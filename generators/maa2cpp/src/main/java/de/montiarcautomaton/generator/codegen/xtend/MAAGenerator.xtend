@@ -24,6 +24,7 @@ import montiarc._ast.ASTComponent
 import montiarc._ast.ASTJavaPBehavior
 import montiarc._symboltable.ComponentSymbol
 import java.util.List
+import de.montiarcautomaton.generator.codegen.xtend.util.CMake
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -99,4 +100,9 @@ class MAAGenerator {
 //    return new AutomatonGenerator(comp).generate(comp)
 //  }
 //}
+
+	def static generateMakeFile(File targetPath, ComponentSymbol comp){
+		
+		toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(), comp), ".txt")
+	}
 }

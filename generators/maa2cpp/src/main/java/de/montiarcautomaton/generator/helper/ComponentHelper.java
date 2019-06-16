@@ -1,5 +1,6 @@
 package de.montiarcautomaton.generator.helper;
 
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -569,6 +570,15 @@ public class ComponentHelper {
     
   }
 
- 
-  
+  public static List<String> getCPPFilesString(File[] files){
+    List<String> cppfiles = new ArrayList<>();
+    
+    for (File file : files ) {
+      if (file.getName().endsWith(".h") || file.getName().endsWith(".cpp")) {
+        cppfiles.add(file.getName());
+      }
+      
+    }
+    return cppfiles;
+  }
 }

@@ -46,6 +46,10 @@ public class MAAGeneratorTool extends MontiArcTool {
       // 4. generate
       Log.info("Generate model: " + qualifiedModelName, "MontiArcGeneratorTool");
       MAAGenerator.generateAll(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(), hwcPath, comp, foundModels);
+      
+      //4.5 generate make file
+      Log.info("Generate CMake file", "MontiArcGeneratorTool");
+      MAAGenerator.generateMakeFile(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(), comp);
     }
 
   }
