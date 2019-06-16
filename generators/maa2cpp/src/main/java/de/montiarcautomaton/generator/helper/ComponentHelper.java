@@ -550,4 +550,25 @@ public class ComponentHelper {
     return paramList;
   }
   
+  public static String java2cppTypeString(String type) {
+    //Todo Code this properly
+    if (type.equals("String")) {
+      return "std::string";
+    }
+    
+    return type;
+  }
+  
+  public String getRealPortCppTypeString(PortSymbol port) {
+    return java2cppTypeString(getRealPortTypeString(port));
+    
+  }
+  
+  public static String getRealPortCppTypeString(ComponentSymbol comp, PortSymbol port) {
+    return java2cppTypeString(getRealPortTypeString(comp, port));
+    
+  }
+
+ 
+  
 }

@@ -14,20 +14,20 @@ import montiarc._symboltable.VariableSymbol
 
 class Identifier {
 
-  private static Identifier instance;
+  static Identifier instance;
 
   def static createInstance(ComponentSymbol comp) {
     instance = new Identifier()
     instance.checkIdentifiers(comp)
   }
 
-  private String resultName = "result";
+  String resultName = "result";
 
-  private String inputName = "input";
+  String inputName = "input";
 
-  private String behaviorImplName = "behaviorImpl";
+  String behaviorImplName = "behaviorImpl";
 
-  private String currentStateName = "currentState";
+  String currentStateName = "currentState";
 
   /**
    * Checks whether component parameter, variable, subcomponent instance, or

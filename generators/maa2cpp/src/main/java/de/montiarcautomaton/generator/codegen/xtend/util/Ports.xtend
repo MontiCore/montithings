@@ -10,7 +10,7 @@ class Ports {
 	def static printVars(Collection<PortSymbol> ports) {
 	return	'''
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortTypeString(port.component.get, port)»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     
    Port<«type»>* «name» = new Port<«type»>;
@@ -23,7 +23,7 @@ class Ports {
 	def static printMethodHeaders(Collection<PortSymbol> ports){
 	return	'''
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortTypeString(port.component.get, port)»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     
     
@@ -37,7 +37,7 @@ class Ports {
 	def static printMethodBodies(Collection<PortSymbol> ports, ComponentSymbol comp){
 	return	'''
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortTypeString(port.component.get, port)»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     
     

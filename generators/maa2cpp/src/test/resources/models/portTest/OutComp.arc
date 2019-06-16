@@ -1,5 +1,5 @@
 package portTest;
 
 component OutComp{
-port out int outPort;
+port out String outPort;
 }

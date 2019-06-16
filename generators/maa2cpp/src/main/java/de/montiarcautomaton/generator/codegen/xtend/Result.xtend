@@ -11,7 +11,7 @@ class Result {
 	    #include "«comp.name»Result.h"
 	    
 	    «IF !comp.allOutgoingPorts.empty»
-	    «comp.name»Result::«comp.name»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortTypeString(port)» «port.name» «ENDFOR»){
+	    «comp.name»Result::«comp.name»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
 	    	«IF comp.superComponent.present»
 	    	      		  super(«FOR port : comp.superComponent.get.allOutgoingPorts» «port.name» «ENDFOR»);
 	    	      		«ENDIF»
@@ -22,13 +22,13 @@ class Result {
 	    «ENDIF»
 	    
 	    «FOR port : comp.outgoingPorts»
-      	 «helper.getRealPortTypeString(port)» «comp.name»Result::get«port.name.toFirstUpper»(){
+      	 «helper.getRealPortCppTypeString(port)» «comp.name»Result::get«port.name.toFirstUpper»(){
   	 	    return «port.name»;
       	 }
 	     «ENDFOR»
 	     
 	     «FOR port : comp.outgoingPorts»
-       	  void «comp.name»Result::set«port.name.toFirstUpper»(«helper.getRealPortTypeString(port)» «port.name»){
+       	  void «comp.name»Result::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»){
    	 	    this->«port.name» = «port.name»; 
        	 }
 	     «ENDFOR»
@@ -40,7 +40,8 @@ class Result {
 	    var ComponentHelper helper = new ComponentHelper(comp)
 	    return '''
 	    #pragma once
-	    using namespace std;
+	    #include <string>
+	    
 	    
 	    class «comp.name»Result
 	    			      «IF comp.superComponent.present» : 
@@ -53,21 +54,21 @@ class Result {
 	    {
 	    private:
 	    	«FOR port : comp.outgoingPorts»
-	    	«helper.getRealPortTypeString(port)» «port.name»;
+	    	«helper.getRealPortCppTypeString(port)» «port.name»;
 	    	«ENDFOR»
 	    
 	    public:	
 	    	«comp.name»Result() {};
 	    	«IF !comp.allOutgoingPorts.empty»
-	    	«comp.name»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortTypeString(port)» «port.name» «ENDFOR»);
+	    	«comp.name»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
 	    	«ENDIF»
 	    	
 	    	«FOR port : comp.outgoingPorts»
-	    	 «helper.getRealPortTypeString(port)» get«port.name.toFirstUpper»();
+	    	 «helper.getRealPortCppTypeString(port)» get«port.name.toFirstUpper»();
 	    	«ENDFOR»
 	    	
 	    	«FOR port : comp.outgoingPorts»
-	    	 void set«port.name.toFirstUpper»(«helper.getRealPortTypeString(port)» «port.name»);
+	    	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»);
 	    	«ENDFOR»
 	    };
 	    '''

@@ -15,7 +15,7 @@ class Input {
       #include "«comp.name»Input.h"      
       
       «IF !comp.allIncomingPorts.empty»
-      	«comp.name»Input::«comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» «helper.getRealPortTypeString(port)» «port.name» «ENDFOR»){
+      	«comp.name»Input::«comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
       		«IF comp.superComponent.present»
       		  super(«FOR port : comp.superComponent.get.allIncomingPorts» «port.name» «ENDFOR»);
       		«ENDIF»
@@ -26,7 +26,7 @@ class Input {
       «ENDIF»
       
       «FOR port : comp.incomingPorts»
-      	 «helper.getRealPortTypeString(port)» «comp.name»Input::get«port.name.toFirstUpper»(){
+      	 «helper.getRealPortCppTypeString(port)» «comp.name»Input::get«port.name.toFirstUpper»(){
       	 	return «port.name»;
       	 }
       				«ENDFOR»
@@ -39,7 +39,8 @@ class Input {
 		
 		return '''
 			#pragma once
-			using namespace std;
+			#include <string>
+			
 			
 			class «comp.name»Input
 			      «IF comp.superComponent.present» : 
@@ -52,16 +53,16 @@ class Input {
 			{
 			private:
 			«FOR port : comp.incomingPorts»
-				«helper.getRealPortTypeString(port)» «port.name»;
+				«helper.getRealPortCppTypeString(port)» «port.name»;
 			«ENDFOR»
 			public:
 				«comp.name»Input() {};
 				«IF !comp.allIncomingPorts.empty»
-			    «comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» «helper.getRealPortTypeString(port)» «port.name» «ENDFOR»);
+			    «comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
 			    «ENDIF»
 				
 				«FOR port : comp.incomingPorts»
-			    «helper.getRealPortTypeString(port)» get«port.name.toFirstUpper»();
+			    «helper.getRealPortCppTypeString(port)» get«port.name.toFirstUpper»();
 				«ENDFOR»
 			};
 			

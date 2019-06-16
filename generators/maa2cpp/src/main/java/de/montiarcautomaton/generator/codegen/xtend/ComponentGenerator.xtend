@@ -24,6 +24,8 @@ class ComponentGenerator {
 		#pragma once
 		#include "IComponent.h"
 		#include "Port.h"
+		#include <string>
+		
 		«IF comp.isDecomposed»
 		«FOR subcomponent : comp.subComponents»
 		#include "«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent)».h"
