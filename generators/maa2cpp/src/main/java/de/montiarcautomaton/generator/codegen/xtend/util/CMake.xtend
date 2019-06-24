@@ -19,12 +19,9 @@ class CMake {
 		set(CMAKE_CXX_STANDARD 14)
 		
 		include_directories(.)
+		file(GLOB SOURCES "*.cpp" "*.h")
 		
-		add_executable(«comp.name»
-			«FOR filename: cppfiles»
-			«filename»
-			«ENDFOR»
-		)
+		add_executable(«comp.name» ${SOURCES})
 		'''
 		}
 	
