@@ -49,13 +49,16 @@ public class MAAGeneratorTool extends MontiArcTool {
       
       
     }
+     
     
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
       ComponentSymbol comp = symTab.<ComponentSymbol> resolve(qualifiedModelName, ComponentSymbol.KIND).get();
 
-    //4.5 generate make file
       if (comp.getStereotype().containsKey("deploy")) {
+      //5 generate libs
+        MAAGenerator.generateLibs(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile());
+      //6 generate make file
         Log.info("Generate CMake file", "MontiArcGeneratorTool"); 
         MAAGenerator.generateMakeFile(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(), comp);
       }
