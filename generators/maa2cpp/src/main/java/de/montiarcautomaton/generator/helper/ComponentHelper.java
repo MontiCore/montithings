@@ -553,9 +553,13 @@ public class ComponentHelper {
   
   public static String java2cppTypeString(String type) {
     //Todo Code this properly
-    if (type.equals("String")) {
-      return "std::string";
-    }
+    type = type.replaceAll("([^<]*)\\[\\]", "std::vector<$1>");
+    type = type.replaceAll("String", "std::string");
+    type = type.replaceAll("Integer", "int");
+    type = type.replaceAll("Map", "std::map");
+    type = type.replaceAll("Set", "std::set");
+    type = type.replaceAll("List", "std:list");
+    type = type.replaceAll("Uint([0-9]*)_t", "uint$1_t");
     
     return type;
   }
