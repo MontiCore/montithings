@@ -25,6 +25,7 @@ import montiarc._ast.ASTJavaPBehavior
 import montiarc._symboltable.ComponentSymbol
 import java.util.List
 import de.montiarcautomaton.generator.codegen.xtend.util.CMake
+import de.montiarcautomaton.generator.codegen.xtend.util.libs.CPPLibraries
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -104,5 +105,12 @@ class MAAGenerator {
 	def static generateMakeFile(File targetPath, ComponentSymbol comp){
 		
 		toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(), comp), ".txt")
+	}
+	
+	def static generateLibs(File targetPath){
+		toFile(targetPath, "Port", CPPLibraries.portString, ".h")
+		toFile(targetPath, "DataSource", CPPLibraries.dataSourceString, ".h")
+		toFile(targetPath, "IComponent", CPPLibraries.IComponentString, ".h")
+		toFile(targetPath, "IComputable", CPPLibraries.IComputableString, ".h")
 	}
 }

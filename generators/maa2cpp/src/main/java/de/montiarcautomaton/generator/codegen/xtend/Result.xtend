@@ -41,7 +41,12 @@ class Result {
 	    return '''
 	    #pragma once
 	    #include <string>
-	    
+	    #include "Port.h"
+		#include <string>
+		#include <map>
+		#include <vector>
+		#include <list>
+		#include <set>
 	    
 	    class «comp.name»Result
 	    			      «IF comp.superComponent.present» : 

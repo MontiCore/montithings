@@ -40,7 +40,12 @@ class Input {
 		return '''
 			#pragma once
 			#include <string>
-			
+			#include "Port.h"
+			#include <string>
+			#include <map>
+			#include <vector>
+			#include <list>
+			#include <set>
 			
 			class «comp.name»Input
 			      «IF comp.superComponent.present» : 

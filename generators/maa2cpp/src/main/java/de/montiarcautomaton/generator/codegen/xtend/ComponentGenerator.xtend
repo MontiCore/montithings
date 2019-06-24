@@ -25,6 +25,12 @@ class ComponentGenerator {
 		#include "IComponent.h"
 		#include "Port.h"
 		#include <string>
+		#include <map>
+		#include <vector>
+		#include <list>
+		#include <set>
+		
+		
 		
 		«IF comp.isDecomposed»
 		«FOR subcomponent : comp.subComponents»
