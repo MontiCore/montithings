@@ -239,6 +239,9 @@ public class ComponentHelper {
         typesPrinter.prettyprint(astType).replaceAll(" ", ""));
   }
   
+  public static String printCPPTypeName(ASTType astType) {
+    return java2cppTypeString(printTypeName(astType));
+  }
   /**
    * Prints a type reference with dimension and type arguments.
    *
@@ -552,14 +555,14 @@ public class ComponentHelper {
   }
   
   public static String java2cppTypeString(String type) {
-    //Todo Code this properly
     type = type.replaceAll("([^<]*)\\[\\]", "std::vector<$1>");
     type = type.replaceAll("String", "std::string");
     type = type.replaceAll("Integer", "int");
     type = type.replaceAll("Map", "std::map");
     type = type.replaceAll("Set", "std::set");
-    type = type.replaceAll("List", "std:list");
-    type = type.replaceAll("Uint([0-9]*)_t", "uint$1_t");
+    type = type.replaceAll("List", "std::list");
+    type = type.replaceAll("Boolean", "bool");
+    type = type.replaceAll("Character", "char");
     
     return type;
   }

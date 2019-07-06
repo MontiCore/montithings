@@ -29,8 +29,6 @@ public class SimpleGenerationTest {
   //FileUtils.cleanDirectory(Paths.get(TARGETPATH).toFile());  
     MAAGeneratorTool script = new MAAGeneratorTool();
     script.generate(Paths.get(MODELPATH).toFile(), Paths.get(TARGETPATH).toFile(), Paths.get(MODELPATH).toFile());
-    assertTrue(!Paths.get(TARGETPATH + "genTest/DynamicSubComp.java").toFile().isFile());
-    
   }
 
 

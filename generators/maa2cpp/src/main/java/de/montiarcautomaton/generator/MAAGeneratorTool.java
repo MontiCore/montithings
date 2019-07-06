@@ -30,7 +30,7 @@ public class MAAGeneratorTool extends MontiArcTool {
     List<String> foundModels = Modelfinder.getModelsInModelPath(modelPath, MontiArcLanguage.FILE_ENDING);
 
     Log.info("Initializing symboltable", "MontiArcGeneratorTool");
-    Scope symTab = initSymbolTable(modelPath, hwcPath);
+    Scope symTab = initSymbolTable(true, modelPath, hwcPath);
 
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);

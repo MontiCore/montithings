@@ -45,7 +45,7 @@ class Utils {
    */
   def static printMember(String type, String name, String visibility) {
     return '''
-      «visibility» «type» «name»;
+      «type» «name»;
     '''
   }
   
@@ -66,7 +66,7 @@ class Utils {
   def static printVariables(ComponentSymbol comp) {
     return '''
       «FOR variable : comp.variables»
-        «printMember(ComponentHelper.printTypeName((variable.astNode.get as ASTVariableDeclaration).type), variable.name, "protected")»
+        «printMember(ComponentHelper.printCPPTypeName((variable.astNode.get as ASTVariableDeclaration).type), variable.name, "")»
       «ENDFOR»
     '''
   }
