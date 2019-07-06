@@ -1,6 +1,7 @@
 package de.montiarcautomaton.generator.helper;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import de.montiarcautomaton.generator.codegen.xtend.util.Utils;
@@ -554,6 +556,9 @@ public class ComponentHelper {
     return paramList;
   }
   
+  /**
+   * @return Corresponding CPP types from input java types
+   */
   public static String java2cppTypeString(String type) {
     type = type.replaceAll("([^<]*)\\[\\]", "std::vector<$1>");
     type = type.replaceAll("String", "std::string");
@@ -577,6 +582,7 @@ public class ComponentHelper {
     
   }
 
+  
   public static List<String> getCPPFilesString(File[] files){
     List<String> cppfiles = new ArrayList<>();
     
@@ -588,4 +594,19 @@ public class ComponentHelper {
     }
     return cppfiles;
   }
+  
+  
+  /**
+   * 
+   * @param hwcPath
+   * @param cmpLocation
+   * @return Returns true if handwritten implementations for the component exist
+   */
+  public static Boolean existsHWCClass(File hwcPath, String component) {
+    File cmpPath = Paths.get(hwcPath.toString() 
+        + File.separator + component.replaceAll("\\.",
+            Matcher.quoteReplacement(File.separator)) + ".h").toFile();
+    return cmpPath.isFile();
+  }
+
 }

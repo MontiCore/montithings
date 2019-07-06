@@ -50,7 +50,8 @@ public class MAAGeneratorTool extends MontiArcTool {
 
       // 4. generate
       Log.info("Generate model: " + qualifiedModelName, "MontiArcGeneratorTool");
-      MAAGenerator.generateAll(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(), hwcPath, comp, foundModels);
+      MAAGenerator.generateAll(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(),
+          hwcPath, comp, foundModels);
       
       
     }
@@ -61,11 +62,13 @@ public class MAAGeneratorTool extends MontiArcTool {
       ComponentSymbol comp = symTab.<ComponentSymbol> resolve(qualifiedModelName, ComponentSymbol.KIND).get();
 
       if (comp.getStereotype().containsKey("deploy")) {
+      File libraryPath = Paths.get(target.getAbsolutePath(), "libraries").toFile();
       //5 generate libs
-        MAAGenerator.generateLibs(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile());
+        MAAGenerator.generateLibs(libraryPath);
       //6 generate make file
         Log.info("Generate CMake file", "MontiArcGeneratorTool"); 
-        MAAGenerator.generateMakeFile(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(), comp);
+        MAAGenerator.generateMakeFile(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile()
+            , comp, hwcPath, libraryPath);
       }
       
     }

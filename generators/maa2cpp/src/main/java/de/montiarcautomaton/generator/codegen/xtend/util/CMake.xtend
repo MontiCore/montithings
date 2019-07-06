@@ -8,9 +8,8 @@ import de.montiarcautomaton.generator.helper.ComponentHelper
 
 class CMake {
 	
-	def static printCMake(File[] files, ComponentSymbol comp) {
+	def static printCMake(File[] files, ComponentSymbol comp, File hwcPath, File libraryPath) {
 		
-		var cppfiles = ComponentHelper.getCPPFilesString(files)
 		
 		return '''
 		cmake_minimum_required(VERSION 3.14)
@@ -18,9 +17,14 @@ class CMake {
 		
 		set(CMAKE_CXX_STANDARD 14)
 		
+		include_directories("«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»")
 		include_directories(«libraryPath.absolutePath.replace("\\","/")»)
 		include_directories(.)
-		file(GLOB SOURCES "*.cpp" "*.h")
+		file(GLOB SOURCES 
+		"./*.cpp"
+		"./*.h"
+		"«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
+		"«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.h"
 		"«libraryPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
 		"«libraryPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.h")
 		

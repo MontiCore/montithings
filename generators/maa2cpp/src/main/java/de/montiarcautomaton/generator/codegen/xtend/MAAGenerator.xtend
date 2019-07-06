@@ -26,6 +26,7 @@ import montiarc._symboltable.ComponentSymbol
 import java.util.List
 import de.montiarcautomaton.generator.codegen.xtend.util.CMake
 import de.montiarcautomaton.generator.codegen.xtend.util.libs.CPPLibraries
+import de.montiarcautomaton.generator.helper.ComponentHelper
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -48,11 +49,9 @@ class MAAGenerator {
     toFile(targetPath, comp.name, ComponentGenerator.generateBody(comp), ".cpp");
     
 
-    var boolean existsHWCClass = TransformationHelper.existsHandwrittenClass(
-    	IterablePath.from(hwc, ".cpp"),
-      comp.packageName + "." + comp.name + "Impl");
+    var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + comp.name + "Impl");
 
-    if (!existsHWCClass && comp.isAtomic) {
+    if (!existsHWC && comp.isAtomic) {
       toFile(targetPath, comp.name + "Impl", AbstractAtomicImplementation.generateAbstractAtomicImplementationHeader(comp),".h");
       toFile(targetPath, comp.name + "Impl", AbstractAtomicImplementation.generateAbstractAtomicImplementationBody(comp),".cpp");
     }
