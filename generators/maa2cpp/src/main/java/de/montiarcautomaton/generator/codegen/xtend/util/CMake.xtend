@@ -18,8 +18,11 @@ class CMake {
 		
 		set(CMAKE_CXX_STANDARD 14)
 		
+		include_directories(«libraryPath.absolutePath.replace("\\","/")»)
 		include_directories(.)
 		file(GLOB SOURCES "*.cpp" "*.h")
+		"«libraryPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
+		"«libraryPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.h")
 		
 		add_executable(«comp.name» ${SOURCES})
 		'''

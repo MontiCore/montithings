@@ -102,9 +102,10 @@ class MAAGenerator {
 //  }
 //}
 
-	def static generateMakeFile(File targetPath, ComponentSymbol comp){
+	def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath){
 		
-		toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(), comp), ".txt")
+		toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(),
+			comp, hwcPath, libraryPath), ".txt")
 	}
 	
 	def static generateLibs(File targetPath){
