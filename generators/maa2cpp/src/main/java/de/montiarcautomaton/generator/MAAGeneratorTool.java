@@ -5,6 +5,7 @@
  */
 package de.montiarcautomaton.generator;
 
+import de.montiarcautomaton.cocos.NoAJavaBehaviourInComponents;
 import de.montiarcautomaton.generator.codegen.xtend.MAAGenerator;
 import de.monticore.cd2pojo.Modelfinder;
 import de.monticore.symboltable.Scope;
@@ -12,6 +13,7 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
 import montiarc._ast.ASTMontiArcNode;
+import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.MontiArcLanguage;
 
@@ -27,6 +29,9 @@ import java.util.List;
 public class MAAGeneratorTool extends MontiArcTool {
 
   public void generate(File modelPath, File target, File hwcPath) {
+    // 0. Add CPP specific cocos to CoCoChecker
+    addCPPCoCos();
+    
     List<String> foundModels = Modelfinder.getModelsInModelPath(modelPath, MontiArcLanguage.FILE_ENDING);
 
     Log.info("Initializing symboltable", "MontiArcGeneratorTool");
@@ -66,5 +71,11 @@ public class MAAGeneratorTool extends MontiArcTool {
     }
 
   }
+
+  private void addCPPCoCos() {
+    checker.addCoCo(new NoAJavaBehaviourInComponents()); 
+  }
+  
+  
 
 }

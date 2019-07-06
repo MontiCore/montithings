@@ -38,7 +38,7 @@ public class MontiArcTool {
   
   protected ModelingLanguageFamily family;
   
-  private MontiArcCoCoChecker checker;
+  protected MontiArcCoCoChecker checker;
   
   private boolean isSymTabInitialized;
   
