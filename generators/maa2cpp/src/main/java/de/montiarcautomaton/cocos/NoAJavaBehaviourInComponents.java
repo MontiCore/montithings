@@ -7,7 +7,7 @@ public class NoAJavaBehaviourInComponents implements MontiArcASTJavaPBehaviorCoC
 
   @Override
   public void check(ASTJavaPBehavior node) {
-    Log.error("0xMA308 JavaP is not supported by the CPP generator.",
+    Log.error("0xMA300 JavaP is not supported by the CPP generator.",
         node.get_SourcePositionStart());
     
   }
