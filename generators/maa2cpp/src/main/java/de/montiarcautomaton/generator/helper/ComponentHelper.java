@@ -29,8 +29,11 @@ import de.monticore.types.types._ast.ASTType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.se_rwth.commons.Names;
 import jline.internal.Log;
+import montiarc._ast.ASTCPPImportStatement;
+import montiarc._ast.ASTCPPSystemImportStatement;
 import montiarc._ast.ASTComponent;
 import montiarc._ast.ASTConnector;
+import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTParameter;
 import montiarc._ast.ASTPort;
 import montiarc._symboltable.ComponentInstanceSymbol;
@@ -607,6 +610,34 @@ public class ComponentHelper {
         + File.separator + component.replaceAll("\\.",
             Matcher.quoteReplacement(File.separator)) + ".h").toFile();
     return cmpPath.isFile();
+  }
+
+  public static List<String> getSystemImports(ComponentSymbol symbol) {
+    List<String> importStrings = new ArrayList<String>();
+    try {      
+      ASTMACompilationUnit node = (ASTMACompilationUnit) symbol.getEnclosingScope().getAstNode().get();
+      List<ASTCPPSystemImportStatement> imports = node.getCPPSystemImportStatementList();
+      for (ASTCPPSystemImportStatement importStatement : imports) {
+        importStrings.add(String.join(".", importStatement.getCppSystemImportList()));
+      }
+    }
+    catch (Exception e) {
+    }
+    return importStrings;
+  }
+
+  public static List<String> getLocalImports(ComponentSymbol symbol) {
+    List<String> importStrings = new ArrayList<String>();
+    try {      
+      ASTMACompilationUnit node = (ASTMACompilationUnit) symbol.getEnclosingScope().getAstNode().get();
+      List<ASTCPPImportStatement> imports = node.getCPPImportStatementList();
+      for (ASTCPPImportStatement importStatement : imports) {
+        importStrings.add(importStatement.getCppImport());
+      }
+    }
+    catch (Exception e) {
+    }
+    return importStrings;
   }
 
 }

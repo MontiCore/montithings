@@ -12,7 +12,8 @@ import java.util.List
 import montiarc._ast.ASTComponent
 import montiarc._ast.ASTVariableDeclaration
 import montiarc._symboltable.ComponentSymbol
-
+import de.monticore.ast.ASTNode
+import montiarc._ast.ASTMACompilationUnit
 
 class Utils {
 
@@ -135,6 +136,17 @@ class Utils {
   	} else {
   		return '''«packageName».«comp.superComponent.get.name»'''
   	}
+  }
+  
+  def static String printCPPImports(ComponentSymbol comp){
+  	return '''
+  	«FOR importString : ComponentHelper.getSystemImports(comp)»
+  	#include <«importString»>
+  	«ENDFOR»
+  	«FOR importString : ComponentHelper.getLocalImports(comp)»
+  	#include "«importString»"
+  	«ENDFOR»
+  	'''
   }
 
 }

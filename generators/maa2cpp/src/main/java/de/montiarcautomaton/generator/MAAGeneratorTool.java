@@ -8,11 +8,13 @@ package de.montiarcautomaton.generator;
 import de.montiarcautomaton.cocos.NoAJavaBehaviourInComponents;
 import de.montiarcautomaton.cocos.NoJavaImportsForCPPGenerator;
 import de.montiarcautomaton.generator.codegen.xtend.MAAGenerator;
+import de.monticore.ast.ASTNode;
 import de.monticore.cd2pojo.Modelfinder;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
+import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentSymbol;
@@ -53,7 +55,8 @@ public class MAAGeneratorTool extends MontiArcTool {
       // 4. check cocos
       Log.info("Check model: " + qualifiedModelName, "MontiArcGeneratorTool");
       checkCoCos((ASTMontiArcNode) comp.getAstNode().get());
-
+     
+      
       // 5. generate
       Log.info("Generate model: " + qualifiedModelName, "MontiArcGeneratorTool");
       MAAGenerator.generateAll(Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(),

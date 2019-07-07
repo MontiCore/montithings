@@ -16,11 +16,17 @@ grammar MontiArc extends de.monticore.java.JavaDSL {
   MACompilationUnit =
     ("package" package:(Name& || ".")+ ";")?  // optional package declaration
     (ImportStatementLOCAL)*                        // import statements
-    Component                                 // single outermost component declaration 
+    (CPPImportStatement)*
+    (CPPSystemImportStatement)*
+    Component                                 //- single outermost component declaration 
     EOF;                                      // and nothing (end of file) afterwards
     
   //Only required until ImportStatement in Types.mc4 uses Name& instead of Name  
   ImportStatementLOCAL = "import" import:(Name& || ".")+ ("." Star:["*"])? ";" ;
+  
+  //CPP Import Statements only to be used by components that are generated with CPP generator
+  CPPImportStatement = "#include" cppImport:String;
+  CPPSystemImportStatement = "#include" "<" cppSystemImport:(Name& || ".")+ ">";
     
    // TODO where should invariant binding take place?
   InvariantContent = BlockStatement | Expression;

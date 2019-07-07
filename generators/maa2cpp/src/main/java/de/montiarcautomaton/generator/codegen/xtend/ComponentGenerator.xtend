@@ -29,7 +29,7 @@ class ComponentGenerator {
 		#include <vector>
 		#include <list>
 		#include <set>
-		
+		«Utils.printCPPImports(comp)»
 		
 		
 		«IF comp.isDecomposed»

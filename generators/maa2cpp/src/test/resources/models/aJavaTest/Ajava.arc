@@ -8,6 +8,9 @@ package aJavaTest;
  * @implements AJava CoCo
  */
  
+ #include "test2.cpp"
+ #include <test.h>
+ 
 component Ajava{
   compute ComputeBlock{
     int x;

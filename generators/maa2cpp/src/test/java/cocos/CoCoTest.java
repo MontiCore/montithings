@@ -8,7 +8,6 @@ import org.junit.Test;
 import de.montiarcautomaton.cocos.NoAJavaBehaviourInComponents;
 import de.montiarcautomaton.cocos.NoJavaImportsForCPPGenerator;
 import de.se_rwth.commons.logging.Log;
-import infrastructure.ExpectedErrorInfo;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc.cocos.MontiArcCoCos;
@@ -35,4 +34,6 @@ public class CoCoTest extends AbstractCoCoTest{
     checkInvalid(new MontiArcCoCoChecker().addCoCo(new NoJavaImportsForCPPGenerator()),
         node, new ExpectedErrorInfo(1, "xMA301"));
   }
+  
+
 }

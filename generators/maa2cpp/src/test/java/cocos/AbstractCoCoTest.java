@@ -20,7 +20,6 @@ import org.junit.Before;
 
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.logging.Log;
-import infrastructure.ExpectedErrorInfo;
 import montiarc.MontiArcTool;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._symboltable.ComponentSymbol;

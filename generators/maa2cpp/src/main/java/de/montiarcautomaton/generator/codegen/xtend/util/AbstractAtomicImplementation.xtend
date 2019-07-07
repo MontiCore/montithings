@@ -11,6 +11,7 @@ class AbstractAtomicImplementation {
     #include "«comp.name»Result.h"
     #include "IComputable.h"
     #include <stdexcept>
+    «Utils.printCPPImports(comp)»
     
     
 	class «comp.name»«generics»Impl : IComputable<«comp.name»Input«generics»,«comp.name»Result«generics»>{
