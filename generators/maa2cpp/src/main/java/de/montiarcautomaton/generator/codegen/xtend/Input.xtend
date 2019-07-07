@@ -46,6 +46,7 @@ class Input {
 			#include <vector>
 			#include <list>
 			#include <set>
+			«Utils.printCPPImports(comp)»
 			
 			class «comp.name»Input
 			      «IF comp.superComponent.present» : 

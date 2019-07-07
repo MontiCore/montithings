@@ -5,6 +5,7 @@
  */
 package de.montiarcautomaton.generator;
 
+import de.montiarcautomaton.cocos.CPPImportExists;
 import de.montiarcautomaton.cocos.NoAJavaBehaviourInComponents;
 import de.montiarcautomaton.cocos.NoJavaImportsForCPPGenerator;
 import de.montiarcautomaton.generator.codegen.xtend.MAAGenerator;
@@ -37,6 +38,7 @@ public class MAAGeneratorTool extends MontiArcTool {
     // 1. Add CPP specific cocos to CoCoChecker
     checker.addCoCo(new NoAJavaBehaviourInComponents());
     checker.addCoCo(new NoJavaImportsForCPPGenerator());
+    checker.addCoCo(new CPPImportExists(hwcPath));
     
     
     

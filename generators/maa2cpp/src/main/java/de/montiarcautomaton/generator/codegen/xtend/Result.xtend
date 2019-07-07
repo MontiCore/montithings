@@ -47,6 +47,7 @@ class Result {
 		#include <vector>
 		#include <list>
 		#include <set>
+		«Utils.printCPPImports(comp)»
 	    
 	    class «comp.name»Result
 	    			      «IF comp.superComponent.present» : 
