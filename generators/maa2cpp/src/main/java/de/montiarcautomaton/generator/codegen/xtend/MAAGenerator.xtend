@@ -9,7 +9,6 @@ package de.montiarcautomaton.generator.codegen.xtend
 
 //import de.montiarcautomaton.generator.codegen.xtend.behavior.AutomatonGenerator
 //import de.montiarcautomaton.generator.codegen.xtend.behavior.JavaPGenerator
-import de.montiarcautomaton.generator.codegen.xtend.util.AbstractAtomicImplementation
 import de.montiarcautomaton.generator.codegen.xtend.util.Identifier
 import de.monticore.ast.ASTCNode
 import de.monticore.codegen.mc2cd.TransformationHelper
@@ -27,6 +26,7 @@ import java.util.List
 import de.montiarcautomaton.generator.codegen.xtend.util.CMake
 import de.montiarcautomaton.generator.codegen.xtend.util.libs.CPPLibraries
 import de.montiarcautomaton.generator.helper.ComponentHelper
+import de.montiarcautomaton.generator.codegen.xtend.behavior.AbstractAtomicImplementation
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 

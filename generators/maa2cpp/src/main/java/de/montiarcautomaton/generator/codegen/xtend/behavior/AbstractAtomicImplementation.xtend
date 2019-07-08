@@ -1,6 +1,8 @@
-package de.montiarcautomaton.generator.codegen.xtend.util
+package de.montiarcautomaton.generator.codegen.xtend.behavior
 
 import montiarc._symboltable.ComponentSymbol
+import de.montiarcautomaton.generator.codegen.xtend.util.Utils
+import de.montiarcautomaton.generator.codegen.xtend.util.Identifier
 
 class AbstractAtomicImplementation {
 	def static generateAbstractAtomicImplementationHeader(ComponentSymbol comp) {
@@ -15,7 +17,7 @@ class AbstractAtomicImplementation {
     
     
 	class «comp.name»«generics»Impl : IComputable<«comp.name»Input«generics»,«comp.name»Result«generics»>{
-	
+
 	public:
 		«comp.name»«generics»Impl(){};
 		virtual «comp.name»Result getInitialValues() override;
