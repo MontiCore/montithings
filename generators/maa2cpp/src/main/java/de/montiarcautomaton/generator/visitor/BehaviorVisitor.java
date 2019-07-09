@@ -17,22 +17,22 @@ import montiarc._visitor.MontiArcVisitor;
  * @version $Revision$, $Date$
  */
 public class BehaviorVisitor implements MontiArcVisitor {
-  
-  Optional<ASTJavaPBehavior> javaPBehavior = Optional.empty();
-  
-  /**
-   * @see montiarc._visitor.MontiArcVisitor#visit(montiarc._ast.ASTJavaPBehavior)
-   */
-  @Override
-  public void visit(ASTJavaPBehavior node) {
-    javaPBehavior = Optional.of(node);
-  }
-  
-  /**
-   * @return javaPBehavior
-   */
-  public Optional<ASTJavaPBehavior> getJavaPBehavior() {
-    return this.javaPBehavior;
-  }
-  
+
+	Optional<ASTJavaPBehavior> javaPBehavior = Optional.empty();
+
+	/**
+	 * @see montiarc._visitor.MontiArcVisitor#visit(montiarc._ast.ASTJavaPBehavior)
+	 */
+	@Override
+	public void visit(ASTJavaPBehavior node) {
+		javaPBehavior = Optional.of(node);
+	}
+
+	/**
+	 * @return javaPBehavior
+	 */
+	public Optional<ASTJavaPBehavior> getJavaPBehavior() {
+		return this.javaPBehavior;
+	}
+
 }
