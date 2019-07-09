@@ -25,8 +25,8 @@ class CMake {
 		"./*.h"
 		"«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
 		"«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.h"
-		"«libraryPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
-		"«libraryPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.h")
+		"«libraryPath.absolutePath.replace("\\","/")»/*.cpp"
+		"«libraryPath.absolutePath.replace("\\","/")»/*.h")
 		
 		add_executable(«comp.name» ${SOURCES})
 		'''
