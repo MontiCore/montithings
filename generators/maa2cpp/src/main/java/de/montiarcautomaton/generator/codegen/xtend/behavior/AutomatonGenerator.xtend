@@ -22,7 +22,7 @@ import montiarc._ast.ASTValueList
 import de.montiarcautomaton.generator.helper.ComponentHelper
 import java.util.stream.Collectors
 
-class AutomatonGenerator extends ABehaviorGenerator{
+class AutomatonGenerator{
 	
   var Collection<StateSymbol> states
 
@@ -63,7 +63,7 @@ class AutomatonGenerator extends ABehaviorGenerator{
 /**
    * Prints the compute implementation of automaton behavior.
    */
-  override String printCompute(ComponentSymbol comp) {
+  def String printCompute(ComponentSymbol comp) {
     var resultName = comp.name + "Result"
     var ASTAutomaton automaton = null
     for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
@@ -122,7 +122,7 @@ class AutomatonGenerator extends ABehaviorGenerator{
 			  }
 		'''
   }
-override String printGetInitialValues(ComponentSymbol comp) {
+def String printGetInitialValues(ComponentSymbol comp) {
     var resultName = comp.name + "Result"
     var ASTAutomaton automaton = null
     for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
@@ -167,7 +167,7 @@ override String printGetInitialValues(ComponentSymbol comp) {
    * Adds a enum for alls states of the automtaton and the attribute currentState for storing 
    * the current state of the automaton.
    */
-  override String hook(ComponentSymbol comp) {
+  def String hook(ComponentSymbol comp) {
     var ASTAutomaton automaton = null
     for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
       if (element instanceof ASTAutomatonBehavior) {
@@ -247,6 +247,54 @@ override String printGetInitialValues(ComponentSymbol comp) {
   def private String printExpression(ASTExpression expr) {
     return printExpression(expr, true);
   }
+	
+	  def String generateHeader(ComponentSymbol comp) {
+  	var String generics = Utils.printFormalTypeParameters(comp)
+    return '''
+    #pragma once
+    #include "«comp.name»Input.h"
+    #include "«comp.name»Result.h"
+    #include "IComputable.h"
+    #include <stdexcept>
+    «Utils.printCPPImports(comp)»
+		
+    class «comp.name»«generics»Impl : IComputable<«comp.name»Input«generics»,«comp.name»Result«generics»>{ {
+	private:  
+        «Utils.printVariables(comp)»
+        «Utils.printConfigParameters(comp)»
+		
+        
+    public:
+      	«hook(comp)»
+		«printConstructor(comp)»
+		virtual «comp.name»Result getInitialValues() override;
+		virtual «comp.name»Result compute(«comp.name»Input input) override;
+
+    }
+    '''
+  }
+  
+  def String generateBody(ComponentSymbol comp){
+  	return'''
+  	#include "«comp.name»Impl.h"
+
+    «printGetInitialValues(comp)»
+    
+    «printCompute(comp)»
+  	'''
+  }
+
+  def String printConstructor(ComponentSymbol comp) {
+    return '''
+       «comp.name»Impl(«Utils.printConfiurationParametersAsList(comp)») {
+        «FOR param : comp.configParameters»
+          this.«param.name» = «param.name»; 
+        «ENDFOR»
+      }
+    '''
+
+  }
+
   
 	
 }
