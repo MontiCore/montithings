@@ -1,0 +1,5 @@
+package nfp;
+
+tagschema Distribution {
+	tagtype Connection: String for Port;
+}

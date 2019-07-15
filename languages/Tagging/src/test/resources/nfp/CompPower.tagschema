@@ -1,0 +1,6 @@
+package nfp;
+
+tagschema CompPower {
+	tagtype CompPowerInst: Energy for ComponentInstance;
+	tagtype CompPower: Energy for Component;
+}

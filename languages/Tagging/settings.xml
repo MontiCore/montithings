@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+
+     ******************************************************************************
+     MontiCAR Modeling Family, www.se-rwth.de
+     Copyright (c) 2017, Software Engineering Group at RWTH Aachen,
+     All rights reserved.
+
+     This project is free software; you can redistribute it and/or
+     modify it under the terms of the GNU Lesser General Public
+     License as published by the Free Software Foundation; either
+     version 3.0 of the License, or (at your option) any later version.
+     This library is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     Lesser General Public License for more details.
+
+     You should have received a copy of the GNU Lesser General Public
+     License along with this project. If not, see <http://www.gnu.org/licenses/>.
+    *******************************************************************************
+
+-->
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <pluginGroups>
+	<pluginGroup>org.mortbay.jetty</pluginGroup>
+	<pluginGroup>de.topobyte</pluginGroup>
+  </pluginGroups>
+
+  <proxies>
+  </proxies>
+
+  <servers>
+    <server>
+      <id>se-nexus</id>
+      <username>cibuild</username>
+      <password>${env.cibuild}</password>
+    </server> 
+
+     <server>
+      <id>github</id>
+      <username>travisbuilduser</username>
+      <password>${env.travisbuilduserpassword}</password>
+    </server>
+  </servers>
+
+  <mirrors>
+    <mirror>
+      <id>se-nexus</id>
+      <mirrorOf>external:*</mirrorOf>
+      <url>https://nexus.se.rwth-aachen.de/content/groups/public</url>
+    </mirror>	 
+  </mirrors>
+
+  <profiles>
+
+    <profile>
+      <id>se-nexus</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>http://central</url>
+          <releases><enabled /></releases>
+          <snapshots><enabled /></snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>central</id>
+          <url>http://central</url>
+          <releases><enabled /></releases>
+          <snapshots><enabled /></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>se-nexus</activeProfile>
+  </activeProfiles>  
+</settings>

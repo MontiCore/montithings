@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>montiarc-fe</module>
+		<module>Tagging</module>
 	</modules>
 
 </project>

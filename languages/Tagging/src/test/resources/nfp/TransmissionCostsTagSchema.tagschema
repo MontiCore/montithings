@@ -1,0 +1,8 @@
+package nfp;
+
+tagschema TransmissionCostsTagSchema {
+	tagtype TransCostCmpInst: Power for ComponentInstance;
+	tagtype TransCostCmp: Power for Component;
+	tagtype TransCostConn: Power for Connector;
+	tagtype TransCostPort: Power for Port;
+}

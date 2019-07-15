@@ -1,0 +1,97 @@
+package de.monticore.lang;
+
+/**
+ * Basic grammar to tag non-functional properties
+ *
+ * @author Michael von Wenckstern
+ */
+grammar Tagging extends de.monticore.common.Common {
+
+  TaggingUnit =
+    ("package" package:(Name& || ".")+ ";")? 
+    (ImportStatement)*
+    "conforms" "to" (QualifiedName || ",")+ ";"
+	TagBody;
+	
+	// name should be optional, but than we need an transformation step in the parser
+	// b/c the symbol table needs a name
+	// and we need the symbol table for coco checks
+	// maybe later for convience we make the optional
+	TagBody = "tags" Name? ("for" targetModel: Scope)? "{"
+	   Tag+ "}";
+	   
+//	interface TagElement;
+	
+  Tag = "tag" (Scope || ",")+ "with" TagElement+;
+  symbol TagElement = Name (TagValue | ";");
+
+ fragment token WSS = (' ' | '\t' | '\r' | '\n');
+
+ token TagValue = '=' WSS* BasicTagValue (WSS* ';');
+ fragment token BasicTagValue = (Recursion | TagToken | String);
+ fragment token Recursion = '{' (~('{' | '}' | '"') | String | Recursion)+ '}';
+ fragment token TagToken = (~('"' | '{' | '}' | ';'))+;
+
+ NameWithArray = (Name ("[" start:IntLiteral (( ":" step:IntLiteral )? ":" end:IntLiteral )?"]")?);
+ ast NameWithArray =
+    method public String toString(){
+        String arrayPart = "";
+
+        arrayPart += getStartOpt().isPresent() ? "" + getStartOpt().get().getValue() : "";
+        arrayPart += getStepOpt().isPresent() ? ":" + getStepOpt().get().getValue() : "";
+        arrayPart += getEndOpt().isPresent() ? ":" + getEndOpt().get().getValue() : "";
+
+        return name + (arrayPart.equals("") ? "" : "[" + arrayPart + "]");
+    };
+
+ QualifiedNameWithArray = parts:( NameWithArray || ".")+;
+ ast QualifiedNameWithArray =
+    method public String toString(){
+        return de.se_rwth.commons.Joiners.DOT.join(getPartsList());
+    };
+
+
+	interface Scope;
+	ast Scope =
+	  method public String getQualifiedNameString() {
+     return "";
+    }
+	  method public String getScopeKind() {
+	    return "undefined";
+	  };
+
+	// this one is only defined here, to get Parser Tags
+	NameScope implements Scope = qualifiedName:QualifiedNameWithArray;
+	ast NameScope =
+	  method public String getQualifiedNameString() {
+       return getQualifiedName().toString();
+     }
+	  method public String getScopeKind() {
+  	  return "NameScope";
+  	};
+
+	ConnectorScope extends NameScope = source:QualifiedNameWithArray "->" qualifiedName:QualifiedNameWithArray;
+  ast ConnectorScope =
+    method public String getQualifiedNameString() {
+       return getQualifiedName().toString();
+     }
+    method public String getScopeKind() {
+      return "ConnectorScope";
+    };
+
+/* ast Scope =
+  method public de.monticore.types.types._ast.ASTQualifiedName getQualifiedName() {
+   return null;
+  }
+  method public String getQualifiedNameAsString() {
+     return de.se_rwth.commons.Joiners.DOT.join(getQualifiedName().getParts());
+  };
+  ast NameScope =
+  method public String getQualifiedNameAsString() {
+     return de.se_rwth.commons.Joiners.DOT.join(getQualifiedName().getParts());
+  };
+  ast ConnectorScope =
+    method public String getQualifiedNameAsString() {
+       return de.se_rwth.commons.Joiners.DOT.join(getQualifiedName().getParts());
+    }; */
+}

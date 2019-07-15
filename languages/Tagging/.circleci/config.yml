@@ -1,0 +1,69 @@
+#
+#
+#  ******************************************************************************
+#  MontiCAR Modeling Family, www.se-rwth.de
+#  Copyright (c) 2017, Software Engineering Group at RWTH Aachen,
+#  All rights reserved.
+#
+#  This project is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 3.0 of the License, or (at your option) any later version.
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this project. If not, see <http://www.gnu.org/licenses/>.
+# *******************************************************************************
+#
+
+# Java Maven CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+general:
+  branches:
+    ignore:
+      - gh-pages
+      
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      # run tests!
+      - run: mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean install --settings "settings.xml"
+workflows:
+  version: 2
+  commit-workflow:
+    jobs:
+      - build
+  scheduled-workflow:
+    triggers:
+      - schedule:
+          cron: "30 1 * * *"
+          filters:
+            branches:
+              only: master
+
+    jobs:
+      - build
+

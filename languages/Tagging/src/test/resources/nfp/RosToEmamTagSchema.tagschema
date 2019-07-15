@@ -1,0 +1,6 @@
+package nfp;
+
+tagschema RosToEmamTagSchema {
+	tagtype RosConnection for Port is {
+	\(topicName = (${topicName:String}, topicType = ${topicType:String}) \(, msgField = ${msgField:String}\)\?\)? };
+}
