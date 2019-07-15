@@ -29,7 +29,8 @@
 		<!-- .. SE-Libraries ..................................................... -->
 		<monticore.version>5.0.0.1</monticore.version> 
 		<mc.grammars.assembly.version>0.0.8</mc.grammars.assembly.version>
-		<se-commons.version>1.7.8</se-commons.version> 
+		<se-commons.version>1.7.8</se-commons.version>
+		<tagging.version>0.0.7-SNAPSHOT</tagging.version>
 
 		<!-- generator -->
 		<groovy.version>2.3.0</groovy.version>
@@ -143,6 +144,13 @@
 				<artifactId>cd4analysis</artifactId>
 				<version>${cd4a.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>de.monticore.lang</groupId>
+				<artifactId>Tagging</artifactId>
+				<version>${tagging.version}</version>
+			</dependency>
+
 
 			<dependency>
 				<groupId>com.google.guava</groupId>

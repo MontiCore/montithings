@@ -1,0 +1,5 @@
+package distribution;
+
+tagschema Distribution {
+	tagtype Connection: String for Port;
+}

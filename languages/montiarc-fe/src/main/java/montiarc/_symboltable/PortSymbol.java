@@ -11,11 +11,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
+import javax.swing.text.html.Option;
 
 import de.monticore.symboltable.CommonSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.references.JTypeReference;
 import montiarc.helper.SymbolPrinter;
+import montiarc.tagging.distribution.ConnectionSymbol;
 
 /**
  * Symboltable entry for ports.
@@ -38,6 +40,11 @@ public class PortSymbol extends CommonSymbol {
   private boolean incoming;
   
   private JTypeReference<? extends JTypeSymbol> typeReference;
+
+  /**
+   * Stores ConnectionSymbol if specified in Tagging model
+   */
+  private Optional<ConnectionSymbol> connectionSymbol;
 
   /**
    * Constructor for a PortSymbol object.
@@ -134,6 +141,27 @@ public class PortSymbol extends CommonSymbol {
   public Map<String, Optional<String>> getStereotype() {
     return stereotype;
   }
+
+  /**
+   * Set connection symbol. Used in ConnectionSymbolCreator
+   * @param c the connection symbol to be added
+   */
+  public void setConnectionSymbol(ConnectionSymbol c){
+    this.connectionSymbol = Optional.of(c);
+  }
+
+  public Optional<ConnectionSymbol> getConnectionSymbolOpt(){
+    return connectionSymbol;
+  }
+
+  public Optional<String> getConnectionValueOpt(){
+    if (connectionSymbol.isPresent()){
+      return Optional.of(connectionSymbol.get().getValue());
+    }
+    return Optional.empty();
+  }
+
+
   
   @Override
   public String toString() {
