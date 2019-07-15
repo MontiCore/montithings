@@ -110,8 +110,8 @@ class MAAGenerator {
 		
 		toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(),
 			comp,
-			targetPath.toPath.relativize(hwcPath.toPath).toString,
-			targetPath.toPath.relativize(libraryPath.toPath).toString), ".txt")
+			targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
+			targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString), ".txt")
 	}
 	
 	def static generateLibs(File targetPath){
