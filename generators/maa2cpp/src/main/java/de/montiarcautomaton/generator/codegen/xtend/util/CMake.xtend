@@ -8,25 +8,27 @@ import de.montiarcautomaton.generator.helper.ComponentHelper
 
 class CMake {
 	
-	def static printCMake(File[] files, ComponentSymbol comp, File hwcPath, File libraryPath) {
+	def static printCMake(File[] files, ComponentSymbol comp, String hwcPath, String libraryPath) {
 		
 		
 		return '''
 		cmake_minimum_required(VERSION 3.14)
 		project(«comp.name»)
 		
-		set(CMAKE_CXX_STANDARD 14)
+		set(CMAKE_CXX_STANDARD 11)
+		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 		
-		include_directories("«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»")
-		include_directories("«libraryPath.absolutePath.replace("\\","/")»")
+		
+		include_directories("«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»")
+		include_directories(«libraryPath.replace("\\","/")»)
 		include_directories(.)
 		file(GLOB SOURCES 
 		"./*.cpp"
 		"./*.h"
-		"«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
-		"«hwcPath.absolutePath.replace("\\","/")»/«comp.name.toFirstLower»/*.h"
-		"«libraryPath.absolutePath.replace("\\","/")»/*.cpp"
-		"«libraryPath.absolutePath.replace("\\","/")»/*.h")
+		"«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
+		"«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»/*.h"
+		"«libraryPath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
+		"«libraryPath.replace("\\","/")»/«comp.name.toFirstLower»/*.h")
 		
 		add_executable(«comp.name» ${SOURCES})
 		'''
