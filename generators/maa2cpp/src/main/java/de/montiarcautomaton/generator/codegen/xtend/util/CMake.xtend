@@ -12,7 +12,7 @@ class CMake {
 		
 		
 		return '''
-		cmake_minimum_required(VERSION 3.14)
+		cmake_minimum_required(VERSION 3.02)
 		project(«comp.name»)
 		
 		set(CMAKE_CXX_STANDARD 11)
@@ -20,15 +20,15 @@ class CMake {
 		
 		
 		include_directories("«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»")
-		include_directories(«libraryPath.replace("\\","/")»)
+		include_directories("«libraryPath.replace("\\","/")»")
 		include_directories(.)
 		file(GLOB SOURCES 
 		"./*.cpp"
 		"./*.h"
 		"«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
 		"«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»/*.h"
-		"«libraryPath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
-		"«libraryPath.replace("\\","/")»/«comp.name.toFirstLower»/*.h")
+		"«libraryPath.replace("\\","/")»/*.cpp"
+		"«libraryPath.replace("\\","/")»/*.h")
 		
 		add_executable(«comp.name» ${SOURCES})
 		'''

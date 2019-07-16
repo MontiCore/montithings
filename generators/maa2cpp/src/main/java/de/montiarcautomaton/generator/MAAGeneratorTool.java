@@ -70,7 +70,7 @@ public class MAAGeneratorTool extends MontiArcTool {
 			ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName, ComponentSymbol.KIND).get();
 
 			if (comp.getStereotype().containsKey("deploy")) {
-				File libraryPath = Paths.get(target.getAbsolutePath(), "libraries").toFile();
+				File libraryPath = Paths.get(target.getAbsolutePath(), "maaRTE").toFile();
 				// 5 generate libs
 				MAAGenerator.generateLibs(libraryPath);
 				// 6 generate make file
