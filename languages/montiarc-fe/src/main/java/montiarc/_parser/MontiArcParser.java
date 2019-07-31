@@ -2,6 +2,7 @@
 package montiarc._parser;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import com.google.common.io.Files;
@@ -23,7 +24,8 @@ public class MontiArcParser extends MontiArcParserTOP {
     if (ast.isPresent()) {
       String simpleFileName = Files.getNameWithoutExtension(filename);
       String modelName = ast.get().getComponent().getName();
-      String packageName = Names.getPackageFromPath(Names.getPathFromFilename(filename));
+      String filePathString = Paths.get(filename).toString();
+      String packageName = Names.getPackageFromPath(Names.getPathFromFilename(filePathString));
       String packageDeclaration = Names.getQualifiedName(ast.get().getPackageList());
       if (!modelName.equals(simpleFileName)) {
         Log.error("0xMA256 The name of the component " + modelName
