@@ -38,7 +38,7 @@ public class MontiArcTool {
   
   protected ModelingLanguageFamily family;
   
-  protected MontiArcCoCoChecker checker;
+  private MontiArcCoCoChecker checker;
   
   private boolean isSymTabInitialized;
   
@@ -167,7 +167,7 @@ public class MontiArcTool {
    * @param modelPaths
    * @return The initialized symbol table
    */
-  public Scope initSymbolTable( Boolean fromCPPGen, File... modelPaths) {
+  public Scope initSymbolTable(File... modelPaths) {
     Set<Path> p = Sets.newHashSet();
     for (File mP : modelPaths) {
       p.add(Paths.get(mP.getAbsolutePath()));
@@ -176,12 +176,7 @@ public class MontiArcTool {
     final ModelPath mp = new ModelPath(p);
     
     GlobalScope gs = new GlobalScope(mp, family);
-    
-    if (fromCPPGen) {
-      JavaDefaultTypesManager.addCPPPrimitiveTypes(gs);
-    }else {
-      JavaDefaultTypesManager.addJavaPrimitiveTypes(gs);
-    }
+    JavaDefaultTypesManager.addJavaPrimitiveTypes(gs);
     isSymTabInitialized = true;
     return gs;
   }
@@ -197,11 +192,7 @@ public class MontiArcTool {
    * @return the initialized symbol table
    */
   public Scope initSymbolTable(String modelPath) {
-    return initSymbolTable(false, Paths.get(modelPath).toFile());
+    return initSymbolTable(Paths.get(modelPath).toFile());
   }
   
-  
-  public Scope initSymbolTable(File... modelPaths) {
-    return initSymbolTable(false, modelPaths);
-  }
 }

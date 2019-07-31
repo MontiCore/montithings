@@ -26,22 +26,8 @@ public class JavaDefaultTypesManager {
   private static final String[] primitiveTypes = { "boolean", "byte", "char", "double", "float",
       "int", "long", "short", "null" };
   
-  private static final String[] cppPrimitiveTypes = {"bool", "byte", "char", "double", "float",
-      "int", "long", "short", "uint8_t", "uint16_t", "uint32_t", "uint64_t"};
-  
   public static void addJavaPrimitiveTypes(GlobalScope globalScope) {
     for (String primType : primitiveTypes) {
-      JavaTypeSymbol jTypeSymbol = jSymbolFactory.createClassSymbol(primType);
-      ArtifactScope spannedScope = new ArtifactScope("java.lang", new ArrayList<ImportStatement>());
-      spannedScope.setResolvingFilters(globalScope.getResolvingFilters());
-      spannedScope.setEnclosingScope(globalScope);
-      spannedScope.add(jTypeSymbol);
-      globalScope.addSubScope(spannedScope);
-    }
-  }
-  
-  public static void addCPPPrimitiveTypes(GlobalScope globalScope) {
-    for (String primType : cppPrimitiveTypes) {
       JavaTypeSymbol jTypeSymbol = jSymbolFactory.createClassSymbol(primType);
       ArtifactScope spannedScope = new ArtifactScope("java.lang", new ArrayList<ImportStatement>());
       spannedScope.setResolvingFilters(globalScope.getResolvingFilters());
