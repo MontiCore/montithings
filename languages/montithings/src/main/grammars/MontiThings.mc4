@@ -1,0 +1,54 @@
+grammar MontiThings extends MontiArc {
+
+    start MACompilationUnit;
+
+    /**
+    * Defines an interface of a component containing
+    * incoming and outgoing ports to external resources.
+    *
+    * @attribute stereotype an optional stereotype
+    * @attribute resourcePorts a list of ports that are contained in
+    *   this interface
+    */
+    ResourceInterface implements Element =
+      Stereotype?
+      "resource port" resourcePort:(ResourcePort || ",")+ ";";
+
+     /**
+      * An incoming resource port is used to receive messages from external sources, an
+      * outgoing resource port is used to send messages to external resources.
+      *
+      * @attribute stereotype an optional stereotype
+      * @attribute incoming true, if this is an incoming port
+      * @attribute outgoing true, if this is an outgoing port
+      * @attribute type the message type of this port
+      * @attribute name an optional name of this port
+      * @attribute resourceoption optional configuration for the
+      *    resource port
+      */
+    symbol ResourcePort =
+      Stereotype?
+      (incoming:["in"] | outgoing:["out"])
+      Type Name "(" (ResourceOption ",")? uri:String ")";
+
+    /**
+    * Optional settings for resource ports
+    */
+    enum ResourceOption =
+      "ws" | "wss" | "tcp" | "append" | "overwrite";
+
+
+    /**
+    * List of imported elements (data types, components etc)
+    */
+
+    //TODO: Find out how to escape '"'
+    CPPImportStatementLOCAL implements ImportStatement =
+       "#include" cppImport:String;
+
+    CPPImportStatementSYSTEM implements ImportStatement =
+      "#include" "<" cppSystemImport:(Name& || ".")+ ">";
+
+
+
+}

@@ -17,6 +17,7 @@
 	<modules>
 		<module>montiarc-fe</module>
 		<module>Tagging</module>
+		<module>montithings</module>
 	</modules>
 
 </project>

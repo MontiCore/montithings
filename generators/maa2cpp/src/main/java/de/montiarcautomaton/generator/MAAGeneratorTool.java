@@ -35,10 +35,7 @@ public class MAAGeneratorTool extends MontiArcTool {
 	public static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
 
 	public void generate(File modelPath, File target, File hwcPath) {
-		// 1. Add CPP specific cocos to CoCoChecker
-		checker.addCoCo(new NoAJavaBehaviourInComponents());
-		checker.addCoCo(new NoJavaImportsForCPPGenerator());
-		checker.addCoCo(new CPPImportExists(hwcPath));
+
 
 		List<String> foundModels = Modelfinder.getModelsInModelPath(modelPath, MontiArcLanguage.FILE_ENDING);
 		// 2. Initialize SymbolTable
