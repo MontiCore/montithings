@@ -15,6 +15,7 @@ grammar MontiArc extends de.monticore.java.JavaDSL {
    */
   MACompilationUnit =
     ("package" package:(Name& || ".")+ ";")?  // optional package declaration
+    (ImportStatement)*
     (ImportStatementLOCAL)*                        // import statements
     Component                                 // single outermost component declaration 
     EOF;                                      // and nothing (end of file) afterwards
@@ -31,6 +32,16 @@ grammar MontiArc extends de.monticore.java.JavaDSL {
   * enrich components with further elements.
   */
   interface Element;
+
+  /**
+  * Necessary to extend the MontiArc language without redefining
+  * everything. Not sure how to do this properly.
+  * Also why can't you define an empty interface?
+  * TODO: Find something better?
+  */
+  interface ImportStatement;
+  Nothing implements ImportStatement = "...";
+
 
   /**
   * A component is a unit of computation or a data store.  
