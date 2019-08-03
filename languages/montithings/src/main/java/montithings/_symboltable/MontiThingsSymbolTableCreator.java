@@ -75,6 +75,19 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     addTypeArgumentsToTypeSymbol(typeRef, astType, currentScope().get());
     sym.setTypeReference(typeRef);
     sym.setDirection(node.isIncoming());
+    String uri = node.getUri();
+    if (uri.startsWith("tcp://")){
+      sym.setProtocol("tcp");
+    }
+    else if (uri.startsWith("ipc://")){
+      sym.setProtocol("ipc");
+    }
+    else if (uri.startsWith("ws://")){
+      sym.setProtocol("ws");
+    }
+    else {
+      sym.setProtocol("filesystem");
+    }
 
     if (node.getStereotypeOpt().isPresent()) {
       for (ASTStereoValue st : node.getStereotypeOpt().get().getValuesList()) {

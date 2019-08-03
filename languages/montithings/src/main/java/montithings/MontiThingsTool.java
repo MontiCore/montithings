@@ -18,7 +18,6 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._symboltable.ComponentSymbol;
-import montiarc.helper.JavaDefaultTypesManager;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
 import montithings._symboltable.MontiThingsLanguageFamily;
@@ -44,9 +43,9 @@ public class MontiThingsTool {
           "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t",
           "uint64_t"};
 
-  protected ModelingLanguageFamily family;
+  private final ModelingLanguageFamily family;
 
-  private MontiThingsCoCoChecker checker;
+  private final MontiThingsCoCoChecker checker;
 
   private boolean isSymTabInitialized;
 
@@ -123,16 +122,14 @@ public class MontiThingsTool {
   public Optional<ComponentSymbol> loadComponentSymbolWithoutCocos(String componentName,
                                                                    File... modelPaths) {
     Scope s = initSymbolTable(modelPaths);
-    return s.<ComponentSymbol> resolve(componentName, ComponentSymbol.KIND);
+    return s.resolve(componentName, ComponentSymbol.KIND);
   }
 
   public Optional<ComponentSymbol> loadComponentSymbolWithCocos(String componentName,
                                                                 File... modelPaths) {
     Optional<ComponentSymbol> compSym = loadComponentSymbolWithoutCocos(componentName, modelPaths);
 
-    if (compSym.isPresent()) {
-      checkCoCos((ASTMontiArcNode) compSym.get().getAstNode().get());
-    }
+    compSym.ifPresent(componentSymbol -> checkCoCos((ASTMontiArcNode) componentSymbol.getAstNode().get()));
 
     return compSym;
   }
@@ -168,10 +165,10 @@ public class MontiThingsTool {
 
 
 
-  public static void addCPPPrimitiveTypes(GlobalScope globalScope) {
+  private static void addCPPPrimitiveTypes(GlobalScope globalScope) {
     for (String primType : primitiveTypes) {
       JavaTypeSymbol jTypeSymbol = new JavaSymbolFactory().createClassSymbol(primType);
-      ArtifactScope spannedScope = new ArtifactScope("java.lang", new ArrayList<ImportStatement>());
+      ArtifactScope spannedScope = new ArtifactScope("java.lang", new ArrayList<>());
       spannedScope.setResolvingFilters(globalScope.getResolvingFilters());
       spannedScope.setEnclosingScope(globalScope);
       spannedScope.add(jTypeSymbol);

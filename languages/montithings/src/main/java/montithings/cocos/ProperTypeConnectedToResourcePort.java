@@ -10,5 +10,5 @@ package montithings.cocos;
  *
  * @author (last commit)
  */
-public class ProperTypeConnectedToResourcePort {
+class ProperTypeConnectedToResourcePort {
 }

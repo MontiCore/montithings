@@ -9,7 +9,6 @@ import montiarc._ast.ASTElement;
 import montiarc._ast.ASTMontiArcInvariant;
 import montiarc._ast.ASTParameter;
 import montiarc._cocos.MontiArcASTComponentCoCo;
-import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.PortSymbol;
@@ -82,7 +81,7 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
     // Collect variable declarations
     for (VariableSymbol variableSymbol : comp.getVariables()) {
       names.add(new Identifier(variableSymbol.getName(),
-          IdentifierTypes.VARIABLE, variableSymbol.getSourcePosition()));
+              IdentifierTypes.VARIABLE, variableSymbol.getSourcePosition()));
     }
 
     for (ASTElement e : node.getBody().getElementList()) {
@@ -104,7 +103,7 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
                 : SourcePosition.getDefaultSourcePosition();
 
       names.add(new Identifier(subComp.getName(),
-          IdentifierTypes.SUBCOMPONENTINSTANCE, pos));
+              IdentifierTypes.SUBCOMPONENTINSTANCE, pos));
     }
 
     // Configuration Parameters
@@ -113,7 +112,7 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
     List<ASTParameter> parameters = node.getHead().getParameterList();
     for (ASTParameter parameter : parameters) {
       names.add(new Identifier(parameter.getName(),
-          IdentifierTypes.CONFIG_PARAMETER, parameter.get_SourcePositionStart()));
+              IdentifierTypes.CONFIG_PARAMETER, parameter.get_SourcePositionStart()));
     }
 
     Set<Identifier> nameDuplicates = new HashSet<>();
@@ -162,7 +161,7 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
   /**
    * Used to store the information about a found identifier.
    */
-  private class Identifier {
+  private static class Identifier {
 
     private final IdentifierTypes type;
     private final SourcePosition sourcePosition;
@@ -174,21 +173,21 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
      * @param sourcePosition SourcePosition that is the position of the
      *                       element in the model.
      */
-    public Identifier(String name, IdentifierTypes type, SourcePosition sourcePosition) {
+    Identifier(String name, IdentifierTypes type, SourcePosition sourcePosition) {
       this.sourcePosition = sourcePosition;
       this.type = type;
       this.name = name;
     }
 
-    public IdentifierTypes getType() {
+    IdentifierTypes getType() {
       return type;
     }
 
-    public SourcePosition getSourcePosition() {
+    SourcePosition getSourcePosition() {
       return sourcePosition;
     }
 
-    public String getName() {
+    String getName() {
       return name;
     }
   }

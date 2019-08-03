@@ -72,7 +72,7 @@ public class MontiThingsCoCos {
             .addCoCo(new AssignmentHasNoName())
             .addCoCo(new ConfigurationParametersCorrectlyInherited())
             .addCoCo(new InnerComponentNotExtendsDefiningComponent())
-            .addCoCo(new montithings.cocos.UniqueTypeParamsInInnerCompHierarchy())
+            .addCoCo(new UniqueTypeParamsInInnerCompHierarchy())
 
             // TYPE CORRECTNESS
             .addCoCo(new AutomatonGuardIsNotBoolean())

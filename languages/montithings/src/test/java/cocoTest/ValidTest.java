@@ -5,6 +5,8 @@
  */
 package cocoTest;
 
+import montiarc._ast.ASTComponent;
+import montiarc._ast.ASTMontiArcNode;
 import org.junit.Test;
 
 /**
@@ -16,6 +18,7 @@ public class ValidTest extends AbstractCoCoTest{
 
   @Test
   public void checkValidTest(){
+    ASTComponent astMontiArcNode = (ASTComponent) loadComponentAST("portTest.PortTest");
     checkValid("portTest.PortTest");
   }
 }

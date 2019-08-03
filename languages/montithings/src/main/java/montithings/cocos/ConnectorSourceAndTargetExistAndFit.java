@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * to the source port, i.e., the type of the target port is identical or a
  * supertype of the source port type. (p. 66, lst. 3.43)
  */
-public class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
+class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
   
   /**
    * @see MontiArcASTComponentCoCo#check(ASTComponent)

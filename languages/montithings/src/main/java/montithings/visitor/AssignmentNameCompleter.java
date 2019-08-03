@@ -13,7 +13,7 @@ import montithings._visitor.MontiThingsVisitor;
  *
  * @author  Joshua Fürste
  */
-public class AssignmentNameCompleter extends montiarc.visitor.AssignmentNameCompleter implements MontiThingsVisitor {
+class AssignmentNameCompleter extends montiarc.visitor.AssignmentNameCompleter implements MontiThingsVisitor {
 
   public AssignmentNameCompleter(Scope automatonScope) {
     super(automatonScope);

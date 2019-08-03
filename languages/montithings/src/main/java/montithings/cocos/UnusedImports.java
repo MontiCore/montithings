@@ -9,13 +9,12 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTImportStatementLOCAL;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._cocos.MontiArcASTMACompilationUnitCoCo;
-import montiarc._visitor.MontiArcVisitor;
 import montithings._visitor.MontiThingsVisitor;
 
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-public class UnusedImports implements MontiArcASTMACompilationUnitCoCo {
+class UnusedImports implements MontiArcASTMACompilationUnitCoCo {
 
 @Override
 public void check(ASTMACompilationUnit node) {

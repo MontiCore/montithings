@@ -10,5 +10,5 @@ package montithings.cocos;
  *
  * @author (last commit) Joshua Fürste
  */
-public class NoJavaImportStatements {
+class NoJavaImportStatements {
 }

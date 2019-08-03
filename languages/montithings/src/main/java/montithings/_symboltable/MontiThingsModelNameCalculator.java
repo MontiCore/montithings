@@ -49,7 +49,7 @@ public class MontiThingsModelNameCalculator
     return new LinkedHashSet<>();
   }
   
-  protected Set<String> calculateModelNameForComponent(String name) {
+  private Set<String> calculateModelNameForComponent(String name) {
     List<String> parts = Splitters.DOT.splitToList(name);
     Set<String> ret = new LinkedHashSet<>();
     
@@ -66,7 +66,7 @@ public class MontiThingsModelNameCalculator
     return Collections.unmodifiableSet(ret);
   }
   
-  protected Set<String> calculateModelNameForPort(String name) {
+  private Set<String> calculateModelNameForPort(String name) {
     List<String> parts = Splitters.DOT.splitToList(name);
     if (parts.size() > 1) {
       String modelName = Joiners.DOT.join(parts.subList(0, parts.size() - 1));
@@ -77,7 +77,7 @@ public class MontiThingsModelNameCalculator
     return ImmutableSet.of();
   }
   
-  protected Set<String> calculateModelNameForComponentInstance(String name) {
+  private Set<String> calculateModelNameForComponentInstance(String name) {
     List<String> parts = Splitters.DOT.splitToList(name);
     if (parts.size() > 1) {
       return calculateModelNameForComponent(Joiners.DOT.join(parts.subList(0, parts.size() - 1)));
@@ -101,7 +101,7 @@ public class MontiThingsModelNameCalculator
     return ImmutableSet.of();
   }
 
-  protected Set<String> calculateModelNamesForResourcePort(String name) {
+  private Set<String> calculateModelNamesForResourcePort(String name) {
     final Set<String> modelNames = new LinkedHashSet<>();
     modelNames.add(name);
     return modelNames;

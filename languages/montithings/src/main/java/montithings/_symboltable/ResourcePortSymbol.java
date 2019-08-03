@@ -22,7 +22,7 @@ import java.util.Optional;
  * @author (last commit) Joshua Fürste
  */
 
-public class ResourcePortSymbol extends ResourcePortSymbolTOP{
+public class ResourcePortSymbol extends ResourcePortSymbolTOP {
 
   private final Map<String, Optional<String>> stereotype = new HashMap<>();
 
@@ -36,13 +36,57 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP{
   public static final boolean INCOMING = true;
 
   /**
+   * Store information about the used protocol
+   */
+  private boolean isIpc = false;
+  private boolean isWS = false;
+  private boolean isTcp = false;
+  private boolean isFileSystem = false;
+
+  public boolean isIpc() {
+    return isIpc;
+  }
+
+  public boolean isWebSocket() {
+    return isWS;
+  }
+
+  public boolean isTcp() {
+    return isTcp;
+  }
+
+  public boolean isFileSystem() {
+    return isFileSystem;
+  }
+
+
+  public void setProtocol(String protocol) {
+    switch (protocol) {
+      case "tcp":
+        isTcp = true;
+        break;
+      case "ipc":
+        isIpc = true;
+        break;
+      case "ws":
+        isWS = true;
+        break;
+      default:
+        isFileSystem = true;
+        break;
+    }
+  }
+
+  /**
    * Indicates whether the port is incoming.
    */
   private boolean incoming;
 
   private JTypeReference<? extends JTypeSymbol> typeReference;
+
   /**
    * Setter for the direction of the port.
+   *
    * @param isIncoming The direction of the port. If true, the port is incoming,
    *                   otherwise, it is outgoing.
    */
@@ -52,14 +96,16 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP{
 
   /**
    * Indicates whether the port is incoming.
+   *
    * @return true, if this is an incoming port, else false.
    */
-  public boolean isIncoming() {
+  private boolean isIncoming() {
     return incoming;
   }
 
   /**
    * Indicates whether the port is outgoing.
+   *
    * @return true, if this is an outgoing port, else false.
    */
   public boolean isOutgoing() {
@@ -68,14 +114,16 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP{
 
   /**
    * Getter for the type reference.
+   *
    * @return The typeReference reference to the type from this port
    */
-  public JTypeReference<? extends JTypeSymbol> getTypeReference() {
+  private JTypeReference<? extends JTypeSymbol> getTypeReference() {
     return this.typeReference;
   }
 
   /**
    * Setter for the type reference.
+   *
    * @param typeReference The reference to the type from this port
    */
   public void setTypeReference(JTypeReference<? extends JTypeSymbol> typeReference) {
@@ -102,7 +150,7 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP{
   /**
    * Adds the stereotype key=value to this entry's map of stereotypes
    *
-   * @param key the stereotype's key
+   * @param key      the stereotype's key
    * @param optional the stereotype's value
    */
   public void addStereotype(String key, Optional<String> optional) {
@@ -112,7 +160,7 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP{
   /**
    * Adds the stereotype key=value to this entry's map of stereotypes
    *
-   * @param key the stereotype's key
+   * @param key   the stereotype's key
    * @param value the stereotype's value
    */
   public void addStereotype(String key, @Nullable String value) {
@@ -134,8 +182,7 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP{
     IndentPrinter ip = new IndentPrinter();
     if (this.isIncoming()) {
       ip.print("in ");
-    }
-    else {
+    } else {
       ip.print("out ");
     }
     ip.print(this.getTypeReference().getName());
