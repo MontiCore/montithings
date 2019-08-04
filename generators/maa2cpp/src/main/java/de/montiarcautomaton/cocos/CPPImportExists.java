@@ -6,10 +6,8 @@ import java.nio.file.Paths;
 import org.antlr.v4.parse.ANTLRParser.id_return;
 
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTCPPImportStatement;
-import montiarc._cocos.MontiArcASTCPPImportStatementCoCo;
 
-public class CPPImportExists implements MontiArcASTCPPImportStatementCoCo {
+/*public class CPPImportExists implements MontiArcASTCPPImportStatementCoCo {
 	File hwcPath = null;
 
 	public CPPImportExists(File hwcPath) {
@@ -37,4 +35,4 @@ public class CPPImportExists implements MontiArcASTCPPImportStatementCoCo {
 
 	}
 
-}
+}*/

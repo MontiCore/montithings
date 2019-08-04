@@ -29,8 +29,6 @@ import de.monticore.types.types._ast.ASTType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.se_rwth.commons.Names;
 import jline.internal.Log;
-import montiarc._ast.ASTCPPImportStatement;
-import montiarc._ast.ASTCPPSystemImportStatement;
 import montiarc._ast.ASTComponent;
 import montiarc._ast.ASTConnector;
 import montiarc._ast.ASTMACompilationUnit;
@@ -412,11 +410,11 @@ public class ComponentHelper {
     // port is of subcomponent
     if (portName.contains(".")) {
       Optional<ComponentInstanceSymbol> subCompInstance = cmp.getSpannedScope()
-          .<ComponentInstanceSymbol>resolve(subCompName, ComponentInstanceSymbol.KIND);
+          .resolve(subCompName, ComponentInstanceSymbol.KIND);
       Optional<ComponentSymbol> subComp = subCompInstance.get().getComponentType().getReferencedComponent();
-      port = subComp.get().getSpannedScope().<PortSymbol>resolve(portNameUnqualified, PortSymbol.KIND);
+      port = subComp.get().getSpannedScope().resolve(portNameUnqualified, PortSymbol.KIND);
     } else {
-      port = cmp.getSpannedScope().<PortSymbol>resolve(portName, PortSymbol.KIND);
+      port = cmp.getSpannedScope().resolve(portName, PortSymbol.KIND);
     }
 
     return port.map(PortSymbol::isIncoming).orElse(false);
@@ -499,7 +497,7 @@ public class ComponentHelper {
     if (isGenericTypeName(comp, name)) {
       return name;
     }
-    Collection<JTypeSymbol> sym = ref.getEnclosingScope().<JTypeSymbol>resolveMany(ref.getName(), JTypeSymbol.KIND);
+    Collection<JTypeSymbol> sym = ref.getEnclosingScope().resolveMany(ref.getName(), JTypeSymbol.KIND);
     if (!sym.isEmpty()) {
       name = sym.iterator().next().getFullName();
     }
@@ -582,7 +580,7 @@ public class ComponentHelper {
         + component.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".h").toFile();
     return cmpPath.isFile();
   }
-
+/*
   public static List<String> getSystemImports(ComponentSymbol symbol) {
     List<String> importStrings = new ArrayList<String>();
     try {
@@ -609,4 +607,5 @@ public class ComponentHelper {
     return importStrings;
   }
 
+ */
 }

@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>montiarc.languages</groupId>
-			<artifactId>montiarc-fe</artifactId>
+			<artifactId>montithings</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -26,7 +26,6 @@
 			<groupId>montiarc.languages</groupId>
 			<artifactId>montiarc-fe</artifactId>
 			<version>${project.version}</version>
-			<classifier>${testmodels.classifier}</classifier>
 		</dependency>
 
 		<dependency>

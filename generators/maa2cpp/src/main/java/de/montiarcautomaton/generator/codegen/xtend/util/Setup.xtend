@@ -48,7 +48,7 @@ class Setup {
 	                    	«IF !helper.getConnectorComponentName(connector.source, target,false).equals("this")»
 	                      	«helper.getConnectorComponentName(connector.source, target,false)».setPort«helper.getConnectorPortName(connector.source, target,false).toFirstUpper»(«helper.getConnectorComponentName(connector.source, target, true)».getPort«helper.getConnectorPortName(connector.source, target, true).toFirstUpper»());
 	                    	«ELSE»
-	                      	this->setPort«helper.getConnectorPortName(connector.source, target,false).toFirstUpper»(«helper.getConnectorComponentName(connector.source, target, true)».getPort«helper.getConnectorPortName(connector.source, target, true).toFirstUpper»());
+	                    	this->setPort«helper.getConnectorPortName(connector.source, target,false).toFirstUpper»(«helper.getConnectorComponentName(connector.source, target, true)».getPort«helper.getConnectorPortName(connector.source, target, true).toFirstUpper»());
 	                    	«ENDIF»
 	                    «ENDIF»
 	                  «ENDFOR»

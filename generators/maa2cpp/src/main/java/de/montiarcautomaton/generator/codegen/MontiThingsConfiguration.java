@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  *
  * @author (last commit) JFuerste
  */
-public class MAAConfiguration implements Configuration {
+public class MontiThingsConfiguration implements Configuration {
 	public static final String CONFIGURATION_PROPERTY = "_configuration";
 	public static final String DEFAULT_OUTPUT_DIRECTORY = "out";
 	public static final String DEFAULT_HWC_DIRECTORY = "src";
@@ -56,14 +56,14 @@ public class MAAConfiguration implements Configuration {
 	/**
 	 * Factory method for {@link TemplateClassGeneratorConfiguration}.
 	 */
-	public static MAAConfiguration withConfiguration(Configuration configuration) {
-		return new MAAConfiguration(configuration);
+	public static MontiThingsConfiguration withConfiguration(Configuration configuration) {
+		return new MontiThingsConfiguration(configuration);
 	}
 
 	/**
 	 * Constructor for {@link TemplateClassGeneratorConfiguration}
 	 */
-	private MAAConfiguration(Configuration internal) {
+	private MontiThingsConfiguration(Configuration internal) {
 		this.configuration = ConfigurationContributorChainBuilder.newChain()
 				.add(DelegatingConfigurationContributor.with(internal)).build();
 	}

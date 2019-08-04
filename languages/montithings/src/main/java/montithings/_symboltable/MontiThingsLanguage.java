@@ -16,7 +16,7 @@ import montiarc._symboltable.MontiArcLanguage;
  */
 public class MontiThingsLanguage extends MontiThingsLanguageTOP{
 
-  private static final String FILE_ENDING = "mt";
+  public static final String FILE_ENDING = "mt";
 
   public MontiThingsLanguage() {
     super("MontiThings Language", FILE_ENDING);

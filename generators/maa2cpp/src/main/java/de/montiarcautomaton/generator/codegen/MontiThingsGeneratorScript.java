@@ -5,7 +5,7 @@
  */
 package de.montiarcautomaton.generator.codegen;
 
-import de.montiarcautomaton.generator.MAAGeneratorTool;
+import de.montiarcautomaton.generator.MontiThingsGeneratorTool;
 import de.se_rwth.commons.configuration.Configuration;
 import de.se_rwth.commons.groovy.GroovyInterpreter;
 import de.se_rwth.commons.groovy.GroovyRunner;
@@ -21,11 +21,11 @@ import java.io.File;
  * @author (last commit) JFuerste
  */
 
-public class MAAGeneratorScript extends Script implements GroovyRunner {
+public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
 
 	protected static final String[] DEFAULT_IMPORTS = {};
 
-	protected static final String LOG = "MAAGeneratorScript";
+	protected static final String LOG = "MontiThingsGeneratorScript";
 
 	/**
 	 * @see de.se_rwth.commons.groovy.GroovyRunner#run(java.lang.String,
@@ -34,24 +34,24 @@ public class MAAGeneratorScript extends Script implements GroovyRunner {
 	@Override
 	public void run(String script, Configuration configuration) {
 		GroovyInterpreter.Builder builder = GroovyInterpreter.newInterpreter()
-				.withScriptBaseClass(de.montiarcautomaton.generator.codegen.MAAGeneratorScript.class)
+				.withScriptBaseClass(MontiThingsGeneratorScript.class)
 				.withImportCustomizer(new ImportCustomizer().addStarImports(DEFAULT_IMPORTS));
 
 		// configuration
-		MAAConfiguration config = MAAConfiguration.withConfiguration(configuration);
+		MontiThingsConfiguration config = MontiThingsConfiguration.withConfiguration(configuration);
 
 		// we add the configuration object as property with a special property
 		// name
-		builder.addVariable(MAAConfiguration.CONFIGURATION_PROPERTY, config);
+		builder.addVariable(MontiThingsConfiguration.CONFIGURATION_PROPERTY, config);
 
-		config.getAllValues().forEach((key, value) -> builder.addVariable(key, value));
+		config.getAllValues().forEach(builder::addVariable);
 
 		// after adding everything we override a couple of known variable
 		// bindings
 		// to have them properly typed in the script
-		builder.addVariable(MAAConfiguration.Options.MODELPATH.toString(), config.getModelPath());
-		builder.addVariable(MAAConfiguration.Options.OUT.toString(), config.getOut());
-		builder.addVariable(MAAConfiguration.Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
+		builder.addVariable(MontiThingsConfiguration.Options.MODELPATH.toString(), config.getModelPath());
+		builder.addVariable(MontiThingsConfiguration.Options.OUT.toString(), config.getOut());
+		builder.addVariable(MontiThingsConfiguration.Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
 
 		GroovyInterpreter g = builder.build();
 		g.evaluate(script);
@@ -65,7 +65,7 @@ public class MAAGeneratorScript extends Script implements GroovyRunner {
 	 * @param fqnTemplateName
 	 */
 	public void generate(File modelPath, File targetFilepath, File hwcPath) {
-		new MAAGeneratorTool().generate(modelPath, targetFilepath, hwcPath);
+		new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath);
 	}
 
 	// #######################
