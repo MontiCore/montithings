@@ -19,9 +19,9 @@ class AbstractAtomicImplementation {
 	class «comp.name»«generics»Impl : IComputable<«comp.name»Input«generics»,«comp.name»Result«generics»>{
 
 	public:
-		«comp.name»«generics»Impl(){};
-		virtual «comp.name»Result getInitialValues() override;
-		virtual «comp.name»Result compute(«comp.name»Input input) override;
+		«comp.name»«generics»Impl() = default;
+		«comp.name»Result getInitialValues() override;
+		«comp.name»Result compute(«comp.name»Input input) override;
 	};
 	
 	

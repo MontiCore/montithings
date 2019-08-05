@@ -15,18 +15,18 @@ class Input {
       #include "«comp.name»Input.h"      
       
       «IF !comp.allIncomingPorts.empty»
-      	«comp.name»Input::«comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
+      	«comp.name»Input::«comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
       		«IF comp.superComponent.present»
       		  super(«FOR port : comp.superComponent.get.allIncomingPorts» «port.name» «ENDFOR»);
       		«ENDIF»
       		«FOR port : comp.incomingPorts»
-      		  this->«port.name» = «port.name»; 
+      		  this->«port.name» = std::move(«port.name»); 
       		«ENDFOR»
       	}
       «ENDIF»
       
       «FOR port : comp.incomingPorts»
-      	 «helper.getRealPortCppTypeString(port)» «comp.name»Input::get«port.name.toFirstUpper»(){
+      	 tl::optional<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
       	 	return «port.name»;
       	 }
       				«ENDFOR»
@@ -46,6 +46,8 @@ class Input {
 			#include <vector>
 			#include <list>
 			#include <set>
+			#include <utility>
+			#include "tl/optional.hpp"
 			«Utils.printCPPImports(comp)»
 			
 			class «comp.name»Input
@@ -59,16 +61,16 @@ class Input {
 			{
 			private:
 			«FOR port : comp.incomingPorts»
-				«helper.getRealPortCppTypeString(port)» «port.name»;
+				tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name»;
 			«ENDFOR»
 			public:
-				«comp.name»Input() {};
+				«comp.name»Input() = default;
 				«IF !comp.allIncomingPorts.empty»
-			    «comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
+			    explicit «comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
 			    «ENDIF»
 				
 				«FOR port : comp.incomingPorts»
-			    «helper.getRealPortCppTypeString(port)» get«port.name.toFirstUpper»();
+			    tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
 				«ENDFOR»
 			};
 			

@@ -29,6 +29,7 @@ class ComponentGenerator {
 		#include <vector>
 		#include <list>
 		#include <set>
+		#include "IncomingIPCPort.h"
 		«Utils.printCPPImports(comp)»
 		
 		
@@ -48,6 +49,7 @@ class ComponentGenerator {
 		{
 		private:
 			«Ports.printVars(comp.ports)»
+			«Ports.printResourcePortVars(ComponentHelper.getResourcePortsInComponent(comp))»
 			«Utils.printVariables(comp)»
 			«Utils.printConfigParameters(comp)»
 			«IF comp.isDecomposed»
@@ -67,10 +69,10 @@ class ComponentGenerator {
 			
 			«comp.name»(«Utils.printConfiurationParametersAsList(comp)»);
 			
-			virtual void setUp() override;
-			virtual void init() override;
-			virtual void compute() override;
-			virtual void update() override;
+			void setUp() override;
+			void init() override;
+			void compute() override;
+			void update() override;
 			
 		};            
 		            

@@ -35,6 +35,8 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
    */
   public static final boolean INCOMING = true;
 
+  private String uri;
+
   /**
    * Store information about the used protocol
    */
@@ -59,6 +61,13 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
     return isFileSystem;
   }
 
+  public void setUri(String uri){
+    this.uri = uri;
+  }
+
+  public String getUri(){
+    return uri;
+  }
 
   public void setProtocol(String protocol) {
     switch (protocol) {
@@ -99,7 +108,7 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
    *
    * @return true, if this is an incoming port, else false.
    */
-  private boolean isIncoming() {
+  public boolean isIncoming() {
     return incoming;
   }
 

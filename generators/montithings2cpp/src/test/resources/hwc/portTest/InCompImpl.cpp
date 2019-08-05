@@ -7,7 +7,7 @@ InCompResult InCompImpl::getInitialValues(){
 }
 
 InCompResult InCompImpl::compute(InCompInput input){
-        std::cout << input.getInPort() << "\n";
+        //std::cout << input.getInPort() << "\n";
         return InCompResult();
   	  	
   	  }

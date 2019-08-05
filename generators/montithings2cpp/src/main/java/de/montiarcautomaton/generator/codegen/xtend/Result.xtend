@@ -22,7 +22,7 @@ class Result {
 	    «ENDIF»
 	    
 	    «FOR port : comp.outgoingPorts»
-      	 «helper.getRealPortCppTypeString(port)» «comp.name»Result::get«port.name.toFirstUpper»(){
+      	 tl::optional<«helper.getRealPortCppTypeString(port)»> «comp.name»Result::get«port.name.toFirstUpper»(){
   	 	    return «port.name»;
       	 }
 	     «ENDFOR»
@@ -60,17 +60,17 @@ class Result {
 	    {
 	    private:
 	    	«FOR port : comp.outgoingPorts»
-	    	«helper.getRealPortCppTypeString(port)» «port.name»;
+	    	tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name»;
 	    	«ENDFOR»
 	    
 	    public:	
-	    	«comp.name»Result() {};
+	    	«comp.name»Result() = default;
 	    	«IF !comp.allOutgoingPorts.empty»
 	    	«comp.name»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
 	    	«ENDIF»
 	    	
 	    	«FOR port : comp.outgoingPorts»
-	    	 «helper.getRealPortCppTypeString(port)» get«port.name.toFirstUpper»();
+	    	 tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
 	    	«ENDFOR»
 	    	
 	    	«FOR port : comp.outgoingPorts»

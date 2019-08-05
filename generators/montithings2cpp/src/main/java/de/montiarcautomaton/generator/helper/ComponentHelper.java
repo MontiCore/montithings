@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import de.montiarcautomaton.generator.codegen.xtend.util.Utils;
+import de.monticore.ast.ASTNode;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.prettyprint.IndentPrinter;
@@ -37,6 +38,9 @@ import montiarc._symboltable.PortSymbol;
 import montiarc.helper.SymbolPrinter;
 import montithings._ast.ASTCPPImportStatementLOCAL;
 import montithings._ast.ASTCPPImportStatementSYSTEM;
+import montithings._ast.ASTResourceInterface;
+import montithings._ast.ASTResourcePort;
+import montithings._symboltable.ResourcePortSymbol;
 
 /**
  * Helper class used in the template to generate target code of atomic or
@@ -570,7 +574,6 @@ public class ComponentHelper {
   /**
    * 
    * @param hwcPath
-   * @param cmpLocation
    * @return Returns true if handwritten implementations for the component exist
    */
   public static Boolean existsHWCClass(File hwcPath, String component) {
@@ -597,6 +600,28 @@ public class ComponentHelper {
     } catch (Exception ignored) {
     }
     return importStrings;
+  }
+
+  public static List<ResourcePortSymbol> getResourcePortsInComponent(ComponentSymbol comp){
+    List<ResourcePortSymbol> ports = new ArrayList<>();
+    ASTComponent node = (ASTComponent) comp.getAstNode().get();
+    for (ASTElement element : node.getBody().getElementList()) {
+      if (element instanceof ASTResourceInterface){
+        ports.addAll((((ASTResourceInterface) element)
+                .getResourcePortList().stream()
+                .map(ASTResourcePort::getSymbolOpt)
+                .map(s -> (Optional<ResourcePortSymbol>) s)
+                .map(Optional::get)
+                .collect(Collectors.toList())));
+      }
+    }
+    return ports;
+  }
+  
+  public static String getResourcePortType(ResourcePortSymbol port) {
+    ASTResourcePort node = (ASTResourcePort) port.getAstNode().get();
+    TypesPrettyPrinterConcreteVisitor typesPrinter = new TypesPrettyPrinterConcreteVisitor(new IndentPrinter());
+    return java2cppTypeString(ComponentHelper.autobox(typesPrinter.prettyprint(node.getType())));
   }
  
 }

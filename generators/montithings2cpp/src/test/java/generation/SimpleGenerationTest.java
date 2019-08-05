@@ -26,7 +26,9 @@ public class SimpleGenerationTest {
 	public void testGeneration() throws IOException {
 		// FileUtils.cleanDirectory(Paths.get(TARGETPATH).toFile());
 		MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
+		System.out.println(Paths.get(MODELPATH).toAbsolutePath().toString());
 		script.generate(Paths.get(MODELPATH).toFile(), Paths.get(TARGETPATH).toFile(), Paths.get(HWCPATH).toFile());
+
 	}
 
 }

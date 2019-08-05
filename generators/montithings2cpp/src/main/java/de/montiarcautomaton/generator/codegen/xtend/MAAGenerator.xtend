@@ -115,9 +115,5 @@ class MAAGenerator {
 	}
 	
 	def static generateLibs(File targetPath){
-		toFile(targetPath, "Port", CPPLibraries.portString, ".h")
-		toFile(targetPath, "DataSource", CPPLibraries.dataSourceString, ".h")
-		toFile(targetPath, "IComponent", CPPLibraries.IComponentString, ".h")
-		toFile(targetPath, "IComputable", CPPLibraries.IComputableString, ".h")
 	}
 }

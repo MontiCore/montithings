@@ -18,8 +18,10 @@ import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._symboltable.MontiThingsLanguage;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -65,9 +67,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 			ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName, ComponentSymbol.KIND).get();
 
 			if (comp.getStereotype().containsKey("deploy")) {
-				File libraryPath = Paths.get(target.getAbsolutePath(), "maaRTE").toFile();
+				File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
 				// 5 generate libs
-				MAAGenerator.generateLibs(libraryPath);
+				try {
+					FileUtils.copyDirectoryToDirectory(Paths.get("src/main/resources/montithings-RTE").toFile(), target);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				// 6 generate make file
 				Log.info("Generate CMake file", "MontiArcGeneratorTool");
 				MAAGenerator.generateMakeFile(

@@ -3,8 +3,6 @@ package portTest;
 /*
  * Valid model.
  */
- #include <string>
- #include "test.h"
 
 <<deploy>> component PortTest{
     resource port in  String resIn("ipc://test1.ipc");

@@ -4,6 +4,8 @@ import java.util.Collection
 import montiarc._symboltable.PortSymbol
 import de.montiarcautomaton.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ResourcePortSymbol
+import montithings._ast.ASTResourcePort
 
 class Ports {
 	
@@ -15,6 +17,28 @@ class Ports {
     
    Port<«type»>* «name» = new Port<«type»>;
     
+    «ENDFOR»
+    '''
+		
+	}
+	
+	def static printResourcePortVars(Collection<ResourcePortSymbol> ports) {
+	return	'''
+    «FOR port : ports»
+    «var type = ComponentHelper.getResourcePortType(port)»
+    «var name = port.name»
+    «IF (port.ipc && !port.outgoing)»
+   Port<«type»>* «name» = new IncomingIPCPort<«type»>("«port.uri»");
+    «ENDIF»
+    «IF (port.ipc && port.outgoing)»
+   Port<«type»>* «name» = new OutgoingIPCPort<«type»>("«port.uri»");
+    «ENDIF»
+    «IF (port.webSocket && !port.outgoing)»
+   Port<«type»>* «name» = new IncomingWSPort<«type»>("«port.uri»");
+    «ENDIF»
+    «IF (port.webSocket && port.outgoing)»
+   Port<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»");
+    «ENDIF»
     «ENDFOR»
     '''
 		
@@ -52,5 +76,14 @@ class Ports {
     «ENDFOR»
     '''
 	}
+	
+	def static printResourcePortHeader(Collection<ResourcePortSymbol> ports, ComponentSymbol comp){
+		var helper = new ComponentHelper(comp);
+		return '''
+		
+		'''
+	}
+	
+	
 	
 }

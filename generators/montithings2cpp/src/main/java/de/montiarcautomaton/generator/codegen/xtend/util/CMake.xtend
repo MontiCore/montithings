@@ -16,7 +16,6 @@ class CMake {
 		project(«comp.name»)
 		
 		set(CMAKE_CXX_STANDARD 11)
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 		
 		
 		include_directories("«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»")
