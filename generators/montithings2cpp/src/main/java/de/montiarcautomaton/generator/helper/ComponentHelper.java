@@ -603,19 +603,16 @@ public class ComponentHelper {
   }
 
   public static List<ResourcePortSymbol> getResourcePortsInComponent(ComponentSymbol comp){
-    List<ResourcePortSymbol> ports = new ArrayList<>();
-    ASTComponent node = (ASTComponent) comp.getAstNode().get();
-    for (ASTElement element : node.getBody().getElementList()) {
-      if (element instanceof ASTResourceInterface){
-        ports.addAll((((ASTResourceInterface) element)
-                .getResourcePortList().stream()
-                .map(ASTResourcePort::getSymbolOpt)
-                .map(s -> (Optional<ResourcePortSymbol>) s)
-                .map(Optional::get)
-                .collect(Collectors.toList())));
-      }
-    }
-    return ports;
+    return ((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(p -> p instanceof ASTResourceInterface)
+            .flatMap(p -> ((ASTResourceInterface) p)
+                    .getResourcePortList()
+                    .stream())
+            .map(e -> (ResourcePortSymbol) e.getSymbolOpt().get())
+            .collect(Collectors.toList());
   }
   
   public static String getResourcePortType(ResourcePortSymbol port) {
