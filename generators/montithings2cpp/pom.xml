@@ -10,7 +10,7 @@
 		<artifactId>generators</artifactId>
 		<version>5.0.2-SNAPSHOT</version>
 	</parent>
-	<artifactId>maa2cpp-xtend</artifactId>
+	<artifactId>montithings2cpp</artifactId>
 
 
 	<!-- == PROJECT DEPENDENCIES ============================================= -->

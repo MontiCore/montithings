@@ -39,6 +39,7 @@ import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
 import montiarc._symboltable.PortSymbol;
 import montiarc.helper.SymbolPrinter;
+import montithings._ast.ASTCPPImportStatementSYSTEM;
 
 /**
  * Helper class used in the template to generate target code of atomic or
@@ -580,13 +581,13 @@ public class ComponentHelper {
         + component.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".h").toFile();
     return cmpPath.isFile();
   }
-/*
+
   public static List<String> getSystemImports(ComponentSymbol symbol) {
     List<String> importStrings = new ArrayList<String>();
     try {
       ASTMACompilationUnit node = (ASTMACompilationUnit) symbol.getEnclosingScope().getAstNode().get();
-      List<ASTCPPSystemImportStatement> imports = node.getCPPSystemImportStatementList();
-      for (ASTCPPSystemImportStatement importStatement : imports) {
+      List<ASTCPPImportStatementSYSTEM> imports = node.getCPPSystemImportStatementList();
+      for (ASTCPPImportStatementSYSTEM importStatement : imports) {
         importStrings.add(String.join(".", importStatement.getCppSystemImportList()));
       }
     } catch (Exception e) {
@@ -607,5 +608,5 @@ public class ComponentHelper {
     return importStrings;
   }
 
- */
+ 
 }
