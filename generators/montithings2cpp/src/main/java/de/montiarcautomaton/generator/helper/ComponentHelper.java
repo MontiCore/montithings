@@ -29,16 +29,13 @@ import de.monticore.types.types._ast.ASTType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.se_rwth.commons.Names;
 import jline.internal.Log;
-import montiarc._ast.ASTComponent;
-import montiarc._ast.ASTConnector;
-import montiarc._ast.ASTMACompilationUnit;
-import montiarc._ast.ASTParameter;
-import montiarc._ast.ASTPort;
+import montiarc._ast.*;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
 import montiarc._symboltable.PortSymbol;
 import montiarc.helper.SymbolPrinter;
+import montithings._ast.ASTCPPImportStatementLOCAL;
 import montithings._ast.ASTCPPImportStatementSYSTEM;
 
 /**
@@ -582,31 +579,24 @@ public class ComponentHelper {
     return cmpPath.isFile();
   }
 
-  public static List<String> getSystemImports(ComponentSymbol symbol) {
+  public static List<String> getCPPImports(ComponentSymbol symbol) {
     List<String> importStrings = new ArrayList<String>();
     try {
       ASTMACompilationUnit node = (ASTMACompilationUnit) symbol.getEnclosingScope().getAstNode().get();
-      List<ASTCPPImportStatementSYSTEM> imports = node.getCPPSystemImportStatementList();
-      for (ASTCPPImportStatementSYSTEM importStatement : imports) {
-        importStrings.add(String.join(".", importStatement.getCppSystemImportList()));
+      List<ASTImportStatement> imports = node.getImportStatementList();
+      for (ASTImportStatement importStatement : imports) {
+        if (importStatement instanceof ASTCPPImportStatementSYSTEM) {
+          importStrings.add(String.join(".",
+                   (((ASTCPPImportStatementSYSTEM) importStatement)
+                          .getCppSystemImportList())));
+        }
+        if (importStatement instanceof ASTCPPImportStatementLOCAL){
+          importStrings.add(((ASTCPPImportStatementLOCAL) importStatement).getCppImport());
+        }
       }
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
     return importStrings;
   }
-
-  public static List<String> getLocalImports(ComponentSymbol symbol) {
-    List<String> importStrings = new ArrayList<String>();
-    try {
-      ASTMACompilationUnit node = (ASTMACompilationUnit) symbol.getEnclosingScope().getAstNode().get();
-      List<ASTCPPImportStatement> imports = node.getCPPImportStatementList();
-      for (ASTCPPImportStatement importStatement : imports) {
-        importStrings.add(importStatement.getCppImport());
-      }
-    } catch (Exception e) {
-    }
-    return importStrings;
-  }
-
  
 }

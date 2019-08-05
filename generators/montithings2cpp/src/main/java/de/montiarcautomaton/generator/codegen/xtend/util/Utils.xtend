@@ -140,12 +140,10 @@ class Utils {
   
   def static String printCPPImports(ComponentSymbol comp){
   	return '''
-  	«««FOR importString : ComponentHelper.getSystemImports(comp)»
-  	«««»»#include <«importString»>
-  	«««»«ENDFOR»
-  	«««»«FOR importString : ComponentHelper.getLocalImports(comp)»
-  	«««»#include "«importString»"
-  	«««»«ENDFOR»
+  	
+  	«FOR importString : ComponentHelper.getCPPImports(comp)»
+  	#include "«importString»"
+  	«ENDFOR»
   	'''
   }
 
