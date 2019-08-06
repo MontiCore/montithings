@@ -24,6 +24,8 @@ class Deploy {
 				cmp.update();
 				do {
 				        std::this_thread::yield();
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				        
 				    } while (std::chrono::high_resolution_clock::now()  < end);
 			}
 		

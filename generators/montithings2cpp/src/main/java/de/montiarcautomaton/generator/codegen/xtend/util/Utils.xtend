@@ -14,6 +14,7 @@ import montiarc._ast.ASTVariableDeclaration
 import montiarc._symboltable.ComponentSymbol
 import de.monticore.ast.ASTNode
 import montiarc._ast.ASTMACompilationUnit
+import montithings._symboltable.ResourcePortSymbol
 
 class Utils {
 
@@ -146,5 +147,55 @@ class Utils {
   	«ENDFOR»
   	'''
   }
+	
+	def static printIPCServerHeader(ResourcePortSymbol symbol, ComponentSymbol comp) {
+		var type = ComponentHelper.getResourcePortType(symbol)
+		return
+		'''
+		#pragma once
+		#include "IComponent.h"
+		#include "Port.h"
+		#include <string>
+		#include <map>
+		#include <vector>
+		#include <list>
+		#include <set>
+		#include "IncomingIPCPort.h"
+		#include "OutgoingIPCPort.h"
+		«Utils.printCPPImports(comp)»
+		#include <AbstractIPCServer.h>
+		
+		class BasicIPCServer : public AbstractIPCServer<TestClass>{
+		private:
+		    «type» getData() override;
+		
+		public:
+		    «type» BasicIPCServer(const char *uri) : AbstractIPCServer(uri){};
+		};
+		'''
+	}
+	
+	def static printIPCServerBody(ResourcePortSymbol port, ComponentSymbol comp){
+		var type = ComponentHelper.getResourcePortType(port)
+		return 
+		'''
+		#include "«port.name»Server.h"
+		
+		«type» «port.name»Server::getData(){
+			//ToDo: FillMe
+			throw std::runtime_error("Invoking getData() on empty implementation");
+		}
+		
+		int
+		main(int argc, char **argv) try {
+		    auto server = «port.name»Server("«port.uri»");
+		    server.run();
+		    return 1;
+		} catch (const nng::exception &e) {
+		    fprintf(stderr, "%s: %s\n", e.who(), e.what());
+		    return 1;
+		}
+		'''
+	}
 
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "Port.h"
 #include "nngpp/nngpp.h"
-#include "nngpp/protocol/push0.h"
+#include "nngpp/protocol/pub0.h"
 #include <iostream>
 #include "cereal/archives/json.hpp"
 #include "cereal/types/vector.hpp"
@@ -19,13 +19,13 @@ using namespace std;
  * other processes running on the same machine.
  */
 template <class T>
-class OutgoingIPCPort {
+class OutgoingWSPort {
 
 public:
-    explicit OutgoingIPCPort(const char* uri) {
+    explicit OutgoingWSPort(const char* uri) {
         this->uri = uri;
         //Open Socket in Request mode
-        socket = nng::push::open();
+        socket = nng::pub::open();
         //Dial specifies, that it connects to an already established socket (the server)
 
         try
@@ -40,7 +40,7 @@ public:
         }
         printf("Connection established\n");
     };
-    explicit OutgoingIPCPort(T initialValue) {}
+    explicit OutgoingWSPort(T initialValue) {}
 
     void setPort(Port<T>* port){
         portSet = true;
@@ -80,11 +80,6 @@ private:
                 auto body = msg.body().data<std::string>();
                 std::cout << dataString << "\n";
                 socket.send(std::move(msg));
-            }
-            else{
-            	std::this_thread::yield();
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            	
             }
         }
         return true;

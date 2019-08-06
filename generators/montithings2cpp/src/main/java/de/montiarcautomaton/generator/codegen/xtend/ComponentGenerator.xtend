@@ -30,6 +30,7 @@ class ComponentGenerator {
 		#include <list>
 		#include <set>
 		#include "IncomingIPCPort.h"
+		#include "OutgoingIPCPort.h"
 		«Utils.printCPPImports(comp)»
 		
 		
@@ -63,6 +64,7 @@ class ComponentGenerator {
 			
 		public:
 			«Ports.printMethodHeaders(comp.ports)»
+			«Ports.printResourcePortMethodHeaders(ComponentHelper.getResourcePortsInComponent(comp))»
 			«IF comp.isDecomposed»	
 			«Subcomponents.printMethodHeaders(comp)»
 			«ENDIF»
@@ -86,6 +88,7 @@ class ComponentGenerator {
 		#include "«comp.name».h"
 		
 		«Ports.printMethodBodies(comp.ports, comp)»
+		«Ports.printResourcePortMethodBodies(ComponentHelper.getResourcePortsInComponent(comp),comp)»
 		
 		«IF comp.isDecomposed»
 		«printComputeDecomposed(comp)»
@@ -101,7 +104,7 @@ class ComponentGenerator {
 		
 		void «comp.name»::setResult(«comp.name»Result result){
 			«FOR portOut : comp.outgoingPorts»
-            this->getPort«portOut.name.toFirstUpper»()->setNextValue(result.get«portOut.name.toFirstUpper»());
+			this->getPort«portOut.name.toFirstUpper»()->setNextValue(result.get«portOut.name.toFirstUpper»());
             «ENDFOR»
 			
 		}
@@ -123,7 +126,7 @@ class ComponentGenerator {
 		return '''
 		«comp.name»::«comp.name»(«Utils.printConfiurationParametersAsList(comp)»){
 			«IF comp.superComponent.present»
-	        super(«FOR inhParam : getInheritedParams(comp) SEPARATOR ','» «inhParam» «ENDFOR»);
+			super(«FOR inhParam : getInheritedParams(comp) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»
 			«IF comp.isAtomic»
 			«comp.name»Impl«Utils.printFormalTypeParameters(comp)» behav«IF comp.hasConfigParameters»(

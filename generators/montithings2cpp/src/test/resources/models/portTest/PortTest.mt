@@ -6,7 +6,7 @@ package portTest;
 
 <<deploy>> component PortTest{
     resource port in  String resIn("ipc://test1.ipc");
-    resource port out String resOu("ipc://test2.ipc");
+    resource port out String resOut("ipc://test2.ipc");
 
 	component InComp ic;
 	component OutComp oc;

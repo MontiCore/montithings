@@ -6,6 +6,7 @@
 package de.montiarcautomaton.generator;
 
 import de.montiarcautomaton.generator.codegen.xtend.MAAGenerator;
+import de.montiarcautomaton.generator.helper.ComponentHelper;
 import de.monticore.ast.ASTNode;
 import de.monticore.cd2pojo.Modelfinder;
 import de.monticore.symboltable.Scope;
@@ -18,6 +19,7 @@ import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._symboltable.MontiThingsLanguage;
+import montithings._symboltable.ResourcePortSymbol;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -60,6 +62,17 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 					Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(),
 					hwcPath, comp, foundModels);
 
+			for (ResourcePortSymbol resourcePortSymbol : ComponentHelper.getResourcePortsInComponent(comp)) {
+				File path = Paths.get(target.getAbsolutePath(),
+								Names.getPathFromPackage(comp.getPackageName()),
+								Character.toLowerCase(comp.getName().charAt(0))
+								+ comp.getName().substring(1) + "-"
+								+ resourcePortSymbol.getName())
+								.toFile();
+				path.mkdir();
+				File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
+				MAAGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath);
+			}
 		}
 
 		for (String model : foundModels) {

@@ -27,6 +27,8 @@ import montiarc._ast.ASTComponent
 import montiarc._ast.ASTJavaPBehavior
 import montiarc._symboltable.ComponentSymbol
 import de.montiarcautomaton.generator.codegen.xtend.behavior.AutomatonGenerator
+import montithings._symboltable.ResourcePortSymbol
+import de.montiarcautomaton.generator.codegen.xtend.util.Utils
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -114,6 +116,15 @@ class MAAGenerator {
 			targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString), ".txt")
 	}
 	
-	def static generateLibs(File targetPath){
+	def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath){
+		toFile(targetPath, port.name + "Server", Utils.printIPCServerHeader(port, comp), ".h")
+		toFile(targetPath, port.name + "Server", Utils.printIPCServerBody(port, comp), ".cpp")
+		toFile(targetPath, "CMakeLists", CMake.printIPCServerCMake(
+			port,
+			targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString),
+			 ".txt")
 	}
+	
+	
+
 }

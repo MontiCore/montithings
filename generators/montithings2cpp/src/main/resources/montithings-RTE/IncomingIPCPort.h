@@ -33,10 +33,10 @@ public:
         }
         catch (const std::exception&)
         {
-            cout << "Connection could not be established!\n";
+            cout << "Connection to" << uri << " could not be established!\n";
             return;
         }
-        printf("Connection established\n");
+        cout << "Connection established\n";
 	};
 	explicit IncomingIPCPort(T initialValue) : Port<T>::Port(initialValue) {}
 
@@ -71,11 +71,10 @@ private:
 		}
 		catch (const std::exception&)
 		{
-			cout << "Connection could not be established!\n";
+			cout << "Connection to" << uri << " could not be established!\n";
 			currentValue = tl::nullopt;
 			return;
 		}
-	    //printf("Sending Request\n");
 	    //Sending an empty request to initialize data transfer from the ipc port.
 	    socket.send("");
 
