@@ -1,6 +1,6 @@
 package portTest;
 
 component OutComp{
-interval 70ms;
+interval 250ms;
 port out String outPort;
 }

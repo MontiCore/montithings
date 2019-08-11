@@ -2,6 +2,7 @@
 
 #include "tl/optional.hpp"
 #include "boost/lockfree/spsc_queue.hpp"
+#include "string"
 
 template <class T>
 class DataSource
@@ -37,7 +38,10 @@ public:
             queue.push(nextVal.value());
         }
     }
-    
+
+    bool hasValue(){
+        return (queue.read_available() > 0);
+    }
 
     void update() {
         currentValue = nextValue;

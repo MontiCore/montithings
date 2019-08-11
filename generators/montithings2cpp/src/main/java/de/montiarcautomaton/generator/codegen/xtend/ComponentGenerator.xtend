@@ -148,10 +148,14 @@ class ComponentGenerator {
 	def static printComputeAtomic(ComponentSymbol comp) {
 		return '''
 		void «comp.name»::compute(){
-			«comp.name»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue()«ENDFOR»)«ENDIF»;
-			
-			«comp.name»Result result = «Identifier.behaviorImplName».compute(input);
-			setResult(result);				
+			«IF comp.allIncomingPorts.length > 0»
+			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue()«ENDFOR»)
+			«ENDIF»
+			{
+				«comp.name»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue()«ENDFOR»)«ENDIF»;
+				«comp.name»Result result = «Identifier.behaviorImplName».compute(input);
+				setResult(result);				
+			}
 		}
 
 		'''
