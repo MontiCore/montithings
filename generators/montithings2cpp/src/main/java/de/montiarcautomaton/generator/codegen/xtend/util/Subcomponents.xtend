@@ -19,24 +19,6 @@ class Subcomponents {
     '''
   }
   
-  def static String printMethodHeaders(ComponentSymbol comp) {
-    return '''
-      «FOR subcomponent : comp.subComponents»
-        «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent)»
-        «type» getComponent«subcomponent.name.toFirstUpper»();
-      «ENDFOR»
-    '''
-  }
-	
-	def static printMethodBodies(ComponentSymbol comp) {
-		return'''
-		«FOR subcomponent : comp.subComponents»
-        «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent)»
-        «type» «comp.name»::getComponent«subcomponent.name.toFirstUpper»(){
-        	return «subcomponent.name»;
-        }
-      «ENDFOR»
-      '''
-	}
+
 	
 }

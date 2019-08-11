@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tl/optional.hpp"
+#include "boost/lockfree/spsc_queue.hpp"
 
 template <class T>
 class DataSource
@@ -8,6 +9,7 @@ class DataSource
 protected:
     tl::optional<T> currentValue;
     tl::optional<T> nextValue;
+    boost::lockfree::spsc_queue<T, boost::lockfree::capacity<5>> queue;
 
 
 public:
@@ -17,30 +19,25 @@ public:
     }
 
     virtual tl::optional<T> getCurrentValue() {
-        if (currentValue){
-            auto temp = std::move(currentValue);
-            currentValue = tl::nullopt;
-            return temp;
+        T queueElement;
+        if (queue.pop(queueElement)){
+            currentValue = queueElement;
+            return currentValue;
+        } else{
+            return tl::nullopt;
         }
-        return currentValue;
     }
 
     void setNextValue(T nextVal) {
-        nextValue = nextVal;
+        queue.push(nextVal);
     }
 
     void setNextValue(tl::optional<T> nextVal) {
-        nextValue = nextVal;
-    }
-
-    tl::optional<T> getNextValue() {
-        if (nextValue){
-            auto temp = std::move(nextValue);
-            nextValue = tl::nullopt;
-            return temp;
+        if (nextVal){
+            queue.push(nextVal.value());
         }
-        return nextValue;
     }
+    
 
     void update() {
         currentValue = nextValue;

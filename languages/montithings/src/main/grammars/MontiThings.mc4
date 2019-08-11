@@ -13,6 +13,13 @@ grammar MontiThings extends MontiArc {
     ResourceInterface implements Element =
       Stereotype?
       "resource port" resourcePort:(ResourcePort || ",")+ ";";
+      
+    /**
+    * The calculation interval specifies in which 
+    * interval the component is executed.
+    */
+    CalcuLationInterval implements Element = 
+    	"interval" interval:IntLiteral "ms;";
 
      /**
       * An incoming resource port is used to receive messages from external sources, an

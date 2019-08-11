@@ -7,7 +7,13 @@ InCompResult InCompImpl::getInitialValues(){
 }
 
 InCompResult InCompImpl::compute(InCompInput input){
-        //std::cout << input.getInPort() << "\n";
+    auto stringOpt = input.getInPort();
+
+    if (stringOpt){
+        std::cout << stringOpt.value() << "\n";
+    } else{
+        std::cout << "No value present\n";
+    }
         return InCompResult();
   	  	
   	  }

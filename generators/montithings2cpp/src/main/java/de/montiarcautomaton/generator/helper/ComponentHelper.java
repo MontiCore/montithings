@@ -36,10 +36,7 @@ import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
 import montiarc._symboltable.PortSymbol;
 import montiarc.helper.SymbolPrinter;
-import montithings._ast.ASTCPPImportStatementLOCAL;
-import montithings._ast.ASTCPPImportStatementSYSTEM;
-import montithings._ast.ASTResourceInterface;
-import montithings._ast.ASTResourcePort;
+import montithings._ast.*;
 import montithings._symboltable.ResourcePortSymbol;
 
 /**
@@ -582,10 +579,15 @@ public class ComponentHelper {
     return cmpPath.isFile();
   }
 
-  public static List<String> getCPPImports(ComponentSymbol symbol) {
+  /**
+   * Get all CPP imports in the given component
+   * @param comp
+   * @return List of Strings containing all CPP imports of the component
+   */
+  public static List<String> getCPPImports(ComponentSymbol comp) {
     List<String> importStrings = new ArrayList<String>();
     try {
-      ASTMACompilationUnit node = (ASTMACompilationUnit) symbol.getEnclosingScope().getAstNode().get();
+      ASTMACompilationUnit node = (ASTMACompilationUnit) comp.getEnclosingScope().getAstNode().get();
       List<ASTImportStatement> imports = node.getImportStatementList();
       for (ASTImportStatement importStatement : imports) {
         if (importStatement instanceof ASTCPPImportStatementSYSTEM) {
@@ -602,6 +604,11 @@ public class ComponentHelper {
     return importStrings;
   }
 
+  /**
+   * Returns a list of ResourcePortSymbols for resources in the component
+   * @param comp
+   * @return ResourcePortSymmbols in component
+   */
   public static List<ResourcePortSymbol> getResourcePortsInComponent(ComponentSymbol comp){
     return ((ASTComponent) comp.getAstNode().get())
             .getBody()
@@ -614,11 +621,26 @@ public class ComponentHelper {
             .map(e -> (ResourcePortSymbol) e.getSymbolOpt().get())
             .collect(Collectors.toList());
   }
-  
+
+  /**
+   * Returns type of the resource port utilizing the functions for non-resource ports
+   * @param port
+   * @return Type of port as string
+   */
   public static String getResourcePortType(ResourcePortSymbol port) {
     ASTResourcePort node = (ASTResourcePort) port.getAstNode().get();
     TypesPrettyPrinterConcreteVisitor typesPrinter = new TypesPrettyPrinterConcreteVisitor(new IndentPrinter());
     return java2cppTypeString(ComponentHelper.autobox(typesPrinter.prettyprint(node.getType())));
   }
- 
+
+  public static String getExecutionInterval(ComponentSymbol comp){
+    return String.valueOf(((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(e -> e instanceof ASTCalcuLationInterval)
+            .findFirst()
+            .map(e -> ((ASTCalcuLationInterval) e).getInterval().getValue())
+            .orElse(50));
+  }
 }

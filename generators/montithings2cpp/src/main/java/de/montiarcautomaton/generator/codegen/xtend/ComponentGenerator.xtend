@@ -8,7 +8,6 @@ import de.montiarcautomaton.generator.codegen.xtend.util.Subcomponents
 import de.montiarcautomaton.generator.codegen.xtend.util.Identifier
 import de.montiarcautomaton.generator.codegen.xtend.util.Setup
 import de.montiarcautomaton.generator.codegen.xtend.util.Init
-import de.montiarcautomaton.generator.codegen.xtend.util.Update
 import java.util.List
 import java.util.ArrayList
 import de.monticore.symboltable.types.JFieldSymbol
@@ -31,6 +30,7 @@ class ComponentGenerator {
 		#include <set>
 		#include "IncomingIPCPort.h"
 		#include "OutgoingIPCPort.h"
+		#include<thread>
 		«Utils.printCPPImports(comp)»
 		
 		
@@ -56,9 +56,11 @@ class ComponentGenerator {
 			«IF comp.isDecomposed»
 			«Subcomponents.printVars(comp)»
 			«ELSE»
+			std::vector< std::thread > threads;
 			«comp.name»Impl «Identifier.behaviorImplName»;
 			void initialize();
 			void setResult(«comp.name»Result result);
+			void run();
 			«ENDIF»
 			
 			
@@ -66,7 +68,6 @@ class ComponentGenerator {
 			«Ports.printMethodHeaders(comp.ports)»
 			«Ports.printResourcePortMethodHeaders(ComponentHelper.getResourcePortsInComponent(comp))»
 			«IF comp.isDecomposed»	
-			«Subcomponents.printMethodHeaders(comp)»
 			«ENDIF»
 			
 			«comp.name»(«Utils.printConfiurationParametersAsList(comp)»);
@@ -74,7 +75,7 @@ class ComponentGenerator {
 			void setUp() override;
 			void init() override;
 			void compute() override;
-			void update() override;
+			void start() override;
 			
 		};            
 		            
@@ -92,14 +93,15 @@ class ComponentGenerator {
 		
 		«IF comp.isDecomposed»
 		«printComputeDecomposed(comp)»
-		«Subcomponents.printMethodBodies(comp)»
+		«printStartDecomposed(comp)»
 		«ELSE»
 		«printComputeAtomic(comp)»
+		«printStartAtomic(comp)»
+		«printRun(comp)»
 		
 		void «comp.name»::initialize(){
 			«comp.name»Result result = «Identifier.behaviorImplName».getInitialValues();
 			setResult(result);
-			update();
 		}
 		
 		void «comp.name»::setResult(«comp.name»Result result){
@@ -114,8 +116,6 @@ class ComponentGenerator {
 		«Setup.print(comp)»
 		
 		«Init.print(comp)»
-		
-		«Update.print(comp)»
 		
 		«printConstructor(comp)»
 		'''
@@ -165,6 +165,50 @@ class ComponentGenerator {
 			this->«subcomponent.name».compute();
 	        «ENDFOR»
 					
+		}
+
+		'''
+	}
+	
+	def static printStartDecomposed(ComponentSymbol comp) {
+		return '''
+		void «comp.name»::start(){
+			«FOR subcomponent : comp.subComponents»
+			this->«subcomponent.name».start();
+	        «ENDFOR»
+					
+		}
+
+		'''
+	}
+	
+	def static printStartAtomic(ComponentSymbol comp) {
+		return '''
+		void «comp.name»::start(){
+			threads.push_back(std::thread{&«comp.name»::run, this});
+					
+		}
+
+		'''
+	}
+	
+	def static printRun(ComponentSymbol comp) {
+		return '''
+		void «comp.name»::run(){
+			cout << "Thread for «comp.name» started\n";
+			
+			while (true)
+				{
+					auto end = std::chrono::high_resolution_clock::now() 
+						+ std::chrono::milliseconds(«ComponentHelper.getExecutionInterval(comp)»);
+					this->compute();
+					
+					do {
+					        std::this_thread::yield();
+			                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					        
+					    } while (std::chrono::high_resolution_clock::now()  < end);
+				}
 		}
 
 		'''

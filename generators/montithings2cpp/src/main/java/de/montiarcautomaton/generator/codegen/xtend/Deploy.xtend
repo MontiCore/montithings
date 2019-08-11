@@ -16,15 +16,15 @@ class Deploy {
 			«comp.name» cmp;
 			cmp.setUp();
 			cmp.init();
+			cmp.start();
 		
 			while (true)
 			{
 				auto end = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(50);
-				cmp.compute();
-				cmp.update();
+				//TODO: 
 				do {
 				        std::this_thread::yield();
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				        
 				    } while (std::chrono::high_resolution_clock::now()  < end);
 			}
