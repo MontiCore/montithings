@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +21,12 @@ public class SimpleGenerationTest {
 	@Before
 	public void setup() {
 		Log.enableFailQuick(false);
+		try {
+			FileUtils.copyDirectoryToDirectory(Paths.get("src/main/resources/rte/montithings-RTE").toFile(),
+							Paths.get("target/").toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test

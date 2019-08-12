@@ -7,15 +7,11 @@ package de.montiarcautomaton.generator;
 
 import de.montiarcautomaton.generator.codegen.xtend.MAAGenerator;
 import de.montiarcautomaton.generator.helper.ComponentHelper;
-import de.monticore.ast.ASTNode;
 import de.monticore.cd2pojo.Modelfinder;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montiarc.MontiArcTool;
-import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMontiArcNode;
-import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._symboltable.MontiThingsLanguage;
@@ -70,7 +66,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 								+ resourcePortSymbol.getName())
 								.toFile();
 				path.mkdir();
-				File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
+				File libraryPath = Paths.get("target/montithings-RTE").toFile();
 				MAAGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath);
 			}
 		}
@@ -80,13 +76,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 			ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName, ComponentSymbol.KIND).get();
 
 			if (comp.getStereotype().containsKey("deploy")) {
-				File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
+				File libraryPath = Paths.get("target/montithings-RTE").toFile();
 				// 5 generate libs
-				try {
-					FileUtils.copyDirectoryToDirectory(Paths.get("src/main/resources/montithings-RTE").toFile(), target);
+				/*try {
+					FileUtils.copyDirectoryToDirectory(Paths.get("src/main/resources/rte/montithings-RTE").toFile(), target);
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
+				}*/
 				// 6 generate make file
 				Log.info("Generate CMake file", "MontiArcGeneratorTool");
 				MAAGenerator.generateMakeFile(
@@ -109,13 +105,25 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 	private String getBasedirFromModelAndTargetPath(String modelPath, String targetPath) {
 		String basedir = "";
 
+		StringBuilder sb = new StringBuilder();
+		String seperator = File.separator;
+		int lastFolderIndex = 0;
 		for (int i = 0; i < modelPath.length(); i++) {
-			if (modelPath.charAt(i) == targetPath.charAt(i)) {
-				basedir += modelPath.charAt(i);
-			} else {
-				break;
+			// Assuming a seperator is always length 1
+			if(seperator.length() != 1) {
+				Log.error("0x???? File seperator should be a single char. Use a less strange system");
+			} else if(modelPath.charAt(i) == seperator.charAt(0)) {
+				lastFolderIndex = i;
 			}
 
+			if (modelPath.charAt(i) == targetPath.charAt(i)) {
+				sb.append(modelPath.charAt(i));
+			}
+			else {
+				// basedir includes the seperator
+				basedir = sb.substring(0, lastFolderIndex + 1);
+				break;
+			}
 		}
 		return basedir;
 	}
