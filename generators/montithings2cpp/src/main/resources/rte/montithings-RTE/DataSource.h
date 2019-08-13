@@ -8,21 +8,19 @@ template <class T>
 class DataSource
 {
 protected:
-    tl::optional<T> currentValue;
-    tl::optional<T> nextValue;
     boost::lockfree::spsc_queue<T, boost::lockfree::capacity<5>> queue;
 
 
 public:
     DataSource() {};
     DataSource(T initialValue) {
-        currentValue = initialValue;
+        queue.push(initialValue);
     }
 
     virtual tl::optional<T> getCurrentValue() {
         T queueElement;
         if (queue.pop(queueElement)){
-            currentValue = queueElement;
+            tl::optional<T> currentValue = queueElement;
             return currentValue;
         } else{
             return tl::nullopt;
@@ -44,6 +42,5 @@ public:
     }
 
     void update() {
-        currentValue = nextValue;
     }
 };
