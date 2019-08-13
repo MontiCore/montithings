@@ -17,14 +17,14 @@
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
-            <version>${project.version}</version>
+            <version>5.0.2.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
             <classifier>${grammars.classifier}</classifier>
-            <version>${project.version}</version>
+            <version>5.0.2.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>

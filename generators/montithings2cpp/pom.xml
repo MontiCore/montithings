@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>montiarc.languages</groupId>
 			<artifactId>montiarc-fe</artifactId>
-			<version>${project.version}</version>
+			<version>5.0.2.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
