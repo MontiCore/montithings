@@ -4,7 +4,7 @@ package portTest;
  * Valid model.
  */
 
-<<deploy>> component PortTest{
+<<deploy, timesync>> component PortTest{
 
 	component InComp ic;
 	component OutComp oc;
