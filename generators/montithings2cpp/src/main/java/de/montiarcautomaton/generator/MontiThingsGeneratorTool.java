@@ -59,15 +59,17 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 					hwcPath, comp, foundModels);
 
 			for (ResourcePortSymbol resourcePortSymbol : ComponentHelper.getResourcePortsInComponent(comp)) {
-				File path = Paths.get(target.getAbsolutePath(),
-								Names.getPathFromPackage(comp.getPackageName()),
-								Character.toLowerCase(comp.getName().charAt(0))
-								+ comp.getName().substring(1) + "-"
-								+ resourcePortSymbol.getName())
-								.toFile();
-				path.mkdir();
-				File libraryPath = Paths.get("target/montithings-RTE").toFile();
-				MAAGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath);
+				if (resourcePortSymbol.isIpc()) {
+					File path = Paths.get(target.getAbsolutePath(),
+									Names.getPathFromPackage(comp.getPackageName()),
+									Character.toLowerCase(comp.getName().charAt(0))
+													+ comp.getName().substring(1) + "-"
+													+ resourcePortSymbol.getName())
+									.toFile();
+					path.mkdir();
+					File libraryPath = Paths.get("target/montithings-RTE").toFile();
+					MAAGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath);
+				}
 			}
 		}
 
