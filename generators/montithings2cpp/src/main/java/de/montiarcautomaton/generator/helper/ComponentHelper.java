@@ -633,14 +633,42 @@ public class ComponentHelper {
     return java2cppTypeString(ComponentHelper.autobox(typesPrinter.prettyprint(node.getType())));
   }
 
-  public static String getExecutionInterval(ComponentSymbol comp){
-    return String.valueOf(((ASTComponent) comp.getAstNode().get())
+  public static String getExecutionIntervalMethod(ComponentSymbol comp){
+    int interval =  ((ASTComponent) comp.getAstNode().get())
             .getBody()
             .getElementList()
             .stream()
-            .filter(e -> e instanceof ASTCalcuLationInterval)
+            .filter(e -> e instanceof ASTControlBlock)
+            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+            .filter(e -> e instanceof ASTCalculationInterval)
             .findFirst()
-            .map(e -> ((ASTCalcuLationInterval) e).getInterval().getValue())
-            .orElse(50));
+            .map(e -> ((ASTCalculationInterval) e).getInterval().getValue())
+            .orElse(50);
+    String method = "std::chrono::milliseconds(" + String.valueOf(interval) + ")";
+    String intervalUnit = ((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(e -> e instanceof ASTControlBlock)
+            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+            .filter(e -> e instanceof ASTCalculationInterval)
+            .findFirst()
+            .map(e -> ((ASTCalculationInterval) e).getTimeUnit().toString())
+            .orElse("MS");
+
+    switch (intervalUnit) {
+      case "MS":
+        method = "std::chrono::milliseconds(" + String.valueOf(interval) + ")";
+        break;
+      case "S" :
+        method = "std::chrono::seconds(" + String.valueOf(interval) + ")";
+        break;
+      case "MIN":
+        method = "std::chrono::seconds(" + String.valueOf(interval*60) + ")";
+
+    }
+    return method;
   }
+
+
 }

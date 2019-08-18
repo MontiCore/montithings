@@ -13,13 +13,35 @@ grammar MontiThings extends MontiArc {
     ResourceInterface implements Element =
       Stereotype?
       "resource port" resourcePort:(ResourcePort || ",")+ ";";
-      
+
+
+    /**
+    * A Control Block consists of statements controlling the execution
+    * behavior of the component. The described behavior in this block
+    * only modifies the already existing behavior of the component
+    * (hwc, automatons, etc) and thus does not implement the
+    * BehaviorElement interface.
+    **/
+    ControlBlock implements Element =
+        "control" "{"
+        ControlStatement*
+        "}";
+
+
+    interface ControlStatement;
+
     /**
     * The calculation interval specifies in which 
     * interval the component is executed.
     */
-    CalcuLationInterval implements Element = 
-    	"interval" interval:IntLiteral "ms;";
+    CalculationInterval implements ControlStatement =
+    	"update interval" interval:IntLiteral TimeUnit";";
+
+    enum TimeUnit = "ms" | "s" | "min";
+
+    ExecutionStatement implements ControlStatement =
+        "if" (Expression) ":" method:Name&"()" (batchInput:["batch"])?";";
+
 
      /**
       * An incoming resource port is used to receive messages from external sources, an
@@ -42,7 +64,8 @@ grammar MontiThings extends MontiArc {
     * Optional settings for resource ports
     */
     enum ResourceOption =
-      "ws" | "wss" | "tcp" | "append" | "overwrite";
+      "netserver" | "netclient" | "ipcreqrep"
+      | "ipclisten" | "fsappend" | "fsoverwrite";
 
 
     /**

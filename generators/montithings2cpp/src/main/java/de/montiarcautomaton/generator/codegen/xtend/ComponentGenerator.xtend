@@ -204,7 +204,7 @@ class ComponentGenerator {
 			while (true)
 				{
 					auto end = std::chrono::high_resolution_clock::now() 
-						+ std::chrono::milliseconds(«ComponentHelper.getExecutionInterval(comp)»);
+						+ «ComponentHelper.getExecutionIntervalMethod(comp)»;
 					this->compute();
 					
 					do {
