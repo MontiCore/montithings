@@ -5,8 +5,12 @@
  */
 package de.montiarcautomaton.generator.visitor;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+
+import com.sun.xml.internal.ws.util.StringUtils;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.mcexpressions._ast.ASTArguments;
@@ -20,6 +24,8 @@ import de.monticore.symboltable.types.JTypeSymbol;
 import montiarc._symboltable.PortSymbol;
 import montiarc._symboltable.VariableSymbol;
 import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
+import montithings._symboltable.SyncStatementKind;
+import montithings._symboltable.SyncStatementSymbol;
 
 /**
  * Transforms cd attribute calls to getter expression which correspond to the
@@ -125,4 +131,33 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 		return typeOpt;
 	}
 
+	@Override
+	public void  handle(ASTNameExpression node) {
+		Scope s = node.getEnclosingScopeOpt().get();
+		String name = node.getName();
+		Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
+		Optional<SyncStatementSymbol> sync = s.resolve(name, SyncStatementSymbol.KIND);
+
+
+		if (port.isPresent()) {
+			printer.print("input.get" + StringUtils.capitalize(node.getName())
+							+ "() && input.get" + StringUtils.capitalize(node.getName()) + "().value()");
+		} else if (sync.isPresent()) {
+			String synced = "(";
+			String s1 = sync.get().
+							getSyncStatementNode()
+							.get()
+							.getSyncedPortList()
+							.stream()
+							.map(str -> "input.get" + StringUtils.capitalize(str) + "()")
+							.collect(Collectors.joining(" && "));
+			synced += s1;
+			synced += ")";
+			printer.print(synced);
+
+
+		} else {
+			printNode(node.getName());
+		}
+	}
 }

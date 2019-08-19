@@ -12,6 +12,10 @@ import java.util.List
 import java.util.ArrayList
 import de.monticore.symboltable.types.JFieldSymbol
 import montiarc._symboltable.ComponentSymbolReference
+import de.monticore.mcexpressions._ast.ASTExpression
+import de.monticore.prettyprint.IndentPrinter
+import de.monticore.java.prettyprint.JavaDSLPrettyPrinter
+import de.montiarcautomaton.generator.visitor.CDAttributeGetterTransformationVisitor
 
 class ComponentGenerator {
 	
@@ -148,8 +152,14 @@ class ComponentGenerator {
 	def static printComputeAtomic(ComponentSymbol comp) {
 		return '''
 		void «comp.name»::compute(){
-			«IF comp.allIncomingPorts.length > 0»
+			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
 			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue()«ENDFOR»)
+			«ENDIF»
+			«IF ComponentHelper.hasSyncGroups(comp)»
+			if ( 
+			«FOR syncGroup : ComponentHelper.getSyncGroups(comp)  SEPARATOR ' || '»
+			(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue() «ENDFOR»)
+			«ENDFOR»)
 			«ENDIF»
 			{
 				«IF !ComponentHelper.usesBatchMode(comp)»
@@ -162,7 +172,17 @@ class ComponentGenerator {
 				}
 				«ENDFOR»
 				«ENDIF»
+				«comp.name»Result result;
+				«IF !ComponentHelper.hasExecutionStatement(comp)»
 				«comp.name»Result result = «Identifier.behaviorImplName».compute(input);
+				«ELSE»
+				
+				«FOR statement : ComponentHelper.getExecutionStatements(comp)»
+				if («printExpression(statement.guard)»){
+					result = «Identifier.behaviorImplName».«statement.method»(input);	
+				}
+				«ENDFOR»
+				«ENDIF»
 				setResult(result);				
 			}
 		}
@@ -240,6 +260,20 @@ class ComponentGenerator {
       }
     }
     return result;
+  }
+  
+  def private static String printExpression(ASTExpression expr, boolean isAssignment) {
+    var IndentPrinter printer = new IndentPrinter();
+    var JavaDSLPrettyPrinter prettyPrinter = new JavaDSLPrettyPrinter(printer);
+    if (isAssignment) {
+      prettyPrinter = new CDAttributeGetterTransformationVisitor(printer);
+    }
+    expr.accept(prettyPrinter);
+    return printer.getContent();
+  }
+
+  def private static String printExpression(ASTExpression expr) {
+    return printExpression(expr, true);
   }
 	
 	

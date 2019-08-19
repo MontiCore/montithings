@@ -164,9 +164,8 @@ public class ComponentHelper {
 
       // Replace all type parameters of the defining component which occurr in
       // the port type by the actual type argument
-      String portTypeString = insertTypeParamValueIntoTypeArg(typeReference,
+      return insertTypeParamValueIntoTypeArg(typeReference,
           actualTypeArgStringsMap.get(currentComponent.getFullName()));
-      return portTypeString;
     }
   }
 
@@ -266,7 +265,7 @@ public class ComponentHelper {
     return "";
   }
 
-  private static HashMap<String, String> PRIMITIVE_TYPES = new HashMap<String, String>() {
+  private static final HashMap<String, String> PRIMITIVE_TYPES = new HashMap<String, String>() {
     {
       put("int", "Integer");
       put("double", "Double");
@@ -402,7 +401,7 @@ public class ComponentHelper {
       boolean isSource) {
     String subCompName = getConnectorComponentName(source, target, isSource);
     String portNameUnqualified = getConnectorPortName(source, target, isSource);
-    Optional<PortSymbol> port = Optional.empty();
+    Optional<PortSymbol> port;
     String portName = isSource ? Names.getQualifiedName(source.getPartList())
         : Names.getQualifiedName(target.getPartList());
     // port is of subcomponent
@@ -584,7 +583,7 @@ public class ComponentHelper {
    * @return List of Strings containing all CPP imports of the component
    */
   public static List<String> getCPPImports(ComponentSymbol comp) {
-    List<String> importStrings = new ArrayList<String>();
+    List<String> importStrings = new ArrayList<>();
     try {
       ASTMACompilationUnit node = (ASTMACompilationUnit) comp.getEnclosingScope().getAstNode().get();
       List<ASTImportStatement> imports = node.getImportStatementList();
@@ -632,6 +631,11 @@ public class ComponentHelper {
     return java2cppTypeString(ComponentHelper.autobox(typesPrinter.prettyprint(node.getType())));
   }
 
+  /**
+   * Gets a string that corresponds to the update interval of the component in CPP code
+   * @param comp
+   * @return CPP duration
+   */
   public static String getExecutionIntervalMethod(ComponentSymbol comp){
     int interval =  ((ASTComponent) comp.getAstNode().get())
             .getBody()
@@ -643,7 +647,7 @@ public class ComponentHelper {
             .findFirst()
             .map(e -> ((ASTCalculationInterval) e).getInterval().getValue())
             .orElse(50);
-    String method = "std::chrono::milliseconds(" + String.valueOf(interval) + ")";
+    String method = "std::chrono::milliseconds(" + interval + ")";
     String intervalUnit = ((ASTComponent) comp.getAstNode().get())
             .getBody()
             .getElementList()
@@ -657,33 +661,66 @@ public class ComponentHelper {
 
     switch (intervalUnit) {
       case "MS":
-        method = "std::chrono::milliseconds(" + String.valueOf(interval) + ")";
+        method = "std::chrono::milliseconds(" + interval + ")";
         break;
       case "S" :
-        method = "std::chrono::seconds(" + String.valueOf(interval) + ")";
+        method = "std::chrono::seconds(" + interval + ")";
         break;
       case "MIN":
-        method = "std::chrono::seconds(" + String.valueOf(interval*60) + ")";
+        method = "std::chrono::seconds(" + interval * 60 + ")";
 
     }
     return method;
   }
 
+  /**
+   * Returns true if
+   * @param comp
+   * @return
+   */
   public static Boolean usesBatchMode(ComponentSymbol comp){
-    Optional<ASTControlStatement> batchStatement = ((ASTComponent) comp.getAstNode().get())
+    return((ASTComponent) comp.getAstNode().get())
             .getBody()
             .getElementList()
             .stream()
             .filter(e -> e instanceof ASTControlBlock)
             .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
             .filter(e -> e instanceof ASTBatchStatement)
-            .findFirst();
+            .anyMatch(astControlStatement -> ((ASTBatchStatement) astControlStatement)
+                    .isBatchOn());
+  }
 
-    return batchStatement
-            .filter(astControlStatement -> ((ASTBatchStatement) astControlStatement)
-                    .isBatchOn())
-            .isPresent();
+  public static Boolean hasSyncGroups(ComponentSymbol comp){
+    return getSyncGroups(comp).size() > 0;
+  }
 
+  public static List<List<String>> getSyncGroups(ComponentSymbol comp){
+    return ((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(e -> e instanceof ASTControlBlock)
+            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+            .filter(e -> e instanceof ASTSyncStatement)
+            .map(e -> ((ASTSyncStatement) e).getSyncedPortList())
+            .collect(Collectors.toList());
+  }
+
+  public static Boolean hasExecutionStatement(ComponentSymbol comp){
+    return getExecutionStatements(comp).size() > 0;
+
+  }
+
+  public static List<ASTExecutionStatement> getExecutionStatements(ComponentSymbol comp){
+    return ((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(e -> e instanceof ASTControlBlock)
+            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+            .filter(e -> e instanceof ASTExecutionStatement)
+            .map(e -> ((ASTExecutionStatement) e))
+            .collect(Collectors.toList());
   }
 
 }
