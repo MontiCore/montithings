@@ -8,7 +8,7 @@ package montithings.cocos;
 /**
  * TODO
  *
- * @author (last commit)
+ * @author (last commit) JFuerste
  */
-class ProperTypeConnectedToResourcePort {
+public class SyncGroupHasAtLeastOneElement {
 }

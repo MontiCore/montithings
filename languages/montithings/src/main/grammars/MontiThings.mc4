@@ -46,7 +46,7 @@ grammar MontiThings extends MontiArc {
         "if" (guard:Expression) ":" method:Name&"()" ";";
 
     symbol SyncStatement implements ControlStatement =
-        "sync port group" Name& "(" syncedPort:(Name || ",")+ ")" ";";
+        "sync port group" Name& "(" syncedPort:(Name || ",")* ")" ";";
 
      /**
       * An incoming resource port is used to receive messages from external sources, an
