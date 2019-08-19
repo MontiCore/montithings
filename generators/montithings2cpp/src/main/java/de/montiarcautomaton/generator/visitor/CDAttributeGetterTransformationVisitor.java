@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
-import com.sun.xml.internal.ws.util.StringUtils;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.mcexpressions._ast.ASTArguments;
@@ -140,8 +138,8 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 
 
 		if (port.isPresent()) {
-			printer.print("input.get" + StringUtils.capitalize(node.getName())
-							+ "() && input.get" + StringUtils.capitalize(node.getName()) + "().value()");
+			printer.print("input.get" + capitalize(node.getName())
+							+ "() && input.get" + capitalize(node.getName()) + "().value()");
 		} else if (sync.isPresent()) {
 			String synced = "(";
 			String s1 = sync.get().
@@ -149,7 +147,7 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 							.get()
 							.getSyncedPortList()
 							.stream()
-							.map(str -> "input.get" + StringUtils.capitalize(str) + "()")
+							.map(str -> "input.get" + capitalize(str) + "()")
 							.collect(Collectors.joining(" && "));
 			synced += s1;
 			synced += ")";
@@ -159,5 +157,9 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 		} else {
 			printNode(node.getName());
 		}
+	}
+
+	private String capitalize(String str){
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 }
