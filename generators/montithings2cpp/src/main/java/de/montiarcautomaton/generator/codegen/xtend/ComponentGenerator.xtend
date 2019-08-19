@@ -152,7 +152,16 @@ class ComponentGenerator {
 			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue()«ENDFOR»)
 			«ENDIF»
 			{
+				«IF !ComponentHelper.usesBatchMode(comp)»
 				«comp.name»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue()«ENDFOR»)«ENDIF»;
+				«ELSE»
+				«comp.name»Input input;
+				«FOR inPort : comp.allIncomingPorts»
+				while(getPort«inPort.name.toFirstUpper»()->hasValue()){
+					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue());
+				}
+				«ENDFOR»
+				«ENDIF»
 				«comp.name»Result result = «Identifier.behaviorImplName».compute(input);
 				setResult(result);				
 			}

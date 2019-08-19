@@ -39,9 +39,14 @@ grammar MontiThings extends MontiArc {
 
     enum TimeUnit = "ms" | "s" | "min";
 
-    ExecutionStatement implements ControlStatement =
-        "if" (Expression) ":" method:Name&"()" (batchInput:["batch"])?";";
+    BatchStatement implements ControlStatement =
+        "batch" (batchOn:["on"] | batchOff:["off"])";";
 
+    ExecutionStatement implements ControlStatement =
+        "if" (guard:Expression) ":" method:Name&"()" ";";
+
+    symbol SyncStatement implements ControlStatement =
+        "sync port group" Name& "(" syncedPort:(Name || ",")+ ")" ";";
 
      /**
       * An incoming resource port is used to receive messages from external sources, an
@@ -67,12 +72,9 @@ grammar MontiThings extends MontiArc {
       "netserver" | "netclient" | "ipcreqrep"
       | "ipclisten" | "fsappend" | "fsoverwrite";
 
-
     /**
-    * List of imported elements (data types, components etc)
+    * Imported CPP elements (data types, components etc)
     */
-
-    //TODO: Find out how to escape '"'
     CPPImportStatementLOCAL implements ImportStatement =
        "#include" cppImport:String;
 

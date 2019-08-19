@@ -109,5 +109,20 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   @Override
   public void visit(montithings._ast.ASTResourceInterface node) {}
 
+  @Override
+  public void visit(montithings._ast.ASTSyncStatement ast) {
+    SyncStatementSymbol syncStatement = create_SyncStatement(ast);
+    initialize_SyncStatement(syncStatement, ast);
+    addToScopeAndLinkWithNode(syncStatement, ast);
+  }
+
+  private SyncStatementSymbol create_SyncStatement(montithings._ast.ASTSyncStatement ast) {
+    return new SyncStatementSymbol(ast.getName());
+  }
+
+  private void initialize_SyncStatement(SyncStatementSymbol syncStatement, montithings._ast.ASTSyncStatement ast) {
+
+  }
+
 
 }

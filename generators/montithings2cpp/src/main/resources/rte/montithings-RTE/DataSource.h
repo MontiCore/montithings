@@ -8,8 +8,7 @@ template <class T>
 class DataSource
 {
 protected:
-    boost::lockfree::spsc_queue<T, boost::lockfree::capacity<5>> queue;
-
+    boost::lockfree::spsc_queue<T, boost::lockfree::capacity<1024>> queue;
 
 public:
     DataSource() {};

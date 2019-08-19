@@ -45,6 +45,10 @@ public class MontiThingsModelNameCalculator
     if (ResourcePortSymbol.KIND.isKindOf(kind)) {
       return calculateModelNamesForResourcePort(name);
     }
+
+    if (SyncStatementSymbol.KIND.isKindOf(kind)) {
+      return calculateModelNamesForSyncStatement(name);
+    }
     
     return new LinkedHashSet<>();
   }
@@ -102,6 +106,12 @@ public class MontiThingsModelNameCalculator
   }
 
   private Set<String> calculateModelNamesForResourcePort(String name) {
+    final Set<String> modelNames = new LinkedHashSet<>();
+    modelNames.add(name);
+    return modelNames;
+  }
+
+  protected Set<String> calculateModelNamesForSyncStatement(String name) {
     final Set<String> modelNames = new LinkedHashSet<>();
     modelNames.add(name);
     return modelNames;

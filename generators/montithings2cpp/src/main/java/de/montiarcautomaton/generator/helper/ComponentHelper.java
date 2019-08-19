@@ -14,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import de.montiarcautomaton.generator.codegen.xtend.util.Utils;
-import de.monticore.ast.ASTNode;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.prettyprint.IndentPrinter;
@@ -670,5 +669,21 @@ public class ComponentHelper {
     return method;
   }
 
+  public static Boolean usesBatchMode(ComponentSymbol comp){
+    Optional<ASTControlStatement> batchStatement = ((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(e -> e instanceof ASTControlBlock)
+            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+            .filter(e -> e instanceof ASTBatchStatement)
+            .findFirst();
+
+    return batchStatement
+            .filter(astControlStatement -> ((ASTBatchStatement) astControlStatement)
+                    .isBatchOn())
+            .isPresent();
+
+  }
 
 }
