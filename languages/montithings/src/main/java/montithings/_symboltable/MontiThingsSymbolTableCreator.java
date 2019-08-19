@@ -16,6 +16,7 @@ import de.monticore.types.types._ast.ASTType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTStereoValue;
 import montiarc._symboltable.MontiArcSymbolTableCreator;
+import montithings._ast.ASTControlBlock;
 import montithings._visitor.MontiThingsVisitor;
 
 import java.util.Deque;
@@ -124,5 +125,18 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
 
   }
 
+  @Override
+  public void visit(ASTControlBlock node){
+    node.setEnclosingScope(currentScope().get());
+  }
 
-}
+  @Override
+  public void endVisit(ASTControlBlock node){
+      setEnclosingScopeOfNodes(node);
+    }
+
+
+  }
+
+
+

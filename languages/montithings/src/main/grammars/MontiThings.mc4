@@ -42,7 +42,7 @@ grammar MontiThings extends MontiArc {
     BatchStatement implements ControlStatement =
         "batch" (batchOn:["on"] | batchOff:["off"])";";
 
-    ExecutionStatement implements ControlStatement =
+   ExecutionStatement implements ControlStatement =
         "if" (guard:Expression) ":" method:Name&"()" ";";
 
     symbol SyncStatement implements ControlStatement =
