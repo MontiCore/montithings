@@ -10,9 +10,8 @@ InCompResult InCompImpl::compute(InCompInput input){
     auto stringOpt = input.getInPort();
 
 
-        std::cout << stringOpt.size() << "\n";
+        std::cout << "Got " << stringOpt.size() << " inputs \n";
 
-        std::cout << "First Compute Done!\n";
 
         return InCompResult();
   	  	

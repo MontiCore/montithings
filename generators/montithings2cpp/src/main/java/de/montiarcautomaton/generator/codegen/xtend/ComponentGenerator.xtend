@@ -174,7 +174,7 @@ class ComponentGenerator {
 				«ENDIF»
 				«comp.name»Result result;
 				«IF !ComponentHelper.hasExecutionStatement(comp)»
-				«comp.name»Result result = «Identifier.behaviorImplName».compute(input);
+				result = «Identifier.behaviorImplName».compute(input);
 				«ELSE»
 				
 				«FOR statement : ComponentHelper.getExecutionStatements(comp)»

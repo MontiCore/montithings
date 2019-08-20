@@ -4,7 +4,7 @@ package batchTest;
  * Valid model.
  */
 
-<<deploy>> component PortTest{
+<<deploy, timesync>> component BatchTest{
 
 	component InComp ic;
 	component OutComp oc;
