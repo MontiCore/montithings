@@ -10,5 +10,5 @@ package montithings.cocos;
  *
  * @author (last commit) JFuerste
  */
-public class ControlBlockHasAtLeastOneStatement {
+public class ControlBlockNotEmpty {
 }

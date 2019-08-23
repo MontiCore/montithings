@@ -4,7 +4,7 @@ component InComp{
 port in String inPort;
 
 control {
-    batch on;
+    batch inPort;
     update interval 200ms;
 }
 }

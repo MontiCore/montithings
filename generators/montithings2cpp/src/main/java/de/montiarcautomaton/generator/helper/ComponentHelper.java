@@ -14,9 +14,12 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import de.montiarcautomaton.generator.codegen.xtend.util.Utils;
+import de.montiarcautomaton.generator.visitor.GuardExpressionVisitor;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.mcexpressions._ast.ASTExpression;
+import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.types.JFieldSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.TypeSymbol;
@@ -685,9 +688,7 @@ public class ComponentHelper {
             .stream()
             .filter(e -> e instanceof ASTControlBlock)
             .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTBatchStatement)
-            .anyMatch(astControlStatement -> ((ASTBatchStatement) astControlStatement)
-                    .isBatchOn());
+            .anyMatch(e -> e instanceof ASTBatchStatement);
   }
 
   public static Boolean hasSyncGroups(ComponentSymbol comp){
@@ -721,6 +722,68 @@ public class ComponentHelper {
             .filter(e -> e instanceof ASTExecutionStatement)
             .map(e -> ((ASTExecutionStatement) e))
             .collect(Collectors.toList());
+  }
+
+  public static List<PortSymbol> getPortsInBatchStatement(ComponentSymbol comp){
+    List<String> names = ((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(e -> e instanceof ASTControlBlock)
+            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+            .filter(e -> e instanceof ASTBatchStatement)
+            .flatMap(e -> ((ASTBatchStatement) e).getBatchPortsList().stream())
+            .collect(Collectors.toList());
+
+    List<PortSymbol> ports = new ArrayList<>();
+    Scope s = comp.getSpannedScope();
+    for (String name : names) {
+      Optional<PortSymbol> resolve = s.resolve(name, PortSymbol.KIND);
+      resolve.ifPresent(ports::add);
+    }
+    return ports;
+
+  }
+
+  public static List<PortSymbol> getPortsNotInBatchStatements(ComponentSymbol comp){
+    return comp.getAllIncomingPorts()
+            .stream()
+            .filter(p -> !getPortsInBatchStatement(comp).contains(p))
+            .collect(Collectors.toList());
+  }
+
+  public static List<ASTNameExpression> getGuardExpressionElements(ASTExecutionStatement node){
+    GuardExpressionVisitor visitor = new GuardExpressionVisitor();
+    node.accept(visitor);
+    return visitor.getExpressions();
+  }
+
+  public static List<PortSymbol> getPortsInGuardExpression(ASTExecutionStatement node){
+    List<PortSymbol> ports = new ArrayList<>();
+
+    for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {
+      String name = guardExpressionElement.getName();
+      Scope s = (Scope) node.getEnclosingScopeOpt().get();
+      Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
+      port.ifPresent(ports::add);
+    }
+    return ports;
+  }
+
+  public static List<PortSymbol> getPortsNotInSyncGroup(ComponentSymbol comp){
+    List<String> portsInSyncGroups = getSyncGroups(comp)
+            .stream()
+            .flatMap(s -> s.stream())
+            .collect(Collectors.toList());
+    return comp.getAllIncomingPorts()
+            .stream()
+            .filter(p -> !portsInSyncGroups.contains(p.getName()))
+            .collect(Collectors.toList());
+  }
+
+  public static Boolean isBatchPort(PortSymbol port, ComponentSymbol comp){
+    return getPortsInBatchStatement(comp).stream()
+            .anyMatch(p -> p.equals(port));
   }
 
 }

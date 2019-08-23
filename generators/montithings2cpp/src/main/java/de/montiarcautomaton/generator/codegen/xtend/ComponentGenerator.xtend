@@ -159,17 +159,24 @@ class ComponentGenerator {
 			if ( 
 			«FOR syncGroup : ComponentHelper.getSyncGroups(comp)  SEPARATOR ' || '»
 			(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue() «ENDFOR»)
-			«ENDFOR»)
+			«ENDFOR»
+			«IF ComponentHelper.getPortsNotInSyncGroup(comp).length() > 0»
+			|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue()«ENDFOR»
+			«ENDIF»
+			)
 			«ENDIF»
 			{
 				«IF !ComponentHelper.usesBatchMode(comp)»
 				«comp.name»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue()«ENDFOR»)«ENDIF»;
 				«ELSE»
 				«comp.name»Input input;
-				«FOR inPort : comp.allIncomingPorts»
+				«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
 				while(getPort«inPort.name.toFirstUpper»()->hasValue()){
 					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue());
 				}
+				«ENDFOR»
+				«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
+				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue());
 				«ENDFOR»
 				«ENDIF»
 				«comp.name»Result result;
@@ -178,7 +185,12 @@ class ComponentGenerator {
 				«ELSE»
 				
 				«FOR statement : ComponentHelper.getExecutionStatements(comp)»
-				if («printExpression(statement.guard)»){
+				if («FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+					«IF !ComponentHelper.isBatchPort(port, comp)»
+					input.get«port.name.toFirstUpper»()
+					«ENDIF»
+					«ENDFOR»
+					«IF ComponentHelper.getPortsInGuardExpression(statement).length() > 0»&&«ENDIF» «printExpression(statement.guard)»){
 					result = «Identifier.behaviorImplName».«statement.method»(input);	
 				}
 				«ENDFOR»

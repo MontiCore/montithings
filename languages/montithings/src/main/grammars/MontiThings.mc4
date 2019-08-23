@@ -39,12 +39,26 @@ grammar MontiThings extends MontiArc {
 
     enum TimeUnit = "ms" | "s" | "min";
 
+    /**
+    * BatchStatements define which ports should be
+    * handled in batch processing mode instead of
+    * handling only one incoming message per tick
+    **/
     BatchStatement implements ControlStatement =
-        "batch" (batchOn:["on"] | batchOff:["off"])";";
+        "batch" batchPorts:(Name& || ",")+ ";";
 
+    /**
+    * ExecutionStatements specify which function in the
+    * handwritten implementation should be executed depending
+    * on the presence on messages on incoming ports and
+    * values of current messages.
+    **/
    ExecutionStatement implements ControlStatement =
         "if" (guard:Expression) ":" method:Name&"()" ";";
 
+    /** SyncStatements allow the specification of groups of ports
+    * that should only be handled together
+    **/
     symbol SyncStatement implements ControlStatement =
         "sync port group" Name& "(" syncedPort:(Name || ",")* ")" ";";
 

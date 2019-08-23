@@ -27,12 +27,9 @@ class Input {
       «ENDIF»
       «ENDIF»
       
-      «FOR port : comp.incomingPorts»
-      «IF !isBatch»
-      	 tl::optional<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
-      	 	return «port.name»;
-      	 }
-      «ELSE»	 
+      «FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
+     
+
       	 std::vector<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
       	       	 	return «port.name»;
       	       	 }
@@ -42,7 +39,15 @@ class Input {
       	 		«port.name».push_back(element.value());
       	 	}
       	 }
-      «ENDIF»
+      «ENDFOR»
+      «FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
+    	 tl::optional<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
+    	 	return «port.name»;
+    	 }
+    	 
+    	 void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+    	 	this->«port.name» = std::move(element);
+    	 } 
       «ENDFOR»
       
     '''
@@ -75,12 +80,11 @@ class Input {
 			            «ENDIF»
 			{
 			private:
-			«FOR port : comp.incomingPorts»
-			«IF !isBatch»
+			«FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
 				tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name»;
-			«ELSE»	
+			«ENDFOR»
+			«FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
 				std::vector<«helper.getRealPortCppTypeString(port)»> «port.name» = {};
-			«ENDIF»
 			«ENDFOR»
 			public:
 		
@@ -89,14 +93,16 @@ class Input {
 			    explicit «comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
 			    «ENDIF»
 				
-				«FOR port : comp.incomingPorts»
-				«IF !isBatch»
-			    tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
-			    «ELSE»
-			    std::vector<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
+				
+				«FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
+				tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
 			    void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»>);
-			    «ENDIF»
 				«ENDFOR»
+				«FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
+				std::vector<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
+			    void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»>);
+				«ENDFOR»
+			
 
 			};
 			

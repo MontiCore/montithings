@@ -13,7 +13,9 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._symboltable.ComponentSymbol;
+import montiarc._symboltable.PortSymbol;
 import montithings.MontiThingsTool;
+import montithings._ast.ASTExecutionStatement;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
 import org.apache.commons.io.FileUtils;
@@ -47,6 +49,14 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 			// 3. parse + resolve model
 			Log.info("Parsing model:" + qualifiedModelName, "MontiThingsGeneratorTool");
 			ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName, ComponentSymbol.KIND).get();
+			for (ASTExecutionStatement statement : ComponentHelper.getExecutionStatements(comp)) {
+				ComponentHelper.getGuardExpressionElements(statement);
+				ComponentHelper.getPortsInGuardExpression(statement);
+			}
+			List<PortSymbol> portNamesInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
+			List<PortSymbol> ports = ComponentHelper.getPortsNotInBatchStatements(comp);
+			List<PortSymbol> portsNotInSyncGroup = ComponentHelper.getPortsNotInSyncGroup(comp);
+
 
 			// 4. check cocos
 			Log.info("Check model: " + qualifiedModelName, "MontiThingsGeneratorTool");

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.montiarcautomaton.generator.helper.ComponentHelper;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.mcexpressions._ast.ASTArguments;
@@ -18,7 +19,9 @@ import de.monticore.mcexpressions._ast.ASTQualifiedNameExpression;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symboltable.Scope;
+import de.monticore.symboltable.ScopeSpanningSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
+import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.PortSymbol;
 import montiarc._symboltable.VariableSymbol;
 import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
@@ -136,6 +139,9 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 		Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
 		Optional<SyncStatementSymbol> sync = s.resolve(name, SyncStatementSymbol.KIND);
 
+		ComponentSymbol comp = (ComponentSymbol) s.getSpanningSymbol().get();
+		List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
+
 
 		if (port.isPresent()) {
 			printer.print("input.get" + capitalize(node.getName())
@@ -147,7 +153,7 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 							.get()
 							.getSyncedPortList()
 							.stream()
-							.map(str -> "input.get" + capitalize(str) + "()")
+							.map(str -> "input.get" + capitalize(str) + "()" + isSet(portsInBatchStatement, str))
 							.collect(Collectors.joining(" && "));
 			synced += s1;
 			synced += ")";
@@ -161,5 +167,13 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 
 	private String capitalize(String str){
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+
+	private String isSet(List<PortSymbol> batchPorts , String name){
+		return batchPorts.stream()
+						.filter(p -> p.getName().equals(name))
+						.findFirst()
+						.map(p -> ".size() > 0")
+						.orElse("");
 	}
 }
