@@ -57,10 +57,14 @@ class ComponentGenerator {
 			«Ports.printResourcePortVars(ComponentHelper.getResourcePortsInComponent(comp))»
 			«Utils.printVariables(comp)»
 			«Utils.printConfigParameters(comp)»
+			std::vector< std::thread > threads;
 			«IF comp.isDecomposed»
+			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
+			void run();
+			«ENDIF»
 			«Subcomponents.printVars(comp)»
 			«ELSE»
-			std::vector< std::thread > threads;
+
 			«comp.name»Impl «Identifier.behaviorImplName»;
 			void initialize();
 			void setResult(«comp.name»Result result);
@@ -94,8 +98,11 @@ class ComponentGenerator {
 		
 		«Ports.printMethodBodies(comp.ports, comp)»
 		«Ports.printResourcePortMethodBodies(ComponentHelper.getResourcePortsInComponent(comp),comp)»
-		
+				
 		«IF comp.isDecomposed»
+		«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
+		«printRun(comp)»
+		«ENDIF»
 		«printComputeDecomposed(comp)»
 		«printStartDecomposed(comp)»
 		«ELSE»
@@ -218,10 +225,13 @@ class ComponentGenerator {
 	def static printStartDecomposed(ComponentSymbol comp) {
 		return '''
 		void «comp.name»::start(){
+			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
+			threads.push_back(std::thread{&«comp.name»::run, this});
+			«ELSE»
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».start();
 	        «ENDFOR»
-					
+			«ENDIF»		
 		}
 
 		'''
