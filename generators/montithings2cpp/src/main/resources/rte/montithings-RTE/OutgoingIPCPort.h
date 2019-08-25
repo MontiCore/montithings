@@ -12,6 +12,8 @@
 #include "cereal/types/list.hpp"
 #include <future>
 #include "tl/optional.hpp"
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 using namespace std;
 
 /*
@@ -44,6 +46,7 @@ public:
 
     void setPort(Port<T>* port){
         portSet = true;
+        port->registerPort(uuid);
         this->port = port;
         fut = std::async(std::launch::async, &OutgoingIPCPort::run, this);
     }
@@ -54,11 +57,12 @@ private:
     bool portSet = false;
     Port<T>* port;
     std::future<bool> fut;
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
 
 
     bool run() {
         while (true) {
-            tl::optional<T> dataOpt = port->getCurrentValue();
+            tl::optional<T> dataOpt = port->getCurrentValue(uuid);
             if (dataOpt) {
                 try {
                     socket.dial(uri, nng::flag::alloc);

@@ -35,6 +35,8 @@ class ComponentGenerator {
 		#include "IncomingIPCPort.h"
 		#include "OutgoingIPCPort.h"
 		#include<thread>
+		#include <boost/uuid/uuid.hpp>
+		#include <boost/uuid/uuid_generators.hpp>
 		«Utils.printCPPImports(comp)»
 		
 		
@@ -53,6 +55,7 @@ class ComponentGenerator {
 		            «ENDIF»«ENDIF»
 		{
 		private:
+			boost::uuids::uuid uuid = boost::uuids::random_generator()();
 			«Ports.printVars(comp.ports)»
 			«Ports.printResourcePortVars(ComponentHelper.getResourcePortsInComponent(comp))»
 			«Utils.printVariables(comp)»
@@ -160,30 +163,30 @@ class ComponentGenerator {
 		return '''
 		void «comp.name»::compute(){
 			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
-			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue()«ENDFOR»)
+			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»)
 			«ENDIF»
 			«IF ComponentHelper.hasSyncGroups(comp)»
 			if ( 
 			«FOR syncGroup : ComponentHelper.getSyncGroups(comp)  SEPARATOR ' || '»
-			(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue() «ENDFOR»)
+			(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue(uuid) «ENDFOR»)
 			«ENDFOR»
 			«IF ComponentHelper.getPortsNotInSyncGroup(comp).length() > 0»
-			|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue()«ENDFOR»
+			|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»
 			«ENDIF»
 			)
 			«ENDIF»
 			{
 				«IF !ComponentHelper.usesBatchMode(comp)»
-				«comp.name»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue()«ENDFOR»)«ENDIF»;
+				«comp.name»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid)«ENDFOR»)«ENDIF»;
 				«ELSE»
 				«comp.name»Input input;
 				«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
-				while(getPort«inPort.name.toFirstUpper»()->hasValue()){
-					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue());
+				while(getPort«inPort.name.toFirstUpper»()->hasValue(uuid)){
+					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
 				}
 				«ENDFOR»
 				«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
-				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue());
+				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
 				«ENDFOR»
 				«ENDIF»
 				«comp.name»Result result;

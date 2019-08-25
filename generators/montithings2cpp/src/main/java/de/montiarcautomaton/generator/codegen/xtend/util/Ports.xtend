@@ -101,6 +101,9 @@ class Ports {
     }
     
     void «comp.name»::setPort«name.toFirstUpper»(Port<«type»>* port){
+    	«IF comp.atomic»
+    	port->registerPort(uuid);
+    	«ENDIF»
     	«name» = port;
     }
     

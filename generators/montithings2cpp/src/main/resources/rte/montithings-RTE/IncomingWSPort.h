@@ -45,15 +45,16 @@ public:
 
 
 
-    tl::optional<T> getCurrentValue() {
-	    T data;
-        if (queue.pop(data)){
-            tl::optional<T> optData = data;
-            return optData;
-        }
-        return tl::nullopt;
-	}
 
+	tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
+    		T queueElement;
+            if (queueMap[uuid].pop(queueElement)){
+                tl::optional<T> currentValue = queueElement;
+                return currentValue;
+            } else{
+                return tl::nullopt;
+            }
+    	}
 private:
     nng::socket socket;
     const char* uri;

@@ -42,14 +42,15 @@ public:
 
 
 
-    tl::optional<T> getCurrentValue() {
-		ipcUpdate();
-        if (currentValue){
-            auto temp = std::move(currentValue);
-            currentValue = tl::nullopt;
-            return temp;
+    tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
+        ipcUpdate();
+		T queueElement;
+        if (queueMap[uuid].pop(queueElement)){
+            tl::optional<T> currentValue = queueElement;
+            return currentValue;
+        } else{
+            return tl::nullopt;
         }
-        return currentValue;
 	}
 
 private:
