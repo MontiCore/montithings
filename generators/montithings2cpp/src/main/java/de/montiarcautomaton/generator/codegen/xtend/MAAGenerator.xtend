@@ -104,27 +104,28 @@ class MAAGenerator {
   	return ""
   }
 	
+  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath){
+	
+	toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(),
+		comp,
+		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
+		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString), ".txt")
+  }
 
-	
-	
+  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath){
+  	var existsHWC = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, port.name)
+  	var ipcPath = ComponentHelper.getIPCHWCPath(port, comp, hwcPath);
+	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerHeader(port, comp), ".h")
+	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerBody(port, comp, existsHWC), ".cpp")
+	toFile(targetPath, "CMakeLists", CMake.printIPCServerCMake(
+		port,
+		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
+		targetPath.toPath.toAbsolutePath.relativize(ipcPath.toPath.toAbsolutePath).toString,
+		existsHWC
+		),
+		 ".txt")
+  }
 
-	def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath){
-		
-		toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(),
-			comp,
-			targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
-			targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString), ".txt")
-	}
-	
-	def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath){
-		toFile(targetPath, port.name + "Server", Utils.printIPCServerHeader(port, comp), ".h")
-		toFile(targetPath, port.name + "Server", Utils.printIPCServerBody(port, comp), ".cpp")
-		toFile(targetPath, "CMakeLists", CMake.printIPCServerCMake(
-			port,
-			targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString),
-			 ".txt")
-	}
-	
 	
 
 }

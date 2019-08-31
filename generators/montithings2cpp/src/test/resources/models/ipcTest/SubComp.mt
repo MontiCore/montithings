@@ -1,0 +1,4 @@
+package ipcTest;
+
+
+component SubComp{}

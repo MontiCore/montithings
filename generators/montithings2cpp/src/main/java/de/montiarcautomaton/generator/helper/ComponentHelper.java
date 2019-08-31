@@ -31,6 +31,7 @@ import de.monticore.types.types._ast.ASTQualifiedName;
 import de.monticore.types.types._ast.ASTType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.se_rwth.commons.Names;
+import de.se_rwth.commons.StringTransformations;
 import jline.internal.Log;
 import montiarc._ast.*;
 import montiarc._symboltable.ComponentInstanceSymbol;
@@ -572,12 +573,28 @@ public class ComponentHelper {
   /**
    * 
    * @param hwcPath
-   * @return Returns true if handwritten implementations for the component exist
+   * @return Returns true if a handwritten implementation for the component exist
    */
-  public static Boolean existsHWCClass(File hwcPath, String component) {
-    File cmpPath = Paths.get(hwcPath.toString() + File.separator
-        + component.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".h").toFile();
-    return cmpPath.isFile();
+  public static Boolean existsHWCClass(File hwcPath, String fqComponentName) {
+    File ImplLocation = Paths.get(hwcPath.toString() + File.separator
+        + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".h").toFile();
+    return ImplLocation.isFile();
+  }
+
+  /**
+   *
+   * @param hwcPath
+   * @param comp
+   * @param resourcePortName
+   * @return Returns true if a handwritten implementation for the IPC Server exists
+   */
+  public static Boolean  existsIPCServerHWCClass(File hwcPath, ComponentSymbol comp, String resourcePortName){
+    String fqCompName = comp.getPackageName() + "." + comp.getName();
+    File implLocation = Paths.get(hwcPath.toString() + File.separator
+            + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+            + "-" + StringTransformations.capitalize(resourcePortName) + File.separator
+            + resourcePortName + "ServerImpl.cpp").toFile();
+    return implLocation.isFile();
   }
 
   /**
@@ -784,6 +801,14 @@ public class ComponentHelper {
   public static Boolean isBatchPort(PortSymbol port, ComponentSymbol comp){
     return getPortsInBatchStatement(comp).stream()
             .anyMatch(p -> p.equals(port));
+  }
+
+  public static File getIPCHWCPath(ResourcePortSymbol port, ComponentSymbol comp, File hwcPath){
+    String fqCompName = comp.getPackageName() + "." + comp.getName();
+    File implLocation = Paths.get(hwcPath.toString() + File.separator
+            + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+            + "-" + StringTransformations.capitalize(port.getName())).toFile();
+    return implLocation;
   }
 
 }

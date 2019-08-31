@@ -163,32 +163,43 @@ class Utils {
 		#include "IncomingIPCPort.h"
 		#include "OutgoingIPCPort.h"
 		«Utils.printCPPImports(comp)»
-		#include <AbstractIPCServer.h>
+		#include <AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF».h>
 		
-		class BasicIPCServer : public AbstractIPCServer<TestClass>{
+		class «symbol.name.toFirstUpper»Server : public AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF»<«type»>{
 		private:
+		«IF symbol.incoming»
 		    «type» getData() override;
-		
+		«ELSE»
+			void processData(«type» data) override;
+		«ENDIF»
 		public:
-		    «type» BasicIPCServer(const char *uri) : AbstractIPCServer(uri){};
+		    «symbol.name.toFirstUpper»Server(const char *uri) : AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF»(uri){};
 		};
 		'''
 	}
 	
-	def static printIPCServerBody(ResourcePortSymbol port, ComponentSymbol comp){
+	def static printIPCServerBody(ResourcePortSymbol port, ComponentSymbol comp, Boolean existsHWC){
 		var type = ComponentHelper.getResourcePortType(port)
 		return 
 		'''
-		#include "«port.name»Server.h"
+		#include "«port.name.toFirstUpper»Server.h"
 		
-		«type» «port.name»Server::getData(){
+		«IF !existsHWC»
+		«IF port.incoming»
+		«type» «port.name.toFirstUpper»Server::getData(){
 			//ToDo: FillMe
 			throw std::runtime_error("Invoking getData() on empty implementation");
 		}
-		
+		«ELSE»
+		void «port.name.toFirstUpper»Server::processData(«type» data){
+			//ToDo: FillMe
+			throw std::runtime_error("Invoking processData() on empty implementation");
+		}
+		«ENDIF»
+		«ENDIF»
 		int
 		main(int argc, char **argv) try {
-		    auto server = «port.name»Server("«port.uri»");
+		    auto server = «port.name.toFirstUpper»Server("«port.uri»");
 		    server.run();
 		    return 1;
 		} catch (const nng::exception &e) {

@@ -38,26 +38,35 @@ class CMake {
 		'''
 		}
 		
-	def static printIPCServerCMake(ResourcePortSymbol port, String libraryPath){
+	def static printIPCServerCMake(ResourcePortSymbol port, String libraryPath, String ipcPath, Boolean existsHWC){
 		return 
 		'''
 		cmake_minimum_required(VERSION 3.12)
-		project(«port.name»Server)
+		project(«port.name.toFirstUpper»Server)
 		
 		set(CMAKE_CXX_STANDARD 11)
 		
 		find_package(nng 1.1.1 CONFIG REQUIRED)
+		find_package(Boost) 
 		
+		«IF existsHWC»
+		include_directories(«ipcPath.replace("\\","/")»)
+		«ENDIF»
+		include_directories(${Boost_INCLUDE_DIRS}) 
 		include_directories("«libraryPath.replace("\\","/")»")
 		include_directories(.)
 		file(GLOB SOURCES 
 		"./*.cpp"
 		"./*.h"
+		«IF existsHWC»
+		"«ipcPath.replace("\\","/")»/*.cpp"
+		"«ipcPath.replace("\\","/")»/*.h"
+		«ENDIF»
 		"«libraryPath.replace("\\","/")»/*.cpp"
 		"«libraryPath.replace("\\","/")»/*.h")
 		
-		add_executable(«port.name»Server ${SOURCES})
-		target_link_libraries(«port.name»Server nng::nng)
+		add_executable(«port.name.toFirstUpper»Server ${SOURCES})
+		target_link_libraries(«port.name.toFirstUpper»Server nng::nng Boost::boost)
 		'''
 	}
 	

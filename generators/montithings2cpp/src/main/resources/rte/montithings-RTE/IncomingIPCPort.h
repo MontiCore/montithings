@@ -43,13 +43,19 @@ public:
 
 
     tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
-        ipcUpdate();
+
 		T queueElement;
         if (queueMap[uuid].pop(queueElement)){
             tl::optional<T> currentValue = queueElement;
             return currentValue;
         } else{
-            return tl::nullopt;
+            ipcUpdate();
+            if (queueMap[uuid].pop(queueElement)) {
+                tl::optional<T> currentValue = queueElement;
+                return currentValue;
+            } else {
+                return tl::nullopt;
+            }
         }
 	}
 
@@ -73,7 +79,6 @@ private:
 		catch (const std::exception&)
 		{
 			cout << "Connection to" << uri << " could not be established!\n";
-			currentValue = tl::nullopt;
 			return;
 		}
 	    //Sending an empty request to initialize data transfer from the ipc port.
@@ -89,7 +94,7 @@ private:
         inputArchive(result);
 
 
-		currentValue = result;
+		pushToAll(result);
     }
 
 
