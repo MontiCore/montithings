@@ -10,6 +10,7 @@ import de.montiarcautomaton.generator.helper.ComponentHelper;
 import de.monticore.cd2pojo.Modelfinder;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.Names;
+import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._symboltable.ComponentSymbol;
@@ -72,13 +73,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 				if (resourcePortSymbol.isIpc()) {
 					File path = Paths.get(target.getAbsolutePath(),
 									Names.getPathFromPackage(comp.getPackageName()),
-									Character.toLowerCase(comp.getName().charAt(0))
-													+ comp.getName().substring(1) + "-"
-													+ resourcePortSymbol.getName())
+														comp.getName() + "-"
+														+ StringTransformations.capitalize(resourcePortSymbol.getName()))
 									.toFile();
 					path.mkdir();
 					File libraryPath = Paths.get("target/montithings-RTE").toFile();
-					MAAGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath);
+					MAAGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath, hwcPath);
 				}
 			}
 		}
