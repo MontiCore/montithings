@@ -14,6 +14,23 @@ grammar MontiThings extends MontiArc {
       Stereotype?
       "resource port" resourcePort:(ResourcePort || ",")+ ";";
 
+     /**
+      * An incoming resource port is used to receive messages from external sources, an
+      * outgoing resource port is used to send messages to external resources.
+      *
+      * @attribute stereotype an optional stereotype
+      * @attribute incoming true, if this is an incoming port
+      * @attribute outgoing true, if this is an outgoing port
+      * @attribute type the message type of this port
+      * @attribute name an optional name of this port
+      * @attribute resourceoption optional configuration for the
+      *    resource port
+      */
+    symbol ResourcePort =
+      Stereotype?
+      (incoming:["in"] | outgoing:["out"])
+      Type Name "(" (ResourceOption ",")? uri:String ")";
+
 
     /**
     * A Control Block consists of statements controlling the execution
@@ -62,22 +79,6 @@ grammar MontiThings extends MontiArc {
     symbol SyncStatement implements ControlStatement =
         "sync port group" Name& "(" syncedPort:(Name || ",")* ")" ";";
 
-     /**
-      * An incoming resource port is used to receive messages from external sources, an
-      * outgoing resource port is used to send messages to external resources.
-      *
-      * @attribute stereotype an optional stereotype
-      * @attribute incoming true, if this is an incoming port
-      * @attribute outgoing true, if this is an outgoing port
-      * @attribute type the message type of this port
-      * @attribute name an optional name of this port
-      * @attribute resourceoption optional configuration for the
-      *    resource port
-      */
-    symbol ResourcePort =
-      Stereotype?
-      (incoming:["in"] | outgoing:["out"])
-      Type Name "(" (ResourceOption ",")? uri:String ")";
 
     /**
     * Optional settings for resource ports
