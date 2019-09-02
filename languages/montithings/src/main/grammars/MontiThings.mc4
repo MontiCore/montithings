@@ -96,6 +96,16 @@ grammar MontiThings extends MontiArc {
     CPPImportStatementSYSTEM implements ImportStatement =
       "#include" "<" cppSystemImport:(Name& || ".")+ ">";
 
+    /**
+    *  RequirementStatements contain information about what physical requirements
+    *  a component has. E.g Sensors/Actuators etc.
+    */
+    RequirementStatement implements Element =
+      "requires" (propertiess:Property | "{" properties:Property+ "}");
+
+    Property =
+      Name& ":" (stringValue:StringLiteral | booleanValue:BooleanLiteral
+          | doubleValue:DoubleLiteral | integerValue:IntLiteral | longValue:LongLiteral) ";";
 
 
 }
