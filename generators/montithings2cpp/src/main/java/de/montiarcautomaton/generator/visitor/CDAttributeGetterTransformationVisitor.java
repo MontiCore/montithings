@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.montiarcautomaton.generator.helper.ComponentHelper;
+import de.se_rwth.commons.logging.Log;
+import de.monticore.expressionsbasis._ast.ASTExpression;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.mcexpressions._ast.ASTArguments;
@@ -18,6 +20,8 @@ import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.mcexpressions._ast.ASTQualifiedNameExpression;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.setexpressions._ast.ASTIsInExpression;
+import de.monticore.setexpressions._ast.ASTSetInExpression;
 import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.ScopeSpanningSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
@@ -176,4 +180,5 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 						.map(p -> ".size() > 0")
 						.orElse("");
 	}
+
 }

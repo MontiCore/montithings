@@ -1,7 +1,12 @@
 #pragma once
 #include "Port.h"
 #include "nngpp/nngpp.h"
+#include "nngpp/protocol/pull0.h"
 #include "nngpp/protocol/sub0.h"
+#include "nngpp/protocol/bus0.h"
+#include <nng/nng.h>
+#include <nng/protocol/pubsub0/pub.h>
+#include <nng/protocol/pubsub0/sub.h>
 #include <iostream>
 #include "cereal/archives/json.hpp"
 #include "cereal/types/vector.hpp"
@@ -26,8 +31,8 @@ public:
 	    this->uri = uri;
         //Open Socket in Request mode
         socket = nng::sub::open();
+        nng_setopt(socket.get(), NNG_OPT_SUB_SUBSCRIBE, "", 0);
         //Dial specifies, that it connects to an already established socket (the server)
-
         try
         {
             socket.listen(uri , nng::flag::alloc);
@@ -59,7 +64,7 @@ private:
     nng::socket socket;
     const char* uri;
     std::future<bool> fut;
-    boost::lockfree::spsc_queue<T, boost::lockfree::capacity<5>> queue;
+    boost::lockfree::spsc_queue<T, boost::lockfree::capacity<1024>> queue;
 
     /**
      * Initialize the IPC Port
@@ -75,11 +80,13 @@ private:
             auto data = msg.body().data<char>();
             std::string receivedAnswer(msg.body().data<char>());
             std::stringstream inStream(receivedAnswer);
+            {
             cereal::JSONInputArchive inputArchive(inStream);
             T result;
             inputArchive(result);
-
-            queue.push(result);
+            std::cout << "Raw Data: " << result << "\n";
+            pushToAll(result);
+            }
             std::this_thread::yield();
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
