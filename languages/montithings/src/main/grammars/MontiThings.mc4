@@ -30,7 +30,7 @@ grammar MontiThings extends MontiArc {
     symbol ResourcePort =
       Stereotype?
       (incoming:["in"] | outgoing:["out"])
-      Type Name ("(" ((ResourceOption "," uri:String?) | ResourceOption | uri:String? ) ")")?
+      Type Name ("(" ((ResourceOption "," uri:String) | ResourceOption | uri:String) ")")?
       ("requires" requiresType:Name ":" requiresName:StringLiteral)?  ;
 
 
