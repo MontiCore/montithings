@@ -6,6 +6,7 @@ grammar MontiThings extends MontiArc {
     * Defines an interface of a component containing
     * incoming and outgoing ports to external resources.
     *
+    *
     * @attribute stereotype an optional stereotype
     * @attribute resourcePorts a list of ports that are contained in
     *   this interface
@@ -29,7 +30,8 @@ grammar MontiThings extends MontiArc {
     symbol ResourcePort =
       Stereotype?
       (incoming:["in"] | outgoing:["out"])
-      Type Name "(" (ResourceOption ",")? uri:String ")";
+      Type Name ("(" ((ResourceOption "," uri:String?) | ResourceOption | uri:String? ) ")")?
+      ("requires" requiresType:Name ":" requiresName:StringLiteral)?  ;
 
 
     /**

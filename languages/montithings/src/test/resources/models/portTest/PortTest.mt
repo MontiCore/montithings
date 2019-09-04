@@ -7,7 +7,7 @@ package portTest;
  #include "test.h"
 
 <<deploy>> component PortTest{
-    resource port in  String resIn("ipc://test1.ipc");
+    resource port in  String resIn;
     resource port out String resOu("ipc://test2.ipc");
 
 	component InComp ic;
