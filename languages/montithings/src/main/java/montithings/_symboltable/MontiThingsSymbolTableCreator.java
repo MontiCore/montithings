@@ -7,8 +7,8 @@ import de.monticore.java.symboltable.JavaTypeSymbolReference;
 import de.monticore.symboltable.MutableScope;
 import de.monticore.symboltable.ResolvingConfiguration;
 import de.monticore.symboltable.Scope;
-import de.monticore.symboltable.types.references.JTypeReference;
 import de.monticore.symboltable.types.JTypeSymbol;
+import de.monticore.symboltable.types.references.JTypeReference;
 import de.monticore.types.JTypeSymbolsHelper;
 import de.monticore.types.TypesHelper;
 import de.monticore.types.TypesPrinter;
@@ -22,13 +22,13 @@ import montithings._visitor.MontiThingsVisitor;
 import java.util.Deque;
 
 public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
-         implements MontiThingsVisitor {
+        implements MontiThingsVisitor {
 
   private final static JTypeSymbolsHelper.JTypeReferenceFactory<JavaTypeSymbolReference> javaTypeRefFactory =
           JavaTypeSymbolReference::new;
 
   public MontiThingsSymbolTableCreator(
-    final ResolvingConfiguration resolvingConfig, final MutableScope enclosingScope) {
+          final ResolvingConfiguration resolvingConfig, final MutableScope enclosingScope) {
     super(resolvingConfig, enclosingScope);
   }
 
@@ -37,12 +37,12 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   }
 
   /**
-  * Creates the symbol table starting from the <code>rootNode</code> and
-  * returns the first scope that was created.
-  *
-  * @param rootNode the root node
-  * @return the first scope that was created
-  */
+   * Creates the symbol table starting from the <code>rootNode</code> and
+   * returns the first scope that was created.
+   *
+   * @param rootNode the root node
+   * @return the first scope that was created
+   */
   public Scope createFromAST(montithings._ast.ASTMontiThingsNode rootNode) {
     Log.errorIfNull(rootNode, "0xA7004x317 Error by creating of the MontiThingsSymbolTableCreator symbol table: top ast node is null");
     rootNode.accept(realThis);
@@ -63,7 +63,6 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   }
 
 
-
   @Override
   public void visit(montithings._ast.ASTResourcePort node) {
     ASTType astType = node.getType();
@@ -78,16 +77,13 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     sym.setDirection(node.isIncoming());
     String uri = node.getUri();
     sym.setUri(uri);
-    if (uri.startsWith("tcp://")){
+    if (uri.startsWith("tcp://")) {
       sym.setProtocol("tcp");
-    }
-    else if (uri.startsWith("ipc://")){
+    } else if (uri.startsWith("ipc://")) {
       sym.setProtocol("ipc");
-    }
-    else if (uri.startsWith("ws://")){
+    } else if (uri.startsWith("ws://")) {
       sym.setProtocol("ws");
-    }
-    else {
+    } else {
       sym.setProtocol("filesystem");
     }
 
@@ -108,7 +104,8 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   }
 
   @Override
-  public void visit(montithings._ast.ASTResourceInterface node) {}
+  public void visit(montithings._ast.ASTResourceInterface node) {
+  }
 
   @Override
   public void visit(montithings._ast.ASTSyncStatement ast) {
@@ -126,17 +123,17 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   }
 
   @Override
-  public void visit(ASTControlBlock node){
+  public void visit(ASTControlBlock node) {
     node.setEnclosingScope(currentScope().get());
   }
 
   @Override
-  public void endVisit(ASTControlBlock node){
-      setEnclosingScopeOfNodes(node);
-    }
-
-
+  public void endVisit(ASTControlBlock node) {
+    setEnclosingScopeOfNodes(node);
   }
+
+
+}
 
 
 

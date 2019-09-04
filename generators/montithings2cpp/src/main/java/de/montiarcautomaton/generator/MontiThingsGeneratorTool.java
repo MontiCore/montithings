@@ -19,10 +19,8 @@ import montithings.MontiThingsTool;
 import montithings._ast.ASTExecutionStatement;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -33,7 +31,7 @@ import java.util.List;
  */
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
-	public static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
+	private static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
 
 	public void generate(File modelPath, File target, File hwcPath) {
 
@@ -54,11 +52,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 				ComponentHelper.getGuardExpressionElements(statement);
 				ComponentHelper.getPortsInGuardExpression(statement);
 			}
-			List<PortSymbol> portNamesInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
-			List<PortSymbol> ports = ComponentHelper.getPortsNotInBatchStatements(comp);
-			List<PortSymbol> portsNotInSyncGroup = ComponentHelper.getPortsNotInSyncGroup(comp);
-
-
 			// 4. check cocos
 			Log.info("Check model: " + qualifiedModelName, "MontiThingsGeneratorTool");
 			checkCoCos((ASTMontiArcNode) comp.getAstNode().get());
