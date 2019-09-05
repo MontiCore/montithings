@@ -66,15 +66,6 @@ grammar MontiThings extends MontiArc {
     BatchStatement implements ControlStatement =
         "batch" batchPorts:(Name& || ",")+ ";";
 
-    /**
-    * ExecutionStatements specify which function in the
-    * handwritten implementation should be executed depending
-    * on the presence on messages on incoming ports and
-    * values of current messages.
-    **/
-   ExecutionStatement implements ControlStatement =
-        "if" (guard:Expression) ":" method:Name&"()" ";";
-
     /** SyncStatements allow the specification of groups of ports
     * that should only be handled together
     **/
@@ -109,5 +100,28 @@ grammar MontiThings extends MontiArc {
       Name& ":" (stringValue:StringLiteral | booleanValue:BooleanLiteral
           | doubleValue:DoubleLiteral | integerValue:IntLiteral | longValue:LongLiteral) ";";
 
+
+    /**
+    * Executionblocks contain If and Else Statements that
+    * control the behavior combined with handwritten code
+    * functions.
+    */
+    ExecutionBlock implements BehaviorElement =
+      "behavior" "{" ExecutionStatement* "}";
+
+    interface ExecutionStatement;
+
+    /**
+        * IfStatements specify which function in the
+        * handwritten implementation should be executed depending
+        * on the presence on messages on incoming ports and
+        * values of current messages.
+        **/
+    ExecutionIfStatement implements ExecutionStatement =
+        "if" (guard:Expression) ":" method:Name&"()"
+        ("|" ("prio" | "priority") "=" priority:IntLiteral)? ";";
+
+    ExecutionElseStatement implements ExecutionStatement =
+        "else" method:Name&"()" ";";
 
 }

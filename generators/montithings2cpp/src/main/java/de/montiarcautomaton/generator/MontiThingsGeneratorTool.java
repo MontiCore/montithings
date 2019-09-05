@@ -16,6 +16,7 @@ import montiarc._ast.ASTMontiArcNode;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.PortSymbol;
 import montithings.MontiThingsTool;
+import montithings._ast.ASTExecutionIfStatement;
 import montithings._ast.ASTExecutionStatement;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
@@ -48,10 +49,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 			// 3. parse + resolve model
 			Log.info("Parsing model:" + qualifiedModelName, "MontiThingsGeneratorTool");
 			ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName, ComponentSymbol.KIND).get();
-			for (ASTExecutionStatement statement : ComponentHelper.getExecutionStatements(comp)) {
-				ComponentHelper.getGuardExpressionElements(statement);
-				ComponentHelper.getPortsInGuardExpression(statement);
-			}
+			List<ASTExecutionIfStatement> executionStatements = ComponentHelper.getExecutionStatements(comp);
+
 			// 4. check cocos
 			Log.info("Check model: " + qualifiedModelName, "MontiThingsGeneratorTool");
 			checkCoCos((ASTMontiArcNode) comp.getAstNode().get());

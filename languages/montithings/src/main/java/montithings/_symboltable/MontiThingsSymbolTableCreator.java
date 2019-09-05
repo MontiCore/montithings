@@ -17,6 +17,7 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTStereoValue;
 import montiarc._symboltable.MontiArcSymbolTableCreator;
 import montithings._ast.ASTControlBlock;
+import montithings._ast.ASTExecutionBlock;
 import montithings._visitor.MontiThingsVisitor;
 
 import java.util.Deque;
@@ -122,13 +123,18 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
 
   }
 
+  /**
+   * The next two methods are necessary so that Guard Expression get an Enclosing Scope
+   * in their AST, which is used during generation.
+   * @param node
+   */
   @Override
-  public void visit(ASTControlBlock node) {
+  public void visit(ASTExecutionBlock node) {
     node.setEnclosingScope(currentScope().get());
   }
 
   @Override
-  public void endVisit(ASTControlBlock node) {
+  public void endVisit(ASTExecutionBlock node) {
     setEnclosingScopeOfNodes(node);
   }
 

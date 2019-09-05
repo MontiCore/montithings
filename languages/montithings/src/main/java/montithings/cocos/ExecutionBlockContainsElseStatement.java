@@ -8,7 +8,7 @@ package montithings.cocos;
 /**
  * TODO
  *
- * @author (last commit) JFuerste
+ * @author (last commit)
  */
-public class MaxOneBatchStatement {
+public class ExecutionBlockContainsElseStatement {
 }

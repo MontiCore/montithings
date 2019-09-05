@@ -148,8 +148,7 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 
 
 		if (port.isPresent()) {
-			printer.print("input.get" + capitalize(node.getName())
-							+ "() && input.get" + capitalize(node.getName()) + "().value()");
+			printer.print("input.get" + capitalize(node.getName()) + "().value()");
 		} else if (sync.isPresent()) {
 			String synced = "(";
 			String s1 = sync.get().

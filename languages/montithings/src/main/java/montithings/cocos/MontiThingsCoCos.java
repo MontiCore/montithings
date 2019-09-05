@@ -19,6 +19,7 @@ public class MontiThingsCoCos {
     final MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker();
     return checker
             .addCoCo(new PortUsage())
+            //TODO: Write proper type checking system
             //.addCoCo(new UsedTypesExist())
             .addCoCo(new SubComponentsConnected())
             .addCoCo(new SubcomponentParametersCorrectlyAssigned())

@@ -194,7 +194,7 @@ class ComponentGenerator {
 				result = «Identifier.behaviorImplName».compute(input);
 				«ELSE»
 				
-				«FOR statement : ComponentHelper.getExecutionStatements(comp)»
+				«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
 				if («FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
 					«IF !ComponentHelper.isBatchPort(port, comp)»
 					input.get«port.name.toFirstUpper»()
@@ -204,6 +204,12 @@ class ComponentGenerator {
 					result = «Identifier.behaviorImplName».«statement.method»(input);	
 				}
 				«ENDFOR»
+				«IF ComponentHelper.getElseStatement(comp) != null»
+				else {
+					result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).method»(input);
+					}
+
+				«ENDIF»
 				«ENDIF»
 				setResult(result);				
 			}

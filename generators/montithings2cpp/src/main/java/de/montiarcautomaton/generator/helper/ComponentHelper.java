@@ -720,15 +720,19 @@ public class ComponentHelper {
    * @param comp
    * @return
    */
-  public static List<ASTExecutionStatement> getExecutionStatements(ComponentSymbol comp) {
+  public static List<ASTExecutionIfStatement> getExecutionStatements(ComponentSymbol comp) {
     return ((ASTComponent) comp.getAstNode().get())
             .getBody()
             .getElementList()
             .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTExecutionStatement)
-            .map(e -> ((ASTExecutionStatement) e))
+            .filter(e -> e instanceof ASTExecutionBlock)
+            .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
+            .filter(e -> e instanceof ASTExecutionIfStatement)
+            .map(e -> ((ASTExecutionIfStatement) e))
+            .sorted(Comparator.comparing(e -> e.getPriorityOpt().orElse(MontiThingsMill.intLiteralBuilder()
+                    .setSource("1")
+                    .build())
+            .getValue()))
             .collect(Collectors.toList());
   }
 
@@ -779,7 +783,7 @@ public class ComponentHelper {
    * @param node
    * @return
    */
-  public static List<ASTNameExpression> getGuardExpressionElements(ASTExecutionStatement node) {
+  public static List<ASTNameExpression> getGuardExpressionElements(ASTExecutionIfStatement node) {
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
     node.accept(visitor);
     return visitor.getExpressions();
@@ -791,7 +795,7 @@ public class ComponentHelper {
    * @param node
    * @return
    */
-  public static List<PortSymbol> getPortsInGuardExpression(ASTExecutionStatement node) {
+  public static List<PortSymbol> getPortsInGuardExpression(ASTExecutionIfStatement node) {
     List<PortSymbol> ports = new ArrayList<>();
 
     for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {
@@ -845,6 +849,24 @@ public class ComponentHelper {
     return Paths.get(hwcPath.toString() + File.separator
             + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
             + "-" + StringTransformations.capitalize(port.getName())).toFile();
+  }
+
+  /**
+   * Get Else Statement if one exists
+   * @param comp
+   * @return
+   */
+  public static ASTExecutionElseStatement getElseStatement(ComponentSymbol comp) {
+    return ((ASTComponent) comp.getAstNode().get())
+            .getBody()
+            .getElementList()
+            .stream()
+            .filter(e -> e instanceof ASTExecutionBlock)
+            .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
+            .filter(e -> e instanceof ASTExecutionElseStatement)
+            .map(e -> (ASTExecutionElseStatement) e)
+            .findFirst()
+            .orElse(null);
   }
 
 }
