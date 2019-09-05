@@ -15,7 +15,7 @@ import de.monticore.symboltable.GlobalScope;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMACompilationUnit;
+import montithings._ast.ASTMTCompilationUnit;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._symboltable.ComponentSymbol;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -71,9 +71,9 @@ public class MontiThingsTool {
     this(fam, MontiThingsCoCos.createChecker());
   }
 
-  public Optional<ASTMACompilationUnit> parse(String filename) {
+  public Optional<ASTMTCompilationUnit> parse(String filename) {
     MontiThingsParser p = new MontiThingsParser();
-    Optional<ASTMACompilationUnit> compUnit;
+    Optional<ASTMTCompilationUnit> compUnit;
     try {
       compUnit = p.parse(filename);
       return compUnit;

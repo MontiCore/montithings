@@ -581,7 +581,7 @@ public class ComponentHelper {
   public static List<String> getCPPImports(ComponentSymbol comp) {
     List<String> importStrings = new ArrayList<>();
     try {
-      ASTMACompilationUnit node = (ASTMACompilationUnit) comp.getEnclosingScope().getAstNode().get();
+      ASTMTCompilationUnit node = (ASTMTCompilationUnit) comp.getEnclosingScope().getAstNode().get();
       List<ASTImportStatement> imports = node.getImportStatementList();
       for (ASTImportStatement importStatement : imports) {
         if (importStatement instanceof ASTCPPImportStatementSYSTEM) {

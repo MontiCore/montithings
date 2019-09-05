@@ -15,7 +15,7 @@
   <packaging>pom</packaging>
   
   <modules>
-    <module>bumperbot</module>
+    <!-- <module>bumperbot</module> -->
   </modules>
 
 </project>

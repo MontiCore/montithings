@@ -129,7 +129,7 @@ public abstract class AbstractCoCoTest {
     Symbol comp = loadComponentSymbol(qualifiedModelName);
     assertNotNull("Could not resolve model " + qualifiedModelName, comp);
     ASTMontiArcNode node = (ASTMontiArcNode) comp.getEnclosingScope().getAstNode().orElse(null);
-    assertNotNull("Could not find ASTMACompilationUnit for model " + qualifiedModelName, node);
+    assertNotNull("Could not find ASTMTCompilationUnit for model " + qualifiedModelName, node);
     return node;
   }
 

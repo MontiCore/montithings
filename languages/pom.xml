@@ -5,17 +5,16 @@
 	<!-- == PROJECT COORDINATES ============================================= -->
 
 	<parent>
-		<groupId>montiarc</groupId>
-		<artifactId>montiarc-core</artifactId>
-	<version>5.0.2-SNAPSHOT</version>
+		<groupId>montithings</groupId>
+		<artifactId>montithings-core</artifactId>
+		<version>5.0.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>montiarc.languages</groupId>
+	<groupId>montithings.languages</groupId>
 	<artifactId>languages</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>montiarc-fe</module>
 		<module>Tagging</module>
 		<module>montithings</module>
 	</modules>

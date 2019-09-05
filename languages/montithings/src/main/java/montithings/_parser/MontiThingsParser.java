@@ -7,7 +7,7 @@ package montithings._parser;
 import com.google.common.io.Files;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMACompilationUnit;
+import montithings._ast.ASTMTCompilationUnit;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -25,9 +25,9 @@ public class MontiThingsParser extends MontiThingsParserTOP {
    */
   @SuppressWarnings("DuplicatedCode")
   @Override
-  public Optional<ASTMACompilationUnit> parseMACompilationUnit(String filename)
+  public Optional<ASTMTCompilationUnit> parseMTCompilationUnit(String filename)
           throws IOException {
-    Optional<ASTMACompilationUnit> ast = super.parseMACompilationUnit(filename);
+    Optional<ASTMTCompilationUnit> ast = super.parseMTCompilationUnit(filename);
     if (ast.isPresent()) {
       String simpleFileName = Files.getNameWithoutExtension(filename);
       String modelName = ast.get().getComponent().getName();

@@ -13,7 +13,6 @@ import montiarc._ast.ASTComponent
 import montiarc._ast.ASTVariableDeclaration
 import montiarc._symboltable.ComponentSymbol
 import de.monticore.ast.ASTNode
-import montiarc._ast.ASTMACompilationUnit
 import montithings._symboltable.ResourcePortSymbol
 
 class Utils {

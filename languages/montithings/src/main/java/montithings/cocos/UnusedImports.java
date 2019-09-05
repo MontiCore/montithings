@@ -7,17 +7,17 @@ import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.types.types._ast.ASTSimpleReferenceType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTImportStatementLOCAL;
-import montiarc._ast.ASTMACompilationUnit;
-import montiarc._cocos.MontiArcASTMACompilationUnitCoCo;
+import montithings._ast.ASTMTCompilationUnit;
+import montithings._cocos.MontiThingsASTMTCompilationUnitCoCo;
 import montithings._visitor.MontiThingsVisitor;
 
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-class UnusedImports implements MontiArcASTMACompilationUnitCoCo {
+class UnusedImports implements MontiThingsASTMTCompilationUnitCoCo {
 
 @Override
-public void check(ASTMACompilationUnit node) {
+public void check(ASTMTCompilationUnit node) {
   
   HashMap<ASTImportStatementLOCAL, Boolean> imports = new HashMap<>();
   for (ASTImportStatementLOCAL impot : node.getImportStatementLOCALList()) {

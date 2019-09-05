@@ -5,18 +5,16 @@
   <!-- == PROJECT COORDINATES ============================================= -->
 
   <parent>
-    <groupId>montiarc</groupId>
-    <artifactId>montiarc-core</artifactId>
+    <groupId>montithings</groupId>
+    <artifactId>montithings-core</artifactId>
 	<version>5.0.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>montiarc.generators</groupId>
+  <groupId>montithings.generators</groupId>
   <artifactId>generators</artifactId>
   <packaging>pom</packaging>
 
   <modules>
-	<module>cd2pojo</module>
-	<module>maa2java-xtend</module>
     <module>montithings2cpp</module>
   </modules>
 

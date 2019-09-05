@@ -4,8 +4,8 @@
 
 	<!-- == PROJECT COORDINATES ============================================= -->
 
-	<groupId>montiarc</groupId>
-	<artifactId>montiarc-core</artifactId>
+	<groupId>montithings</groupId>
+	<artifactId>montithings-core</artifactId>
 	<version>5.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -73,66 +73,16 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
-	<!-- == PROJECT METAINFORMATION ========================================= -->
-
-	<name>MontiArc</name>
-	<description>Framework for Modeling and Simulation of Software Architectures</description>
-	<url>http://nexus.se.rwth-aachen.de/service/local/repositories/se-sites/content/monticore/${project.version}/</url>
-	<inceptionYear>2009</inceptionYear>
-
-	<organization>
-		<name>Department of Software Engineering, RWTH Aachen University</name>
-		<url>http://www.se-rwth.de/</url>
-	</organization>
-
-	<developers>
-		<developer>
-			<name>Robert Heim</name>
-			<email>heim@se-rwth.de</email>
-			<id>Department of Software Engineering, RWTH Aachen University</id>
-			<url>http://www.se-rwth.de/</url>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</developer>
-		<developer>
-			<name>Michael von Wenckstern</name>
-			<email>vonwenckstern@se-rwth.de</email>
-			<id>Department of Software Engineering, RWTH Aachen University</id>
-			<url>http://www.se-rwth.de/</url>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</developer>
-		<developer>
-			<name>Arne Haber</name>
-			<email>haber@se-rwth.de</email>
-			<id>Department of Software Engineering, RWTH Aachen University</id>
-			<url>http://www.se-rwth.de/</url>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</developer>
-	</developers>
-
-	<mailingLists>
-		<mailingList>
-			<name>Developer</name>
-			<post>MontiArc4@lab2.sselab.de</post>
-		</mailingList>
-	</mailingLists>
-
-	<issueManagement>
-		<system>GitLab</system>
-		<url>https://git.rwth-aachen.de/montiarc/core/issues</url>
-	</issueManagement>
-
+	
 	<!-- == DEPENDENCIES ==================================================== -->
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+				<groupId>montiarc</groupId>
+				<artifactId>montiarc-core</artifactId>
+				<version>5.0.2-SNAPSHOT</version>
+			</dependency>
 
 			<dependency>
 				<groupId>de.se_rwth.commons</groupId>

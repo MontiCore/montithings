@@ -22,7 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMACompilationUnit;
+import montithings._ast.ASTMTCompilationUnit;
 
 
 /**
@@ -112,7 +112,7 @@ public class ParserTest {
 
         Log.debug("Parsing file " + file.toString(), "ParserTest");
         testCount++;
-        Optional<ASTMACompilationUnit> maModel = Optional.empty();
+        Optional<ASTMTCompilationUnit> maModel = Optional.empty();
         boolean expectingError = ParserTest.expectedParseErrorModels.contains(file.toString());
 
         MontiThingsParser parser = new MontiThingsParser();
