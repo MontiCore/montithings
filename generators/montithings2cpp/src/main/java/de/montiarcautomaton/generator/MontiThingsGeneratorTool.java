@@ -49,7 +49,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 			// 3. parse + resolve model
 			Log.info("Parsing model:" + qualifiedModelName, "MontiThingsGeneratorTool");
 			ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName, ComponentSymbol.KIND).get();
-			List<ASTExecutionIfStatement> executionStatements = ComponentHelper.getExecutionStatements(comp);
 
 			// 4. check cocos
 			Log.info("Check model: " + qualifiedModelName, "MontiThingsGeneratorTool");
