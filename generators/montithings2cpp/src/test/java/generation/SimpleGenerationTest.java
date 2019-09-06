@@ -1,6 +1,6 @@
 package generation;
 
-import de.montiarcautomaton.generator.MontiThingsGeneratorTool;
+import montithings.generator.MontiThingsGeneratorTool;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
