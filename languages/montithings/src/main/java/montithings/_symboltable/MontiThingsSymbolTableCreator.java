@@ -4,23 +4,27 @@ package montithings._symboltable;
 
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.java.symboltable.JavaTypeSymbolReference;
-import de.monticore.symboltable.MutableScope;
-import de.monticore.symboltable.ResolvingConfiguration;
-import de.monticore.symboltable.Scope;
+import de.monticore.symboltable.*;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.references.JTypeReference;
 import de.monticore.types.JTypeSymbolsHelper;
 import de.monticore.types.TypesHelper;
 import de.monticore.types.TypesPrinter;
 import de.monticore.types.types._ast.ASTType;
+import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
+import montiarc._ast.ASTImportStatementLOCAL;
+import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTStereoValue;
+import montiarc._symboltable.MontiArcArtifactScope;
 import montiarc._symboltable.MontiArcSymbolTableCreator;
+import montiarc.helper.JavaDefaultTypesManager;
 import montithings._ast.ASTControlBlock;
 import montithings._ast.ASTExecutionBlock;
+import montithings._ast.ASTMTCompilationUnit;
 import montithings._visitor.MontiThingsVisitor;
 
-import java.util.Deque;
+import java.util.*;
 
 public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
         implements MontiThingsVisitor {
@@ -57,12 +61,41 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   }
 
   @Override
+  public void visit(ASTMTCompilationUnit compilationUnit) {
+    Log.debug("Building Symboltable for Component: " + compilationUnit.getComponent().getName(),
+            MontiThingsSymbolTableCreator.class.getSimpleName());
+    this.compilationUnitPackage = Names.getQualifiedName(compilationUnit.getPackageList());
+    List<ImportStatement> imports = new ArrayList();
+    Iterator var3 = compilationUnit.getImportStatementLOCALList().iterator();
+
+    while(var3.hasNext()) {
+      ASTImportStatementLOCAL astImportStatement = (ASTImportStatementLOCAL)var3.next();
+      String qualifiedImport = Names.getQualifiedName(astImportStatement.getImportList());
+      ImportStatement importStatement = new ImportStatement(qualifiedImport, astImportStatement.isStar());
+      imports.add(importStatement);
+    }
+
+    JavaDefaultTypesManager.addJavaDefaultImports(imports);
+    this.autoinstantiate.push(true);
+    ArtifactScope artifactScope = new MontiArcArtifactScope(Optional.empty(), this.compilationUnitPackage, imports);
+    this.currentImports = imports;
+    artifactScope.setAstNode(compilationUnit);
+    compilationUnit.setSpannedScope(artifactScope);
+    this.putOnStack(artifactScope);
+  }
+
+  @Override
+  public void endVisit(ASTMACompilationUnit node) {
+    this.removeCurrentScope();
+  }
+
+
+  @Override
   public void setRealThis(MontiThingsVisitor realThis) {
     if (this.realThis != realThis) {
       this.realThis = realThis;
     }
   }
-
 
   @Override
   public void visit(montithings._ast.ASTResourcePort node) {
