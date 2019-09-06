@@ -30,14 +30,8 @@ Validate:
     - mvn $MAVEN_CLI_OPTS compile package -Dmaven.test.skip=true
   artifacts:
     paths:
-      - applications/bumperbot/target/
-      - generators/cd2pojo/target/
-      - generators/maa2java-xtend/target/
-      - languages/montiarc-fe/target/
-      - libraries/lejos-rte/target/
-      - libraries/maJavaLib/target/
-      - libraries/maa-rte/target/
-      - libraries/simulator-rte/target/
+      - generators/montithings2cpp/target/
+      - languages/montithings/target/
     expire_in: 1 week
 
 # Run Unit Tests after build
@@ -46,15 +40,14 @@ Validate:
   coverage: '/\d+.\d+ \% covered/'
   script:
     - mvn $MAVEN_CLI_OPTS test package
-    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montiarc-fe/target/site/jacoco/jacoco.csv
+    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
   dependencies: 
     - Validate #download artifacts from build
   artifacts:
     reports:
       junit:
-      - ./generators/maa2java-xtend/target/surefire-reports/TEST-*.xml
-      - ./libraries/simulator-rte/target/surefire-reports/TEST-*.xml
-      - ./languages/montiarc-fe/target/surefire-reports/TEST-*.xml
+      - ./generators/montithings2cpp/target/surefire-reports/TEST-*.xml
+      - ./languages/montithings/target/surefire-reports/TEST-*.xml
 
 Unit Test JDK 8:
   image: maven:3-jdk-8
