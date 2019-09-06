@@ -1,4 +1,4 @@
-# MontiArc Core Project
+# MontiThings Core Project
 
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
