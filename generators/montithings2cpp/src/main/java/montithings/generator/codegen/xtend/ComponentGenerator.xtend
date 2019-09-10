@@ -167,12 +167,12 @@ class ComponentGenerator {
 			«ENDIF»
 			«IF ComponentHelper.hasSyncGroups(comp)»
 			if ( 
-			«FOR syncGroup : ComponentHelper.getSyncGroups(comp)  SEPARATOR ' || '»
-			(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue(uuid) «ENDFOR»)
-			«ENDFOR»
-			«IF ComponentHelper.getPortsNotInSyncGroup(comp).length() > 0»
-			|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»
-			«ENDIF»
+				«FOR syncGroup : ComponentHelper.getSyncGroups(comp)  SEPARATOR ' || '»
+				(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue(uuid) «ENDFOR»)
+				«ENDFOR»
+				«IF ComponentHelper.getPortsNotInSyncGroup(comp).length() > 0»
+				|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»
+				<«ENDIF»
 			)
 			«ENDIF»
 			{
@@ -195,16 +195,19 @@ class ComponentGenerator {
 				«ELSE»
 				
 				«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
-				if («FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+				if (
+					«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
 					«IF !ComponentHelper.isBatchPort(port, comp)»
 					input.get«port.name.toFirstUpper»()
 					«ENDIF»
 					«ENDFOR»
-					«IF ComponentHelper.getPortsInGuardExpression(statement).length() > 0»&&«ENDIF» «printExpression(statement.guard)»){
+					«IF ComponentHelper.getPortsInGuardExpression(statement).length() > 0»&&«ENDIF» «printExpression(statement.guard)»
+					)
+				{
 					result = «Identifier.behaviorImplName».«statement.method»(input);	
 				}
 				«ENDFOR»
-				«IF ComponentHelper.getElseStatement(comp) != null»
+				«IF ComponentHelper.getElseStatement(comp) !== null»
 				else {
 					result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).method»(input);
 					}

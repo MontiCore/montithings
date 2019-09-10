@@ -3,7 +3,6 @@ package montithings.generator.codegen.xtend
 import montithings.generator.codegen.xtend.behavior.AbstractAtomicImplementation
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Identifier
-import montithings.generator.codegen.xtend.util.libs.CPPLibraries
 import montithings.generator.helper.ComponentHelper
 import de.monticore.ast.ASTCNode
 import de.monticore.io.FileReaderWriter
@@ -16,7 +15,6 @@ import montiarc._ast.ASTBehaviorElement
 import montiarc._ast.ASTComponent
 import montiarc._ast.ASTJavaPBehavior
 import montiarc._symboltable.ComponentSymbol
-import montithings.generator.codegen.xtend.behavior.AutomatonGenerator
 import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 

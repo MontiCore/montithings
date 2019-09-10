@@ -5,7 +5,6 @@ import montiarc._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
-import montithings._ast.ASTResourcePort
 
 class Ports {
 	
@@ -24,22 +23,22 @@ class Ports {
 	
 	def static printResourcePortVars(Collection<ResourcePortSymbol> ports) {
 	return	'''
-    «FOR port : ports»
-    «var type = ComponentHelper.getResourcePortType(port)»
-    «var name = port.name»
-    «IF (port.ipc && !port.outgoing)»
-   Port<«type»>* «name» = new IncomingIPCPort<«type»>("«port.uri»");
-    «ENDIF»
-    «IF (port.ipc && port.outgoing)»
-   OutgoingIPCPort<«type»>* «name» = new OutgoingIPCPort<«type»>("«port.uri»");
-    «ENDIF»
-    «IF (port.webSocket && !port.outgoing)»
-   Port<«type»>* «name» = new IncomingWSPort<«type»>("«port.uri»");
-    «ENDIF»
-    «IF (port.webSocket && port.outgoing)»
-   OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»");
-    «ENDIF»
-    «ENDFOR»
+«FOR port : ports»
+«var type = ComponentHelper.getResourcePortType(port)»
+«var name = port.name»
+«IF (port.ipc && !port.outgoing)»
+Port<«type»>* «name» = new IncomingIPCPort<«type»>("«port.uri»");
+«ENDIF»
+«IF (port.ipc && port.outgoing)»
+OutgoingIPCPort<«type»>* «name» = new OutgoingIPCPort<«type»>("«port.uri»");
+«ENDIF»
+«IF (port.webSocket && !port.outgoing)»
+Port<«type»>* «name» = new IncomingWSPort<«type»>("«port.uri»");
+«ENDIF»
+«IF (port.webSocket && port.outgoing)»
+OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»");
+«ENDIF»
+«ENDFOR»
     '''
 		
 	}
