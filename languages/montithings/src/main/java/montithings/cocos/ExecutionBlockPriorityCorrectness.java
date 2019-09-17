@@ -23,6 +23,7 @@ public class ExecutionBlockPriorityCorrectness implements MontiThingsASTExecutio
   public void check(ASTExecutionBlock node) {
     boolean noDuplicates = node.getExecutionStatementList()
             .stream()
+            .filter(e -> e instanceof ASTExecutionIfStatement)
             .filter(e -> ((ASTExecutionIfStatement) e).getPriorityOpt().isPresent())
             .map(e -> ((ASTExecutionIfStatement) e).getPriority().getValue())
             .allMatch(new HashSet<>()::add);
