@@ -13,6 +13,7 @@ import montiarc._ast.ASTMontiArcNode;
 import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
+import montithings._cocos.MontiThingsCoCoChecker;
 import org.junit.Before;
 
 import java.nio.file.Paths;
@@ -171,14 +172,14 @@ public abstract class AbstractCoCoTest {
    * @param node The node of the component to check
    * @param expectedErrors The information about expected errors
    */
-  protected static void checkInvalid(MontiArcCoCoChecker cocos, ASTMontiArcNode node,
-      ExpectedErrorInfo expectedErrors) {
+  protected static void checkInvalid(MontiThingsCoCoChecker cocos, ASTMontiArcNode node,
+                                     ExpectedErrorInfo expectedErrors) {
     
     // check whether all the expected errors are present when using all cocos
     Log.getFindings().clear();
     MONTI_THINGS_TOOL.checkCoCos(node);
     expectedErrors.checkExpectedPresent(Log.getFindings(), "Got no findings when checking all "
-        + "cocos. Did you forget to add the new coco to MontiArcCocos?");
+        + "cocos. Did you forget to add the new coco to MontiThingsCocos?");
     
     // check whether only the expected errors are present when using only the
     // given cocos

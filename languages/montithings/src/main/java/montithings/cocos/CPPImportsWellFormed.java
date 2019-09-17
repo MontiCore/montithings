@@ -5,10 +5,12 @@
  */
 package montithings.cocos;
 
+import montithings._ast.ASTCPPImportStatementLOCAL;
+
 /**
  * TODO
  *
  * @author (last commit) Joshua Fürste
  */
-class CPPImportsWellFormed {
+class CPPImportsWellFormed extends ASTCPPImportStatementLOCAL {
 }

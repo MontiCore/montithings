@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ExpectedErrorInfo {
-  private static Pattern ERROR_CODE_PATTERN = Pattern.compile("xMA[0-9]{3}");
+  private static Pattern ERROR_CODE_PATTERN = Pattern.compile("xM[A-Z][0-9]{3}");
   
   private int numExpectedFindings = 0;
   

@@ -39,7 +39,7 @@ public class MontiThingsCoCos {
             .addCoCo(new ImportsValid())
             .addCoCo(new SubcomponentReferenceCycle())
             .addCoCo(new PortNamesAreNotJavaKeywords())
-            .addCoCo(new montithings.cocos.UnusedImports())
+            //.addCoCo(new montithings.cocos.UnusedImports())
 
             /// Automaton Cocos
             /// /////////////////////////////////////////////////////////////
@@ -93,6 +93,12 @@ public class MontiThingsCoCos {
             .addCoCo(new AutomatonStateDefinedMultipleTimes())
             .addCoCo(new UseOfValueLists())
             .addCoCo(new IdentifiersAreUnique())
-            .addCoCo(new JavaPVariableIdentifiersUnique());
+            .addCoCo(new JavaPVariableIdentifiersUnique())
+
+            // MONTITHINGS
+            .addCoCo(new ExecutionBlockPriorityCorrectness())
+            .addCoCo(new ExecutionBlockWellFormed())
+            .addCoCo(new ControlBlockStatementsInComposedComponent())
+            .addCoCo(new ControlBlockNotEmpty());
   }
 }

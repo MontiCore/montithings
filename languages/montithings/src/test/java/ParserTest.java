@@ -19,6 +19,7 @@ import de.monticore.symboltable.Symbol;
 import montithings._parser.MontiThingsParser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.se_rwth.commons.logging.Log;
