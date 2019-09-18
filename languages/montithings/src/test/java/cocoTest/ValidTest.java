@@ -6,8 +6,6 @@
 package cocoTest;
 
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTComponent;
-import montiarc._ast.ASTMontiArcNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -18,8 +16,6 @@ import org.junit.Test;
  */
 public class ValidTest extends AbstractCoCoTest{
 
-  public static final String PACKAGE = "cocoTest";
-
   @BeforeClass
   public static void setup(){
     Log.enableFailQuick(false);
@@ -27,7 +23,6 @@ public class ValidTest extends AbstractCoCoTest{
 
   @Test
   public void checkValidTest(){
-    ASTComponent astMontiArcNode = (ASTComponent) loadComponentAST("portTest.PortTest");
     checkValid("portTest.PortTest");
   }
 }

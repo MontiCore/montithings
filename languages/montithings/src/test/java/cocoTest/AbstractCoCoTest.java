@@ -8,9 +8,7 @@ package cocoTest;
 import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.Symbol;
 import de.se_rwth.commons.logging.Log;
-import montiarc.MontiArcTool;
 import montiarc._ast.ASTMontiArcNode;
-import montiarc._cocos.MontiArcCoCoChecker;
 import montiarc._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -28,11 +26,11 @@ import static org.junit.Assert.assertNotNull;
  */
 public abstract class AbstractCoCoTest {
 
-  protected static final String MODEL_PATH = "src/test/resources/models/";
+  private static final String MODEL_PATH = "src/test/resources/models/";
 
-  protected static final String FAKE_JAVA_TYPES_PATH = "target/librarymodels/";
+  private static final String FAKE_JAVA_TYPES_PATH = "target/librarymodels/";
 
-  protected static final MontiThingsTool MONTI_THINGS_TOOL = new MontiThingsTool();
+  private static final MontiThingsTool MONTI_THINGS_TOOL = new MontiThingsTool();
 
   @Before
   public void cleanUpLog() {
@@ -45,7 +43,7 @@ public abstract class AbstractCoCoTest {
    * @param qualifiedModelName The qualified name of the model
    * @return The AST node of the model
    */
-  protected ASTMontiArcNode loadComponentAST(String qualifiedModelName) {
+  ASTMontiArcNode loadComponentAST(String qualifiedModelName) {
     ComponentSymbol comp = loadComponentSymbol(qualifiedModelName);
     assertNotNull("Could not resolve model " + qualifiedModelName, comp);
     ASTMontiArcNode node = (ASTMontiArcNode) comp.getAstNode().orElse(null);
@@ -69,7 +67,7 @@ public abstract class AbstractCoCoTest {
    * @param qualifiedModelName The fully qualified name of the model to load
    * @return The symbol of the loaded model
    */
-  protected ComponentSymbol loadComponentSymbol(String qualifiedModelName){
+  private ComponentSymbol loadComponentSymbol(String qualifiedModelName){
     ComponentSymbol comp = loadComponentSymbolFromModelPath(qualifiedModelName, MODEL_PATH);
 
     assertNotNull(comp);
@@ -98,16 +96,13 @@ public abstract class AbstractCoCoTest {
    * @param modelPath The model path containing the package
    * @return The loaded component symbol
    */
-  protected ComponentSymbol loadComponentSymbolFromModelPath(String qualifiedModelName,
-                                                String modelPath){
+  private ComponentSymbol loadComponentSymbolFromModelPath(String qualifiedModelName,
+                                                           String modelPath){
 
-    Scope symTab2 = new MontiArcTool().initSymbolTable(Paths.get(modelPath).toFile(),
-            Paths.get(FAKE_JAVA_TYPES_PATH).toFile());
     Scope symTab = MONTI_THINGS_TOOL.initSymbolTable(Paths.get(modelPath).toFile(),
         Paths.get(FAKE_JAVA_TYPES_PATH).toFile());
-    ComponentSymbol comp = symTab.<ComponentSymbol> resolve(
+    return symTab.<ComponentSymbol> resolve(
         qualifiedModelName, ComponentSymbol.KIND).orElse(null);
-    return comp;
   }
 
   /**
@@ -126,7 +121,7 @@ public abstract class AbstractCoCoTest {
   }
 
 
-  protected ASTMontiArcNode loadCompilationUnitAST(String qualifiedModelName) {
+  private ASTMontiArcNode loadCompilationUnitAST(String qualifiedModelName) {
     Symbol comp = loadComponentSymbol(qualifiedModelName);
     assertNotNull("Could not resolve model " + qualifiedModelName, comp);
     ASTMontiArcNode node = (ASTMontiArcNode) comp.getEnclosingScope().getAstNode().orElse(null);
@@ -149,7 +144,7 @@ public abstract class AbstractCoCoTest {
    * this for checking valid models.
    * @param model The fully qualified name of the model
    */
-  protected void checkValid(String model) {
+  void checkValid(String model) {
     Log.getFindings().clear();
     MONTI_THINGS_TOOL.checkCoCos(loadCompilationUnitAST(model));
     new ExpectedErrorInfo().checkOnlyExpectedPresent(Log.getFindings());
@@ -172,8 +167,8 @@ public abstract class AbstractCoCoTest {
    * @param node The node of the component to check
    * @param expectedErrors The information about expected errors
    */
-  protected static void checkInvalid(MontiThingsCoCoChecker cocos, ASTMontiArcNode node,
-                                     ExpectedErrorInfo expectedErrors) {
+  static void checkInvalid(MontiThingsCoCoChecker cocos, ASTMontiArcNode node,
+                           ExpectedErrorInfo expectedErrors) {
     
     // check whether all the expected errors are present when using all cocos
     Log.getFindings().clear();

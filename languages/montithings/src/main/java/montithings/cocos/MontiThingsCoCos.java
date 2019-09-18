@@ -96,6 +96,13 @@ public class MontiThingsCoCos {
             .addCoCo(new JavaPVariableIdentifiersUnique())
 
             // MONTITHINGS
+            .addCoCo(new PortsInSyncGroupAreIncoming())
+            .addCoCo(new PortsInBatchStatementAreIncoming())
+            .addCoCo(new NoJavaImportStatements())
+            .addCoCo(new NoJavaPBehavior())
+            .addCoCo(new MaxOneBehaviorPerComponent())
+            .addCoCo(new ExecutionGuardIsValid())
+            .addCoCo(new MaxOneControlBlock())
             .addCoCo(new ExecutionBlockPriorityCorrectness())
             .addCoCo(new ExecutionBlockWellFormed())
             .addCoCo(new ControlBlockStatementsInComposedComponent())

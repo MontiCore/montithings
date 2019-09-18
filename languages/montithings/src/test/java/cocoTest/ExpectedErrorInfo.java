@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ExpectedErrorInfo {
+class ExpectedErrorInfo {
   private static Pattern ERROR_CODE_PATTERN = Pattern.compile("xM[A-Z][0-9]{3}");
   
-  private int numExpectedFindings = 0;
+  private int numExpectedFindings;
   
-  private HashSet<String> expectedErrorCodes = new HashSet<>();
+  private final HashSet<String> expectedErrorCodes = new HashSet<>();
   
   private Predicate<String> containsExpectedErrorCode;
   
@@ -34,14 +34,14 @@ public class ExpectedErrorInfo {
   }
   
   public static void reset() {
-    ERROR_CODE_PATTERN = Pattern.compile("xMA[0-9]{3}");
+    ERROR_CODE_PATTERN = Pattern.compile("xM[A-Z][0-9]{3}");
   }
   
   /**
    * Raises an error if the given error codes don't match the convention for error codes in test
    * cases (no leading zero, capital hexadecimal digits)
    */
-  protected static void checkExpectedErrorCodes(String[] errorCodes) {
+  private static void checkExpectedErrorCodes(String[] errorCodes) {
     
     for (String errorCode : errorCodes) {
       if (!ERROR_CODE_PATTERN.matcher(errorCode).matches()) {
@@ -52,7 +52,7 @@ public class ExpectedErrorInfo {
     }
   }
   
-  protected static Set<String> collectErrorCodes(String findings) {
+  private static Set<String> collectErrorCodes(String findings) {
     Matcher matcher = ERROR_CODE_PATTERN.matcher(findings);
     
     Set<String> errorCodes = new HashSet<>();
@@ -64,18 +64,14 @@ public class ExpectedErrorInfo {
   }
   
   private void initContainsExpectedErrorCode() {
-    containsExpectedErrorCode = new Predicate<String>() {
-      
-      @Override
-      public boolean test(String s) {
-        for (String errorCode : expectedErrorCodes) {
-          if (s.contains(errorCode)) {
-            return true;
-          }
+    containsExpectedErrorCode = s -> {
+      for (String errorCode : expectedErrorCodes) {
+        if (s.contains(errorCode)) {
+          return true;
         }
-        
-        return false;
       }
+
+      return false;
     };
   }
   
@@ -93,7 +89,7 @@ public class ExpectedErrorInfo {
   }
   
   private String concatenateFindings(List<Finding> findings) {
-    return findings.stream().map(f -> f.buildMsg())
+    return findings.stream().map(Finding::buildMsg)
         .collect(Collectors.joining("\n"));
   }
   
@@ -105,7 +101,7 @@ public class ExpectedErrorInfo {
     }
     
     assertEquals(findingsString, numExpectedFindings,
-        findings.stream().map(f -> f.buildMsg()).filter(containsExpectedErrorCode).count());
+        findings.stream().map(Finding::buildMsg).filter(containsExpectedErrorCode).count());
     
     assertTrue(collectErrorCodes(findingsString).containsAll(expectedErrorCodes));
   }

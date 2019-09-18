@@ -11,9 +11,8 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTComponent;
 import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.PortSymbol;
-import montithings._ast.ASTBatchStatement;
 import montithings._ast.ASTControlBlock;
-import montithings._ast.ASTControlStatement;
+import montithings._ast.ASTSyncStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  *
  * @author (last commit) JFuerste
  */
-public class PortsInBatchStatementAreIncoming implements MontiArcASTComponentCoCo {
+public class PortsInSyncGroupAreIncoming implements MontiArcASTComponentCoCo {
   @Override
   public void check(ASTComponent node) {
 
@@ -38,30 +37,31 @@ public class PortsInBatchStatementAreIncoming implements MontiArcASTComponentCoC
     }
 
     Scope s = node.getSpannedScopeOpt().get();
-    for (ASTBatchStatement batchStatement : getBatchPortNames(node)) {
-      for (String portName : batchStatement.getBatchPortsList()) {
+    for (ASTSyncStatement syncGroup : getSyncGroups(node)) {
+      for (String portName : syncGroup.getSyncedPortList()) {
         Optional<Symbol> port = s.resolve(portName, PortSymbol.KIND);
         if (!port.isPresent()){
-          Log.error("0xMT111 The port " + portName + " does not exist in the batch statement.",
-                  batchStatement.get_SourcePositionStart());
+          Log.error("0xMT113 The port " + portName + " in the sync group does not exist.",
+                  syncGroup.get_SourcePositionStart());
           continue;
         }
         if (!((PortSymbol)port.get()).isIncoming()){
-          Log.error("0xMT112 The port " + portName + " in the batch statement is not incoming.",
-                  batchStatement.get_SourcePositionStart());
+          Log.error("0xMT114 The port " + portName + " in the sync group is not incoming.",
+                  syncGroup.get_SourcePositionStart());
         }
       }
+
     }
 
   }
 
-  public List<ASTBatchStatement> getBatchPortNames(ASTComponent node){
+  public List<ASTSyncStatement> getSyncGroups(ASTComponent node){
     return node.getBody().getElementList()
             .stream()
             .filter(e -> e instanceof ASTControlBlock)
             .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTBatchStatement)
-            .map(e -> (ASTBatchStatement) e)
+            .filter(ASTSyncStatement.class::isInstance)
+            .map(ASTSyncStatement.class::cast)
             .collect(Collectors.toList());
   }
 }

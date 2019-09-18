@@ -3,7 +3,7 @@
  *
  * http://www.se-rwth.de/
  */
-package montithings.generator.visitor;
+package montithings.visitor;
 
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.mcexpressions._visitor.MCExpressionsVisitor;
@@ -15,10 +15,8 @@ import java.util.List;
 /**
  * TODO
  *
- * @author (last commit) JFuerste
+ * @author (last commit)
  */
-
-
 public class GuardExpressionVisitor implements MCExpressionsVisitor, MontiThingsVisitor {
 
   List<ASTNameExpression> expressions = new ArrayList<>();

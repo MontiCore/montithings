@@ -6,28 +6,28 @@
 package montithings.cocos;
 
 import de.se_rwth.commons.logging.Log;
+import montiarc._ast.ASTBehaviorElement;
 import montiarc._ast.ASTComponent;
 import montiarc._cocos.MontiArcASTComponentCoCo;
-import montithings._ast.ASTControlBlock;
 
 /**
  * TODO
  *
- * @author (last commit) JFuerste
+ * @author (last commit)
  */
-public class MaxOneControlBlock implements MontiArcASTComponentCoCo {
+public class MaxOneBehaviorPerComponent implements MontiArcASTComponentCoCo {
+
 
   @Override
   public void check(ASTComponent node) {
-    long controlBlockCount = node.getBody()
-            .getElementList()
+    long count = node.getBody().getElementList()
             .stream()
-            .filter(e -> e instanceof ASTControlBlock)
+            .filter(e -> e instanceof ASTBehaviorElement)
             .count();
-
-    if (controlBlockCount > 1){
-      Log.error("0xMT101 There are multiple control blocks in component " + node.getName() ,
+    if (count > 1){
+      Log.error("0xMT110 There exists more than one behavior element in component " + node.getName(),
               node.get_SourcePositionStart());
     }
+
   }
 }

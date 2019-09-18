@@ -1,7 +1,7 @@
 package montithings.generator.helper;
 
 import montithings.generator.codegen.xtend.util.Utils;
-import montithings.generator.visitor.GuardExpressionVisitor;
+import montithings.visitor.GuardExpressionVisitor;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;

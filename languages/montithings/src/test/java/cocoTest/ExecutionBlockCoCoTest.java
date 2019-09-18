@@ -5,6 +5,7 @@ import montiarc._ast.ASTMontiArcNode;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.ExecutionBlockPriorityCorrectness;
 import montithings.cocos.ExecutionBlockWellFormed;
+import montithings.cocos.ExecutionGuardIsValid;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -12,10 +13,14 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
 
   private static final String PACKAGE = "cocoTest";
 
-
   @BeforeClass
   public static void setup(){
     Log.enableFailQuick(false);
+  }
+
+  @Test
+  public void validTest(){
+    checkValid(PACKAGE + "." + "ValidExecutionBlock");
   }
 
   @Test
@@ -51,6 +56,15 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
             + "." + "ExecutionBlockPriorities");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockPriorityCorrectness()),
             node,
-            new ExpectedErrorInfo(2, "xMT106", "xMT107"));  }
+            new ExpectedErrorInfo(2, "xMT106", "xMT107"));
+  }
 
+  @Test
+  public void executionGuardWithUndefinedElementsTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE
+            + "." + "UndefinedExecutionGuard");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionGuardIsValid()),
+            node,
+            new ExpectedErrorInfo(1 , "xMT108"));
+  }
 }
