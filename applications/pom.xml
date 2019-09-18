@@ -5,12 +5,12 @@
   <!-- == PROJECT COORDINATES ============================================= -->
 
   <parent>
-    <groupId>montiarc</groupId>
-    <artifactId>montiarc-core</artifactId>
-	<version>5.0.2-SNAPSHOT</version>
+    <groupId>montithings</groupId>
+    <artifactId>montithings-core</artifactId>
+    <version>5.0.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>montiarc.applications</groupId>
+  <groupId>montithings.applications</groupId>
   <artifactId>applications</artifactId>
   <packaging>pom</packaging>
   

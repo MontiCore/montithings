@@ -1,7 +1,0 @@
-package nfp;
-
-import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
-
-tagschema OCL2JavaTags {
-  tagtype SymbolName:String for CDType;
-}

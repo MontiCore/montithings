@@ -15,7 +15,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>Tagging</module>
 		<module>montithings</module>
 	</modules>
 

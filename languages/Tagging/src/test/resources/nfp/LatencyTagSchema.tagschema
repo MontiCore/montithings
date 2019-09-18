@@ -1,8 +1,0 @@
-package nfp;
-
-tagschema LatencyTagSchema {
-	tagtype LatencyCmpInst: Duration for ComponentInstance;
-	tagtype LatencyCmp: Duration for Component;
-	tagtype LatencyConn: Duration for Connector;
-	tagtype LatencyPort: Duration for Port;
-}
