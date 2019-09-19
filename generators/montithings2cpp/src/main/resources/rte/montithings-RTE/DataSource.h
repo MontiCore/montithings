@@ -23,7 +23,6 @@ protected:
 public:
     DataSource() {};
     DataSource(T initialValue) {
-        queue.push(initialValue);
     }
 
     virtual void registerPort(boost::uuids::uuid uuid){
