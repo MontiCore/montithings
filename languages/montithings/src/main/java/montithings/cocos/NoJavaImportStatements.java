@@ -12,7 +12,7 @@ import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.ComponentSymbol;
 
 /**
- * TODO
+ * Checks that there are no java imports used in MontiThings components
  *
  * @author (last commit) Joshua Fürste
  */

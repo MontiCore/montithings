@@ -12,7 +12,7 @@ import montithings._cocos.MontiThingsASTControlBlockCoCo;
 import montithings._cocos.MontiThingsASTControlStatementCoCo;
 
 /**
- * TODO
+ * Checks that control blocks are not empty
  *
  * @author (last commit) JFuerste
  */

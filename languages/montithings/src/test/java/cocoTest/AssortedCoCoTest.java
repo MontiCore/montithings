@@ -12,6 +12,7 @@ import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.MaxOneBehaviorPerComponent;
 import montithings.cocos.NoJavaImportStatements;
 import montithings.cocos.NoJavaPBehavior;
+import montithings.cocos.TimeSyncOnlyInComposedComponents;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -48,6 +49,15 @@ public class AssortedCoCoTest extends AbstractCoCoTest  {
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new NoJavaImportStatements()),
             node,
             new ExpectedErrorInfo(1, "xMT124"));
+  }
+
+  @Test
+  public void TimeSyncInAtomicTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+            "." + "TimeSyncInAtomic");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new TimeSyncOnlyInComposedComponents()),
+            node,
+            new ExpectedErrorInfo(1, "xMT119"));
   }
 
 }

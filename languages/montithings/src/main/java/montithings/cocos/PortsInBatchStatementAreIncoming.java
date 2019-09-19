@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * TODO
+ * Checks that ports used in batch statements exist and are incoming
  *
  * @author (last commit) JFuerste
  */

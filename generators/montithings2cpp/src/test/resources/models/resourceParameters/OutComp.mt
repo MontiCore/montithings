@@ -1,4 +1,4 @@
-package portTest;
+package resourceParameters;
 
 component OutComp{
 

@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * TODO
+ * Checks that Execution blocks have at least one IfStatement
+ * and exactly one ElseStatement
  *
  * @author (last commit)
  */

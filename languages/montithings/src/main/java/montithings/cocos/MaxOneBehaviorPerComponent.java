@@ -11,7 +11,8 @@ import montiarc._ast.ASTComponent;
 import montiarc._cocos.MontiArcASTComponentCoCo;
 
 /**
- * TODO
+ * Checks that there is only a single behavior element e.g ExecutionBlocks
+ * in a component
  *
  * @author (last commit)
  */

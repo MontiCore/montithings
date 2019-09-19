@@ -96,6 +96,12 @@ public class MontiThingsCoCos {
             .addCoCo(new JavaPVariableIdentifiersUnique())
 
             // MONTITHINGS
+            .addCoCo(new TimeSyncOnlyInComposedComponents())
+            .addCoCo(new MaxOneUpdateInterval())
+            .addCoCo(new UpdateIntervalPositive())
+            .addCoCo(new SyncGroupNamesUppercase())
+            .addCoCo(new SyncGroupIsNoSubset())
+            .addCoCo(new SyncGroupHasAtLeastOneElement())
             .addCoCo(new PortsInSyncGroupAreIncoming())
             .addCoCo(new PortsInBatchStatementAreIncoming())
             .addCoCo(new NoJavaImportStatements())

@@ -14,7 +14,9 @@ import montithings._cocos.MontiThingsASTExecutionBlockCoCo;
 import java.util.HashSet;
 
 /**
- * TODO
+ * Checks that priorities in Execution blocks are used correctly
+ * e.g all IfStatements need a unique priority unless there is only
+ * a single IfStatement
  *
  * @author (last commit)
  */
@@ -37,7 +39,7 @@ public class ExecutionBlockPriorityCorrectness implements MontiThingsASTExecutio
               .filter(e -> e instanceof ASTExecutionIfStatement)
               .filter(e -> !(((ASTExecutionIfStatement) e).getPriorityOpt().isPresent()))
               .forEach(e -> Log.error("0xMT107 If there is more than one if " +
-                      " statement present, priorities are required", e.get_SourcePositionStart()));
+                      " statement present, priorities are required.", e.get_SourcePositionStart()));
 
     }
 

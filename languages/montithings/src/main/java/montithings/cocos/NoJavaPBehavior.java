@@ -11,7 +11,7 @@ import montiarc._ast.ASTJavaPBehavior;
 import montiarc._cocos.MontiArcASTBehaviorElementCoCo;
 
 /**
- * TODO
+ * Checks that there is no Java Behavior in MontiThings components
  *
  * @author (last commit) Joshua Fürste
  */

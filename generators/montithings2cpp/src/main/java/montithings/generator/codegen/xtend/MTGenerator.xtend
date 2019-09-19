@@ -17,6 +17,7 @@ import montiarc._ast.ASTJavaPBehavior
 import montiarc._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
+import montithings._ast.ASTExecutionBlock
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -89,6 +90,10 @@ class MTGenerator {
   }
 
   def private static dispatch generateBehavior(ASTAutomatonBehavior automaton, ComponentSymbol comp, File targetPath) {
+  	return ""
+  }
+  
+  def private static dispatch generateBehavior(ASTExecutionBlock execBlock, ComponentSymbol comp, File targetPath) {
   	return ""
   }
 	

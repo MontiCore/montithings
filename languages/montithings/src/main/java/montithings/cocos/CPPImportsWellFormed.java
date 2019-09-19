@@ -8,7 +8,9 @@ package montithings.cocos;
 import montithings._ast.ASTCPPImportStatementLOCAL;
 
 /**
- * TODO
+ * Checks that the CPP Imports are well-formed.
+ * Mostly a technical limitation due to the way that
+ * '"' isn't parsed correctly.
  *
  * @author (last commit) Joshua Fürste
  */

@@ -6,7 +6,7 @@
 package montithings.cocos;
 
 /**
- * TODO
+ * Checks that CPP Imports exist
  *
  * @author (last commit) Joshua Fürste
  */

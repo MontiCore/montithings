@@ -165,6 +165,10 @@ class Utils {
 		
 		class «symbol.name.toFirstUpper»Server : public AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF»<«type»>{
 		private:
+		«IF symbol.resourceParameters.size > 0»
+		map<std::string,std::string> parameters = 
+			{ «FOR parameter : symbol.resourceParameters SEPARATOR ','»{«parameter.key»,«parameter.value»}«ENDFOR» };
+		«ENDIF»
 		«IF symbol.incoming»
 		    «type» getData() override;
 		«ELSE»

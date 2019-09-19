@@ -40,13 +40,24 @@ grammar MontiThings extends MontiArc {
       * @attribute name an optional name of this port
       * @attribute resourceoption optional configuration for the
       *    resource port
+      * @attribute Parameters for the generated resource server
       */
     symbol ResourcePort =
       Stereotype?
       (incoming:["in"] | outgoing:["out"])
-      Type Name ("(" ((ResourceOption "," uri:String) | ResourceOption | uri:String) ")")?
+      Type Name ("("(
+                   (
+                     ((ResourceOption "," uri:String ) |
+                     ResourceOption |
+                     uri:String )
+                   ("," (ResourceParameter || ",")+)?
+                   ) |
+                   ((ResourceParameter || ",")+)
+                )
+                ")")?
       ("requires" requiresType:Name ":" requiresName:StringLiteral)?  ;
 
+     ResourceParameter = key:Name "=" value:String;
 
     /**
     * A Control Block consists of statements controlling the execution

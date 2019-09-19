@@ -58,12 +58,13 @@ public class ASTResourcePort extends ASTResourcePortTOP {
           String name,
           Optional<montithings._ast.ASTResourceOption> resourceOption,
           Optional<String> uriOpt ,
+          java.util.List<montithings._ast.ASTResourceParameter> resourceParameters,
           Optional<String> requiresType,
           Optional<de.monticore.literals.literals._ast.ASTStringLiteral> requiresName,
           boolean incoming,
           boolean outgoing
   ) {
-    super(stereotype, type, name, resourceOption, uriOpt, requiresType, requiresName, incoming, outgoing);
+    super(stereotype, type, name, resourceOption, uriOpt, resourceParameters ,requiresType, requiresName, incoming, outgoing);
 
 
 

@@ -11,7 +11,7 @@ import montiarc._cocos.MontiArcASTComponentCoCo;
 import montithings._ast.ASTControlBlock;
 
 /**
- * TODO
+ * Checks that there is only a single control block in a component
  *
  * @author (last commit) JFuerste
  */

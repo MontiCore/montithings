@@ -13,7 +13,8 @@ import montithings._ast.ASTCalculationInterval;
 import montithings._ast.ASTControlBlock;
 
 /**
- * TODO
+ * Checks that control blocks in Composed components only have
+ * certain Control statements.
  *
  * @author (last commit)
  */

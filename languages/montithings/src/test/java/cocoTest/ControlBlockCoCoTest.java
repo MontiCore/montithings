@@ -5,6 +5,7 @@ import montiarc._ast.ASTMontiArcNode;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.*;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ControlBlockCoCoTest extends AbstractCoCoTest {
@@ -60,5 +61,50 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new PortsInSyncGroupAreIncoming()),
             node,
             new ExpectedErrorInfo(2 , "xMT113", "xMT114"));
+  }
+
+  @Test
+  public void emptySyncTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+            "." + "EmptySyncStatement");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new SyncGroupHasAtLeastOneElement()),
+            node,
+            new ExpectedErrorInfo(1 , "xMT115"));
+  }
+
+  @Test
+  public void syncSubsetTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+            "." + "SyncSubset");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new SyncGroupIsNoSubset()),
+            node,
+            new ExpectedErrorInfo(1 , "xMT116"));
+  }
+
+  @Test
+  public void syncLowercaseTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+            "." + "SyncLowercase");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new SyncGroupNamesUppercase()),
+            node,
+            new ExpectedErrorInfo(1 , "xMT116"));
+  }
+
+  @Test
+  public void zeroUpdateIntervalTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+            "." + "NegativeUpdateInterval");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new UpdateIntervalPositive()),
+            node,
+            new ExpectedErrorInfo(1 , "xMT118"));
+  }
+
+  @Test
+  public void DoubleUpdateIntervalTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+            "." + "DoubleUpdateInterval");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new MaxOneUpdateInterval()),
+            node,
+            new ExpectedErrorInfo(1 , "xMT132"));
   }
 }

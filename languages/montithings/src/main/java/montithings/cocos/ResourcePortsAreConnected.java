@@ -6,7 +6,7 @@
 package montithings.cocos;
 
 /**
- * TODO
+ * Checks that all resource ports are connected
  *
  * @author (last commit) Joshua Fürste
  */

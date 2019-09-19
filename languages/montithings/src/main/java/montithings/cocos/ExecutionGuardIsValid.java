@@ -23,7 +23,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * TODO
+ * Checks that only ports, variables and sync groups that were previously
+ * declared are used in Execution Guards
  *
  * @author (last commit) JFuerste
  */

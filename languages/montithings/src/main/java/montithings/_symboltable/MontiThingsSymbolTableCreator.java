@@ -111,6 +111,7 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     sym.setDirection(node.isIncoming());
     String uri = node.getUri();
     sym.setUri(uri);
+    sym.setResourceParameters(node.getResourceParameterList());
     if (uri.startsWith("tcp://")) {
       sym.setProtocol("tcp");
     } else if (uri.startsWith("ipc://")) {

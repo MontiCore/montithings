@@ -10,9 +10,11 @@ import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.references.JTypeReference;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc.helper.SymbolPrinter;
+import montithings._ast.ASTResourceParameter;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,6 +46,7 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
   private boolean isWS = false;
   private boolean isTcp = false;
   private boolean isFileSystem = false;
+  private List<ASTResourceParameter> resourceParameters = new java.util.ArrayList<>();
 
   public boolean isIpc() {
     return isIpc;
@@ -68,6 +71,15 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
   public String getUri(){
     return uri;
   }
+
+  public void setResourceParameters(List<ASTResourceParameter> resourceParameters){
+    this.resourceParameters = resourceParameters;
+  }
+  
+  public List<ASTResourceParameter> getResourceParameters(){
+    return resourceParameters;
+  }
+
 
   public void setProtocol(String protocol) {
     switch (protocol) {

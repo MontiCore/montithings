@@ -6,7 +6,8 @@
 package montithings.cocos;
 
 /**
- * TODO
+ * Checks that resource port URIs conform to the
+ * resource port types that are currently implemented
  *
  * @author (last commit) Joshua Fürste
  */
