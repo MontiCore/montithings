@@ -9,10 +9,7 @@ package cocoTest;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMontiArcNode;
 import montithings._cocos.MontiThingsCoCoChecker;
-import montithings.cocos.MaxOneBehaviorPerComponent;
-import montithings.cocos.NoJavaImportStatements;
-import montithings.cocos.NoJavaPBehavior;
-import montithings.cocos.TimeSyncOnlyInComposedComponents;
+import montithings.cocos.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -60,4 +57,30 @@ public class AssortedCoCoTest extends AbstractCoCoTest  {
             new ExpectedErrorInfo(1, "xMT119"));
   }
 
+  @Test
+  public void TimeSyncInSubComponentsTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+            "." + "TimeSyncInSubComps");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new TimeSyncInSubComponents()),
+            node,
+            new ExpectedErrorInfo(2, "xMT120"));
+  }
+
+  @Test
+  public void resourcePortsInNonDeployTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE
+            + "." + "ResourcePortInNonDeploy");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ResourcePortsOnlyOnOutermostComponent()),
+            node,
+            new ExpectedErrorInfo(2 , "xMT127"));
+  }
+
+  @Test
+  public void resourcePortNameLowercaseTest(){
+    ASTMontiArcNode node = loadComponentAST(PACKAGE
+            + "." + "ResourcePortLowercase");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new LowerCaseResourcePort()),
+            node,
+            new ExpectedErrorInfo(2 , "xMT133"));
+  }
 }

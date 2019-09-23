@@ -21,6 +21,7 @@ public class MontiThingsCoCos {
             .addCoCo(new PortUsage())
             //TODO: Write proper type checking system
             //.addCoCo(new UsedTypesExist())
+            .addCoCo(new LowerCaseResourcePort())
             .addCoCo(new SubComponentsConnected())
             .addCoCo(new SubcomponentParametersCorrectlyAssigned())
             .addCoCo(new PackageLowerCase())
@@ -61,8 +62,6 @@ public class MontiThingsCoCos {
             .addCoCo((MontiArcASTParameterCoCo) new UseOfProhibitedIdentifiers())
             .addCoCo((MontiArcASTStateCoCo) new NamesCorrectlyCapitalized())
             .addCoCo(new ConnectorSourceAndTargetComponentDiffer())
-            //TODO: Reimplement this coco
-            //.addCoCo(new ConnectorSourceAndTargetExistAndFit())
             .addCoCo(new ImportsAreUnique())
 
             // REFERENTIAL INTEGRITY
@@ -96,6 +95,8 @@ public class MontiThingsCoCos {
             .addCoCo(new JavaPVariableIdentifiersUnique())
 
             // MONTITHINGS
+            .addCoCo(new ResourcePortsOnlyOnOutermostComponent())
+            .addCoCo(new TimeSyncInSubComponents())
             .addCoCo(new TimeSyncOnlyInComposedComponents())
             .addCoCo(new MaxOneUpdateInterval())
             .addCoCo(new UpdateIntervalPositive())
