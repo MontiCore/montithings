@@ -50,7 +50,7 @@ public:
         }
     }
 
-    bool hasValue(boost::uuids::uuid uuid){
+    virtual bool hasValue(boost::uuids::uuid uuid){
         return (queueMap[uuid].read_available() > 0);
     }
 

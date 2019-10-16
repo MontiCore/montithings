@@ -1,7 +1,7 @@
 package ipcTest;
 
 
-<<deploy>> component IpcTest{
+<<deploy, timesync>> component IpcTest{
 
     component SubComp subComp;
 
@@ -9,6 +9,7 @@ package ipcTest;
     resource port in String inPort requires Sensor: "Temperature",
                   out String outPort("ipc://outPort");
 
-    connect inPort -> outPort;
+    connect inPort -> subComp.inPort;
+    connect subComp.outPort -> outPort;
 
 }

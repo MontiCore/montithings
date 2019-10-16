@@ -97,6 +97,13 @@ private:
 		pushToAll(result);
     }
 
+    virtual bool hasValue(boost::uuids::uuid uuid){
+        if (queueMap[uuid].read_available() == 0){
+            ipcUpdate();
+        }
+        return (queueMap[uuid].read_available() > 0);
+    }
+
 
 
 };

@@ -6,6 +6,9 @@ SubCompResult SubCompImpl::getInitialValues(){
 }
 
 SubCompResult SubCompImpl::compute(SubCompInput input){
-  	  	return SubCompResult();
-  	  	
-  	  }
+    SubCompResult result;
+    if (input.getInPort()) {
+        result.setOutPort(input.getInPort().value());
+    }
+    return result;
+}
