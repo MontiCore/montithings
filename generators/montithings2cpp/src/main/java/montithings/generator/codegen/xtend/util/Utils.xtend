@@ -167,15 +167,17 @@ class Utils {
 		private:
 		«IF symbol.resourceParameters.size > 0»
 		map<std::string,std::string> parameters = 
-			{ «FOR parameter : symbol.resourceParameters SEPARATOR ','»{«parameter.key»,«parameter.value»}«ENDFOR» };
+			{ «FOR parameter : symbol.resourceParameters SEPARATOR ','»{"«parameter.key»","«parameter.value»"}«ENDFOR» };
 		«ENDIF»
 		«IF symbol.incoming»
 		    «type» getData() override;
 		«ELSE»
 			void processData(«type» data) override;
 		«ENDIF»
+
 		public:
 		    «symbol.name.toFirstUpper»Server(const char *uri) : AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF»(uri){};
+		    void setup() override;
 		};
 		'''
 	}
@@ -185,16 +187,20 @@ class Utils {
 		return 
 		'''
 		#include "«port.name.toFirstUpper»Server.h"
-		
+
+		void «port.name.toFirstUpper»Server::setup(){
+		 //ToDo: Fill Me if needed
+		}
+
 		«IF !existsHWC»
 		«IF port.incoming»
 		«type» «port.name.toFirstUpper»Server::getData(){
-			//ToDo: FillMe
+			//ToDo: Fill Me
 			throw std::runtime_error("Invoking getData() on empty implementation");
 		}
 		«ELSE»
 		void «port.name.toFirstUpper»Server::processData(«type» data){
-			//ToDo: FillMe
+			//ToDo: Fill Me
 			throw std::runtime_error("Invoking processData() on empty implementation");
 		}
 		«ENDIF»
@@ -202,6 +208,7 @@ class Utils {
 		int
 		main(int argc, char **argv) try {
 		    auto server = «port.name.toFirstUpper»Server("«port.uri»");
+		    server.setup();
 		    server.run();
 		    return 1;
 		} catch (const nng::exception &e) {

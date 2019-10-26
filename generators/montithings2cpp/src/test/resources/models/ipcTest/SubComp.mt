@@ -2,6 +2,6 @@ package ipcTest;
 
 
 component SubComp{
-    port in String inPort,
+    port in String[] inPort,
          out String outPort;
 }

@@ -45,12 +45,12 @@ public:
     tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
 
 		T queueElement;
-        if (queueMap[uuid].pop(queueElement)){
+        if (this->queueMap[uuid].pop(queueElement)){
             tl::optional<T> currentValue = queueElement;
             return currentValue;
         } else{
             ipcUpdate();
-            if (queueMap[uuid].pop(queueElement)) {
+            if (this->queueMap[uuid].pop(queueElement)) {
                 tl::optional<T> currentValue = queueElement;
                 return currentValue;
             } else {
@@ -94,14 +94,14 @@ private:
         inputArchive(result);
 
 
-		pushToAll(result);
+		this->pushToAll(result);
     }
 
     virtual bool hasValue(boost::uuids::uuid uuid){
-        if (queueMap[uuid].read_available() == 0){
+        if (this->queueMap[uuid].read_available() == 0){
             ipcUpdate();
         }
-        return (queueMap[uuid].read_available() > 0);
+        return (this->queueMap[uuid].read_available() > 0);
     }
 
 

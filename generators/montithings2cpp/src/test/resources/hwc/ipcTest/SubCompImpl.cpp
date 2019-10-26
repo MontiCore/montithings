@@ -1,3 +1,4 @@
+#include <iostream>
 #include "SubCompImpl.h"
 
 SubCompResult SubCompImpl::getInitialValues(){
@@ -8,7 +9,10 @@ SubCompResult SubCompImpl::getInitialValues(){
 SubCompResult SubCompImpl::compute(SubCompInput input){
     SubCompResult result;
     if (input.getInPort()) {
-        result.setOutPort(input.getInPort().value());
+        auto arr = input.getInPort().value();
+        std::cout << arr[0];
+        result.setOutPort(arr[0]);
+
     }
     return result;
 }

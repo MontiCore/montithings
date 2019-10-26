@@ -34,6 +34,8 @@ class ComponentGenerator {
 		#include <set>
 		#include "IncomingIPCPort.h"
 		#include "OutgoingIPCPort.h"
+		#include "IncomingWSPort.h"
+		#include "OutgoingWSPort.h"
 		#include<thread>
 		#include <boost/uuid/uuid.hpp>
 		#include <boost/uuid/uuid_generators.hpp>
