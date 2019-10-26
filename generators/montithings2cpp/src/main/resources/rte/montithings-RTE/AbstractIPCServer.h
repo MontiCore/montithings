@@ -44,8 +44,8 @@ public:
             }
 
             dataString = stream.str();
-            nng::msg msg(strlen(dataString.c_str()) + 1);
-            msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) + 1));
+            nng::msg msg(strlen(dataString.c_str()) * 2);
+            msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) * 2));
 			auto body = msg.body().data<std::string>();
             std::cout << dataString << "\n";
             sock.send(std::move(msg));
