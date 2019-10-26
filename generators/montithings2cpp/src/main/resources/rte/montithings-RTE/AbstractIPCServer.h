@@ -25,7 +25,7 @@ private:
     virtual T getData() = 0;
     std::string dataString = "";
     nng::socket sock;
-    
+
 public:
     explicit AbstractIPCServer(const char *uri) {
         sock = nng::rep::open();
@@ -34,7 +34,7 @@ public:
 
     void run(){
         while (true){
-			std::ostringstream stream; 
+            std::ostringstream stream;
             sock.recv();
             T data = getData();
 
@@ -44,11 +44,19 @@ public:
             }
 
             dataString = stream.str();
-            nng::msg msg(strlen(dataString.c_str()) * 2);
-            msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) * 2));
-			auto body = msg.body().data<std::string>();
+            if (dataString.find('[') == std::string::npos){
+                nng::msg msg(strlen(dataString.c_str()) +1);
+                msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) +1));
+                sock.send(std::move(msg));
+            }
+            else {
+                nng::msg msg(strlen(dataString.c_str()) * 2);
+                msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) * 2));
+                sock.send(std::move(msg));
+            }
+
             std::cout << dataString << "\n";
-            sock.send(std::move(msg));
+
             //sock.send(nng::view(dataString.c_str(), strlen(dataString.c_str()) + 1));
         }
     }
