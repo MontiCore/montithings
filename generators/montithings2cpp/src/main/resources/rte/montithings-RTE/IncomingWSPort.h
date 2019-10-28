@@ -53,7 +53,7 @@ public:
 
 	tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
     		T queueElement;
-            if (queueMap[uuid].pop(queueElement)){
+            if (this->queueMap[uuid].pop(queueElement)){
                 tl::optional<T> currentValue = queueElement;
                 return currentValue;
             } else{

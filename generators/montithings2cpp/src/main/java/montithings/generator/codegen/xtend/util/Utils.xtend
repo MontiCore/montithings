@@ -177,7 +177,7 @@ class Utils {
 
 		public:
 		    «symbol.name.toFirstUpper»Server(const char *uri) : AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF»(uri){};
-		    void setup() override;
+		    void setup();
 		};
 		'''
 	}
