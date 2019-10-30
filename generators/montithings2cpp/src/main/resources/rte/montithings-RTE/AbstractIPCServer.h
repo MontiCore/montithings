@@ -18,6 +18,7 @@
 #include "cereal/types/map.hpp"
 #include "cereal/types/set.hpp"
 #include "cereal/types/list.hpp"
+#include <nng/nng.h>
 
 
 template <typename T>
@@ -45,7 +46,7 @@ public:
             }
 
             dataString = stream.str();
-            sock.send(nng::buffer(strdup(dataString.c_str()),dataString.length() + 1));
+            sock.send(nng::buffer(nng_strdup(dataString.c_str()),dataString.length() + 1), nng::flag::alloc);
 
             std::cout << dataString << "\n";
 
