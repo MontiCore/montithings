@@ -85,7 +85,7 @@ private:
             T result;
             inputArchive(result);
             std::cout << "Raw Data: " << result << "\n";
-            pushToAll(result);
+            this->pushToAll(result);
             }
             std::this_thread::yield();
             std::this_thread::sleep_for(std::chrono::milliseconds(1));

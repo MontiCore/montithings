@@ -45,7 +45,7 @@ public:
             }
 
             dataString = stream.str();
-            sock.send(nng::buffer(_strdup(dataString.c_str()),dataString.length() + 1));
+            sock.send(nng::buffer(strdup(dataString.c_str()),dataString.length() + 1));
 
             std::cout << dataString << "\n";
 

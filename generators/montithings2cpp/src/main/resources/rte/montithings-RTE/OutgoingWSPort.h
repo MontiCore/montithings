@@ -84,7 +84,7 @@ private:
                 auto dataString = stream.str();
 
                 dataString = stream.str();
-                socket.send(nng::buffer(_strdup(dataString.c_str()),dataString.length() + 1));
+                socket.send(nng::buffer(strdup(dataString.c_str()),dataString.length() + 1));
 
                 std::cout << dataString << "\n";
 
