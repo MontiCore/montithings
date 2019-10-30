@@ -10,6 +10,7 @@
 #include <nngpp/nngpp.h>
 #include <nngpp/protocol/rep0.h>
 #include <nngpp/protocol/req0.h>
+#include <nngpp/platform/platform.h>
 #include "cereal/archives/json.hpp"
 #include "cereal/types/vector.hpp"
 #include "cereal/types/string.hpp"
@@ -44,16 +45,7 @@ public:
             }
 
             dataString = stream.str();
-            if (dataString.find('[') == std::string::npos){
-                nng::msg msg(strlen(dataString.c_str()) +1);
-                msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) +1));
-                sock.send(std::move(msg));
-            }
-            else {
-                nng::msg msg(strlen(dataString.c_str()) * 2);
-                msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) * 2));
-                sock.send(std::move(msg));
-            }
+            sock.send(nng::buffer(_strdup(dataString.c_str()),dataString.length() + 1));
 
             std::cout << dataString << "\n";
 

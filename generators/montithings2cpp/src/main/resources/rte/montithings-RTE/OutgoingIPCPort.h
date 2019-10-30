@@ -79,11 +79,12 @@ private:
                     outputArchive(data);
                 }
                 auto dataString = stream.str();
-                nng::msg msg(strlen(dataString.c_str()) + 1);
-                msg.body().insert(nng::view(dataString.c_str(), strlen(dataString.c_str()) + 1));
-                auto body = msg.body().data<std::string>();
+
+                dataString = stream.str();
+                sock.send(nng::buffer(_strdup(dataString.c_str()),dataString.length() + 1));
+
                 std::cout << dataString << "\n";
-                socket.send(std::move(msg));
+
             }
             else{
             	std::this_thread::yield();
