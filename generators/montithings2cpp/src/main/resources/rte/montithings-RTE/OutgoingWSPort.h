@@ -87,9 +87,14 @@ private:
                 socket.send(nng::buffer(nng_strdup(dataString.c_str()),dataString.length() + 1), nng::flag::alloc);
 
                 std::cout << dataString << "\n";
+				
 
 
-
+            }
+			else{
+            	std::this_thread::yield();
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            	
             }
         }
         return true;
