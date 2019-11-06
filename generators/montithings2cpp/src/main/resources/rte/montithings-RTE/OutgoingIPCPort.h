@@ -40,6 +40,7 @@ public:
             cout << "Connection to" << uri << " could not be established!\n";
             return;
         }
+		isConnected = true;
         printf("Connection established\n");
     };
     explicit OutgoingIPCPort(T initialValue) {}
@@ -58,20 +59,25 @@ private:
     Port<T>* port;
     std::future<bool> fut;
     boost::uuids::uuid uuid = boost::uuids::random_generator()();
+	bool isConnected = false;
 
 
     bool run() {
         while (true) {
             tl::optional<T> dataOpt = port->getCurrentValue(uuid);
+			
             if (dataOpt) {
-                try {
-                    socket.dial(uri, nng::flag::alloc);
+				if (!isConnected){
+					try {
+						socket.dial(uri, nng::flag::alloc);
 
-                }
-                catch (const std::exception &) {
-                    cout << "Connection to" << uri << " could not be established!\n";
-                    continue;
-                }
+					}
+					catch (const std::exception &) {
+						cout << "Connection to" << uri << " could not be established!\n";
+						continue;
+					}
+				}
+				isConnected = true;
                 T data = dataOpt.value();
                 std::ostringstream stream;
                 {

@@ -62,6 +62,7 @@ public:
 private:
     nng::socket socket;
     const char* uri;
+	bool isConnected = false;
 
     /**
      * Initialize the IPC Port
@@ -71,15 +72,19 @@ private:
 	}
 
     void ipcUpdate() {
-		try
-		{
-			socket.dial(uri, nng::flag::alloc);
+		if (!isConnected){
+			
+			try
+			{
+				socket.dial(uri, nng::flag::alloc);
 
-		}
-		catch (const std::exception&)
-		{
-			cout << "Connection to" << uri << " could not be established!\n";
-			return;
+			}
+			catch (const std::exception&)
+			{
+				cout << "Connection to" << uri << " could not be established!\n";
+				return;
+			}
+			isConnected = true;
 		}
 	    //Sending an empty request to initialize data transfer from the ipc port.
 	    socket.send("");
