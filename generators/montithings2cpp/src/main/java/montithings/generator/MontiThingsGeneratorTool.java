@@ -40,7 +40,7 @@ import static java.util.Collections.*;
 /**
  * TODO
  *
- * @author (last commit) JFuerste
+ * @authors (last commit) JFuerste, Daniel von Mirbach
  */
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
@@ -138,15 +138,39 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}*/
+
+				// Check for Subpackages
+				File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath() + "/" +
+						Names.getQualifier(model));
+
 				// 6 generate make file
 				Log.info("Generate CMake file", "MontiArcGeneratorTool");
 				MTGenerator.generateMakeFile(
 						Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(),
-						comp, hwcPath, libraryPath);
+						comp, hwcPath, libraryPath, subPackagesPath);
 			}
 
 		}
 
+	}
+
+	/**
+	 * Returns list of all subpackages paths
+	 *
+	 * @param modelPath
+	 * @return
+	 */
+	private File[] getSubPackagesPath(String modelPath) {
+		ArrayList<File> subPackagesPaths = new ArrayList<>();
+		File[] subDirs = new File(modelPath).listFiles(File::isDirectory);
+
+		// Iterate over subdirectories of the model folder and add the paths of the subdirs to array
+		for (File subDir : subDirs) {
+			subPackagesPaths.add(new File(subDir.getAbsolutePath()));
+		}
+
+		// cast to ArrayList to File[] and return
+		return subPackagesPaths.toArray(new File[subPackagesPaths.size()]);
 	}
 
     /**

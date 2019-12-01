@@ -3,10 +3,11 @@ package montithings.generator.codegen.xtend.util
 import java.io.File
 import montiarc._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
+import montithings.generator.helper.ComponentHelper
 
 class CMake {
 	
-	def static printCMake(File[] files, ComponentSymbol comp, String hwcPath, String libraryPath) {
+	def static printCMake(File[] files, ComponentSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath) {
 		
 		
 		return '''
@@ -21,10 +22,12 @@ class CMake {
 		include_directories(${Boost_INCLUDE_DIRS}) 
 		include_directories("«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»")
 		include_directories("«libraryPath.replace("\\","/")»")
+		«ComponentHelper.getSubPackageIncludes(subPackagesPath)»
 		include_directories(.)
 		file(GLOB SOURCES 
 		"./*.cpp"
 		"./*.h"
+		«ComponentHelper.getSubPackageImports(subPackagesPath)»
 		"«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»/*.cpp"
 		"«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»/*.h"
 		"«libraryPath.replace("\\","/")»/*.cpp"

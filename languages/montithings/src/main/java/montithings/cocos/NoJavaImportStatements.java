@@ -20,7 +20,12 @@ public class NoJavaImportStatements implements MontiArcASTComponentCoCo {
 
   @Override
   public void check(ASTComponent node) {
-    if (!node.getSymbolOpt().isPresent()) {
+    /**
+     * Allow Java import statements in order to include subpackages
+     * Authored by: Daniel von Mirbach
+     */
+  }
+    /**if (!node.getSymbolOpt().isPresent()) {
       Log.error(
               String.format("0xMT010 ASTComponent node \"%s\" has no " +
                               "symbol. Did you forget to run the " +
@@ -32,5 +37,5 @@ public class NoJavaImportStatements implements MontiArcASTComponentCoCo {
     if (comp.getImports().size() > 2)
     Log.error("0xMT124 There should be no Java Imports in MontiThings component",
             node.get_SourcePositionStart());
-  }
+  }**/
 }

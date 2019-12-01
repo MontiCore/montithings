@@ -31,6 +31,7 @@ import montithings._ast.*;
 import montithings._symboltable.ResourcePortSymbol;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -872,6 +873,49 @@ public class ComponentHelper {
             .map(e -> (ASTExecutionElseStatement) e)
             .findFirst()
             .orElse(null);
+  }
+
+  /**
+   * Get import for subpackages
+   * @param subPackagesPath
+   * @return
+   */
+  public static String getSubPackageImports(File[] subPackagesPath) {
+    String packageNames = "";
+    String start = "\"./";
+    String endCpp = "/*.cpp\"\n";
+    String endH = "/*.h\"\n";
+
+    for (File subPackage : subPackagesPath) {
+      /**
+       * Example of build String with 2 subpackages:
+       *
+       * \"./packageName1/*.cpp\"\n
+       * \"./packageName1/*.h\"\n
+       * \"./packageName2/*.cpp\"\n
+       * \"./packageName2/*.h\"\n
+       */
+      packageNames += start + subPackage.getName() + endCpp;
+      packageNames += start + subPackage.getName() + endH;
+    }
+    return packageNames;
+  }
+
+  public static String getSubPackageIncludes(File[] subPackagesPath) {
+    String packageNames = "";
+    String start = "include_directories(./";
+    String end = ")\n";
+
+    for (File subPackage : subPackagesPath) {
+      /**
+       * Example of build String with 2 subpackages:
+       *
+       * include_directories(./packageName1)\n
+       * include_directories(./packageName2)\n
+       */
+      packageNames += start + subPackage.getName() + end;
+    }
+    return packageNames;
   }
 
 }
