@@ -1,0 +1,10 @@
+grammar Bindings extends de.monticore.types.Types {
+  BindingsCompilationUnit = Element*;
+
+  interface Element;
+
+  BindingRule implements Element =
+    interfaceComponent:QualifiedName
+    "->"
+    implementationComponent:QualifiedName";";
+}

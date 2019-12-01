@@ -1,7 +1,7 @@
 package cocoTest;
 
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMontiArcNode;
+import montithings._ast.ASTMontiThingsNode;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.ExecutionBlockPriorityCorrectness;
 import montithings.cocos.ExecutionBlockWellFormed;
@@ -25,7 +25,7 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void executionWithoutElseTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
             + "." + "ExecutionWithoutElse");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockWellFormed()),
             node,
@@ -34,7 +34,7 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void executionBlockEmpty(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
             + "." + "ExecutionBlockEmpty");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockWellFormed()),
             node,
@@ -43,7 +43,7 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void executionHasMoreThanOneElseTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
             + "." + "ExecutionWithTwoElse");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockWellFormed()),
             node,
@@ -52,7 +52,7 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void executionPrioritiesTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
             + "." + "ExecutionBlockPriorities");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockPriorityCorrectness()),
             node,
@@ -61,7 +61,7 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void executionGuardWithUndefinedElementsTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
             + "." + "UndefinedExecutionGuard");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionGuardIsValid()),
             node,

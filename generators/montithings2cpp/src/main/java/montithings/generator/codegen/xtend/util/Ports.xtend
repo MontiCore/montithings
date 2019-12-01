@@ -56,21 +56,21 @@ OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»"
     '''
 	}
 	
-		def static printResourcePortMethodBodies(Collection<ResourcePortSymbol> ports, ComponentSymbol comp){
+		def static printResourcePortMethodBodies(Collection<ResourcePortSymbol> ports, ComponentSymbol comp, String compname){
 	return	'''
     «FOR port : ports»
     «var type = ComponentHelper.getResourcePortType(port)»
     «var name = port.name»
     «IF port.incoming»
-    Port<«type»>* «comp.name»::getPort«name.toFirstUpper»(){
+    Port<«type»>* «compname»::getPort«name.toFirstUpper»(){
     	return «name»;
     }
     
-    void «comp.name»::setPort«name.toFirstUpper»(Port<«type»>* port){
+    void «compname»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«name» = port;
     }
     «ELSE»
-    void «comp.name»::setPort«name.toFirstUpper»(Port<«type»>* port){
+    void «compname»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«name»->setPort(port);
     }
     «ENDIF»
@@ -89,17 +89,17 @@ OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»"
     '''
 	}
 	
-	def static printMethodBodies(Collection<PortSymbol> ports, ComponentSymbol comp){
+	def static printMethodBodies(Collection<PortSymbol> ports, ComponentSymbol comp, String compname){
 	return	'''
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     
-    Port<«type»>* «comp.name»::getPort«name.toFirstUpper»(){
+    Port<«type»>* «compname»::getPort«name.toFirstUpper»(){
     	return «name»;
     }
     
-    void «comp.name»::setPort«name.toFirstUpper»(Port<«type»>* port){
+    void «compname»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«IF comp.atomic»
     	port->registerPort(uuid);
     	«ENDIF»

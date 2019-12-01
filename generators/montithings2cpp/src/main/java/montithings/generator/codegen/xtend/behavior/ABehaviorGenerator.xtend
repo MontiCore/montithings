@@ -10,65 +10,65 @@ abstract class ABehaviorGenerator {
    * 
    * @return the implementation of the compute() method
    */
-  def String printCompute(ComponentSymbol comp);
+  def String printCompute(ComponentSymbol comp, String compname);
 
   /**
    * Implementing this method is mandatory.
    * 
    * @return the implementation of the getInitialValues() method
    */
-  def String printGetInitialValues(ComponentSymbol comp);
+  def String printGetInitialValues(ComponentSymbol comp, String compname);
 
   /**
    * This method can be used to add additional code to the implementation class without.   
    */
-  def String hook(ComponentSymbol comp);
+  def String hook(ComponentSymbol comp, String compname);
 
   /**
    * Entry point for generating a component's implementation.
    * 
    */
-  def String generateHeader(ComponentSymbol comp) {
+  def String generateHeader(ComponentSymbol comp, String compname) {
   	var String generics = Utils.printFormalTypeParameters(comp)
     return '''
 #pragma once
-#include "«comp.name»Input.h"
-#include "«comp.name»Result.h"
+#include "«compname»Input.h"
+#include "«compname»Result.h"
 #include "IComputable.h"
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
 	
-class «comp.name»«generics»Impl : IComputable<«comp.name»Input«generics»,«comp.name»Result«generics»>{ {
+class «compname»«generics»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
 private:  
     «Utils.printVariables(comp)»
     «Utils.printConfigParameters(comp)»
 	
     
 public:
-  	«hook(comp)»
-	«printConstructor(comp)»
-	virtual «comp.name»Result getInitialValues() override;
-	virtual «comp.name»Result compute(«comp.name»Input input) override;
+  	«hook(comp, compname)»
+	«printConstructor(comp, compname)»
+	virtual «compname»Result getInitialValues() override;
+	virtual «compname»Result compute(«compname»Input input) override;
 
     }
     '''
   }
   
-  def String generateBody(ComponentSymbol comp){
+  def String generateBody(ComponentSymbol comp, String compname){
   	return'''
-#include "«comp.name»Impl.h"
+#include "«compname»Impl.h"
 
-«printGetInitialValues(comp)»
+«printGetInitialValues(comp, compname)»
 
-«printCompute(comp)»
+«printCompute(comp, compname)»
 '''
   }
     
 
 
-  def String printConstructor(ComponentSymbol comp) {
+  def String printConstructor(ComponentSymbol comp, String compname) {
     return '''
-«comp.name»Impl(«Utils.printConfiurationParametersAsList(comp)») {
+«compname»Impl(«Utils.printConfiurationParametersAsList(comp)») {
 «FOR param : comp.configParameters»
 	this.«param.name» = «param.name»; 
 «ENDFOR»

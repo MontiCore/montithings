@@ -5,6 +5,9 @@
  */
 package montithings.generator;
 
+import bindings._ast.ASTBindingsNode;
+import de.monticore.ast.ASTNode;
+import montiarc._symboltable.PortSymbol;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
 import de.monticore.cd2pojo.Modelfinder;
@@ -17,10 +20,22 @@ import montiarc._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
+import bindings._symboltable.BindingsLanguage;
+import bindings._cocos.BindingsCoCoChecker;
+import bindings.*;
 
+import javax.sound.sampled.Port;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import static java.util.Collections.*;
 
 /**
  * TODO
@@ -33,7 +48,32 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
 	public void generate(File modelPath, File target, File hwcPath) {
 
+		/**
+		 *
+		 *
+		 * Check Bindings
+		 *
+		 */
+		// 1. Get Bindings
+        HashMap<String, String> interfaceToImplementation = getInterfaceImplementationMatching(hwcPath.getAbsolutePath());
+        List<String> foundBindings = Modelfinder.getModelsInModelPath(hwcPath, BindingsLanguage.FILE_ENDING);
 
+        // 2. Parse and check Cocos of bindings
+		for (String binding : foundBindings) {
+			String qualifiedModelName = hwcPath.getAbsolutePath() + "/" + Names.getQualifier(binding) + "/" +
+					Names.getSimpleName(binding) + ".mtb";
+			BindingsTool bindingsTool = new BindingsTool();
+			CocoInput input = bindingsTool.prepareTest(qualifiedModelName);
+			bindingsTool.executeCoCo(input);
+			bindingsTool.checkResults(EMPTY_LIST);
+		}
+
+		/**
+		 *
+		 *
+		 * Check Models
+		 *
+		 */
 		List<String> foundModels = Modelfinder.getModelsInModelPath(modelPath, MontiThingsLanguage.FILE_ENDING);
 		// 2. Initialize SymbolTable
 		Log.info("Initializing symboltable", "MontiArcGeneratorTool");
@@ -53,9 +93,24 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
 			// 5. generate
 			Log.info("Generate model: " + qualifiedModelName, "MontiThingsGeneratorTool");
+
+			// check if component is implementation
+			if (interfaceToImplementation.containsValue(comp.getName())) {
+				// Dont generate files for implementation. They are generated when interface is there
+				continue;
+			}
+
+			String compname = comp.getName();
+
+			// Check if component is interface
+			if (interfaceToImplementation.containsKey(comp.getName())) {
+				compname = interfaceToImplementation.get(comp.getName());
+			}
+
+			// Generate Files
 			MTGenerator.generateAll(
 					Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(),
-					hwcPath, comp, foundModels);
+					hwcPath, comp, foundModels, compname, interfaceToImplementation);
 
 			for (ResourcePortSymbol resourcePortSymbol : ComponentHelper.getResourcePortsInComponent(comp)) {
 				if (resourcePortSymbol.isIpc()) {
@@ -93,6 +148,49 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 		}
 
 	}
+
+    /**
+     * Returns InterfaceComponent name matching to Implementation name as HashMap
+     *
+     * @param hwcPath
+     * @return
+     */
+	private HashMap<String, String> getInterfaceImplementationMatching(String hwcPath) {
+        // Every entry contains matching from interface to implementation (interface -> implementation)
+        HashMap<String, String> interfaceToImplementation = new HashMap<String, String>();
+
+        // 1. Check if binding exists
+		File[] hwcSubDirs = new File(hwcPath).listFiles(File::isDirectory);
+		for (File subdir: hwcSubDirs) {
+			if (new File(subdir.getAbsolutePath(), "bindings.mtb").exists()) {
+				// Every entry contains 1 binding
+				ArrayList<String> bindingList = new ArrayList<String>();
+
+				// 2. Append all lines to bindingList
+				try {
+					String bindingsPath = subdir.getAbsolutePath() + "/bindings.mtb";
+					BufferedReader reader = new BufferedReader(new FileReader(bindingsPath));
+					String line = reader.readLine();
+					while (line != null) {
+						bindingList.add(line);
+						line = reader.readLine();
+					}
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+
+				// 3. Append interface to implementation matching to map
+				for (String binding : bindingList) {
+					String interfaceComponent = binding.split("->")[0].replace(" ", "");
+					String implementationComponent = binding.split(" -> ")[1].replace(";", "")
+							.replace(" ", "");
+					interfaceToImplementation.put(interfaceComponent, implementationComponent);
+				}
+			}
+		}
+
+        return interfaceToImplementation;
+    }
 
 	/**
 	 * Compares the two paths and returns the common path. The common path is the

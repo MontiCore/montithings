@@ -17,6 +17,17 @@ grammar MontiThings extends MontiArc {
     interface ImportStatement;
 
     /**
+    * Interface component has no implementation except Ports
+    * TODO: extend MontiArc's Component instead of overwriting it - Needs MontiArc to be on MontiCore 5.3.0
+    */
+    symbol scope Component implements Element =
+        Stereotype?
+        (["interface"])? "component" Name
+        head:ComponentHead
+        (instanceName:Name actualTypeArgument:TypeArguments?)?
+        body:ComponentBody;
+
+    /**
     * Defines an interface of a component containing
     * incoming and outgoing ports to external resources.
     *

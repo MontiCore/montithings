@@ -8,18 +8,18 @@ import montithings.generator.helper.ComponentHelper
 
 class Setup {
 	
-	def static print(ComponentSymbol comp) {
+	def static print(ComponentSymbol comp, String compname) {
 		if (comp.isAtomic) {
-      return printSetupAtomic(comp)
+      return printSetupAtomic(comp, compname)
     } else {
-      return printSetupComposed(comp)
+      return printSetupComposed(comp, compname)
     }
 
 	}
 	
-	def static printSetupAtomic(ComponentSymbol comp) {
+	def static printSetupAtomic(ComponentSymbol comp, String compname) {
 		return '''
-		void «comp.name»::setUp(){
+		void «compname»::setUp(){
 			«IF comp.superComponent.present»
 			super.setUp();
 			«ENDIF»
@@ -30,10 +30,10 @@ class Setup {
 		'''
 	}
 	
-	def static printSetupComposed(ComponentSymbol comp) {
+	def static printSetupComposed(ComponentSymbol comp, String compname) {
 		var helper = new ComponentHelper(comp)
 		return '''
-		void «comp.name»::setUp(){
+		void «compname»::setUp(){
 			«IF comp.superComponent.present»
 			super.setUp();
 			«ENDIF»

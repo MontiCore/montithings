@@ -7,17 +7,17 @@ import montiarc._ast.ASTComponent
 import de.monticore.types.types._ast.ASTQualifiedName
 
 class Init {
-	def static print(ComponentSymbol comp) {
+	def static print(ComponentSymbol comp, String compname) {
     if (comp.isAtomic) {
-    	return printInitAtomic(comp)
+    	return printInitAtomic(comp, compname)
     } else {
-      return printInitComposed(comp)
+      return printInitComposed(comp, compname)
     }
   }
 	
-	def static printInitAtomic(ComponentSymbol comp) {
+	def static printInitAtomic(ComponentSymbol comp, String compname) {
 		return '''
-		void «comp.name»::init(){
+		void «compname»::init(){
 			«IF comp.superComponent.present»
 			super.init();
 		    «ENDIF»
@@ -27,10 +27,10 @@ class Init {
 		'''
 	}
 	
-	def static printInitComposed(ComponentSymbol comp) {
+	def static printInitComposed(ComponentSymbol comp, String compname) {
 		var helper = new ComponentHelper(comp);
 		return '''
-		void «comp.name»::init(){
+		void «compname»::init(){
 		«IF comp.superComponent.present»
 			super.init();
 		    «ENDIF»

@@ -1,5 +1,6 @@
 package montithings.generator.helper;
 
+import montiarc._ast.ASTComponent;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.visitor.GuardExpressionVisitor;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
@@ -372,13 +373,17 @@ public class ComponentHelper {
     return result;
   }
 
-  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance) {
+  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
+                                                             HashMap<String, String> interfaceToImplementation) {
     String result = "";
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
 
     result += componentTypeReference.getName();
     if (componentTypeReference.hasActualTypeArguments()) {
       result += printTypeArguments(componentTypeReference.getActualTypeArguments());
+    }
+    if(interfaceToImplementation.containsKey(result)) {
+      return interfaceToImplementation.get(result);
     }
     return result;
   }

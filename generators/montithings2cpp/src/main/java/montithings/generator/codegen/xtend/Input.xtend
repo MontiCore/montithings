@@ -8,16 +8,16 @@ class Input {
 	
 	
 	
-    def static generateInputBody(ComponentSymbol comp) {
+    def static generateInputBody(ComponentSymbol comp, String compname) {
     var ComponentHelper helper = new ComponentHelper(comp)
     var isBatch = ComponentHelper.usesBatchMode(comp);
     
     return '''
-#include "«comp.name»Input.h"      
+#include "«compname»Input.h"
 «IF !isBatch»
 
 «IF !comp.allIncomingPorts.empty»
-«comp.name»Input::«comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
+«compname»Input::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
 «IF comp.superComponent.present»
 	super(«FOR port : comp.superComponent.get.allIncomingPorts» «port.name» «ENDFOR»);
 «ENDIF»
@@ -28,11 +28,11 @@ class Input {
 «ENDIF»
 «ENDIF»  
 «FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
-std::vector<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
+std::vector<«helper.getRealPortCppTypeString(port)»> «compname»Input::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
  
-void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+void «compname»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
 	if (element){
 		«port.name».push_back(element.value());
  	}
@@ -40,11 +40,11 @@ void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«hel
 
 «ENDFOR»
 «FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
+tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Input::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
 
-void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+void «compname»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
 	this->«port.name» = std::move(element);
 } 
 «ENDFOR»
@@ -52,7 +52,7 @@ void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«hel
 '''
   }
 	
-	def static generateInputHeader(ComponentSymbol comp) {
+	def static generateInputHeader(ComponentSymbol comp, String compname) {
 	var ComponentHelper helper = new ComponentHelper(comp)
 	var isBatch = ComponentHelper.usesBatchMode(comp);
 		
@@ -69,7 +69,7 @@ void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«hel
 #include "tl/optional.hpp"
 «Utils.printCPPImports(comp)»
 
-class «comp.name»Input
+class «compname»Input
 «IF comp.superComponent.present» : 
 	«Utils.printSuperClassFQ(comp)»Input
 «IF comp.superComponent.get.hasFormalTypeParameters»<
@@ -87,9 +87,9 @@ private:
 «ENDFOR»
 public:
 
-	«comp.name»Input() = default;
+	«compname»Input() = default;
 	«IF !comp.allIncomingPorts.empty && !isBatch»
-	explicit «comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
+	explicit «compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
     «ENDIF»
 	
 	

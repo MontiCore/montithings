@@ -10,6 +10,7 @@ import montithings.generator.codegen.xtend.util.Setup
 import montithings.generator.codegen.xtend.util.Init
 import java.util.List
 import java.util.ArrayList
+import java.util.HashMap
 import de.monticore.symboltable.types.JFieldSymbol
 import montiarc._symboltable.ComponentSymbolReference
 import de.monticore.mcexpressions._ast.ASTExpression
@@ -19,7 +20,7 @@ import montithings.generator.visitor.CDAttributeGetterTransformationVisitor
 
 class ComponentGenerator {
 	
-	def static generateHeader(ComponentSymbol comp) {
+	def static generateHeader(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
 		var ComponentHelper helper = new ComponentHelper(comp)
 
 		
@@ -44,14 +45,14 @@ class ComponentGenerator {
 		
 		«IF comp.isDecomposed»
 		«FOR subcomponent : comp.subComponents»
-		#include "«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent)».h"
+		#include "«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)».h"
 		«ENDFOR»
 		«ELSE»
-		#include "«comp.name»Impl.h"
+		#include "«compname»Impl.h"
 		«ENDIF»
 		
 		
-		class «comp.name»«Utils.printFormalTypeParameters(comp)» : IComponent «IF comp.superComponent.present» , «Utils.printSuperClassFQ(comp)» 
+		class «compname»«Utils.printFormalTypeParameters(comp)» : IComponent «IF comp.superComponent.present» , «Utils.printSuperClassFQ(comp)»
 		            «IF comp.superComponent.get.hasFormalTypeParameters»<«FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
 		              «scTypeParams»«ENDFOR»>
 		            «ENDIF»«ENDIF»
@@ -67,12 +68,12 @@ class ComponentGenerator {
 			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
 			void run();
 			«ENDIF»
-			«Subcomponents.printVars(comp)»
+			«Subcomponents.printVars(comp, interfaceToImplementation)»
 			«ELSE»
 
-			«comp.name»Impl «Identifier.behaviorImplName»;
+			«compname»Impl «Identifier.behaviorImplName»;
 			void initialize();
-			void setResult(«comp.name»Result result);
+			void setResult(«compname»Result result);
 			void run();
 			«ENDIF»
 			
@@ -83,7 +84,7 @@ class ComponentGenerator {
 			«IF comp.isDecomposed»	
 			«ENDIF»
 			
-			«comp.name»(«Utils.printConfiurationParametersAsList(comp)»);
+			«compname»(«Utils.printConfiurationParametersAsList(comp)»);
 			
 			void setUp() override;
 			void init() override;
@@ -97,30 +98,30 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static generateBody(ComponentSymbol comp) {
+	def static generateBody(ComponentSymbol comp, String compname) {
 		return '''
-		#include "«comp.name».h"
+		#include "«compname».h"
 		
-		«Ports.printMethodBodies(comp.ports, comp)»
-		«Ports.printResourcePortMethodBodies(ComponentHelper.getResourcePortsInComponent(comp),comp)»
+		«Ports.printMethodBodies(comp.ports, comp, compname)»
+		«Ports.printResourcePortMethodBodies(ComponentHelper.getResourcePortsInComponent(comp),comp, compname)»
 				
 		«IF comp.isDecomposed»
 		«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
-		«printRun(comp)»
+		«printRun(comp, compname)»
 		«ENDIF»
-		«printComputeDecomposed(comp)»
-		«printStartDecomposed(comp)»
+		«printComputeDecomposed(comp, compname)»
+		«printStartDecomposed(comp, compname)»
 		«ELSE»
-		«printComputeAtomic(comp)»
-		«printStartAtomic(comp)»
-		«printRun(comp)»
+		«printComputeAtomic(comp, compname)»
+		«printStartAtomic(comp, compname)»
+		«printRun(comp, compname)»
 		
-		void «comp.name»::initialize(){
-			«comp.name»Result result = «Identifier.behaviorImplName».getInitialValues();
+		void «compname»::initialize(){
+			«compname»Result result = «Identifier.behaviorImplName».getInitialValues();
 			setResult(result);
 		}
 		
-		void «comp.name»::setResult(«comp.name»Result result){
+		void «compname»::setResult(«compname»Result result){
 			«FOR portOut : comp.outgoingPorts»
 			this->getPort«portOut.name.toFirstUpper»()->setNextValue(result.get«portOut.name.toFirstUpper»());
             «ENDFOR»
@@ -129,23 +130,23 @@ class ComponentGenerator {
 		
 		
 		«ENDIF»
-		«Setup.print(comp)»
+		«Setup.print(comp, compname)»
 		
-		«Init.print(comp)»
+		«Init.print(comp, compname)»
 		
-		«printConstructor(comp)»
+		«printConstructor(comp, compname)»
 		'''
 	}
 	
 
-	def static printConstructor(ComponentSymbol comp) {
+	def static printConstructor(ComponentSymbol comp, String compname) {
 		return '''
-		«comp.name»::«comp.name»(«Utils.printConfiurationParametersAsList(comp)»){
+		«compname»::«compname»(«Utils.printConfiurationParametersAsList(comp)»){
 			«IF comp.superComponent.present»
-			super(«FOR inhParam : getInheritedParams(comp) SEPARATOR ','» «inhParam» «ENDFOR»);
+			super(«FOR inhParam : getInheritedParams(comp, compname) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»
 			«IF comp.isAtomic»
-			«comp.name»Impl«Utils.printFormalTypeParameters(comp)» behav«IF comp.hasConfigParameters»(
+			«compname»Impl«Utils.printFormalTypeParameters(comp)» behav«IF comp.hasConfigParameters»(
 			            «FOR param : comp.configParameters SEPARATOR ','»
 			              «param.name»
 						            «ENDFOR»
@@ -161,9 +162,9 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printComputeAtomic(ComponentSymbol comp) {
+	def static printComputeAtomic(ComponentSymbol comp, String compname) {
 		return '''
-		void «comp.name»::compute(){
+		void «compname»::compute(){
 			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
 			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»)
 			«ENDIF»
@@ -179,9 +180,9 @@ class ComponentGenerator {
 			«ENDIF»
 			{
 				«IF !ComponentHelper.usesBatchMode(comp)»
-				«comp.name»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid)«ENDFOR»)«ENDIF»;
+				«compname»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid)«ENDFOR»)«ENDIF»;
 				«ELSE»
-				«comp.name»Input input;
+				«compname»Input input;
 				«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
 				while(getPort«inPort.name.toFirstUpper»()->hasValue(uuid)){
 					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
@@ -191,7 +192,7 @@ class ComponentGenerator {
 				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
 				«ENDFOR»
 				«ENDIF»
-				«comp.name»Result result;
+				«compname»Result result;
 				«IF !ComponentHelper.hasExecutionStatement(comp)»
 				result = «Identifier.behaviorImplName».compute(input);
 				«ELSE»
@@ -224,9 +225,9 @@ class ComponentGenerator {
 	}
 		
 	
-	def static printComputeDecomposed(ComponentSymbol comp) {
+	def static printComputeDecomposed(ComponentSymbol comp, String compname) {
 		return '''
-		void «comp.name»::compute(){
+		void «compname»::compute(){
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».compute();
 	        «ENDFOR»
@@ -236,11 +237,11 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printStartDecomposed(ComponentSymbol comp) {
+	def static printStartDecomposed(ComponentSymbol comp, String compname) {
 		return '''
-		void «comp.name»::start(){
+		void «compname»::start(){
 			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
-			threads.push_back(std::thread{&«comp.name»::run, this});
+			threads.push_back(std::thread{&«compname»::run, this});
 			«ELSE»
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».start();
@@ -251,20 +252,20 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printStartAtomic(ComponentSymbol comp) {
+	def static printStartAtomic(ComponentSymbol comp, String compname) {
 		return '''
-		void «comp.name»::start(){
-			threads.push_back(std::thread{&«comp.name»::run, this});
+		void «compname»::start(){
+			threads.push_back(std::thread{&«compname»::run, this});
 					
 		}
 
 		'''
 	}
 	
-	def static printRun(ComponentSymbol comp) {
+	def static printRun(ComponentSymbol comp, String compname) {
 		return '''
-		void «comp.name»::run(){
-			cout << "Thread for «comp.name» started\n";
+		void «compname»::run(){
+			cout << "Thread for «compname» started\n";
 			
 			while (true)
 				{
@@ -283,7 +284,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def private static List<String> getInheritedParams(ComponentSymbol component) {
+	def private static List<String> getInheritedParams(ComponentSymbol component, String compname) {
     var List<String> result = new ArrayList;
     var List<JFieldSymbol> configParameters = component.getConfigParameters();
     if (component.getSuperComponent().isPresent()) {
