@@ -482,20 +482,28 @@ public class ComponentHelper {
    * @param ref
    * @return
    */
-  public String printFqnTypeName(ASTComponent comp, JTypeReference<? extends JTypeSymbol> ref) {
+  public String printParamTypeName(ASTComponent comp, JTypeReference<? extends JTypeSymbol> ref) {
     StringBuilder name = new StringBuilder(ref.getName());
-    if (isGenericTypeName(comp, name.toString())) {
-      return name.toString();
-    }
-    Collection<JTypeSymbol> sym = ref.getEnclosingScope().resolveMany(ref.getName(), JTypeSymbol.KIND);
-    if (!sym.isEmpty()) {
-      name = new StringBuilder(sym.iterator().next().getFullName());
-    }
     for (int i = 0; i < ref.getDimension(); ++i) {
       name.append("[]");
     }
-    return autobox(name.toString());
+    return java2cppTypeString(name.toString());
   }
+  
+  public String printFqnTypeName(ASTComponent comp, JTypeReference<? extends JTypeSymbol> ref) {
+	    StringBuilder name = new StringBuilder(ref.getName());
+	    if (isGenericTypeName(comp, name.toString())) {
+	      return name.toString();
+	    }
+	    Collection<JTypeSymbol> sym = ref.getEnclosingScope().resolveMany(ref.getName(), JTypeSymbol.KIND);
+	    if (!sym.isEmpty()) {
+	      name = new StringBuilder(sym.iterator().next().getFullName());
+	    }
+	    for (int i = 0; i < ref.getDimension(); ++i) {
+	      name.append("[]");
+	    }
+	    return autobox(java2cppTypeString(name.toString()));
+	  }
 
   /**
    * @return A list of String representations of the actual type arguments
