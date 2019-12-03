@@ -918,4 +918,28 @@ public class ComponentHelper {
     return packageNames;
   }
 
+  public static String getPackagePath(ComponentSymbol comp, ComponentInstanceSymbol subComp) {
+    // Get package name of subcomponent
+    String subCompPackageName = subComp.getComponentType().getReferencedSymbol().getPackageName();
+    // Check if subcomponent is in different package than parent component
+    if (!subCompPackageName.equals(comp.getPackageName())) {
+      // Split packageName
+      String[] path = subCompPackageName.split("\\.");
+      // Build correct package path
+      String correctPath = "";
+      boolean leaveFirstOut = true;
+      for (String dir : path) {
+        if (leaveFirstOut) {
+          leaveFirstOut = false;
+          continue;
+        }
+        correctPath += dir + "/";
+      }
+      // Return correct path
+      return correctPath;
+    }
+    // If subcomponent is in the same package as component, then no package path before class import required
+    return "";
+  }
+
 }
