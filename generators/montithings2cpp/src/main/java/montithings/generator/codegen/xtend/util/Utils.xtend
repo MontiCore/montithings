@@ -22,7 +22,7 @@ class Utils {
   def static printConfiurationParametersAsList(ComponentSymbol comp) {
     var helper = new ComponentHelper(comp)
     return '''
-      «FOR param : comp.configParameters SEPARATOR ','» «helper.printFqnTypeName(comp.astNode.get as ASTComponent, param.type)» «param.name» «ENDFOR»
+      «FOR param : comp.configParameters SEPARATOR ','» «helper.printParamTypeName(comp.astNode.get as ASTComponent, param.type)» «param.name» «ENDFOR»
     '''
   }
 
@@ -55,7 +55,7 @@ class Utils {
   def static printConfigParameters(ComponentSymbol comp) {
     return '''
       «FOR param : (comp.astNode.get as ASTComponent).head.parameterList»
-        «printMember(ComponentHelper.printTypeName(param.type), param.name, "private final")»
+        «printMember(ComponentHelper.printCPPTypeName(param.type), param.name, "")»
       «ENDFOR»
     '''
   }

@@ -16,8 +16,13 @@ class AbstractAtomicImplementation {
 «Utils.printCPPImports(comp)»
 
 class «compname»«generics»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{
-
+	
+private:  
+    «Utils.printVariables(comp)»
+    «Utils.printConfigParameters(comp)»
+    
 public:
+    «printConstructor(comp)»
 	«compname»«generics»Impl() = default;
 	«compname»Result getInitialValues() override;
 	«compname»Result compute(«compname»Input input) override;
@@ -38,6 +43,17 @@ public:
 	throw std::runtime_error("Invoking compute() on abstract implementation «comp.packageName».«compname»");  	
 }
 '''
+  }
+  
+    def static String printConstructor(ComponentSymbol comp) {
+    return '''
+«comp.name»Impl(«Utils.printConfiurationParametersAsList(comp)») {
+«FOR param : comp.configParameters»
+	this.«param.name» = «param.name»; 
+«ENDFOR»
+}
+'''
+
   }
 	
 }
