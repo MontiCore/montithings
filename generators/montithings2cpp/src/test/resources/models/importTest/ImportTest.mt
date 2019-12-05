@@ -1,7 +1,7 @@
 package importTest;
 
 
-import importTest.subpackage.*;
+import importTest.subpackage.SubComp;
 
 <<deploy>> component ImportTest {
   component SubComp subComp;

@@ -57,9 +57,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 		// 1. Get Bindings
         HashMap<String, String> interfaceToImplementation = getInterfaceImplementationMatching(hwcPath.getAbsolutePath());
         List<String> foundBindings = Modelfinder.getModelsInModelPath(hwcPath, BindingsLanguage.FILE_ENDING);
+		Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
 
         // 2. Parse and check Cocos of bindings
 		for (String binding : foundBindings) {
+			Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
 			String qualifiedModelName = hwcPath.getAbsolutePath() + "/" + Names.getQualifier(binding) + "/" +
 					Names.getSimpleName(binding) + ".mtb";
 			BindingsTool bindingsTool = new BindingsTool();

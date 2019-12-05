@@ -28,6 +28,13 @@
             <artifactId>maJavaLib</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>montiarc.libraries</groupId>
+            <artifactId>simulator-rte</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>montiarc.libraries</groupId>
             <artifactId>maa-rte</artifactId>
@@ -46,6 +53,13 @@
         </dependency>
 
         <dependency>
+            <groupId>montiarc.libraries</groupId>
+            <artifactId>maJavaLib</artifactId>
+            <classifier>${majavalib.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-grammar</artifactId>
         </dependency>
@@ -55,9 +69,17 @@
             <artifactId>javaDSL</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>montiarc.generators</groupId>
+            <artifactId>cd2pojo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-
-
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-generator</artifactId>
+            <version>${monticore.version}</version>
+        </dependency>
 
         <!-- .. Test Libraries ............................................... -->
         <dependency>
