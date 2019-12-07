@@ -7,6 +7,7 @@ package montithings.cocos;
 
 import de.monticore.cd2pojo.Modelfinder;
 import de.monticore.symboltable.ImportStatement;
+import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.Symbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
@@ -18,6 +19,7 @@ import montithings._symboltable.MontiThingsLanguage;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Checks that there are no java imports used in MontiThings components
@@ -46,46 +48,18 @@ public class NoJavaImportStatements implements MontiArcASTComponentCoCo {
     for (ImportStatement importStatement : importStatements) {
       // Check if import statement is a star import. If no then check if import statement imports a MontiThings component
       if (!importStatement.isStar()) {
+        Scope encScope = comp.getEnclosingScope();
+        Optional<ComponentSymbol> compsym = encScope.<ComponentSymbol> resolve(importStatement.getStatement(),
+            ComponentSymbol.KIND);
+
         // Check if import statement imports a MontiThings component
-        if (!modelExists(importStatement.getStatement())) {
+        if (!compsym.isPresent()) {
           Log.error("0xMT124 The import statement: " + importStatement.getStatement() +
                   " imports no MontiThings component!");
           return;
         }
       }
     }
-  }
-
-  /**
-   * Parses import string and checks if model exists in path given by import statement
-   * @param importStatement
-   * @return
-   */
-  private boolean modelExists(String importStatement) {
-    // 1. Remove '.' from path
-    String[] path = importStatement.split("\\.");
-
-    // 2. Get models in specified path
-    List<String> foundModels;
-    try {
-      foundModels = Modelfinder.getModelsInModelPath(Paths.get(APPLICATION_MODEL_PATH).toFile(),
-              MontiThingsLanguage.FILE_ENDING);
-    } catch (Exception e) {
-      foundModels = Modelfinder.getModelsInModelPath(Paths.get(TEST_MODEL_PATH).toFile(),
-              MontiThingsLanguage.FILE_ENDING);
-    }
-
-    // 4. Check if model exists
-    String compName = path[path.length - 1];
-    for (String model : foundModels) {
-      String qualifiedModelName = Names.getSimpleName(model);
-      if (qualifiedModelName.equals(compName)) {
-        // return without failure when model with implementation name exists
-        return true;
-      }
-    }
-
-    return false;
   }
 }
 
