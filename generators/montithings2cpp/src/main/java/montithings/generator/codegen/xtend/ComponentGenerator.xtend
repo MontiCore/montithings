@@ -146,7 +146,9 @@ class ComponentGenerator {
 
 	def static printConstructor(ComponentSymbol comp, String compname) {
 		return '''
-		«compname»::«compname»(«Utils.printConfiurationParametersAsList(comp)»){
+		«compname»::«compname»(«Utils.printConfiurationParametersAsList(comp)»)
+		«Subcomponents.printInitializerList(comp)»
+		{
 			«IF comp.superComponent.present»
 			super(«FOR inhParam : getInheritedParams(comp, compname) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»

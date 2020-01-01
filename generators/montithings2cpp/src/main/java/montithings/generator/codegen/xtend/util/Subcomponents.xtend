@@ -11,15 +11,22 @@ class Subcomponents {
     return '''
       «FOR subcomponent : comp.subComponents»
         «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)»
-        «type» «subcomponent.name»«IF !helper.getParamValues(subcomponent).isEmpty»(
-                «FOR param : helper.getParamValues(subcomponent) SEPARATOR ','»
-                  «param»
-                «ENDFOR»
-                )«ENDIF»;
+        «type» «subcomponent.name»;
       «ENDFOR»
     '''
   }
-  
 
-	
+
+  def static String printInitializerList(ComponentSymbol comp) {
+    var helper = new ComponentHelper(comp)
+    return '''
+      :
+      «FOR subcomponent : comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty] SEPARATOR ','»
+        «subcomponent.name»(
+          «FOR param : helper.getParamValues(subcomponent) SEPARATOR ','»
+            «param»
+          «ENDFOR»)
+      «ENDFOR»
+    '''
+  }
 }
