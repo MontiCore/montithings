@@ -375,12 +375,18 @@ public class ComponentHelper {
   }
 
   public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
-                                                             HashMap<String, String> interfaceToImplementation) {
+      HashMap<String, String> interfaceToImplementation) {
+    return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementation, true);
+  }
+
+  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
+                                                             HashMap<String, String> interfaceToImplementation,
+                                                             boolean printTypeParameters) {
     String result = "";
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
 
     result += componentTypeReference.getName();
-    if (componentTypeReference.hasActualTypeArguments()) {
+    if (componentTypeReference.hasActualTypeArguments() && printTypeParameters) {
       result += printTypeArguments(componentTypeReference.getActualTypeArguments());
     }
     if(interfaceToImplementation.containsKey(result)) {

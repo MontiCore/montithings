@@ -11,6 +11,7 @@ import montithings.generator.codegen.xtend.util.Init
 import java.util.List
 import java.util.ArrayList
 import java.util.HashMap
+import java.util.HashSet
 import de.monticore.symboltable.types.JFieldSymbol
 import montiarc._symboltable.ComponentSymbolReference
 import de.monticore.mcexpressions._ast.ASTExpression
@@ -22,8 +23,10 @@ class ComponentGenerator {
 	
 	def static generateHeader(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
 		var ComponentHelper helper = new ComponentHelper(comp)
-
-		
+    var HashSet<String> compIncludes = new HashSet<String>()
+    for (subcomponent : comp.subComponents) {
+      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
+		}
 		return '''
 		#pragma once
 		#include "IComponent.h"
@@ -44,8 +47,8 @@ class ComponentGenerator {
 		
 		
 		«IF comp.isDecomposed»
-		«FOR subcomponent : comp.subComponents»
-		#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)».h"
+		«FOR include : compIncludes»
+		«include»
 		«ENDFOR»
 		«ELSE»
 		#include "«compname»Impl.h"
