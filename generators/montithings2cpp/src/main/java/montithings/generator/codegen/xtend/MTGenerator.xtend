@@ -99,12 +99,13 @@ class MTGenerator {
   	return ""
   }
 	
-  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath){
+  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath){
 	
 	toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(),
 		comp,
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
-		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString), ".txt")
+		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
+		subPackagesPath), ".txt")
   }
 
   def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath){

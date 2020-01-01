@@ -134,12 +134,6 @@
 			<version>5.0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>montithings.languages</groupId>
-            <artifactId>bindings</artifactId>
-            <version>5.0.2-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
 
     </dependencies>
 

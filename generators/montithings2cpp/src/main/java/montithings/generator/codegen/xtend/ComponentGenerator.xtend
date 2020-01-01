@@ -45,7 +45,7 @@ class ComponentGenerator {
 		
 		«IF comp.isDecomposed»
 		«FOR subcomponent : comp.subComponents»
-		#include "«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)».h"
+		#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)».h"
 		«ENDFOR»
 		«ELSE»
 		#include "«compname»Impl.h"

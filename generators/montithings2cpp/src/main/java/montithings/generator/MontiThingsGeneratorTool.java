@@ -40,7 +40,7 @@ import static java.util.Collections.*;
 /**
  * TODO
  *
- * @author (last commit) JFuerste
+ * @authors (last commit) JFuerste, Daniel von Mirbach
  */
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
@@ -57,9 +57,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 		// 1. Get Bindings
         HashMap<String, String> interfaceToImplementation = getInterfaceImplementationMatching(hwcPath.getAbsolutePath());
         List<String> foundBindings = Modelfinder.getModelsInModelPath(hwcPath, BindingsLanguage.FILE_ENDING);
+		Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
 
         // 2. Parse and check Cocos of bindings
 		for (String binding : foundBindings) {
+			Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
 			String qualifiedModelName = hwcPath.getAbsolutePath() + "/" + Names.getQualifier(binding) + "/" +
 					Names.getSimpleName(binding) + ".mtb";
 			BindingsTool bindingsTool = new BindingsTool();
@@ -138,15 +140,39 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}*/
+
+				// Check for Subpackages
+				File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath() + "/" +
+						Names.getQualifier(model));
+
 				// 6 generate make file
 				Log.info("Generate CMake file", "MontiArcGeneratorTool");
 				MTGenerator.generateMakeFile(
 						Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName())).toFile(),
-						comp, hwcPath, libraryPath);
+						comp, hwcPath, libraryPath, subPackagesPath);
 			}
 
 		}
 
+	}
+
+	/**
+	 * Returns list of all subpackages paths
+	 *
+	 * @param modelPath
+	 * @return
+	 */
+	private File[] getSubPackagesPath(String modelPath) {
+		ArrayList<File> subPackagesPaths = new ArrayList<>();
+		File[] subDirs = new File(modelPath).listFiles(File::isDirectory);
+
+		// Iterate over subdirectories of the model folder and add the paths of the subdirs to array
+		for (File subDir : subDirs) {
+			subPackagesPaths.add(new File(subDir.getAbsolutePath()));
+		}
+
+		// cast to ArrayList to File[] and return
+		return subPackagesPaths.toArray(new File[subPackagesPaths.size()]);
 	}
 
     /**

@@ -61,6 +61,12 @@ public class AssortedCoCoTest extends AbstractCoCoTest  {
   }
 
   @Test
+  public void javaValidImportTest(){
+    checkValid(PACKAGE, "JavaImportValid");
+  }
+
+
+  @Test
   public void TimeSyncInAtomicTest(){
     ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "TimeSyncInAtomic");
