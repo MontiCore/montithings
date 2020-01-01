@@ -70,16 +70,26 @@ class Utils {
       «ENDFOR»
     '''
   }
-  
+
+  /**
+   * Check if a component is generic
+   */
+  def static Boolean hasTypeParameters(ComponentSymbol comp) {
+    return (comp.astNode.get as ASTComponent).head.isPresentGenericTypeParameters;
+  }
+
   /**
    * Prints formal parameters of a component.
    */
   def static printFormalTypeParameters(ComponentSymbol comp) {
+    return printFormalTypeParameters(comp, false)
+  }
+  def static printFormalTypeParameters(ComponentSymbol comp, Boolean withClassPrefix) {
     return '''
-      «IF (comp.astNode.get as ASTComponent).head.isPresentGenericTypeParameters»
+      «IF hasTypeParameters(comp)»
         <
           «FOR generic : getGenericParameters(comp) SEPARATOR ','»
-            «generic»
+            «IF withClassPrefix»class «ENDIF»«generic»
           «ENDFOR»
         >
       «ENDIF»

@@ -53,9 +53,11 @@ class ComponentGenerator {
 		«ELSE»
 		#include "«compname»Impl.h"
 		«ENDIF»
-		
-		
-		class «compname»«Utils.printFormalTypeParameters(comp)» : IComponent «IF comp.superComponent.present» , «Utils.printSuperClassFQ(comp)»
+
+		«IF Utils.hasTypeParameters(comp)»
+		template«Utils.printFormalTypeParameters(comp, true)»
+		«ENDIF»
+		class «compname» : IComponent «IF comp.superComponent.present» , «Utils.printSuperClassFQ(comp)»
 		            «IF comp.superComponent.get.hasFormalTypeParameters»<«FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
 		              «scTypeParams»«ENDFOR»>
 		            «ENDIF»«ENDIF»
