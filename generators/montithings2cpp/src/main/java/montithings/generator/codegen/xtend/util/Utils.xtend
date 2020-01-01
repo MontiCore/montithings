@@ -19,7 +19,7 @@ class Utils {
   /**
    * Prints the component's configuration parameters as a comma separated list.
    */
-  def static printConfiurationParametersAsList(ComponentSymbol comp) {
+  def static printConfigurationParametersAsList(ComponentSymbol comp) {
     var helper = new ComponentHelper(comp)
     return '''
       «FOR param : comp.configParameters SEPARATOR ','» «helper.printParamTypeName(comp.astNode.get as ASTComponent, param.type)» «param.name» «ENDFOR»
@@ -93,6 +93,14 @@ class Utils {
           «ENDFOR»
         >
       «ENDIF»
+    '''
+  }
+
+  def static String printTemplateArguments(ComponentSymbol comp) {
+    return '''
+    «IF Utils.hasTypeParameters(comp)»
+      template«Utils.printFormalTypeParameters(comp, true)»
+    «ENDIF»
     '''
   }
 

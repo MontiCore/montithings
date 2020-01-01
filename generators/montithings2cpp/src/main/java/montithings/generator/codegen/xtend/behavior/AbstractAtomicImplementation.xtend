@@ -23,7 +23,7 @@ private:
     
 public:
     «printConstructor(comp)»
-	«compname»«generics»Impl() = default;
+	//«compname»«generics»Impl() = default;
 	«compname»Result getInitialValues() override;
 	«compname»Result compute(«compname»Input input) override;
 };
@@ -47,7 +47,7 @@ public:
   
     def static String printConstructor(ComponentSymbol comp) {
     return '''
-«comp.name»Impl(«Utils.printConfiurationParametersAsList(comp)») {
+«comp.name»Impl(«Utils.printConfigurationParametersAsList(comp)») {
 «FOR param : comp.configParameters»
 	this.«param.name» = «param.name»; 
 «ENDFOR»

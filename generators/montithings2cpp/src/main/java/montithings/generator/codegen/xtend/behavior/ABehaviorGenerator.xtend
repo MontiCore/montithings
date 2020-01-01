@@ -68,7 +68,7 @@ public:
 
   def String printConstructor(ComponentSymbol comp, String compname) {
     return '''
-«compname»Impl(«Utils.printConfiurationParametersAsList(comp)») {
+«compname»Impl(«Utils.printConfigurationParametersAsList(comp)») {
 «FOR param : comp.configParameters»
 	this.«param.name» = «param.name»; 
 «ENDFOR»

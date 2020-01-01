@@ -5,6 +5,7 @@ import montiarc._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
+import montithings.generator.codegen.xtend.util.Utils
 
 class Ports {
 	
@@ -94,11 +95,12 @@ OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»"
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
-    
+    «Utils.printTemplateArguments(comp)»
     Port<«type»>* «compname»::getPort«name.toFirstUpper»(){
     	return «name»;
     }
-    
+
+    «Utils.printTemplateArguments(comp)»
     void «compname»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«IF comp.atomic»
     	port->registerPort(uuid);

@@ -39,7 +39,7 @@ class MTGenerator {
     toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname), ".h");
     toFile(targetPath, compname + "Result", Result.generateResultBody(comp, compname), ".cpp");
     toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, interfaceToImplementation), ".h");
-    toFile(targetPath, compname, ComponentGenerator.generateBody(comp, compname), ".cpp");
+    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname), ".cpp");
     
 
     var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + compname + "Impl");
