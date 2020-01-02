@@ -5,6 +5,7 @@ import montithings.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
 import montiarc._ast.ASTComponent
 import de.monticore.types.types._ast.ASTQualifiedName
+import montithings.generator.codegen.xtend.util.Utils
 
 class Init {
 	def static print(ComponentSymbol comp, String compname) {
@@ -17,7 +18,8 @@ class Init {
 	
 	def static printInitAtomic(ComponentSymbol comp, String compname) {
 		return '''
-		void «compname»::init(){
+		«Utils.printTemplateArguments(comp)»
+		void «compname»«Utils.printFormalTypeParameters(comp, false)»::init(){
 			«IF comp.superComponent.present»
 			super.init();
 		    «ENDIF»
@@ -30,7 +32,8 @@ class Init {
 	def static printInitComposed(ComponentSymbol comp, String compname) {
 		var helper = new ComponentHelper(comp);
 		return '''
-		void «compname»::init(){
+		«Utils.printTemplateArguments(comp)»
+		void «compname»«Utils.printFormalTypeParameters(comp, false)»::init(){
 		«IF comp.superComponent.present»
 			super.init();
 		    «ENDIF»

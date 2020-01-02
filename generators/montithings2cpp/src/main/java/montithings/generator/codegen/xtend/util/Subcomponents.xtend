@@ -20,7 +20,6 @@ class Subcomponents {
   def static String printInitializerList(ComponentSymbol comp) {
     var helper = new ComponentHelper(comp)
     return '''
-      :
       «FOR subcomponent : comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty] SEPARATOR ','»
         «subcomponent.name»(
           «FOR param : helper.getParamValues(subcomponent) SEPARATOR ','»

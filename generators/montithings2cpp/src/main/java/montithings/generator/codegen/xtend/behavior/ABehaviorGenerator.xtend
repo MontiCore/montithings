@@ -29,7 +29,7 @@ abstract class ABehaviorGenerator {
    * 
    */
   def String generateHeader(ComponentSymbol comp, String compname) {
-  	var String generics = Utils.printFormalTypeParameters(comp)
+  	var String generics = Utils.printFormalTypeParameters(comp, false)
     return '''
 #pragma once
 #include "«compname»Input.h"
@@ -37,8 +37,9 @@ abstract class ABehaviorGenerator {
 #include "IComputable.h"
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
-	
-class «compname»«generics»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
+
+«Utils.printTemplateArguments(comp)»
+class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
 private:  
     «Utils.printVariables(comp)»
     «Utils.printConfigParameters(comp)»
@@ -47,8 +48,8 @@ private:
 public:
   	«hook(comp, compname)»
 	«printConstructor(comp, compname)»
-	virtual «compname»Result getInitialValues() override;
-	virtual «compname»Result compute(«compname»Input input) override;
+	virtual «compname»Result«generics» getInitialValues() override;
+	virtual «compname»Result«generics» compute(«compname»Input«generics» input) override;
 
     }
     '''

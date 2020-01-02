@@ -35,9 +35,9 @@ class MTGenerator {
     Identifier.createInstance(comp)
 
     toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname), ".h");
-    toFile(targetPath, compname + "Input", Input.generateInputBody(comp, compname), ".cpp");
+    toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname), ".cpp");
     toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname), ".h");
-    toFile(targetPath, compname + "Result", Result.generateResultBody(comp, compname), ".cpp");
+    toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname), ".cpp");
     toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, interfaceToImplementation), ".h");
     toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname), ".cpp");
     

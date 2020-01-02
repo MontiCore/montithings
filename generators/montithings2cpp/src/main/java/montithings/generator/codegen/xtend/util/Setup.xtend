@@ -5,6 +5,7 @@ import montiarc._ast.ASTConnector
 import montiarc._ast.ASTComponent
 import de.monticore.types.types._ast.ASTQualifiedName
 import montithings.generator.helper.ComponentHelper
+import montithings.generator.codegen.xtend.util.Utils
 
 class Setup {
 	
@@ -19,7 +20,8 @@ class Setup {
 	
 	def static printSetupAtomic(ComponentSymbol comp, String compname) {
 		return '''
-		void «compname»::setUp(){
+		«Utils.printTemplateArguments(comp)»
+		void «compname»«Utils.printFormalTypeParameters(comp, false)»::setUp(){
 			«IF comp.superComponent.present»
 			super.setUp();
 			«ENDIF»
@@ -33,7 +35,8 @@ class Setup {
 	def static printSetupComposed(ComponentSymbol comp, String compname) {
 		var helper = new ComponentHelper(comp)
 		return '''
-		void «compname»::setUp(){
+		«Utils.printTemplateArguments(comp)»
+		void «compname»«Utils.printFormalTypeParameters(comp, false)»::setUp(){
 			«IF comp.superComponent.present»
 			super.setUp();
 			«ENDIF»

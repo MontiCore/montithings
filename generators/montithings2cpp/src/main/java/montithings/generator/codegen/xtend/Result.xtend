@@ -5,13 +5,23 @@ import montithings.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
 
 class Result {
+
+  def static generateImplementationFile(ComponentSymbol comp, String compname) {
+    return '''
+    #include "«compname»Result.h"
+    «IF !Utils.hasTypeParameters(comp)»
+    «generateResultBody(comp, compname)»
+    «ENDIF»
+    '''
+  }
+
+
 	def static generateResultBody(ComponentSymbol comp, String compname){
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    return '''
-#include "«compname»Result.h"
-
 «IF !comp.allOutgoingPorts.empty»
-«compname»Result::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
+«Utils.printTemplateArguments(comp)»
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
 	«IF comp.superComponent.present»
 	super(«FOR port : comp.superComponent.get.allOutgoingPorts» «port.name» «ENDFOR»);
 «ENDIF»
@@ -22,13 +32,15 @@ class Result {
 «ENDIF»
 
 «FOR port : comp.outgoingPorts»
-tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Result::get«port.name.toFirstUpper»(){
+«Utils.printTemplateArguments(comp)»
+tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
  }
  «ENDFOR»
  
  «FOR port : comp.outgoingPorts»
-void «compname»Result::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»){
+«Utils.printTemplateArguments(comp)»
+void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»){
 		this->«port.name» = «port.name»; 
  }
  «ENDFOR»
@@ -48,6 +60,7 @@ return '''
 #include <set>
 «Utils.printCPPImports(comp)»
 
+«Utils.printTemplateArguments(comp)»
 class «compname»Result
   «IF comp.superComponent.present» : 
     «Utils.printSuperClassFQ(comp)»Result
@@ -76,6 +89,10 @@ public:
 	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»);
 	«ENDFOR»
 };
+
+«IF Utils.hasTypeParameters(comp)»
+  «generateResultBody(comp, compname)»
+«ENDIF»
 '''
 		
 	}

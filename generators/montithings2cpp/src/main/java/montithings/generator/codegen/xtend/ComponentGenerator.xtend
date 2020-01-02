@@ -74,9 +74,9 @@ class ComponentGenerator {
 			«Subcomponents.printVars(comp, interfaceToImplementation)»
 			«ELSE»
 
-			«compname»Impl «Identifier.behaviorImplName»;
+			«compname»Impl«Utils.printFormalTypeParameters(comp)» «Identifier.behaviorImplName»;
 			void initialize();
-			void setResult(«compname»Result result);
+			void setResult(«compname»Result«Utils.printFormalTypeParameters(comp)» result);
 			void run();
 			«ENDIF»
 			
@@ -129,13 +129,13 @@ class ComponentGenerator {
 		«printRun(comp, compname)»
 
 		«Utils.printTemplateArguments(comp)»
-		void «compname»::initialize(){
-			«compname»Result result = «Identifier.behaviorImplName».getInitialValues();
+		void «compname»«Utils.printFormalTypeParameters(comp)»::initialize(){
+			«compname»Result«Utils.printFormalTypeParameters(comp)» result = «Identifier.behaviorImplName».getInitialValues();
 			setResult(result);
 		}
 
 		«Utils.printTemplateArguments(comp)»
-		void «compname»::setResult(«compname»Result result){
+		void «compname»«Utils.printFormalTypeParameters(comp)»::setResult(«compname»Result«Utils.printFormalTypeParameters(comp)» result){
 			«FOR portOut : comp.outgoingPorts»
 			this->getPort«portOut.name.toFirstUpper»()->setNextValue(result.get«portOut.name.toFirstUpper»());
             «ENDFOR»
@@ -145,11 +145,11 @@ class ComponentGenerator {
 		
 		«ENDIF»
 
-		«Utils.printTemplateArguments(comp)»
+
 		«Setup.print(comp, compname)»
 
 
-		«Utils.printTemplateArguments(comp)»
+
 		«Init.print(comp, compname)»
 		
 		«printConstructor(comp, compname)»
@@ -160,9 +160,12 @@ class ComponentGenerator {
 	def static printConstructor(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		«compname»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
+		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
+		«IF !comp.configParameters.isEmpty || !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»
+    :
+    «ENDIF»
 		«Subcomponents.printInitializerList(comp)»
-		«IF !comp.configParameters.isEmpty»,«ENDIF»
+		«IF !comp.configParameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
 		«FOR param : comp.configParameters SEPARATOR ','»
       «param.name» («param.name»)
     «ENDFOR»
@@ -171,7 +174,7 @@ class ComponentGenerator {
 			super(«FOR inhParam : getInheritedParams(comp, compname) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»
 			«IF comp.isAtomic»
-			«compname»Impl«Utils.printFormalTypeParameters(comp)» behav«IF comp.hasConfigParameters»(
+			«compname»Impl«Utils.printFormalTypeParameters(comp, false)» behav«IF comp.hasConfigParameters»(
 			            «FOR param : comp.configParameters SEPARATOR ','»
 			              «param.name»
 						            «ENDFOR»
@@ -185,7 +188,7 @@ class ComponentGenerator {
 	def static printComputeAtomic(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»::compute(){
+		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
 			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
 			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»)
 			«ENDIF»
@@ -201,9 +204,9 @@ class ComponentGenerator {
 			«ENDIF»
 			{
 				«IF !ComponentHelper.usesBatchMode(comp)»
-				«compname»Input input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid)«ENDFOR»)«ENDIF»;
+				«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid)«ENDFOR»)«ENDIF»;
 				«ELSE»
-				«compname»Input input;
+				«compname»Input«Utils.printFormalTypeParameters(comp)» input;
 				«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
 				while(getPort«inPort.name.toFirstUpper»()->hasValue(uuid)){
 					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
@@ -213,7 +216,7 @@ class ComponentGenerator {
 				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
 				«ENDFOR»
 				«ENDIF»
-				«compname»Result result;
+				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
 				«IF !ComponentHelper.hasExecutionStatement(comp)»
 				result = «Identifier.behaviorImplName».compute(input);
 				«ELSE»
@@ -249,7 +252,7 @@ class ComponentGenerator {
 	def static printComputeDecomposed(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»::compute(){
+		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».compute();
 	        «ENDFOR»
@@ -262,9 +265,9 @@ class ComponentGenerator {
 	def static printStartDecomposed(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»::start(){
+		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
 			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
-			threads.push_back(std::thread{&«compname»::run, this});
+			threads.push_back(std::thread{&«compname»«Utils.printFormalTypeParameters(comp)»::run, this});
 			«ELSE»
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».start();
@@ -278,8 +281,8 @@ class ComponentGenerator {
 	def static printStartAtomic(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»::start(){
-			threads.push_back(std::thread{&«compname»::run, this});
+		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
+			threads.push_back(std::thread{&«compname»«Utils.printFormalTypeParameters(comp)»::run, this});
 					
 		}
 
@@ -289,7 +292,7 @@ class ComponentGenerator {
 	def static printRun(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»::run(){
+		void «compname»«Utils.printFormalTypeParameters(comp)»::run(){
 			cout << "Thread for «compname» started\n";
 			
 			while (true)

@@ -63,15 +63,18 @@ OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»"
     «var type = ComponentHelper.getResourcePortType(port)»
     «var name = port.name»
     «IF port.incoming»
-    Port<«type»>* «compname»::getPort«name.toFirstUpper»(){
+    «Utils.printTemplateArguments(comp)»
+    Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getPort«name.toFirstUpper»(){
     	return «name»;
     }
-    
-    void «compname»::setPort«name.toFirstUpper»(Port<«type»>* port){
+
+    «Utils.printTemplateArguments(comp)»
+    void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«name» = port;
     }
     «ELSE»
-    void «compname»::setPort«name.toFirstUpper»(Port<«type»>* port){
+    «Utils.printTemplateArguments(comp)»
+    void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«name»->setPort(port);
     }
     «ENDIF»
@@ -96,12 +99,12 @@ OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»"
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     «Utils.printTemplateArguments(comp)»
-    Port<«type»>* «compname»::getPort«name.toFirstUpper»(){
+    Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getPort«name.toFirstUpper»(){
     	return «name»;
     }
 
     «Utils.printTemplateArguments(comp)»
-    void «compname»::setPort«name.toFirstUpper»(Port<«type»>* port){
+    void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«IF comp.atomic»
     	port->registerPort(uuid);
     	«ENDIF»

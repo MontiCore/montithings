@@ -73,7 +73,7 @@ class AutomatonGenerator{
     }
     return '''
 			«resultName»«Utils.printFormalTypeParameters(comp)»
-			  «compname»Impl::compute(«compname»Input«Utils.printFormalTypeParameters(comp)» «Identifier.inputName») {
+			  «compname»Impl«Utils.printFormalTypeParameters(comp)»::compute(«compname»Input«Utils.printFormalTypeParameters(comp)» «Identifier.inputName») {
 			    
 «««			  Lists all ingoing ports and stores the values of the passed parameter input.
 			    // inputs
@@ -258,7 +258,8 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
 	
-class «compname»«generics»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
+«Utils.printTemplateArguments(comp)»	
+class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
 private:  
 	«Utils.printVariables(comp)»
 	«Utils.printConfigParameters(comp)»
@@ -266,8 +267,8 @@ private:
 public:
   	«hook(comp, compname)»
 	«printConstructor(comp, compname)»
-	virtual «compname»Result getInitialValues() override;
-	virtual «compname»Result compute(«compname»Input input) override;
+	virtual «compname»Result«generics» getInitialValues() override;
+	virtual «compname»Result«generics» compute(«compname»Input«generics» input) override;
 
     }
 '''

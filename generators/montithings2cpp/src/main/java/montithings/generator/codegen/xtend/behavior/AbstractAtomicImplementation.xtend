@@ -15,7 +15,8 @@ class AbstractAtomicImplementation {
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
 
-class «compname»«generics»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{
+«Utils.printTemplateArguments(comp)»
+class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{
 	
 private:  
     «Utils.printVariables(comp)»
@@ -23,9 +24,9 @@ private:
     
 public:
     «printConstructor(comp)»
-	//«compname»«generics»Impl() = default;
-	«compname»Result getInitialValues() override;
-	«compname»Result compute(«compname»Input input) override;
+	//«compname»Impl() = default;
+	«compname»Result«generics» getInitialValues() override;
+	«compname»Result«generics» compute(«compname»Input«generics» input) override;
 };
 '''
   }

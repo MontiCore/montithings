@@ -5,7 +5,15 @@ import montithings.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
 
 class Input {
-	
+
+	def static generateImplementationFile(ComponentSymbol comp, String compname) {
+    return '''
+    #include "«compname»Input.h"
+    «IF !Utils.hasTypeParameters(comp)»
+    «generateInputBody(comp, compname)»
+    «ENDIF»
+    '''
+  }
 	
 	
     def static generateInputBody(ComponentSymbol comp, String compname) {
@@ -13,11 +21,11 @@ class Input {
     var isBatch = ComponentHelper.usesBatchMode(comp);
     
     return '''
-#include "«compname»Input.h"
 «IF !isBatch»
 
 «IF !comp.allIncomingPorts.empty»
-«compname»Input::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
+«Utils.printTemplateArguments(comp)»
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
 «IF comp.superComponent.present»
 	super(«FOR port : comp.superComponent.get.allIncomingPorts» «port.name» «ENDFOR»);
 «ENDIF»
@@ -28,23 +36,27 @@ class Input {
 «ENDIF»
 «ENDIF»  
 «FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
-std::vector<«helper.getRealPortCppTypeString(port)»> «compname»Input::get«port.name.toFirstUpper»(){
+«Utils.printTemplateArguments(comp)»
+std::vector<«helper.getRealPortCppTypeString(port)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
- 
-void «compname»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+
+«Utils.printTemplateArguments(comp)»
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
 	if (element){
 		«port.name».push_back(element.value());
  	}
 }
-
 «ENDFOR»
+
 «FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Input::get«port.name.toFirstUpper»(){
+«Utils.printTemplateArguments(comp)»
+tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
 
-void «compname»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+«Utils.printTemplateArguments(comp)»
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
 	this->«port.name» = std::move(element);
 } 
 «ENDFOR»
@@ -69,6 +81,7 @@ void «compname»Input::add«port.name.toFirstUpper»Element(tl::optional<«help
 #include "tl/optional.hpp"
 «Utils.printCPPImports(comp)»
 
+«Utils.printTemplateArguments(comp)»
 class «compname»Input
 «IF comp.superComponent.present» : 
 	«Utils.printSuperClassFQ(comp)»Input
@@ -103,7 +116,11 @@ public:
 	«ENDFOR»
 	
 
-};	
+};
+
+«IF Utils.hasTypeParameters(comp)»
+  «generateInputBody(comp, compname)»
+«ENDIF»
 
 '''
 	}
