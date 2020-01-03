@@ -75,7 +75,7 @@ class MTGenerator {
       toFile(targetPath, compname + "Impl",
       	AbstractAtomicImplementation.generateAbstractAtomicImplementationHeader(comp, compname),".h")
       toFile(targetPath, compname + "Impl",
-      	AbstractAtomicImplementation.generateAbstractAtomicImplementationBody(comp, compname),".cpp")
+      	AbstractAtomicImplementation.generateImplementationFile(comp, compname),".cpp")
     }
 
   }

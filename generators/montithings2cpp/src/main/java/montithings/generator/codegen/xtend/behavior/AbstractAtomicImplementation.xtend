@@ -28,19 +28,32 @@ public:
 	«compname»Result«generics» getInitialValues() override;
 	«compname»Result«generics» compute(«compname»Input«generics» input) override;
 };
+
+«IF Utils.hasTypeParameters(comp)»
+	«generateAbstractAtomicImplementationBody(comp, compname)»
+«ENDIF»
 '''
+  }
+  
+  def static String generateImplementationFile(ComponentSymbol comp, String compname) {
+	  return '''
+	#include "«compname»Impl.h"
+	«IF !Utils.hasTypeParameters(comp)»
+	«generateAbstractAtomicImplementationBody(comp, compname)»
+	«ENDIF»
+	'''
   }
   
   	def static generateAbstractAtomicImplementationBody(ComponentSymbol comp, String compname) {
     var String generics = Utils.printFormalTypeParameters(comp)
     return '''
-#include "«compname»Impl.h"
-
-«compname»Result «compname»Impl::getInitialValues(){
+«Utils.printTemplateArguments(comp)»
+«compname»Result«generics» «compname»Impl«generics»::getInitialValues(){
 	throw std::runtime_error("Invoking getInitialValues() on abstract implementation «comp.packageName».«compname»");
 }
 
-«compname»Result «compname»Impl::compute(«compname»Input«generics» «Identifier.inputName»){
+«Utils.printTemplateArguments(comp)»
+«compname»Result«generics» «compname»Impl«generics»::compute(«compname»Input«generics» «Identifier.inputName»){
 	throw std::runtime_error("Invoking compute() on abstract implementation «comp.packageName».«compname»");  	
 }
 '''
@@ -48,10 +61,14 @@ public:
   
     def static String printConstructor(ComponentSymbol comp) {
     return '''
-«comp.name»Impl(«Utils.printConfigurationParametersAsList(comp)») {
-«FOR param : comp.configParameters»
-	this.«param.name» = «param.name»; 
+«comp.name»Impl(«Utils.printConfigurationParametersAsList(comp)»)
+«IF !comp.configParameters.isEmpty»
+:
+«ENDIF»
+«FOR param : comp.configParameters SEPARATOR ','»
+    «param.name» («param.name»)
 «ENDFOR»
+{
 }
 '''
 
