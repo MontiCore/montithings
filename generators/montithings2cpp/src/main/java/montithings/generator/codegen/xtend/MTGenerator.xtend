@@ -101,7 +101,7 @@ class MTGenerator {
 	
   def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath){
 	
-	toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(),
+	toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
 		comp,
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
