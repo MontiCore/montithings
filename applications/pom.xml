@@ -13,9 +13,9 @@
   <groupId>montithings.applications</groupId>
   <artifactId>applications</artifactId>
   <packaging>pom</packaging>
-  
+
   <modules>
-    <!-- <module>bumperbot</module> -->
+    <module>smarttrunk-light</module>
   </modules>
 
 </project>

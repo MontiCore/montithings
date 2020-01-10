@@ -32,7 +32,7 @@ class AutomatonGenerator{
 
   var ComponentSymbol comp;
 
-  new(ComponentSymbol component) {
+  new(ComponentSymbol component, String compname) {
     this.comp = comp
     this.states = new ArrayList;
     this.transitions = new ArrayList;
@@ -63,8 +63,8 @@ class AutomatonGenerator{
 /**
    * Prints the compute implementation of automaton behavior.
    */
-  def String printCompute(ComponentSymbol comp) {
-    var resultName = comp.name + "Result"
+  def String printCompute(ComponentSymbol comp, String compname) {
+    var resultName = compname + "Result"
     var ASTAutomaton automaton = null
     for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
       if (element instanceof ASTAutomatonBehavior) {
@@ -73,7 +73,7 @@ class AutomatonGenerator{
     }
     return '''
 			«resultName»«Utils.printFormalTypeParameters(comp)»
-			  «comp.name»Impl::compute(«comp.name»Input«Utils.printFormalTypeParameters(comp)» «Identifier.inputName») {
+			  «compname»Impl«Utils.printFormalTypeParameters(comp)»::compute(«compname»Input«Utils.printFormalTypeParameters(comp)» «Identifier.inputName») {
 			    
 «««			  Lists all ingoing ports and stores the values of the passed parameter input.
 			    // inputs
@@ -110,7 +110,7 @@ class AutomatonGenerator{
 			    	  	  «ENDIF»
 			    	  	  
 «««			    	  	and change state to target state of transition
-			    	  	  «Identifier.currentStateName» = «comp.name»State.«transition.target.name»;
+			    	  	  «Identifier.currentStateName» = «compname»State.«transition.target.name»;
 			    	  	  break;
 			    	  	}
 			    	  	
@@ -122,8 +122,8 @@ class AutomatonGenerator{
 			  }
 		'''
   }
-def String printGetInitialValues(ComponentSymbol comp) {
-    var resultName = comp.name + "Result"
+def String printGetInitialValues(ComponentSymbol comp, String compname) {
+    var resultName = compname + "Result"
     var ASTAutomaton automaton = null
     for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
       if (element instanceof ASTAutomatonBehavior) {
@@ -133,7 +133,7 @@ def String printGetInitialValues(ComponentSymbol comp) {
     return '''
 
 			 «resultName»«Utils.printFormalTypeParameters(comp)»
-			«comp.name»Impl::getInitialValues() {
+			«compname»Impl::getInitialValues() {
 «««			initialize initial result
 			   «resultName»«Utils.printFormalTypeParameters(comp)» «Identifier.resultName»;
 			  
@@ -155,7 +155,7 @@ def String printGetInitialValues(ComponentSymbol comp) {
 			  	«ENDFOR»
 			  «ENDIF»
 			  
-			  «Identifier.currentStateName» = «comp.name»State.«automaton.initialStateDeclarationList.get(0).name»;
+			  «Identifier.currentStateName» = «compname»State.«automaton.initialStateDeclarationList.get(0).name»;
 			  return «Identifier.resultName»;
 			}
 		'''
@@ -167,7 +167,7 @@ def String printGetInitialValues(ComponentSymbol comp) {
    * Adds a enum for alls states of the automtaton and the attribute currentState for storing 
    * the current state of the automaton.
    */
-  def String hook(ComponentSymbol comp) {
+  def String hook(ComponentSymbol comp, String compname) {
     var ASTAutomaton automaton = null
     for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
       if (element instanceof ASTAutomatonBehavior) {
@@ -175,18 +175,18 @@ def String printGetInitialValues(ComponentSymbol comp) {
       }
     }
     return '''
-			«Utils.printMember(comp.name + "State", Identifier.currentStateName, "private")»
+			«Utils.printMember(compname + "State", Identifier.currentStateName, "private")»
 			
-			«printStateEnum(automaton, comp)»
+			«printStateEnum(automaton, comp, compname)»
 		'''
   }
 	
 	 /**
    * Prints a enum with all states of the automaton.
    */
-  def private String printStateEnum(ASTAutomaton automaton, ComponentSymbol comp) {
+  def private String printStateEnum(ASTAutomaton automaton, ComponentSymbol comp, String compname) {
     return '''
-			enum «comp.name»State {
+			enum «compname»State {
 			«FOR state : automaton.getStateDeclaration(0).stateList SEPARATOR ','»
 				«state.name»
 			«ENDFOR»;
@@ -248,43 +248,44 @@ def String printGetInitialValues(ComponentSymbol comp) {
     return printExpression(expr, true);
   }
 	
-	  def String generateHeader(ComponentSymbol comp) {
+	  def String generateHeader(ComponentSymbol comp, String compname) {
   	var String generics = Utils.printFormalTypeParameters(comp)
     return '''
 #pragma once
-#include "«comp.name»Input.h"
-#include "«comp.name»Result.h"
+#include "«compname»Input.h"
+#include "«compname»Result.h"
 #include "IComputable.h"
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
 	
-class «comp.name»«generics»Impl : IComputable<«comp.name»Input«generics»,«comp.name»Result«generics»>{ {
+«Utils.printTemplateArguments(comp)»	
+class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
 private:  
 	«Utils.printVariables(comp)»
 	«Utils.printConfigParameters(comp)»
 	
 public:
-  	«hook(comp)»
-	«printConstructor(comp)»
-	virtual «comp.name»Result getInitialValues() override;
-	virtual «comp.name»Result compute(«comp.name»Input input) override;
+  	«hook(comp, compname)»
+	«printConstructor(comp, compname)»
+	virtual «compname»Result«generics» getInitialValues() override;
+	virtual «compname»Result«generics» compute(«compname»Input«generics» input) override;
 
     }
 '''
   }
   
-  def String generateBody(ComponentSymbol comp){
+  def String generateBody(ComponentSymbol comp, String compname){
   	return'''
-  	#include "«comp.name»Impl.h"
+  	#include "«compname»Impl.h"
 
-    «printGetInitialValues(comp)»
-    «printCompute(comp)»
+    «printGetInitialValues(comp, compname)»
+    «printCompute(comp, compname)»
   	'''
   }
 
-  def String printConstructor(ComponentSymbol comp) {
+  def String printConstructor(ComponentSymbol comp, String compname) {
     return '''
-       «comp.name»Impl(«Utils.printConfiurationParametersAsList(comp)») {
+       «compname»Impl(«Utils.printConfigurationParametersAsList(comp)») {
         «FOR param : comp.configParameters»
           this.«param.name» = «param.name»; 
         «ENDFOR»

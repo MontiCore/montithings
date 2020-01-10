@@ -5,19 +5,27 @@ import montithings.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
 
 class Input {
+
+	def static generateImplementationFile(ComponentSymbol comp, String compname) {
+    return '''
+    #include "«compname»Input.h"
+    «IF !Utils.hasTypeParameters(comp)»
+    «generateInputBody(comp, compname)»
+    «ENDIF»
+    '''
+  }
 	
 	
-	
-    def static generateInputBody(ComponentSymbol comp) {
+    def static generateInputBody(ComponentSymbol comp, String compname) {
     var ComponentHelper helper = new ComponentHelper(comp)
     var isBatch = ComponentHelper.usesBatchMode(comp);
     
     return '''
-#include "«comp.name»Input.h"      
 «IF !isBatch»
 
 «IF !comp.allIncomingPorts.empty»
-«comp.name»Input::«comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
+«Utils.printTemplateArguments(comp)»
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
 «IF comp.superComponent.present»
 	super(«FOR port : comp.superComponent.get.allIncomingPorts» «port.name» «ENDFOR»);
 «ENDIF»
@@ -28,23 +36,27 @@ class Input {
 «ENDIF»
 «ENDIF»  
 «FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
-std::vector<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
+«Utils.printTemplateArguments(comp)»
+std::vector<«helper.getRealPortCppTypeString(port)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
- 
-void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+
+«Utils.printTemplateArguments(comp)»
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
 	if (element){
 		«port.name».push_back(element.value());
  	}
 }
-
 «ENDFOR»
+
 «FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port)»> «comp.name»Input::get«port.name.toFirstUpper»(){
+«Utils.printTemplateArguments(comp)»
+tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
 
-void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+«Utils.printTemplateArguments(comp)»
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
 	this->«port.name» = std::move(element);
 } 
 «ENDFOR»
@@ -52,7 +64,7 @@ void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«hel
 '''
   }
 	
-	def static generateInputHeader(ComponentSymbol comp) {
+	def static generateInputHeader(ComponentSymbol comp, String compname) {
 	var ComponentHelper helper = new ComponentHelper(comp)
 	var isBatch = ComponentHelper.usesBatchMode(comp);
 		
@@ -69,7 +81,8 @@ void «comp.name»Input::add«port.name.toFirstUpper»Element(tl::optional<«hel
 #include "tl/optional.hpp"
 «Utils.printCPPImports(comp)»
 
-class «comp.name»Input
+«Utils.printTemplateArguments(comp)»
+class «compname»Input
 «IF comp.superComponent.present» : 
 	«Utils.printSuperClassFQ(comp)»Input
 «IF comp.superComponent.get.hasFormalTypeParameters»<
@@ -87,9 +100,9 @@ private:
 «ENDFOR»
 public:
 
-	«comp.name»Input() = default;
+	«compname»Input() = default;
 	«IF !comp.allIncomingPorts.empty && !isBatch»
-	explicit «comp.name»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
+	explicit «compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
     «ENDIF»
 	
 	
@@ -103,7 +116,11 @@ public:
 	«ENDFOR»
 	
 
-};	
+};
+
+«IF Utils.hasTypeParameters(comp)»
+  «generateInputBody(comp, compname)»
+«ENDIF»
 
 '''
 	}

@@ -1,7 +1,7 @@
 package cocoTest;
 
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMontiArcNode;
+import montithings._ast.ASTMontiThingsNode;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.*;
 import org.junit.BeforeClass;
@@ -19,7 +19,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void emptyControlBlockTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "ControlBlockEmpty");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ControlBlockNotEmpty()),
             node,
@@ -28,7 +28,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void controlStatementsInComposedComponentTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "ControlBlockInComposedComponent");
     checkInvalid(new MontiThingsCoCoChecker()
             .addCoCo(new ControlBlockStatementsInComposedComponent()),
@@ -38,7 +38,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void multipleControlBlockTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "MultipleControlBlocks");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new MaxOneControlBlock()),
             node,
@@ -47,7 +47,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void batchPortTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "PortsInBatchStatementIncoming");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new PortsInBatchStatementAreIncoming()),
             node,
@@ -56,7 +56,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void syncPortTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "PortsInSyncStatementIncoming");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new PortsInSyncGroupAreIncoming()),
             node,
@@ -65,7 +65,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void emptySyncTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "EmptySyncStatement");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new SyncGroupHasAtLeastOneElement()),
             node,
@@ -74,7 +74,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void syncSubsetTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "SyncSubset");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new SyncGroupIsNoSubset()),
             node,
@@ -83,7 +83,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void syncLowercaseTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "SyncLowercase");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new SyncGroupNamesUppercase()),
             node,
@@ -92,7 +92,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void zeroUpdateIntervalTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "NegativeUpdateInterval");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new UpdateIntervalPositive()),
             node,
@@ -101,7 +101,7 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   @Test
   public void DoubleUpdateIntervalTest(){
-    ASTMontiArcNode node = loadComponentAST(PACKAGE +
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
             "." + "DoubleUpdateInterval");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new MaxOneUpdateInterval()),
             node,

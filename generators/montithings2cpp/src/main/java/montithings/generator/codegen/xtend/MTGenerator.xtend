@@ -10,6 +10,7 @@ import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.List
+import java.util.HashMap
 import montiarc._ast.ASTAutomatonBehavior
 import montiarc._ast.ASTBehaviorElement
 import montiarc._ast.ASTComponent
@@ -29,51 +30,52 @@ import montithings._ast.ASTExecutionBlock
  */
 class MTGenerator {
 
-  def static generateAll(File targetPath, File hwc, ComponentSymbol comp, List<String> foundModels) {
+  def static generateAll(File targetPath, File hwc, ComponentSymbol comp, List<String> foundModels, String compname,
+                         HashMap<String, String> interfaceToImplementation) {
     Identifier.createInstance(comp)
 
-    toFile(targetPath, comp.name + "Input", Input.generateInputHeader(comp), ".h");
-    toFile(targetPath, comp.name + "Input", Input.generateInputBody(comp), ".cpp");
-    toFile(targetPath, comp.name + "Result", Result.generateResultHeader(comp), ".h");
-    toFile(targetPath, comp.name + "Result", Result.generateResultBody(comp), ".cpp");
-    toFile(targetPath, comp.name, ComponentGenerator.generateHeader(comp), ".h");
-    toFile(targetPath, comp.name, ComponentGenerator.generateBody(comp), ".cpp");
+    toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname), ".h");
+    toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname), ".cpp");
+    toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname), ".h");
+    toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname), ".cpp");
+    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, interfaceToImplementation), ".h");
+    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname), ".cpp");
     
 
-    var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + comp.name + "Impl");
+    var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + compname + "Impl");
 
     if (!existsHWC && comp.isAtomic) {
-		generateBehaviorImplementation(comp, targetPath)
+		generateBehaviorImplementation(comp, targetPath, compname)
     }
     
 	// Generate inner components
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
-    	generateAll(targetPath.toPath.resolve(comp.name + "gen").toFile, hwc, innerComp, foundModels);
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, interfaceToImplementation);
     }
     
 	// Generate deploy class
     if (comp.getStereotype().containsKey("deploy")) {
-      toFile(targetPath, "Deploy" + comp.name, Deploy.generateDeploy(comp),".cpp");
+      toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname),".cpp");
     }
 
   }
 
-  def static generateBehaviorImplementation(ComponentSymbol comp, File targetPath) {
+  def static generateBehaviorImplementation(ComponentSymbol comp, File targetPath, String compname) {
     var compAST = comp.astNode.get as ASTComponent
     var boolean hasBehavior = false
     for (element : compAST.body.elementList) {
       if (element instanceof ASTBehaviorElement) {
         hasBehavior = true;
-        return generateBehavior(element as ASTCNode, comp, targetPath)
+        return generateBehavior(element as ASTCNode, comp, targetPath, compname)
       }
     }
 
     if (!hasBehavior) {
-      toFile(targetPath, comp.name + "Impl",
-      	AbstractAtomicImplementation.generateAbstractAtomicImplementationHeader(comp),".h")
-      toFile(targetPath, comp.name + "Impl",
-      	AbstractAtomicImplementation.generateAbstractAtomicImplementationBody(comp),".cpp")
+      toFile(targetPath, compname + "Impl",
+      	AbstractAtomicImplementation.generateAbstractAtomicImplementationHeader(comp, compname),".h")
+      toFile(targetPath, compname + "Impl",
+      	AbstractAtomicImplementation.generateImplementationFile(comp, compname),".cpp")
     }
 
   }
@@ -85,24 +87,25 @@ class MTGenerator {
     writer.storeInFile(path, content)
   }
 
-  def private static dispatch generateBehavior(ASTJavaPBehavior ajava, ComponentSymbol comp, File targetPath) {
+  def private static dispatch generateBehavior(ASTJavaPBehavior ajava, ComponentSymbol comp, File targetPath, String compname) {
     return ""
   }
 
-  def private static dispatch generateBehavior(ASTAutomatonBehavior automaton, ComponentSymbol comp, File targetPath) {
+  def private static dispatch generateBehavior(ASTAutomatonBehavior automaton, ComponentSymbol comp, File targetPath, String compname) {
   	return ""
   }
   
-  def private static dispatch generateBehavior(ASTExecutionBlock execBlock, ComponentSymbol comp, File targetPath) {
+  def private static dispatch generateBehavior(ASTExecutionBlock execBlock, ComponentSymbol comp, File targetPath, String compname) {
   	return ""
   }
 	
-  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath){
+  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath){
 	
-	toFile(targetPath, "CMakeLists", CMake.printCMake(targetPath.listFiles(),
+	toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
 		comp,
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
-		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString), ".txt")
+		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
+		subPackagesPath), ".txt")
   }
 
   def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath){

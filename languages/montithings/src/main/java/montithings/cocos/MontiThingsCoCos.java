@@ -113,6 +113,7 @@ public class MontiThingsCoCos {
             .addCoCo(new ExecutionBlockPriorityCorrectness())
             .addCoCo(new ExecutionBlockWellFormed())
             .addCoCo(new ControlBlockStatementsInComposedComponent())
-            .addCoCo(new ControlBlockNotEmpty());
+            .addCoCo(new ControlBlockNotEmpty())
+            .addCoCo(new InterfaceComponentContainsOnlyPorts());
   }
 }

@@ -5,16 +5,16 @@ import montithings.generator.helper.ComponentHelper
 
 class Deploy {
 	
-	def static generateDeploy(ComponentSymbol comp) {
+	def static generateDeploy(ComponentSymbol comp, String compname) {
 		return '''
-		#include "«comp.name».h"
+		#include "«compname».h"
 		#include <chrono>
 		#include <thread>
 		
 		
 		int main()
 		{
-			«comp.name» cmp;
+			«compname» cmp;
 			cmp.setUp();
 			cmp.init();
 			«IF !comp.getStereotype().containsKey("timesync")»

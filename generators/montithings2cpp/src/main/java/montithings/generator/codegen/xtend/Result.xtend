@@ -5,13 +5,23 @@ import montithings.generator.helper.ComponentHelper
 import montiarc._symboltable.ComponentSymbol
 
 class Result {
-	def static generateResultBody(ComponentSymbol comp){
+
+  def static generateImplementationFile(ComponentSymbol comp, String compname) {
+    return '''
+    #include "«compname»Result.h"
+    «IF !Utils.hasTypeParameters(comp)»
+    «generateResultBody(comp, compname)»
+    «ENDIF»
+    '''
+  }
+
+
+	def static generateResultBody(ComponentSymbol comp, String compname){
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    return '''
-#include "«comp.name»Result.h"
-
 «IF !comp.allOutgoingPorts.empty»
-«comp.name»Result::«comp.name»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
+«Utils.printTemplateArguments(comp)»
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
 	«IF comp.superComponent.present»
 	super(«FOR port : comp.superComponent.get.allOutgoingPorts» «port.name» «ENDFOR»);
 «ENDIF»
@@ -22,20 +32,22 @@ class Result {
 «ENDIF»
 
 «FOR port : comp.outgoingPorts»
-tl::optional<«helper.getRealPortCppTypeString(port)»> «comp.name»Result::get«port.name.toFirstUpper»(){
+«Utils.printTemplateArguments(comp)»
+tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
  }
  «ENDFOR»
  
  «FOR port : comp.outgoingPorts»
-void «comp.name»Result::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»){
+«Utils.printTemplateArguments(comp)»
+void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»){
 		this->«port.name» = «port.name»; 
  }
  «ENDFOR»
 	    '''
 	}
 	
-	def static generateResultHeader(ComponentSymbol comp){
+	def static generateResultHeader(ComponentSymbol comp, String compname){
 	    var ComponentHelper helper = new ComponentHelper(comp)
 return '''
 #pragma once
@@ -48,7 +60,8 @@ return '''
 #include <set>
 «Utils.printCPPImports(comp)»
 
-class «comp.name»Result
+«Utils.printTemplateArguments(comp)»
+class «compname»Result
   «IF comp.superComponent.present» : 
     «Utils.printSuperClassFQ(comp)»Result
     «IF comp.superComponent.get.hasFormalTypeParameters»<
@@ -63,9 +76,9 @@ private:
 	«ENDFOR»
 
 public:	
-	«comp.name»Result() = default;
+	«compname»Result() = default;
 	«IF !comp.allOutgoingPorts.empty»
-	«comp.name»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
+	«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
 	«ENDIF»
 	
 	«FOR port : comp.outgoingPorts»
@@ -76,6 +89,10 @@ public:
 	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»);
 	«ENDFOR»
 };
+
+«IF Utils.hasTypeParameters(comp)»
+  «generateResultBody(comp, compname)»
+«ENDIF»
 '''
 		
 	}

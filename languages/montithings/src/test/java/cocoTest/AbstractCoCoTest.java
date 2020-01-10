@@ -8,9 +8,9 @@ package cocoTest;
 import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.Symbol;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMontiArcNode;
-import montiarc._symboltable.ComponentSymbol;
+import montithings._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
+import montithings._ast.ASTMontiThingsNode;
 import montithings._cocos.MontiThingsCoCoChecker;
 import org.junit.Before;
 
@@ -43,10 +43,10 @@ public abstract class AbstractCoCoTest {
    * @param qualifiedModelName The qualified name of the model
    * @return The AST node of the model
    */
-  ASTMontiArcNode loadComponentAST(String qualifiedModelName) {
+  ASTMontiThingsNode loadComponentAST(String qualifiedModelName) {
     ComponentSymbol comp = loadComponentSymbol(qualifiedModelName);
     assertNotNull("Could not resolve model " + qualifiedModelName, comp);
-    ASTMontiArcNode node = (ASTMontiArcNode) comp.getAstNode().orElse(null);
+    ASTMontiThingsNode node = (ASTMontiThingsNode) comp.getAstNode().orElse(null);
     assertNotNull("Could not find ASTComponent for model " + qualifiedModelName, node);
     return node;
   }
@@ -57,7 +57,7 @@ public abstract class AbstractCoCoTest {
    * @param modelName Name of the model
    * @return The AST node of the component
    */
-  protected ASTMontiArcNode loadComponentAST(String packageName, String modelName){
+  protected ASTMontiThingsNode loadComponentAST(String packageName, String modelName){
     return loadComponentAST(packageName + "." + modelName);
   }
 
@@ -121,10 +121,10 @@ public abstract class AbstractCoCoTest {
   }
 
 
-  private ASTMontiArcNode loadCompilationUnitAST(String qualifiedModelName) {
+  private ASTMontiThingsNode loadCompilationUnitAST(String qualifiedModelName) {
     Symbol comp = loadComponentSymbol(qualifiedModelName);
     assertNotNull("Could not resolve model " + qualifiedModelName, comp);
-    ASTMontiArcNode node = (ASTMontiArcNode) comp.getEnclosingScope().getAstNode().orElse(null);
+    ASTMontiThingsNode node = (ASTMontiThingsNode) comp.getEnclosingScope().getAstNode().orElse(null);
     assertNotNull("Could not find ASTMTCompilationUnit for model " + qualifiedModelName, node);
     return node;
   }
@@ -167,7 +167,7 @@ public abstract class AbstractCoCoTest {
    * @param node The node of the component to check
    * @param expectedErrors The information about expected errors
    */
-  static void checkInvalid(MontiThingsCoCoChecker cocos, ASTMontiArcNode node,
+  static void checkInvalid(MontiThingsCoCoChecker cocos, ASTMontiThingsNode node,
                            ExpectedErrorInfo expectedErrors) {
     
     // check whether all the expected errors are present when using all cocos

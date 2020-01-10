@@ -1,5 +1,6 @@
 package montithings.generator.helper;
 
+import montiarc._ast.ASTComponent;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.visitor.GuardExpressionVisitor;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
@@ -30,6 +31,7 @@ import montithings._ast.*;
 import montithings._symboltable.ResourcePortSymbol;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -372,13 +374,23 @@ public class ComponentHelper {
     return result;
   }
 
-  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance) {
+  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
+      HashMap<String, String> interfaceToImplementation) {
+    return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementation, true);
+  }
+
+  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
+                                                             HashMap<String, String> interfaceToImplementation,
+                                                             boolean printTypeParameters) {
     String result = "";
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
 
     result += componentTypeReference.getName();
-    if (componentTypeReference.hasActualTypeArguments()) {
+    if (componentTypeReference.hasActualTypeArguments() && printTypeParameters) {
       result += printTypeArguments(componentTypeReference.getActualTypeArguments());
+    }
+    if(interfaceToImplementation.containsKey(result)) {
+      return interfaceToImplementation.get(result);
     }
     return result;
   }
@@ -875,6 +887,73 @@ public class ComponentHelper {
             .map(e -> (ASTExecutionElseStatement) e)
             .findFirst()
             .orElse(null);
+  }
+
+  /**
+   * Get import for subpackages
+   * @param subPackagesPath
+   * @return
+   */
+  public static String getSubPackageImports(File[] subPackagesPath) {
+    String packageNames = "";
+    String start = "\"./";
+    String endCpp = "/*.cpp\"\n";
+    String endH = "/*.h\"\n";
+
+    for (File subPackage : subPackagesPath) {
+      /**
+       * Example of build String with 2 subpackages:
+       *
+       * \"./packageName1/*.cpp\"\n
+       * \"./packageName1/*.h\"\n
+       * \"./packageName2/*.cpp\"\n
+       * \"./packageName2/*.h\"\n
+       */
+      packageNames += start + subPackage.getName() + endCpp;
+      packageNames += start + subPackage.getName() + endH;
+    }
+    return packageNames;
+  }
+
+  public static String getSubPackageIncludes(File[] subPackagesPath) {
+    String packageNames = "";
+    String start = "include_directories(./";
+    String end = ")\n";
+
+    for (File subPackage : subPackagesPath) {
+      /**
+       * Example of build String with 2 subpackages:
+       *
+       * include_directories(./packageName1)\n
+       * include_directories(./packageName2)\n
+       */
+      packageNames += start + subPackage.getName() + end;
+    }
+    return packageNames;
+  }
+
+  public static String getPackagePath(ComponentSymbol comp, ComponentInstanceSymbol subComp) {
+    // Get package name of subcomponent
+    String subCompPackageName = subComp.getComponentType().getReferencedSymbol().getPackageName();
+    // Check if subcomponent is in different package than parent component
+    if (!subCompPackageName.equals(comp.getPackageName())) {
+      // Split packageName
+      String[] path = subCompPackageName.split("\\.");
+      // Build correct package path
+      String correctPath = "";
+      boolean leaveFirstOut = true;
+      for (String dir : path) {
+        if (leaveFirstOut) {
+          leaveFirstOut = false;
+          continue;
+        }
+        correctPath += dir + "/";
+      }
+      // Return correct path
+      return correctPath;
+    }
+    // If subcomponent is in the same package as component, then no package path before class import required
+    return "";
   }
 
 }
