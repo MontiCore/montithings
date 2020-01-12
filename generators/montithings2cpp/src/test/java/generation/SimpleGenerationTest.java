@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package generation;
 
 import montithings.generator.MontiThingsGeneratorTool;

@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #pragma once
 #include "OutCompInput.h"
 #include "OutCompResult.h"

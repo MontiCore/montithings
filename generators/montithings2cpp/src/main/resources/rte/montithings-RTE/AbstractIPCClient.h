@@ -1,6 +1,4 @@
-//
-// Created by JFuer on 31/08/2019.
-//
+// (c) https://github.com/MontiCore/monticore
 
 #ifndef OUTPORTSERVER_ABSTRACTIPCCLIENT_H
 #define OUTPORTSERVER_ABSTRACTIPCCLIENT_H

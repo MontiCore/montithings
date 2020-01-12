@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
 import montiarc._ast.ASTComponent;

@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package bindings;
 
 import bindings._ast.ASTBindingsCompilationUnit;

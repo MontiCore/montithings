@@ -1,6 +1,4 @@
-//
-// Created by JFuer on 27/07/2019.
-//
+// (c) https://github.com/MontiCore/monticore
 
 #ifndef REQREP_ABSTRACTIPCSERVER_H
 #define REQREP_ABSTRACTIPCSERVER_H
