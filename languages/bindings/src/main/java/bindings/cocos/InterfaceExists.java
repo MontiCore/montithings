@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package bindings.cocos;
 
 import de.monticore.ModelingLanguage;

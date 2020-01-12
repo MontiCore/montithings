@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
     #pragma once
     #include "ImplementationInput.h"
     #include "ImplementationResult.h"

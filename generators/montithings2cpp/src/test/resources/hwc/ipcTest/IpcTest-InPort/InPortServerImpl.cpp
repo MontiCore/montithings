@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #include "InPortServer.h"
 #include <set>
 vector<std::string> InPortServer::getData(){

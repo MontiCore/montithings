@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 grammar MontiThings extends MontiArc {
 
     start MTCompilationUnit;

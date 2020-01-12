@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
 import montithings.generator.codegen.xtend.util.Utils

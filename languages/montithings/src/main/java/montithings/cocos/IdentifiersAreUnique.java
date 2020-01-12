@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.cocos;
 
 import com.google.common.collect.Lists;

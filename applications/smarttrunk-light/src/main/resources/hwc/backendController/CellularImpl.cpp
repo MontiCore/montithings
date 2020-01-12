@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #include "CellularImpl.h"
 #include <iostream>
 #include <string.h>
