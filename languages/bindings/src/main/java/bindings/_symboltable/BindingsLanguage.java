@@ -10,7 +10,7 @@ import montiarc._symboltable.MontiArcLanguage;
  *
  * @author (last commit) Daniel von Mirbach
  */
-public abstract class BindingsLanguage extends BindingsLanguageTOP{
+public abstract class BindingsLanguage extends BindingsLanguageTOP {
 
   public static final String FILE_ENDING = "mtb";
 

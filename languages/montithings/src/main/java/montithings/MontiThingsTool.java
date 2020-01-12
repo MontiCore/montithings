@@ -8,12 +8,11 @@ import de.monticore.java.symboltable.JavaSymbolFactory;
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.symboltable.ArtifactScope;
 import de.monticore.symboltable.GlobalScope;
-import de.monticore.symboltable.ImportStatement;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.logging.Log;
-import montithings._ast.ASTMTCompilationUnit;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._symboltable.ComponentSymbol;
+import montithings._ast.ASTMTCompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
 import montithings._symboltable.MontiThingsLanguageFamily;
@@ -35,9 +34,9 @@ import java.util.Set;
 public class MontiThingsTool {
 
   private static final String[] primitiveTypes = { "bool", "std::byte", "char", "double", "float",
-          "int", "long", "short", "null" , "char16_t" , "char32_t", "wchar_t", "std::string",
-          "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t",
-          "uint64_t", "Integer"};
+      "int", "long", "short", "null", "char16_t", "char32_t", "wchar_t", "std::string",
+      "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t",
+      "uint64_t", "Integer" };
 
   private final ModelingLanguageFamily family;
 
@@ -51,6 +50,7 @@ public class MontiThingsTool {
   public MontiThingsTool() {
     this(new MontiThingsLanguageFamily(), MontiThingsCoCos.createChecker());
   }
+
   /**
    * Constructor for montiarc.MontiArcTool
    */
@@ -94,7 +94,7 @@ public class MontiThingsTool {
     }
     if (!node.getSymbolOpt().isPresent() && !node.getSpannedScopeOpt().isPresent()) {
       Log.error(
-              "Symtab is not linked with passed node! Call getSymbol() or getASTNode() for getting the ast.");
+          "Symtab is not linked with passed node! Call getSymbol() or getASTNode() for getting the ast.");
     }
 
     checker.checkAll(node);
@@ -112,20 +112,21 @@ public class MontiThingsTool {
    * Otherwise the optional is empty.
    *
    * @param componentName Name of the component
-   * @param modelPaths Folders containing the packages with models
+   * @param modelPaths    Folders containing the packages with models
    * @return
    */
   public Optional<ComponentSymbol> loadComponentSymbolWithoutCocos(String componentName,
-                                                                   File... modelPaths) {
+      File... modelPaths) {
     Scope s = initSymbolTable(modelPaths);
     return s.resolve(componentName, ComponentSymbol.KIND);
   }
 
   public Optional<ComponentSymbol> loadComponentSymbolWithCocos(String componentName,
-                                                                File... modelPaths) {
+      File... modelPaths) {
     Optional<ComponentSymbol> compSym = loadComponentSymbolWithoutCocos(componentName, modelPaths);
 
-    compSym.ifPresent(componentSymbol -> checkCoCos((ASTMontiArcNode) componentSymbol.getAstNode().get()));
+    compSym.ifPresent(
+        componentSymbol -> checkCoCos((ASTMontiArcNode) componentSymbol.getAstNode().get()));
 
     return compSym;
   }
@@ -157,9 +158,6 @@ public class MontiThingsTool {
   public Scope initSymbolTable(String modelPath) {
     return initSymbolTable(Paths.get(modelPath).toFile());
   }
-
-
-
 
   private static void addCPPPrimitiveTypes(GlobalScope globalScope) {
     for (String primType : primitiveTypes) {

@@ -1,12 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen;
 
-import montithings.generator.MontiThingsGeneratorTool;
 import de.se_rwth.commons.configuration.Configuration;
 import de.se_rwth.commons.groovy.GroovyInterpreter;
 import de.se_rwth.commons.groovy.GroovyRunner;
 import de.se_rwth.commons.logging.Log;
 import groovy.lang.Script;
+import montithings.generator.MontiThingsGeneratorTool;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 import java.io.File;
@@ -30,8 +30,8 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
   @Override
   public void run(String script, Configuration configuration) {
     GroovyInterpreter.Builder builder = GroovyInterpreter.newInterpreter()
-            .withScriptBaseClass(MontiThingsGeneratorScript.class)
-            .withImportCustomizer(new ImportCustomizer().addStarImports(DEFAULT_IMPORTS));
+        .withScriptBaseClass(MontiThingsGeneratorScript.class)
+        .withImportCustomizer(new ImportCustomizer().addStarImports(DEFAULT_IMPORTS));
 
     // configuration
     MontiThingsConfiguration config = MontiThingsConfiguration.withConfiguration(configuration);
@@ -45,9 +45,11 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
     // after adding everything we override a couple of known variable
     // bindings
     // to have them properly typed in the script
-    builder.addVariable(MontiThingsConfiguration.Options.MODELPATH.toString(), config.getModelPath());
+    builder
+        .addVariable(MontiThingsConfiguration.Options.MODELPATH.toString(), config.getModelPath());
     builder.addVariable(MontiThingsConfiguration.Options.OUT.toString(), config.getOut());
-    builder.addVariable(MontiThingsConfiguration.Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
+    builder.addVariable(MontiThingsConfiguration.Options.HANDWRITTENCODEPATH.toString(),
+        config.getHWCPath());
 
     GroovyInterpreter g = builder.build();
     g.evaluate(script);

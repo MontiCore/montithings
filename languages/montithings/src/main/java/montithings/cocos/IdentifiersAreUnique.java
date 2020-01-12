@@ -30,7 +30,7 @@ import java.util.Set;
  * @implements [Hab16] B1: All names of model elements within a component
  * namespace have to be unique. (p. 59. Lst. 3.31)
  * @implements [Wor16] MU1: The name of each component variable is unique
- *  among ports, variables, and configuration parameters. (p.54, Lst. 4.5)
+ * among ports, variables, and configuration parameters. (p.54, Lst. 4.5)
  */
 public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
 
@@ -39,15 +39,15 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
     if (!node.getSymbolOpt().isPresent()) {
       Log.error(
           String.format("0xMA010 ASTComponent node \"%s\" has no " +
-                            "symbol. Did you forget to run the " +
-                            "SymbolTableCreator before checking cocos?",
+                  "symbol. Did you forget to run the " +
+                  "SymbolTableCreator before checking cocos?",
               node.getName()));
       return;
     }
-    
+
     ArrayList<Identifier> names = new ArrayList<>();
     ComponentSymbol comp = (ComponentSymbol) node.getSymbolOpt().get();
-    
+
     // In case the model is faulty and there are inheritance cycles, we have to 
     // check for those before actually trying to check the uniqueness of the 
     // connector names
@@ -60,16 +60,17 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
     checker.checkAll(node);
     final boolean inheritanceCycle
         = Log.getFindings().stream()
-              .map(Finding::getMsg)
-              .anyMatch(m -> m.contains("xMA017"));
-    if(inheritanceCycle){
+        .map(Finding::getMsg)
+        .anyMatch(m -> m.contains("xMA017"));
+    if (inheritanceCycle) {
       Log.warn("Could not check for uniqueness of names in inherited " +
-                   "ports due to an inheritance cycle.");
-    } else {
+          "ports due to an inheritance cycle.");
+    }
+    else {
       // Collect port names
       for (PortSymbol portSymbol : comp.getAllPorts()) {
         SourcePosition sourcePosition = SourcePosition.getDefaultSourcePosition();
-        if(portSymbol.getAstNode().isPresent()){
+        if (portSymbol.getAstNode().isPresent()) {
           sourcePosition = portSymbol.getAstNode().get().get_SourcePositionStart();
         }
         names.add(new Identifier(portSymbol.getName(), IdentifierTypes.PORT, sourcePosition));
@@ -82,7 +83,7 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
     // Collect variable declarations
     for (VariableSymbol variableSymbol : comp.getVariables()) {
       names.add(new Identifier(variableSymbol.getName(),
-              IdentifierTypes.VARIABLE, variableSymbol.getSourcePosition()));
+          IdentifierTypes.VARIABLE, variableSymbol.getSourcePosition()));
     }
 
     for (ASTElement e : node.getBody().getElementList()) {
@@ -100,11 +101,11 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
 
       SourcePosition pos
           = subComp.getAstNode().isPresent()
-                ? subComp.getAstNode().get().get_SourcePositionStart()
-                : SourcePosition.getDefaultSourcePosition();
+          ? subComp.getAstNode().get().get_SourcePositionStart()
+          : SourcePosition.getDefaultSourcePosition();
 
       names.add(new Identifier(subComp.getName(),
-              IdentifierTypes.SUBCOMPONENTINSTANCE, pos));
+          IdentifierTypes.SUBCOMPONENTINSTANCE, pos));
     }
 
     // Configuration Parameters
@@ -113,7 +114,7 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
     List<ASTParameter> parameters = node.getHead().getParameterList();
     for (ASTParameter parameter : parameters) {
       names.add(new Identifier(parameter.getName(),
-              IdentifierTypes.CONFIG_PARAMETER, parameter.get_SourcePositionStart()));
+          IdentifierTypes.CONFIG_PARAMETER, parameter.get_SourcePositionStart()));
     }
 
     Set<Identifier> nameDuplicates = new HashSet<>();
@@ -165,7 +166,9 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
   private static class Identifier {
 
     private final IdentifierTypes type;
+
     private final SourcePosition sourcePosition;
+
     private final String name;
 
     /**

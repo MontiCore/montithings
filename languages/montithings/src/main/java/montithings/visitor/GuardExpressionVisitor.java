@@ -21,7 +21,7 @@ public class GuardExpressionVisitor implements MCExpressionsVisitor, MontiThings
     expressions.add(node);
   }
 
-  public List<ASTNameExpression> getExpressions(){
+  public List<ASTNameExpression> getExpressions() {
     return expressions;
   }
 }

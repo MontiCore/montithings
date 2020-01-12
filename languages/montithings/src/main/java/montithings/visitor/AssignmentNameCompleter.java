@@ -7,9 +7,10 @@ import montithings._visitor.MontiThingsVisitor;
 /**
  * Only necessary since the wrong visitor is used if this class is not present
  *
- * @author  Joshua Fürste
+ * @author Joshua Fürste
  */
-class AssignmentNameCompleter extends montiarc.visitor.AssignmentNameCompleter implements MontiThingsVisitor {
+class AssignmentNameCompleter extends montiarc.visitor.AssignmentNameCompleter
+    implements MontiThingsVisitor {
 
   public AssignmentNameCompleter(Scope automatonScope) {
     super(automatonScope);

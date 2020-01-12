@@ -1,9 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 package bindings;
 
-import de.se_rwth.commons.logging.Log;
 import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._parser.BindingsParser;
+import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -24,37 +24,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class AbstractTest {
 
-    @BeforeAll
-    static void initialize() {
-        Log.enableFailQuick(false);
-    }
+  @BeforeAll
+  static void initialize() {
+    Log.enableFailQuick(false);
+  }
 
-    @BeforeEach
-    void setUp() {
-        Log.getFindings().clear();
-    }
+  @BeforeEach
+  void setUp() {
+    Log.getFindings().clear();
+  }
 
-    /**
-     * Parses a model and ensures that the root node is present.
-     *
-     * @param modelFile the full file name of the model.
-     * @return the root of the parsed model.
-     */
-    protected ASTBindingsCompilationUnit parseModel(String modelFile) {
-        Path model = Paths.get(modelFile);
-        BindingsParser parser = new BindingsParser();
-        Optional<ASTBindingsCompilationUnit> optAutomaton;
-        try {
-            optAutomaton = parser.parse(model.toString());
-            assertFalse(parser.hasErrors());
-            assertTrue(optAutomaton.isPresent());
-            return optAutomaton.get();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            fail("There was an exception when parsing the model " + modelFile + ": "
-                    + e.getMessage());
-        }
-        return null;
+  /**
+   * Parses a model and ensures that the root node is present.
+   *
+   * @param modelFile the full file name of the model.
+   * @return the root of the parsed model.
+   */
+  protected ASTBindingsCompilationUnit parseModel(String modelFile) {
+    Path model = Paths.get(modelFile);
+    BindingsParser parser = new BindingsParser();
+    Optional<ASTBindingsCompilationUnit> optAutomaton;
+    try {
+      optAutomaton = parser.parse(model.toString());
+      assertFalse(parser.hasErrors());
+      assertTrue(optAutomaton.isPresent());
+      return optAutomaton.get();
     }
+    catch (Exception e) {
+      e.printStackTrace();
+      fail("There was an exception when parsing the model " + modelFile + ": "
+          + e.getMessage());
+    }
+    return null;
+  }
 }

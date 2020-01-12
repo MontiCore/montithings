@@ -20,15 +20,15 @@ public class MaxOneUpdateInterval implements MontiArcASTComponentCoCo {
   @Override
   public void check(ASTComponent node) {
     List<ASTControlStatement> collect = node.getBody().getElementList()
-            .stream()
-            .filter(ASTControlBlock.class::isInstance)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(ASTCalculationInterval.class::isInstance)
-            .collect(Collectors.toList());
+        .stream()
+        .filter(ASTControlBlock.class::isInstance)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(ASTCalculationInterval.class::isInstance)
+        .collect(Collectors.toList());
 
-    if (collect.size() > 1){
+    if (collect.size() > 1) {
       Log.error("0xMT132 Update intervals should only be defined once in " + node.getName(),
-              collect.get(0).get_SourcePositionStart());
+          collect.get(0).get_SourcePositionStart());
     }
   }
 }

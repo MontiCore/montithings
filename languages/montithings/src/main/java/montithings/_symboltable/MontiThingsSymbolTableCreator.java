@@ -1,6 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
 
-
 package montithings._symboltable;
 
 import de.monticore.java.symboltable.JavaSymbolFactory;
@@ -26,27 +25,26 @@ import montiarc._symboltable.MontiArcArtifactScope;
 import montiarc._symboltable.MontiArcSymbolTableCreator;
 import montiarc.helper.JavaDefaultTypesManager;
 import montiarc.helper.Timing;
-import montithings._ast.ASTControlBlock;
 import montithings._ast.ASTComponent;
 import montithings._ast.ASTExecutionBlock;
 import montithings._ast.ASTMTCompilationUnit;
 import montithings._visitor.MontiThingsVisitor;
-import montithings._symboltable.ComponentSymbol;
 
 import java.util.*;
 
 public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
-        implements MontiThingsVisitor {
+    implements MontiThingsVisitor {
 
   private final static JTypeSymbolsHelper.JTypeReferenceFactory<JavaTypeSymbolReference> javaTypeRefFactory =
-          JavaTypeSymbolReference::new;
+      JavaTypeSymbolReference::new;
 
   public MontiThingsSymbolTableCreator(
-          final ResolvingConfiguration resolvingConfig, final MutableScope enclosingScope) {
+      final ResolvingConfiguration resolvingConfig, final MutableScope enclosingScope) {
     super(resolvingConfig, enclosingScope);
   }
 
-  public MontiThingsSymbolTableCreator(final ResolvingConfiguration resolvingConfig, final Deque<MutableScope> scopeStack) {
+  public MontiThingsSymbolTableCreator(final ResolvingConfiguration resolvingConfig,
+      final Deque<MutableScope> scopeStack) {
     super(resolvingConfig, scopeStack);
   }
 
@@ -71,7 +69,8 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
    * @return the first scope that was created
    */
   public Scope createFromAST(montithings._ast.ASTMontiThingsNode rootNode) {
-    Log.errorIfNull(rootNode, "0xA7004x317 Error by creating of the MontiThingsSymbolTableCreator symbol table: top ast node is null");
+    Log.errorIfNull(rootNode,
+        "0xA7004x317 Error by creating of the MontiThingsSymbolTableCreator symbol table: top ast node is null");
     rootNode.accept(realThis);
     return getFirstCreatedScope();
   }
@@ -85,21 +84,23 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   @Override
   public void visit(ASTMTCompilationUnit compilationUnit) {
     Log.debug("Building Symboltable for Component: " + compilationUnit.getComponent().getName(),
-            MontiThingsSymbolTableCreator.class.getSimpleName());
+        MontiThingsSymbolTableCreator.class.getSimpleName());
     this.compilationUnitPackage = Names.getQualifiedName(compilationUnit.getPackageList());
     List<ImportStatement> imports = new ArrayList();
     Iterator var3 = compilationUnit.getImportStatementLOCALList().iterator();
 
-    while(var3.hasNext()) {
-      ASTImportStatementLOCAL astImportStatement = (ASTImportStatementLOCAL)var3.next();
+    while (var3.hasNext()) {
+      ASTImportStatementLOCAL astImportStatement = (ASTImportStatementLOCAL) var3.next();
       String qualifiedImport = Names.getQualifiedName(astImportStatement.getImportList());
-      ImportStatement importStatement = new ImportStatement(qualifiedImport, astImportStatement.isStar());
+      ImportStatement importStatement = new ImportStatement(qualifiedImport,
+          astImportStatement.isStar());
       imports.add(importStatement);
     }
 
     JavaDefaultTypesManager.addJavaDefaultImports(imports);
     this.autoinstantiate.push(true);
-    ArtifactScope artifactScope = new MontiArcArtifactScope(Optional.empty(), this.compilationUnitPackage, imports);
+    ArtifactScope artifactScope = new MontiArcArtifactScope(Optional.empty(),
+        this.compilationUnitPackage, imports);
     this.currentImports = imports;
     artifactScope.setAstNode(compilationUnit);
     compilationUnit.setSpannedScope(artifactScope);
@@ -110,7 +111,6 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   public void endVisit(ASTMACompilationUnit node) {
     this.removeCurrentScope();
   }
-
 
   @Override
   public void setRealThis(MontiThingsVisitor realThis) {
@@ -127,7 +127,7 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
 
     int dimension = TypesHelper.getArrayDimensionIfArrayOrZero(astType);
     JTypeReference<JavaTypeSymbol> typeRef = new JavaTypeSymbolReference(typeName,
-            currentScope().get(), dimension);
+        currentScope().get(), dimension);
     addTypeArgumentsToTypeSymbol(typeRef, astType, currentScope().get());
     sym.setTypeReference(typeRef);
     sym.setDirection(node.isIncoming());
@@ -136,11 +136,14 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     sym.setResourceParameters(node.getResourceParameterList());
     if (uri.startsWith("tcp://")) {
       sym.setProtocol("tcp");
-    } else if (uri.startsWith("ipc://")) {
+    }
+    else if (uri.startsWith("ipc://")) {
       sym.setProtocol("ipc");
-    } else if (uri.startsWith("ws://")) {
+    }
+    else if (uri.startsWith("ws://")) {
       sym.setProtocol("ws");
-    } else {
+    }
+    else {
       sym.setProtocol("filesystem");
     }
 
@@ -150,14 +153,13 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
       }
     }
 
-
     addToScopeAndLinkWithNode(sym, node);
   }
 
   private void addTypeArgumentsToTypeSymbol(JTypeReference<? extends JTypeSymbol> typeRef,
-                                            ASTType astType, Scope definingScope) {
+      ASTType astType, Scope definingScope) {
     JTypeSymbolsHelper.addTypeArgumentsToTypeSymbol(typeRef, astType, definingScope,
-            javaTypeRefFactory);
+        javaTypeRefFactory);
   }
 
   @Override
@@ -175,13 +177,15 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     return new SyncStatementSymbol(ast.getName());
   }
 
-  private void initialize_SyncStatement(SyncStatementSymbol syncStatement, montithings._ast.ASTSyncStatement ast) {
+  private void initialize_SyncStatement(SyncStatementSymbol syncStatement,
+      montithings._ast.ASTSyncStatement ast) {
 
   }
 
   /**
    * The next two methods are necessary so that Guard Expression get an Enclosing Scope
    * in their AST, which is used during generation.
+   *
    * @param node
    */
   @Override

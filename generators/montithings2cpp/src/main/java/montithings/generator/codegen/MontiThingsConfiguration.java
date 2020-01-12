@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
  */
 public class MontiThingsConfiguration implements Configuration {
   public static final String CONFIGURATION_PROPERTY = "_configuration";
+
   public static final String DEFAULT_OUTPUT_DIRECTORY = "out";
+
   public static final String DEFAULT_HWC_DIRECTORY = "src";
 
   /**
@@ -61,7 +63,7 @@ public class MontiThingsConfiguration implements Configuration {
    */
   private MontiThingsConfiguration(Configuration internal) {
     this.configuration = ConfigurationContributorChainBuilder.newChain()
-            .add(DelegatingConfigurationContributor.with(internal)).build();
+        .add(DelegatingConfigurationContributor.with(internal)).build();
   }
 
   /**

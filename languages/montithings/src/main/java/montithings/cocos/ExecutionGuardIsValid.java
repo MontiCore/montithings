@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.cocos;
 
-import de.monticore.java.javadsl._ast.ASTIfStatement;
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.symboltable.Scope;
@@ -24,15 +23,15 @@ import java.util.stream.Collectors;
  *
  * @author (last commit) JFuerste
  */
-public class ExecutionGuardIsValid  implements MontiArcASTComponentCoCo {
+public class ExecutionGuardIsValid implements MontiArcASTComponentCoCo {
   @Override
   public void check(ASTComponent node) {
-    if (!node.getSpannedScopeOpt().isPresent()){
+    if (!node.getSpannedScopeOpt().isPresent()) {
       Log.error(
-              String.format("0xMT020 ASTComponent node \"%s\" has no " +
-                              "spanned scope. Did you forget to run the " +
-                              "SymbolTableCreator before checking cocos?",
-                      node.getName()));
+          String.format("0xMT020 ASTComponent node \"%s\" has no " +
+                  "spanned scope. Did you forget to run the " +
+                  "SymbolTableCreator before checking cocos?",
+              node.getName()));
       return;
     }
     Scope s = node.getSpannedScopeOpt().get();
@@ -45,9 +44,9 @@ public class ExecutionGuardIsValid  implements MontiArcASTComponentCoCo {
         Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
         Optional<VariableSymbol> var = s.resolve(name, VariableSymbol.KIND);
         Optional<JavaTypeSymbol> jType = s.resolve(name, JavaTypeSymbol.KIND);
-        if (!port.isPresent() && !var.isPresent() && !jType.isPresent()){
-          Log.error("0xMT108 The variable " + name + " is not defined in this scope" ,
-                  ifStatement.get_SourcePositionStart());
+        if (!port.isPresent() && !var.isPresent() && !jType.isPresent()) {
+          Log.error("0xMT108 The variable " + name + " is not defined in this scope",
+              ifStatement.get_SourcePositionStart());
         }
       }
 
@@ -55,13 +54,13 @@ public class ExecutionGuardIsValid  implements MontiArcASTComponentCoCo {
 
   }
 
-  private List<ASTExecutionIfStatement> getIfStatements(ASTComponent node){
+  private List<ASTExecutionIfStatement> getIfStatements(ASTComponent node) {
     return node.getBody().getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTExecutionBlock)
-            .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
-            .filter(e -> e instanceof ASTExecutionIfStatement)
-            .map(e -> (ASTExecutionIfStatement) e)
-            .collect(Collectors.toList());
+        .stream()
+        .filter(e -> e instanceof ASTExecutionBlock)
+        .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
+        .filter(e -> e instanceof ASTExecutionIfStatement)
+        .map(e -> (ASTExecutionIfStatement) e)
+        .collect(Collectors.toList());
   }
 }

@@ -21,24 +21,24 @@ public class ExecutionBlockWellFormed implements MontiThingsASTExecutionBlockCoC
   @Override
   public void check(ASTExecutionBlock node) {
     List<ASTExecutionStatement> elseStatements = node
-            .getExecutionStatementList()
-            .stream()
-            .filter(e -> e instanceof ASTExecutionElseStatement)
-            .collect(Collectors.toList());
+        .getExecutionStatementList()
+        .stream()
+        .filter(e -> e instanceof ASTExecutionElseStatement)
+        .collect(Collectors.toList());
 
     List<ASTExecutionStatement> ifStatements = node
-            .getExecutionStatementList()
-            .stream()
-            .filter(e -> e instanceof ASTExecutionIfStatement)
-            .collect(Collectors.toList());
+        .getExecutionStatementList()
+        .stream()
+        .filter(e -> e instanceof ASTExecutionIfStatement)
+        .collect(Collectors.toList());
 
-    if (elseStatements.isEmpty() || ifStatements.isEmpty()){
+    if (elseStatements.isEmpty() || ifStatements.isEmpty()) {
       Log.error("0xMT104 Execution Blocks should contain at least one If Statement " +
-                      "and one Else Statement.",
-              node.get_SourcePositionStart());
+              "and one Else Statement.",
+          node.get_SourcePositionStart());
     }
 
-    if (elseStatements.size() > 1){
+    if (elseStatements.size() > 1) {
       Log.error("0xMT105 Execution Blocks should not contain more than one Else Statement.");
     }
   }

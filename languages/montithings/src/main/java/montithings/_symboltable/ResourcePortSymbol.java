@@ -39,9 +39,13 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
    * Store information about the used protocol
    */
   private boolean isIpc = false;
+
   private boolean isWS = false;
+
   private boolean isTcp = false;
+
   private boolean isFileSystem = false;
+
   private List<ASTResourceParameter> resourceParameters = new java.util.ArrayList<>();
 
   public boolean isIpc() {
@@ -60,22 +64,21 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
     return isFileSystem;
   }
 
-  public void setUri(String uri){
+  public void setUri(String uri) {
     this.uri = uri;
   }
 
-  public String getUri(){
+  public String getUri() {
     return uri;
   }
 
-  public void setResourceParameters(List<ASTResourceParameter> resourceParameters){
+  public void setResourceParameters(List<ASTResourceParameter> resourceParameters) {
     this.resourceParameters = resourceParameters;
   }
-  
-  public List<ASTResourceParameter> getResourceParameters(){
+
+  public List<ASTResourceParameter> getResourceParameters() {
     return resourceParameters;
   }
-
 
   public void setProtocol(String protocol) {
     switch (protocol) {
@@ -199,7 +202,8 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
     IndentPrinter ip = new IndentPrinter();
     if (this.isIncoming()) {
       ip.print("in ");
-    } else {
+    }
+    else {
       ip.print("out ");
     }
     ip.print(this.getTypeReference().getName());
@@ -208,6 +212,5 @@ public class ResourcePortSymbol extends ResourcePortSymbolTOP {
     ip.print(this.getName());
     return ip.getContent();
   }
-
 
 }

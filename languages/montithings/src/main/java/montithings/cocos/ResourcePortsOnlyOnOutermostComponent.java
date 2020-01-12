@@ -16,12 +16,13 @@ public class ResourcePortsOnlyOnOutermostComponent implements MontiArcASTCompone
 
   @Override
   public void check(ASTComponent node) {
-    if (!node.getStereotypeOpt().isPresent() || !node.getStereotypeOpt().get().containsStereoValue("deploy")){
+    if (!node.getStereotypeOpt().isPresent() || !node.getStereotypeOpt().get()
+        .containsStereoValue("deploy")) {
       node.getBody().getElementList()
-              .stream()
-              .filter(ASTResourceInterface.class::isInstance)
-              .forEach(e -> Log.error("0xMT127 Non-Deploy component " + node.getName() + " contains " +
-                      "resource ports.", e.get_SourcePositionStart()));
+          .stream()
+          .filter(ASTResourceInterface.class::isInstance)
+          .forEach(e -> Log.error("0xMT127 Non-Deploy component " + node.getName() + " contains " +
+              "resource ports.", e.get_SourcePositionStart()));
     }
   }
 }

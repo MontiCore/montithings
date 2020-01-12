@@ -17,6 +17,6 @@ public class NoJavaPBehavior implements MontiArcASTBehaviorElementCoCo {
   public void check(ASTBehaviorElement astBehaviorElement) {
     if (astBehaviorElement instanceof ASTJavaPBehavior)
       Log.error("0xMT125 JavaP Behavior should not be used in MontiThings components",
-              astBehaviorElement.get_SourcePositionStart());
+          astBehaviorElement.get_SourcePositionStart());
   }
 }

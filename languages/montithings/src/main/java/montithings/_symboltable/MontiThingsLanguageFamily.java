@@ -14,11 +14,10 @@ import montiarc._symboltable.MontiArcLanguage;
  * The MontiArcLanguageFamily aggregates common languages for MontiArc usage; these are
  * {@link MontiArcLanguage}, {@link CD4AnalysisLanguage} and the {@link JavaDSLLanguage}.
  *
-
  * @author (last commit) Joshua Fürste
  */
-public class MontiThingsLanguageFamily  extends ModelingLanguageFamily {
-  public MontiThingsLanguageFamily(){
+public class MontiThingsLanguageFamily extends ModelingLanguageFamily {
+  public MontiThingsLanguageFamily() {
     addModelingLanguage(new MontiThingsLanguage());
     addModelingLanguage(new JavaDSLLanguage());
     MontiArcCD4ALanguage cdlang = new MontiArcCD4ALanguage();

@@ -1,26 +1,22 @@
 // (c) https://github.com/MontiCore/monticore
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import de.monticore.symboltable.Symbol;
-import montithings._parser.MontiThingsParser;
-import org.antlr.v4.runtime.RecognitionException;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTMTCompilationUnit;
+import montithings._parser.MontiThingsParser;
+import org.antlr.v4.runtime.RecognitionException;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * TODO
@@ -33,9 +29,9 @@ public class ParserTest {
   private static final String MODEL_PATH = "src/test/resources/models";
 
   private static List<String> expectedParseErrorModels = Collections.singletonList(
-          MODEL_PATH + "/portTest/PortTest.mt")
-          .stream().map(s -> Paths.get(s).toString())
-          .collect(Collectors.toList());
+      MODEL_PATH + "/portTest/PortTest.mt")
+      .stream().map(s -> Paths.get(s).toString())
+      .collect(Collectors.toList());
 
   @BeforeClass
   public static void setUp() {
@@ -49,7 +45,6 @@ public class ParserTest {
     test("mt");
   }
 
-
   private void test(String fileEnding) throws IOException {
     ParseTest parserTest = new ParseTest("." + fileEnding);
     Files.walkFileTree(Paths.get(MODEL_PATH), parserTest);
@@ -62,10 +57,10 @@ public class ParserTest {
     }
     Log.info("Count of tested models: " + parserTest.getTestCount(), "ParserTest");
     Log.info("Count of correctly parsed models: "
-            + (parserTest.getTestCount() - parserTest.getModelsInError().size()), "ParserTest");
+        + (parserTest.getTestCount() - parserTest.getModelsInError().size()), "ParserTest");
 
     assertTrue("There were models that could not be parsed", parserTest.getModelsInError()
-            .isEmpty());
+        .isEmpty());
   }
 
   /**
@@ -103,9 +98,9 @@ public class ParserTest {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-            throws IOException {
+        throws IOException {
       if (file.toFile().isFile()
-              && (file.toString().toLowerCase().endsWith(fileEnding))) {
+          && (file.toString().toLowerCase().endsWith(fileEnding))) {
 
         Log.debug("Parsing file " + file.toString(), "ParserTest");
         testCount++;

@@ -29,9 +29,10 @@ public class SyncGroupIsNoSubset implements MontiArcASTComponentCoCo {
     for (ASTSyncStatement syncGroup : syncGroups) {
       Set<String> set = syncGroupToSet(syncGroup);
       for (Set<String> syncSet : syncSets) {
-        if (syncSet.containsAll(set) | set.containsAll(syncSet)){
-          Log.error("0xMT116 Sync Group " + syncGroup.getName() + " should not be a subset of another sync group.",
-                  syncGroup.get_SourcePositionStart());
+        if (syncSet.containsAll(set) | set.containsAll(syncSet)) {
+          Log.error("0xMT116 Sync Group " + syncGroup.getName()
+                  + " should not be a subset of another sync group.",
+              syncGroup.get_SourcePositionStart());
         }
       }
       syncSets.add(set);
@@ -39,17 +40,17 @@ public class SyncGroupIsNoSubset implements MontiArcASTComponentCoCo {
 
   }
 
-  private List<ASTSyncStatement> getSyncGroups(ASTComponent comp){
+  private List<ASTSyncStatement> getSyncGroups(ASTComponent comp) {
     return comp.getBody().getElementList()
-            .stream()
-            .filter(ASTControlBlock.class::isInstance)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(ASTSyncStatement.class::isInstance)
-            .map(ASTSyncStatement.class::cast)
-            .collect(Collectors.toList());
+        .stream()
+        .filter(ASTControlBlock.class::isInstance)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(ASTSyncStatement.class::isInstance)
+        .map(ASTSyncStatement.class::cast)
+        .collect(Collectors.toList());
   }
 
-  private Set<String> syncGroupToSet(ASTSyncStatement sync){
+  private Set<String> syncGroupToSet(ASTSyncStatement sync) {
     return new HashSet<>(sync.getSyncedPortList());
   }
 }

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * supertype of the source port type. (p. 66, lst. 3.43)
  */
 class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
-  
+
   /**
    * @see MontiArcASTComponentCoCo#check(ASTComponent)
    */
@@ -56,20 +56,24 @@ class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
       return;
     }
     ComponentSymbol compSym = (ComponentSymbol) node.getSymbolOpt().get();
-    
+
     node.getConnectors().forEach(connector -> {
       final Optional<PortSymbol> sourcePort;
       final List<Optional<PortSymbol>> targetPorts = new ArrayList<>();
       final List<ASTQualifiedName> targets = new ArrayList<>();
       try {
-        if(connector.getSource().sizeParts() <= 1){
-           sourcePort= compSym.getPort(connector.getSource().toString(), true);
-        }else{
-          Optional<ComponentInstanceSymbol> componentInstanceSymbol = compSym.getSubComponent(connector.getSource().getPart(0));
-          if(componentInstanceSymbol.isPresent()){
-            sourcePort=componentInstanceSymbol.get().getComponentType().getPort(connector.getSource().getPart(1), true);
-          }else{
-            sourcePort=Optional.empty();
+        if (connector.getSource().sizeParts() <= 1) {
+          sourcePort = compSym.getPort(connector.getSource().toString(), true);
+        }
+        else {
+          Optional<ComponentInstanceSymbol> componentInstanceSymbol = compSym
+              .getSubComponent(connector.getSource().getPart(0));
+          if (componentInstanceSymbol.isPresent()) {
+            sourcePort = componentInstanceSymbol.get().getComponentType()
+                .getPort(connector.getSource().getPart(1), true);
+          }
+          else {
+            sourcePort = Optional.empty();
           }
         }
         if (!sourcePort.isPresent()) {
@@ -81,17 +85,21 @@ class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
                       .map(ASTQualifiedName::toString).reduce(" ", String::concat),
                   connector.get_SourcePositionStart()));
         }
-  
+
         connector.streamTargetss().forEach(target -> {
           Optional<PortSymbol> targetPort;
-          if(target.sizeParts() <= 1){
+          if (target.sizeParts() <= 1) {
             targetPort = compSym.getPort(target.toString(), true);
-          }else{
-            Optional<ComponentInstanceSymbol> componentInstanceSymbol = compSym.getSubComponent(target.getPart(0));
-            if(componentInstanceSymbol.isPresent()){
-              targetPort=componentInstanceSymbol.get().getComponentType().getPort(target.getPart(1),true);
-            }else{
-              targetPort=Optional.empty();
+          }
+          else {
+            Optional<ComponentInstanceSymbol> componentInstanceSymbol = compSym
+                .getSubComponent(target.getPart(0));
+            if (componentInstanceSymbol.isPresent()) {
+              targetPort = componentInstanceSymbol.get().getComponentType()
+                  .getPort(target.getPart(1), true);
+            }
+            else {
+              targetPort = Optional.empty();
             }
           }
           if (!targetPort.isPresent()) {
@@ -110,33 +118,33 @@ class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
       catch (ResolvedSeveralEntriesException e) {
         return;
       }
-  
+
       if (!sourcePort.isPresent()) {
         return;
       }
       PortSymbol source = sourcePort.get();
-      for (int i = 0; i<targetPorts.size() ; i++) {
-  
+      for (int i = 0; i < targetPorts.size(); i++) {
+
         if (!targetPorts.get(i).isPresent()) {
           return;
         }
         PortSymbol target = targetPorts.get(i).get();
-  
+
         JTypeReference<? extends JTypeSymbol> sourceType = source.getTypeReference();
         JTypeReference<? extends JTypeSymbol> targetType = target.getTypeReference();
-  
+
         // The checks are only applicable if the types of both ports exist
         if (!sourceType.existsReferencedSymbol() || !targetType.existsReferencedSymbol()) {
           return;
         }
-  
+
         // Status: Both ports exist and the types of both ports exist
         // Next step is to determine the component in which the ports are defined.
         // In this process the real type arguments of the defining components have
         // to be determined.
         // Also, for the defining component the formal type parameters have to
         // be determined.
-  
+
         List<JTypeSymbol> sourceTypeFormalParams
             = sourceType.getReferencedSymbol()
             .getFormalTypeParameters().stream()
@@ -145,7 +153,7 @@ class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
             = targetType.getReferencedSymbol()
             .getFormalTypeParameters().stream()
             .map(p -> (JTypeSymbol) p).collect(Collectors.toList());
-  
+
         List<JTypeReference<? extends JTypeSymbol>> sourceTypeArgumentTypes
             = sourceType.getActualTypeArguments()
             .stream()
@@ -156,21 +164,21 @@ class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
             .stream()
             .map(arg -> (JTypeReference<? extends JTypeSymbol>) arg.getType())
             .collect(Collectors.toList());
-  
+
         // We have to load the binding of the formal type parameters to check
         // the types
         if (TypeCompatibilityChecker.hasNestedGenerics(sourceType)) {
           ASTQualifiedName sourceNameFQ = connector.getSource();
-    
+
           final List<ActualTypeArgument> initialTypeArgs
               = InheritanceTypeHelper.getInitialTypeArguments(compSym, sourceNameFQ);
-    
+
           // Determine the formal type arguments and type parameters of the defining component
           final Map.Entry<List<? extends JTypeSymbol>, List<ActualTypeArgument>>
               sourceTypeParamsAndRealTypeArgs
               = InheritanceTypeHelper.getTypeParamsAndRealTypeArgsForDefiningComponent(
               compSym, source, sourceNameFQ, initialTypeArgs);
-    
+
           sourceTypeFormalParams = sourceTypeParamsAndRealTypeArgs.getKey().stream()
               .map(p -> (JTypeSymbol) p)
               .collect(Collectors.toList());
@@ -179,22 +187,22 @@ class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
               .map(a -> (JTypeReference<?>) a.getType())
               .collect(Collectors.toList());
         }
-  
+
         if (TypeCompatibilityChecker.hasNestedGenerics(targetType)) {
           int finalI = i;
           ASTQualifiedName targetFQN
               = connector.getTargetsList().stream()
               .filter(n -> n.toString().equals(targets.get(finalI).toString()))
               .findFirst().get();
-    
+
           final List<ActualTypeArgument> initialTypeArgs
               = InheritanceTypeHelper.getInitialTypeArguments(compSym, targetFQN);
-    
+
           // Determine the formal type arguments and type parameters of the defining component
           final Map.Entry<List<? extends JTypeSymbol>, List<ActualTypeArgument>> targetTypeParamsAndRealTypeArgs
               = InheritanceTypeHelper.getTypeParamsAndRealTypeArgsForDefiningComponent(
               compSym, target, targetFQN, initialTypeArgs);
-    
+
           targetTypeFormalParams = targetTypeParamsAndRealTypeArgs.getKey().stream()
               .map(p -> (JTypeSymbol) p)
               .collect(Collectors.toList());
@@ -204,7 +212,7 @@ class ConnectorSourceAndTargetExistAndFit implements MontiArcASTComponentCoCo {
               .map(a -> (JTypeReference<?>) a.getType())
               .collect(Collectors.toList());
         }
-  
+
         if (!TypeCompatibilityChecker.areTypesEqual(
             sourceType,             // Type reference to the type of the source port
             sourceTypeFormalParams, // Formal parameters occurring in the source type

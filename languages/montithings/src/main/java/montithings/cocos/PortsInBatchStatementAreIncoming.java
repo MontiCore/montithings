@@ -9,7 +9,6 @@ import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.PortSymbol;
 import montithings._ast.ASTBatchStatement;
 import montithings._ast.ASTControlBlock;
-import montithings._ast.ASTControlStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,12 +23,12 @@ public class PortsInBatchStatementAreIncoming implements MontiArcASTComponentCoC
   @Override
   public void check(ASTComponent node) {
 
-    if (!node.getSpannedScopeOpt().isPresent()){
+    if (!node.getSpannedScopeOpt().isPresent()) {
       Log.error(
-              String.format("0xMT020 ASTComponent node \"%s\" has no " +
-                              "spanned scope. Did you forget to run the " +
-                              "SymbolTableCreator before checking cocos?",
-                      node.getName()));
+          String.format("0xMT020 ASTComponent node \"%s\" has no " +
+                  "spanned scope. Did you forget to run the " +
+                  "SymbolTableCreator before checking cocos?",
+              node.getName()));
       return;
     }
 
@@ -37,27 +36,27 @@ public class PortsInBatchStatementAreIncoming implements MontiArcASTComponentCoC
     for (ASTBatchStatement batchStatement : getBatchPortNames(node)) {
       for (String portName : batchStatement.getBatchPortsList()) {
         Optional<Symbol> port = s.resolve(portName, PortSymbol.KIND);
-        if (!port.isPresent()){
+        if (!port.isPresent()) {
           Log.error("0xMT111 The port " + portName + " does not exist in the batch statement.",
-                  batchStatement.get_SourcePositionStart());
+              batchStatement.get_SourcePositionStart());
           continue;
         }
-        if (!((PortSymbol)port.get()).isIncoming()){
+        if (!((PortSymbol) port.get()).isIncoming()) {
           Log.error("0xMT112 The port " + portName + " in the batch statement is not incoming.",
-                  batchStatement.get_SourcePositionStart());
+              batchStatement.get_SourcePositionStart());
         }
       }
     }
 
   }
 
-  public List<ASTBatchStatement> getBatchPortNames(ASTComponent node){
+  public List<ASTBatchStatement> getBatchPortNames(ASTComponent node) {
     return node.getBody().getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTBatchStatement)
-            .map(e -> (ASTBatchStatement) e)
-            .collect(Collectors.toList());
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(e -> e instanceof ASTBatchStatement)
+        .map(e -> (ASTBatchStatement) e)
+        .collect(Collectors.toList());
   }
 }

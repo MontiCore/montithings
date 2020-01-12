@@ -29,7 +29,7 @@ import java.util.Set;
  */
 public class MontiThingsModelNameCalculator
     extends de.monticore.CommonModelNameCalculator {
-  
+
   @Override
   public Set<String> calculateModelNames(final String name, final SymbolKind kind) {
 
@@ -50,14 +50,14 @@ public class MontiThingsModelNameCalculator
     if (SyncStatementSymbol.KIND.isKindOf(kind)) {
       return calculateModelNamesForSyncStatement(name);
     }
-    
+
     return new LinkedHashSet<>();
   }
-  
+
   private Set<String> calculateModelNameForComponent(String name) {
     List<String> parts = Splitters.DOT.splitToList(name);
     Set<String> ret = new LinkedHashSet<>();
-    
+
     for (int i = 0; i < parts.size(); i++) {
       char[] c = parts.get(i).toCharArray();
       if (Character.isUpperCase(c[0])) {
@@ -65,23 +65,23 @@ public class MontiThingsModelNameCalculator
       }
     }
     //There is no Part that starts with Uppercase. This Error is handled by NamesCorrectlyCapitalized but does not result in SymTab error
-    if(ret.isEmpty()){
+    if (ret.isEmpty()) {
       ret.add(name);
     }
     return Collections.unmodifiableSet(ret);
   }
-  
+
   private Set<String> calculateModelNameForPort(String name) {
     List<String> parts = Splitters.DOT.splitToList(name);
     if (parts.size() > 1) {
       String modelName = Joiners.DOT.join(parts.subList(0, parts.size() - 1));
-      return ImmutableSet.<String> builder()
+      return ImmutableSet.<String>builder()
           .addAll(calculateModelNameForComponent(modelName))
           .build();
     }
     return ImmutableSet.of();
   }
-  
+
   private Set<String> calculateModelNameForComponentInstance(String name) {
     List<String> parts = Splitters.DOT.splitToList(name);
     if (parts.size() > 1) {
@@ -89,14 +89,14 @@ public class MontiThingsModelNameCalculator
     }
     return ImmutableSet.of();
   }
-  
+
   protected Set<String> calculateModelNameForConnector(String name) {
     List<String> parts = Splitters.DOT.splitToList(name);
     if (parts.size() == 1) {
       return calculateModelNameForComponent(Joiners.DOT.join(parts.subList(0, parts.size() - 1)));
     }
     else if (parts.size() >= 2) {
-      return ImmutableSet.<String> builder()
+      return ImmutableSet.<String>builder()
           .addAll(
               calculateModelNameForComponent(Joiners.DOT.join(parts.subList(0, parts.size() - 1))))
           .addAll(
@@ -117,5 +117,5 @@ public class MontiThingsModelNameCalculator
     modelNames.add(name);
     return modelNames;
   }
-  
+
 }

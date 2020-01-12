@@ -1,14 +1,14 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._parser;
+
 import com.google.common.io.Files;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTMTCompilationUnit;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
-
-
 
 /**
  * @author (last commit) Joshua Fürste
@@ -22,7 +22,7 @@ public class MontiThingsParser extends MontiThingsParserTOP {
   @SuppressWarnings("DuplicatedCode")
   @Override
   public Optional<ASTMTCompilationUnit> parseMTCompilationUnit(String filename)
-          throws IOException {
+      throws IOException {
     Optional<ASTMTCompilationUnit> ast = super.parseMTCompilationUnit(filename);
     if (ast.isPresent()) {
       String simpleFileName = Files.getNameWithoutExtension(filename);
@@ -32,13 +32,13 @@ public class MontiThingsParser extends MontiThingsParserTOP {
       String packageDeclaration = Names.getQualifiedName(ast.get().getPackageList());
       if (!modelName.equals(simpleFileName)) {
         Log.error("0xMA256 The name of the component " + modelName
-                + " is not identical to the name of the file in file '" + filename
-                + "' (without its file extension).");
+            + " is not identical to the name of the file in file '" + filename
+            + "' (without its file extension).");
       }
       if (!packageName.endsWith(packageDeclaration)) {
         Log.error("0xMA257 The package declaration " + packageDeclaration
-                + " of the component must not differ from the "
-                + "package of the component file in file '" + filename + "'.");
+            + " of the component must not differ from the "
+            + "package of the component file in file '" + filename + "'.");
       }
 
     }

@@ -13,9 +13,9 @@ import montithings._cocos.MontiThingsASTSyncStatementCoCo;
 public class SyncGroupHasAtLeastOneElement implements MontiThingsASTSyncStatementCoCo {
   @Override
   public void check(ASTSyncStatement node) {
-    if (node.getSyncedPortList().isEmpty()){
+    if (node.getSyncedPortList().isEmpty()) {
       Log.error("0xMT115 Synchronization groups must contain at least one port.",
-              node.get_SourcePositionStart());
+          node.get_SourcePositionStart());
     }
   }
 }

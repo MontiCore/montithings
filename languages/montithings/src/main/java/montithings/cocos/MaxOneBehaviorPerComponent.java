@@ -14,16 +14,16 @@ import montiarc._cocos.MontiArcASTComponentCoCo;
  */
 public class MaxOneBehaviorPerComponent implements MontiArcASTComponentCoCo {
 
-
   @Override
   public void check(ASTComponent node) {
     long count = node.getBody().getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTBehaviorElement)
-            .count();
-    if (count > 1){
-      Log.error("0xMT110 There exists more than one behavior element in component " + node.getName(),
-              node.get_SourcePositionStart());
+        .stream()
+        .filter(e -> e instanceof ASTBehaviorElement)
+        .count();
+    if (count > 1) {
+      Log.error(
+          "0xMT110 There exists more than one behavior element in component " + node.getName(),
+          node.get_SourcePositionStart());
     }
 
   }

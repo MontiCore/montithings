@@ -23,12 +23,12 @@ public class PortsInSyncGroupAreIncoming implements MontiArcASTComponentCoCo {
   @Override
   public void check(ASTComponent node) {
 
-    if (!node.getSpannedScopeOpt().isPresent()){
+    if (!node.getSpannedScopeOpt().isPresent()) {
       Log.error(
-              String.format("0xMT020 ASTComponent node \"%s\" has no " +
-                              "spanned scope. Did you forget to run the " +
-                              "SymbolTableCreator before checking cocos?",
-                      node.getName()));
+          String.format("0xMT020 ASTComponent node \"%s\" has no " +
+                  "spanned scope. Did you forget to run the " +
+                  "SymbolTableCreator before checking cocos?",
+              node.getName()));
       return;
     }
 
@@ -36,14 +36,14 @@ public class PortsInSyncGroupAreIncoming implements MontiArcASTComponentCoCo {
     for (ASTSyncStatement syncGroup : getSyncGroups(node)) {
       for (String portName : syncGroup.getSyncedPortList()) {
         Optional<Symbol> port = s.resolve(portName, PortSymbol.KIND);
-        if (!port.isPresent()){
+        if (!port.isPresent()) {
           Log.error("0xMT113 The port " + portName + " in the sync group does not exist.",
-                  syncGroup.get_SourcePositionStart());
+              syncGroup.get_SourcePositionStart());
           continue;
         }
-        if (!((PortSymbol)port.get()).isIncoming()){
+        if (!((PortSymbol) port.get()).isIncoming()) {
           Log.error("0xMT114 The port " + portName + " in the sync group is not incoming.",
-                  syncGroup.get_SourcePositionStart());
+              syncGroup.get_SourcePositionStart());
         }
       }
 
@@ -51,13 +51,13 @@ public class PortsInSyncGroupAreIncoming implements MontiArcASTComponentCoCo {
 
   }
 
-  public List<ASTSyncStatement> getSyncGroups(ASTComponent node){
+  public List<ASTSyncStatement> getSyncGroups(ASTComponent node) {
     return node.getBody().getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(ASTSyncStatement.class::isInstance)
-            .map(ASTSyncStatement.class::cast)
-            .collect(Collectors.toList());
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(ASTSyncStatement.class::isInstance)
+        .map(ASTSyncStatement.class::cast)
+        .collect(Collectors.toList());
   }
 }

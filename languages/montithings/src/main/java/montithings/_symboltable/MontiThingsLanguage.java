@@ -10,7 +10,7 @@ import montiarc._symboltable.MontiArcLanguage;
  *
  * @author (last commit) Joshua Fürste
  */
-public class MontiThingsLanguage extends MontiThingsLanguageTOP{
+public class MontiThingsLanguage extends MontiThingsLanguageTOP {
 
   public static final String FILE_ENDING = "mt";
 

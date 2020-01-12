@@ -1,13 +1,15 @@
 // (c) https://github.com/MontiCore/monticore
 package bindings.cocos;
 
-import de.se_rwth.commons.logging.Finding;
-import de.se_rwth.commons.logging.Log;
 import bindings.AbstractTest;
 import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._cocos.BindingsCoCoChecker;
+import de.se_rwth.commons.logging.Finding;
+import de.se_rwth.commons.logging.Log;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,34 +23,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AbstractCocoTest extends AbstractTest {
 
-    /**
-     * Prepare the inputs needed for executing a coco
-     * @param pathToModelFile file path to a .tab file
-     * @return An AST and a coco checker
-     */
-    public CocoTestInput prepareTest(String pathToModelFile) {
-        // prepare input
-        ASTBindingsCompilationUnit ast = parseModel(pathToModelFile);
-        BindingsCoCoChecker checker = new BindingsCoCoChecker();
+  /**
+   * Prepare the inputs needed for executing a coco
+   *
+   * @param pathToModelFile file path to a .tab file
+   * @return An AST and a coco checker
+   */
+  public CocoTestInput prepareTest(String pathToModelFile) {
+    // prepare input
+    ASTBindingsCompilationUnit ast = parseModel(pathToModelFile);
+    BindingsCoCoChecker checker = new BindingsCoCoChecker();
 
-        // bundle input
-        return new CocoTestInput(ast, checker);
-    }
+    // bundle input
+    return new CocoTestInput(ast, checker);
+  }
 
-    public void executeCoCo(CocoTestInput input) {
-        input.getChecker().checkAll(input.getAst());
-    }
+  public void executeCoCo(CocoTestInput input) {
+    input.getChecker().checkAll(input.getAst());
+  }
 
-    public void checkResults(String expectedError) {
-        checkResults(Collections.singletonList(expectedError));
-    }
+  public void checkResults(String expectedError) {
+    checkResults(Collections.singletonList(expectedError));
+  }
 
-    public void checkResults(Collection<String> expectedErrors) {
-        Collection<Finding> findings = Log.getFindings();
-        List<Finding> expectedFindings = expectedErrors.stream()
-                .map(Finding::error)
-                .collect(Collectors.toList());
-        assertThat(findings).containsExactlyElementsOf(expectedFindings);
-    }
+  public void checkResults(Collection<String> expectedErrors) {
+    Collection<Finding> findings = Log.getFindings();
+    List<Finding> expectedFindings = expectedErrors.stream()
+        .map(Finding::error)
+        .collect(Collectors.toList());
+    assertThat(findings).containsExactlyElementsOf(expectedFindings);
+  }
 
 }

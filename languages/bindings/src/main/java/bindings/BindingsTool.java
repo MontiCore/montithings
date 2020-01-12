@@ -21,47 +21,47 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BindingsTool {
-    
-    protected ASTBindingsCompilationUnit parseModel(String modelFile) {
-        Path model = Paths.get(modelFile);
-        BindingsParser parser = new BindingsParser();
-        Optional<ASTBindingsCompilationUnit> optAutomaton;
-        try {
-            optAutomaton = parser.parse(model.toString());
-            assertFalse(parser.hasErrors());
-            assertTrue(optAutomaton.isPresent());
-            return optAutomaton.get();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            fail("There was an exception when parsing the model " + modelFile + ": "
-                    + e.getMessage());
-        }
-        return null;
-    }
 
-    public CocoInput prepareTest(String pathToModelFile) {
-        // prepare input
-        ASTBindingsCompilationUnit ast = parseModel(pathToModelFile);
-        BindingsCoCoChecker checker = new BindingsCoCoChecker();
-
-        // bundle input
-        return new CocoInput(ast, checker);
+  protected ASTBindingsCompilationUnit parseModel(String modelFile) {
+    Path model = Paths.get(modelFile);
+    BindingsParser parser = new BindingsParser();
+    Optional<ASTBindingsCompilationUnit> optAutomaton;
+    try {
+      optAutomaton = parser.parse(model.toString());
+      assertFalse(parser.hasErrors());
+      assertTrue(optAutomaton.isPresent());
+      return optAutomaton.get();
     }
-
-    public void executeCoCo(CocoInput input) {
-        input.getChecker().checkAll(input.getAst());
+    catch (Exception e) {
+      e.printStackTrace();
+      fail("There was an exception when parsing the model " + modelFile + ": "
+          + e.getMessage());
     }
+    return null;
+  }
 
-    public void checkResults(String expectedError) {
-        checkResults(Collections.singletonList(expectedError));
-    }
+  public CocoInput prepareTest(String pathToModelFile) {
+    // prepare input
+    ASTBindingsCompilationUnit ast = parseModel(pathToModelFile);
+    BindingsCoCoChecker checker = new BindingsCoCoChecker();
 
-    public void checkResults(Collection<String> expectedErrors) {
-        Collection<Finding> findings = Log.getFindings();
-        List<Finding> expectedFindings = expectedErrors.stream()
-                .map(Finding::error)
-                .collect(Collectors.toList());
-        assertThat(findings).containsExactlyElementsOf(expectedFindings);
-    }
+    // bundle input
+    return new CocoInput(ast, checker);
+  }
+
+  public void executeCoCo(CocoInput input) {
+    input.getChecker().checkAll(input.getAst());
+  }
+
+  public void checkResults(String expectedError) {
+    checkResults(Collections.singletonList(expectedError));
+  }
+
+  public void checkResults(Collection<String> expectedErrors) {
+    Collection<Finding> findings = Log.getFindings();
+    List<Finding> expectedFindings = expectedErrors.stream()
+        .map(Finding::error)
+        .collect(Collectors.toList());
+    assertThat(findings).containsExactlyElementsOf(expectedFindings);
+  }
 }

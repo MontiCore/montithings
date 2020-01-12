@@ -18,32 +18,32 @@ import static org.junit.Assert.assertTrue;
 
 class ExpectedErrorInfo {
   private static Pattern ERROR_CODE_PATTERN = Pattern.compile("xM[A-Z][0-9]{3}");
-  
+
   private int numExpectedFindings;
-  
+
   private final HashSet<String> expectedErrorCodes = new HashSet<>();
-  
+
   private Predicate<String> containsExpectedErrorCode;
-  
+
   /**
    * Only use for checking of non MontiArc Errors!
-   * 
+   *
    * @param eRROR_CODE_PATTERN the eRROR_CODE_PATTERN to set
    */
   public static void setERROR_CODE_PATTERN(Pattern eRROR_CODE_PATTERN) {
     ERROR_CODE_PATTERN = eRROR_CODE_PATTERN;
   }
-  
+
   public static void reset() {
     ERROR_CODE_PATTERN = Pattern.compile("xM[A-Z][0-9]{3}");
   }
-  
+
   /**
    * Raises an error if the given error codes don't match the convention for error codes in test
    * cases (no leading zero, capital hexadecimal digits)
    */
   private static void checkExpectedErrorCodes(String[] errorCodes) {
-    
+
     for (String errorCode : errorCodes) {
       if (!ERROR_CODE_PATTERN.matcher(errorCode).matches()) {
         Log.error(String.format(
@@ -52,18 +52,18 @@ class ExpectedErrorInfo {
       }
     }
   }
-  
+
   private static Set<String> collectErrorCodes(String findings) {
     Matcher matcher = ERROR_CODE_PATTERN.matcher(findings);
-    
+
     Set<String> errorCodes = new HashSet<>();
     while (matcher.find()) {
       errorCodes.add(matcher.group());
     }
-    
+
     return errorCodes;
   }
-  
+
   private void initContainsExpectedErrorCode() {
     containsExpectedErrorCode = s -> {
       for (String errorCode : expectedErrorCodes) {
@@ -75,55 +75,55 @@ class ExpectedErrorInfo {
       return false;
     };
   }
-  
+
   public ExpectedErrorInfo() {
     this(0);
   }
-  
+
   public ExpectedErrorInfo(int numExpectedFindings, String... expectedErrorCodes) {
     checkExpectedErrorCodes(expectedErrorCodes);
-    
+
     this.numExpectedFindings = numExpectedFindings;
     this.expectedErrorCodes.addAll(Arrays.asList(expectedErrorCodes));
-    
+
     initContainsExpectedErrorCode();
   }
-  
+
   private String concatenateFindings(List<Finding> findings) {
     return findings.stream().map(Finding::buildMsg)
         .collect(Collectors.joining("\n"));
   }
-  
+
   public void checkExpectedPresent(List<Finding> findings, String emptyFindingsHint) {
     String findingsString = concatenateFindings(findings);
-    
+
     if (findingsString.isEmpty()) {
       findingsString = emptyFindingsHint;
     }
-    
+
     assertEquals(findingsString, numExpectedFindings,
         findings.stream().map(Finding::buildMsg).filter(containsExpectedErrorCode).count());
-    
+
     assertTrue(collectErrorCodes(findingsString).containsAll(expectedErrorCodes));
   }
-  
+
   public void checkOnlyExpectedPresent(List<Finding> findings) {
     checkOnlyExpectedPresent(findings, "");
   }
-  
+
   public void checkOnlyExpectedPresent(List<Finding> findings, String emptyFindingsHint) {
     checkExpectedPresent(findings, emptyFindingsHint);
-    
+
     checkNoAdditionalErrorCodesPresent(concatenateFindings(findings));
   }
-  
+
   private void checkNoAdditionalErrorCodesPresent(String findingsString) {
     Set<String> actualErrorCodes = collectErrorCodes(findingsString);
-    
+
     // check whether there are unexpected error codes
     Set<String> unexpectedErrorCodes = new HashSet<>(actualErrorCodes);
     unexpectedErrorCodes.removeAll(expectedErrorCodes);
-    
+
     assertEquals(findingsString, 0, unexpectedErrorCodes.size());
   }
 }

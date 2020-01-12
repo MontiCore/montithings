@@ -4,7 +4,6 @@ package montithings.cocos;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTElement;
 import montiarc._ast.ASTInterface;
-import montiarc._ast.ASTPort;
 import montithings._ast.ASTComponent;
 import montithings._cocos.MontiThingsASTComponentCoCo;
 import montithings._symboltable.ComponentSymbol;

@@ -13,9 +13,9 @@ import montithings._cocos.MontiThingsASTCalculationIntervalCoCo;
 public class UpdateIntervalPositive implements MontiThingsASTCalculationIntervalCoCo {
   @Override
   public void check(ASTCalculationInterval node) {
-    if (!(node.getInterval().getValue() > 0)){
+    if (!(node.getInterval().getValue() > 0)) {
       Log.error("0xMT118 The update interval for the component should be a positive integer value",
-              node.get_SourcePositionStart());
+          node.get_SourcePositionStart());
     }
   }
 }

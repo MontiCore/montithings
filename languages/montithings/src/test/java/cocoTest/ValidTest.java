@@ -10,15 +10,15 @@ import org.junit.Test;
  *
  * @author (last commit) Joshua Fürste
  */
-public class ValidTest extends AbstractCoCoTest{
+public class ValidTest extends AbstractCoCoTest {
 
   @BeforeClass
-  public static void setup(){
+  public static void setup() {
     Log.enableFailQuick(false);
   }
 
   @Test
-  public void checkValidTest(){
+  public void checkValidTest() {
     checkValid("portTest.PortTest");
   }
 }

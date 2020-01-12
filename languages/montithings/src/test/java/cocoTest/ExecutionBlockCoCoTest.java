@@ -15,59 +15,58 @@ public class ExecutionBlockCoCoTest extends AbstractCoCoTest {
   private static final String PACKAGE = "cocoTest";
 
   @BeforeClass
-  public static void setup(){
+  public static void setup() {
     Log.enableFailQuick(false);
   }
 
   @Test
-  public void validTest(){
+  public void validTest() {
     checkValid(PACKAGE + "." + "ValidExecutionBlock");
   }
 
   @Test
-  public void executionWithoutElseTest(){
+  public void executionWithoutElseTest() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE
-            + "." + "ExecutionWithoutElse");
+        + "." + "ExecutionWithoutElse");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockWellFormed()),
-            node,
-            new ExpectedErrorInfo(1, "xMT104"));
+        node,
+        new ExpectedErrorInfo(1, "xMT104"));
   }
 
   @Test
-  public void executionBlockEmpty(){
+  public void executionBlockEmpty() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE
-            + "." + "ExecutionBlockEmpty");
+        + "." + "ExecutionBlockEmpty");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockWellFormed()),
-            node,
-            new ExpectedErrorInfo(1, "xMT104"));
+        node,
+        new ExpectedErrorInfo(1, "xMT104"));
   }
 
   @Test
-  public void executionHasMoreThanOneElseTest(){
+  public void executionHasMoreThanOneElseTest() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE
-            + "." + "ExecutionWithTwoElse");
+        + "." + "ExecutionWithTwoElse");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockWellFormed()),
-            node,
-            new ExpectedErrorInfo(1, "xMT105"));
+        node,
+        new ExpectedErrorInfo(1, "xMT105"));
   }
 
   @Test
-  public void executionPrioritiesTest(){
+  public void executionPrioritiesTest() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE
-            + "." + "ExecutionBlockPriorities");
+        + "." + "ExecutionBlockPriorities");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionBlockPriorityCorrectness()),
-            node,
-            new ExpectedErrorInfo(2, "xMT106", "xMT107"));
+        node,
+        new ExpectedErrorInfo(2, "xMT106", "xMT107"));
   }
 
   @Test
-  public void executionGuardWithUndefinedElementsTest(){
+  public void executionGuardWithUndefinedElementsTest() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE
-            + "." + "UndefinedExecutionGuard");
+        + "." + "UndefinedExecutionGuard");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ExecutionGuardIsValid()),
-            node,
-            new ExpectedErrorInfo(1 , "xMT108"));
+        node,
+        new ExpectedErrorInfo(1, "xMT108"));
   }
-
 
 }

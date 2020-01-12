@@ -14,9 +14,9 @@ import montithings._cocos.MontiThingsASTSyncStatementCoCo;
 public class SyncGroupNamesUppercase implements MontiThingsASTSyncStatementCoCo {
   @Override
   public void check(ASTSyncStatement node) {
-    if (!Character.isUpperCase(node.getName().charAt(0))){
+    if (!Character.isUpperCase(node.getName().charAt(0))) {
       Log.error("0xMT116 Names of synchronization groups must start with a capital letter.",
-              node.get_SourcePositionStart());
+          node.get_SourcePositionStart());
     }
   }
 }

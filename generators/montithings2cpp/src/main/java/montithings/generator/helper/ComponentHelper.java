@@ -1,9 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
-import montiarc._ast.ASTComponent;
-import montithings.generator.codegen.xtend.util.Utils;
-import montithings.visitor.GuardExpressionVisitor;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
@@ -22,7 +19,9 @@ import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import jline.internal.Log;
-import montiarc._ast.*;
+import montiarc._ast.ASTComponent;
+import montiarc._ast.ASTParameter;
+import montiarc._ast.ASTPort;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
@@ -30,9 +29,10 @@ import montiarc._symboltable.PortSymbol;
 import montiarc.helper.SymbolPrinter;
 import montithings._ast.*;
 import montithings._symboltable.ResourcePortSymbol;
+import montithings.generator.codegen.xtend.util.Utils;
+import montithings.visitor.GuardExpressionVisitor;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -53,9 +53,11 @@ public class ComponentHelper {
 
   public ComponentHelper(ComponentSymbol component) {
     this.component = component;
-    if ((component.getAstNode().isPresent()) && (component.getAstNode().get() instanceof ASTComponent)) {
+    if ((component.getAstNode().isPresent()) && (component.getAstNode()
+        .get() instanceof ASTComponent)) {
       componentNode = (ASTComponent) component.getAstNode().get();
-    } else {
+    }
+    else {
       componentNode = null;
     }
   }
@@ -81,14 +83,17 @@ public class ComponentHelper {
    *                        determined.
    * @return The String representation of the type of the port.
    */
-  public static String getRealPortTypeString(ComponentSymbol componentSymbol, PortSymbol portSymbol) {
+  public static String getRealPortTypeString(ComponentSymbol componentSymbol,
+      PortSymbol portSymbol) {
 
     final JTypeReference<? extends JTypeSymbol> typeReference = portSymbol.getTypeReference();
     if (!typeReference.existsReferencedSymbol()) {
-      Log.error("0xMA135 Referenced type for port \"" + portSymbol.getName() + "\" does not exist.");
+      Log.error(
+          "0xMA135 Referenced type for port \"" + portSymbol.getName() + "\" does not exist.");
     }
 
-    if (componentSymbol.getPorts().contains(portSymbol) || !componentSymbol.getSuperComponent().isPresent()) {
+    if (componentSymbol.getPorts().contains(portSymbol) || !componentSymbol.getSuperComponent()
+        .isPresent()) {
       // A. Component has no super component or the port is defined in the
       // extending component
       // Therefore, there are no special cases and the name can be used from
@@ -97,12 +102,14 @@ public class ComponentHelper {
       // return ComponentHelper.autobox(printTypeReference(typeReference));
       // TODO: This is a temporary workaround until MC 5.0.0.1 is used that
       // fixes the JTypeSymbolsHelper
-      TypesPrettyPrinterConcreteVisitor typesPrinter = new TypesPrettyPrinterConcreteVisitor(new IndentPrinter());
+      TypesPrettyPrinterConcreteVisitor typesPrinter = new TypesPrettyPrinterConcreteVisitor(
+          new IndentPrinter());
       final ASTPort astNode = (ASTPort) portSymbol.getAstNode().get();
       return ComponentHelper.autobox(typesPrinter.prettyprint(astNode.getType()));
       // End of temp workaround
 
-    } else {
+    }
+    else {
       // TODO Refactor stack and maps to fields of the Helper or remove stack
       // and only save last element
       // B. Component has a super component
@@ -135,7 +142,7 @@ public class ComponentHelper {
       // on the stack and the map for the super component is filled
 
       while (currentComponent != null && currentComponent.getSuperComponent().isPresent()
-              && !currentComponent.getPorts().contains(portSymbol)) {
+          && !currentComponent.getPorts().contains(portSymbol)) {
         Map<String, String> superCompTypeArgs = new HashMap<>();
         final ComponentSymbolReference superCompRef = currentComponent.getSuperComponent().get();
         superComponentStack.push(superCompRef);
@@ -146,7 +153,7 @@ public class ComponentHelper {
           final int index = superCompSymbol.getFormalTypeParameters().indexOf(typeSymbol);
           final ActualTypeArgument actualTypeArg = superCompRef.getActualTypeArguments().get(index);
           String resultingTypeArgument = insertTypeParamValueIntoTypeArg(actualTypeArg.getType(),
-                  actualTypeArgStringsMap.get(currentComponent.getFullName()));
+              actualTypeArgStringsMap.get(currentComponent.getFullName()));
           superCompTypeArgs.put(typeSymbol.getName(), resultingTypeArgument);
         }
         actualTypeArgStringsMap.put(superCompSymbol.getFullName(), superCompTypeArgs);
@@ -165,7 +172,7 @@ public class ComponentHelper {
       // Replace all type parameters of the defining component which occurr in
       // the port type by the actual type argument
       return insertTypeParamValueIntoTypeArg(typeReference,
-              actualTypeArgStringsMap.get(Objects.requireNonNull(currentComponent).getFullName()));
+          actualTypeArgStringsMap.get(Objects.requireNonNull(currentComponent).getFullName()));
     }
   }
 
@@ -184,8 +191,9 @@ public class ComponentHelper {
    * @param typeParamMap The map used to replace the type parameters
    * @return The resulting String representation with replaced type parameters
    */
-  public static String insertTypeParamValueIntoTypeArg(TypeReference<? extends TypeSymbol> toAnalyze,
-                                                       Map<String, String> typeParamMap) {
+  public static String insertTypeParamValueIntoTypeArg(
+      TypeReference<? extends TypeSymbol> toAnalyze,
+      Map<String, String> typeParamMap) {
 
     StringBuilder result = new StringBuilder();
     result.append(toAnalyze.getName());
@@ -194,16 +202,18 @@ public class ComponentHelper {
       // parameter
       if (typeParamMap.containsKey(toAnalyze.getName())) {
         return typeParamMap.get(toAnalyze.getName());
-      } else {
+      }
+      else {
         return toAnalyze.getName();
       }
-    } else {
+    }
+    else {
       // There are type arguments and therefore they are processed recursively
       // and reprinted
       result.append("<");
       result.append(toAnalyze.getActualTypeArguments().stream()
-              .map(typeArg -> insertTypeParamValueIntoTypeArg(typeArg.getType(), typeParamMap))
-              .collect(Collectors.joining(", ")));
+          .map(typeArg -> insertTypeParamValueIntoTypeArg(typeArg.getType(), typeParamMap))
+          .collect(Collectors.joining(", ")));
       result.append(">");
     }
     for (int i = 0; i < toAnalyze.getDimension(); i++) {
@@ -220,7 +230,7 @@ public class ComponentHelper {
    */
   public static String printTypeName(ASTType astType) {
     TypesPrettyPrinterConcreteVisitor typesPrinter = new de.monticore.types.prettyprint.TypesPrettyPrinterConcreteVisitor(
-            new IndentPrinter());
+        new IndentPrinter());
     return autobox(typesPrinter.prettyprint(astType).replaceAll(" ", ""));
   }
 
@@ -257,8 +267,9 @@ public class ComponentHelper {
   public static String printTypeArguments(List<ActualTypeArgument> typeArguments) {
     if (typeArguments.size() > 0) {
       String result = "<" +
-              typeArguments.stream().map(ComponentHelper::printTypeArgument).collect(Collectors.joining(", ")) +
-              ">";
+          typeArguments.stream().map(ComponentHelper::printTypeArgument)
+              .collect(Collectors.joining(", ")) +
+          ">";
       return result;
     }
     return "";
@@ -337,15 +348,17 @@ public class ComponentHelper {
 
     if (numberOfMissingParameters > 0) {
       // Get the AST node of the component and the list of parameters in the AST
-      final ASTComponent astNode = (ASTComponent) param.getComponentType().getReferencedSymbol().getAstNode()
-              .get();
+      final ASTComponent astNode = (ASTComponent) param.getComponentType().getReferencedSymbol()
+          .getAstNode()
+          .get();
       final List<ASTParameter> parameters = astNode.getHead().getParameterList();
 
       // Retrieve the parameters from the node and add them to the list
       for (int counter = 0; counter < numberOfMissingParameters; counter++) {
         // Fill up from the last parameter
         final ASTParameter astParameter = parameters.get(parameters.size() - 1 - counter);
-        final String prettyprint = printer.prettyprint(astParameter.getDefaultValue().getExpression());
+        final String prettyprint = printer
+            .prettyprint(astParameter.getDefaultValue().getExpression());
         outputParameters.add(outputParameters.size() - counter, prettyprint);
       }
     }
@@ -364,7 +377,8 @@ public class ComponentHelper {
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
 
     String packageName = Utils
-            .printPackageWithoutKeyWordAndSemicolon(componentTypeReference.getReferencedComponent().get());
+        .printPackageWithoutKeyWordAndSemicolon(
+            componentTypeReference.getReferencedComponent().get());
     if (!packageName.equals("")) {
       result = packageName + ".";
     }
@@ -381,8 +395,8 @@ public class ComponentHelper {
   }
 
   public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
-                                                             HashMap<String, String> interfaceToImplementation,
-                                                             boolean printTypeParameters) {
+      HashMap<String, String> interfaceToImplementation,
+      boolean printTypeParameters) {
     String result = "";
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
 
@@ -390,7 +404,7 @@ public class ComponentHelper {
     if (componentTypeReference.hasActualTypeArguments() && printTypeParameters) {
       result += printTypeArguments(componentTypeReference.getActualTypeArguments());
     }
-    if(interfaceToImplementation.containsKey(result)) {
+    if (interfaceToImplementation.containsKey(result)) {
       return interfaceToImplementation.get(result);
     }
     return result;
@@ -405,20 +419,23 @@ public class ComponentHelper {
    *                 connector or the target port
    * @return true, if the port is an incoming port. False, otherwise.
    */
-  public boolean isIncomingPort(ComponentSymbol cmp, ASTQualifiedName source, ASTQualifiedName target,
-                                boolean isSource) {
+  public boolean isIncomingPort(ComponentSymbol cmp, ASTQualifiedName source,
+      ASTQualifiedName target,
+      boolean isSource) {
     String subCompName = getConnectorComponentName(source, target, isSource);
     String portNameUnqualified = getConnectorPortName(source, target, isSource);
     Optional<PortSymbol> port;
     String portName = isSource ? Names.getQualifiedName(source.getPartList())
-            : Names.getQualifiedName(target.getPartList());
+        : Names.getQualifiedName(target.getPartList());
     // port is of subcomponent
     if (portName.contains(".")) {
       Optional<ComponentInstanceSymbol> subCompInstance = cmp.getSpannedScope()
-              .resolve(subCompName, ComponentInstanceSymbol.KIND);
-      Optional<ComponentSymbol> subComp = subCompInstance.get().getComponentType().getReferencedComponent();
+          .resolve(subCompName, ComponentInstanceSymbol.KIND);
+      Optional<ComponentSymbol> subComp = subCompInstance.get().getComponentType()
+          .getReferencedComponent();
       port = subComp.get().getSpannedScope().resolve(portNameUnqualified, PortSymbol.KIND);
-    } else {
+    }
+    else {
       port = cmp.getSpannedScope().resolve(portName, PortSymbol.KIND);
     }
 
@@ -431,11 +448,13 @@ public class ComponentHelper {
    * @param isSource <tt>true</tt> for source component, else <tt>false>tt>
    * @return
    */
-  public String getConnectorComponentName(ASTQualifiedName source, ASTQualifiedName target, boolean isSource) {
+  public String getConnectorComponentName(ASTQualifiedName source, ASTQualifiedName target,
+      boolean isSource) {
     final String name;
     if (isSource) {
       name = Names.getQualifiedName(source.getPartList());
-    } else {
+    }
+    else {
       name = Names.getQualifiedName(target.getPartList());
     }
     if (name.contains(".")) {
@@ -451,11 +470,13 @@ public class ComponentHelper {
    * @param isSource <tt>true</tt> for source component, else <tt>false>tt>
    * @return
    */
-  public String getConnectorPortName(ASTQualifiedName source, ASTQualifiedName target, boolean isSource) {
+  public String getConnectorPortName(ASTQualifiedName source, ASTQualifiedName target,
+      boolean isSource) {
     final String name;
     if (isSource) {
       name = Names.getQualifiedName(source.getPartList());
-    } else {
+    }
+    else {
       name = Names.getQualifiedName(target.getPartList());
     }
 
@@ -479,7 +500,7 @@ public class ComponentHelper {
     }
     if (comp.getHead().isPresentGenericTypeParameters()) {
       List<ASTTypeVariableDeclaration> parameterList = comp.getHead().getGenericTypeParameters()
-              .getTypeVariableDeclarationList();
+          .getTypeVariableDeclarationList();
       for (ASTTypeVariableDeclaration type : parameterList) {
         if (type.getName().equals(typeName)) {
           return true;
@@ -502,21 +523,22 @@ public class ComponentHelper {
     }
     return java2cppTypeString(name.toString());
   }
-  
+
   public String printFqnTypeName(ASTComponent comp, JTypeReference<? extends JTypeSymbol> ref) {
-	    StringBuilder name = new StringBuilder(ref.getName());
-	    if (isGenericTypeName(comp, name.toString())) {
-	      return name.toString();
-	    }
-	    Collection<JTypeSymbol> sym = ref.getEnclosingScope().resolveMany(ref.getName(), JTypeSymbol.KIND);
-	    if (!sym.isEmpty()) {
-	      name = new StringBuilder(sym.iterator().next().getFullName());
-	    }
-	    for (int i = 0; i < ref.getDimension(); ++i) {
-	      name.append("[]");
-	    }
-	    return autobox(java2cppTypeString(name.toString()));
-	  }
+    StringBuilder name = new StringBuilder(ref.getName());
+    if (isGenericTypeName(comp, name.toString())) {
+      return name.toString();
+    }
+    Collection<JTypeSymbol> sym = ref.getEnclosingScope()
+        .resolveMany(ref.getName(), JTypeSymbol.KIND);
+    if (!sym.isEmpty()) {
+      name = new StringBuilder(sym.iterator().next().getFullName());
+    }
+    for (int i = 0; i < ref.getDimension(); ++i) {
+      name.append("[]");
+    }
+    return autobox(java2cppTypeString(name.toString()));
+  }
 
   /**
    * @return A list of String representations of the actual type arguments
@@ -526,13 +548,15 @@ public class ComponentHelper {
     final List<String> paramList = new ArrayList<>();
     if (component.getSuperComponent().isPresent()) {
       final ComponentSymbolReference componentSymbolReference = component.getSuperComponent().get();
-      final List<ActualTypeArgument> actualTypeArgs = componentSymbolReference.getActualTypeArguments();
+      final List<ActualTypeArgument> actualTypeArgs = componentSymbolReference
+          .getActualTypeArguments();
       String componentPrefix = this.component.getFullName() + ".";
       for (ActualTypeArgument actualTypeArg : actualTypeArgs) {
         final String printedTypeArg = SymbolPrinter.printTypeArgument(actualTypeArg);
         if (printedTypeArg.startsWith(componentPrefix)) {
           paramList.add(printedTypeArg.substring(componentPrefix.length()));
-        } else {
+        }
+        else {
           paramList.add(printedTypeArg);
         }
       }
@@ -574,7 +598,8 @@ public class ComponentHelper {
    */
   public static Boolean existsHWCClass(File hwcPath, String fqComponentName) {
     File ImplLocation = Paths.get(hwcPath.toString() + File.separator
-            + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".h").toFile();
+        + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".h")
+        .toFile();
     return ImplLocation.isFile();
   }
 
@@ -584,12 +609,13 @@ public class ComponentHelper {
    * @param resourcePortName
    * @return Returns true if a handwritten implementation for the IPC Server exists
    */
-  public static Boolean existsIPCServerHWCClass(File hwcPath, ComponentSymbol comp, String resourcePortName) {
+  public static Boolean existsIPCServerHWCClass(File hwcPath, ComponentSymbol comp,
+      String resourcePortName) {
     String fqCompName = comp.getPackageName() + "." + comp.getName();
     File implLocation = Paths.get(hwcPath.toString() + File.separator
-            + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
-            + "-" + StringTransformations.capitalize(resourcePortName) + File.separator
-            + resourcePortName + "ServerImpl.cpp").toFile();
+        + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+        + "-" + StringTransformations.capitalize(resourcePortName) + File.separator
+        + resourcePortName + "ServerImpl.cpp").toFile();
     return implLocation.isFile();
   }
 
@@ -602,19 +628,21 @@ public class ComponentHelper {
   public static List<String> getCPPImports(ComponentSymbol comp) {
     List<String> importStrings = new ArrayList<>();
     try {
-      ASTMTCompilationUnit node = (ASTMTCompilationUnit) comp.getEnclosingScope().getAstNode().get();
+      ASTMTCompilationUnit node = (ASTMTCompilationUnit) comp.getEnclosingScope().getAstNode()
+          .get();
       List<ASTImportStatement> imports = node.getImportStatementList();
       for (ASTImportStatement importStatement : imports) {
         if (importStatement instanceof ASTCPPImportStatementSYSTEM) {
           importStrings.add(String.join(".",
-                  (((ASTCPPImportStatementSYSTEM) importStatement)
-                          .getCppSystemImportList())));
+              (((ASTCPPImportStatementSYSTEM) importStatement)
+                  .getCppSystemImportList())));
         }
         if (importStatement instanceof ASTCPPImportStatementLOCAL) {
           importStrings.add(((ASTCPPImportStatementLOCAL) importStatement).getCppImport());
         }
       }
-    } catch (Exception ignored) {
+    }
+    catch (Exception ignored) {
     }
     return importStrings;
   }
@@ -627,15 +655,15 @@ public class ComponentHelper {
    */
   public static List<ResourcePortSymbol> getResourcePortsInComponent(ComponentSymbol comp) {
     return ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(p -> p instanceof ASTResourceInterface)
-            .flatMap(p -> ((ASTResourceInterface) p)
-                    .getResourcePortList()
-                    .stream())
-            .map(e -> (ResourcePortSymbol) e.getSymbolOpt().get())
-            .collect(Collectors.toList());
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(p -> p instanceof ASTResourceInterface)
+        .flatMap(p -> ((ASTResourceInterface) p)
+            .getResourcePortList()
+            .stream())
+        .map(e -> (ResourcePortSymbol) e.getSymbolOpt().get())
+        .collect(Collectors.toList());
   }
 
   /**
@@ -646,7 +674,8 @@ public class ComponentHelper {
    */
   public static String getResourcePortType(ResourcePortSymbol port) {
     ASTResourcePort node = (ASTResourcePort) port.getAstNode().get();
-    TypesPrettyPrinterConcreteVisitor typesPrinter = new TypesPrettyPrinterConcreteVisitor(new IndentPrinter());
+    TypesPrettyPrinterConcreteVisitor typesPrinter = new TypesPrettyPrinterConcreteVisitor(
+        new IndentPrinter());
     return java2cppTypeString(ComponentHelper.autobox(typesPrinter.prettyprint(node.getType())));
   }
 
@@ -658,26 +687,26 @@ public class ComponentHelper {
    */
   public static String getExecutionIntervalMethod(ComponentSymbol comp) {
     int interval = ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTCalculationInterval)
-            .findFirst()
-            .map(e -> ((ASTCalculationInterval) e).getInterval().getValue())
-            .orElse(50);
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(e -> e instanceof ASTCalculationInterval)
+        .findFirst()
+        .map(e -> ((ASTCalculationInterval) e).getInterval().getValue())
+        .orElse(50);
     String method = "std::chrono::milliseconds(" + interval + ")";
     String intervalUnit = ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTCalculationInterval)
-            .findFirst()
-            .map(e -> ((ASTCalculationInterval) e).getTimeUnit().toString())
-            .orElse("MS");
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(e -> e instanceof ASTCalculationInterval)
+        .findFirst()
+        .map(e -> ((ASTCalculationInterval) e).getTimeUnit().toString())
+        .orElse("MS");
 
     switch (intervalUnit) {
       case "MS":
@@ -701,14 +730,13 @@ public class ComponentHelper {
    */
   public static Boolean usesBatchMode(ComponentSymbol comp) {
     return ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .anyMatch(e -> e instanceof ASTBatchStatement);
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .anyMatch(e -> e instanceof ASTBatchStatement);
   }
-
 
   public static Boolean hasSyncGroups(ComponentSymbol comp) {
     return getSyncGroups(comp).size() > 0;
@@ -722,14 +750,14 @@ public class ComponentHelper {
    */
   public static List<List<String>> getSyncGroups(ComponentSymbol comp) {
     return ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTSyncStatement)
-            .map(e -> ((ASTSyncStatement) e).getSyncedPortList())
-            .collect(Collectors.toList());
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(e -> e instanceof ASTSyncStatement)
+        .map(e -> ((ASTSyncStatement) e).getSyncedPortList())
+        .collect(Collectors.toList());
   }
 
   public static Boolean hasExecutionStatement(ComponentSymbol comp) {
@@ -743,18 +771,19 @@ public class ComponentHelper {
    */
   public static List<ASTExecutionIfStatement> getExecutionStatements(ComponentSymbol comp) {
     return ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTExecutionBlock)
-            .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
-            .filter(e -> e instanceof ASTExecutionIfStatement)
-            .map(e -> ((ASTExecutionIfStatement) e))
-            .sorted(Comparator.comparing(e -> e.getPriorityOpt().orElse(MontiThingsMill.intLiteralBuilder()
-                    .setSource("1")
-                    .build())
-            .getValue()))
-            .collect(Collectors.toList());
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTExecutionBlock)
+        .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
+        .filter(e -> e instanceof ASTExecutionIfStatement)
+        .map(e -> ((ASTExecutionIfStatement) e))
+        .sorted(
+            Comparator.comparing(e -> e.getPriorityOpt().orElse(MontiThingsMill.intLiteralBuilder()
+                .setSource("1")
+                .build())
+                .getValue()))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -765,14 +794,14 @@ public class ComponentHelper {
    */
   public static List<PortSymbol> getPortsInBatchStatement(ComponentSymbol comp) {
     List<String> names = ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-            .filter(e -> e instanceof ASTBatchStatement)
-            .flatMap(e -> ((ASTBatchStatement) e).getBatchPortsList().stream())
-            .collect(Collectors.toList());
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+        .filter(e -> e instanceof ASTBatchStatement)
+        .flatMap(e -> ((ASTBatchStatement) e).getBatchPortsList().stream())
+        .collect(Collectors.toList());
 
     List<PortSymbol> ports = new ArrayList<>();
     Scope s = comp.getSpannedScope();
@@ -793,9 +822,9 @@ public class ComponentHelper {
    */
   public static List<PortSymbol> getPortsNotInBatchStatements(ComponentSymbol comp) {
     return comp.getAllIncomingPorts()
-            .stream()
-            .filter(p -> !getPortsInBatchStatement(comp).contains(p))
-            .collect(Collectors.toList());
+        .stream()
+        .filter(p -> !getPortsInBatchStatement(comp).contains(p))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -836,13 +865,13 @@ public class ComponentHelper {
    */
   public static List<PortSymbol> getPortsNotInSyncGroup(ComponentSymbol comp) {
     List<String> portsInSyncGroups = getSyncGroups(comp)
-            .stream()
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+        .stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
     return comp.getAllIncomingPorts()
-            .stream()
-            .filter(p -> !portsInSyncGroups.contains(p.getName()))
-            .collect(Collectors.toList());
+        .stream()
+        .filter(p -> !portsInSyncGroups.contains(p.getName()))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -854,7 +883,7 @@ public class ComponentHelper {
    */
   public static Boolean isBatchPort(PortSymbol port, ComponentSymbol comp) {
     return getPortsInBatchStatement(comp).stream()
-            .anyMatch(p -> p.equals(port));
+        .anyMatch(p -> p.equals(port));
   }
 
   /**
@@ -868,30 +897,32 @@ public class ComponentHelper {
   public static File getIPCHWCPath(ResourcePortSymbol port, ComponentSymbol comp, File hwcPath) {
     String fqCompName = comp.getPackageName() + "." + comp.getName();
     return Paths.get(hwcPath.toString() + File.separator
-            + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
-            + "-" + StringTransformations.capitalize(port.getName())).toFile();
+        + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+        + "-" + StringTransformations.capitalize(port.getName())).toFile();
   }
 
   /**
    * Get Else Statement if one exists
+   *
    * @param comp
    * @return
    */
   public static ASTExecutionElseStatement getElseStatement(ComponentSymbol comp) {
     return ((ASTComponent) comp.getAstNode().get())
-            .getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTExecutionBlock)
-            .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
-            .filter(e -> e instanceof ASTExecutionElseStatement)
-            .map(e -> (ASTExecutionElseStatement) e)
-            .findFirst()
-            .orElse(null);
+        .getBody()
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTExecutionBlock)
+        .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
+        .filter(e -> e instanceof ASTExecutionElseStatement)
+        .map(e -> (ASTExecutionElseStatement) e)
+        .findFirst()
+        .orElse(null);
   }
 
   /**
    * Get import for subpackages
+   *
    * @param subPackagesPath
    * @return
    */

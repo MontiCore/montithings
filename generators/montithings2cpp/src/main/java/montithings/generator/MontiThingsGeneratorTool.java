@@ -1,11 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
-import bindings._ast.ASTBindingsNode;
-import de.monticore.ast.ASTNode;
-import montiarc._symboltable.PortSymbol;
-import montithings.generator.codegen.xtend.MTGenerator;
-import montithings.generator.helper.ComponentHelper;
+import bindings.BindingsTool;
+import bindings.CocoInput;
+import bindings._symboltable.BindingsLanguage;
 import de.monticore.cd2pojo.Modelfinder;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.Names;
@@ -16,24 +14,20 @@ import montiarc._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
-import bindings._symboltable.BindingsLanguage;
-import bindings._cocos.BindingsCoCoChecker;
-import bindings.*;
+import montithings.generator.codegen.xtend.MTGenerator;
+import montithings.generator.helper.ComponentHelper;
 import org.apache.commons.io.FileUtils;
 
-import javax.sound.sampled.Port;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
-import static java.util.Collections.*;
+import static java.util.Collections.EMPTY_LIST;
 
 /**
  * TODO

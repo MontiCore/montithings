@@ -16,14 +16,14 @@ public class MaxOneControlBlock implements MontiArcASTComponentCoCo {
   @Override
   public void check(ASTComponent node) {
     long controlBlockCount = node.getBody()
-            .getElementList()
-            .stream()
-            .filter(e -> e instanceof ASTControlBlock)
-            .count();
+        .getElementList()
+        .stream()
+        .filter(e -> e instanceof ASTControlBlock)
+        .count();
 
-    if (controlBlockCount > 1){
-      Log.error("0xMT101 There are multiple control blocks in component " + node.getName() ,
-              node.get_SourcePositionStart());
+    if (controlBlockCount > 1) {
+      Log.error("0xMT101 There are multiple control blocks in component " + node.getName(),
+          node.get_SourcePositionStart());
     }
   }
 }
