@@ -71,7 +71,7 @@ Code Quality:
     DOCKER_DRIVER: overlay2
   allow_failure: true
   cache: {}
-  retry: 5
+  retry: 2
   tags:
     - shell
     - docker
