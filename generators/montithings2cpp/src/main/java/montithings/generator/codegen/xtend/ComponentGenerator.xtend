@@ -62,7 +62,6 @@ class ComponentGenerator {
 		            «ENDIF»«ENDIF»
 		{
 		private:
-			boost::uuids::uuid uuid = boost::uuids::random_generator()();
 			«Ports.printVars(comp.ports)»
 			«Ports.printResourcePortVars(ComponentHelper.getResourcePortsInComponent(comp))»
 			«Utils.printVariables(comp)»
@@ -185,30 +184,30 @@ class ComponentGenerator {
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
 			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
-			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»)
+			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)«ENDFOR»)
 			«ENDIF»
 			«IF ComponentHelper.hasSyncGroups(comp)»
 			if ( 
 				«FOR syncGroup : ComponentHelper.getSyncGroups(comp)  SEPARATOR ' || '»
-				(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue(uuid) «ENDFOR»)
+				(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue(portUuid«port.toFirstUpper») «ENDFOR»)
 				«ENDFOR»
 				«IF ComponentHelper.getPortsNotInSyncGroup(comp).length() > 0»
-				|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(uuid)«ENDFOR»
+				|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(portUuid«port.name.toFirstUpper»)«ENDFOR»
 				<«ENDIF»
 			)
 			«ENDIF»
 			{
 				«IF !ComponentHelper.usesBatchMode(comp)»
-				«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid)«ENDFOR»)«ENDIF»;
+				«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(portUuid«inPort.name.toFirstUpper»)«ENDFOR»)«ENDIF»;
 				«ELSE»
 				«compname»Input«Utils.printFormalTypeParameters(comp)» input;
 				«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
-				while(getPort«inPort.name.toFirstUpper»()->hasValue(uuid)){
-					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
+				while(getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)){
+					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(portUuid«inPort.name.toFirstUpper»));
 				}
 				«ENDFOR»
 				«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
-				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(uuid));
+				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(portUuid«inPort.name.toFirstUpper»));
 				«ENDFOR»
 				«ENDIF»
 				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
@@ -275,7 +274,6 @@ class ComponentGenerator {
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
 			threads.push_back(std::thread{&«compname»«Utils.printFormalTypeParameters(comp)»::run, this});
-					
 		}
 		'''
 	}
