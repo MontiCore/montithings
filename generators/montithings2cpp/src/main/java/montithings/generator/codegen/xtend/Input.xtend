@@ -100,13 +100,10 @@ private:
 	std::vector<«helper.getRealPortCppTypeString(port)»> «port.name» = {};
 «ENDFOR»
 public:
-
 	«compname»Input() = default;
 	«IF !comp.allIncomingPorts.empty && !isBatch»
 	explicit «compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
     «ENDIF»
-	
-	
 	«FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
 	tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
 	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»>);
@@ -115,14 +112,11 @@ public:
 	std::vector<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
 	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»>);
 	«ENDFOR»
-	
-
 };
 
 «IF Utils.hasTypeParameters(comp)»
   «generateInputBody(comp, compname)»
 «ENDIF»
-
 '''
 	}
 	

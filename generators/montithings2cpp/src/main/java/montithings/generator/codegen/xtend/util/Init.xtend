@@ -49,11 +49,8 @@ class Init {
 		    «ENDFOR» 
 		    
 		    «FOR subcomponent : comp.subComponents»
-    		«subcomponent.name».init();
+    		  «subcomponent.name».init();
             «ENDFOR» 
-
-
-			
 		}
 		'''
 	}

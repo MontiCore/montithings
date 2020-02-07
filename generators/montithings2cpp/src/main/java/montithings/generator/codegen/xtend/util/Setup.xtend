@@ -26,10 +26,8 @@ class Setup {
 			«IF comp.superComponent.present»
 			super.setUp();
 			«ENDIF»
-			initialize();	
-			
+			initialize();
 		}
-		
 		'''
 	}
 	
@@ -44,17 +42,14 @@ class Setup {
 			«FOR subcomponent : comp.subComponents»
 			«subcomponent.name».setUp();
 	        «ENDFOR»
-		
-	        «FOR ASTConnector connector : (comp.getAstNode().get() as ASTComponent)
-	                  .getConnectors()»
-	                  «FOR ASTQualifiedName target : connector.targetsList»
-	                    «IF !helper.isIncomingPort(comp,connector.source, target, false)»
-                  	    «helper.getConnectorComponentName(connector.source, target,false)»«IF helper.getConnectorComponentName(connector.source, target,false).equals("this")»->«ELSE».«ENDIF»setPort«helper.getConnectorPortName(connector.source, target,false).toFirstUpper»(«helper.getConnectorComponentName(connector.source, target, true)»«IF helper.getConnectorComponentName(connector.source, target,true).equals("this")»->«ELSE».«ENDIF»getPort«helper.getConnectorPortName(connector.source, target, true).toFirstUpper»());
-	                    «ENDIF»
-	                  «ENDFOR»
-	                «ENDFOR»
 
-
+	        «FOR ASTConnector connector : (comp.getAstNode().get() as ASTComponent).getConnectors()»
+              «FOR ASTQualifiedName target : connector.targetsList»
+                «IF !helper.isIncomingPort(comp,connector.source, target, false)»
+				    «helper.getConnectorComponentName(connector.source, target,false)»«IF helper.getConnectorComponentName(connector.source, target,false).equals("this")»->«ELSE».«ENDIF»setPort«helper.getConnectorPortName(connector.source, target,false).toFirstUpper»(«helper.getConnectorComponentName(connector.source, target, true)»«IF helper.getConnectorComponentName(connector.source, target,true).equals("this")»->«ELSE».«ENDIF»getPort«helper.getConnectorPortName(connector.source, target, true).toFirstUpper»());
+                «ENDIF»
+              «ENDFOR»
+            «ENDFOR»
 		}
 		'''
 	}

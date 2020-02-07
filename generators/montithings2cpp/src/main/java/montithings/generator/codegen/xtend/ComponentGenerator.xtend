@@ -140,16 +140,10 @@ class ComponentGenerator {
 			«FOR portOut : comp.outgoingPorts»
 			this->getPort«portOut.name.toFirstUpper»()->setNextValue(result.get«portOut.name.toFirstUpper»());
             «ENDFOR»
-			
 		}
-		
-		
 		«ENDIF»
 
-
 		«Setup.print(comp, compname)»
-
-
 
 		«Init.print(comp, compname)»
 		
@@ -178,9 +172,9 @@ class ComponentGenerator {
 			«compname»Impl«Utils.printFormalTypeParameters(comp, false)» behav«IF comp.hasConfigParameters»(
 			            «FOR param : comp.configParameters SEPARATOR ','»
 			              «param.name»
-						            «ENDFOR»
+			            «ENDFOR»
 					    )«ENDIF»;
-          	«Identifier.behaviorImplName» = behav;
+  «Identifier.behaviorImplName» = behav;
 			        «ENDIF»
 		}
 		'''
@@ -245,7 +239,6 @@ class ComponentGenerator {
 				setResult(result);				
 			}
 		}
-
 		'''
 	}
 		
@@ -259,7 +252,6 @@ class ComponentGenerator {
 	        «ENDFOR»
 					
 		}
-
 		'''
 	}
 	
@@ -275,7 +267,6 @@ class ComponentGenerator {
 	        «ENDFOR»
 			«ENDIF»		
 		}
-
 		'''
 	}
 	
@@ -286,7 +277,6 @@ class ComponentGenerator {
 			threads.push_back(std::thread{&«compname»«Utils.printFormalTypeParameters(comp)»::run, this});
 					
 		}
-
 		'''
 	}
 	
@@ -303,10 +293,9 @@ class ComponentGenerator {
 					this->compute();
 					
 					do {
-					        std::this_thread::yield();
-			                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-					        
-					    } while (std::chrono::high_resolution_clock::now()  < end);
+					  std::this_thread::yield();
+					  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					} while (std::chrono::high_resolution_clock::now()  < end);
 				}
 		}
 

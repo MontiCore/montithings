@@ -75,17 +75,14 @@ private:
 	«FOR port : comp.outgoingPorts»
 	tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name»;
 	«ENDFOR»
-
 public:	
 	«compname»Result() = default;
 	«IF !comp.allOutgoingPorts.empty»
 	«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
 	«ENDIF»
-	
 	«FOR port : comp.outgoingPorts»
 	 tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
 	«ENDFOR»
-	
 	«FOR port : comp.outgoingPorts»
 	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»);
 	«ENDFOR»

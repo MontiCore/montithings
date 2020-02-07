@@ -19,7 +19,7 @@ class Utils {
     var helper = new ComponentHelper(comp)
     return '''
       «FOR param : comp.configParameters SEPARATOR ','» «helper.printParamTypeName(comp.astNode.get as ASTComponent, param.type)» «param.name» «ENDFOR»
-    '''
+    '''.toString().replace("\n", "")
   }
 
   /**
@@ -53,7 +53,7 @@ class Utils {
       «FOR param : (comp.astNode.get as ASTComponent).head.parameterList»
         «printMember(ComponentHelper.printCPPTypeName(param.type), param.name, "")»
       «ENDFOR»
-    '''
+    '''.toString().replace("\n", "")
   }
 
   /**
@@ -89,7 +89,7 @@ class Utils {
           «ENDFOR»
         >
       «ENDIF»
-    '''
+    '''.toString().replace("\n", "")
   }
 
   def static String printTemplateArguments(ComponentSymbol comp) {
@@ -97,7 +97,7 @@ class Utils {
     «IF Utils.hasTypeParameters(comp)»
       template«Utils.printFormalTypeParameters(comp, true)»
     «ENDIF»
-    '''
+    '''.toString().replace("\n", "")
   }
 
   def private static List<String> getGenericParameters(ComponentSymbol comp) {
