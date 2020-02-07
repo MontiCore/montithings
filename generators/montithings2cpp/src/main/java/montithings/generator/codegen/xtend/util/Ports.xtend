@@ -15,9 +15,8 @@ class Ports {
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
-    
    Port<«type»>* «name» = new Port<«type»>;
-    
+   boost::uuids::uuid portUuid«name.toFirstUpper» = boost::uuids::random_generator () ();
     «ENDFOR»
     '''
 		
@@ -107,7 +106,7 @@ OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»"
     «Utils.printTemplateArguments(comp)»
     void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«IF comp.atomic»
-    	port->registerPort(uuid);
+    	port->registerPort(portUuid«name.toFirstUpper»);
     	«ENDIF»
     	«name» = port;
     }
