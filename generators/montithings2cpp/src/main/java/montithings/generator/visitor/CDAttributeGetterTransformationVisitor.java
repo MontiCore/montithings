@@ -11,8 +11,10 @@ import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.types.JTypeSymbol;
+import jdk.internal.jline.internal.Log;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.PortSymbol;
+import montiarc._symboltable.TransitionSymbol;
 import montiarc._symboltable.VariableSymbol;
 import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
 import montithings._symboltable.SyncStatementSymbol;
@@ -136,7 +138,16 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
     Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
     Optional<SyncStatementSymbol> sync = s.resolve(name, SyncStatementSymbol.KIND);
 
-    ComponentSymbol comp = (ComponentSymbol) s.getSpanningSymbol().get();
+    ComponentSymbol comp = new ComponentSymbol("", ComponentSymbol.KIND);
+    if (s.getSpanningSymbol().get() instanceof ComponentSymbol) {
+      // If-then-else expression
+      comp = (ComponentSymbol) s.getSpanningSymbol().get();
+    } else if (s.getSpanningSymbol().get() instanceof TransitionSymbol) {
+      // Automaton expression
+      comp = (ComponentSymbol) s.getSpanningSymbol().get().getEnclosingScope().getEnclosingScope().get().getSpanningSymbol().get();
+    } else {
+      Log.error("ASTNameExpression " + node.getName() + "has an unknown scope (neither if-then-else nor automaton)");
+    }
     List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
 
     if (port.isPresent()) {

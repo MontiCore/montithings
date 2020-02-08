@@ -20,8 +20,7 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import jline.internal.Log;
 import montiarc._ast.ASTComponent;
-import montiarc._ast.ASTParameter;
-import montiarc._ast.ASTPort;
+import montiarc._ast.*;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
@@ -987,4 +986,13 @@ public class ComponentHelper {
     return "";
   }
 
+  public static boolean containsAutomaton(ComponentSymbol comp) {
+    ASTComponent component = (ASTComponent) comp.getAstNode().get();
+    for (ASTElement element : component.getBody().getElementList()) {
+      if (element instanceof ASTAutomatonBehavior) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

@@ -79,7 +79,7 @@ class AutomatonGenerator{
 «««			  Lists all ingoing ports and stores the values of the passed parameter input.
 			    // inputs
 			    «FOR inPort : comp.allIncomingPorts»
-			    	«ComponentHelper.getRealPortCppTypeString(comp, inPort)» «inPort.name» = «Identifier.inputName».get«inPort.name.toFirstUpper»();
+			    	«ComponentHelper.getRealPortCppTypeString(comp, inPort)» «inPort.name» = «Identifier.inputName».get«inPort.name.toFirstUpper»().value();
 			    «ENDFOR»
 			    
 «««			  Initialize result
@@ -111,7 +111,7 @@ class AutomatonGenerator{
 			    	  	  «ENDIF»
 			    	  	  
 «««			    	  	and change state to target state of transition
-			    	  	  «Identifier.currentStateName» = «compname»State.«transition.target.name»;
+			    	  	  «Identifier.currentStateName» = «compname»State::«transition.target.name»;
 			    	  	  break;
 			    	  	}
 			    	  	
@@ -156,7 +156,7 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
 			  	«ENDFOR»
 			  «ENDIF»
 			  
-			  «Identifier.currentStateName» = «compname»State.«automaton.initialStateDeclarationList.get(0).name»;
+			  «Identifier.currentStateName» = «compname»State::«automaton.initialStateDeclarationList.get(0).name»;
 			  return «Identifier.resultName»;
 			}
 		'''
@@ -165,7 +165,7 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
 	
 
   /**
-   * Adds a enum for alls states of the automtaton and the attribute currentState for storing 
+   * Adds a enum for all states of the automaton and the attribute currentState for storing 
    * the current state of the automaton.
    */
   def String hook(ComponentSymbol comp, String compname) {
@@ -176,9 +176,9 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
       }
     }
     return '''
-			«Utils.printMember(compname + "State", Identifier.currentStateName, "private")»
-			
 			«printStateEnum(automaton, comp, compname)»
+			
+			«Utils.printMember(compname + "State", Identifier.currentStateName, "private")»
 		'''
   }
 	
@@ -188,10 +188,12 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
   def private String printStateEnum(ASTAutomaton automaton, ComponentSymbol comp, String compname) {
     return '''
 			enum «compname»State {
-			«FOR state : automaton.getStateDeclaration(0).stateList SEPARATOR ','»
+			«FOR stateDecl : automaton.stateDeclarationList SEPARATOR ','»
+			«FOR state : stateDecl.stateList SEPARATOR ','»
 				«state.name»
-			«ENDFOR»;
-			}
+			«ENDFOR»
+			«ENDFOR»
+			};
 		'''
   }
   
@@ -260,7 +262,7 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
 «Utils.printCPPImports(comp)»
 	
 «Utils.printTemplateArguments(comp)»	
-class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
+class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{
 private:  
 	«Utils.printVariables(comp)»
 	«Utils.printConfigParameters(comp)»
@@ -271,7 +273,7 @@ public:
 	virtual «compname»Result«generics» getInitialValues() override;
 	virtual «compname»Result«generics» compute(«compname»Input«generics» input) override;
 
-    }
+    };
 '''
   }
   

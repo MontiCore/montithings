@@ -2,6 +2,7 @@
 package montithings.generator.codegen.xtend
 
 import montithings.generator.codegen.xtend.behavior.AbstractAtomicImplementation
+import montithings.generator.codegen.xtend.behavior.AutomatonGenerator
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper
@@ -75,6 +76,13 @@ class MTGenerator {
 		    toFile(targetPath, compname + "Impl",
 		      AbstractAtomicImplementation.generateImplementationFile(comp, compname),".cpp")		  
         }
+        if (ComponentHelper.containsAutomaton(comp)) {
+			var automatonGenerator = new AutomatonGenerator(comp, compname)
+			toFile(targetPath, compname + "Impl",
+		      automatonGenerator.generateHeader(comp, compname),".h")
+		    toFile(targetPath, compname + "Impl",
+		      automatonGenerator.generateBody(comp, compname),".cpp")
+		}
         return generateBehavior(element as ASTCNode, comp, targetPath, compname)
       }
     }
