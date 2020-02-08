@@ -7,7 +7,6 @@
 #include <map>
 #include <boost/uuid/uuid.hpp>
 
-
 template <class T>
 class DataSource
 {
