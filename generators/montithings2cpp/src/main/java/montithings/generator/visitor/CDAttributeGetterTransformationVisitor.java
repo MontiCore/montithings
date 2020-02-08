@@ -11,7 +11,7 @@ import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.types.JTypeSymbol;
-import jdk.internal.jline.internal.Log;
+import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.PortSymbol;
 import montiarc._symboltable.TransitionSymbol;

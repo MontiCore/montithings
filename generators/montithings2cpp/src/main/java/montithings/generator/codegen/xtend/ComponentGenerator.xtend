@@ -9,7 +9,6 @@ import montithings.generator.codegen.xtend.util.Subcomponents
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.codegen.xtend.util.Setup
 import montithings.generator.codegen.xtend.util.Init
-import montithings.generator.codegen.xtend.behavior.AutomatonGenerator
 import java.util.List
 import java.util.ArrayList
 import java.util.HashMap
