@@ -68,6 +68,13 @@ class MTGenerator {
     for (element : compAST.body.elementList) {
       if (element instanceof ASTBehaviorElement) {
         hasBehavior = true;
+    	if (element instanceof ASTExecutionBlock) {
+    		// Print Impl Stubs for execution blocks
+		    toFile(targetPath, compname + "Impl",
+		      AbstractAtomicImplementation.generateAbstractAtomicImplementationHeader(comp, compname),".h")
+		    toFile(targetPath, compname + "Impl",
+		      AbstractAtomicImplementation.generateImplementationFile(comp, compname),".cpp")		  
+        }
         return generateBehavior(element as ASTCNode, comp, targetPath, compname)
       }
     }

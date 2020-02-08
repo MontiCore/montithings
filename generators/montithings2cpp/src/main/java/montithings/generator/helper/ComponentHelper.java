@@ -762,7 +762,6 @@ public class ComponentHelper {
 
   public static Boolean hasExecutionStatement(ComponentSymbol comp) {
     return getExecutionStatements(comp).size() > 0;
-
   }
 
   /**

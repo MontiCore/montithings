@@ -4,6 +4,7 @@ package montithings.generator.codegen.xtend.behavior
 import montiarc._symboltable.ComponentSymbol
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
+import montithings.generator.helper.ComponentHelper
 
 class AbstractAtomicImplementation {
 	def static generateAbstractAtomicImplementationHeader(ComponentSymbol comp, String compname) {
@@ -28,6 +29,12 @@ public:
 	//«compname»Impl() = default;
 	«compname»Result«generics» getInitialValues() override;
 	«compname»Result«generics» compute(«compname»Input«generics» input) override;
+	«IF ComponentHelper.getExecutionStatements(comp).size > 0»
+	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
+	«compname»Result«generics» «statement.method»(«compname»Input«generics» input) override;
+	«ENDFOR»
+	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).method»(«compname»Input«generics» input) override;
+	«ENDIF»
 };
 
 «IF Utils.hasTypeParameters(comp)»
@@ -53,10 +60,24 @@ public:
 	throw std::runtime_error("Invoking getInitialValues() on abstract implementation «comp.packageName».«compname»");
 }
 
+«IF ComponentHelper.getExecutionStatements(comp).size > 0»
+	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
+		«Utils.printTemplateArguments(comp)»
+		«compname»Result«generics» «compname»Impl«generics»::«statement.method»(«compname»Input«generics» «Identifier.inputName»){
+			throw std::runtime_error("Invoking «statement.method»() on abstract implementation «comp.packageName».«compname»");  	
+		}
+		
+	«ENDFOR»
+	«Utils.printTemplateArguments(comp)»
+	«compname»Result«generics» «compname»Impl«generics»::«ComponentHelper.getElseStatement(comp).method»(«compname»Input«generics» «Identifier.inputName»){
+		throw std::runtime_error("Invoking «ComponentHelper.getElseStatement(comp).method»() on abstract implementation «comp.packageName».«compname»");  	
+	}
+«ELSE»
 «Utils.printTemplateArguments(comp)»
 «compname»Result«generics» «compname»Impl«generics»::compute(«compname»Input«generics» «Identifier.inputName»){
 	throw std::runtime_error("Invoking compute() on abstract implementation «comp.packageName».«compname»");  	
 }
+«ENDIF»
 '''
   }
   
