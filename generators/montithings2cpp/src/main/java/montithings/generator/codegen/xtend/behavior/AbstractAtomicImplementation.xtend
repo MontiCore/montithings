@@ -28,12 +28,16 @@ public:
     «printConstructor(comp)»
 	//«compname»Impl() = default;
 	«compname»Result«generics» getInitialValues() override;
-	«compname»Result«generics» compute(«compname»Input«generics» input) override;
 	«IF ComponentHelper.getExecutionStatements(comp).size > 0»
 	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
 	«compname»Result«generics» «statement.method»(«compname»Input«generics» input);
 	«ENDFOR»
 	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).method»(«compname»Input«generics» input);
+	«compname»Result«generics» compute(«compname»Input«generics» input) override {
+	  throw std::runtime_error("Invoking compute() on component «comp.packageName».«compname» which has if-then-else behavior");
+	}
+	«ELSE»
+	«compname»Result«generics» compute(«compname»Input«generics» input) override;
 	«ENDIF»
 };
 

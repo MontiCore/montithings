@@ -24,9 +24,9 @@ class ComponentGenerator {
 	
 	def static generateHeader(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
 		var ComponentHelper helper = new ComponentHelper(comp)
-    var HashSet<String> compIncludes = new HashSet<String>()
-    for (subcomponent : comp.subComponents) {
-      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
+	    var HashSet<String> compIncludes = new HashSet<String>()
+	    for (subcomponent : comp.subComponents) {
+	      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
 		}
 		return '''
 		#pragma once
@@ -80,7 +80,6 @@ class ComponentGenerator {
 			void run();
 			«ENDIF»
 			
-			
 		public:
 			«Ports.printMethodHeaders(comp.ports)»
 			«Ports.printResourcePortMethodHeaders(ComponentHelper.getResourcePortsInComponent(comp))»
@@ -93,13 +92,11 @@ class ComponentGenerator {
 			void init() override;
 			void compute() override;
 			void start() override;
-			
 		};            
 		            
 		«IF Utils.hasTypeParameters(comp)»
-      «generateBody(comp, compname)»
-    «ENDIF»
-		
+	      «generateBody(comp, compname)»
+	    «ENDIF»
 		'''
 	}
 
@@ -155,28 +152,35 @@ class ComponentGenerator {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
-		«IF !comp.configParameters.isEmpty || !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»
-    :
-    «ENDIF»
+		«IF comp.isAtomic || !comp.configParameters.isEmpty || !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»
+    	:
+    	«ENDIF»
+    	«IF comp.isAtomic»
+			«printBehaviorInitializerListEntry(comp, compname)»
+        «ENDIF»
+    	«IF !comp.configParameters.isEmpty»,«ENDIF»
 		«Subcomponents.printInitializerList(comp)»
 		«IF !comp.configParameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
 		«FOR param : comp.configParameters SEPARATOR ','»
-      «param.name» («param.name»)
-    «ENDFOR»
+      	«param.name» («param.name»)
+    	«ENDFOR»
 		{
 			«IF comp.superComponent.present»
 			super(«FOR inhParam : getInheritedParams(comp, compname) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»
-			«IF comp.isAtomic»
-			«compname»Impl«Utils.printFormalTypeParameters(comp, false)» behav«IF comp.hasConfigParameters»(
-			            «FOR param : comp.configParameters SEPARATOR ','»
-			              «param.name»
-			            «ENDFOR»
-					    )«ENDIF»;
-  «Identifier.behaviorImplName» = behav;
-			        «ENDIF»
 		}
 		'''
+	}
+	
+	def static printBehaviorInitializerListEntry(ComponentSymbol comp, String compname) {
+		return '''
+		«Identifier.behaviorImplName»(«compname»Impl«Utils.printFormalTypeParameters(comp, false)»(
+		«IF comp.hasConfigParameters»
+	        «FOR param : comp.configParameters SEPARATOR ','»
+	          «param.name»
+	        «ENDFOR»
+    	«ENDIF»
+    	))'''.toString().replace("\n", "")
 	}
 	
 	def static printComputeAtomic(ComponentSymbol comp, String compname) {
