@@ -6,6 +6,7 @@ import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTComponent;
+import montiarc._ast.ASTParameter;
 import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.PortSymbol;
 import montiarc._symboltable.VariableSymbol;
@@ -44,7 +45,9 @@ public class ExecutionGuardIsValid implements MontiArcASTComponentCoCo {
         Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
         Optional<VariableSymbol> var = s.resolve(name, VariableSymbol.KIND);
         Optional<JavaTypeSymbol> jType = s.resolve(name, JavaTypeSymbol.KIND);
-        if (!port.isPresent() && !var.isPresent() && !jType.isPresent()) {
+        Optional<ASTParameter> parameter = node.getHead().getParameterList().stream()
+            .filter(e -> e.getName().equals(name)).findFirst();
+        if (!port.isPresent() && !var.isPresent() && !jType.isPresent() && !parameter.isPresent()) {
           Log.error("0xMT108 The variable " + name + " is not defined in this scope",
               ifStatement.get_SourcePositionStart());
         }
