@@ -31,9 +31,9 @@ public:
 	«compname»Result«generics» compute(«compname»Input«generics» input) override;
 	«IF ComponentHelper.getExecutionStatements(comp).size > 0»
 	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
-	«compname»Result«generics» «statement.method»(«compname»Input«generics» input) override;
+	«compname»Result«generics» «statement.method»(«compname»Input«generics» input);
 	«ENDFOR»
-	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).method»(«compname»Input«generics» input) override;
+	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).method»(«compname»Input«generics» input);
 	«ENDIF»
 };
 
