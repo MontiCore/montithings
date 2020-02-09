@@ -3,10 +3,7 @@ package montithings.generator.visitor;
 
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.java.symboltable.JavaTypeSymbol;
-import de.monticore.mcexpressions._ast.ASTArguments;
-import de.monticore.mcexpressions._ast.ASTCallExpression;
-import de.monticore.mcexpressions._ast.ASTNameExpression;
-import de.monticore.mcexpressions._ast.ASTQualifiedNameExpression;
+import de.monticore.mcexpressions._ast.*;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symboltable.Scope;
@@ -17,6 +14,7 @@ import montiarc._symboltable.PortSymbol;
 import montiarc._symboltable.TransitionSymbol;
 import montiarc._symboltable.VariableSymbol;
 import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
+import montithings._ast.ASTNoData;
 import montithings._symboltable.SyncStatementSymbol;
 import montithings.generator.helper.ComponentHelper;
 
@@ -133,6 +131,10 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
 
   @Override
   public void handle(ASTNameExpression node) {
+    handle(node, false);
+  }
+
+  private void handle(ASTNameExpression node, boolean isComparedToNoData) {
     Scope s = node.getEnclosingScopeOpt().get();
     String name = node.getName();
     Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
@@ -151,7 +153,11 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
     List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
 
     if (port.isPresent()) {
-      printer.print("input.get" + capitalize(node.getName()) + "().value()");
+      if (isComparedToNoData) {
+        printer.print("input.get" + capitalize(node.getName()) + "()");
+      } else {
+        printer.print("input.get" + capitalize(node.getName()) + "().value()");
+      }
     }
     else if (sync.isPresent()) {
       String synced = "(";
@@ -170,6 +176,27 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
     else {
       printNode(node.getName());
     }
+  }
+
+  @Override
+  public void handle(ASTIdentityExpression node) {
+    CommentPrettyPrinter.printPreComments(node, getPrinter());
+    if (node.getLeftExpression() instanceof ASTNameExpression &&
+        node.getRightExpression() instanceof ASTNoData) {
+      // edge case: we're comparing a name to NoData. Prevent unwrapping optionals
+      handle((ASTNameExpression)node.getLeftExpression(), true);
+    } else {
+      node.getLeftExpression().accept(getRealThis());
+    }
+    getPrinter().print(node.getIdentityTestOpt().orElse(""));
+    if (node.getRightExpression() instanceof ASTNameExpression &&
+        node.getLeftExpression() instanceof ASTNoData) {
+      // edge case: we're comparing a name to NoData. Prevent unwrapping optionals
+      handle((ASTNameExpression)node.getRightExpression(), true);
+    } else {
+      node.getRightExpression().accept(getRealThis());
+    }
+    CommentPrettyPrinter.printPostComments(node, getPrinter());
   }
 
   private String capitalize(String str) {

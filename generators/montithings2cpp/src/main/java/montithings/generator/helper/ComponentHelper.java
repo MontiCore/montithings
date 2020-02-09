@@ -29,6 +29,7 @@ import montiarc.helper.SymbolPrinter;
 import montithings._ast.*;
 import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
+import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.visitor.GuardExpressionVisitor;
 
 import java.io.File;
@@ -994,5 +995,13 @@ public class ComponentHelper {
       }
     }
     return false;
+  }
+
+  public static boolean portIsComparedToNoData(ASTExpression e, String portName) {
+    NoDataComparisionsVisitor visitor = new NoDataComparisionsVisitor();
+    e.accept(visitor);
+    return visitor.getFoundExpressions().stream()
+        .map(ASTNameExpression::getName)
+        .anyMatch(n -> n.equals(portName));
   }
 }

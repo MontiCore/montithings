@@ -161,4 +161,11 @@ grammar MontiThings extends MontiArc {
     ExecutionElseStatement implements ExecutionStatement =
         "else" method:Name&"()" ";";
 
+    /**
+     * The Value for empty data
+     * Copied from MontiArc. We dont actually need a different syntax but MontiArc's AST class
+     * also specifies how to print NoData as "null" in the target language. For C++, we need to
+     * overwrite this to write an empty optional.
+     */
+    NoData implements Expression = "--";
 }
