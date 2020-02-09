@@ -26,6 +26,7 @@
 		<!-- DSLs -->
 		<javadsl.version>4.3.11.1</javadsl.version> 
 		<cd4a.version>1.3.13</cd4a.version>
+		<montiarc.version>5.0.2-SNAPSHOT</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
 		<monticore.version>5.0.0.1</monticore.version> 
@@ -82,7 +83,7 @@
 			<dependency>
 				<groupId>montiarc</groupId>
 				<artifactId>montiarc-core</artifactId>
-				<version>5.0.2-SNAPSHOT</version>
+				<version>${montiarc.version}</version>
 			</dependency>
 
 			<dependency>

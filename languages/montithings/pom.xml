@@ -18,14 +18,14 @@
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
-            <version>5.0.2-SNAPSHOT</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
             <classifier>${grammars.classifier}</classifier>
-            <version>5.0.2-SNAPSHOT</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>

@@ -19,14 +19,14 @@
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
-            <version>5.0.2-SNAPSHOT</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
             <classifier>${grammars.classifier}</classifier>
-            <version>5.0.2-SNAPSHOT</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
@@ -104,7 +104,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -142,25 +141,12 @@
         <dependency>
             <groupId>montiarc.generators</groupId>
             <artifactId>cd2pojo</artifactId>
-            <version>5.1.2-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>montiarc.generators</groupId>
-            <artifactId>cd2pojo</artifactId>
-            <version>5.1.2-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${montiarc.version}</version>
         </dependency>
         <dependency>
             <groupId>montithings.languages</groupId>
             <artifactId>montithings</artifactId>
             <version>5.0.2-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
