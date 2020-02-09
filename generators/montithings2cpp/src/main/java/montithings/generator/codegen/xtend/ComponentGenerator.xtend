@@ -67,6 +67,7 @@ class ComponentGenerator {
 			«Utils.printVariables(comp)»
 			«Utils.printConfigParameters(comp)»
 			std::vector< std::thread > threads;
+			TimeMode timeMode = «IF comp.getStereotype().containsKey("timesync")»TIMESYNC«ELSE»EVENTBASED«ENDIF»;
 			«IF comp.isDecomposed»
 			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
 			void run();
@@ -88,7 +89,7 @@ class ComponentGenerator {
 			
 			«compname»(«Utils.printConfigurationParametersAsList(comp)»);
 			
-			void setUp() override;
+			void setUp(TimeMode enclosingComponentTiming) override;
 			void init() override;
 			void compute() override;
 			void start() override;
@@ -188,7 +189,7 @@ class ComponentGenerator {
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
 			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
-			if («FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)«ENDFOR»)
+			if (timeMode == TIMESYNC || «FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)«ENDFOR»)
 			«ENDIF»
 			«IF ComponentHelper.hasSyncGroups(comp)»
 			if ( 

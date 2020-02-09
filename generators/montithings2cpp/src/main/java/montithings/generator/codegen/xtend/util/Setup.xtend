@@ -22,9 +22,10 @@ class Setup {
 	def static printSetupAtomic(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»«Utils.printFormalTypeParameters(comp, false)»::setUp(){
+		void «compname»«Utils.printFormalTypeParameters(comp, false)»::setUp(TimeMode enclosingComponentTiming){
+			if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 			«IF comp.superComponent.present»
-			super.setUp();
+			super.setUp(enclosingComponentTiming);
 			«ENDIF»
 			initialize();
 		}
@@ -35,12 +36,13 @@ class Setup {
 		var helper = new ComponentHelper(comp)
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»«Utils.printFormalTypeParameters(comp, false)»::setUp(){
+		void «compname»«Utils.printFormalTypeParameters(comp, false)»::setUp(TimeMode enclosingComponentTiming){
+			if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 			«IF comp.superComponent.present»
-			super.setUp();
+			super.setUp(enclosingComponentTiming);
 			«ENDIF»
 			«FOR subcomponent : comp.subComponents»
-			«subcomponent.name».setUp();
+			«subcomponent.name».setUp(enclosingComponentTiming);
 	        «ENDFOR»
 
 	        «FOR ASTConnector connector : (comp.getAstNode().get() as ASTComponent).getConnectors()»

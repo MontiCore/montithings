@@ -15,7 +15,7 @@ class Deploy {
 		int main()
 		{
 			«compname» cmp;
-			cmp.setUp();
+			cmp.setUp(«IF comp.getStereotype().containsKey("timesync")»TIMESYNC«ELSE»EVENTBASED«ENDIF»);
 			cmp.init();
 			«IF !comp.getStereotype().containsKey("timesync")»
 			cmp.start();
