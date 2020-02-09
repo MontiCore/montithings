@@ -2,9 +2,11 @@
 
 package montithings._symboltable;
 
+import de.monticore.ast.ASTNode;
 import de.monticore.java.symboltable.JavaSymbolFactory;
 import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.java.symboltable.JavaTypeSymbolReference;
+import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.symboltable.*;
 import de.monticore.symboltable.modifiers.BasicAccessModifier;
 import de.monticore.symboltable.types.JFieldSymbol;
@@ -279,7 +281,6 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
   @Override
   public void endVisit(ASTComponent node) {
     ComponentSymbol component = componentStack.pop();
-    autoConnectionTrafo.transformAtEnd(node, component);
 
     // super component
     if (node.getHead().isPresentSuperComponent()) {
@@ -293,6 +294,10 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
       addTypeArgumentsToComponent(ref, superCompRef);
 
       component.setSuperComponent(ref);
+    }
+
+    for (ASTSubComponent subComp : node.getSubComponents()) {
+      addSubComponentSymbols(subComp);
     }
 
     if (autoinstantiate.pop()) {
@@ -388,6 +393,7 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
         }
       }
     }
+    autoConnectionTrafo.transformAtEnd(node, component);
   }
 
   private void setActualTypeArgumentsOfCompRef(ComponentSymbolReference typeReference,
@@ -469,8 +475,61 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
             astSimpleReferenceType.getTypeArguments().getTypeArgumentList());
       }
     }
-
   }
+  private void addSubComponentSymbols(ASTSubComponent node) {
+    String referencedCompName = TypesPrinter
+        .printTypeWithoutTypeArgumentsAndDimension(node.getType());
+
+    // String refCompPackage = Names.getQualifier(referencedCompName);
+    String simpleCompName = Names.getSimpleName(referencedCompName);
+
+    ComponentSymbolReference componentTypeReference = new ComponentSymbolReference(
+        referencedCompName,
+        currentScope().get());
+    // actual type arguments
+    addTypeArgumentsToComponent(componentTypeReference, node.getType());
+
+    // ref.setPackageName(refCompPackage);
+    List<ASTExpression> configArgs = new ArrayList<>();
+
+    for (ASTExpression arg : node.getArgumentsList()) {
+      arg.setEnclosingScope(currentScope().get());
+      setEnclosingScopeOfNodes(arg);
+      configArgs.add(arg);
+    }
+
+    // instances
+    if (!node.getInstancesList().isEmpty()) {
+      // create instances of the referenced components.
+      for (ASTSubComponentInstance i : node.getInstancesList()) {
+        createInstance(i.getName(), i, componentTypeReference, configArgs);
+      }
+    }
+    else {
+      // auto instance because instance name is missing
+      createInstance(StringTransformations.uncapitalize(simpleCompName), node,
+          componentTypeReference, configArgs);
+    }
+
+    node.setEnclosingScope(currentScope().get());
+  }
+
+  /**
+   * Creates the instance and adds it to the symTab.
+   */
+  private void createInstance(String name, ASTNode node,
+      ComponentSymbolReference componentTypeReference,
+      List<ASTExpression> configArguments) {
+    ComponentInstanceSymbol instance = new ComponentInstanceSymbol(name,
+        componentTypeReference);
+    configArguments.forEach(v -> instance.addConfigArgument(v));
+    // create a subscope for the instance
+    // setLinkBetweenSymbolAndNode(instance, node);
+    addToScopeAndLinkWithNode(instance, node);
+    // remove the created instance's scope
+    // removeCurrentScope();
+  }
+
   /**
    * END Adapted from MontiArc
    */

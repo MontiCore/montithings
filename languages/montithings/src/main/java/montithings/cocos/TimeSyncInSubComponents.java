@@ -54,7 +54,7 @@ public class TimeSyncInSubComponents implements MontiArcASTComponentCoCo {
       ASTStereotype stereotype = node.getStereotypeOpt().get();
       if (stereotype.containsStereoValue("timesync")) {
         Log.warn("0xMT120 Timesynced component " + topCompName + " contains " +
-                "subcomponent " + node.getName() + " with timining options.",
+                "subcomponent " + node.getName() + " with timing options.",
             stereotype.get_SourcePositionStart());
       }
     }
@@ -67,7 +67,7 @@ public class TimeSyncInSubComponents implements MontiArcASTComponentCoCo {
         .filter(ASTCalculationInterval.class::isInstance)
         .forEach(e ->
             Log.warn("0xMT120 Timesynced component " + topCompName + " contains " +
-                    "subcomponent " + node.getName() + " with timining options.",
+                    "subcomponent " + node.getName() + " with timing options.",
                 e.get_SourcePositionStart()));
   }
 
