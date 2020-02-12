@@ -83,6 +83,8 @@ grammar MontiThings extends MontiArc {
         ControlStatement*
         "}";
 
+    Assumption implements Element = "assume" ":" guard:Expression ";";
+    Guarantee implements Element = "guarantee" ":" guard:Expression ";";
 
     interface ControlStatement;
 

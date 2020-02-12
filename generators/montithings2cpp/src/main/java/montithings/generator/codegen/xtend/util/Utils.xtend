@@ -5,7 +5,7 @@ import montithings.generator.helper.ComponentHelper
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration
 import java.util.ArrayList
 import java.util.List
-import montiarc._ast.ASTComponent
+import montithings._ast.ASTComponent
 import montiarc._ast.ASTVariableDeclaration
 import montiarc._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol

@@ -216,35 +216,85 @@ class ComponentGenerator {
 				«ENDFOR»
 				«ENDIF»
 				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
+				«printAssumptions(comp, compname)»
 				«IF !ComponentHelper.hasExecutionStatement(comp)»
 				result = «Identifier.behaviorImplName».compute(input);
 				«ELSE»
-				
-				«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
-				if (
-					«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
-					«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
-					input.get«port.name.toFirstUpper»()
-					«ELSE»
-					true // presence of value on port «port.name» not checked as it is compared to NoData
-					«ENDIF»
-					«ENDFOR»
-					«IF ComponentHelper.getPortsInGuardExpression(statement).length() > 0»&&«ENDIF» «printExpression(statement.guard)»
-					)
-				{
-					result = «Identifier.behaviorImplName».«statement.method»(input);	
-				}
-				«ENDFOR»
-				«IF ComponentHelper.getElseStatement(comp) !== null»
-				else {
-					result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).method»(input);
-					}
-
+				«printIfThenElseExecution(comp, compname)»
 				«ENDIF»
-				«ENDIF»
+				«printGuarantees(comp, compname)»
 				setResult(result);				
 			}
 		}
+		'''
+	}
+	
+	def static printAssumptions(ComponentSymbol comp, String compname) {
+		var assumptions = ComponentHelper.getAssumptions(comp);
+		return '''
+		«FOR statement : assumptions»
+		if (
+		«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
+				input.get«port.name.toFirstUpper»()
+			«ELSE»
+				true // presence of value on port «port.name» not checked as it is compared to NoData
+			«ENDIF»
+		«ENDFOR» && 
+		!(
+			«printExpression(statement.guard)»
+		)) {
+			std::stringstream error;
+			error << "Violated assumption «printExpression(statement.guard)» on component «comp.packageName».«compname»" << std::endl;
+			error << "Input port values: " << std::endl;
+			«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
+			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
+				error << "Port \"«inPort.name»\": " << input.get«inPort.name.toFirstUpper» ().value() << std::endl; 
+			} else {
+				error << "Port \"«inPort.name»\": No data." << std::endl;
+			}
+			«ENDFOR»
+			«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
+			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
+				error << "Port \"«inPort.name»\": " << input.get«inPort.name.toFirstUpper» () << std::endl; 
+			} else {
+				error << "Port \"«inPort.name»\": No data." << std::endl;
+			}
+			«ENDFOR»
+			throw std::runtime_error(error.str ());
+		}
+		«ENDFOR»
+		'''
+	}
+	
+	def static printGuarantees(ComponentSymbol comp, String compname) {
+		var guarantees = ComponentHelper.getGuarantees(comp);
+		return '''
+		'''
+	}
+	
+	def static printIfThenElseExecution(ComponentSymbol comp, String compname) {
+		return '''
+		«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
+		if (
+			«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
+			input.get«port.name.toFirstUpper»()
+			«ELSE»
+			true // presence of value on port «port.name» not checked as it is compared to NoData
+			«ENDIF»
+			«ENDFOR»
+			«IF ComponentHelper.getPortsInGuardExpression(statement).length() > 0»&&«ENDIF» «printExpression(statement.guard)»
+			)
+		{
+			result = «Identifier.behaviorImplName».«statement.method»(input);	
+		}
+		«ENDFOR»
+		«IF ComponentHelper.getElseStatement(comp) !== null»
+		else {
+			result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).method»(input);
+			}
+		«ENDIF»
 		'''
 	}
 		

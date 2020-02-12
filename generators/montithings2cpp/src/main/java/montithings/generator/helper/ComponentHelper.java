@@ -2,6 +2,7 @@
 package montithings.generator.helper;
 
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
+import de.monticore.mcexpressions._ast.ASTBracketExpression;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
@@ -19,7 +20,6 @@ import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import jline.internal.Log;
-import montiarc._ast.ASTComponent;
 import montiarc._ast.*;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
@@ -27,8 +27,10 @@ import montiarc._symboltable.ComponentSymbolReference;
 import montiarc._symboltable.PortSymbol;
 import montiarc.helper.SymbolPrinter;
 import montithings._ast.*;
+import montithings._ast.ASTComponent;
 import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
+import montithings.generator.visitor.ExpressionEnclosingScopeSetterVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.visitor.GuardExpressionVisitor;
 
@@ -764,6 +766,28 @@ public class ComponentHelper {
     return getExecutionStatements(comp).size() > 0;
   }
 
+  public static List<ASTGuarantee> getGuarantees(ComponentSymbol comp) {
+    List<ASTGuarantee> list =  ((ASTComponent)comp.getAstNode().get())
+        .getBody()
+        .getElementList().stream()
+        .filter(e -> e instanceof ASTGuarantee)
+        .map(e -> ((ASTGuarantee) e))
+        .collect(Collectors.toList());
+    list.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(comp.getSpannedScope())));
+    return list;
+  }
+
+  public static List<ASTAssumption> getAssumptions(ComponentSymbol comp) {
+    List<ASTAssumption> list =  ((ASTComponent)comp.getAstNode().get())
+        .getBody()
+        .getElementList().stream()
+        .filter(e -> e instanceof ASTAssumption)
+        .map(e -> ((ASTAssumption) e))
+        .collect(Collectors.toList());
+    list.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(comp.getSpannedScope())));
+    return list;
+  }
+
   /**
    * @param comp
    * @return
@@ -832,7 +856,7 @@ public class ComponentHelper {
    * @param node
    * @return
    */
-  public static List<ASTNameExpression> getGuardExpressionElements(ASTExecutionIfStatement node) {
+  public static List<ASTNameExpression> getGuardExpressionElements(ASTExpression node) {
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
     node.accept(visitor);
     return visitor.getExpressions();
@@ -845,6 +869,15 @@ public class ComponentHelper {
    * @return
    */
   public static List<PortSymbol> getPortsInGuardExpression(ASTExecutionIfStatement node) {
+    return getPortsInGuardExpression(node.getGuard());
+  }
+  public static List<PortSymbol> getPortsInGuardExpression(ASTAssumption node) {
+    return getPortsInGuardExpression(node.getGuard());
+  }
+  public static List<PortSymbol> getPortsInGuardExpression(ASTGuarantee node) {
+    return getPortsInGuardExpression(node.getGuard());
+  }
+  public static List<PortSymbol> getPortsInGuardExpression(ASTExpression node) {
     List<PortSymbol> ports = new ArrayList<>();
 
     for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {

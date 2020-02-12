@@ -29,7 +29,7 @@
 		<montiarc.version>5.1.2</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
-		<monticore.version>5.0.0.1</monticore.version> 
+		<monticore.version>5.0.0.1</monticore.version>
 		<mc.grammars.assembly.version>0.0.8</mc.grammars.assembly.version>
 		<se-commons.version>1.7.8</se-commons.version>
 		<tagging.version>0.0.7-SNAPSHOT</tagging.version>
