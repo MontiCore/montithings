@@ -153,10 +153,17 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
     List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
 
     if (port.isPresent()) {
-      if (isComparedToNoData) {
-        printer.print("input.get" + capitalize(node.getName()) + "()");
+      String prefix;
+      if (port.get().isIncoming()) {
+        prefix = "input";
       } else {
-        printer.print("input.get" + capitalize(node.getName()) + "().value()");
+        prefix = "result";
+      }
+
+      if (isComparedToNoData) {
+        printer.print(prefix+".get" + capitalize(node.getName()) + "()");
+      } else {
+        printer.print(prefix+".get" + capitalize(node.getName()) + "().value()");
       }
     }
     else if (sync.isPresent()) {

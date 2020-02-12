@@ -245,7 +245,7 @@ class ComponentGenerator {
 			«printExpression(statement.guard)»
 		)) {
 			std::stringstream error;
-			error << "Violated assumption «printExpression(statement.guard)» on component «comp.packageName».«compname»" << std::endl;
+			error << "Violated assumption «printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
 			error << "Input port values: " << std::endl;
 			«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
 			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
@@ -270,6 +270,49 @@ class ComponentGenerator {
 	def static printGuarantees(ComponentSymbol comp, String compname) {
 		var guarantees = ComponentHelper.getGuarantees(comp);
 		return '''
+		«FOR statement : guarantees»
+		if (
+		«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
+				«IF port.isIncoming»
+				input.get«port.name.toFirstUpper»()
+				«ELSE»
+				result.get«port.name.toFirstUpper»()
+				«ENDIF»
+			«ELSE»
+				true // presence of value on port «port.name» not checked as it is compared to NoData
+			«ENDIF»
+		«ENDFOR» && 
+		!(
+			«printExpression(statement.guard)»
+		)) {
+			std::stringstream error;
+			error << "Violated guarantee «printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
+			error << "Port values: " << std::endl;
+			«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
+			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
+				error << "In port \"«inPort.name»\": " << input.get«inPort.name.toFirstUpper» ().value() << std::endl; 
+			} else {
+				error << "In port \"«inPort.name»\": No data." << std::endl;
+			}
+			«ENDFOR»
+			«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
+			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
+				error << "In port \"«inPort.name»\": " << input.get«inPort.name.toFirstUpper» () << std::endl; 
+			} else {
+				error << "In port \"«inPort.name»\": No data." << std::endl;
+			}
+			«ENDFOR»
+			«FOR outPort : comp.allOutgoingPorts»
+			if (result.get«outPort.name.toFirstUpper» ().has_value()) {
+				error << "Out port \"«outPort.name»\": " << result.get«outPort.name.toFirstUpper» ().value() << std::endl; 
+			} else {
+				error << "Out port \"«outPort.name»\": No data." << std::endl;
+			}
+			«ENDFOR»
+			throw std::runtime_error(error.str ());
+		}
+		«ENDFOR»
 		'''
 	}
 	

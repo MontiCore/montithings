@@ -7,7 +7,7 @@ import de.monticore.mcexpressions._visitor.MCExpressionsVisitor;
 import de.monticore.symboltable.Scope;
 
 /**
- * TODO
+ * Workaround for MontiCore Bug that prevents setting enclosing scope correctly
  *
  * @author (last commit) kirchhof
  * @version , 12.02.2020
