@@ -10,13 +10,22 @@ import montithings.generator.codegen.xtend.util.Utils
 
 class Ports {
 	
-	def static printVars(Collection<PortSymbol> ports) {
+	def static printVars(ComponentSymbol comp, Collection<PortSymbol> ports) {
 	return	'''
+	  // Ports
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
-   Port<«type»>* «name» = new Port<«type»>;
-   boost::uuids::uuid portUuid«name.toFirstUpper» = boost::uuids::random_generator () ();
+    Port<«type»>* «name» = new Port<«type»>;
+    boost::uuids::uuid portUuid«name.toFirstUpper» = boost::uuids::random_generator () ();
+    «ENDFOR»
+    // Internal monitoring of ports
+    «FOR port : ports»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
+    «var name = port.name»
+    «IF comp.isDecomposed»
+    boost::uuids::uuid portMonitorUuid«name.toFirstUpper» = boost::uuids::random_generator () ();
+    «ENDIF»
     «ENDFOR»
     '''
 		
@@ -107,6 +116,9 @@ OutgoingWSPort<«type»>* «name» = new OutgoingWSPort<«type»>("«port.uri»"
     void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«IF comp.atomic»
     	port->registerPort(portUuid«name.toFirstUpper»);
+    	«ENDIF»
+    	«IF comp.isDecomposed»
+    	port->registerPort(portMonitorUuid«name.toFirstUpper»);
     	«ENDIF»
     	«name» = port;
     }
