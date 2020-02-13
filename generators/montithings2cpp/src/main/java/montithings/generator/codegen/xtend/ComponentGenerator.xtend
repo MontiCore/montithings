@@ -51,6 +51,8 @@ class ComponentGenerator {
 		«FOR include : compIncludes»
 		«include»
 		«ENDFOR»
+		#include "«compname»Input.h"
+		#include "«compname»Result.h"
 		«ELSE»
 		#include "«compname»Impl.h"
 		«ENDIF»
@@ -62,7 +64,7 @@ class ComponentGenerator {
 		            «ENDIF»«ENDIF»
 		{
 		private:
-			«Ports.printVars(comp.ports)»
+			«Ports.printVars(comp, comp.ports)»
 			«Ports.printResourcePortVars(ComponentHelper.getResourcePortsInComponent(comp))»
 			«Utils.printVariables(comp)»
 			«Utils.printConfigParameters(comp)»
@@ -84,14 +86,12 @@ class ComponentGenerator {
 		public:
 			«Ports.printMethodHeaders(comp.ports)»
 			«Ports.printResourcePortMethodHeaders(ComponentHelper.getResourcePortsInComponent(comp))»
-			«IF comp.isDecomposed»	
-			«ENDIF»
-			
 			«compname»(«Utils.printConfigurationParametersAsList(comp)»);
 			
 			void setUp(TimeMode enclosingComponentTiming) override;
 			void init() override;
 			void compute() override;
+			bool shouldCompute();
 			void start() override;
 		};            
 		            
@@ -139,6 +139,8 @@ class ComponentGenerator {
             «ENDFOR»
 		}
 		«ENDIF»
+		
+		«printShouldComputeCheck(comp, compname)»
 
 		«Setup.print(comp, compname)»
 
@@ -187,9 +189,53 @@ class ComponentGenerator {
 	def static printComputeAtomic(ComponentSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
+		void «compname»«Utils.printFormalTypeParameters(comp)»::compute() {
+			if (shouldCompute())
+			{
+				«printComputeInputs(comp, compname)»
+				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
+				«printAssumptionsCheck(comp, compname)»
+				«IF !ComponentHelper.hasExecutionStatement(comp)»
+				result = «Identifier.behaviorImplName».compute(input);
+				«ELSE»
+				«printIfThenElseExecution(comp, compname)»
+				«ENDIF»
+				«printGuaranteesCheck(comp, compname)»
+				setResult(result);				
+			}
+		}
+		'''
+	}
+	
+	def static printComputeInputs(ComponentSymbol comp, String compname) {
+		return printComputeInputs(comp, compname, false);
+	}
+	
+	def static printComputeInputs(ComponentSymbol comp, String compname, boolean isMonitor) {
+		return '''
+		«IF !ComponentHelper.usesBatchMode(comp)»
+		«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«inPort.name.toFirstUpper»)«ENDFOR»)«ENDIF»;
+		«ELSE»
+		«compname»Input«Utils.printFormalTypeParameters(comp)» input;
+		«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
+		while(getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)){
+			input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«inPort.name.toFirstUpper»));
+		}
+		«ENDFOR»
+		«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
+		input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«inPort.name.toFirstUpper»));
+		«ENDFOR»
+		«ENDIF»
+		'''
+	}
+	
+	def static printShouldComputeCheck(ComponentSymbol comp, String compname) {
+		return '''
+		«Utils.printTemplateArguments(comp)»
+		bool «compname»«Utils.printFormalTypeParameters(comp)»::shouldCompute() {
 			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
 			if (timeMode == TIMESYNC || «FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)«ENDFOR»)
+			{ return true; }
 			«ENDIF»
 			«IF ComponentHelper.hasSyncGroups(comp)»
 			if ( 
@@ -200,36 +246,18 @@ class ComponentGenerator {
 				|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(portUuid«port.name.toFirstUpper»)«ENDFOR»
 				<«ENDIF»
 			)
+			{ return true; }
 			«ENDIF»
-			{
-				«IF !ComponentHelper.usesBatchMode(comp)»
-				«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(portUuid«inPort.name.toFirstUpper»)«ENDFOR»)«ENDIF»;
-				«ELSE»
-				«compname»Input«Utils.printFormalTypeParameters(comp)» input;
-				«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
-				while(getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)){
-					input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(portUuid«inPort.name.toFirstUpper»));
-				}
-				«ENDFOR»
-				«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
-				input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(portUuid«inPort.name.toFirstUpper»));
-				«ENDFOR»
-				«ENDIF»
-				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
-				«printAssumptions(comp, compname)»
-				«IF !ComponentHelper.hasExecutionStatement(comp)»
-				result = «Identifier.behaviorImplName».compute(input);
-				«ELSE»
-				«printIfThenElseExecution(comp, compname)»
-				«ENDIF»
-				«printGuarantees(comp, compname)»
-				setResult(result);				
-			}
+			«IF comp.allIncomingPorts.length == 0»
+			return true;
+			«ELSE»
+			return false;
+			«ENDIF»
 		}
 		'''
 	}
 	
-	def static printAssumptions(ComponentSymbol comp, String compname) {
+	def static printAssumptionsCheck(ComponentSymbol comp, String compname) {
 		var assumptions = ComponentHelper.getAssumptions(comp);
 		return '''
 		«FOR statement : assumptions»
@@ -267,7 +295,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printGuarantees(ComponentSymbol comp, String compname) {
+	def static printGuaranteesCheck(ComponentSymbol comp, String compname) {
 		var guarantees = ComponentHelper.getGuarantees(comp);
 		return '''
 		«FOR statement : guarantees»
@@ -346,11 +374,30 @@ class ComponentGenerator {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
+			if (shouldCompute()) {
+			
+			«printComputeInputs(comp, compname)»
+			«printAssumptionsCheck(comp, compname)»
+			
 			«FOR subcomponent : comp.subComponents»
-			this->«subcomponent.name».compute();
-	        «ENDFOR»
-					
+				this->«subcomponent.name».compute();
+        	«ENDFOR»
+        	
+        	«printComputeResults(comp, compname, true)»
+        	«printGuaranteesCheck(comp, compname)»
+        	}
 		}
+		'''
+	}
+	
+	def static printComputeResults(ComponentSymbol comp, String compname, boolean isMonitor) {
+		return '''
+		«compname»Result«Utils.printFormalTypeParameters(comp)» result;
+		«FOR outPort : comp.allOutgoingPorts»
+		if (getPort«outPort.name.toFirstUpper»()->hasValue(port«IF isMonitor»Monitor«ENDIF»Uuid«outPort.name.toFirstUpper»)) {
+			result.set«outPort.name.toFirstUpper»(getPort«outPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«outPort.name.toFirstUpper»).value());
+		}
+		«ENDFOR»
 		'''
 	}
 	

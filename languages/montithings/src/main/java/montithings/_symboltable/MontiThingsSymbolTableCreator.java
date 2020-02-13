@@ -27,10 +27,10 @@ import montiarc._symboltable.MontiArcArtifactScope;
 import montiarc._symboltable.MontiArcSymbolTableCreator;
 import montiarc.helper.JavaDefaultTypesManager;
 import montiarc.helper.Timing;
+import montithings._ast.*;
 import montithings._ast.ASTComponent;
-import montithings._ast.ASTExecutionBlock;
-import montithings._ast.ASTMTCompilationUnit;
 import montithings._visitor.MontiThingsVisitor;
+import montithings.visitor.ExpressionEnclosingScopeSetterVisitor;
 
 import java.util.*;
 
@@ -258,8 +258,10 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     autoConnectionTrafo.transformAtStart(node, component);
 
     // Fix AST enclosing scopes
-    component.getAssumptions();
-    component.getGuarantees();
+    List<ASTAssumption> assumptions = component.getAssumptions();
+    assumptions.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(component.getSpannedScope())));
+    List<ASTGuarantee> guarantees = component.getGuarantees();
+    guarantees.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(component.getSpannedScope())));
   }
 
   protected void setParametersOfComponent(final ComponentSymbol componentSymbol,
