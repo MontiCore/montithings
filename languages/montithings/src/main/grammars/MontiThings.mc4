@@ -3,43 +3,69 @@ grammar MontiThings extends MontiArc {
 
     start MTCompilationUnit;
 
-    /** ASTMTCompilationUnit represents the entire content of a MontiArc model artifact
-      * @attribute package          The package declaration of the component model
-      * @attribute importStatements List of imported elements (data types and component types)
-      * @attribute component The outermost component model defined in this compilation unit
-      */
+    /** 
+     * ASTMTCompilationUnit represents the entire content of a MontiArc model artifact
+     *
+     * @attribute package          The package declaration of the component model
+     * @attribute importStatements List of imported elements (data types and component types)
+     * @attribute component The outermost component model defined in this compilation unit
+     */
     MTCompilationUnit =
       ("package" package:(Name& || ".")+ ";")?  // optional package declaration
       (ImportStatement)*
-      (ImportStatementLOCAL)*                        // import statements
+      (ImportStatementLOCAL)*                   // import statements
       Component                                 // single outermost component declaration 
       EOF;                                      // and nothing (end of file) afterwards
+
+    /**
+     * Interface component has no implementation except Ports
+     * TODO: extend MontiArc's Component instead of overwriting it - Needs MontiArc to be on MontiCore 5.3.0
+     */
+    symbol scope Component implements Element =
+      Stereotype?
+      (["interface"])? "component" Name
+      head:ComponentHead
+      (instanceName:Name actualTypeArgument:TypeArguments?)?
+      body:ComponentBody;
+
+    /* ============================================================ */
+    /* ===================== Import Statements ==================== */
+    /* ============================================================ */
 
     interface ImportStatement;
 
     /**
-    * Interface component has no implementation except Ports
-    * TODO: extend MontiArc's Component instead of overwriting it - Needs MontiArc to be on MontiCore 5.3.0
-    */
-    symbol scope Component implements Element =
-        Stereotype?
-        (["interface"])? "component" Name
-        head:ComponentHead
-        (instanceName:Name actualTypeArgument:TypeArguments?)?
-        body:ComponentBody;
+     * Imported CPP elements (data types, components etc)
+     */
+    CPPImportStatementLOCAL implements ImportStatement =
+      "#include" cppImport:String;
+
+    CPPImportStatementSYSTEM implements ImportStatement =
+      "#include" "<" cppSystemImport:(Name& || ".")+ ">";
+
+    /* ============================================================ */
+    /* ================= Assumptions & Guarantees ================= */
+    /* ============================================================ */
+
+    Assumption implements Element = "assume" ":" guard:Expression ";";
+    Guarantee implements Element = "guarantee" ":" guard:Expression ";";
+
+    /* ============================================================ */
+    /* ====================== Resource Ports ====================== */
+    /* ============================================================ */
 
     /**
-    * Defines an interface of a component containing
-    * incoming and outgoing ports to external resources.
-    *
-    *
-    * @attribute stereotype an optional stereotype
-    * @attribute resourcePorts a list of ports that are contained in
-    *   this interface
-    */
+     * Defines an interface of a component containing
+     * incoming and outgoing ports to external resources.
+     *
+     * @attribute stereotype an optional stereotype
+     * @attribute resourcePorts a list of ports that are contained in
+     *   this interface
+     */
     ResourceInterface implements Element =
       Stereotype?
-      "resource port" resourcePort:(ResourcePort || ",")+ ";";
+      "resource" "port"
+      resourcePort:(ResourcePort || ",")+ ";";
 
      /**
       * An incoming resource port is used to receive messages from external sources, an
@@ -62,100 +88,101 @@ grammar MontiThings extends MontiArc {
                      ((ResourceOption "," uri:String ) |
                      ResourceOption |
                      uri:String )
-                   ("," (ResourceParameter || ",")+)?
+                     ("," (ResourceParameter || ",")+)?
                    ) |
                    ((ResourceParameter || ",")+)
                 )
                 ")")?
       ("requires" requiresType:Name ":" requiresName:StringLiteral)?  ;
 
-     ResourceParameter = key:Name "=" value:String;
+    ResourceParameter = key:Name "=" value:String;
 
     /**
-    * A Control Block consists of statements controlling the execution
-    * behavior of the component. The described behavior in this block
-    * only modifies the already existing behavior of the component
-    * (hwc, automatons, etc) and thus does not implement the
-    * BehaviorElement interface.
-    **/
+     * Optional settings for resource ports
+     */
+    enum ResourceOption =
+      "netserver" | "netclient" | "ipcreqrep" |
+      "ipclisten" | "fsappend" | "fsoverwrite";
+
+    /* ============================================================ */
+    /* ====================== Control Blocks ====================== */
+    /* ============================================================ */
+
+    /**
+     * A Control Block consists of statements controlling the execution
+     * behavior of the component. The described behavior in this block
+     * only modifies the already existing behavior of the component
+     * (hwc, automatons, etc) and thus does not implement the
+     * BehaviorElement interface.
+     */
     ControlBlock implements Element =
         "control" "{"
         ControlStatement*
         "}";
 
-    Assumption implements Element = "assume" ":" guard:Expression ";";
-    Guarantee implements Element = "guarantee" ":" guard:Expression ";";
-
     interface ControlStatement;
 
     /**
-    * The calculation interval specifies in which 
-    * interval the component is executed.
-    */
+     * The calculation interval specifies in which 
+     * interval the component is executed.
+     */
     CalculationInterval implements ControlStatement =
-    	"update interval" interval:IntLiteral TimeUnit";";
+      "update" "interval" interval:IntLiteral TimeUnit";";
 
     enum TimeUnit = "ms" | "s" | "min";
 
     /**
-    * BatchStatements define which ports should be
-    * handled in batch processing mode instead of
-    * handling only one incoming message per tick
-    **/
+     * BatchStatements define which ports should be
+     * handled in batch processing mode instead of
+     * handling only one incoming message per tick
+     */
     BatchStatement implements ControlStatement =
         "batch" batchPorts:(Name& || ",")+ ";";
 
     /** SyncStatements allow the specification of groups of ports
-    * that should only be handled together
-    **/
+     * that should only be handled together
+     */
     symbol SyncStatement implements ControlStatement =
         "sync port group" Name& "(" syncedPort:(Name || ",")* ")" ";";
 
+    /* ============================================================ */
+    /* ================ Requirements & Capabilities =============== */
+    /* ============================================================ */
 
     /**
-    * Optional settings for resource ports
-    */
-    enum ResourceOption =
-      "netserver" | "netclient" | "ipcreqrep"
-      | "ipclisten" | "fsappend" | "fsoverwrite";
-
-    /**
-    * Imported CPP elements (data types, components etc)
-    */
-    CPPImportStatementLOCAL implements ImportStatement =
-       "#include" cppImport:String;
-
-    CPPImportStatementSYSTEM implements ImportStatement =
-      "#include" "<" cppSystemImport:(Name& || ".")+ ">";
-
-    /**
-    *  RequirementStatements contain information about what physical requirements
-    *  a component has. E.g Sensors/Actuators etc.
-    */
+     *  RequirementStatements contain information about what physical requirements
+     *  a component has. E.g Sensors/Actuators etc.
+     */
     RequirementStatement implements Element =
       "requires" (propertiess:Property | "{" properties:Property+ "}");
 
-    Property =
-      Name& ":" (stringValue:StringLiteral | booleanValue:BooleanLiteral
-          | doubleValue:DoubleLiteral | integerValue:IntLiteral | longValue:LongLiteral) ";";
+    Property = Name& ":" 
+      (
+        stringValue:StringLiteral | booleanValue:BooleanLiteral |
+        doubleValue:DoubleLiteral | integerValue:IntLiteral | 
+        longValue:LongLiteral
+      ) ";";
 
+    /* ============================================================ */
+    /* =================== If-Then-Else Behavior ================== */
+    /* ============================================================ */
 
     /**
-    * Executionblocks contain If and Else Statements that
-    * control the behavior combined with handwritten code
-    * functions.
-    */
+     * Executionblocks contain If and Else Statements that
+     * control the behavior combined with handwritten code
+     * functions.
+     */
     ExecutionBlock implements BehaviorElement =
       "behavior" "{" ExecutionStatement* "}";
 
     interface ExecutionStatement;
 
     /**
-        * IfStatements specify which function in the
-        * handwritten implementation should be executed depending
-        * on the presence on messages on incoming ports and
-        * values of current messages.
-        **/
+     * IfStatements specify which function in the
+     * handwritten implementation should be executed depending
+     * on the presence on messages on incoming ports and
+     * values of current messages.
+     */
     ExecutionIfStatement implements ExecutionStatement =
         "if" (guard:Expression) ":" method:Name&"()"
         ("|" ("prio" | "priority") "=" priority:IntLiteral)? ";";
