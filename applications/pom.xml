@@ -17,6 +17,7 @@
 
   <modules>
     <module>smarttrunk-light</module>
+    <module>hierarchy</module>
   </modules>
 
 </project>
