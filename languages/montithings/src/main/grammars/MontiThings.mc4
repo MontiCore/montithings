@@ -143,7 +143,7 @@ grammar MontiThings extends MontiArc {
      * that should only be handled together
      */
     symbol SyncStatement implements ControlStatement =
-        "sync port group" Name& "(" syncedPort:(Name || ",")* ")" ";";
+        "sync" "port" "group" Name& "(" syncedPort:(Name || ",")* ")" ";";
 
     /* ============================================================ */
     /* ================ Requirements & Capabilities =============== */
