@@ -2,7 +2,6 @@
 package montithings.generator.helper;
 
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
-import de.monticore.mcexpressions._ast.ASTBracketExpression;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
@@ -30,7 +29,7 @@ import montithings._ast.*;
 import montithings._ast.ASTComponent;
 import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
-import montithings.generator.visitor.ExpressionEnclosingScopeSetterVisitor;
+import montithings.visitor.ExpressionEnclosingScopeSetterVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.visitor.GuardExpressionVisitor;
 

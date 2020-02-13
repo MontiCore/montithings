@@ -1,5 +1,5 @@
 /* (c) https://github.com/MontiCore/monticore */
-package montithings.generator.visitor;
+package montithings.visitor;
 
 import de.monticore.ast.ASTNode;
 import de.monticore.mcexpressions._ast.*;

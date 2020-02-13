@@ -37,6 +37,7 @@ public class MontiThingsCoCos {
         .addCoCo(new SubcomponentReferenceCycle())
         .addCoCo(new PortNamesAreNotJavaKeywords())
         //.addCoCo(new montithings.cocos.UnusedImports())
+        .addCoCo(new AssumptionDoesNotDependOnOutputPort())
 
         /// Automaton Cocos
         /// /////////////////////////////////////////////////////////////
