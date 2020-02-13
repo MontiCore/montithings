@@ -53,7 +53,6 @@ public class ComponentSymbol extends montiarc._symboltable.ComponentSymbol {
         .filter(e -> e instanceof ASTAssumption)
         .map(e -> ((ASTAssumption) e))
         .collect(Collectors.toList());
-    list.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(getSpannedScope())));
     return list;
   }
 
@@ -64,7 +63,6 @@ public class ComponentSymbol extends montiarc._symboltable.ComponentSymbol {
         .filter(e -> e instanceof ASTGuarantee)
         .map(e -> ((ASTGuarantee) e))
         .collect(Collectors.toList());
-    list.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(getSpannedScope())));
     return list;
   }
 
