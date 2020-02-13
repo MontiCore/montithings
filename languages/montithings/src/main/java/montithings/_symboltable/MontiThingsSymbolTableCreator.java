@@ -256,6 +256,10 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
 
     autoinstantiate.push(autoinstantiate.peek());
     autoConnectionTrafo.transformAtStart(node, component);
+
+    // Fix AST enclosing scopes
+    component.getAssumptions();
+    component.getGuarantees();
   }
 
   protected void setParametersOfComponent(final ComponentSymbol componentSymbol,
