@@ -32,7 +32,7 @@ public:
 	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
 	«compname»Result«generics» «statement.method»(«compname»Input«generics» input);
 	«ENDFOR»
-	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).method»(«compname»Input«generics» input);
+	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).get.method»(«compname»Input«generics» input);
 	«compname»Result«generics» compute(«compname»Input«generics» input) override {
 	  throw std::runtime_error("Invoking compute() on component «comp.packageName».«compname» which has if-then-else behavior");
 	}
@@ -73,8 +73,8 @@ public:
 		
 	«ENDFOR»
 	«Utils.printTemplateArguments(comp)»
-	«compname»Result«generics» «compname»Impl«generics»::«ComponentHelper.getElseStatement(comp).method»(«compname»Input«generics» «Identifier.inputName»){
-		throw std::runtime_error("Invoking «ComponentHelper.getElseStatement(comp).method»() on abstract implementation «comp.packageName».«compname»");  	
+	«compname»Result«generics» «compname»Impl«generics»::«ComponentHelper.getElseStatement(comp).get.method»(«compname»Input«generics» «Identifier.inputName»){
+		throw std::runtime_error("Invoking «ComponentHelper.getElseStatement(comp).get.method»() on abstract implementation «comp.packageName».«compname»");
 	}
 «ELSE»
 «Utils.printTemplateArguments(comp)»

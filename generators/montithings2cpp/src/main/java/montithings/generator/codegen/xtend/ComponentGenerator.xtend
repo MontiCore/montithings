@@ -262,7 +262,7 @@ class ComponentGenerator {
 		return '''
 		«FOR statement : assumptions»
 		if (
-		«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+		«FOR port : statement.portsInGuardExpression SEPARATOR ' && '»
 			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
 				input.get«port.name.toFirstUpper»()
 			«ELSE»
@@ -300,7 +300,7 @@ class ComponentGenerator {
 		return '''
 		«FOR statement : guarantees»
 		if (
-		«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+		«FOR port : statement.portsInGuardExpression SEPARATOR ' && '»
 			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
 				«IF port.isIncoming»
 				input.get«port.name.toFirstUpper»()
@@ -348,14 +348,14 @@ class ComponentGenerator {
 		return '''
 		«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
 		if (
-			«FOR port : ComponentHelper.getPortsInGuardExpression(statement) SEPARATOR ' && '»
+			«FOR port : statement.portsInGuardExpression SEPARATOR ' && '»
 			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
 			input.get«port.name.toFirstUpper»()
 			«ELSE»
 			true // presence of value on port «port.name» not checked as it is compared to NoData
 			«ENDIF»
 			«ENDFOR»
-			«IF ComponentHelper.getPortsInGuardExpression(statement).length() > 0»&&«ENDIF» «printExpression(statement.guard)»
+			«IF statement.portsInGuardExpression.length() > 0»&&«ENDIF» «printExpression(statement.guard)»
 			)
 		{
 			result = «Identifier.behaviorImplName».«statement.method»(input);	
@@ -363,7 +363,7 @@ class ComponentGenerator {
 		«ENDFOR»
 		«IF ComponentHelper.getElseStatement(comp) !== null»
 		else {
-			result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).method»(input);
+			result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).get.method»(input);
 			}
 		«ENDIF»
 		'''

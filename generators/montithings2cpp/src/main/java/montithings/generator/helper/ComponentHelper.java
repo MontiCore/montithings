@@ -421,8 +421,7 @@ public class ComponentHelper {
    * @return true, if the port is an incoming port. False, otherwise.
    */
   public boolean isIncomingPort(ComponentSymbol cmp, ASTQualifiedName source,
-      ASTQualifiedName target,
-      boolean isSource) {
+      ASTQualifiedName target, boolean isSource) {
     String subCompName = getConnectorComponentName(source, target, isSource);
     String portNameUnqualified = getConnectorPortName(source, target, isSource);
     Optional<PortSymbol> port;
@@ -590,7 +589,6 @@ public class ComponentHelper {
 
   public static String getRealPortCppTypeString(ComponentSymbol comp, PortSymbol port) {
     return java2cppTypeString(getRealPortTypeString(comp, port));
-
   }
 
   /**
@@ -646,25 +644,6 @@ public class ComponentHelper {
     catch (Exception ignored) {
     }
     return importStrings;
-  }
-
-  /**
-   * Returns a list of ResourcePortSymbols for resources in the component
-   *
-   * @param comp
-   * @return ResourcePortSymmbols in component
-   */
-  public static List<ResourcePortSymbol> getResourcePortsInComponent(ComponentSymbol comp) {
-    return ((ASTComponent) comp.getAstNode().get())
-        .getBody()
-        .getElementList()
-        .stream()
-        .filter(p -> p instanceof ASTResourceInterface)
-        .flatMap(p -> ((ASTResourceInterface) p)
-            .getResourcePortList()
-            .stream())
-        .map(e -> (ResourcePortSymbol) e.getSymbolOpt().get())
-        .collect(Collectors.toList());
   }
 
   /**
@@ -761,133 +740,6 @@ public class ComponentHelper {
         .collect(Collectors.toList());
   }
 
-  public static Boolean hasExecutionStatement(ComponentSymbol comp) {
-    return getExecutionStatements(comp).size() > 0;
-  }
-
-  public static List<ASTGuarantee> getGuarantees(ComponentSymbol comp) {
-    List<ASTGuarantee> list =  ((ASTComponent)comp.getAstNode().get())
-        .getBody()
-        .getElementList().stream()
-        .filter(e -> e instanceof ASTGuarantee)
-        .map(e -> ((ASTGuarantee) e))
-        .collect(Collectors.toList());
-    list.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(comp.getSpannedScope())));
-    return list;
-  }
-
-  public static List<ASTAssumption> getAssumptions(ComponentSymbol comp) {
-    List<ASTAssumption> list =  ((ASTComponent)comp.getAstNode().get())
-        .getBody()
-        .getElementList().stream()
-        .filter(e -> e instanceof ASTAssumption)
-        .map(e -> ((ASTAssumption) e))
-        .collect(Collectors.toList());
-    list.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(comp.getSpannedScope())));
-    return list;
-  }
-
-  /**
-   * @param comp
-   * @return
-   */
-  public static List<ASTExecutionIfStatement> getExecutionStatements(ComponentSymbol comp) {
-    return ((ASTComponent) comp.getAstNode().get())
-        .getBody()
-        .getElementList()
-        .stream()
-        .filter(e -> e instanceof ASTExecutionBlock)
-        .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
-        .filter(e -> e instanceof ASTExecutionIfStatement)
-        .map(e -> ((ASTExecutionIfStatement) e))
-        .sorted(
-            Comparator.comparing(e -> e.getPriorityOpt().orElse(MontiThingsMill.intLiteralBuilder()
-                .setSource("1")
-                .build())
-                .getValue()))
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Returns all ports that appear in any batch statements
-   *
-   * @param comp
-   * @return
-   */
-  public static List<PortSymbol> getPortsInBatchStatement(ComponentSymbol comp) {
-    List<String> names = ((ASTComponent) comp.getAstNode().get())
-        .getBody()
-        .getElementList()
-        .stream()
-        .filter(e -> e instanceof ASTControlBlock)
-        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-        .filter(e -> e instanceof ASTBatchStatement)
-        .flatMap(e -> ((ASTBatchStatement) e).getBatchPortsList().stream())
-        .collect(Collectors.toList());
-
-    List<PortSymbol> ports = new ArrayList<>();
-    Scope s = comp.getSpannedScope();
-    for (String name : names) {
-      Optional<PortSymbol> resolve = s.resolve(name, PortSymbol.KIND);
-      resolve.ifPresent(ports::add);
-    }
-    return ports;
-
-  }
-
-  /**
-   * Returns all ports of a component that don't appear in any batch statement. Used in the generation
-   * process
-   *
-   * @param comp
-   * @return
-   */
-  public static List<PortSymbol> getPortsNotInBatchStatements(ComponentSymbol comp) {
-    return comp.getAllIncomingPorts()
-        .stream()
-        .filter(p -> !getPortsInBatchStatement(comp).contains(p))
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Returns all NameExpressions that appear in the guard of the execution statement
-   *
-   * @param node
-   * @return
-   */
-  public static List<ASTNameExpression> getGuardExpressionElements(ASTExpression node) {
-    GuardExpressionVisitor visitor = new GuardExpressionVisitor();
-    node.accept(visitor);
-    return visitor.getExpressions();
-  }
-
-  /**
-   * returns a list of all ports that occur in the guard of an execution statement
-   *
-   * @param node
-   * @return
-   */
-  public static List<PortSymbol> getPortsInGuardExpression(ASTExecutionIfStatement node) {
-    return getPortsInGuardExpression(node.getGuard());
-  }
-  public static List<PortSymbol> getPortsInGuardExpression(ASTAssumption node) {
-    return getPortsInGuardExpression(node.getGuard());
-  }
-  public static List<PortSymbol> getPortsInGuardExpression(ASTGuarantee node) {
-    return getPortsInGuardExpression(node.getGuard());
-  }
-  public static List<PortSymbol> getPortsInGuardExpression(ASTExpression node) {
-    List<PortSymbol> ports = new ArrayList<>();
-
-    for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {
-      String name = guardExpressionElement.getName();
-      Scope s = node.getEnclosingScopeOpt().get();
-      Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
-      port.ifPresent(ports::add);
-    }
-    return ports;
-  }
-
   /**
    * Returns ports that don't appear in any synchronization group
    *
@@ -906,15 +758,15 @@ public class ComponentHelper {
   }
 
   /**
-   * Returns true iff the port appears in a batch expression
+   * Returns all NameExpressions that appear in the guard of the execution statement
    *
-   * @param port
-   * @param comp
+   * @param node
    * @return
    */
-  public static Boolean isBatchPort(PortSymbol port, ComponentSymbol comp) {
-    return getPortsInBatchStatement(comp).stream()
-        .anyMatch(p -> p.equals(port));
+  public static List<ASTNameExpression> getGuardExpressionElements(ASTExpression node) {
+    GuardExpressionVisitor visitor = new GuardExpressionVisitor();
+    node.accept(visitor);
+    return visitor.getExpressions();
   }
 
   /**
@@ -930,25 +782,6 @@ public class ComponentHelper {
     return Paths.get(hwcPath.toString() + File.separator
         + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
         + "-" + StringTransformations.capitalize(port.getName())).toFile();
-  }
-
-  /**
-   * Get Else Statement if one exists
-   *
-   * @param comp
-   * @return
-   */
-  public static ASTExecutionElseStatement getElseStatement(ComponentSymbol comp) {
-    return ((ASTComponent) comp.getAstNode().get())
-        .getBody()
-        .getElementList()
-        .stream()
-        .filter(e -> e instanceof ASTExecutionBlock)
-        .flatMap(e -> ((ASTExecutionBlock) e).getExecutionStatementList().stream())
-        .filter(e -> e instanceof ASTExecutionElseStatement)
-        .map(e -> (ASTExecutionElseStatement) e)
-        .findFirst()
-        .orElse(null);
   }
 
   /**
@@ -1019,21 +852,85 @@ public class ComponentHelper {
     return "";
   }
 
-  public static boolean containsAutomaton(ComponentSymbol comp) {
-    ASTComponent component = (ASTComponent) comp.getAstNode().get();
-    for (ASTElement element : component.getBody().getElementList()) {
-      if (element instanceof ASTAutomatonBehavior) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   public static boolean portIsComparedToNoData(ASTExpression e, String portName) {
     NoDataComparisionsVisitor visitor = new NoDataComparisionsVisitor();
     e.accept(visitor);
     return visitor.getFoundExpressions().stream()
         .map(ASTNameExpression::getName)
         .anyMatch(n -> n.equals(portName));
+  }
+
+  /* ============================================================ */
+  /* =================== MontiThings Adapter ==================== */
+  /* ============================================================ */
+
+  public static List<ASTAssumption> getAssumptions(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).getAssumptions();
+  }
+
+  public static List<ASTGuarantee> getGuarantees(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).getGuarantees();
+  }
+
+  public static Boolean hasExecutionStatement(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).hasExecutionStatement();
+  }
+
+  /**
+   * Get list of execution statements sorted by priority
+   * @return list of execution statements sorted by priority
+   */
+  public static List<ASTExecutionIfStatement> getExecutionStatements(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).getExecutionStatements();
+  }
+
+  /**
+   * Returns a list of ResourcePortSymbols for resources in the component
+   * @return ResourcePortSymmbols in component
+   */
+  public static List<ResourcePortSymbol> getResourcePortsInComponent(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).getResourcePortsInComponent();
+  }
+
+  /**
+   * Returns true iff the port appears in a batch expression
+   *
+   * @param port
+   * @return
+   */
+  public static Boolean isBatchPort(PortSymbol port, ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).isBatchPort(port);
+  }
+
+  /**
+   * Returns all ports that appear in any batch statements
+   * @return unsorted list of all ports for which a batch statement exists
+   */
+  public static List<PortSymbol> getPortsInBatchStatement(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).getPortsInBatchStatement();
+  }
+
+  /**
+   * Find all ports of a component that DON'T appear in any batch statement
+   * @return
+   */
+  public static List<PortSymbol> getPortsNotInBatchStatements(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).getPortsNotInBatchStatements();
+  }
+
+  /**
+   * Get Else Statement if one exists
+   * @return the (only) else statement within this component's body, Optional.empty if none exists
+   */
+  public static Optional<ASTExecutionElseStatement> getElseStatement(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).getElseStatement();
+  }
+
+  /**
+   * Checks if this component uses an automaton
+   * @return true iff this component's body contains an automaton
+   */
+  public static boolean containsAutomaton(ComponentSymbol component) {
+    return ((montithings._symboltable.ComponentSymbol) component).containsAutomaton();
   }
 }
