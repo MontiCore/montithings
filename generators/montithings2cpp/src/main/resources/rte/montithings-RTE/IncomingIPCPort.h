@@ -92,8 +92,8 @@ private:
 
 	    //Receive Message and convert to target type T
         auto msg = socket.recv_msg();
-		auto data = msg.body().data<char>();
-		std::string receivedAnswer(msg.body().data<char>());
+		auto data = msg.body().template data<char>();
+		std::string receivedAnswer(msg.body().template data<char>());
         std::stringstream inStream(receivedAnswer);
         cereal::JSONInputArchive inputArchive(inStream);
         T result;
