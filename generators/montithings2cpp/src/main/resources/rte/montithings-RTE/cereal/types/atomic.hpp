@@ -1,8 +1,8 @@
-/*! \file functional.hpp
-    \brief Support for types found in \<functional\>
+/*! \file atomic.hpp
+    \brief Support for types found in \<atomic\>
     \ingroup STLSupport */
 /*
-  Copyright (c) 2016, Randolph Voorhies, Shane Grant
+  Copyright (c) 2014, Randolph Voorhies, Shane Grant
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,29 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef CEREAL_TYPES_FUNCTIONAL_HPP_
-#define CEREAL_TYPES_FUNCTIONAL_HPP_
+#ifndef CEREAL_TYPES_ATOMIC_HPP_
+#define CEREAL_TYPES_ATOMIC_HPP_
 
-#include <functional>
+#include <cereal/cereal.hpp>
+#include <atomic>
 
 namespace cereal
 {
-  //! Saving for std::less
+  //! Serializing (save) for std::atomic
   template <class Archive, class T> inline
-  void serialize( Archive &, std::less<T> & )
-  { }
+  void CEREAL_SAVE_FUNCTION_NAME( Archive & ar, std::atomic<T> const & a )
+  {
+    ar( CEREAL_NVP_("atomic_data", a.load()) );
+  }
+
+  //! Serializing (load) for std::atomic
+  template <class Archive, class T> inline
+  void CEREAL_LOAD_FUNCTION_NAME( Archive & ar, std::atomic<T> & a )
+  {
+    T tmp;
+    ar( CEREAL_NVP_("atomic_data", tmp) );
+    a.store( tmp );
+  }
 } // namespace cereal
 
-#endif // CEREAL_TYPES_FUNCTIONAL_HPP_
+#endif // CEREAL_TYPES_ATOMIC_HPP_

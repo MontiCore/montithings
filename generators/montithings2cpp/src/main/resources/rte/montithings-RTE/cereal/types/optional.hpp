@@ -1,8 +1,8 @@
-/*! \file functional.hpp
-    \brief Support for types found in \<functional\>
+/*! \file optional.hpp
+    \brief Support for std::optional
     \ingroup STLSupport */
 /*
-  Copyright (c) 2016, Randolph Voorhies, Shane Grant
+  Copyright (c) 2017, Juan Pedro Bolivar Puente
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,40 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef CEREAL_TYPES_FUNCTIONAL_HPP_
-#define CEREAL_TYPES_FUNCTIONAL_HPP_
+#ifndef CEREAL_TYPES_STD_OPTIONAL_
+#define CEREAL_TYPES_STD_OPTIONAL_
 
-#include <functional>
+#include "cereal/cereal.hpp"
+#include <optional>
 
-namespace cereal
-{
-  //! Saving for std::less
-  template <class Archive, class T> inline
-  void serialize( Archive &, std::less<T> & )
-  { }
+namespace cereal {
+  //! Saving for std::optional
+  template <class Archive, typename T> inline
+  void CEREAL_SAVE_FUNCTION_NAME(Archive& ar, const std::optional<T>& optional)
+  {
+    if(!optional) {
+      ar(CEREAL_NVP_("nullopt", true));
+    } else {
+      ar(CEREAL_NVP_("nullopt", false),
+         CEREAL_NVP_("data", *optional));
+    }
+  }
+
+  //! Loading for std::optional
+  template <class Archive, typename T> inline
+  void CEREAL_LOAD_FUNCTION_NAME(Archive& ar, std::optional<T>& optional)
+  {
+    bool nullopt;
+    ar(CEREAL_NVP_("nullopt", nullopt));
+
+    if (nullopt) {
+      optional = std::nullopt;
+    } else {
+      T value;
+      ar(CEREAL_NVP_("data", value));
+      optional = std::move(value);
+    }
+  }
 } // namespace cereal
 
-#endif // CEREAL_TYPES_FUNCTIONAL_HPP_
+#endif // CEREAL_TYPES_STD_OPTIONAL_
