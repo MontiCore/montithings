@@ -3,7 +3,7 @@ package montithings.generator.codegen.xtend.util
 
 import de.monticore.symboltable.types.JFieldSymbol
 import montiarc._symboltable.ComponentInstanceSymbol
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montiarc._symboltable.PortSymbol
 import montiarc._symboltable.VariableSymbol
 

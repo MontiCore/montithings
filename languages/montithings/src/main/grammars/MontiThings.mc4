@@ -23,7 +23,7 @@ grammar MontiThings extends MontiArc {
      */
     symbol scope Component implements Element =
       Stereotype?
-      (["interface"])? "component" Name
+      (["interface"] | ["specification"])? (["component"] | ["application"])  Name
       head:ComponentHead
       (instanceName:Name actualTypeArgument:TypeArguments?)?
       body:ComponentBody;

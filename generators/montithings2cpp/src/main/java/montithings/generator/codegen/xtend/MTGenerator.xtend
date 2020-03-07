@@ -17,7 +17,7 @@ import montiarc._ast.ASTAutomatonBehavior
 import montiarc._ast.ASTBehaviorElement
 import montiarc._ast.ASTComponent
 import montiarc._ast.ASTJavaPBehavior
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 import montithings._ast.ASTExecutionBlock
@@ -47,17 +47,18 @@ class MTGenerator {
     var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + compname + "Impl");
 
     if (!existsHWC && comp.isAtomic) {
-		generateBehaviorImplementation(comp, targetPath, compname)
+		  generateBehaviorImplementation(comp, targetPath, compname)
     }
     
 	// Generate inner components
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, interfaceToImplementation);
+    	
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp as ComponentSymbol, foundModels, compname, interfaceToImplementation);
     }
     
 	// Generate deploy class
-    if (comp.getStereotype().containsKey("deploy")) {
+    if (comp.isApplication) {
       toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname),".cpp");
     }
 

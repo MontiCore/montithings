@@ -10,7 +10,7 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMontiArcNode;
-import montiarc._symboltable.ComponentSymbol;
+import montithings._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
@@ -137,10 +137,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-      ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName,
-          ComponentSymbol.KIND).get();
+      montithings._symboltable.ComponentSymbol comp = symTab.<montithings._symboltable.ComponentSymbol>resolve(qualifiedModelName,
+          montithings._symboltable.ComponentSymbol.KIND).get();
 
-      if (comp.getStereotype().containsKey("deploy")) {
+      if (comp.isApplication()) {
         File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
         // 5 generate libs
 				/*try {

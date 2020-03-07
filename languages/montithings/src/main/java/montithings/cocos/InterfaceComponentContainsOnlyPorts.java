@@ -28,7 +28,7 @@ public class InterfaceComponentContainsOnlyPorts implements MontiThingsASTCompon
     ComponentSymbol comp = (ComponentSymbol) node.getSymbolOpt().get();
 
     // Do not check anything if this is not an interface component
-    if (!node.isInterface()) {
+    if (!node.isInterface() && !node.isSpecification()) {
       return;
     }
 
@@ -36,8 +36,8 @@ public class InterfaceComponentContainsOnlyPorts implements MontiThingsASTCompon
       if (!(element instanceof ASTInterface)) {
         Log.error(
             String.format(
-                "0xMT200 ASTComponent node \"%s\" is an interface component but its body " +
-                    "contains an element that is not a port",
+                "0xMT200 ASTComponent node \"%s\" is an interface or specification component "
+                    + "but its body contains an element that is not a port",
                 node.getName()));
       }
     }

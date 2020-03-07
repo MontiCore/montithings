@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.xtend.util.Utils
@@ -71,7 +71,7 @@ class ComponentGenerator {
 			std::vector< std::thread > threads;
 			TimeMode timeMode = «IF comp.getStereotype().containsKey("timesync")»TIMESYNC«ELSE»EVENTBASED«ENDIF»;
 			«IF comp.isDecomposed»
-			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
+			«IF comp.getStereotype().containsKey("timesync") && !comp.isApplication»
 			void run();
 			«ENDIF»
 			«Subcomponents.printVars(comp, interfaceToImplementation)»
@@ -116,7 +116,7 @@ class ComponentGenerator {
 		«Ports.printResourcePortMethodBodies(ComponentHelper.getResourcePortsInComponent(comp),comp, compname)»
 				
 		«IF comp.isDecomposed»
-		«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
+		«IF comp.getStereotype().containsKey("timesync") && !comp.isApplication»
 		«printRun(comp, compname)»
 		«ENDIF»
 		«printComputeDecomposed(comp, compname)»
@@ -405,7 +405,7 @@ class ComponentGenerator {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
-			«IF comp.getStereotype().containsKey("timesync") && !comp.getStereotype().containsKey("deploy")»
+			«IF comp.getStereotype().containsKey("timesync") && !comp.isApplication»
 			threads.push_back(std::thread{&«compname»«Utils.printFormalTypeParameters(comp)»::run, this});
 			«ELSE»
 			«FOR subcomponent : comp.subComponents»

@@ -3,7 +3,7 @@ package montithings.generator.codegen.xtend
 
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 
 class Result {
 

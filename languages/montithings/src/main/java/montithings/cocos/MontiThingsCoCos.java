@@ -37,7 +37,7 @@ public class MontiThingsCoCos {
         .addCoCo(new SubcomponentReferenceCycle())
         .addCoCo(new PortNamesAreNotJavaKeywords())
         //.addCoCo(new montithings.cocos.UnusedImports())
-        .addCoCo(new AssumptionDoesNotDependOnOutputPort())
+
 
         /// Automaton Cocos
         /// /////////////////////////////////////////////////////////////
@@ -111,6 +111,8 @@ public class MontiThingsCoCos {
         .addCoCo(new ExecutionBlockWellFormed())
         .addCoCo(new ControlBlockStatementsInComposedComponent())
         .addCoCo(new ControlBlockNotEmpty())
-        .addCoCo(new InterfaceComponentContainsOnlyPorts());
+        .addCoCo(new InterfaceComponentContainsOnlyPorts())
+        .addCoCo(new AssumptionDoesNotDependOnOutputPort())
+        .addCoCo(new SpecificationComponentHasSpecification());
   }
 }

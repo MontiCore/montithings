@@ -7,7 +7,7 @@ import java.util.ArrayList
 import java.util.List
 import montithings._ast.ASTComponent
 import montiarc._ast.ASTVariableDeclaration
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
 
 class Utils {
@@ -132,7 +132,7 @@ class Utils {
   /**
    * Helper function used to determine package names.
    */
-  def static String printPackageWithoutKeyWordAndSemicolon(ComponentSymbol comp){
+  def static String printPackageWithoutKeyWordAndSemicolon(montiarc._symboltable.ComponentSymbol comp){
   	return '''
   	«IF comp.isInnerComponent»
   	«printPackageWithoutKeyWordAndSemicolon(comp.definingComponent.get) + "." + comp.definingComponent.get.name + "gen"»

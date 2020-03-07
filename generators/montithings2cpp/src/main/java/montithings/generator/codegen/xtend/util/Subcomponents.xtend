@@ -2,7 +2,7 @@
 package montithings.generator.codegen.xtend.util
 
 import montithings.generator.helper.ComponentHelper
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import java.util.HashMap
 
 class Subcomponents {

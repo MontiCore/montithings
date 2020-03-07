@@ -4,7 +4,7 @@ package montithings.generator.codegen.xtend.util
 import java.util.Collection
 import montiarc._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 

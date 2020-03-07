@@ -2,9 +2,8 @@
 package montithings.generator.codegen.xtend.util
 
 import java.io.File
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
-import montithings.generator.helper.ComponentHelper
 
 class CMake {
 	

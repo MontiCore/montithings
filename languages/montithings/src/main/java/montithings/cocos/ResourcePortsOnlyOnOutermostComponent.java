@@ -16,6 +16,7 @@ public class ResourcePortsOnlyOnOutermostComponent implements MontiArcASTCompone
 
   @Override
   public void check(ASTComponent node) {
+
     if (!node.getStereotypeOpt().isPresent() || !node.getStereotypeOpt().get()
         .containsStereoValue("deploy")) {
       node.getBody().getElementList()

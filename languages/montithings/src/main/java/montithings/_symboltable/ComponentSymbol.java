@@ -3,6 +3,7 @@ package montithings._symboltable;
 
 import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.SymbolKind;
+import de.monticore.symboltable.modifiers.AccessModifier;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTAutomatonBehavior;
 import montiarc._ast.ASTElement;
@@ -40,6 +41,13 @@ public class ComponentSymbol extends montiarc._symboltable.ComponentSymbol {
     }
     ASTComponent component = (ASTComponent) getAstNode().get();
     return component.isInterface();
+  }
+
+  public boolean isApplication() {
+    return getAstComponent().isApplication() ||
+        (getAstComponent().getStereotypeOpt().isPresent()
+            && getAstComponent().getStereotypeOpt().get().containsStereoValue("deploy")
+        );
   }
 
   /**
@@ -219,5 +227,16 @@ public class ComponentSymbol extends montiarc._symboltable.ComponentSymbol {
       Log.error("ComponentSymbol \"" + getFullName() + "\" has no ASTComponent");
     }
     return ((ASTComponent) getAstNode().get());
+  }
+
+  /* ============================================================ */
+  /* ========================= Adapters ========================= */
+  /* ============================================================ */
+
+  /**
+   * @return innerComponents
+   */
+  @Override public Collection<ComponentSymbol> getInnerComponents() {
+    return super.getInnerComponents().stream().map(c -> (ComponentSymbol)c).collect(Collectors.toList());
   }
 }

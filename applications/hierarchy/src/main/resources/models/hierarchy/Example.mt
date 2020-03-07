@@ -1,6 +1,6 @@
 package hierarchy;
 
-<<deploy, timesync>> component Example {
+<<timesync>> application Example {
   component Source source;
   component Sink sink;
   component LowPassFilter (5) lpf;

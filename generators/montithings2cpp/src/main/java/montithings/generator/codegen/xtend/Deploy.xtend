@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montithings.generator.helper.ComponentHelper
 
 class Deploy {

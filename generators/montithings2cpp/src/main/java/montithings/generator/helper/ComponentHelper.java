@@ -46,8 +46,6 @@ import java.util.stream.Collectors;
  * @author Gerrit Leonhardt
  */
 public class ComponentHelper {
-  public static String DEPLOY_STEREOTYPE = "deploy";
-
   private final ComponentSymbol component;
 
   protected final ASTComponent componentNode;

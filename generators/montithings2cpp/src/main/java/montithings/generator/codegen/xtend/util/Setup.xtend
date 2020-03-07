@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.util
 
-import montiarc._symboltable.ComponentSymbol
+import montithings._symboltable.ComponentSymbol
 import montiarc._ast.ASTConnector
 import montiarc._ast.ASTComponent
 import de.monticore.types.types._ast.ASTQualifiedName

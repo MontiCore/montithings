@@ -51,7 +51,6 @@ public class ASTNoData extends ASTNoDataTOP implements ASTMontiThingsNode {
       node.setEnclosingScopeOpt(this.getEnclosingScopeOpt());
       realVisitor.getRealThis().traverse(node);
       realVisitor.getRealThis().endVisit(node);
-
        */
     }
   }
