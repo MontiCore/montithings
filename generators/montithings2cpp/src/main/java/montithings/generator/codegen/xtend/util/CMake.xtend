@@ -4,19 +4,39 @@ package montithings.generator.codegen.xtend.util
 import java.io.File
 import montithings._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
+import montithings.generator.codegen.TargetPlatform
 
 class CMake {
 	
-	def static printTopLevelCMake(File[] files, ComponentSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath) {
+	def static printDsaParameters() {
+		return '''
+		# Cross compile
+		set(CMAKE_SYSTEM_NAME Linux)
+		set(CMAKE_SYSTEM_VERSION 1)
+		set(CMAKE_C_COMPILER   /usr/bin/powerpc-linux-gnu-gcc)
+		set(CMAKE_CXX_COMPILER /usr/bin/powerpc-linux-gnu-g++)
+		
+		find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9")
+		
+		file(GLOB_RECURSE INCLUDE_SOURCES "include/*.cpp" "include/*.h")
+		HEADER_DIRECTORIES("inc" dir_list)
+		include_directories("inc" ${dir_list})
+
+		link_directories(./lib/dsa-vcg)
+		'''
+	}
+	
+	def static printDsaLinkLibraries(ComponentSymbol comp) {
+		return '''
+		target_link_libraries(«comp.name» nng pthread curl Boost::boost ${ATOMIC_LIBRARY})
+		'''
+	}
+	
+	def static printTopLevelCMake(File[] files, ComponentSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, TargetPlatform platform) {
 		return '''
 		cmake_minimum_required(VERSION 3.8)
 		project("«comp.name»")
 		set(CMAKE_CXX_STANDARD 11)
-		
-		find_package(nng 1.1.1 CONFIG REQUIRED)
-		find_package(Boost) 
-
-		include_directories(${Boost_INCLUDE_DIRS})
 		
 		# Find all subdirectories with .h files
 		# Adapted from https://stackoverflow.com/a/31004567
@@ -31,6 +51,16 @@ class CMake {
 		    SET(${return_list} ${dir_list})
 		ENDMACRO()
 		SET(dir_list "")
+		
+		«IF platform == TargetPlatform.DSA_VCG»
+		«printDsaParameters()»
+		«ENDIF»
+
+		«IF platform != TargetPlatform.DSA_VCG»
+		find_package(nng 1.1.1 CONFIG REQUIRED)
+		«ENDIF»
+		find_package(Boost)
+		include_directories(${Boost_INCLUDE_DIRS})
 		
 		# for MSVC
 		if (MSVC)
@@ -73,7 +103,11 @@ class CMake {
 		«FOR subdir : subPackagesPath»
 		${«subdir.name.toUpperCase()»_SOURCES}
 		«ENDFOR»)
+		«IF platform == TargetPlatform.DSA_VCG»
+		«printDsaLinkLibraries(comp)»
+		«ELSE»
 		target_link_libraries(«comp.name» nng::nng Boost::boost)
+		«ENDIF»
 		set_target_properties(«comp.name» PROPERTIES LINKER_LANGUAGE CXX)
 		'''
 	}

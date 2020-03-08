@@ -21,6 +21,7 @@ import montithings._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 import montithings._ast.ASTExecutionBlock
+import montithings.generator.codegen.TargetPlatform
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -122,7 +123,7 @@ class MTGenerator {
 		comp,
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
-		subPackagesPath), ".txt")
+		subPackagesPath, TargetPlatform.DSA_VCG), ".txt")
   }
 
   def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath){

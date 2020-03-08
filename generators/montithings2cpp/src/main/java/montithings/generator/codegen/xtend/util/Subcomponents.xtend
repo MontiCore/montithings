@@ -8,7 +8,6 @@ import java.util.HashMap
 class Subcomponents {
 
   def static String printVars(ComponentSymbol comp, HashMap<String, String> interfaceToImplementation) {
-  	var helper = new ComponentHelper(comp)
     return '''
       «FOR subcomponent : comp.subComponents»
         «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)»

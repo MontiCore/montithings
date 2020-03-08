@@ -156,7 +156,7 @@ class ComponentGenerator {
 		«Utils.printTemplateArguments(comp)»
 		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
 		«IF comp.isAtomic || !comp.configParameters.isEmpty || !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»
-    	:
+		:
     	«ENDIF»
     	«IF comp.isAtomic»
 			«printBehaviorInitializerListEntry(comp, compname)»

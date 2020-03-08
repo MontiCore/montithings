@@ -157,6 +157,30 @@
 						</classesDirectory>
 					</configuration>
 				</execution>
+				<execution>
+					<id>headers</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+					<configuration>
+						<classifier>${montithings-headers.classifier}</classifier>
+						<classesDirectory>
+							${basedir}/src/main/resources/header
+						</classesDirectory>
+					</configuration>
+				</execution>
+				<execution>
+					<id>libraries</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+					<configuration>
+						<classifier>${montithings-libs.classifier}</classifier>
+						<classesDirectory>
+							${basedir}/src/main/resources/lib
+						</classesDirectory>
+					</configuration>
+				</execution>
 			</executions>
 		</plugin>
 			<plugin>
