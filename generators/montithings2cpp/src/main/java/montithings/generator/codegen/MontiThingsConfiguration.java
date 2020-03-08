@@ -25,13 +25,15 @@ public class MontiThingsConfiguration implements Configuration {
 
   public static final String DEFAULT_HWC_DIRECTORY = "src";
 
+  public static final TargetPlatform DEFAULT_PLATFORM = TargetPlatform.GENERIC;
+
   /**
    * The names of the specific MontiArc options used in this configuration.
    */
   public enum Options {
 
     MODELPATH("modelPath"), MODELPATH_SHORT("mp"), HANDWRITTENCODEPATH("handwrittenCode"),
-    HANDWRITTENCODEPATH_SHORT("hwc"), OUT("out"), OUT_SHORT("o");
+    HANDWRITTENCODEPATH_SHORT("hwc"), OUT("out"), OUT_SHORT("o"), PLATFORM("platform");
 
     String name;
 
@@ -247,6 +249,25 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "out"
     return new File(DEFAULT_OUTPUT_DIRECTORY);
+  }
+
+  public TargetPlatform getPlatform() {
+    Optional<String> platform = getAsString(Options.PLATFORM);
+    if (platform.isPresent()) {
+      switch (platform.get()) {
+        case "GENERIC":
+          return TargetPlatform.GENERIC;
+        case "DSA_VCG":
+        case "l06":
+        case "DSA":
+        case "VCG":
+          return TargetPlatform.DSA_VCG;
+        default:
+          throw new IllegalArgumentException("0xMT300 Platform " + platform + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "generic"
+    return TargetPlatform.GENERIC;
   }
 
   /**

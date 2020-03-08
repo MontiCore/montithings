@@ -3,6 +3,7 @@ package generation;
 
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.MontiThingsGeneratorTool;
+import montithings.generator.codegen.TargetPlatform;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class SimpleGenerationTest {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
     System.out.println(Paths.get(MODELPATH).toAbsolutePath().toString());
     script.generate(Paths.get(MODELPATH).toFile(), Paths.get(TARGETPATH).toFile(),
-        Paths.get(HWCPATH).toFile());
+        Paths.get(HWCPATH).toFile(), TargetPlatform.GENERIC);
 
   }
 

@@ -225,6 +225,7 @@
                         <out>${basedir}/target/generated-sources/</out>
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
+                        <!--<platform>DSA</platform>-->
                     </arguments>
                     <script>montithings/generator/maagenerator.groovy</script>
                 </configuration>

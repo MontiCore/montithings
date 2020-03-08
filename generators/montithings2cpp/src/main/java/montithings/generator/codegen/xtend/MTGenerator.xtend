@@ -117,16 +117,16 @@ class MTGenerator {
   	return ""
   }
 	
-  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath){
+  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, TargetPlatform platform){
 	
 	toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
 		comp,
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
-		subPackagesPath, TargetPlatform.DSA_VCG), ".txt")
+		subPackagesPath, platform), ".txt")
   }
 
-  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath){
+  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath, TargetPlatform platform){
   	var existsHWC = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, port.name)
   	var ipcPath = ComponentHelper.getIPCHWCPath(port, comp, hwcPath);
 	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerHeader(port, comp), ".h")
@@ -135,7 +135,7 @@ class MTGenerator {
 		port,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(ipcPath.toPath.toAbsolutePath).toString,
-		existsHWC, TargetPlatform.DSA_VCG
+		existsHWC, platform
 		),
 		 ".txt")
   }

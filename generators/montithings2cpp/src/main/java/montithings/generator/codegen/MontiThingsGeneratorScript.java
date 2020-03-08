@@ -10,6 +10,7 @@ import montithings.generator.MontiThingsGeneratorTool;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 import java.io.File;
+import java.lang.annotation.Target;
 
 /**
  * TODO
@@ -36,20 +37,17 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
     // configuration
     MontiThingsConfiguration config = MontiThingsConfiguration.withConfiguration(configuration);
 
-    // we add the configuration object as property with a special property
-    // name
+    // we add the configuration object as property with a special property name
     builder.addVariable(MontiThingsConfiguration.CONFIGURATION_PROPERTY, config);
 
     config.getAllValues().forEach(builder::addVariable);
 
     // after adding everything we override a couple of known variable
-    // bindings
-    // to have them properly typed in the script
-    builder
-        .addVariable(MontiThingsConfiguration.Options.MODELPATH.toString(), config.getModelPath());
+    // bindings to have them properly typed in the script
+    builder.addVariable(MontiThingsConfiguration.Options.MODELPATH.toString(), config.getModelPath());
     builder.addVariable(MontiThingsConfiguration.Options.OUT.toString(), config.getOut());
-    builder.addVariable(MontiThingsConfiguration.Options.HANDWRITTENCODEPATH.toString(),
-        config.getHWCPath());
+    builder.addVariable(MontiThingsConfiguration.Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
+    builder.addVariable(MontiThingsConfiguration.Options.PLATFORM.toString(), config.getPlatform());
 
     GroovyInterpreter g = builder.build();
     g.evaluate(script);
@@ -58,12 +56,9 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
   /**
    * Gets called by Groovy Script. Generates component artifacts for each
    * component in {@code modelPath} to {@code targetFilepath}
-   *
-   * @param modelPath
-   * @param fqnTemplateName
    */
-  public void generate(File modelPath, File targetFilepath, File hwcPath) {
-    new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath);
+  public void generate(File modelPath, File targetFilepath, File hwcPath, TargetPlatform platform) {
+    new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath, platform);
   }
 
   // #######################

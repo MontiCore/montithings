@@ -14,6 +14,7 @@ import montithings._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
+import montithings.generator.codegen.TargetPlatform;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
 import org.apache.commons.io.FileUtils;
@@ -38,7 +39,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   private static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
 
-  public void generate(File modelPath, File target, File hwcPath) {
+  public void generate(File modelPath, File target, File hwcPath, TargetPlatform platform) {
 
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
@@ -117,8 +118,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // Generate Files
       MTGenerator.generateAll(
           Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-              .toFile(),
-          hwcPath, comp, foundModels, compname, interfaceToImplementation);
+              .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation);
 
       for (ResourcePortSymbol resourcePortSymbol : ComponentHelper
           .getResourcePortsInComponent(comp)) {
@@ -130,7 +130,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
               .toFile();
           path.mkdir();
           File libraryPath = Paths.get("target/montithings-RTE").toFile();
-          MTGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath, hwcPath);
+          MTGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath, hwcPath, platform);
         }
       }
     }
@@ -155,7 +155,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         // 6 generate make file
         Log.info("Generate CMake file", "MontiThingsGeneratorTool");
         MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
-            subPackagesPath);
+            subPackagesPath, platform);
       }
     }
 
