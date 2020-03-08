@@ -228,15 +228,4 @@ public class ComponentSymbol extends montiarc._symboltable.ComponentSymbol {
     }
     return ((ASTComponent) getAstNode().get());
   }
-
-  /* ============================================================ */
-  /* ========================= Adapters ========================= */
-  /* ============================================================ */
-
-  /**
-   * @return innerComponents
-   */
-  @Override public Collection<ComponentSymbol> getInnerComponents() {
-    return super.getInnerComponents().stream().map(c -> (ComponentSymbol)c).collect(Collectors.toList());
-  }
 }
