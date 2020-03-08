@@ -135,7 +135,7 @@ class MTGenerator {
 		port,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(ipcPath.toPath.toAbsolutePath).toString,
-		existsHWC
+		existsHWC, TargetPlatform.DSA_VCG
 		),
 		 ".txt")
   }

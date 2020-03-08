@@ -26,9 +26,9 @@ class CMake {
 		'''
 	}
 	
-	def static printDsaLinkLibraries(ComponentSymbol comp) {
+	def static printDsaLinkLibraries(String targetName) {
 		return '''
-		target_link_libraries(«comp.name» nng pthread curl Boost::boost ${ATOMIC_LIBRARY})
+		target_link_libraries(«targetName» nng pthread curl Boost::boost ${ATOMIC_LIBRARY})
 		'''
 	}
 	
@@ -104,7 +104,7 @@ class CMake {
 		${«subdir.name.toUpperCase()»_SOURCES}
 		«ENDFOR»)
 		«IF platform == TargetPlatform.DSA_VCG»
-		«printDsaLinkLibraries(comp)»
+		«printDsaLinkLibraries(comp.name)»
 		«ELSE»
 		target_link_libraries(«comp.name» nng::nng Boost::boost)
 		«ENDIF»
@@ -112,16 +112,22 @@ class CMake {
 		'''
 	}
 		
-	def static printIPCServerCMake(ResourcePortSymbol port, String libraryPath, String ipcPath, Boolean existsHWC){
+	def static printIPCServerCMake(ResourcePortSymbol port, String libraryPath, String ipcPath, Boolean existsHWC, TargetPlatform platform){
 		return 
 		'''
-		cmake_minimum_required(VERSION 3.12)
+		cmake_minimum_required(VERSION 3.8)
 		project(«port.name.toFirstUpper»Server)
 		
 		set(CMAKE_CXX_STANDARD 11)
+
+		«IF platform == TargetPlatform.DSA_VCG»
+		«printDsaParameters()»
+		«ENDIF»
 		
+		«IF platform != TargetPlatform.DSA_VCG»
 		find_package(nng 1.1.1 CONFIG REQUIRED)
-		find_package(Boost) 
+		«ENDIF»
+		find_package(Boost)
 		
 		«IF existsHWC»
 		include_directories(«ipcPath.replace("\\","/")»)
@@ -140,7 +146,11 @@ class CMake {
 		"«libraryPath.replace("\\","/")»/*.h")
 		
 		add_executable(«port.name.toFirstUpper»Server ${SOURCES})
+		«IF platform == TargetPlatform.DSA_VCG»
+		«printDsaLinkLibraries(port.name.toFirstUpper+"Server")»
+		«ELSE»
 		target_link_libraries(«port.name.toFirstUpper»Server nng::nng Boost::boost)
+		«ENDIF»
 		'''
 	}
 	
