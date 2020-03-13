@@ -16,7 +16,7 @@
 #include "cereal/types/map.hpp"
 #include "cereal/types/set.hpp"
 #include "cereal/types/list.hpp"
-#include "boost/lockfree/spsc_queue.hpp"
+#include "rigtorp/SPSCQueue.h"
 #include <future>
 using namespace std;
 
@@ -54,7 +54,9 @@ public:
 
 	tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
     		T queueElement;
-            if (this->queueMap[uuid].pop(queueElement)){
+            if (this->queueMap[uuid].front()){
+                queueElement = *(this->queueMap[uuid].front());
+                this->queueMap[uuid].pop();
                 tl::optional<T> currentValue = queueElement;
                 return currentValue;
             } else{
@@ -65,7 +67,7 @@ private:
     nng::socket socket;
     const char* uri;
     std::future<bool> fut;
-    boost::lockfree::spsc_queue<T, boost::lockfree::capacity<1024>> queue;
+    rigtorp::SPSCQueue<T> queue;
 
     /**
      * Initialize the IPC Port
