@@ -5,13 +5,13 @@
 #include "rigtorp/SPSCQueue.h"
 #include "string"
 #include <map>
-#include <boost/uuid/uuid.hpp>
+#include "sole/sole.hpp"
 
 template <class T>
 class DataSource
 {
 
-    typedef std::map<boost::uuids::uuid ,  rigtorp::SPSCQueue<T> > map_type;
+    typedef std::map<sole::uuid ,  rigtorp::SPSCQueue<T> > map_type;
 protected:
     map_type queueMap;
 
@@ -25,11 +25,11 @@ public:
     DataSource(T initialValue) {
     }
 
-    virtual void registerPort(boost::uuids::uuid uuid){
+    virtual void registerPort(sole::uuid uuid){
         queueMap[uuid];
     }
 
-    virtual tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
+    virtual tl::optional<T> getCurrentValue(sole::uuid uuid) {
         T queueElement;
         if (queueMap[uuid].front()){
             queueElement = *(queueMap[uuid].front());
@@ -52,7 +52,7 @@ public:
         }
     }
 
-    virtual bool hasValue(boost::uuids::uuid uuid){
+    virtual bool hasValue(sole::uuid uuid){
         return queueMap[uuid].front ();
     }
 

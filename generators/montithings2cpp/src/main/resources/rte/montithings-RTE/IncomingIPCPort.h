@@ -43,7 +43,7 @@ public:
 
 
 
-    tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
+    tl::optional<T> getCurrentValue(sole::uuid uuid) {
 
 		T queueElement;
         if (this->queueMap[uuid].pop(queueElement)){
@@ -103,7 +103,7 @@ private:
 		this->pushToAll(result);
     }
 
-    virtual bool hasValue(boost::uuids::uuid uuid){
+    virtual bool hasValue(sole::uuid uuid){
         if (this->queueMap[uuid].read_available() == 0){
             ipcUpdate();
         }

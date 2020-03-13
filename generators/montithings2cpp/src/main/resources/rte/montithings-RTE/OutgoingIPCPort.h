@@ -13,8 +13,7 @@
 #include "cereal/types/list.hpp"
 #include <future>
 #include "tl/optional.hpp"
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
+#include "sole/sole.hpp"
 using namespace std;
 
 /*
@@ -59,7 +58,7 @@ private:
     bool portSet = false;
     Port<T>* port;
     std::future<bool> fut;
-    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+    sole::uuid uuid = sole::uuid4();
 	bool isConnected = false;
 
 

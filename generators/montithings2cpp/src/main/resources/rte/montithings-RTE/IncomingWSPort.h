@@ -52,7 +52,7 @@ public:
 
 
 
-	tl::optional<T> getCurrentValue(boost::uuids::uuid uuid) {
+	tl::optional<T> getCurrentValue(sole::uuid uuid) {
     		T queueElement;
             if (this->queueMap[uuid].front()){
                 queueElement = *(this->queueMap[uuid].front());
