@@ -46,6 +46,8 @@
 //////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#define ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification: This is used to remove all OS specific code
+
 #include <stdint.h>
 #include <stdio.h>     // for size_t; should be stddef.h instead; however, clang+archlinux fails when compiling it (@Travis-Ci)
 #include <sys/types.h> // for uint32_t; should be stdint.h instead; however, GCC 5 on OSX fails when compiling it (See issue #11)
@@ -91,10 +93,12 @@ namespace sole
     uuid rebuild( const std::string &uustr );
 }
 
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4127)
 #endif
+#endif // MontiThings Modification
 
 namespace std {
     template<>
@@ -112,9 +116,11 @@ namespace std {
     };
 }
 
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
+#endif // MontiThings Modification
 
 // implementation
 
@@ -132,6 +138,7 @@ namespace std {
 #include <string>
 #include <vector>
 
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
 #if defined(_WIN32)
 #   include <winsock2.h>
 #   include <process.h>
@@ -193,6 +200,7 @@ namespace std {
 #ifdef _MSC_VER
 #   define $msvc  $yes
 #endif
+#endif // MontiThings Modification
 
 #if defined(__GNUC__) && (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 < 50100)
     namespace std
@@ -206,7 +214,10 @@ namespace std {
     }
 #endif
 
+
 ////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
 
 #ifdef  $windows
 #define $welse   $no
@@ -250,6 +261,8 @@ namespace std {
 #define $melse   $yes
 #endif
 
+#endif // MontiThings Modification
+
 #define $yes(...) __VA_ARGS__
 #define $no(...)
 
@@ -268,6 +281,7 @@ inline bool sole::uuid::operator<( const sole::uuid &other ) const {
 
 namespace sole {
 
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
     inline std::string printftime( uint64_t timestamp_secs = 0, const std::string &locale = std::string() ) {
         std::string timef;
         try {
@@ -325,6 +339,7 @@ namespace sole {
 
         return ss.str();
     }
+#endif // MontiThings Modification
 
     inline std::string uuid::str() const {
         std::stringstream ss;
@@ -369,7 +384,7 @@ namespace sole {
 
     //////////////////////////////////////////////////////////////////////////////////////
     // multiplatform clock_gettime()
-
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
     $windows(
         struct timespec {
             uint64_t tv_sec;
@@ -627,6 +642,7 @@ namespace sole {
         }
         return 0;
     }
+#endif // MontiThings Modification
 
     //////////////////////////////////////////////////////////////////////////////////////
     // UUID implementations
@@ -646,6 +662,7 @@ namespace sole {
         return my;
     }
 
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
     inline uuid uuid1() {
         // Number of 100-ns intervals since 00:00:00.00 15 October 1582; [ref] uuid.py
         uint64_t ns100_intervals = get_time( 0x01b21dd213814000ULL );
@@ -716,6 +733,7 @@ namespace sole {
 
         return u;
     }
+#endif // MontiThings Modification
 
     inline uuid rebuild( uint64_t ab, uint64_t cd ) {
         uuid u;
