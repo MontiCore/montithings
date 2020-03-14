@@ -29,11 +29,11 @@ class Deploy {
 				«ENDIF» 
 				do {
 				  std::this_thread::yield();
-		  	      «IF comp.getStereotype().containsKey("timesync")»
-			            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                  «ELSE»
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                  «ENDIF»
+				  «IF comp.getStereotype().containsKey("timesync")»
+				  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				  «ELSE»
+				  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				  «ENDIF»
 				} while (std::chrono::high_resolution_clock::now()  < end);
 			}
 			return 0;

@@ -42,7 +42,7 @@ tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Result«Util
  «FOR port : comp.outgoingPorts»
 «Utils.printTemplateArguments(comp)»
 void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»){
-		this->«port.name» = «port.name»; 
+this->«port.name» = «port.name»; 
  }
  «ENDFOR»
 	    '''

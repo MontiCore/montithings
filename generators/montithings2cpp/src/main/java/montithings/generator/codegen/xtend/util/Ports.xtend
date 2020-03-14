@@ -19,9 +19,8 @@ class Ports {
     Port<«type»>* «name» = new Port<«type»>;
     sole::uuid portUuid«name.toFirstUpper» = sole::uuid4 ();
     «ENDFOR»
-    // Internal monitoring of ports
+	// Internal monitoring of ports
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     «IF comp.isDecomposed»
     sole::uuid portMonitorUuid«name.toFirstUpper» = sole::uuid4 ();

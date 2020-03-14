@@ -181,8 +181,8 @@ class ComponentGenerator {
 	        «FOR param : comp.configParameters SEPARATOR ','»
 	          «param.name»
 	        «ENDFOR»
-    	«ENDIF»
-    	))'''.toString().replace("\n", "")
+    «ENDIF»
+	))'''.toString().replace("\n", "")
 	}
 	
 	def static printComputeAtomic(ComponentSymbol comp, String compname) {
@@ -381,10 +381,10 @@ class ComponentGenerator {
 			«FOR subcomponent : comp.subComponents»
 				this->«subcomponent.name».compute();
         	«ENDFOR»
-        	
+
         	«printComputeResults(comp, compname, true)»
         	«printGuaranteesCheck(comp, compname)»
-        	}
+			}
 		}
 		'''
 	}
