@@ -17,6 +17,7 @@
 
   <modules>
     <module>smarttrunk-light</module>
+    <module>fireAlarm</module>
     <module>hierarchy</module>
   </modules>
 
