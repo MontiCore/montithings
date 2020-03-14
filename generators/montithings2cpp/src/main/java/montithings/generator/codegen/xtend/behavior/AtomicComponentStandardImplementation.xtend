@@ -6,7 +6,7 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper
 
-class AbstractAtomicImplementation {
+class AtomicComponentStandardImplementation {
 	def static generateAbstractAtomicImplementationHeader(ComponentSymbol comp, String compname) {
     var String generics = Utils.printFormalTypeParameters(comp)
     return '''
