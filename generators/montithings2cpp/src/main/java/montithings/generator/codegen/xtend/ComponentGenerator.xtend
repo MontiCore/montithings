@@ -41,11 +41,10 @@ class ComponentGenerator {
 		#include "OutgoingIPCPort.h"
 		#include "IncomingWSPort.h"
 		#include "OutgoingWSPort.h"
-		#include<thread>
+		#include <thread>
 		#include "sole/sole.hpp"
 		#include <iostream>
 		«Utils.printCPPImports(comp)»
-		
 		
 		«IF comp.isDecomposed»
 		«FOR include : compIncludes»
