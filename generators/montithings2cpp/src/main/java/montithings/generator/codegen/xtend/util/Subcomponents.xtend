@@ -4,8 +4,23 @@ package montithings.generator.codegen.xtend.util
 import montithings.generator.helper.ComponentHelper
 import montithings._symboltable.ComponentSymbol
 import java.util.HashMap
+import java.util.HashSet
 
 class Subcomponents {
+	
+  def static String printIncludes(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
+  	var HashSet<String> compIncludes = new HashSet<String>()
+    for (subcomponent : comp.subComponents) {
+      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
+	}
+	return '''
+	«FOR include : compIncludes»
+	«include»
+	«ENDFOR»
+	#include "«compname»Input.h"
+	#include "«compname»Result.h"
+	'''
+  }
 
   def static String printVars(ComponentSymbol comp, HashMap<String, String> interfaceToImplementation) {
     return '''
