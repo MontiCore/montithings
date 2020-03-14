@@ -34,7 +34,7 @@ public:
         }
         catch (const std::exception&)
         {
-            cout << "Connection to" << uri << " could not be established!\n";
+            cout << "Connection to " << uri << " could not be established!\n";
             return;
         }
         cout << "Connection established\n";
@@ -46,12 +46,16 @@ public:
     tl::optional<T> getCurrentValue(sole::uuid uuid) {
 
 		T queueElement;
-        if (this->queueMap[uuid].pop(queueElement)){
+        if (this->queueMap[uuid].front ()){
+            queueElement = *(this->queueMap[uuid].front());
+            this->queueMap[uuid].pop();
             tl::optional<T> currentValue = queueElement;
             return currentValue;
         } else{
             ipcUpdate();
-            if (this->queueMap[uuid].pop(queueElement)) {
+            if (this->queueMap[uuid].front ()){
+                queueElement = *(this->queueMap[uuid].front());
+                this->queueMap[uuid].pop();
                 tl::optional<T> currentValue = queueElement;
                 return currentValue;
             } else {
@@ -82,7 +86,7 @@ private:
 			}
 			catch (const std::exception&)
 			{
-				cout << "Connection to" << uri << " could not be established!\n";
+				cout << "Connection to " << uri << " could not be established!\n";
 				return;
 			}
 			isConnected = true;
@@ -104,10 +108,10 @@ private:
     }
 
     virtual bool hasValue(sole::uuid uuid){
-        if (this->queueMap[uuid].read_available() == 0){
+        if (!this->queueMap[uuid].front ()){
             ipcUpdate();
         }
-        return (this->queueMap[uuid].read_available() > 0);
+        return (this->queueMap[uuid].front ());
     }
 
 
