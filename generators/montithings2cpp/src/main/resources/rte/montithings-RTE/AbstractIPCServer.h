@@ -3,7 +3,6 @@
 #ifndef REQREP_ABSTRACTIPCSERVER_H
 #define REQREP_ABSTRACTIPCSERVER_H
 
-
 #include <string>
 #include <nngpp/nngpp.h>
 #include <nngpp/protocol/rep0.h>
@@ -18,40 +17,42 @@
 #include "cereal/types/list.hpp"
 #include <nng/nng.h>
 
+template<typename T>
+class AbstractIPCServer
+{
+  private:
+  virtual T getData () = 0;
+  std::string dataString = "";
+  nng::socket sock;
 
-template <typename T>
-class AbstractIPCServer{
-private:
-    virtual T getData() = 0;
-    std::string dataString = "";
-    nng::socket sock;
+  public:
+  explicit AbstractIPCServer (const char *uri)
+  {
+    sock = nng::rep::open ();
+    sock.listen (uri);
+  }
 
-public:
-    explicit AbstractIPCServer(const char *uri) {
-        sock = nng::rep::open();
-        sock.listen(uri);
-    }
+  void run ()
+  {
+    while (true)
+      {
+        std::ostringstream stream;
+        sock.recv ();
+        T data = getData ();
 
-    void run(){
-        while (true){
-            std::ostringstream stream;
-            sock.recv();
-            T data = getData();
-
-            {
-                cereal::JSONOutputArchive outputArchive(stream);
-                outputArchive(data);
-            }
-
-            dataString = stream.str();
-            sock.send(nng::buffer(nng_strdup(dataString.c_str()),dataString.length() + 1), nng::flag::alloc);
-
-            std::cout << dataString << "\n";
-
-            //sock.send(nng::view(dataString.c_str(), strlen(dataString.c_str()) + 1));
+        {
+          cereal::JSONOutputArchive outputArchive (stream);
+          outputArchive (data);
         }
-    }
-};
 
+        dataString = stream.str ();
+        sock.send (nng::buffer (nng_strdup (dataString.c_str ()), dataString.length () + 1), nng::flag::alloc);
+
+        std::cout << dataString << "\n";
+
+        //sock.send(nng::view(dataString.c_str(), strlen(dataString.c_str()) + 1));
+      }
+  }
+};
 
 #endif //REQREP_ABSTRACTIPCSERVER_H

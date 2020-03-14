@@ -7,55 +7,71 @@
 #include <map>
 #include "sole/sole.hpp"
 
-template <class T>
+template<class T>
 class DataSource
 {
 
-    typedef std::map<sole::uuid ,  rigtorp::SPSCQueue<T> > map_type;
-protected:
-    map_type queueMap;
+  typedef std::map<sole::uuid, rigtorp::SPSCQueue<T> > map_type;
+  protected:
+  map_type queueMap;
 
-    virtual void pushToAll(T nextVal){
-        for (auto& x : queueMap){
-            x.second.push(nextVal);
-        }
-    }
-public:
-    DataSource() {};
-    DataSource(T initialValue) {
-    }
+  virtual void pushToAll (T nextVal)
+  {
+    for (auto &x : queueMap)
+      {
+        x.second.push (nextVal);
+      }
+  }
 
-    virtual void registerPort(sole::uuid uuid){
-        queueMap[uuid];
-    }
+  public:
+  DataSource ()
+  {
+  };
 
-    virtual tl::optional<T> getCurrentValue(sole::uuid uuid) {
-        T queueElement;
-        if (queueMap[uuid].front()){
-            queueElement = *(queueMap[uuid].front());
-            queueMap[uuid].pop();
-            tl::optional<T> currentValue = queueElement;
-            return currentValue;
-        } else{
-            return tl::nullopt;
-        }
-    }
+  DataSource (T initialValue)
+  {
+  }
 
+  virtual void registerPort (sole::uuid uuid)
+  {
+    queueMap[uuid];
+  }
 
-    void setNextValue(T nextVal) {
-        pushToAll(nextVal);
-    }
+  virtual tl::optional<T> getCurrentValue (sole::uuid uuid)
+  {
+    T queueElement;
+    if (queueMap[uuid].front ())
+      {
+        queueElement = *(queueMap[uuid].front ());
+        queueMap[uuid].pop ();
+        tl::optional<T> currentValue = queueElement;
+        return currentValue;
+      }
+    else
+      {
+        return tl::nullopt;
+      }
+  }
 
-    void setNextValue(tl::optional<T> nextVal) {
-        if (nextVal){
-            pushToAll(nextVal.value());
-        }
-    }
+  void setNextValue (T nextVal)
+  {
+    pushToAll (nextVal);
+  }
 
-    virtual bool hasValue(sole::uuid uuid){
-        return queueMap[uuid].front ();
-    }
+  void setNextValue (tl::optional<T> nextVal)
+  {
+    if (nextVal)
+      {
+        pushToAll (nextVal.value ());
+      }
+  }
 
-    void update() {
-    }
+  virtual bool hasValue (sole::uuid uuid)
+  {
+    return queueMap[uuid].front ();
+  }
+
+  void update ()
+  {
+  }
 };
