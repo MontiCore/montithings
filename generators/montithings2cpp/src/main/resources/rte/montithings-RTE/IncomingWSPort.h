@@ -87,7 +87,7 @@ private:
             cereal::JSONInputArchive inputArchive(inStream);
             T result;
             inputArchive(result);
-            std::cout << "Raw Data: " << result << "\n";
+            //std::cout << "Raw Data: " << result << "\n";
             this->pushToAll(result);
             }
             std::this_thread::yield();

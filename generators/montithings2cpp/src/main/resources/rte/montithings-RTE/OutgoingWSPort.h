@@ -86,10 +86,7 @@ private:
                 dataString = stream.str();
                 socket.send(nng::buffer(nng_strdup(dataString.c_str()),dataString.length() + 1), nng::flag::alloc);
 
-                std::cout << dataString << "\n";
-				
-
-
+                //std::cout << dataString << "\n";
             }
 			else{
             	std::this_thread::yield();
