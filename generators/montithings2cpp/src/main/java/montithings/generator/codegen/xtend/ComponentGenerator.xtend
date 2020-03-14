@@ -43,6 +43,7 @@ class ComponentGenerator {
 		#include "OutgoingWSPort.h"
 		#include<thread>
 		#include "sole/sole.hpp"
+		#include <iostream>
 		«Utils.printCPPImports(comp)»
 		
 		
@@ -428,7 +429,7 @@ class ComponentGenerator {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::run(){
-			cout << "Thread for «compname» started\n";
+			std::cout << "Thread for «compname» started\n";
 			
 			while (true)
 				{
