@@ -4,6 +4,8 @@
 #include "IComputable.h"
 #include <stdexcept>
 
+namespace montithings {
+namespace hierarchy {
 
 class SourceImpl : IComputable<SourceInput,SourceResult>{
 	
@@ -21,3 +23,4 @@ public:
 	SourceResult compute(SourceInput input) override;
 };
 
+}}

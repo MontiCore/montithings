@@ -1,6 +1,9 @@
 #include "SinkImpl.h"
 #include <iostream>
 
+namespace montithings {
+namespace hierarchy {
+
 SinkResult
 SinkImpl::getInitialValues ()
 {
@@ -18,3 +21,5 @@ SinkImpl::compute (SinkInput input)
     { std::cout << "No data." << std::endl; }
   return {};
 }
+
+}}

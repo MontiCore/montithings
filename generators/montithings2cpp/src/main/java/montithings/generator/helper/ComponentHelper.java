@@ -850,6 +850,12 @@ public class ComponentHelper {
     return "";
   }
 
+  public static List<String> getPackages(ComponentSymbol component) {
+    String packageName = component.getPackageName();
+    String[] packages = packageName.split("\\.");
+    return Arrays.asList(packages);
+  }
+
   public static boolean portIsComparedToNoData(ASTExpression e, String portName) {
     NoDataComparisionsVisitor visitor = new NoDataComparisionsVisitor();
     e.accept(visitor);

@@ -47,6 +47,8 @@ class ComponentGenerator {
 		«ELSE»
 		#include "«compname»Impl.h"
 		«ENDIF»
+		
+		«Utils.printNamespaceStart(comp)»
 
 		«Utils.printTemplateArguments(comp)»
 		class «compname» : IComponent «IF comp.superComponent.present» , «Utils.printSuperClassFQ(comp)»
@@ -84,20 +86,24 @@ class ComponentGenerator {
 			void compute() override;
 			bool shouldCompute();
 			void start() override;
-		};            
+		};
 		            
 		«IF Utils.hasTypeParameters(comp)»
 	      «generateBody(comp, compname)»
 	    «ENDIF»
+
+	    «Utils.printNamespaceEnd(comp)»
 		'''
 	}
 
 	def static generateImplementationFile(ComponentSymbol comp, String compname) {
 	  return '''
   	#include "«compname».h"
+  	«Utils.printNamespaceStart(comp)»
   	«IF !Utils.hasTypeParameters(comp)»
     «generateBody(comp, compname)»
     «ENDIF»
+    «Utils.printNamespaceEnd(comp)»
     '''
 	}
 	

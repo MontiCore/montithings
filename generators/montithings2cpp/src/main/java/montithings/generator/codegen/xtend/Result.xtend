@@ -10,9 +10,11 @@ class Result {
   def static generateImplementationFile(ComponentSymbol comp, String compname) {
     return '''
     #include "«compname»Result.h"
+    «Utils.printNamespaceStart(comp)»
     «IF !Utils.hasTypeParameters(comp)»
     «generateResultBody(comp, compname)»
     «ENDIF»
+    «Utils.printNamespaceEnd(comp)»
     '''
   }
 
@@ -61,6 +63,8 @@ return '''
 #include <set>
 «Utils.printCPPImports(comp)»
 
+«Utils.printNamespaceStart(comp)»
+
 «Utils.printTemplateArguments(comp)»
 class «compname»Result
   «IF comp.superComponent.present» : 
@@ -91,6 +95,7 @@ public:
 «IF Utils.hasTypeParameters(comp)»
   «generateResultBody(comp, compname)»
 «ENDIF»
+«Utils.printNamespaceEnd(comp)»
 '''
 		
 	}

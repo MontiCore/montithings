@@ -4,6 +4,8 @@
 #include "IComputable.h"
 #include <stdexcept>
 
+namespace montithings {
+namespace hierarchy {
 
 class SumImpl : IComputable<SumInput,SumResult>{
 	
@@ -18,3 +20,4 @@ public:
 	SumResult compute(SumInput input) override;
 };
 
+}}

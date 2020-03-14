@@ -4,6 +4,8 @@
 #include "IComputable.h"
 #include <stdexcept>
 
+namespace montithings {
+namespace hierarchy {
 
 class ConverterImpl : IComputable<ConverterInput,ConverterResult>{
 	
@@ -22,3 +24,4 @@ public:
 	}
 };
 
+}}

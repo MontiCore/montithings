@@ -3,6 +3,7 @@ package montithings.generator.codegen.xtend.util
 
 import montithings.generator.helper.ComponentHelper
 import montithings._symboltable.ComponentSymbol
+import montiarc._symboltable.ComponentInstanceSymbol
 import java.util.HashMap
 import java.util.HashSet
 
@@ -26,7 +27,7 @@ class Subcomponents {
     return '''
       «FOR subcomponent : comp.subComponents»
         «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)»
-        «type» «subcomponent.name»;
+        «printPackageNamespace(comp, subcomponent)»«type» «subcomponent.name»;
       «ENDFOR»
     '''
   }
@@ -42,5 +43,26 @@ class Subcomponents {
           «ENDFOR»)
       «ENDFOR»
     '''
+  }
+  
+  def static String printPackageNamespace(ComponentSymbol comp, ComponentInstanceSymbol subcomp) {
+  	var subcomponentType = subcomp.componentType.referencedSymbol
+  	var fullNamespaceSubcomponent = printPackageNamespaceForComponent(subcomponentType)
+  	var fullNamespaceEnclosingComponent = printPackageNamespaceForComponent(comp)
+  	if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) && 
+  		fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
+  		return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent).get(1)
+  	} else {
+  		return fullNamespaceSubcomponent
+  	}
+  }
+  
+  def static String printPackageNamespaceForComponent(montiarc._symboltable.ComponentSymbol comp) {
+  	var packages = ComponentHelper.getPackages(comp);
+  	var namespace = "montithings::"
+  	for (packageName : packages) {
+  		namespace += packageName + "::"
+  	}
+  	return namespace
   }
 }

@@ -17,6 +17,8 @@ class AtomicComponentStandardImplementation {
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
 
+«Utils.printNamespaceStart(comp)»
+
 «Utils.printTemplateArguments(comp)»
 class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{
 	
@@ -44,15 +46,18 @@ public:
 «IF Utils.hasTypeParameters(comp)»
 	«generateAbstractAtomicImplementationBody(comp, compname)»
 «ENDIF»
+«Utils.printNamespaceEnd(comp)»
 '''
   }
   
   def static String generateImplementationFile(ComponentSymbol comp, String compname) {
 	  return '''
 	#include "«compname»Impl.h"
+	«Utils.printNamespaceStart(comp)»
 	«IF !Utils.hasTypeParameters(comp)»
 	«generateAbstractAtomicImplementationBody(comp, compname)»
 	«ENDIF»
+	«Utils.printNamespaceEnd(comp)»
 	'''
   }
   

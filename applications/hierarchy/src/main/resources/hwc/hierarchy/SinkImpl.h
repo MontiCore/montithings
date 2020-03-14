@@ -4,6 +4,8 @@
 #include "IComputable.h"
 #include <stdexcept>
 
+namespace montithings {
+namespace hierarchy {
 
 class SinkImpl : IComputable<SinkInput,SinkResult>{
 	
@@ -18,3 +20,4 @@ public:
 	SinkResult compute(SinkInput input) override;
 };
 
+}}

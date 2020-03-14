@@ -1,5 +1,8 @@
 #include "LowPassFilterImpl.h"
 
+namespace montithings {
+namespace hierarchy {
+
 LowPassFilterResult
 LowPassFilterImpl::getInitialValues ()
 {
@@ -17,3 +20,5 @@ LowPassFilterImpl::dismiss (LowPassFilterInput input)
 {
   return {};
 }
+
+}}

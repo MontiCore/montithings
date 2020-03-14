@@ -260,6 +260,8 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
 #include "IComputable.h"
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
+
+«Utils.printNamespaceStart(comp)»
 	
 «Utils.printTemplateArguments(comp)»	
 class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{
@@ -274,6 +276,7 @@ public:
 	virtual «compname»Result«generics» compute(«compname»Input«generics» input) override;
 
     };
+«Utils.printNamespaceEnd(comp)»
 '''
   }
   

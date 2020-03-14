@@ -4,6 +4,8 @@
 #include "IComputable.h"
 #include <stdexcept>
 
+namespace montithings {
+namespace hierarchy {
 
 class LowPassFilterImpl : IComputable<LowPassFilterInput,LowPassFilterResult>{
 	
@@ -25,3 +27,4 @@ public:
 	}
 };
 
+}}

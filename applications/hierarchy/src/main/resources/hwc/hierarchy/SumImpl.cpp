@@ -1,6 +1,9 @@
 #include <iostream>
 #include "SumImpl.h"
 
+namespace montithings {
+namespace hierarchy {
+
 SumResult
 SumImpl::getInitialValues ()
 {
@@ -14,3 +17,5 @@ SumImpl::compute (SumInput input)
     { return {}; }
   return {input.getIn1 ().value () + input.getIn2 ().value ()};
 }
+
+}}
