@@ -612,7 +612,7 @@ public class ComponentHelper {
     File implLocation = Paths.get(hwcPath.toString() + File.separator
         + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
         + "-" + StringTransformations.capitalize(resourcePortName) + File.separator
-        + resourcePortName + "ServerImpl.cpp").toFile();
+        + StringTransformations.capitalize(resourcePortName) + "Server.cpp").toFile();
     return implLocation.isFile();
   }
 

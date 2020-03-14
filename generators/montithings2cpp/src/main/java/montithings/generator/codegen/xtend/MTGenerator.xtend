@@ -126,18 +126,20 @@ class MTGenerator {
 		subPackagesPath, platform), ".txt")
   }
 
-  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath, TargetPlatform platform){
+  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath, TargetPlatform platform, boolean headerOnly){
   	var existsHWC = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, port.name)
   	var ipcPath = ComponentHelper.getIPCHWCPath(port, comp, hwcPath);
 	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerHeader(port, comp), ".h")
+	if (!headerOnly) {
+	 
 	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerBody(port, comp, existsHWC), ".cpp")
 	toFile(targetPath, "CMakeLists", CMake.printIPCServerCMake(
 		port,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(ipcPath.toPath.toAbsolutePath).toString,
 		existsHWC, platform
-		),
-		 ".txt")
+		), ".txt")
+	}
   }
 
 	

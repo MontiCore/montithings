@@ -126,18 +126,11 @@ class CMake {
 		find_package(nng 1.1.1 CONFIG REQUIRED)
 		«ENDIF»
 		
-		«IF existsHWC»
-		include_directories(«ipcPath.replace("\\","/")»)
-		«ENDIF»
 		include_directories("«libraryPath.replace("\\","/")»")
 		include_directories(.)
 		file(GLOB SOURCES 
 		"./*.cpp"
 		"./*.h"
-		«IF existsHWC»
-		"«ipcPath.replace("\\","/")»/*.cpp"
-		"«ipcPath.replace("\\","/")»/*.h"
-		«ENDIF»
 		"«libraryPath.replace("\\","/")»/*.cpp"
 		"«libraryPath.replace("\\","/")»/*.h")
 		

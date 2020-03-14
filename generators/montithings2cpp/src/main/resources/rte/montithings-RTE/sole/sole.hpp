@@ -793,11 +793,13 @@ namespace sole {
 #undef $yes
 #undef $no
 
+
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification
 // Pop disabled warnings
 #if (defined(__APPLE__) && defined(__MACH__))
 #pragma clang diagnostic pop
 #endif
-
+#endif // MontiThings Modification
 // MontiThings Modification: Removed Demo and Test Code
 
 

@@ -123,14 +123,48 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       for (ResourcePortSymbol resourcePortSymbol : ComponentHelper
           .getResourcePortsInComponent(comp)) {
         if (resourcePortSymbol.isIpc()) {
-          File path = Paths.get(target.getAbsolutePath(),
+          // Generate necessary headers for application
+          File headerPath = Paths.get(target.getAbsolutePath(),
               Names.getPathFromPackage(comp.getPackageName()),
-              comp.getName() + "-"
-                  + StringTransformations.capitalize(resourcePortSymbol.getName()))
+              comp.getName() + "-" + StringTransformations.capitalize(resourcePortSymbol.getName()))
               .toFile();
-          path.mkdir();
-          File libraryPath = Paths.get("target/montithings-RTE").toFile();
-          MTGenerator.generateIPCServer(path, resourcePortSymbol, comp, libraryPath, hwcPath, platform);
+          headerPath.mkdir();
+          File libraryPath = Paths.get("target/generated-sources/montithings-RTE").toFile();
+          MTGenerator.generateIPCServer(headerPath, resourcePortSymbol, comp, libraryPath, hwcPath, platform, true);
+
+          // Generate IPC Port implementation
+          File implPath = Paths.get(target.getAbsolutePath(),
+              "resource-ports",
+              Names.getPathFromPackage(comp.getPackageName()),
+              comp.getName() + "-" + StringTransformations.capitalize(resourcePortSymbol.getName()))
+              .toFile();
+          implPath.mkdir();
+          MTGenerator.generateIPCServer(implPath, resourcePortSymbol, comp, libraryPath, hwcPath, platform, false);
+
+          // Copy IPC Port HWC to target
+          boolean existsHwc = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, resourcePortSymbol.getName());
+          if (existsHwc) {
+            try {
+              // Copy HWC files
+              String resourcePortName = comp.getName() + "-" +
+                  StringTransformations.capitalize(resourcePortSymbol.getName());
+              File hwcDirectory = Paths.get(hwcPath.getAbsolutePath(),
+                  Names.getPathFromPackage(comp.getPackageName()),
+                  resourcePortName).toFile();
+              FileUtils.copyDirectory(hwcDirectory, implPath);
+
+              // Remove HWC files from components' HWC
+              File componentResourcePortImplPath = Paths.get(target.getAbsolutePath(), "hwc",
+                  Names.getPathFromPackage(comp.getPackageName()),
+                  comp.getName() + "-" + StringTransformations.capitalize(resourcePortSymbol.getName()))
+                  .toFile();
+              FileUtils.deleteDirectory(componentResourcePortImplPath);
+            }
+            catch (IOException e) {
+              System.err.println(e.getMessage());
+              e.printStackTrace();
+            }
+          }
         }
       }
     }
