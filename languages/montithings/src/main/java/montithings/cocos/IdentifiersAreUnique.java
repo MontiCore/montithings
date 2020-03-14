@@ -11,11 +11,12 @@ import montiarc._ast.ASTMontiArcInvariant;
 import montiarc._ast.ASTParameter;
 import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.ComponentInstanceSymbol;
-import montiarc._symboltable.ComponentSymbol;
+import montithings._symboltable.ComponentSymbol;
 import montiarc._symboltable.PortSymbol;
 import montiarc._symboltable.VariableSymbol;
 import montiarc.cocos.CircularInheritance;
 import montithings._cocos.MontiThingsCoCoChecker;
+import montithings._symboltable.ResourcePortSymbol;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -74,6 +75,15 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
           sourcePosition = portSymbol.getAstNode().get().get_SourcePositionStart();
         }
         names.add(new Identifier(portSymbol.getName(), IdentifierTypes.PORT, sourcePosition));
+      }
+
+      // Collect resource ports
+      for (ResourcePortSymbol rport : comp.getResourcePortsInComponent()) {
+        SourcePosition sourcePosition = SourcePosition.getDefaultSourcePosition();
+        if (rport.getAstNode().isPresent()) {
+          sourcePosition = rport.getAstNode().get().get_SourcePositionStart();
+        }
+        names.add(new Identifier(rport.getName(), IdentifierTypes.RESOURCE_PORT, sourcePosition));
       }
     }
     // Restore the saved findings
@@ -135,6 +145,9 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
         case PORT:
           logError(nameDuplicate, "0xMA053", "port");
           break;
+        case RESOURCE_PORT:
+          logError(nameDuplicate, "0xMT030", "resource port");
+          break;
         case INVARIANT:
           logError(nameDuplicate, "0xMA052", "invariant");
           break;
@@ -157,7 +170,7 @@ public class IdentifiersAreUnique implements MontiArcASTComponentCoCo {
   }
 
   private enum IdentifierTypes {
-    CONFIG_PARAMETER, PORT, INVARIANT, SUBCOMPONENTINSTANCE, VARIABLE
+    CONFIG_PARAMETER, PORT, INVARIANT, SUBCOMPONENTINSTANCE, VARIABLE, RESOURCE_PORT
   }
 
   /**
