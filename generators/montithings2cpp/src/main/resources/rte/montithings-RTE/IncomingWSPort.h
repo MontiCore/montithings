@@ -39,9 +39,9 @@ public:
             socket.listen(uri , nng::flag::alloc);
 
         }
-        catch (const std::exception&)
+        catch (const std::exception& e)
         {
-            cout << "Could not create listener for: " << uri << "\n";
+            cout << "Could not create listener for: " << uri << " (" << e.what () << ")\n";
             return;
         }
         cout << "Created listener for: " << uri << "\n";

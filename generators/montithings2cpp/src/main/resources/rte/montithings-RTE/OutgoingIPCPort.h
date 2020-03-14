@@ -35,13 +35,13 @@ public:
             socket.dial(uri , nng::flag::alloc);
 
         }
-        catch (const std::exception&)
+        catch (const std::exception& e)
         {
-            cout << "Connection to" << uri << " could not be established!\n";
+            cout << "Connection to " << uri << " could not be established! (" << e.what () << ")\n";
             return;
         }
 		isConnected = true;
-        printf("Connection established\n");
+        cout << "Connection to " << uri << " established\n";
     };
     explicit OutgoingIPCPort(T initialValue) {}
 
@@ -72,8 +72,8 @@ private:
 						socket.dial(uri, nng::flag::alloc);
 
 					}
-					catch (const std::exception &) {
-						cout << "Connection to" << uri << " could not be established!\n";
+					catch (const std::exception & e) {
+						cout << "Connection to " << uri << " could not be established! (" <<  e.what () << ")\n";
 						continue;
 					}
 				}

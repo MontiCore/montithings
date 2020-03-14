@@ -66,10 +66,10 @@ private:
 
             }
             catch (const std::exception &) {
-                cout << "Connection to" << uri << " could not be established!\n";
+                cout << "Connection to " << uri << " could not be established!\n";
             }
         }
-        printf("Connection established\n");
+        cout << "Connection to " << uri << " established\n";
 
         while (true) {
             tl::optional<T> dataOpt = port->getCurrentValue(uuid);
