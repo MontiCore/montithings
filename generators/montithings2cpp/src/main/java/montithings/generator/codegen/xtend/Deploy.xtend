@@ -3,6 +3,7 @@ package montithings.generator.codegen.xtend
 
 import montithings._symboltable.ComponentSymbol
 import montithings.generator.helper.ComponentHelper
+import montithings.generator.codegen.xtend.util.Subcomponents
 
 class Deploy {
 	
@@ -14,7 +15,7 @@ class Deploy {
 		
 		int main()
 		{
-			«compname» cmp;
+			«Subcomponents.printPackageNamespaceForComponent(comp)»«compname» cmp;
 			cmp.setUp(«IF comp.getStereotype().containsKey("timesync")»TIMESYNC«ELSE»EVENTBASED«ENDIF»);
 			cmp.init();
 			«IF !comp.getStereotype().containsKey("timesync")»
@@ -29,11 +30,11 @@ class Deploy {
 				«ENDIF» 
 				do {
 				  std::this_thread::yield();
-		  	      «IF comp.getStereotype().containsKey("timesync")»
-			            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                  «ELSE»
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                  «ENDIF»
+				  «IF comp.getStereotype().containsKey("timesync")»
+				  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				  «ELSE»
+				  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				  «ENDIF»
 				} while (std::chrono::high_resolution_clock::now()  < end);
 			}
 			return 0;

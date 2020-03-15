@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
-import montithings.generator.codegen.xtend.behavior.AbstractAtomicImplementation
+import montithings.generator.codegen.xtend.behavior.AtomicComponentStandardImplementation
 import montithings.generator.codegen.xtend.behavior.AutomatonGenerator
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Identifier
@@ -33,7 +33,7 @@ import montithings.generator.codegen.TargetPlatform
  */
 class MTGenerator {
 
-  def static generateAll(File targetPath, File hwc, ComponentSymbol comp, List<String> foundModels, String compname,
+  def static void generateAll(File targetPath, File hwc, ComponentSymbol comp, List<String> foundModels, String compname,
                          HashMap<String, String> interfaceToImplementation) {
     Identifier.createInstance(comp)
 
@@ -74,9 +74,9 @@ class MTGenerator {
     	if (element instanceof ASTExecutionBlock) {
     		// Print Impl Stubs for execution blocks
 		    toFile(targetPath, compname + "Impl",
-		      AbstractAtomicImplementation.generateAbstractAtomicImplementationHeader(comp, compname),".h")
+		      AtomicComponentStandardImplementation.generateAbstractAtomicImplementationHeader(comp, compname),".h")
 		    toFile(targetPath, compname + "Impl",
-		      AbstractAtomicImplementation.generateImplementationFile(comp, compname),".cpp")		  
+		      AtomicComponentStandardImplementation.generateImplementationFile(comp, compname),".cpp")		  
         }
         if (ComponentHelper.containsAutomaton(comp)) {
 			var automatonGenerator = new AutomatonGenerator(comp, compname)
@@ -91,9 +91,9 @@ class MTGenerator {
 
     if (!hasBehavior) {
       toFile(targetPath, compname + "Impl",
-      	AbstractAtomicImplementation.generateAbstractAtomicImplementationHeader(comp, compname),".h")
+      	AtomicComponentStandardImplementation.generateAbstractAtomicImplementationHeader(comp, compname),".h")
       toFile(targetPath, compname + "Impl",
-      	AbstractAtomicImplementation.generateImplementationFile(comp, compname),".cpp")
+      	AtomicComponentStandardImplementation.generateImplementationFile(comp, compname),".cpp")
     }
 
   }
@@ -126,18 +126,20 @@ class MTGenerator {
 		subPackagesPath, platform), ".txt")
   }
 
-  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath, TargetPlatform platform){
+  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath, TargetPlatform platform, boolean headerOnly){
   	var existsHWC = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, port.name)
   	var ipcPath = ComponentHelper.getIPCHWCPath(port, comp, hwcPath);
 	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerHeader(port, comp), ".h")
+	if (!headerOnly) {
+	 
 	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerBody(port, comp, existsHWC), ".cpp")
 	toFile(targetPath, "CMakeLists", CMake.printIPCServerCMake(
 		port,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(ipcPath.toPath.toAbsolutePath).toString,
 		existsHWC, platform
-		),
-		 ".txt")
+		), ".txt")
+	}
   }
 
 	

@@ -10,9 +10,11 @@ class Input {
 	def static generateImplementationFile(ComponentSymbol comp, String compname) {
     return '''
     #include "«compname»Input.h"
+    «Utils.printNamespaceStart(comp)»
     «IF !Utils.hasTypeParameters(comp)»
     «generateInputBody(comp, compname)»
     «ENDIF»
+    «Utils.printNamespaceEnd(comp)»
     '''
   }
 	
@@ -82,6 +84,8 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 #include "tl/optional.hpp"
 «Utils.printCPPImports(comp)»
 
+«Utils.printNamespaceStart(comp)»
+
 «Utils.printTemplateArguments(comp)»
 class «compname»Input
 «IF comp.superComponent.present» : 
@@ -117,6 +121,7 @@ public:
 «IF Utils.hasTypeParameters(comp)»
   «generateInputBody(comp, compname)»
 «ENDIF»
+«Utils.printNamespaceEnd(comp)»
 '''
 	}
 	

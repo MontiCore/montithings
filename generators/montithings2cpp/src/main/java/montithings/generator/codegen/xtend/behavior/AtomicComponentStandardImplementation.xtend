@@ -6,7 +6,7 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper
 
-class AbstractAtomicImplementation {
+class AtomicComponentStandardImplementation {
 	def static generateAbstractAtomicImplementationHeader(ComponentSymbol comp, String compname) {
     var String generics = Utils.printFormalTypeParameters(comp)
     return '''
@@ -16,6 +16,8 @@ class AbstractAtomicImplementation {
 #include "IComputable.h"
 #include <stdexcept>
 «Utils.printCPPImports(comp)»
+
+«Utils.printNamespaceStart(comp)»
 
 «Utils.printTemplateArguments(comp)»
 class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{
@@ -44,15 +46,18 @@ public:
 «IF Utils.hasTypeParameters(comp)»
 	«generateAbstractAtomicImplementationBody(comp, compname)»
 «ENDIF»
+«Utils.printNamespaceEnd(comp)»
 '''
   }
   
   def static String generateImplementationFile(ComponentSymbol comp, String compname) {
 	  return '''
 	#include "«compname»Impl.h"
+	«Utils.printNamespaceStart(comp)»
 	«IF !Utils.hasTypeParameters(comp)»
 	«generateAbstractAtomicImplementationBody(comp, compname)»
 	«ENDIF»
+	«Utils.printNamespaceEnd(comp)»
 	'''
   }
   

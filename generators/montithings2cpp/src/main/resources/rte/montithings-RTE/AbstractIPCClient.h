@@ -14,35 +14,38 @@
 #include "cereal/types/set.hpp"
 #include "cereal/types/list.hpp"
 
-template <typename T>
-class AbstractIPCClient {
-private:
-    virtual void processData(T data) = 0;
-    std::string dataString = "";
-    nng::socket sock;
-public:
-    explicit AbstractIPCClient(const char *uri) {
-        sock = nng::pull::open();
-        sock.listen(uri);
-    }
+template<typename T>
+class AbstractIPCClient
+{
+  private:
+  virtual void processData (T data) = 0;
+  std::string dataString = "";
+  nng::socket sock;
+  public:
+  explicit AbstractIPCClient (const char *uri)
+  {
+    sock = nng::pull::open ();
+    sock.listen (uri);
+  }
 
-    void run(){
-        while (true){
-            std::ostringstream stream;
-            auto msg = sock.recv_msg();
-            auto data = msg.body().data<char>();
+  void run ()
+  {
+    while (true)
+      {
+        std::ostringstream stream;
+        auto msg = sock.recv_msg ();
+        auto data = msg.body ().template data<char> ();
 
-            std::string receivedAnswer(msg.body().data<char>());
-            std::stringstream inStream(receivedAnswer);
-            cereal::JSONInputArchive inputArchive(inStream);
-            T result;
-            inputArchive(result);
+        std::string receivedAnswer (msg.body ().template data<char> ());
+        std::stringstream inStream (receivedAnswer);
+        cereal::JSONInputArchive inputArchive (inStream);
+        T result;
+        inputArchive (result);
 
-            processData(result);
-        }
-    }
+        processData (result);
+      }
+  }
 
 };
-
 
 #endif //OUTPORTSERVER_ABSTRACTIPCCLIENT_H

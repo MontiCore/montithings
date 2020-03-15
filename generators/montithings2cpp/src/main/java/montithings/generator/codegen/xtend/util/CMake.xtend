@@ -28,7 +28,7 @@ class CMake {
 	
 	def static printDsaLinkLibraries(String targetName) {
 		return '''
-		target_link_libraries(«targetName» nng pthread curl Boost::boost ${ATOMIC_LIBRARY})
+		target_link_libraries(«targetName» nng pthread curl ${ATOMIC_LIBRARY})
 		'''
 	}
 	
@@ -59,8 +59,6 @@ class CMake {
 		«IF platform != TargetPlatform.DSA_VCG»
 		find_package(nng 1.1.1 CONFIG REQUIRED)
 		«ENDIF»
-		find_package(Boost)
-		include_directories(${Boost_INCLUDE_DIRS})
 		
 		# for MSVC
 		if (MSVC)
@@ -106,7 +104,7 @@ class CMake {
 		«IF platform == TargetPlatform.DSA_VCG»
 		«printDsaLinkLibraries(comp.name)»
 		«ELSE»
-		target_link_libraries(«comp.name» nng::nng Boost::boost)
+		target_link_libraries(«comp.name» nng::nng)
 		«ENDIF»
 		set_target_properties(«comp.name» PROPERTIES LINKER_LANGUAGE CXX)
 		'''
@@ -127,21 +125,12 @@ class CMake {
 		«IF platform != TargetPlatform.DSA_VCG»
 		find_package(nng 1.1.1 CONFIG REQUIRED)
 		«ENDIF»
-		find_package(Boost)
 		
-		«IF existsHWC»
-		include_directories(«ipcPath.replace("\\","/")»)
-		«ENDIF»
-		include_directories(${Boost_INCLUDE_DIRS}) 
 		include_directories("«libraryPath.replace("\\","/")»")
 		include_directories(.)
 		file(GLOB SOURCES 
 		"./*.cpp"
 		"./*.h"
-		«IF existsHWC»
-		"«ipcPath.replace("\\","/")»/*.cpp"
-		"«ipcPath.replace("\\","/")»/*.h"
-		«ENDIF»
 		"«libraryPath.replace("\\","/")»/*.cpp"
 		"«libraryPath.replace("\\","/")»/*.h")
 		
@@ -149,7 +138,7 @@ class CMake {
 		«IF platform == TargetPlatform.DSA_VCG»
 		«printDsaLinkLibraries(port.name.toFirstUpper+"Server")»
 		«ELSE»
-		target_link_libraries(«port.name.toFirstUpper»Server nng::nng Boost::boost)
+		target_link_libraries(«port.name.toFirstUpper»Server nng::nng)
 		«ENDIF»
 		'''
 	}

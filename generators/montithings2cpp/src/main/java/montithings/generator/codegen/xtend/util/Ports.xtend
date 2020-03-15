@@ -17,14 +17,13 @@ class Ports {
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     Port<«type»>* «name» = new Port<«type»>;
-    boost::uuids::uuid portUuid«name.toFirstUpper» = boost::uuids::random_generator () ();
+    sole::uuid portUuid«name.toFirstUpper» = sole::uuid4 ();
     «ENDFOR»
-    // Internal monitoring of ports
+	// Internal monitoring of ports
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
     «var name = port.name»
     «IF comp.isDecomposed»
-    boost::uuids::uuid portMonitorUuid«name.toFirstUpper» = boost::uuids::random_generator () ();
+    sole::uuid portMonitorUuid«name.toFirstUpper» = sole::uuid4 ();
     «ENDIF»
     «ENDFOR»
     '''

@@ -12,7 +12,6 @@ import montithings.generator.codegen.xtend.util.Init
 import java.util.List
 import java.util.ArrayList
 import java.util.HashMap
-import java.util.HashSet
 import de.monticore.symboltable.types.JFieldSymbol
 import montiarc._symboltable.ComponentSymbolReference
 import de.monticore.mcexpressions._ast.ASTExpression
@@ -24,10 +23,7 @@ class ComponentGenerator {
 	
 	def static generateHeader(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
 		var ComponentHelper helper = new ComponentHelper(comp)
-	    var HashSet<String> compIncludes = new HashSet<String>()
-	    for (subcomponent : comp.subComponents) {
-	      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
-		}
+	    
 		return '''
 		#pragma once
 		#include "IComponent.h"
@@ -41,21 +37,18 @@ class ComponentGenerator {
 		#include "OutgoingIPCPort.h"
 		#include "IncomingWSPort.h"
 		#include "OutgoingWSPort.h"
-		#include<thread>
-		#include <boost/uuid/uuid.hpp>
-		#include <boost/uuid/uuid_generators.hpp>
+		#include <thread>
+		#include "sole/sole.hpp"
+		#include <iostream>
 		«Utils.printCPPImports(comp)»
 		
-		
 		«IF comp.isDecomposed»
-		«FOR include : compIncludes»
-		«include»
-		«ENDFOR»
-		#include "«compname»Input.h"
-		#include "«compname»Result.h"
+		«Subcomponents.printIncludes(comp, compname, interfaceToImplementation)»
 		«ELSE»
 		#include "«compname»Impl.h"
 		«ENDIF»
+		
+		«Utils.printNamespaceStart(comp)»
 
 		«Utils.printTemplateArguments(comp)»
 		class «compname» : IComponent «IF comp.superComponent.present» , «Utils.printSuperClassFQ(comp)»
@@ -93,20 +86,24 @@ class ComponentGenerator {
 			void compute() override;
 			bool shouldCompute();
 			void start() override;
-		};            
+		};
 		            
 		«IF Utils.hasTypeParameters(comp)»
 	      «generateBody(comp, compname)»
 	    «ENDIF»
+
+	    «Utils.printNamespaceEnd(comp)»
 		'''
 	}
 
 	def static generateImplementationFile(ComponentSymbol comp, String compname) {
 	  return '''
   	#include "«compname».h"
+  	«Utils.printNamespaceStart(comp)»
   	«IF !Utils.hasTypeParameters(comp)»
     «generateBody(comp, compname)»
     «ENDIF»
+    «Utils.printNamespaceEnd(comp)»
     '''
 	}
 	
@@ -182,8 +179,8 @@ class ComponentGenerator {
 	        «FOR param : comp.configParameters SEPARATOR ','»
 	          «param.name»
 	        «ENDFOR»
-    	«ENDIF»
-    	))'''.toString().replace("\n", "")
+    «ENDIF»
+	))'''.toString().replace("\n", "")
 	}
 	
 	def static printComputeAtomic(ComponentSymbol comp, String compname) {
@@ -382,10 +379,10 @@ class ComponentGenerator {
 			«FOR subcomponent : comp.subComponents»
 				this->«subcomponent.name».compute();
         	«ENDFOR»
-        	
+
         	«printComputeResults(comp, compname, true)»
         	«printGuaranteesCheck(comp, compname)»
-        	}
+			}
 		}
 		'''
 	}
@@ -429,7 +426,7 @@ class ComponentGenerator {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::run(){
-			cout << "Thread for «compname» started\n";
+			std::cout << "Thread for «compname» started\n";
 			
 			while (true)
 				{

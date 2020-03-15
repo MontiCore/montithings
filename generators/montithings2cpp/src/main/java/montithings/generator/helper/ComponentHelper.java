@@ -612,7 +612,7 @@ public class ComponentHelper {
     File implLocation = Paths.get(hwcPath.toString() + File.separator
         + fqCompName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
         + "-" + StringTransformations.capitalize(resourcePortName) + File.separator
-        + resourcePortName + "ServerImpl.cpp").toFile();
+        + StringTransformations.capitalize(resourcePortName) + "Server.cpp").toFile();
     return implLocation.isFile();
   }
 
@@ -848,6 +848,12 @@ public class ComponentHelper {
     }
     // If subcomponent is in the same package as component, then no package path before class import required
     return "";
+  }
+
+  public static List<String> getPackages(ComponentSymbol component) {
+    String packageName = component.getPackageName();
+    String[] packages = packageName.split("\\.");
+    return Arrays.asList(packages);
   }
 
   public static boolean portIsComparedToNoData(ASTExpression e, String portName) {

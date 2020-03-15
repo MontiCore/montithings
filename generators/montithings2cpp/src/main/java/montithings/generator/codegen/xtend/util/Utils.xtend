@@ -151,6 +151,26 @@ class Utils {
   	}
   }
   
+  def static String printNamespaceStart(ComponentSymbol comp) {
+  	var packages = ComponentHelper.getPackages(comp);
+  	return '''
+  	namespace montithings {
+  	«FOR i : 0..<packages.size»
+  	namespace «packages.get(i)» {
+  	«ENDFOR»
+  	'''
+  }
+  
+  def static String printNamespaceEnd(ComponentSymbol comp) {
+  	var packages = ComponentHelper.getPackages(comp);
+  	return '''
+  	«FOR i : 0..<packages.size»
+	} // namespace «packages.get(packages.size - (i+1))»
+  	«ENDFOR»
+	} // namespace montithings
+  	'''
+  }
+  
   def static String printCPPImports(ComponentSymbol comp){
   	return '''
   	
@@ -177,6 +197,8 @@ class Utils {
 		«Utils.printCPPImports(comp)»
 		#include <AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF».h>
 		
+		«Utils.printNamespaceStart(comp)»
+		
 		class «symbol.name.toFirstUpper»Server : public AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF»<«type»>{
 		private:
 		«IF symbol.resourceParameters.size > 0»
@@ -193,6 +215,7 @@ class Utils {
 		    «symbol.name.toFirstUpper»Server(const char *uri) : AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF»(uri){};
 		    void setup();
 		};
+		«Utils.printNamespaceEnd(comp)»
 		'''
 	}
 	
@@ -201,6 +224,8 @@ class Utils {
 		return 
 		'''
 		#include "«port.name.toFirstUpper»Server.h"
+		
+		«Utils.printNamespaceStart(comp)»
 
 		void «port.name.toFirstUpper»Server::setup(){
 		 //ToDo: Fill Me if needed
@@ -219,9 +244,11 @@ class Utils {
 		}
 		«ENDIF»
 		«ENDIF»
+		«Utils.printNamespaceEnd(comp)»
+		
 		int
 		main(int argc, char **argv) try {
-		    auto server = «port.name.toFirstUpper»Server("«port.uri»");
+		    auto server = «Subcomponents.printPackageNamespaceForComponent(comp)»«port.name.toFirstUpper»Server("«port.uri»");
 		    server.setup();
 		    server.run();
 		    return 1;

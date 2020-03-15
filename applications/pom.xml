@@ -16,8 +16,9 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>smarttrunk-light</module>
+    <module>fireAlarm</module>
     <module>hierarchy</module>
+    <module>hierarchy-rp</module>
   </modules>
 
 </project>

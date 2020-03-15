@@ -12,7 +12,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>smarttrunk-light</artifactId>
+    <artifactId>hierarchy-rp</artifactId>
 
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 
@@ -177,6 +177,42 @@
                             <outputDirectory>${basedir}/target/generated-sources</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>unpack-mt-libs</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-libs.classifier}</classifier>
+                                    <version>5.0.2-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-sources/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-headers</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-headers.classifier}</classifier>
+                                    <version>5.0.2-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-sources/header</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -189,6 +225,7 @@
                         <out>${basedir}/target/generated-sources/</out>
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
+                        <!--<platform>DSA</platform>-->
                     </arguments>
                     <script>montithings/generator/maagenerator.groovy</script>
                 </configuration>
