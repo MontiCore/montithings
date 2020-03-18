@@ -88,7 +88,8 @@ class AutomatonGenerator{
 «««			  Generate implementation of automaton:
 «««			  switch-case statement for every state name 
 			    switch («Identifier.currentStateName») {
-			    «FOR state : automaton.stateDeclarationList.get(0).stateList»
+			    «FOR stateDeclaration : automaton.stateDeclarationList»
+			    «FOR state : stateDeclaration.stateList»
 			    	case «state.name»:
 			    	  «FOR transition : transitions.stream.filter(s | s.source.name == state.name).collect(Collectors.toList)»
 			    	  	// transition: «transition.toString»
@@ -117,6 +118,7 @@ class AutomatonGenerator{
 			    	  	
 			    	  	
 			    	  «ENDFOR»
+			    «ENDFOR»
 			    «ENDFOR»
 			    }
 			    return result;
@@ -284,8 +286,10 @@ public:
   	return'''
   	#include "«compname»Impl.h"
 
+	«Utils.printNamespaceStart(comp)»
     «printGetInitialValues(comp, compname)»
     «printCompute(comp, compname)»
+    «Utils.printNamespaceEnd(comp)»
   	'''
   }
 
