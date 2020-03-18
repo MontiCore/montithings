@@ -3,6 +3,7 @@ package montithings.cocos;
 
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.symboltable.Scope;
+import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTComponent;
 import montiarc._cocos.MontiArcASTComponentCoCo;
@@ -43,11 +44,13 @@ public class NoJavaImportStatements implements MontiArcASTComponentCoCo {
         Optional<ComponentSymbol> compsym = encScope.<ComponentSymbol>resolve(
             importStatement.getStatement(),
             ComponentSymbol.KIND);
+        Optional<CDTypeSymbol> cdsym = encScope.<CDTypeSymbol> resolve(importStatement.getStatement(),
+            CDTypeSymbol.KIND);
 
         // Check if import statement imports a MontiThings component
-        if (!compsym.isPresent()) {
+        if (!compsym.isPresent() && !cdsym.isPresent()) {
           Log.error("0xMT124 The import statement: " + importStatement.getStatement() +
-              " imports no MontiThings component!");
+              " imports neither a  MontiThings component nor a type defined in a class diagram!");
           return;
         }
       }

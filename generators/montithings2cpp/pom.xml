@@ -68,8 +68,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>montiarc.generators</groupId>
-			<artifactId>cd2pojo</artifactId>
+			<groupId>montithings.generators</groupId>
+			<artifactId>cd2cpp</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

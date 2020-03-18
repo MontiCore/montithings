@@ -4,6 +4,7 @@ package montithings.generator.codegen.xtend
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
 import montithings._symboltable.ComponentSymbol
+import montithings.generator.codegen.xtend.util.Ports
 
 class Input {
 
@@ -83,6 +84,7 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 #include <utility>
 #include "tl/optional.hpp"
 «Utils.printCPPImports(comp)»
+«Ports.printIncludes(comp)»
 
 «Utils.printNamespaceStart(comp)»
 

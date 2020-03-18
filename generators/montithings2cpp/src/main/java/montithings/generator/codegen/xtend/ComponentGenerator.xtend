@@ -41,6 +41,7 @@ class ComponentGenerator {
 		#include "sole/sole.hpp"
 		#include <iostream>
 		«Utils.printCPPImports(comp)»
+		«Ports.printIncludes(comp)»
 		
 		«IF comp.isDecomposed»
 		«Subcomponents.printIncludes(comp, compname, interfaceToImplementation)»

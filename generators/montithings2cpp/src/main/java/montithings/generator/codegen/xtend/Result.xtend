@@ -4,6 +4,7 @@ package montithings.generator.codegen.xtend
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
 import montithings._symboltable.ComponentSymbol
+import montithings.generator.codegen.xtend.util.Ports
 
 class Result {
 
@@ -62,6 +63,7 @@ return '''
 #include <list>
 #include <set>
 «Utils.printCPPImports(comp)»
+«Ports.printIncludes(comp)»
 
 «Utils.printNamespaceStart(comp)»
 

@@ -4,7 +4,7 @@ package bindings.cocos;
 import bindings._ast.ASTBindingRule;
 import bindings._cocos.BindingsASTBindingRuleCoCo;
 import bindings._symboltable.BindingsLanguage;
-import de.monticore.cd2pojo.Modelfinder;
+import montithings.generator.cd2cpp.Modelfinder;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.MontiThingsLanguage;

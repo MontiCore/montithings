@@ -47,22 +47,13 @@ class Subcomponents {
   
   def static String printPackageNamespace(ComponentSymbol comp, ComponentInstanceSymbol subcomp) {
   	var subcomponentType = subcomp.componentType.referencedSymbol
-  	var fullNamespaceSubcomponent = printPackageNamespaceForComponent(subcomponentType)
-  	var fullNamespaceEnclosingComponent = printPackageNamespaceForComponent(comp)
+  	var fullNamespaceSubcomponent = ComponentHelper.printPackageNamespaceForComponent(subcomponentType)
+  	var fullNamespaceEnclosingComponent = ComponentHelper.printPackageNamespaceForComponent(comp)
   	if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) && 
   		fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
   		return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent).get(1)
   	} else {
   		return fullNamespaceSubcomponent
   	}
-  }
-  
-  def static String printPackageNamespaceForComponent(montiarc._symboltable.ComponentSymbol comp) {
-  	var packages = ComponentHelper.getPackages(comp);
-  	var namespace = "montithings::"
-  	for (packageName : packages) {
-  		namespace += packageName + "::"
-  	}
-  	return namespace
   }
 }

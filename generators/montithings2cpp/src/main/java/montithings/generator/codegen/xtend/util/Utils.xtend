@@ -248,7 +248,7 @@ class Utils {
 		
 		int
 		main(int argc, char **argv) try {
-		    auto server = «Subcomponents.printPackageNamespaceForComponent(comp)»«port.name.toFirstUpper»Server("«port.uri»");
+		    auto server = «ComponentHelper.printPackageNamespaceForComponent(comp)»«port.name.toFirstUpper»Server("«port.uri»");
 		    server.setup();
 		    server.run();
 		    return 1;

@@ -15,7 +15,7 @@ class Deploy {
 		
 		int main()
 		{
-			«Subcomponents.printPackageNamespaceForComponent(comp)»«compname» cmp;
+			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp;
 			cmp.setUp(«IF comp.getStereotype().containsKey("timesync")»TIMESYNC«ELSE»EVENTBASED«ENDIF»);
 			cmp.init();
 			«IF !comp.getStereotype().containsKey("timesync")»

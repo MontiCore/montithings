@@ -2,6 +2,7 @@
 package montithings.generator.codegen.xtend.util
 
 import java.util.Collection
+import java.util.HashSet
 import montiarc._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
 import montithings._symboltable.ComponentSymbol
@@ -9,6 +10,21 @@ import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 
 class Ports {
+
+  def static String printIncludes(ComponentSymbol comp) {
+  	var HashSet<String> portIncludes = new HashSet<String>()
+    for (port : comp.ports) {
+    	if (ComponentHelper.portUsesCdType(port)) {
+    		var portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port)
+      		portIncludes.add('''#include "«portNamespace.replace("::", "/")».h"''')
+      	}
+      }
+	return '''
+	«FOR include : portIncludes»
+	«include»
+	«ENDFOR»
+	'''
+  }
 	
 	def static printVars(ComponentSymbol comp, Collection<PortSymbol> ports) {
 	return	'''

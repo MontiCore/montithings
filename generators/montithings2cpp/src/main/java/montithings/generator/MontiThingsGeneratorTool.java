@@ -4,7 +4,9 @@ package montithings.generator;
 import bindings.BindingsTool;
 import bindings.CocoInput;
 import bindings._symboltable.BindingsLanguage;
-import de.monticore.cd2pojo.Modelfinder;
+import de.monticore.umlcd4a.CD4AnalysisLanguage;
+import montithings.generator.cd2cpp.CppGenerator;
+import montithings.generator.cd2cpp.Modelfinder;
 import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
@@ -23,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +78,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     /* ============================================================ */
-    /* ======================? Check Models ======================= */
+    /* ======================= Check Models ======================= */
     /* ============================================================ */
     // 1. Find all .mt files
     List<String> foundModels = Modelfinder
@@ -107,6 +110,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         // Dont generate files for implementation. They are generated when interface is there
         continue;
       }
+
+      /* ============================================================ */
+      /* ==================== Generate Components =================== */
+      /* ============================================================ */
 
       String compname = comp.getName();
 
@@ -169,6 +176,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
 
+    /* ============================================================ */
+    /* ====================== CMakeLists.txt ====================== */
+    /* ============================================================ */
+
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
       montithings._symboltable.ComponentSymbol comp = symTab.<montithings._symboltable.ComponentSymbol>resolve(qualifiedModelName,
@@ -176,13 +187,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       if (comp.isApplication()) {
         File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
-        // 5 generate libs
-				/*try {
-					FileUtils.copyDirectoryToDirectory(Paths.get("src/main/resources/rte/montithings-RTE").toFile(), target);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}*/
-
         // Check for Subpackages
         File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
 
@@ -193,6 +197,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
 
+    /* ============================================================ */
+    /* ====================== Class Diagrams ====================== */
+    /* ============================================================ */
+
+    generateCD(modelPath, target);
   }
 
   /**
@@ -275,7 +284,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for (int i = 0; i < modelPath.length(); i++) {
       // Assuming a seperator is always length 1
       if (seperator.length() != 1) {
-        Log.error("0x???? File seperator should be a single char. Use a less strange system");
+        Log.error("0x???? File separator should be a single char. Use a less strange system");
       }
       else if (modelPath.charAt(i) == seperator.charAt(0)) {
         lastFolderIndex = i;
@@ -291,6 +300,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
     return basedir;
+  }
+
+  private void generateCD(File modelPath, File targetFilepath) {
+    List<String> foundModels = Modelfinder.getModelsInModelPath(modelPath, CD4AnalysisLanguage.FILE_ENDING);
+    for (String model : foundModels) {
+      String simpleName = Names.getSimpleName(model);
+      String packageName = Names.getQualifier(model);
+
+      Path outDir = Paths.get(targetFilepath.getAbsolutePath());
+      new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model,
+          Names.getQualifiedName(packageName, simpleName)).generate();
+    }
   }
 
 }

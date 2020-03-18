@@ -139,9 +139,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>montiarc.generators</groupId>
-            <artifactId>cd2pojo</artifactId>
-            <version>${montiarc.version}</version>
+            <groupId>montithings.generators</groupId>
+            <artifactId>cd2cpp</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>montithings.languages</groupId>

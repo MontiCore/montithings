@@ -5,7 +5,6 @@ import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.types.JFieldSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.TypeSymbol;
@@ -16,20 +15,21 @@ import de.monticore.types.prettyprint.TypesPrettyPrinterConcreteVisitor;
 import de.monticore.types.types._ast.ASTQualifiedName;
 import de.monticore.types.types._ast.ASTType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
+import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import jline.internal.Log;
-import montiarc._ast.*;
+import montiarc._ast.ASTParameter;
+import montiarc._ast.ASTPort;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
 import montiarc._symboltable.PortSymbol;
+import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
 import montiarc.helper.SymbolPrinter;
 import montithings._ast.*;
-import montithings._ast.ASTComponent;
 import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
-import montithings.visitor.ExpressionEnclosingScopeSetterVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.visitor.GuardExpressionVisitor;
 
@@ -104,6 +104,9 @@ public class ComponentHelper {
       TypesPrettyPrinterConcreteVisitor typesPrinter = new TypesPrettyPrinterConcreteVisitor(
           new IndentPrinter());
       final ASTPort astNode = (ASTPort) portSymbol.getAstNode().get();
+      if (portUsesCdType(portSymbol)) {
+        return printCdPortPackageNamespace(componentSymbol, portSymbol);
+      }
       return ComponentHelper.autobox(typesPrinter.prettyprint(astNode.getType()));
       // End of temp workaround
 
@@ -173,6 +176,44 @@ public class ComponentHelper {
       return insertTypeParamValueIntoTypeArg(typeReference,
           actualTypeArgStringsMap.get(Objects.requireNonNull(currentComponent).getFullName()));
     }
+  }
+
+  public static boolean portUsesCdType(PortSymbol portSymbol) {
+    return portSymbol.getTypeReference().getReferencedSymbol() instanceof CDTypeSymbol2JavaType;
+  }
+
+  public static String printCdPortPackageNamespace(ComponentSymbol componentSymbol, PortSymbol portSymbol) {
+    if (!(portSymbol.getTypeReference().getReferencedSymbol() instanceof CDTypeSymbol2JavaType)) {
+      throw new IllegalArgumentException(
+          "Can't print namespace of non-CD type " + portSymbol.getTypeReference()
+              .getReferencedSymbol().getFullName());
+    }
+    CDTypeSymbol2JavaType adapter = (CDTypeSymbol2JavaType) portSymbol.getTypeReference()
+        .getReferencedSymbol();
+    CDTypeSymbol cdTypeSymbol = adapter.getAdaptee();
+    return printPackageNamespace(componentSymbol, cdTypeSymbol);
+  }
+
+  public static String printPackageNamespace(ComponentSymbol comp, CDTypeSymbol cdtype) {
+    String fullNamespaceSubcomponent = "montithings::" + cdtype.getFullName().replace(".", "::");
+    String fullNamespaceEnclosingComponent = printPackageNamespaceForComponent(comp);
+    if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
+        fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
+      return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent)[1];
+    }
+    else {
+      return fullNamespaceSubcomponent;
+    }
+  }
+
+  public static String printPackageNamespaceForComponent(
+      montiarc._symboltable.ComponentSymbol comp) {
+    List<String> packages = ComponentHelper.getPackages(comp);
+    StringBuilder namespace = new StringBuilder("montithings::");
+    for (String packageName : packages) {
+      namespace.append(packageName).append("::");
+    }
+    return namespace.toString();
   }
 
   /**
@@ -882,6 +923,7 @@ public class ComponentHelper {
 
   /**
    * Get list of execution statements sorted by priority
+   *
    * @return list of execution statements sorted by priority
    */
   public static List<ASTExecutionIfStatement> getExecutionStatements(ComponentSymbol component) {
@@ -890,6 +932,7 @@ public class ComponentHelper {
 
   /**
    * Returns a list of ResourcePortSymbols for resources in the component
+   *
    * @return ResourcePortSymmbols in component
    */
   public static List<ResourcePortSymbol> getResourcePortsInComponent(ComponentSymbol component) {
@@ -908,6 +951,7 @@ public class ComponentHelper {
 
   /**
    * Returns all ports that appear in any batch statements
+   *
    * @return unsorted list of all ports for which a batch statement exists
    */
   public static List<PortSymbol> getPortsInBatchStatement(ComponentSymbol component) {
@@ -916,6 +960,7 @@ public class ComponentHelper {
 
   /**
    * Find all ports of a component that DON'T appear in any batch statement
+   *
    * @return
    */
   public static List<PortSymbol> getPortsNotInBatchStatements(ComponentSymbol component) {
@@ -924,6 +969,7 @@ public class ComponentHelper {
 
   /**
    * Get Else Statement if one exists
+   *
    * @return the (only) else statement within this component's body, Optional.empty if none exists
    */
   public static Optional<ASTExecutionElseStatement> getElseStatement(ComponentSymbol component) {
@@ -932,6 +978,7 @@ public class ComponentHelper {
 
   /**
    * Checks if this component uses an automaton
+   *
    * @return true iff this component's body contains an automaton
    */
   public static boolean containsAutomaton(ComponentSymbol component) {
