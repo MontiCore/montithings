@@ -4,7 +4,7 @@ package batchTest;
 component OutComp{
 
 control {
-    update interval 20ms;
+    update interval 20msec;
 }
 
 port out String outPort;

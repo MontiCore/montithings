@@ -6,6 +6,6 @@ component Sum {
   port out int result;
 
   control {
-    update interval 1s;
+    update interval 1sec;
   }
 }

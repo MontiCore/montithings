@@ -9,6 +9,6 @@ component NegativeUpdateInterval {
     connect oc.outPort -> ic.inPort;
 
     control{
-        update interval 0ms;
+        update interval 0msec;
     }
 }

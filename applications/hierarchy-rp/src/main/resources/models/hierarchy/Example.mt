@@ -19,7 +19,7 @@ package hierarchy;
   connect d.y -> sink.value;
 
   control {
-    update interval 1s;
+    update interval 1sec;
   }
 
 }

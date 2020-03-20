@@ -129,7 +129,7 @@ grammar MontiThings extends MontiArc {
     CalculationInterval implements ControlStatement =
       "update" "interval" interval:IntLiteral TimeUnit";";
 
-    enum TimeUnit = "ms" | "s" | "min";
+    enum TimeUnit = "msec" | "sec" | "min";
 
     /**
      * BatchStatements define which ports should be

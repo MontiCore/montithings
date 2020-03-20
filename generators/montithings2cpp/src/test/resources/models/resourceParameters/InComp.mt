@@ -5,7 +5,7 @@ component InComp{
 port in String inPort;
 
 control {
-    update interval 250ms;
+    update interval 250msec;
 }
 
 behavior{
