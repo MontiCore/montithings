@@ -3,6 +3,7 @@ package montithings._ast;
 
 import de.monticore.literals.literals._ast.ASTIntLiteral;
 import de.monticore.mcexpressions._ast.ASTExpression;
+import montiarc._ast.ASTGuardExpression;
 import montiarc._symboltable.PortSymbol;
 import montithings.helper.ExpressionUtil;
 
@@ -18,7 +19,7 @@ import java.util.Optional;
  */
 public class ASTExecutionIfStatement extends ASTExecutionIfStatementTOP {
   public List<PortSymbol> getPortsInGuardExpression() {
-    return ExpressionUtil.getPortsInGuardExpression(getGuard());
+    return ExpressionUtil.getPortsInGuardExpression(getGuard().getExpression());
   }
 
   /* ============================================================ */
@@ -28,7 +29,7 @@ public class ASTExecutionIfStatement extends ASTExecutionIfStatementTOP {
   public ASTExecutionIfStatement() {
   }
 
-  public ASTExecutionIfStatement(ASTExpression guard,
+  public ASTExecutionIfStatement(ASTGuardExpression guard,
       String method, Optional<ASTIntLiteral> priority) {
     super(guard, method, priority);
   }

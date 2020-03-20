@@ -3,7 +3,6 @@ package montithings.generator.codegen.xtend
 
 import montithings._symboltable.ComponentSymbol
 import montithings.generator.helper.ComponentHelper
-import montithings.generator.codegen.xtend.util.Subcomponents
 
 class Deploy {
 	

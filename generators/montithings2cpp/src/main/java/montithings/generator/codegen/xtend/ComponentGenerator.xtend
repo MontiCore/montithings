@@ -347,13 +347,13 @@ class ComponentGenerator {
 		«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
 		if (
 			«FOR port : statement.portsInGuardExpression SEPARATOR ' && '»
-			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
+			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard.expression, port.name)»
 			input.get«port.name.toFirstUpper»()
 			«ELSE»
 			true // presence of value on port «port.name» not checked as it is compared to NoData
 			«ENDIF»
 			«ENDFOR»
-			«IF statement.portsInGuardExpression.length() > 0»&&«ENDIF» «printExpression(statement.guard)»
+			«IF statement.portsInGuardExpression.length() > 0»&&«ENDIF» «printExpression(statement.guard.expression)»
 			)
 		{
 			result = «Identifier.behaviorImplName».«statement.method»(input);	

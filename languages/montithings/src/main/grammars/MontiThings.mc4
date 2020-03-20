@@ -184,7 +184,7 @@ grammar MontiThings extends MontiArc {
      * values of current messages.
      */
     ExecutionIfStatement implements ExecutionStatement =
-        "if" (guard:Expression) ":" method:Name&"()"
+        "if" (guard:GuardExpression) ":" method:Name&"()"
         ("|" ("prio" | "priority") "=" priority:IntLiteral)? ";";
 
     ExecutionElseStatement implements ExecutionStatement =
