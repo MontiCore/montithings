@@ -75,6 +75,7 @@ public class MontiThingsCoCos {
         .addCoCo(new AutomatonGuardIsNotBoolean())
         .addCoCo(new GenericInitValues())
         .addCoCo(new ProhibitGenericsWithBounds())
+        .addCoCo(new DefaultValuesCorrectlyAssigned())
 
         // .addCoCo(new AutomatonStimulusTypeDoesNotFitInputType())
         .addCoCo((MontiArcASTTransitionCoCo) new

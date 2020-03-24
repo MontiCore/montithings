@@ -33,7 +33,7 @@ import java.util.Set;
  */
 public class MontiThingsTool {
 
-  private static final String[] primitiveTypes = { "bool", "std::byte", "char", "double", "float",
+  private static final String[] primitiveTypes = { "boolean", "std::byte", "char", "double", "float",
       "int", "long", "short", "null", "char16_t", "char32_t", "wchar_t", "std::string",
       "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t",
       "uint64_t", "Integer" };

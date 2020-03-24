@@ -38,6 +38,13 @@ public class AssortedCoCoTest extends AbstractCoCoTest {
   }
 
   @Test
+  public void defaultValueTypeCheckTest() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE + "." + "DefaultValueWrongType");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new DefaultValuesCorrectlyAssigned()),
+        node, new ExpectedErrorInfo(1, "xMT014"));
+  }
+
+  @Test
   public void javaPBehaviorTest() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE +
         "." + "JavaPBehavior");

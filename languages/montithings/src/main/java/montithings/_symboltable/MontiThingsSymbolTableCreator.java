@@ -233,6 +233,8 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
 
       if (decl.isPresentDefault()) {
         sym.setDefaultValue(decl.getDefault());
+        sym.getDefaultValue().setEnclosingScope(currentScope().get());
+        setEnclosingScopeOfNodes(sym.getDefaultValue());
       }
 
       if (node.isPresentAllowedValues()) {
