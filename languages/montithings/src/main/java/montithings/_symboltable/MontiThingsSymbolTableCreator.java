@@ -27,8 +27,9 @@ import montiarc._symboltable.MontiArcArtifactScope;
 import montiarc._symboltable.MontiArcSymbolTableCreator;
 import montiarc.helper.JavaDefaultTypesManager;
 import montiarc.helper.Timing;
-import montithings._ast.*;
 import montithings._ast.ASTComponent;
+import montithings._ast.ASTPort;
+import montithings._ast.*;
 import montithings._visitor.MontiThingsVisitor;
 import montithings.visitor.ExpressionEnclosingScopeSetterVisitor;
 
@@ -205,6 +206,51 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
    */
 
   @Override
+  public void visit(ASTPort node) {
+    ASTType astType = node.getType();
+    String typeName = TypesPrinter.printTypeWithoutTypeArgumentsAndDimension(astType);
+
+    List<ASTMTPortDeclaration> declarations = node.getMTPortDeclarationList();
+
+    if (node.getMTPortDeclarationList().isEmpty()) {
+      declarations.add(MontiThingsNodeFactory
+          .createASTMTPortDeclaration(StringTransformations.uncapitalize(typeName),
+              Optional.empty()));
+    }
+
+    for (ASTMTPortDeclaration decl : node.getMTPortDeclarationList()) {
+      montithings._symboltable.PortSymbol sym = new montithings._symboltable.PortSymbol(
+          decl.getName());
+
+      int dimension = TypesHelper.getArrayDimensionIfArrayOrZero(astType);
+      JTypeReference<JavaTypeSymbol> typeRef = new JavaTypeSymbolReference(typeName,
+          currentScope().get(), dimension);
+
+      addTypeArgumentsToTypeSymbol(typeRef, astType, currentScope().get());
+
+      sym.setTypeReference(typeRef);
+      sym.setDirection(node.isIncoming());
+
+      if (decl.isPresentDefault()) {
+        sym.setDefaultValue(decl.getDefault());
+      }
+
+      if (node.isPresentAllowedValues()) {
+        sym.setAllowedValues(node.getAllowedValues());
+      }
+
+      // stereotype
+      if (node.getStereotypeOpt().isPresent()) {
+        for (ASTStereoValue st : node.getStereotypeOpt().get().getValuesList()) {
+          sym.addStereotype(st.getName(), st.getValue());
+        }
+      }
+
+      addToScopeAndLinkWithNode(sym, node);
+    }
+  }
+
+  @Override
   public void visit(ASTComponent node) {
     this.currentComponent = node;
     String componentName = node.getName();
@@ -259,9 +305,11 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
 
     // Fix AST enclosing scopes
     List<ASTAssumption> assumptions = component.getAssumptions();
-    assumptions.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(component.getSpannedScope())));
+    assumptions.forEach(e -> e.getGuard()
+        .accept(new ExpressionEnclosingScopeSetterVisitor(component.getSpannedScope())));
     List<ASTGuarantee> guarantees = component.getGuarantees();
-    guarantees.forEach(e -> e.getGuard().accept(new ExpressionEnclosingScopeSetterVisitor(component.getSpannedScope())));
+    guarantees.forEach(e -> e.getGuard()
+        .accept(new ExpressionEnclosingScopeSetterVisitor(component.getSpannedScope())));
   }
 
   protected void setParametersOfComponent(final ComponentSymbol componentSymbol,
@@ -482,6 +530,7 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
       }
     }
   }
+
   private void addSubComponentSymbols(ASTSubComponent node) {
     String referencedCompName = TypesPrinter
         .printTypeWithoutTypeArgumentsAndDimension(node.getType());

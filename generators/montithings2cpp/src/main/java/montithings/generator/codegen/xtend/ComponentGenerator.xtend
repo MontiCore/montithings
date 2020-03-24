@@ -100,6 +100,7 @@ class ComponentGenerator {
 	def static generateImplementationFile(ComponentSymbol comp, String compname) {
 	  return '''
   	#include "«compname».h"
+  	#include <regex>
   	«Utils.printNamespaceStart(comp)»
   	«IF !Utils.hasTypeParameters(comp)»
     «generateBody(comp, compname)»
@@ -192,12 +193,18 @@ class ComponentGenerator {
 			{
 				«printComputeInputs(comp, compname)»
 				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
+				«FOR port: comp.incomingPorts»
+        «ComponentHelper.printPortValuecheck(comp, port)»
+        «ENDFOR»
 				«printAssumptionsCheck(comp, compname)»
 				«IF !ComponentHelper.hasExecutionStatement(comp)»
 				result = «Identifier.behaviorImplName».compute(input);
 				«ELSE»
 				«printIfThenElseExecution(comp, compname)»
 				«ENDIF»
+				«FOR port: comp.outgoingPorts»
+          «ComponentHelper.printPortValuecheck(comp, port)»
+        «ENDFOR»
 				«printGuaranteesCheck(comp, compname)»
 				setResult(result);				
 			}
@@ -375,14 +382,20 @@ class ComponentGenerator {
 			if (shouldCompute()) {
 			
 			«printComputeInputs(comp, compname)»
+			«FOR port: comp.incomingPorts»
+			«ComponentHelper.printPortValuecheck(comp, port)»
+			«ENDFOR»
 			«printAssumptionsCheck(comp, compname)»
 			
 			«FOR subcomponent : comp.subComponents»
 				this->«subcomponent.name».compute();
-        	«ENDFOR»
+      «ENDFOR»
 
-        	«printComputeResults(comp, compname, true)»
-        	«printGuaranteesCheck(comp, compname)»
+      «printComputeResults(comp, compname, true)»
+      «FOR port: comp.outgoingPorts»
+        «ComponentHelper.printPortValuecheck(comp, port)»
+      «ENDFOR»
+      «printGuaranteesCheck(comp, compname)»
 			}
 		}
 		'''

@@ -51,6 +51,27 @@ grammar MontiThings extends MontiArc {
     Guarantee implements Element = "guarantee" ":" guard:Expression ";";
 
     /* ============================================================ */
+    /* ========================== Ports =========================== */
+    /* ============================================================ */
+
+    interface AllowedValues;
+
+    Port implements Element =
+        Stereotype?
+        (incoming:["in"] | outgoing:["out"])    // direction
+        Type ("(" AllowedValues ")" )?
+        (MTPortDeclaration || ",")+;
+
+    MTPortDeclaration = Name ("=" default:Valuation)?;
+
+    //StreamHistoryValue implements Expression = "[" IntLiteral | "pre" "]";
+
+    MTValueList   implements AllowedValues = (Valuation | MTValueRange) ("," (Valuation | MTValueRange))*;
+    MTValueRange  implements AllowedValues = lowerBound:Valuation (":" stepsize:Valuation)? ":" upperBound:Valuation;
+    MTValueFormat implements AllowedValues = "format" ":" format:String; // RegEx to which value has to conform
+
+
+    /* ============================================================ */
     /* ====================== Resource Ports ====================== */
     /* ============================================================ */
 

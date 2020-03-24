@@ -41,7 +41,6 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
    * montithings.generator.visitor.MontiArcJavaDSLPrettyPrinter
    *
    * @param out
-   * @param left
    */
   public CDAttributeGetterTransformationVisitor(IndentPrinter out) {
     super(out);
@@ -135,6 +134,10 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
   }
 
   private void handle(ASTNameExpression node, boolean isComparedToNoData) {
+    if (!node.isPresentEnclosingScope()) {
+      printer.print(node.getName());
+      return;
+    }
     Scope s = node.getEnclosingScopeOpt().get();
     String name = node.getName();
     Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
