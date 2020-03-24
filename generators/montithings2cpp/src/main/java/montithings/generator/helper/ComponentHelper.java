@@ -18,7 +18,7 @@ import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
-import jline.internal.Log;
+import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTParameter;
 import montiarc._ast.ASTPort;
 import montiarc._symboltable.ComponentInstanceSymbol;
@@ -725,13 +725,13 @@ public class ComponentHelper {
         .filter(e -> e instanceof ASTCalculationInterval)
         .findFirst()
         .map(e -> ((ASTCalculationInterval) e).getTimeUnit().toString())
-        .orElse("MS");
+        .orElse("MSEC");
 
     switch (intervalUnit) {
-      case "MS":
+      case "MSEC":
         method = "std::chrono::milliseconds(" + interval + ")";
         break;
-      case "S":
+      case "SEC":
         method = "std::chrono::seconds(" + interval + ")";
         break;
       case "MIN":
