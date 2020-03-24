@@ -9,6 +9,10 @@ import montithings._ast.ASTComponent
 import montiarc._ast.ASTVariableDeclaration
 import montithings._symboltable.ComponentSymbol
 import montithings._symboltable.ResourcePortSymbol
+import de.monticore.mcexpressions._ast.ASTExpression
+import de.monticore.prettyprint.IndentPrinter
+import de.monticore.java.prettyprint.JavaDSLPrettyPrinter
+import montithings.generator.visitor.CDAttributeGetterTransformationVisitor
 
 class Utils {
 
@@ -164,9 +168,9 @@ class Utils {
   def static String printNamespaceEnd(ComponentSymbol comp) {
   	var packages = ComponentHelper.getPackages(comp);
   	return '''
-  	«FOR i : 0..<packages.size»
+	«FOR i : 0..<packages.size»
 	} // namespace «packages.get(packages.size - (i+1))»
-  	«ENDFOR»
+	«ENDFOR»
 	} // namespace montithings
   	'''
   }
@@ -257,6 +261,20 @@ class Utils {
 		    return 1;
 		}
 		'''
+	}
+	
+	def static String printExpression(ASTExpression expr, boolean isAssignment) {
+    	var IndentPrinter printer = new IndentPrinter();
+    	var JavaDSLPrettyPrinter prettyPrinter = new JavaDSLPrettyPrinter(printer);
+    	if (isAssignment) {
+      		prettyPrinter = new CDAttributeGetterTransformationVisitor(printer);
+    	}
+    	expr.accept(prettyPrinter);
+    	return printer.getContent();
+  	}
+
+	def static String printExpression(ASTExpression expr) {
+    	return printExpression(expr, true);
 	}
 
 }

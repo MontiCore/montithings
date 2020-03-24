@@ -5,6 +5,7 @@ import montithings._symboltable.ComponentSymbol
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.xtend.util.Utils
+import montithings.generator.codegen.xtend.util.ValueCheck
 import montithings.generator.codegen.xtend.util.Subcomponents
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.codegen.xtend.util.Setup
@@ -14,10 +15,6 @@ import java.util.ArrayList
 import java.util.HashMap
 import de.monticore.symboltable.types.JFieldSymbol
 import montiarc._symboltable.ComponentSymbolReference
-import de.monticore.mcexpressions._ast.ASTExpression
-import de.monticore.prettyprint.IndentPrinter
-import de.monticore.java.prettyprint.JavaDSLPrettyPrinter
-import montithings.generator.visitor.CDAttributeGetterTransformationVisitor
 
 class ComponentGenerator {
 	
@@ -194,7 +191,7 @@ class ComponentGenerator {
 				«printComputeInputs(comp, compname)»
 				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
 				«FOR port: comp.incomingPorts»
-        «ComponentHelper.printPortValuecheck(comp, port)»
+        «ValueCheck.printPortValuecheck(comp, port)»
         «ENDFOR»
 				«printAssumptionsCheck(comp, compname)»
 				«IF !ComponentHelper.hasExecutionStatement(comp)»
@@ -203,7 +200,7 @@ class ComponentGenerator {
 				«printIfThenElseExecution(comp, compname)»
 				«ENDIF»
 				«FOR port: comp.outgoingPorts»
-          «ComponentHelper.printPortValuecheck(comp, port)»
+          «ValueCheck.printPortValuecheck(comp, port)»
         «ENDFOR»
 				«printGuaranteesCheck(comp, compname)»
 				setResult(result);				
@@ -275,10 +272,10 @@ class ComponentGenerator {
 			«ENDIF»
 		«ENDFOR» && 
 		!(
-			«printExpression(statement.guard)»
+			«Utils.printExpression(statement.guard)»
 		)) {
 			std::stringstream error;
-			error << "Violated assumption «printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
+			error << "Violated assumption «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
 			error << "Input port values: " << std::endl;
 			«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
 			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
@@ -317,10 +314,10 @@ class ComponentGenerator {
 			«ENDIF»
 		«ENDFOR» && 
 		!(
-			«printExpression(statement.guard)»
+			«Utils.printExpression(statement.guard)»
 		)) {
 			std::stringstream error;
-			error << "Violated guarantee «printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
+			error << "Violated guarantee «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
 			error << "Port values: " << std::endl;
 			«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
 			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
@@ -360,7 +357,7 @@ class ComponentGenerator {
 			true // presence of value on port «port.name» not checked as it is compared to NoData
 			«ENDIF»
 			«ENDFOR»
-			«IF statement.portsInGuardExpression.length() > 0»&&«ENDIF» «printExpression(statement.guard.expression)»
+			«IF statement.portsInGuardExpression.length() > 0»&&«ENDIF» «Utils.printExpression(statement.guard.expression)»
 			)
 		{
 			result = «Identifier.behaviorImplName».«statement.method»(input);	
@@ -383,7 +380,7 @@ class ComponentGenerator {
 			
 			«printComputeInputs(comp, compname)»
 			«FOR port: comp.incomingPorts»
-			«ComponentHelper.printPortValuecheck(comp, port)»
+			«ValueCheck.printPortValuecheck(comp, port)»
 			«ENDFOR»
 			«printAssumptionsCheck(comp, compname)»
 			
@@ -393,7 +390,7 @@ class ComponentGenerator {
 
       «printComputeResults(comp, compname, true)»
       «FOR port: comp.outgoingPorts»
-        «ComponentHelper.printPortValuecheck(comp, port)»
+        «ValueCheck.printPortValuecheck(comp, port)»
       «ENDFOR»
       «printGuaranteesCheck(comp, compname)»
 			}
@@ -472,19 +469,4 @@ class ComponentGenerator {
     }
     return result;
   }
-  
-  def private static String printExpression(ASTExpression expr, boolean isAssignment) {
-    var IndentPrinter printer = new IndentPrinter();
-    var JavaDSLPrettyPrinter prettyPrinter = new JavaDSLPrettyPrinter(printer);
-    if (isAssignment) {
-      prettyPrinter = new CDAttributeGetterTransformationVisitor(printer);
-    }
-    expr.accept(prettyPrinter);
-    return printer.getContent();
-  }
-
-  def private static String printExpression(ASTExpression expr) {
-    return printExpression(expr, true);
-  }
-	
 }

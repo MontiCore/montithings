@@ -8,10 +8,6 @@ import montiarc._ast.ASTComponent
 import montiarc._ast.ASTAutomatonBehavior
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
-import de.monticore.prettyprint.IndentPrinter
-import de.monticore.mcexpressions._ast.ASTExpression
-import de.monticore.java.prettyprint.JavaDSLPrettyPrinter
-import montithings.generator.visitor.CDAttributeGetterTransformationVisitor
 import montiarc._ast.ASTIOAssignment
 import montiarc._symboltable.VariableSymbol
 import java.util.Optional
@@ -94,7 +90,7 @@ class AutomatonGenerator{
 			    	  «FOR transition : transitions.stream.filter(s | s.source.name == state.name).collect(Collectors.toList)»
 			    	  	// transition: «transition.toString»
 «««			    	  if statement for each guard of a transition from this state	
-			    	  	if («IF transition.guardAST.isPresent»«printExpression(transition.guardAST.get.guardExpression.expression)»«ELSE» true «ENDIF») {
+			    	  	if («IF transition.guardAST.isPresent»«Utils.printExpression(transition.guardAST.get.guardExpression.expression)»«ELSE» true «ENDIF») {
 			    	  	  //reaction
 «««			    	  	if true execute reaction of transition  
 			    	  	  «IF transition.reactionAST.present»
@@ -226,31 +222,11 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
     } else {
       var ASTValueList vl = assignment.getValueList();
       if (vl.isPresentValuation()) {
-        return printExpression(vl.getValuation().getExpression(), assignment.isAssignment);
+        return Utils.printExpression(vl.getValuation().getExpression(), assignment.isAssignment);
       } else {
         throw new RuntimeException("ValueLists not supported.");
       }
     }
-  }
-
-  /**
-   * Prints the java expression of the given AST expression node.
-   * 
-   * @param expr
-   * @return
-   */
-  def private String printExpression(ASTExpression expr, boolean isAssignment) {
-    var IndentPrinter printer = new IndentPrinter();
-    var JavaDSLPrettyPrinter prettyPrinter = new JavaDSLPrettyPrinter(printer);
-    if (isAssignment) {
-      prettyPrinter = new CDAttributeGetterTransformationVisitor(printer);
-    }
-    expr.accept(prettyPrinter);
-    return printer.getContent();
-  }
-
-  def private String printExpression(ASTExpression expr) {
-    return printExpression(expr, true);
   }
 	
 	  def String generateHeader(ComponentSymbol comp, String compname) {
