@@ -17,7 +17,6 @@ public:
     }
 	//ConverterImpl() = default;
 	ConverterResult getInitialValues() override;
-	ConverterResult setZero(ConverterInput input);
 	ConverterResult propagate(ConverterInput input);
 	ConverterResult compute(ConverterInput input) override {
 	  throw std::runtime_error("Invoking compute() on component hierarchy.Converter which has if-then-else behavior");

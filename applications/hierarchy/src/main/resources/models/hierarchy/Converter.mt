@@ -5,7 +5,7 @@ component Converter {
   port out int outport;
 
   behavior {
-    if (inport == --) : setZero();
+    if (inport == --) : outport = 0;
     else propagate();
   }
 }

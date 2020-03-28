@@ -360,13 +360,25 @@ class ComponentGenerator {
 			«IF statement.portsInGuardExpression.length() > 0»&&«ENDIF» «Utils.printExpression(statement.guard.expression)»
 			)
 		{
-			result = «Identifier.behaviorImplName».«statement.method»(input);	
+			«IF statement.isPresentMethod»
+			result = «Identifier.behaviorImplName».«statement.method»(input);
+			«ELSE»
+			«FOR valuation : statement.portValuationList»
+			result.set«valuation.port.toFirstUpper»(«Utils.printExpression(valuation.value.expression)»);
+			«ENDFOR»
+			«ENDIF»	
 		}
 		«ENDFOR»
 		«IF ComponentHelper.getElseStatement(comp) !== null»
 		else {
+		«IF ComponentHelper.getElseStatement(comp).get.isPresentMethod»
 			result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).get.method»(input);
-			}
+		«ELSE»
+			«FOR valuation : ComponentHelper.getElseStatement(comp).get.portValuationList»
+			result.set«valuation.port.toFirstUpper»(«Utils.printExpression(valuation.value.expression)»);
+			«ENDFOR»
+		«ENDIF»
+		}
 		«ENDIF»
 		'''
 	}

@@ -32,9 +32,13 @@ public:
 	«compname»Result«generics» getInitialValues() override;
 	«IF ComponentHelper.getExecutionStatements(comp).size > 0»
 	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
+	«IF statement.isPresentMethod»
 	«compname»Result«generics» «statement.method»(«compname»Input«generics» input);
+	«ENDIF»
 	«ENDFOR»
+	«IF ComponentHelper.getElseStatement(comp).get.isPresentMethod»
 	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).get.method»(«compname»Input«generics» input);
+	«ENDIF»
 	«compname»Result«generics» compute(«compname»Input«generics» input) override {
 	  throw std::runtime_error("Invoking compute() on component «comp.packageName».«compname» which has if-then-else behavior");
 	}
@@ -71,16 +75,19 @@ public:
 
 «IF ComponentHelper.getExecutionStatements(comp).size > 0»
 	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
+	«IF statement.isPresentMethod»
 		«Utils.printTemplateArguments(comp)»
 		«compname»Result«generics» «compname»Impl«generics»::«statement.method»(«compname»Input«generics» «Identifier.inputName»){
 			throw std::runtime_error("Invoking «statement.method»() on abstract implementation «comp.packageName».«compname»");  	
 		}
-		
+	«ENDIF»
 	«ENDFOR»
+	«IF ComponentHelper.getElseStatement(comp).get.isPresentMethod»
 	«Utils.printTemplateArguments(comp)»
 	«compname»Result«generics» «compname»Impl«generics»::«ComponentHelper.getElseStatement(comp).get.method»(«compname»Input«generics» «Identifier.inputName»){
 		throw std::runtime_error("Invoking «ComponentHelper.getElseStatement(comp).get.method»() on abstract implementation «comp.packageName».«compname»");
 	}
+	«ENDIF»
 «ELSE»
 «Utils.printTemplateArguments(comp)»
 «compname»Result«generics» «compname»Impl«generics»::compute(«compname»Input«generics» «Identifier.inputName»){

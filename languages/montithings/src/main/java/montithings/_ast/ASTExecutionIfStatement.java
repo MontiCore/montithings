@@ -4,6 +4,7 @@ package montithings._ast;
 import de.monticore.literals.literals._ast.ASTIntLiteral;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import montiarc._ast.ASTGuardExpression;
+import montiarc._ast.ASTValuation;
 import montiarc._symboltable.PortSymbol;
 import montithings.helper.ExpressionUtil;
 
@@ -30,7 +31,8 @@ public class ASTExecutionIfStatement extends ASTExecutionIfStatementTOP {
   }
 
   public ASTExecutionIfStatement(ASTGuardExpression guard,
-      String method, Optional<ASTIntLiteral> priority) {
-    super(guard, method, priority);
+      Optional<String> method, List<ASTPortValuation> portValuations,
+      Optional<ASTIntLiteral> priority) {
+    super(guard, method, portValuations, priority);
   }
 }
