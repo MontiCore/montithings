@@ -15,10 +15,11 @@ import java.util.ArrayList
 import java.util.HashMap
 import de.monticore.symboltable.types.JFieldSymbol
 import montiarc._symboltable.ComponentSymbolReference
+import montithings.generator.codegen.TargetPlatform
 
 class ComponentGenerator {
 	
-	def static generateHeader(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
+	def static generateHeader(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation, TargetPlatform platform) {
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    
 		return '''
@@ -30,10 +31,12 @@ class ComponentGenerator {
 		#include <vector>
 		#include <list>
 		#include <set>
+		«IF platform != TargetPlatform.ARDUINO»
 		#include "IncomingIPCPort.h"
 		#include "OutgoingIPCPort.h"
 		#include "IncomingWSPort.h"
 		#include "OutgoingWSPort.h"
+		«ENDIF»
 		#include <thread>
 		#include "sole/sole.hpp"
 		#include <iostream>

@@ -10,5 +10,6 @@ package montithings.generator.codegen;
  */
 public enum TargetPlatform {
   GENERIC,
-  DSA_VCG
+  DSA_VCG,
+  ARDUINO
 }

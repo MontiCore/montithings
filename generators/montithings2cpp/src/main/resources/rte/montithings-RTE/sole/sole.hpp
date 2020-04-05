@@ -123,7 +123,7 @@ namespace std {
 #endif // MontiThings Modification
 
 // implementation
-
+#ifndef ONLY_GENERIC_IMPLEMENTATIONS // MontiThings Modification (memory.h is incompatible with Arduino)
 #include <memory.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -131,6 +131,7 @@ namespace std {
 
 #include <cstring>
 #include <ctime>
+#endif // MontiThings Modification
 
 #include <iomanip>
 #include <random>

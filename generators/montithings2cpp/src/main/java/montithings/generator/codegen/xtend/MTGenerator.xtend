@@ -5,6 +5,7 @@ import montithings.generator.codegen.xtend.behavior.AtomicComponentStandardImple
 import montithings.generator.codegen.xtend.behavior.AutomatonGenerator
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Identifier
+import montithings.generator.codegen.xtend.util.ArduinoReadme
 import montithings.generator.helper.ComponentHelper
 import de.monticore.ast.ASTCNode
 import de.monticore.io.FileReaderWriter
@@ -34,14 +35,14 @@ import montithings.generator.codegen.TargetPlatform
 class MTGenerator {
 
   def static void generateAll(File targetPath, File hwc, ComponentSymbol comp, List<String> foundModels, String compname,
-                         HashMap<String, String> interfaceToImplementation) {
+                         HashMap<String, String> interfaceToImplementation, TargetPlatform platform) {
     Identifier.createInstance(comp)
 
     toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname), ".h");
     toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname), ".cpp");
     toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname), ".h");
     toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname), ".cpp");
-    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, interfaceToImplementation), ".h");
+    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, interfaceToImplementation, platform), ".h");
     toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname), ".cpp");
     
 
@@ -55,12 +56,19 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp as ComponentSymbol, foundModels, compname, interfaceToImplementation);
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp as ComponentSymbol, foundModels, compname, interfaceToImplementation, platform);
     }
     
 	// Generate deploy class
     if (comp.isApplication) {
-      toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname),".cpp");
+      if (platform == TargetPlatform.ARDUINO) {
+      	var sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
+      	sketchDirectory.mkdir();
+        toFile(sketchDirectory, "Deploy" + compname, Deploy.generateDeployArduino(comp, compname),".ino");
+        toFile(targetPath.getParentFile(), "README", ArduinoReadme.printArduinoReadme(targetPath.name, compname),".txt");
+      } else {
+        toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname),".cpp");
+      }
     }
 
   }

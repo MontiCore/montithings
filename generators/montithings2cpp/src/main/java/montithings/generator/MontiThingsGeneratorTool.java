@@ -48,7 +48,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
     try {
-      FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath(), "hwc").toFile());
+      if (platform == TargetPlatform.ARDUINO) {
+        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile());
+      } else {
+        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath(), "hwc").toFile());
+      }
     }
     catch (IOException e) {
       System.err.println(e.getMessage());
@@ -125,7 +129,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // Generate Files
       MTGenerator.generateAll(
           Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-              .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation);
+              .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation, platform);
 
       for (ResourcePortSymbol resourcePortSymbol : ComponentHelper
           .getResourcePortsInComponent(comp)) {
@@ -191,9 +195,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
 
         // 6 generate make file
-        Log.info("Generate CMake file", "MontiThingsGeneratorTool");
-        MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
-            subPackagesPath, platform);
+        if (platform != TargetPlatform.ARDUINO) { // Arduino uses its own build system
+          Log.info("Generate CMake file", "MontiThingsGeneratorTool");
+          MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
+              subPackagesPath, platform);
+        }
       }
     }
 

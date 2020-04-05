@@ -17,6 +17,10 @@
 #include "cereal/types/list.hpp"
 #include <nng/nng.h>
 
+/**
+ * External programs providing data extend this class and override the getData() method of
+ * this class to provide data to the architecture
+ */
 template<typename T>
 class AbstractIPCServer
 {

@@ -78,14 +78,6 @@ class IncomingIPCPort : public Port<T>
   const char *uri;
   bool isConnected = false;
 
-  /**
-   * Initialize the IPC Port
-   */
-  void initIPC ()
-  {
-
-  }
-
   void ipcUpdate ()
   {
     if (!isConnected)

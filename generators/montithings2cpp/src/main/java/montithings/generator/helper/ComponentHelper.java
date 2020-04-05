@@ -744,6 +744,39 @@ public class ComponentHelper {
     }
     return method;
   }
+  
+  public static String getExecutionIntervalInMillis(ComponentSymbol comp) {
+	    int interval = ((ASTComponent) comp.getAstNode().get())
+	        .getBody()
+	        .getElementList()
+	        .stream()
+	        .filter(e -> e instanceof ASTControlBlock)
+	        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+	        .filter(e -> e instanceof ASTCalculationInterval)
+	        .findFirst()
+	        .map(e -> ((ASTCalculationInterval) e).getInterval().getValue())
+	        .orElse(50);
+	    String intervalUnit = ((ASTComponent) comp.getAstNode().get())
+	        .getBody()
+	        .getElementList()
+	        .stream()
+	        .filter(e -> e instanceof ASTControlBlock)
+	        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+	        .filter(e -> e instanceof ASTCalculationInterval)
+	        .findFirst()
+	        .map(e -> ((ASTCalculationInterval) e).getTimeUnit().toString())
+	        .orElse("MSEC");
+
+	    switch (intervalUnit) {
+	      case "MSEC":
+	        return "" + interval;
+	      case "SEC":
+	        return "" + interval * 1000;
+	      case "MIN":
+	        return "" + interval * 60 * 1000;
+	    }
+	    return "50";
+	  }
 
   /**
    * Returns true if

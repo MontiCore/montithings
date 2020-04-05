@@ -14,6 +14,10 @@
 #include "cereal/types/set.hpp"
 #include "cereal/types/list.hpp"
 
+/**
+ * External programs using data of the architecture extend this class and override the processData()
+ * method of this class to use data given by the architecture.
+ */
 template<typename T>
 class AbstractIPCClient
 {

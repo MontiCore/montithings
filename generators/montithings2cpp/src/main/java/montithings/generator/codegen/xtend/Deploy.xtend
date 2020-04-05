@@ -40,5 +40,34 @@ class Deploy {
 		}
 		'''
 	}
+	
+	def static generateDeployArduino(ComponentSymbol comp, String compname) {
+		return '''
+		#include "«compname».h"
+		
+		«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp;
+		const long interval = «ComponentHelper.getExecutionIntervalInMillis(comp)»;
+		unsigned long previousMillis = 0;
+		
+		void setup() {
+		  Serial.begin(9600);
+		  cmp.setUp(«IF comp.getStereotype().containsKey("timesync")»TIMESYNC«ELSE»EVENTBASED«ENDIF»);
+		  cmp.init();
+		  «IF !comp.getStereotype().containsKey("timesync")»
+		  cmp.start();
+		  «ENDIF»
+		}
+		
+		void loop() {
+		  «IF comp.getStereotype().containsKey("timesync")»
+		  unsigned long currentMillis = millis();
 
+		  if (currentMillis >= previousMillis + interval) {
+		    previousMillis = currentMillis;
+		    cmp.compute();
+		  }
+		  «ENDIF»
+		}
+		'''
+	}
 }

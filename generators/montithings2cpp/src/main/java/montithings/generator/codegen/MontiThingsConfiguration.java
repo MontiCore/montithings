@@ -262,6 +262,9 @@ public class MontiThingsConfiguration implements Configuration {
         case "DSA":
         case "VCG":
           return TargetPlatform.DSA_VCG;
+        case "ARDUINO":
+        case "ESP32":
+          return TargetPlatform.ARDUINO;
         default:
           throw new IllegalArgumentException("0xMT300 Platform " + platform + " in pom.xml is unknown");
       }

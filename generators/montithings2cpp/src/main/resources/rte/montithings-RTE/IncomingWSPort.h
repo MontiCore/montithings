@@ -76,13 +76,6 @@ class IncomingWSPort : public Port<T>
   std::future<bool> fut;
   rigtorp::SPSCQueue<T> queue;
 
-  /**
-   * Initialize the IPC Port
-   */
-  void initIPC ()
-  {
-  }
-
   bool listen ()
   {
     //Receive Message and convert to target type T
