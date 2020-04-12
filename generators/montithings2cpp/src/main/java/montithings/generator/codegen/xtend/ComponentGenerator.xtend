@@ -32,10 +32,8 @@ class ComponentGenerator {
 		#include <list>
 		#include <set>
 		«IF platform != TargetPlatform.ARDUINO»
-		#include "IncomingIPCPort.h"
-		#include "OutgoingIPCPort.h"
-		#include "IncomingWSPort.h"
-		#include "OutgoingWSPort.h"
+		#include "IPCPort.h"
+		#include "WSPort.h"
 		«ENDIF»
 		#include <thread>
 		#include "sole/sole.hpp"
@@ -127,6 +125,9 @@ class ComponentGenerator {
 
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::initialize(){
+			«FOR port : comp.incomingPorts»
+			getPort«port.name.toFirstUpper» ()->registerListeningPort (this->getUuid ());
+			«ENDFOR»
 			«compname»Result«Utils.printFormalTypeParameters(comp)» result = «Identifier.behaviorImplName».getInitialValues();
 			setResult(result);
 		}
@@ -219,16 +220,16 @@ class ComponentGenerator {
 	def static printComputeInputs(ComponentSymbol comp, String compname, boolean isMonitor) {
 		return '''
 		«IF !ComponentHelper.usesBatchMode(comp)»
-		«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«inPort.name.toFirstUpper»)«ENDFOR»)«ENDIF»;
+		«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(«IF isMonitor»portMonitorUuid«inPort.name.toFirstUpper»«ELSE»this->uuid«ENDIF»)«ENDFOR»)«ENDIF»;
 		«ELSE»
 		«compname»Input«Utils.printFormalTypeParameters(comp)» input;
 		«FOR inPort : ComponentHelper.getPortsInBatchStatement(comp)»
-		while(getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)){
-			input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«inPort.name.toFirstUpper»));
+		while(getPort«inPort.name.toFirstUpper»()->hasValue(this->uuid)){
+			input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(«IF isMonitor»portMonitorUuid«inPort.name.toFirstUpper»«ELSE»this->uuid«ENDIF»));
 		}
 		«ENDFOR»
 		«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
-		input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«inPort.name.toFirstUpper»));
+		input.add«inPort.name.toFirstUpper»Element(getPort«inPort.name.toFirstUpper»()->getCurrentValue(«IF isMonitor»portMonitorUuid«inPort.name.toFirstUpper»«ELSE»this->uuid«ENDIF»));
 		«ENDFOR»
 		«ENDIF»
 		'''
@@ -239,16 +240,16 @@ class ComponentGenerator {
 		«Utils.printTemplateArguments(comp)»
 		bool «compname»«Utils.printFormalTypeParameters(comp)»::shouldCompute() {
 			«IF comp.allIncomingPorts.length > 0 && !ComponentHelper.hasSyncGroups(comp)»
-			if (timeMode == TIMESYNC || «FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(portUuid«inPort.name.toFirstUpper»)«ENDFOR»)
+			if (timeMode == TIMESYNC || «FOR inPort : comp.allIncomingPorts SEPARATOR ' || '»getPort«inPort.name.toFirstUpper»()->hasValue(this->uuid)«ENDFOR»)
 			{ return true; }
 			«ENDIF»
 			«IF ComponentHelper.hasSyncGroups(comp)»
 			if ( 
 				«FOR syncGroup : ComponentHelper.getSyncGroups(comp)  SEPARATOR ' || '»
-				(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue(portUuid«port.toFirstUpper») «ENDFOR»)
+				(«FOR port : syncGroup SEPARATOR ' && '» getPort«port.toFirstUpper»()->hasValue(this->uuid) «ENDFOR»)
 				«ENDFOR»
 				«IF ComponentHelper.getPortsNotInSyncGroup(comp).length() > 0»
-				|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(portUuid«port.name.toFirstUpper»)«ENDFOR»
+				|| «FOR port : ComponentHelper.getPortsNotInSyncGroup(comp) SEPARATOR ' || '» getPort«port.name.toFirstUpper»()->hasValue(this->uuid)«ENDFOR»
 				<«ENDIF»
 			)
 			{ return true; }
@@ -417,8 +418,8 @@ class ComponentGenerator {
 		return '''
 		«compname»Result«Utils.printFormalTypeParameters(comp)» result;
 		«FOR outPort : comp.allOutgoingPorts»
-		if (getPort«outPort.name.toFirstUpper»()->hasValue(port«IF isMonitor»Monitor«ENDIF»Uuid«outPort.name.toFirstUpper»)) {
-			result.set«outPort.name.toFirstUpper»(getPort«outPort.name.toFirstUpper»()->getCurrentValue(port«IF isMonitor»Monitor«ENDIF»Uuid«outPort.name.toFirstUpper»).value());
+		if (getPort«outPort.name.toFirstUpper»()->hasValue(«IF isMonitor»portMonitorUuid«outPort.name.toFirstUpper»«ELSE»this->uuid«ENDIF»)) {
+			result.set«outPort.name.toFirstUpper»(getPort«outPort.name.toFirstUpper»()->getCurrentValue(«IF isMonitor»portMonitorUuid«outPort.name.toFirstUpper»«ELSE»this->uuid«ENDIF»).value());
 		}
 		«ENDFOR»
 		'''

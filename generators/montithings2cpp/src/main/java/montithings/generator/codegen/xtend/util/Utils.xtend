@@ -196,8 +196,6 @@ class Utils {
 		#include <vector>
 		#include <list>
 		#include <set>
-		#include "IncomingIPCPort.h"
-		#include "OutgoingIPCPort.h"
 		«Utils.printCPPImports(comp)»
 		#include <AbstractIPC«IF symbol.incoming»Server«ELSE»Client«ENDIF».h>
 		
