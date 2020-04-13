@@ -43,6 +43,7 @@ class Init {
 		          .getConnectors()»
 		          «FOR ASTQualifiedName target : connector.targetsList»
 		            «IF helper.isIncomingPort(comp, connector.source, target, false)»
+		            	// implements "connect «connector»"
                   	    «helper.getConnectorComponentName(connector.source, target,false)»«IF helper.getConnectorComponentName(connector.source, target,false).equals("this")»->«ELSE».«ENDIF»getPort«helper.getConnectorPortName(connector.source, target,false).toFirstUpper» ()->setDataProvidingPort(«helper.getConnectorComponentName(connector.source, target, true)»«IF helper.getConnectorComponentName(connector.source, target,true).equals("this")»->«ELSE».«ENDIF»getPort«helper.getConnectorPortName(connector.source, target, true).toFirstUpper» ());
 		            «ENDIF»
 		          «ENDFOR»

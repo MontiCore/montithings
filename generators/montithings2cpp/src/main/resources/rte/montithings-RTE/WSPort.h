@@ -7,10 +7,7 @@
 #include <nngpp/protocol/pub0.h>
 #include <future>
 #include <iostream>
-#include <cereal/archives/json.hpp>
 #include "Port.h"
-
-
 
 template<typename T>
 class WSPort : public Port<T>
@@ -28,10 +25,8 @@ class WSPort : public Port<T>
   {
     if (direction == IN)
       {
-        //Open Socket in Request mode
         inSocket = nng::sub::open ();
         nng_setopt (inSocket.get (), NNG_OPT_SUB_SUBSCRIBE, "", 0);
-        //Dial specifies, that it connects to an already established socket (the server)
         try
           {
             inSocket.listen (uri, nng::flag::alloc);
@@ -46,12 +41,23 @@ class WSPort : public Port<T>
       }
     else
       {
-        //Open Socket in publish mode
         outSocket = nng::pub::open ();
         nng::set_opt_reconnect_time_max (outSocket, 2000);
         nng::set_opt_reconnect_time_min (outSocket, 100);
         futOutSocket = std::async (std::launch::async, &WSPort::send, this);
       }
+  }
+
+  void getExternalMessages () override
+  {
+    // Intentionally not implemented.
+    // Functionality is provided by listen() to be non blocking.
+  }
+
+  void sendToExternal (tl::optional<T> nextVal) override
+  {
+    // Intentionally not implemented.
+    // Functionality is provided by send() to be non-blocking and to
   }
 
   bool listen ()
@@ -61,14 +67,9 @@ class WSPort : public Port<T>
       {
         auto msg = inSocket.recv_msg ();
         auto data = msg.body ().template data<char> ();
-        std::string receivedAnswer (msg.body ().template data<char> ());
-        std::stringstream inStream (receivedAnswer);
-        {
-          cereal::JSONInputArchive inputArchive (inStream);
-          T result;
-          inputArchive (result);
-          this->setNextValue (result);
-        }
+        T result = jsonToData<T> (data);
+        this->setNextValue (result);
+
         std::this_thread::yield ();
         std::this_thread::sleep_for (std::chrono::milliseconds (1));
       }
@@ -95,22 +96,11 @@ class WSPort : public Port<T>
         tl::optional<T> dataOpt = this->dataProvider->getCurrentValue (this->uuid);
         if (dataOpt)
           {
-            T data = dataOpt.value ();
-            std::ostringstream stream;
-            {
-              cereal::JSONOutputArchive outputArchive (stream);
-              outputArchive (data);
-            }
-            auto dataString = stream.str ();
-            dataString = stream.str ();
+            auto dataString = dataToJson (dataOpt);
             outSocket.send (nng::buffer (nng_strdup (dataString.c_str ()), dataString.length () + 1), nng::flag::alloc);
           }
-        else
-          {
-            std::this_thread::yield ();
-            std::this_thread::sleep_for (std::chrono::milliseconds (50));
-          }
+        std::this_thread::yield ();
+        std::this_thread::sleep_for (std::chrono::milliseconds (1));
       }
   }
-
 };
