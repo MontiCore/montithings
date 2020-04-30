@@ -292,7 +292,34 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     // timing
     component.setBehaviorKind(Timing.getBehaviorKind(node));
 
+    // add upperbound type parameters as Java type symbol to component
+    Optional<ASTTypeParameters> optionalTypeParameters = node.getHead().getGenericTypeParametersOpt();
+    if (optionalTypeParameters.isPresent()) {
+      // component has type parameters -> translate AST to Java Symbols and add
+      // these to the
+      // componentSymbol.
+      ASTTypeParameters astTypeParameters = optionalTypeParameters.get();
+      for (ASTTypeVariableDeclaration astTypeParameter : astTypeParameters
+          .getTypeVariableDeclarationList()) {
+        Set<ASTType> types = new HashSet<>(astTypeParameter.getUpperBoundList());
+        for (ASTType type:types)
+        {
+          if(type instanceof ASTComplexReferenceType &&
+              !component.getSpannedScope().getLocalSymbols().containsKey(((ASTComplexReferenceType) type).getSimpleReferenceType(0).getName(0))){
+          // TypeParameters/TypeVariables are seen as type declarations.
+          JavaTypeSymbol javaTypeVariableSymbol = javaSymbolFactory.createTypeVariable(((ASTComplexReferenceType) type).getSimpleReferenceType(0).getName(0));
+
+          // reuse JavaDSL
+          JTypeSymbolsHelper.addInterfacesToType(javaTypeVariableSymbol, new ArrayList<>(), component.getSpannedScope(), javaTypeRefFactory);
+
+          component.addFormalTypeParameter(javaTypeVariableSymbol);
+          }
+        }
+      }
+    }
+
     componentStack.push(component);
+
     addToScopeAndLinkWithNode(component, node);
 
     // Transform SimpleConncetors to normal qaualified connectors

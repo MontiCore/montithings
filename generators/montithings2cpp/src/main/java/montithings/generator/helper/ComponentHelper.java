@@ -2,9 +2,13 @@
 package montithings.generator.helper;
 
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
+import de.monticore.java.symboltable.JavaTypeSymbolReference;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symboltable.GlobalScope;
+import de.monticore.symboltable.ImportStatement;
+import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.types.JFieldSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.TypeSymbol;
@@ -13,22 +17,20 @@ import de.monticore.symboltable.types.references.JTypeReference;
 import de.monticore.symboltable.types.references.TypeReference;
 import de.monticore.types.prettyprint.TypesPrettyPrinterConcreteVisitor;
 import de.monticore.types.types._ast.ASTQualifiedName;
+import de.monticore.types.types._ast.ASTSimpleReferenceType;
 import de.monticore.types.types._ast.ASTType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTParameter;
+import montiarc._ast.*;
 import montiarc._ast.ASTPort;
-import montiarc._ast.ASTValuation;
-import montiarc._symboltable.ComponentInstanceSymbol;
-import montiarc._symboltable.ComponentSymbol;
-import montiarc._symboltable.ComponentSymbolReference;
-import montiarc._symboltable.PortSymbol;
+import montiarc._symboltable.*;
 import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
 import montiarc.helper.SymbolPrinter;
 import montithings._ast.*;
+import montithings._ast.ASTComponent;
 import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.generator.visitor.CDAttributeGetterTransformationVisitor;
@@ -213,6 +215,12 @@ public class ComponentHelper {
   public static String printPackageNamespaceForComponent(
       montiarc._symboltable.ComponentSymbol comp) {
     List<String> packages = ComponentHelper.getPackages(comp);
+    if(comp instanceof montithings._symboltable.ComponentSymbol) {
+      if (((montithings._symboltable.ComponentSymbol) comp).isInterfaceComponent()) {
+        //packages = new ArrayList<>();
+        return "";
+      }
+    }
     StringBuilder namespace = new StringBuilder("montithings::");
     for (String packageName : packages) {
       namespace.append(packageName).append("::");
@@ -443,16 +451,142 @@ public class ComponentHelper {
       boolean printTypeParameters) {
     String result = "";
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
-
     result += componentTypeReference.getName();
     if (componentTypeReference.hasActualTypeArguments() && printTypeParameters) {
-      result += printTypeArguments(componentTypeReference.getActualTypeArguments());
+      // format simple component type name to full component type name
+      List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
+      for(int i =0; i<types.size();i++) {
+        String typeName = types.get(i).getType().getName();
+        ComponentSymbol boundComponent = getComponentFromString(getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
+        if ( boundComponent!= null) {
+          JavaTypeSymbolReference nameWithNamespace =
+              new JavaTypeSymbolReference(printPackageNamespaceForComponent(boundComponent)+typeName,
+                  types.get(i).getType().getEnclosingScope(),0);
+          types.set(i,new ActualTypeArgument(nameWithNamespace));
+        }
+      }
+      result += printTypeArguments(types);
     }
     if (interfaceToImplementation.containsKey(result)) {
       return interfaceToImplementation.get(result);
     }
     return result;
   }
+
+  /**
+   * Set of components used as generic type argument as include string
+   * @param comp component that gets the new includes
+   * @param instance component instance that assigns component to generic
+   * @return Set of components used as generic type argument as include string.
+   * Is empty if include is not needed.
+   */
+  public static HashSet<String> includeGenericComponent(ComponentSymbol comp, ComponentInstanceSymbol instance){
+    HashSet<String> result = new HashSet<>();
+    final ComponentSymbolReference componentTypeReference = instance.getComponentType();
+    if (componentTypeReference.hasActualTypeArguments()) {
+      List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
+      for(int i =0; i<types.size();i++) {
+        String typeName = types.get(i).getType().getName();
+        ComponentSymbol boundComponent = getComponentFromString(getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
+        if (boundComponent!= null) {
+          result.add(getPackagePath(comp,boundComponent)+typeName);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Replace subcomponent instance type with generic if it is an interface type.
+   * Return the subcomponent type name without package.
+   * @param comp component containing the subcomponent instances.
+   * @param instance the instance where it's type may be replaced.
+   * @param interfaceToImplementation binding which replaces an interface type if the subcomponent
+   * @return
+   */
+  public static String getSubComponentTypeNameWithBinding(ComponentSymbol comp, ComponentInstanceSymbol instance,
+      HashMap<String, String> interfaceToImplementation) {
+    HashMap<String, String> interfaceToImplementationGeneric = new HashMap<>(interfaceToImplementation);
+    final ComponentSymbolReference componentTypeReference = instance.getComponentType();
+    // check if needed optional values are present and if the instance component type is an interface
+    if(componentTypeReference.getReferencedComponent().isPresent()&&componentTypeReference.getReferencedComponent().get() instanceof montithings._symboltable.ComponentSymbol){
+      if(((montithings._symboltable.ComponentSymbol)componentTypeReference.getReferencedComponent().get()).isInterfaceComponent()){
+        //get all used component generics with their upperBound Names.
+        if(comp.getAstNode().isPresent()){
+          ASTComponent compBind = (ASTComponent) (comp.getAstNode().get());
+          if (compBind.getHead().getGenericTypeParametersOpt().isPresent()) {
+            List<ASTTypeVariableDeclaration> generics = compBind.getHead().getGenericTypeParameters().getTypeVariableDeclarationList();
+            for (int i = 0; i < generics.size(); i++) {
+              if(generics.get(i).getUpperBoundList().size()>0){
+                String interfaceComp = generics.get(i).getUpperBound(0).getSimpleReferenceType(0).getName(0);
+                String typeName = generics.get(i).getName();
+                // get the ast instance from given component instance symbol
+                for(ASTSubComponent subComponent : compBind.getSubComponents()) {
+                  if(subComponent.getType() instanceof ASTSimpleReferenceType) {
+                    if(((ASTSimpleReferenceType)subComponent.getType()).getName(0).equals(typeName)
+                        &&subComponent.getInstancesList().stream().anyMatch(a ->instance.getName().equals(a.getName()))) {
+                      // replace the interface component type of the instance with its generic type.
+                      interfaceToImplementationGeneric.remove(interfaceComp);
+                      interfaceToImplementationGeneric.put(interfaceComp,typeName);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return getSubComponentTypeNameWithoutPackage(instance,interfaceToImplementationGeneric);
+  }
+
+  /**
+   * Get component by includes and name.
+   * @param compWithIncludes component containing include statements that are used for name resolve.
+   * @param componentToGet component name.
+   * @return component symbol with given simple name if found, else null.
+   */
+  private static ComponentSymbol getComponentFromString(MontiArcArtifactScope compWithIncludes, String componentToGet){
+    Optional<ComponentSymbol> componentSymbol;
+    Scope globalScope = compWithIncludes;
+    while(!(globalScope instanceof GlobalScope)){
+      if(!globalScope.getEnclosingScope().isPresent()){
+        return null;
+      }
+      globalScope = globalScope.getEnclosingScope().get();
+    }
+    for (ImportStatement i : compWithIncludes.getImports()) {
+      if(i.isStar()) {
+        componentSymbol = globalScope.resolve(i.getStatement() + "." + componentToGet, ComponentSymbol.KIND);
+      }
+      else if(i.getStatement().endsWith("."+componentToGet)){
+        componentSymbol = globalScope.resolve(i.getStatement(), ComponentSymbol.KIND);
+      }
+      else {
+        continue;
+      }
+      if (componentSymbol.isPresent())
+        return componentSymbol.get();
+    }
+    return null;
+  }
+
+  /**
+   * Get enclosing MontiArcArtifactScope.
+   * @param s subscope of a MontiArcArtifactScope.
+   * @return MontiArcArtifactScope if present, or else null
+   */
+  private static MontiArcArtifactScope getEnclosingMontiArcArtifactScope(Scope s){
+    Optional<Scope> sc;
+    while(!(s instanceof MontiArcArtifactScope)){
+      if(!s.getEnclosingScope().isPresent()){
+        return null;
+      }
+      s = s.getEnclosingScope().get();
+    }
+    return (MontiArcArtifactScope)s;
+  }
+
 
   /**
    * Determine whether the port of the given connector is an incoming or outgoing
@@ -905,8 +1039,12 @@ public class ComponentHelper {
   }
 
   public static String getPackagePath(ComponentSymbol comp, ComponentInstanceSymbol subComp) {
+    return getPackagePath(comp, subComp.getComponentType().getReferencedSymbol());
+  }
+
+  public static String getPackagePath(ComponentSymbol comp, ComponentSymbol subComp) {
     // Get package name of subcomponent
-    String subCompPackageName = subComp.getComponentType().getReferencedSymbol().getPackageName();
+    String subCompPackageName = subComp.getPackageName();
     // Check if subcomponent is in different package than parent component
     if (!subCompPackageName.equals(comp.getPackageName())) {
       // Split packageName
