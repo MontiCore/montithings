@@ -74,7 +74,6 @@ public class MontiThingsCoCos {
         // TYPE CORRECTNESS
         .addCoCo(new AutomatonGuardIsNotBoolean())
         .addCoCo(new GenericInitValues())
-        .addCoCo(new ProhibitGenericsWithBounds())
         .addCoCo(new DefaultValuesCorrectlyAssigned())
         .addCoCo(new IfThenElseValuesCorrectlyAssigned())
 
