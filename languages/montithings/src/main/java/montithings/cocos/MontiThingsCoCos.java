@@ -114,6 +114,10 @@ public class MontiThingsCoCos {
         .addCoCo(new ControlBlockNotEmpty())
         .addCoCo(new InterfaceComponentContainsOnlyPorts())
         .addCoCo(new AssumptionDoesNotDependOnOutputPort())
-        .addCoCo(new SpecificationComponentHasSpecification());
+        .addCoCo(new SpecificationComponentHasSpecification())
+
+        // MONTITHINGS Generic Binding
+        .addCoCo(new InterfaceExists())
+        .addCoCo(new ImplementationFitsInterface());
   }
 }

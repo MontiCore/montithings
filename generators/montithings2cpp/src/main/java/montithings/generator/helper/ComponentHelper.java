@@ -35,6 +35,7 @@ import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.generator.visitor.CDAttributeGetterTransformationVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.helper.GenericBindingUtil;
 import montithings.visitor.GuardExpressionVisitor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -457,7 +458,8 @@ public class ComponentHelper {
       List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
       for(int i =0; i<types.size();i++) {
         String typeName = types.get(i).getType().getName();
-        ComponentSymbol boundComponent = getComponentFromString(getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
+        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(
+            GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
         if ( boundComponent!= null) {
           JavaTypeSymbolReference nameWithNamespace =
               new JavaTypeSymbolReference(printPackageNamespaceForComponent(boundComponent)+typeName,
@@ -487,7 +489,8 @@ public class ComponentHelper {
       List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
       for(int i =0; i<types.size();i++) {
         String typeName = types.get(i).getType().getName();
-        ComponentSymbol boundComponent = getComponentFromString(getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
+        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(
+            GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
         if (boundComponent!= null) {
           result.add(getPackagePath(comp,boundComponent)+typeName);
         }
@@ -498,11 +501,18 @@ public class ComponentHelper {
 
   /**
    * Replace subcomponent instance type with generic if it is an interface type.
-   * Return the subcomponent type name without package.
+   * component top<T extends InterfaceComponent>{
+   *   component InterfaceComponent xy;
+   * }
+   * results in
+   * component top<T extends InterfaceComponent>{
+   *   component T xy;
+   * }
+   *
    * @param comp component containing the subcomponent instances.
    * @param instance the instance where it's type may be replaced.
-   * @param interfaceToImplementation binding which replaces an interface type if the subcomponent
-   * @return
+   * @param interfaceToImplementation binding which replaces an interface type if no generic is used.
+   * @return the subcomponent type name without package.
    */
   public static String getSubComponentTypeNameWithBinding(ComponentSymbol comp, ComponentInstanceSymbol instance,
       HashMap<String, String> interfaceToImplementation) {
@@ -538,53 +548,6 @@ public class ComponentHelper {
       }
     }
     return getSubComponentTypeNameWithoutPackage(instance,interfaceToImplementationGeneric);
-  }
-
-  /**
-   * Get component by includes and name.
-   * @param compWithIncludes component containing include statements that are used for name resolve.
-   * @param componentToGet component name.
-   * @return component symbol with given simple name if found, else null.
-   */
-  private static ComponentSymbol getComponentFromString(MontiArcArtifactScope compWithIncludes, String componentToGet){
-    Optional<ComponentSymbol> componentSymbol;
-    Scope globalScope = compWithIncludes;
-    while(!(globalScope instanceof GlobalScope)){
-      if(!globalScope.getEnclosingScope().isPresent()){
-        return null;
-      }
-      globalScope = globalScope.getEnclosingScope().get();
-    }
-    for (ImportStatement i : compWithIncludes.getImports()) {
-      if(i.isStar()) {
-        componentSymbol = globalScope.resolve(i.getStatement() + "." + componentToGet, ComponentSymbol.KIND);
-      }
-      else if(i.getStatement().endsWith("."+componentToGet)){
-        componentSymbol = globalScope.resolve(i.getStatement(), ComponentSymbol.KIND);
-      }
-      else {
-        continue;
-      }
-      if (componentSymbol.isPresent())
-        return componentSymbol.get();
-    }
-    return null;
-  }
-
-  /**
-   * Get enclosing MontiArcArtifactScope.
-   * @param s subscope of a MontiArcArtifactScope.
-   * @return MontiArcArtifactScope if present, or else null
-   */
-  private static MontiArcArtifactScope getEnclosingMontiArcArtifactScope(Scope s){
-    Optional<Scope> sc;
-    while(!(s instanceof MontiArcArtifactScope)){
-      if(!s.getEnclosingScope().isPresent()){
-        return null;
-      }
-      s = s.getEnclosingScope().get();
-    }
-    return (MontiArcArtifactScope)s;
   }
 
 
