@@ -5,17 +5,17 @@
  */
 package montithings.cocos;
 
-import de.monticore.java.symboltable.JavaTypeSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.references.ActualTypeArgument;
-import de.monticore.types.JTypeSymbolsHelper;
 import de.monticore.types.types._ast.*;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTComponent;
-import montiarc._cocos.MontiArcASTComponentCoCo;
+import montiarc._ast.ASTSubComponent;
+import montiarc._ast.ASTSubComponentInstance;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
+import montithings.helper.GenericBindingUtil;
 
 import java.util.*;
 
@@ -32,7 +32,7 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
   public void check(ASTComponent node) {
     if (!node.getSymbolOpt().isPresent()) {
       Log.error(
-          String.format("0xMA010 ASTComponent node \"%s\" has no " +
+          String.format("0xMT149 ASTComponent node \"%s\" has no " +
                   "symbol. Did you forget to run the " +
                   "SymbolTableCreator before checking cocos?",
               node.getName()));
@@ -49,8 +49,9 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
       }
 
       if (componentType.getActualTypeArguments().size() != componentType.getReferencedSymbol()
-          .getFormalTypeParameters().size() -upperBoundCount(componentType.getReferencedSymbol())) {
-        Log.error(String.format("0xMA085 The number of type parameters " +
+          .getFormalTypeParameters().size() -upperBoundCount(componentType.getReferencedSymbol())
+      &&!isGenericTypeWithUpperBound((montithings._ast.ASTComponent) node,componentInstanceSymbol.getName())) {
+        Log.error(String.format("0xMT085 The number of type parameters " +
                 "assigned to the subcomponent %s of " +
                 "type %s does not match the amount " +
                 "of required parameters.",
@@ -69,11 +70,15 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
             boolean foundGenericType = false;
 
             // try to resolve as generic type
-            for (JTypeSymbol genericTypeParam : componentSymbol.getFormalTypeParameters()) {
+            /*for (JTypeSymbol genericTypeParam : componentSymbol.getFormalTypeParameters()) {
               if (actualP.getType().getName().equals(genericTypeParam.getName())) {
                 foundGenericType = true;
               }
+            }*/
+            if (GenericBindingUtil.getGenericBindings((montithings._ast.ASTComponent) node).containsKey(actualP.getType().getName())) {
+              foundGenericType = true;
             }
+
             // if generic type uses upperBound we let it pass.
             if(foundGenericType == false && componentType.getReferencedComponent().isPresent()
                 && componentType.getReferencedComponent().get().getAstNode().isPresent() &&
@@ -88,7 +93,7 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
             }
 
             if(!foundGenericType) {
-              Log.error(String.format("0xMA096 The type parameter '" + actualP.getType().getName() +
+              Log.error(String.format("0xMT150 The type parameter '" + actualP.getType().getName() +
                       "' assigned to the subcomponent %s of " +
                       "type %s could not be found.",
                   componentInstanceSymbol.getName(),
@@ -118,5 +123,18 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
       }
     }
     return typeParameters.size();
+  }
+
+  private boolean isGenericTypeWithUpperBound(montithings._ast.ASTComponent node,String instanceName){
+
+    String genericName = "";
+    for(ASTSubComponent subComponent:node.getSubComponents()){
+      for (ASTSubComponentInstance instance : subComponent.getInstancesList()) {
+        if (instance.getName().equals(instanceName)) {
+          genericName = ((ASTSimpleReferenceType)subComponent.getType()).getName(0);
+        }
+      }
+    }
+    return GenericBindingUtil.getGenericBindings((montithings._ast.ASTComponent) node).containsKey(genericName);
   }
 }

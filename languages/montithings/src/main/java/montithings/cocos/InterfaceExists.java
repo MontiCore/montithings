@@ -28,7 +28,7 @@ public class InterfaceExists implements MontiThingsASTComponentCoCo {
   @Override
   public void check(ASTComponent node) {
     if(!node.getEnclosingScopeOpt().isPresent()){
-      Log.error("No Component enclosing Scope. Was SymbolTable initialized?");
+      Log.error("0xMT140 No Component enclosing Scope. Was SymbolTable initialized?");
     }
     //for every generic subcomponent, check that it has an existing interface.
     Map<String, ASTSimpleReferenceType> genericToInterface = GenericBindingUtil.getGenericBindings(node);
@@ -43,7 +43,7 @@ public class InterfaceExists implements MontiThingsASTComponentCoCo {
           // from the name we check that component exists and that it is really an interface component
           if(interfaceComp==null
               ||!((montithings._symboltable.ComponentSymbol)interfaceComp).isInterfaceComponent()){
-            Log.error("Generic " + TypesPrinter.printTypeWithoutTypeArgumentsAndDimension(type) + " for component instance "+
+            Log.error("0xMT141 Generic " + TypesPrinter.printTypeWithoutTypeArgumentsAndDimension(type) + " for component instance "+
                 subComp.getInstances(0).getName() + " in component "+ node.getName() + " does not extend only interface models. "
                 + "Is an resolveable interface component model available?",subComp.getInstances(0).get_SourcePositionStart());
           }
