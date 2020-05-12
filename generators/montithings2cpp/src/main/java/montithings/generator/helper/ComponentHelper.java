@@ -456,21 +456,35 @@ public class ComponentHelper {
     if (componentTypeReference.hasActualTypeArguments() && printTypeParameters) {
       // format simple component type name to full component type name
       List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
-      for(int i =0; i<types.size();i++) {
-        String typeName = types.get(i).getType().getName();
-        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(
-            GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
-        if ( boundComponent!= null) {
-          JavaTypeSymbolReference nameWithNamespace =
-              new JavaTypeSymbolReference(printPackageNamespaceForComponent(boundComponent)+typeName,
-                  types.get(i).getType().getEnclosingScope(),0);
-          types.set(i,new ActualTypeArgument(nameWithNamespace));
-        }
-      }
+      types = addTypeParameterComponentPackage(instance,types);
       result += printTypeArguments(types);
     }
     if (interfaceToImplementation.containsKey(result)) {
       return interfaceToImplementation.get(result);
+    }
+    return result;
+  }
+
+  /**
+   * Formats simple component type name to qualified component type parameter name
+   * @param instance component instance that gets qualified type parameter names
+   * @param types types of the component instance, where simple component names are converted to qualified names
+   * @return for every type parameter that references a component by it's simple name, it is replaced by the fully qualified component name.
+   */
+  public static List<ActualTypeArgument> addTypeParameterComponentPackage(ComponentInstanceSymbol instance, List<ActualTypeArgument> types) {
+    List<ActualTypeArgument> result = new ArrayList<>(types);
+    int size = types.size();
+    for(int i =0; i<size;i++) {
+      if (types.get(i).getType() instanceof JavaTypeSymbolReference){
+        JavaTypeSymbolReference oldType = (JavaTypeSymbolReference)types.get(i).getType();
+        String typeName = oldType.getName();
+        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
+        if (boundComponent != null) {
+          JavaTypeSymbolReference nameWithNamespace = new JavaTypeSymbolReference(printPackageNamespaceForComponent(boundComponent) + typeName, oldType.getEnclosingScope(), oldType.getDimension());
+          nameWithNamespace.setActualTypeArguments(ComponentHelper.addTypeParameterComponentPackage(instance,oldType.getActualTypeArguments()));
+          result.set(i, new ActualTypeArgument(nameWithNamespace));
+        }
+      }
     }
     return result;
   }
@@ -487,15 +501,22 @@ public class ComponentHelper {
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
     if (componentTypeReference.hasActualTypeArguments()) {
       List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
+      return includeGenericComponentIterate(comp,instance,types);
+    }
+    return new HashSet<>();
+  }
+
+  public static HashSet<String> includeGenericComponentIterate(ComponentSymbol comp, ComponentInstanceSymbol instance, List<ActualTypeArgument> types){
+    HashSet<String> result = new HashSet<>();
       for(int i =0; i<types.size();i++) {
         String typeName = types.get(i).getType().getName();
         ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(
             GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
         if (boundComponent!= null) {
           result.add(getPackagePath(comp,boundComponent)+typeName);
+          result.addAll(includeGenericComponentIterate(comp, instance, types.get(i).getType().getActualTypeArguments()));
         }
       }
-    }
     return result;
   }
 

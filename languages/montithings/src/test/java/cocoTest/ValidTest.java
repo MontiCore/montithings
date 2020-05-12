@@ -21,4 +21,9 @@ public class ValidTest extends AbstractCoCoTest {
   public void checkValidTest() {
     checkValid("portTest.PortTest");
   }
+
+  @Test
+  public void checkValidGenericBindingTest() {
+    checkValid("cocoTest.genericBindingTest.valid.Assignment");
+  }
 }
