@@ -294,28 +294,17 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     component.setBehaviorKind(Timing.getBehaviorKind(node));
 
     // add upperbound type parameters as Java type symbol to component
-    Optional<ASTTypeParameters> optionalTypeParameters = node.getHead().getGenericTypeParametersOpt();
-    if (optionalTypeParameters.isPresent()) {
-      // component has type parameters -> translate AST to Java Symbols and add
-      // these to the
-      // componentSymbol.
-      ASTTypeParameters astTypeParameters = optionalTypeParameters.get();
-      for (ASTTypeVariableDeclaration astTypeParameter : astTypeParameters
-          .getTypeVariableDeclarationList()) {
-        Set<ASTType> types = new HashSet<>(astTypeParameter.getUpperBoundList());
-        for (ASTType type:types)
-        {
-          if(type instanceof ASTComplexReferenceType &&
-              !component.getSpannedScope().getLocalSymbols().containsKey(((ASTComplexReferenceType) type).getSimpleReferenceType(0).getName(0))){
-          // TypeParameters/TypeVariables are seen as type declarations.
-          JavaTypeSymbol javaTypeVariableSymbol = javaSymbolFactory.createTypeVariable(((ASTComplexReferenceType) type).getSimpleReferenceType(0).getName(0));
+    Map<String, ASTSimpleReferenceType> upperboundTypeMap = GenericBindingUtil.getGenericBindings(node);
+    for (ASTSimpleReferenceType upperBoundType : upperboundTypeMap.values()) {
+      String upperBoundTypeName = upperBoundType.getName(0);
+      if (!component.getSpannedScope().getLocalSymbols().containsKey(upperBoundTypeName)) {
+        // TypeParameters/TypeVariables are seen as type declarations.
+        JavaTypeSymbol javaTypeVariableSymbol = javaSymbolFactory.createTypeVariable(upperBoundTypeName);
 
-          // reuse JavaDSL
-          JTypeSymbolsHelper.addInterfacesToType(javaTypeVariableSymbol, new ArrayList<>(), component.getSpannedScope(), javaTypeRefFactory);
+        // reuse JavaDSL
+        JTypeSymbolsHelper.addInterfacesToType(javaTypeVariableSymbol, new ArrayList<>(), component.getSpannedScope(), javaTypeRefFactory);
 
-          component.addFormalTypeParameter(javaTypeVariableSymbol);
-          }
-        }
+        component.addFormalTypeParameter(javaTypeVariableSymbol);
       }
     }
 
@@ -384,8 +373,9 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     // changes the subcomponent gneric types to their interface type.
     for (ASTSubComponent subComp : node.getSubComponents()) {
      ASTReferenceType type = subComp.getType();
-      if(genericToInterface.containsKey(TypesPrinter.printTypeWithoutTypeArgumentsAndDimension(type))){
-        subComp.setType(genericToInterface.get(TypesPrinter.printTypeWithoutTypeArgumentsAndDimension(type)));
+     String typeName = TypesPrinter.printTypeWithoutTypeArgumentsAndDimension(type);
+      if(genericToInterface.containsKey(typeName)){
+        subComp.setType(genericToInterface.get(typeName));
         addSubComponentSymbols(subComp);
         subComp.setType(type);
       }

@@ -7,7 +7,8 @@ import de.monticore.symboltable.Scope;
 import de.monticore.types.types._ast.ASTComplexReferenceType;
 import de.monticore.types.types._ast.ASTSimpleReferenceType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
-import de.se_rwth.commons.logging.Log;
+import montiarc._ast.ASTSubComponent;
+import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.MontiArcArtifactScope;
 import montithings._ast.ASTComponent;
@@ -19,9 +20,13 @@ import java.util.*;
  *
  * @author Julian Krebber
  * @version , 01.05.2020
- * @since
+ * @since 5.0.2
  */
 public class GenericBindingUtil {
+
+  private GenericBindingUtil(){
+
+  }
 
   /**
    * Returns mapping between the generic name and the interface component.
@@ -33,15 +38,24 @@ public class GenericBindingUtil {
     Map<String,ASTSimpleReferenceType> genericToInterface = new HashMap<>();
     if (node.getHead().getGenericTypeParametersOpt().isPresent()) {
       List<ASTTypeVariableDeclaration> generics = node.getHead().getGenericTypeParameters().getTypeVariableDeclarationList();
-      for (int i = 0; i < generics.size(); i++) {
-        if(generics.get(i).getUpperBoundList().size()>0){
-          String typeName = generics.get(i).getName();
-          for(ASTComplexReferenceType complexReferenceType : generics.get(i).getUpperBoundList()) {
-            ASTSimpleReferenceType interfaceComp = complexReferenceType.getSimpleReferenceType(0);
-            genericToInterface.put(typeName, interfaceComp);
-          }
-        }
+      for (ASTTypeVariableDeclaration generic : generics) {
+        genericToInterface.putAll(linkGenericWithInterface(generic));
       }
+    }
+    return genericToInterface;
+  }
+
+  /**
+   * Converts generic with upper bound list to a mapping generic name -> upper bounds.
+   * @param generic name and upper bounds that will be returned as mapping
+   * @return mapping between generic and its upper bounds if upper bounds are present, otherwise an empty mapping
+   */
+  private static Map<String, ASTSimpleReferenceType> linkGenericWithInterface(ASTTypeVariableDeclaration generic) {
+    Map<String,ASTSimpleReferenceType> genericToInterface = new HashMap<>();
+    String typeName = generic.getName();
+    for (ASTComplexReferenceType complexReferenceType : generic.getUpperBoundList()) {
+      ASTSimpleReferenceType interfaceComp = complexReferenceType.getSimpleReferenceType(0);
+      genericToInterface.put(typeName, interfaceComp);
     }
     return genericToInterface;
   }
@@ -54,13 +68,9 @@ public class GenericBindingUtil {
    */
   public static ComponentSymbol getComponentFromString(MontiArcArtifactScope compWithIncludes, String componentToGet){
     Optional<ComponentSymbol> componentSymbol;
-    Scope globalScope = compWithIncludes;
-    while(!(globalScope instanceof GlobalScope)){
-      if(!globalScope.getEnclosingScope().isPresent()){
-        return null;
-      }
-      globalScope = globalScope.getEnclosingScope().get();
-    }
+    Scope globalScope = getGlobalScope(compWithIncludes);
+    if (globalScope == null)
+      return null;
     componentSymbol = globalScope.resolve(compWithIncludes.getPackageName()+ "." + componentToGet, ComponentSymbol.KIND);
     if (componentSymbol.isPresent())
       return componentSymbol.get();
@@ -81,12 +91,26 @@ public class GenericBindingUtil {
   }
 
   /**
+   * Get enclosing GlobalScope.
+   * @param s subscope of a GlobalScope.
+   * @return GlobalScope if present, or else null.
+   */
+  private static Scope getGlobalScope(Scope s) {
+    while(!(s instanceof GlobalScope)){
+      if(!s.getEnclosingScope().isPresent()){
+        return null;
+      }
+      s = s.getEnclosingScope().get();
+    }
+    return s;
+  }
+
+  /**
    * Get enclosing MontiArcArtifactScope.
    * @param s subscope of a MontiArcArtifactScope.
    * @return MontiArcArtifactScope if present, or else null.
    */
   public static MontiArcArtifactScope getEnclosingMontiArcArtifactScope(Scope s){
-    Optional<Scope> sc;
     while(!(s instanceof MontiArcArtifactScope)){
       if(!s.getEnclosingScope().isPresent()){
         return null;
@@ -94,5 +118,23 @@ public class GenericBindingUtil {
       s = s.getEnclosingScope().get();
     }
     return (MontiArcArtifactScope)s;
+  }
+
+  /**
+   * Gets the type name of a given subComponent.
+   *
+   * @param comp Component that contains the subComponent.
+   * @param name SubComponent instance, that identifies the subComponent by Name.
+   * @return The Type of the AST subComponent that uses given instance name if present. Otherwise null.
+   */
+  public static String getSubComponentType(ASTComponent comp, ComponentInstanceSymbol name){
+    for(ASTSubComponent subComponent : comp.getSubComponents()) {
+      if(subComponent.getType() instanceof ASTSimpleReferenceType) {
+        if(subComponent.getInstancesList().stream().anyMatch(a ->name.getName().equals(a.getName()))) {
+          return ((ASTSimpleReferenceType)subComponent.getType()).getName(0);
+        }
+      }
+    }
+    return null;
   }
 }

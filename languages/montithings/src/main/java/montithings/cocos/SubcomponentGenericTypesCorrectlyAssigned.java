@@ -5,13 +5,10 @@
  */
 package montithings.cocos;
 
-import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.references.ActualTypeArgument;
 import de.monticore.types.types._ast.*;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTComponent;
-import montiarc._ast.ASTSubComponent;
-import montiarc._ast.ASTSubComponentInstance;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montiarc._symboltable.ComponentSymbolReference;
@@ -50,7 +47,7 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
 
       if (componentType.getActualTypeArguments().size() != componentType.getReferencedSymbol()
           .getFormalTypeParameters().size() -upperBoundCount(componentType.getReferencedSymbol())
-      &&!isGenericTypeWithUpperBound((montithings._ast.ASTComponent) node,componentInstanceSymbol.getName())) {
+      &&!isGenericTypeWithUpperBound((montithings._ast.ASTComponent) node,componentInstanceSymbol)) {
         Log.error(String.format("0xMT085 The number of type parameters " +
                 "assigned to the subcomponent %s of " +
                 "type %s does not match the amount " +
@@ -70,17 +67,12 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
             boolean foundGenericType = false;
 
             // try to resolve as generic type
-            /*for (JTypeSymbol genericTypeParam : componentSymbol.getFormalTypeParameters()) {
-              if (actualP.getType().getName().equals(genericTypeParam.getName())) {
-                foundGenericType = true;
-              }
-            }*/
             if (GenericBindingUtil.getGenericBindings((montithings._ast.ASTComponent) node).containsKey(actualP.getType().getName())) {
               foundGenericType = true;
             }
 
             // if generic type uses upperBound we let it pass.
-            if(foundGenericType == false && componentType.getReferencedComponent().isPresent()
+            if(!foundGenericType && componentType.getReferencedComponent().isPresent()
                 && componentType.getReferencedComponent().get().getAstNode().isPresent() &&
                 componentType.getReferencedComponent().get().getAstNode().get() instanceof ASTComponent) {
               ASTComponent subComp = ((ASTComponent)componentType.getReferencedComponent().get().getAstNode().get());
@@ -125,16 +117,10 @@ public class SubcomponentGenericTypesCorrectlyAssigned extends montiarc.cocos.Su
     return typeParameters.size();
   }
 
-  private boolean isGenericTypeWithUpperBound(montithings._ast.ASTComponent node,String instanceName){
-
-    String genericName = "";
-    for(ASTSubComponent subComponent:node.getSubComponents()){
-      for (ASTSubComponentInstance instance : subComponent.getInstancesList()) {
-        if (instance.getName().equals(instanceName)) {
-          genericName = ((ASTSimpleReferenceType)subComponent.getType()).getName(0);
-        }
-      }
-    }
-    return GenericBindingUtil.getGenericBindings((montithings._ast.ASTComponent) node).containsKey(genericName);
+  private boolean isGenericTypeWithUpperBound(montithings._ast.ASTComponent node,ComponentInstanceSymbol instanceName){
+    String genericName = GenericBindingUtil.getSubComponentType(node,instanceName);
+    if(genericName==null)
+      return false;
+    return GenericBindingUtil.getGenericBindings(node).containsKey(genericName);
   }
 }

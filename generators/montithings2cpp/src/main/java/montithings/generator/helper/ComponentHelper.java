@@ -6,9 +6,6 @@ import de.monticore.java.symboltable.JavaTypeSymbolReference;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.symboltable.GlobalScope;
-import de.monticore.symboltable.ImportStatement;
-import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.types.JFieldSymbol;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.monticore.symboltable.types.TypeSymbol;
@@ -17,7 +14,6 @@ import de.monticore.symboltable.types.references.JTypeReference;
 import de.monticore.symboltable.types.references.TypeReference;
 import de.monticore.types.prettyprint.TypesPrettyPrinterConcreteVisitor;
 import de.monticore.types.types._ast.ASTQualifiedName;
-import de.monticore.types.types._ast.ASTSimpleReferenceType;
 import de.monticore.types.types._ast.ASTType;
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration;
 import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
@@ -33,11 +29,9 @@ import montithings._ast.*;
 import montithings._ast.ASTComponent;
 import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
-import montithings.generator.visitor.CDAttributeGetterTransformationVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.helper.GenericBindingUtil;
 import montithings.visitor.GuardExpressionVisitor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -218,7 +212,6 @@ public class ComponentHelper {
     List<String> packages = ComponentHelper.getPackages(comp);
     if(comp instanceof montithings._symboltable.ComponentSymbol) {
       if (((montithings._symboltable.ComponentSymbol) comp).isInterfaceComponent()) {
-        //packages = new ArrayList<>();
         return "";
       }
     }
@@ -478,11 +471,13 @@ public class ComponentHelper {
       if (types.get(i).getType() instanceof JavaTypeSymbolReference){
         JavaTypeSymbolReference oldType = (JavaTypeSymbolReference)types.get(i).getType();
         String typeName = oldType.getName();
-        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
+        MontiArcArtifactScope artifactScope = GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope());
+        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(artifactScope, typeName);
         if (boundComponent != null) {
-          JavaTypeSymbolReference nameWithNamespace = new JavaTypeSymbolReference(printPackageNamespaceForComponent(boundComponent) + typeName, oldType.getEnclosingScope(), oldType.getDimension());
-          nameWithNamespace.setActualTypeArguments(ComponentHelper.addTypeParameterComponentPackage(instance,oldType.getActualTypeArguments()));
-          result.set(i, new ActualTypeArgument(nameWithNamespace));
+          String nameWithNameSpace =printPackageNamespaceForComponent(boundComponent) + typeName;
+          JavaTypeSymbolReference javaTypeSymbolReference = new JavaTypeSymbolReference(nameWithNameSpace , oldType.getEnclosingScope(), oldType.getDimension());
+          javaTypeSymbolReference.setActualTypeArguments(ComponentHelper.addTypeParameterComponentPackage(instance,oldType.getActualTypeArguments()));
+          result.set(i, new ActualTypeArgument(javaTypeSymbolReference));
         }
       }
     }
@@ -496,8 +491,7 @@ public class ComponentHelper {
    * @return Set of components used as generic type argument as include string.
    * Is empty if include is not needed.
    */
-  public static HashSet<String> includeGenericComponent(ComponentSymbol comp, ComponentInstanceSymbol instance){
-    HashSet<String> result = new HashSet<>();
+  public static Set<String> includeGenericComponent(ComponentSymbol comp, ComponentInstanceSymbol instance){
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
     if (componentTypeReference.hasActualTypeArguments()) {
       List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
@@ -506,7 +500,7 @@ public class ComponentHelper {
     return new HashSet<>();
   }
 
-  public static HashSet<String> includeGenericComponentIterate(ComponentSymbol comp, ComponentInstanceSymbol instance, List<ActualTypeArgument> types){
+  public static Set<String> includeGenericComponentIterate(ComponentSymbol comp, ComponentInstanceSymbol instance, List<ActualTypeArgument> types){
     HashSet<String> result = new HashSet<>();
       for(int i =0; i<types.size();i++) {
         String typeName = types.get(i).getType().getName();
@@ -540,30 +534,19 @@ public class ComponentHelper {
     HashMap<String, String> interfaceToImplementationGeneric = new HashMap<>(interfaceToImplementation);
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
     // check if needed optional values are present and if the instance component type is an interface
-    if(componentTypeReference.getReferencedComponent().isPresent()&&componentTypeReference.getReferencedComponent().get() instanceof montithings._symboltable.ComponentSymbol){
-      if(((montithings._symboltable.ComponentSymbol)componentTypeReference.getReferencedComponent().get()).isInterfaceComponent()){
-        //get all used component generics with their upperBound Names.
+    if(componentTypeReference.getReferencedComponent().isPresent()
+        &&componentTypeReference.getReferencedComponent().get() instanceof montithings._symboltable.ComponentSymbol){
+      montithings._symboltable.ComponentSymbol interfaceComp = (montithings._symboltable.ComponentSymbol)componentTypeReference.getReferencedComponent().get();
+      if(interfaceComp.isInterfaceComponent()){
+        //get interface component type name and the replacing generic name.
+        String interfaceCompName = interfaceComp.getName();
         if(comp.getAstNode().isPresent()){
           ASTComponent compBind = (ASTComponent) (comp.getAstNode().get());
-          if (compBind.getHead().getGenericTypeParametersOpt().isPresent()) {
-            List<ASTTypeVariableDeclaration> generics = compBind.getHead().getGenericTypeParameters().getTypeVariableDeclarationList();
-            for (int i = 0; i < generics.size(); i++) {
-              if(generics.get(i).getUpperBoundList().size()>0){
-                String interfaceComp = generics.get(i).getUpperBound(0).getSimpleReferenceType(0).getName(0);
-                String typeName = generics.get(i).getName();
-                // get the ast instance from given component instance symbol
-                for(ASTSubComponent subComponent : compBind.getSubComponents()) {
-                  if(subComponent.getType() instanceof ASTSimpleReferenceType) {
-                    if(((ASTSimpleReferenceType)subComponent.getType()).getName(0).equals(typeName)
-                        &&subComponent.getInstancesList().stream().anyMatch(a ->instance.getName().equals(a.getName()))) {
-                      // replace the interface component type of the instance with its generic type.
-                      interfaceToImplementationGeneric.remove(interfaceComp);
-                      interfaceToImplementationGeneric.put(interfaceComp,typeName);
-                    }
-                  }
-                }
-              }
-            }
+          String typeName = GenericBindingUtil.getSubComponentType(compBind, instance);
+          // replace the interface component type of the instance with the generic type.
+          if(typeName!=null && interfaceCompName!=null) {
+            interfaceToImplementationGeneric.remove(interfaceCompName);
+            interfaceToImplementationGeneric.put(interfaceCompName, typeName);
           }
         }
       }

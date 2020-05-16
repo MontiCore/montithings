@@ -127,7 +127,7 @@ public class ImplementationFitsInterface implements MontiThingsASTComponentCoCo 
         // only subComponents that assign an implementation to interface components are relevant,
         // so we first get the needed data to decide.
         if (type.getTypeArgumentsOpt().isPresent()) {
-          List<ASTTypeVariableDeclaration> generics = new ArrayList<>();
+          List<ASTTypeVariableDeclaration> generics;
           if (((ASTComponent) componentSymbol.getAstNode().get()).getHead().getGenericTypeParametersOpt().isPresent()) {
 
             ASTComponent nodeAssigningGenerics = (ASTComponent) componentSymbol.getAstNode().get();
@@ -160,7 +160,7 @@ public class ImplementationFitsInterface implements MontiThingsASTComponentCoCo 
                       Log.error("0xMT144 Implementation Component " + ((ASTSimpleReferenceType) implementations.get(i)).getName(0) + " of SubComponent " + subComponent.getInstances(0).getName() + " in component " + node.getName() + " can not be an interface component.", subComponent.getInstances(0).get_SourcePositionStart());
                     }
                     //check that the implementing component is compatible to any given interface component.
-                    else if (!interfaceComps.stream().anyMatch(interfaceC -> canImplementInterface((ASTComponent) implementation.getAstNode().get(), (ASTComponent) interfaceC.getAstNode().get()))) {
+                    else if (interfaceComps.stream().noneMatch(interfaceC -> canImplementInterface((ASTComponent) implementation.getAstNode().get(), (ASTComponent) interfaceC.getAstNode().get()))) {
                       Log.error("0xMT145 Implementation Component " + ((ASTSimpleReferenceType) implementations.get(i)).getName(0) + " of SubComponent " + subComponent.getInstances(0).getName() + " in component " + node.getName() + " does not meet required interface component specification.", subComponent.getInstances(0).get_SourcePositionStart());
                     }
                     else {
