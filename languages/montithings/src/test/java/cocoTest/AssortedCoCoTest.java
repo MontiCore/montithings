@@ -7,6 +7,7 @@ import montithings._ast.ASTMontiThingsNode;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.*;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AssortedCoCoTest extends AbstractCoCoTest {
@@ -139,14 +140,15 @@ public class AssortedCoCoTest extends AbstractCoCoTest {
         new ExpectedErrorInfo(2, "xMT145"));
   }
 
-  /*@Test
+  @Ignore
+  @Test
   public void genericParameterInterfaceNotFound() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE
         + "." +"genericBindingTest.genericParameterInterfaceNotFound."+ "Assignment");
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
         node,
         new ExpectedErrorInfo(1, "xMT146"));
-  }*/
+  }
 
   @Test
   public void genericParameterNotFitsInterface() {
