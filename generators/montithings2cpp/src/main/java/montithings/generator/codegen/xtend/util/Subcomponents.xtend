@@ -6,13 +6,18 @@ import montithings._symboltable.ComponentSymbol
 import montiarc._symboltable.ComponentInstanceSymbol
 import java.util.HashMap
 import java.util.HashSet
+import java.util.Set
 
 class Subcomponents {
 	
   def static String printIncludes(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
-  	var HashSet<String> compIncludes = new HashSet<String>()
+  	var Set<String> compIncludes = new HashSet<String>()
     for (subcomponent : comp.subComponents) {
       compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
+	  var Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent)
+	  for (String genericInclude : genericIncludes) {
+	    compIncludes.add('''#include "«genericInclude».h"''')
+	  }
 	}
 	return '''
 	«FOR include : compIncludes»
@@ -26,7 +31,7 @@ class Subcomponents {
   def static String printVars(ComponentSymbol comp, HashMap<String, String> interfaceToImplementation) {
     return '''
       «FOR subcomponent : comp.subComponents»
-        «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation)»
+        «var type = ComponentHelper.getSubComponentTypeNameWithBinding(comp, subcomponent, interfaceToImplementation)»
         «printPackageNamespace(comp, subcomponent)»«type» «subcomponent.name»;
       «ENDFOR»
     '''

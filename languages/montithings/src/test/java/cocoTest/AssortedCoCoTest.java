@@ -7,6 +7,7 @@ import montithings._ast.ASTMontiThingsNode;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.*;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AssortedCoCoTest extends AbstractCoCoTest {
@@ -101,5 +102,69 @@ public class AssortedCoCoTest extends AbstractCoCoTest {
     checkInvalid(new MontiThingsCoCoChecker().addCoCo(new LowerCaseResourcePort()),
         node,
         new ExpectedErrorInfo(2, "xMT133"));
+  }
+
+  @Test
+  public void notInterface() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
+        + "." +"genericBindingTest.interfaceNotFound."+ "Bind");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
+        node,
+        new ExpectedErrorInfo(1, "xMT141"));
+  }
+
+  @Test
+  public void implementationMissing() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
+        + "." +"genericBindingTest.implementationMissing."+ "Assignment");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
+        node,
+        new ExpectedErrorInfo(2, "xMT143"));
+  }
+
+  @Test
+  public void interfaceImplementsInterface() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
+        + "." +"genericBindingTest.interfaceImplementsInterface."+ "Assignment");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
+        node,
+        new ExpectedErrorInfo(2, "xMT144"));
+  }
+
+  @Test
+  public void notFitsInterface() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
+        + "." +"genericBindingTest.notFitsInterface."+ "Assignment");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
+        node,
+        new ExpectedErrorInfo(2, "xMT145"));
+  }
+
+  @Ignore
+  @Test
+  public void genericParameterInterfaceNotFound() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
+        + "." +"genericBindingTest.genericParameterInterfaceNotFound."+ "Assignment");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
+        node,
+        new ExpectedErrorInfo(1, "xMT146"));
+  }
+
+  @Test
+  public void genericParameterNotFitsInterface() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
+        + "." +"genericBindingTest.genericParameterNotFitsInterface."+ "Bind");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
+        node,
+        new ExpectedErrorInfo(2, "xMT147","xMT141"));
+  }
+
+  @Test
+  public void genericParameterNeedsInterface() {
+    ASTMontiThingsNode node = loadComponentAST(PACKAGE
+        + "." +"genericBindingTest.genericParameterNeedsInterface."+ "Bind");
+    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface()),
+        node,
+        new ExpectedErrorInfo(1, "xMT148"));
   }
 }

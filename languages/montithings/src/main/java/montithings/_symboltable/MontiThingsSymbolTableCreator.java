@@ -31,6 +31,7 @@ import montithings._ast.ASTComponent;
 import montithings._ast.ASTPort;
 import montithings._ast.*;
 import montithings._visitor.MontiThingsVisitor;
+import montithings.helper.GenericBindingUtil;
 import montithings.visitor.ExpressionEnclosingScopeSetterVisitor;
 
 import java.util.*;
@@ -292,7 +293,23 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
     // timing
     component.setBehaviorKind(Timing.getBehaviorKind(node));
 
+    // add upperbound type parameters as Java type symbol to component
+    Map<String, ASTSimpleReferenceType> upperboundTypeMap = GenericBindingUtil.getGenericBindings(node);
+    for (ASTSimpleReferenceType upperBoundType : upperboundTypeMap.values()) {
+      String upperBoundTypeName = upperBoundType.getName(0);
+      if (!component.getSpannedScope().getLocalSymbols().containsKey(upperBoundTypeName)) {
+        // TypeParameters/TypeVariables are seen as type declarations.
+        JavaTypeSymbol javaTypeVariableSymbol = javaSymbolFactory.createTypeVariable(upperBoundTypeName);
+
+        // reuse JavaDSL
+        JTypeSymbolsHelper.addInterfacesToType(javaTypeVariableSymbol, new ArrayList<>(), component.getSpannedScope(), javaTypeRefFactory);
+
+        component.addFormalTypeParameter(javaTypeVariableSymbol);
+      }
+    }
+
     componentStack.push(component);
+
     addToScopeAndLinkWithNode(component, node);
 
     // Transform SimpleConncetors to normal qaualified connectors
@@ -352,8 +369,19 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
       component.setSuperComponent(ref);
     }
 
+    Map<String,ASTSimpleReferenceType> genericToInterface = GenericBindingUtil.getGenericBindings(node);
+    // changes the subcomponent gneric types to their interface type.
     for (ASTSubComponent subComp : node.getSubComponents()) {
-      addSubComponentSymbols(subComp);
+     ASTReferenceType type = subComp.getType();
+     String typeName = TypesPrinter.printTypeWithoutTypeArgumentsAndDimension(type);
+      if(genericToInterface.containsKey(typeName)){
+        subComp.setType(genericToInterface.get(typeName));
+        addSubComponentSymbols(subComp);
+        subComp.setType(type);
+      }
+      else{
+        addSubComponentSymbols(subComp);
+      }
     }
 
     if (autoinstantiate.pop()) {
@@ -538,6 +566,7 @@ public class MontiThingsSymbolTableCreator extends MontiArcSymbolTableCreator
         .printTypeWithoutTypeArgumentsAndDimension(node.getType());
 
     // String refCompPackage = Names.getQualifier(referencedCompName);
+
     String simpleCompName = Names.getSimpleName(referencedCompName);
 
     ComponentSymbolReference componentTypeReference = new ComponentSymbolReference(

@@ -2,6 +2,7 @@
 package montithings.generator.helper;
 
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
+import de.monticore.java.symboltable.JavaTypeSymbolReference;
 import de.monticore.mcexpressions._ast.ASTExpression;
 import de.monticore.mcexpressions._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
@@ -19,22 +20,18 @@ import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTParameter;
+import montiarc._ast.*;
 import montiarc._ast.ASTPort;
-import montiarc._ast.ASTValuation;
-import montiarc._symboltable.ComponentInstanceSymbol;
-import montiarc._symboltable.ComponentSymbol;
-import montiarc._symboltable.ComponentSymbolReference;
-import montiarc._symboltable.PortSymbol;
+import montiarc._symboltable.*;
 import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
 import montiarc.helper.SymbolPrinter;
 import montithings._ast.*;
+import montithings._ast.ASTComponent;
 import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.codegen.xtend.util.Utils;
-import montithings.generator.visitor.CDAttributeGetterTransformationVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.helper.GenericBindingUtil;
 import montithings.visitor.GuardExpressionVisitor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -213,6 +210,11 @@ public class ComponentHelper {
   public static String printPackageNamespaceForComponent(
       montiarc._symboltable.ComponentSymbol comp) {
     List<String> packages = ComponentHelper.getPackages(comp);
+    if(comp instanceof montithings._symboltable.ComponentSymbol) {
+      if (((montithings._symboltable.ComponentSymbol) comp).isInterfaceComponent()) {
+        return "";
+      }
+    }
     StringBuilder namespace = new StringBuilder("montithings::");
     for (String packageName : packages) {
       namespace.append(packageName).append("::");
@@ -443,16 +445,115 @@ public class ComponentHelper {
       boolean printTypeParameters) {
     String result = "";
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
-
     result += componentTypeReference.getName();
     if (componentTypeReference.hasActualTypeArguments() && printTypeParameters) {
-      result += printTypeArguments(componentTypeReference.getActualTypeArguments());
+      // format simple component type name to full component type name
+      List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
+      types = addTypeParameterComponentPackage(instance,types);
+      result += printTypeArguments(types);
     }
     if (interfaceToImplementation.containsKey(result)) {
       return interfaceToImplementation.get(result);
     }
     return result;
   }
+
+  /**
+   * Formats simple component type name to qualified component type parameter name
+   * @param instance component instance that gets qualified type parameter names
+   * @param types types of the component instance, where simple component names are converted to qualified names
+   * @return for every type parameter that references a component by it's simple name, it is replaced by the fully qualified component name.
+   */
+  public static List<ActualTypeArgument> addTypeParameterComponentPackage(ComponentInstanceSymbol instance, List<ActualTypeArgument> types) {
+    List<ActualTypeArgument> result = new ArrayList<>(types);
+    int size = types.size();
+    for(int i =0; i<size;i++) {
+      if (types.get(i).getType() instanceof JavaTypeSymbolReference){
+        JavaTypeSymbolReference oldType = (JavaTypeSymbolReference)types.get(i).getType();
+        String typeName = oldType.getName();
+        MontiArcArtifactScope artifactScope = GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope());
+        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(artifactScope, typeName);
+        if (boundComponent != null) {
+          String nameWithNameSpace =printPackageNamespaceForComponent(boundComponent) + typeName;
+          JavaTypeSymbolReference javaTypeSymbolReference = new JavaTypeSymbolReference(nameWithNameSpace , oldType.getEnclosingScope(), oldType.getDimension());
+          javaTypeSymbolReference.setActualTypeArguments(ComponentHelper.addTypeParameterComponentPackage(instance,oldType.getActualTypeArguments()));
+          result.set(i, new ActualTypeArgument(javaTypeSymbolReference));
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Set of components used as generic type argument as include string
+   * @param comp component that gets the new includes
+   * @param instance component instance that assigns component to generic
+   * @return Set of components used as generic type argument as include string.
+   * Is empty if include is not needed.
+   */
+  public static Set<String> includeGenericComponent(ComponentSymbol comp, ComponentInstanceSymbol instance){
+    final ComponentSymbolReference componentTypeReference = instance.getComponentType();
+    if (componentTypeReference.hasActualTypeArguments()) {
+      List<ActualTypeArgument> types = new ArrayList<>(componentTypeReference.getActualTypeArguments());
+      return includeGenericComponentIterate(comp,instance,types);
+    }
+    return new HashSet<>();
+  }
+
+  public static Set<String> includeGenericComponentIterate(ComponentSymbol comp, ComponentInstanceSymbol instance, List<ActualTypeArgument> types){
+    HashSet<String> result = new HashSet<>();
+      for(int i =0; i<types.size();i++) {
+        String typeName = types.get(i).getType().getName();
+        ComponentSymbol boundComponent = GenericBindingUtil.getComponentFromString(
+            GenericBindingUtil.getEnclosingMontiArcArtifactScope(instance.getEnclosingScope()), typeName);
+        if (boundComponent!= null) {
+          result.add(getPackagePath(comp,boundComponent)+typeName);
+          result.addAll(includeGenericComponentIterate(comp, instance, types.get(i).getType().getActualTypeArguments()));
+        }
+      }
+    return result;
+  }
+
+  /**
+   * Replace subcomponent instance type with generic if it is an interface type.
+   * component top<T extends InterfaceComponent>{
+   *   component InterfaceComponent xy;
+   * }
+   * results in
+   * component top<T extends InterfaceComponent>{
+   *   component T xy;
+   * }
+   *
+   * @param comp component containing the subcomponent instances.
+   * @param instance the instance where it's type may be replaced.
+   * @param interfaceToImplementation binding which replaces an interface type if no generic is used.
+   * @return the subcomponent type name without package.
+   */
+  public static String getSubComponentTypeNameWithBinding(ComponentSymbol comp, ComponentInstanceSymbol instance,
+      HashMap<String, String> interfaceToImplementation) {
+    HashMap<String, String> interfaceToImplementationGeneric = new HashMap<>(interfaceToImplementation);
+    final ComponentSymbolReference componentTypeReference = instance.getComponentType();
+    // check if needed optional values are present and if the instance component type is an interface
+    if(componentTypeReference.getReferencedComponent().isPresent()
+        &&componentTypeReference.getReferencedComponent().get() instanceof montithings._symboltable.ComponentSymbol){
+      montithings._symboltable.ComponentSymbol interfaceComp = (montithings._symboltable.ComponentSymbol)componentTypeReference.getReferencedComponent().get();
+      if(interfaceComp.isInterfaceComponent()){
+        //get interface component type name and the replacing generic name.
+        String interfaceCompName = interfaceComp.getName();
+        if(comp.getAstNode().isPresent()){
+          ASTComponent compBind = (ASTComponent) (comp.getAstNode().get());
+          String typeName = GenericBindingUtil.getSubComponentType(compBind, instance);
+          // replace the interface component type of the instance with the generic type.
+          if(typeName!=null && interfaceCompName!=null) {
+            interfaceToImplementationGeneric.remove(interfaceCompName);
+            interfaceToImplementationGeneric.put(interfaceCompName, typeName);
+          }
+        }
+      }
+    }
+    return getSubComponentTypeNameWithoutPackage(instance,interfaceToImplementationGeneric);
+  }
+
 
   /**
    * Determine whether the port of the given connector is an incoming or outgoing
@@ -905,8 +1006,12 @@ public class ComponentHelper {
   }
 
   public static String getPackagePath(ComponentSymbol comp, ComponentInstanceSymbol subComp) {
+    return getPackagePath(comp, subComp.getComponentType().getReferencedSymbol());
+  }
+
+  public static String getPackagePath(ComponentSymbol comp, ComponentSymbol subComp) {
     // Get package name of subcomponent
-    String subCompPackageName = subComp.getComponentType().getReferencedSymbol().getPackageName();
+    String subCompPackageName = subComp.getPackageName();
     // Check if subcomponent is in different package than parent component
     if (!subCompPackageName.equals(comp.getPackageName())) {
       // Split packageName
