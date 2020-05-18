@@ -773,8 +773,8 @@ public class ComponentHelper {
     try {
       ASTMTCompilationUnit node = (ASTMTCompilationUnit) comp.getEnclosingScope().getAstNode()
           .get();
-      List<ASTImportStatement> imports = node.getImportStatementList();
-      for (ASTImportStatement importStatement : imports) {
+      List<ASTMTImportStatement> imports = node.getMTImportStatementList();
+      for (ASTMTImportStatement importStatement : imports) {
         if (importStatement instanceof ASTCPPImportStatementSYSTEM) {
           importStrings.add(String.join(".",
               (((ASTCPPImportStatementSYSTEM) importStatement)
