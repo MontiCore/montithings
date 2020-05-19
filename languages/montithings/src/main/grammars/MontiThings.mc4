@@ -7,12 +7,12 @@ grammar MontiThings extends MontiArc {
      * ASTMTCompilationUnit represents the entire content of a MontiArc model artifact
      *
      * @attribute package          The package declaration of the component model
-     * @attribute importStatements List of imported elements (data types and component types)
+     * @attribute MTImportStatements List of imported elements (data types and component types)
      * @attribute component The outermost component model defined in this compilation unit
      */
     MTCompilationUnit =
       ("package" package:(Name& || ".")+ ";")?  // optional package declaration
-      (ImportStatement)*
+      (MTImportStatement)*
       (ImportStatementLOCAL)*                   // import statements
       Component                                 // single outermost component declaration 
       EOF;                                      // and nothing (end of file) afterwards
@@ -31,15 +31,15 @@ grammar MontiThings extends MontiArc {
     /* ===================== Import Statements ==================== */
     /* ============================================================ */
 
-    interface ImportStatement;
+    interface MTImportStatement;
 
     /**
      * Imported CPP elements (data types, components etc)
      */
-    CPPImportStatementLOCAL implements ImportStatement =
+    CPPImportStatementLOCAL implements MTImportStatement =
       "#include" cppImport:String;
 
-    CPPImportStatementSYSTEM implements ImportStatement =
+    CPPImportStatementSYSTEM implements MTImportStatement =
       "#include" "<" cppSystemImport:(Name& || ".")+ ">";
 
     /* ============================================================ */
