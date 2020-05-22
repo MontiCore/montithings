@@ -59,9 +59,16 @@ Unit Test JDK 11:
   allow_failure: true 
   <<: *unit_test_definition
 
+
+Unit Test JDK 14:
+  image: maven:3-jdk-14
+  # We do not require JDK 14 support yet. We appreciate it though.
+  allow_failure: true
+  <<: *unit_test_definition
+
 Unit Test Amazon Corretto JDK 8:
   image: maven:3-amazoncorretto-8
-  # We do not require Amazon Corretto JDK 11 support. We appreciate it though.
+  # We do not require Amazon Corretto JDK support. We appreciate it though.
   allow_failure: true 
   <<: *unit_test_definition
 
