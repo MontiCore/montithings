@@ -97,7 +97,7 @@ class ValueCheck {
   	}
 
 	def private static String formatCheckToString(String port, ASTMTValueFormat format) {
-    	return '''std::regex_match(«port», std::regex("«format.format»"))'''
+    	return '''std::regex_match(allowedValuesCheck.str(), std::regex("«format.format»"))'''
 	} 
 	
 	def private static String valueRangeToString(String port, ASTMTValueRange range, String valueContainer) {

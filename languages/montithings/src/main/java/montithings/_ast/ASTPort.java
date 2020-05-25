@@ -2,7 +2,6 @@
 package montithings._ast;
 
 import de.monticore.types.types._ast.ASTType;
-import montiarc._ast.ASTComponent;
 import montiarc._ast.ASTStereotype;
 import montiarc._ast.MontiArcNodeFactory;
 

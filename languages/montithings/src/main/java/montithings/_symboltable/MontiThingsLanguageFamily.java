@@ -24,6 +24,5 @@ public class MontiThingsLanguageFamily extends ModelingLanguageFamily {
     cdlang.addResolvingFilter(new CommonResolvingFilter<JTypeSymbol>(JTypeSymbol.KIND));
     cdlang.addResolvingFilter(new CommonResolvingFilter<JFieldSymbol>(JFieldSymbol.KIND));
     addModelingLanguage(cdlang);
-
   }
 }

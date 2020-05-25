@@ -18,8 +18,7 @@
   <modules>
     <module>fireAlarm</module>
     <module>hierarchy</module>
-    <module>hierarchy-rp</module>
-    <module>hierarchy-interface-components</module>
+    <module>language-features</module>
   </modules>
 
 </project>
