@@ -87,7 +87,7 @@ Port<«type»>* «name» = new WSPort<«type»>(OUT, "«port.uri»");
     Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getPort«name.toFirstUpper»(){
     	return «name»;
     }
-	
+
     «Utils.printTemplateArguments(comp)»
     void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
     	«name» = port;

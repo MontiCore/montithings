@@ -14,6 +14,11 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>automata</module>
+    <module>assumptions-guarantees</module>
+    <module>class-diagrams</module>
+    <module>error-handling</module>
+    <module>if-then-else-behavior</module>
     <module>interface-components</module>
     <module>resource-ports</module>
   </modules>
