@@ -6,13 +6,13 @@
 
     <!-- == PROJECT COORDINATES ============================================= -->
     <parent>
-        <artifactId>applications</artifactId>
+        <artifactId>language-features</artifactId>
         <groupId>montithings.applications</groupId>
         <version>5.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>hierarchy-interface-components</artifactId>
+    <artifactId>resource-ports</artifactId>
 
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 
@@ -128,7 +128,7 @@
                         </goals>
                         <configuration>
                             <includeClassifiers>${librarymodels.classifier}, models</includeClassifiers>
-                            <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
+                            <outputDirectory>target/librarymodels</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -144,7 +144,7 @@
                                     <artifactId>maJavaLib</artifactId>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
+                            <outputDirectory>target/librarymodels</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -174,7 +174,7 @@
                                     <version>5.0.2-SNAPSHOT</version>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${basedir}/target/generated-sources</outputDirectory>
+                            <outputDirectory>target/generated-sources</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -192,7 +192,7 @@
                                     <version>5.0.2-SNAPSHOT</version>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${basedir}/target/generated-sources/lib</outputDirectory>
+                            <outputDirectory>target/generated-sources/lib</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -210,7 +210,7 @@
                                     <version>5.0.2-SNAPSHOT</version>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${basedir}/target/generated-sources/header</outputDirectory>
+                            <outputDirectory>target/generated-sources/header</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

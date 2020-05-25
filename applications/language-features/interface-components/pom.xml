@@ -6,13 +6,13 @@
 
     <!-- == PROJECT COORDINATES ============================================= -->
     <parent>
-        <artifactId>applications</artifactId>
+        <artifactId>language-features</artifactId>
         <groupId>montithings.applications</groupId>
         <version>5.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>hierarchy-rp</artifactId>
+    <artifactId>interface-components</artifactId>
 
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 

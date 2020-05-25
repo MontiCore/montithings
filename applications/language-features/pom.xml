@@ -4,21 +4,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!-- == PROJECT COORDINATES ============================================= -->
-
   <parent>
-    <groupId>montithings</groupId>
-    <artifactId>montithings-core</artifactId>
+    <artifactId>applications</artifactId>
+    <groupId>montithings.applications</groupId>
     <version>5.0.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>montithings.applications</groupId>
-  <artifactId>applications</artifactId>
+  <artifactId>language-features</artifactId>
   <packaging>pom</packaging>
 
   <modules>
-    <module>fireAlarm</module>
-    <module>hierarchy</module>
-    <module>language-features</module>
+    <module>interface-components</module>
+    <module>resource-ports</module>
   </modules>
 
 </project>

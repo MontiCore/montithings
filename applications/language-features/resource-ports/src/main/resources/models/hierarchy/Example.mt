@@ -6,17 +6,12 @@ package hierarchy;
   resource port out int outPort ("ws://localhost:8080/out/Port/");
   resource port in  int inPort2  ("ws://localhost:8080/out/Port/");
 
-  //component Source source;
-  component Sink sink;
-  component LowPassFilter (5) lpf;
-  component Converter c;
   component Double d;
+  component Sink sink;
 
-  connect inPort -> lpf.inport;
-  connect lpf.outport -> c.inport;
-  connect c.outport -> outPort;
-  connect inPort2 -> d.x;
-  connect d.y -> sink.value;
+  connect inPort -> d.x;
+  connect d.y -> outPort;
+  connect inPort2 ->  sink.value;
 
   control {
     update interval 1sec;
