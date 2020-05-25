@@ -1,7 +1,6 @@
 /* (c) https://github.com/MontiCore/monticore */
 package montithings.visitor;
 
-import de.monticore.ast.ASTNode;
 import de.monticore.mcexpressions._ast.*;
 import de.monticore.mcexpressions._visitor.MCExpressionsVisitor;
 import de.monticore.symboltable.Scope;
@@ -16,7 +15,7 @@ import de.monticore.symboltable.Scope;
 public class ExpressionEnclosingScopeSetterVisitor implements MCExpressionsVisitor {
   private MCExpressionsVisitor realThis = this;
 
-  private Scope enclosingScope;
+  private final Scope enclosingScope;
 
   @Override
   public void setRealThis(MCExpressionsVisitor realThis) {

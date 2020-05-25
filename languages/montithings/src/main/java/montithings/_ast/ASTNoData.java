@@ -34,7 +34,9 @@ public class ASTNoData extends ASTNoDataTOP implements ASTMontiThingsNode {
   }
 
   @Override
-  public void accept(MontiThingsVisitor visitor) { accpt(visitor); }
+  public void accept(MontiThingsVisitor visitor) {
+    accpt(visitor);
+  }
 
   @Override
   public void accept(LiteralsVisitor visitor) {
@@ -46,12 +48,6 @@ public class ASTNoData extends ASTNoDataTOP implements ASTMontiThingsNode {
       LiteralsPrettyPrinterConcreteVisitor realVisitor = (LiteralsPrettyPrinterConcreteVisitor) visitor;
       IndentPrinter p = realVisitor.getPrinter();
       p.print("tl::nullopt");
-      /*
-      ASTNullLiteral node = MontiArcMill.nullLiteralBuilder().build();
-      node.setEnclosingScopeOpt(this.getEnclosingScopeOpt());
-      realVisitor.getRealThis().traverse(node);
-      realVisitor.getRealThis().endVisit(node);
-       */
     }
   }
 }
