@@ -161,9 +161,10 @@ class ComponentGenerator {
     	«IF comp.isAtomic»
 			«printBehaviorInitializerListEntry(comp, compname)»
         «ENDIF»
-    	«IF !comp.configParameters.isEmpty»,«ENDIF»
+    	«IF comp.isAtomic && !comp.configParameters.isEmpty»,«ENDIF»
 		«Subcomponents.printInitializerList(comp)»
 		«IF !comp.configParameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
+		«IF comp.isAtomic && comp.configParameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
 		«FOR param : comp.configParameters SEPARATOR ','»
       	«param.name» («param.name»)
     	«ENDFOR»

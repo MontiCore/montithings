@@ -544,7 +544,7 @@ public class ComponentHelper {
           ASTComponent compBind = (ASTComponent) (comp.getAstNode().get());
           String typeName = GenericBindingUtil.getSubComponentType(compBind, instance);
           // replace the interface component type of the instance with the generic type.
-          if(typeName!=null && interfaceCompName!=null) {
+          if(typeName!=null && interfaceCompName!=null && !interfaceCompName.equals(typeName)) {
             interfaceToImplementationGeneric.remove(interfaceCompName);
             interfaceToImplementationGeneric.put(interfaceCompName, typeName);
           }
