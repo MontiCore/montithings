@@ -110,8 +110,9 @@ public class CppGenerator {
     if (typeWithoutMT.startsWith("montithings::")) {
       typeWithoutMT = typeWithoutMT.replaceFirst("montithings::", "");
     }
-    Path filePath = Paths.get(Names.getPathFromPackage(typeWithoutMT) + ".h");
-    filePath = Paths.get(filePath.toString().replace("::", File.separator));
+    String filePathString = Names.getPathFromPackage(typeWithoutMT);
+    filePathString = filePathString.replace("::", File.separator);
+    Path filePath = Paths.get(Names.getPathFromPackage(filePathString) + ".h");
 
     // Hack to at least correctly generate java.lang.*
     // Will not work with packages that start with upper case letters
