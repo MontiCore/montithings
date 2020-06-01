@@ -712,7 +712,11 @@ public class ComponentHelper {
    * @return Corresponding CPP types from input java types
    */
   public static String java2cppTypeString(String type) {
-    type = type.replaceAll("([^<]*)\\[]", "std::vector<$1>");
+    String replacedArray = type.replaceAll("([^<]*)\\[]", "std::vector<$1>");
+    while (!type.equals(replacedArray)) {
+      type = replacedArray;
+      replacedArray = type.replaceAll("([^<]*)\\[]", "std::vector<$1>");
+    }
     type = type.replaceAll("String", "std::string");
     type = type.replaceAll("Integer", "int");
     type = type.replaceAll("Map", "std::map");
