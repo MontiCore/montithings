@@ -43,7 +43,7 @@ public class ASTDevices extends ASTDevicesTOP {
 
                 for (ASTJSONProperty arrayValue : value.getPropList()) {
                     ASTJSONString stringValue = (ASTJSONString) arrayValue.getValue();
-                    result.put("location_"+prop.getKey(), stringValue.getStringLiteral().getValue());
+                    result.put("location_"+arrayValue.getKey(), stringValue.getStringLiteral().getValue());
                 }
 
             } else {
