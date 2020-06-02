@@ -1,0 +1,38 @@
+{
+    "distribution": {
+      "fire_detection:latest": {
+        "distribution_selection": [
+          [
+            ["has_sensor", "temp", "==", 1],
+            ["has_sensor", "smoke", "==", 1]
+          ],
+          ["location_building", "building1", "==", 1]
+        ],
+        "distribution_constraints": [
+          ["location_floor", "2", ">=", 2],
+          ["location_floor", "3", "==", 2],
+          ["location_floor", "4", "<=", 1],
+          ["location_floor", "5", "==", 0],
+          ["location_floor", "6", "==", "all"]
+        ]
+      }
+    },
+    "incompatibilities": [
+      ["room_temp_controller:latest","room_temp_sensor:latest"]
+    ],
+    "dependencies": [
+      {
+        "type": "distinct",
+        "dependent": "room_temp_controller:latest",
+        "dependency": "room_temp_sensor:latest",
+        "amount_at_least": 1
+      },
+      {
+        "type": "simple",
+        "dependent": "room_temp_sensor:latest",
+        "dependency": "room_temp_controller:latest",
+        "amount_at_least": 1
+      }
+    ]
+  }
+  

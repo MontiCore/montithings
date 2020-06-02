@@ -1,0 +1,204 @@
+{
+    "devices" : {
+        "raspy1": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": "101"
+            },
+            "state": "online"
+        },
+        "raspy2": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor2",
+                "room": "102"
+            },
+            "state": "online"
+        },
+        "raspy3": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor3",
+                "room": "103"
+            },
+            "state": "online"
+        },
+        "raspy4": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": "104"
+            },
+            "state": "online"
+        },
+        "raspy5": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor3",
+                "room": "104"
+            },
+            "state": "online"
+        },
+        "raspy6": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": "104"
+            },
+            "state": "online"
+        },
+        "raspy7": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor2",
+                "room": "101"
+            },
+            "state": "online"
+        },
+        "raspy8": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor3",
+                "room": "102"
+            },
+            "state": "online"
+        },
+        "raspy9": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": "103"
+            },
+            "state": "online"
+        },
+        "raspy10": {
+            "type": "device",
+            "hardware": ["sensor_temperature"],
+            "location": {
+                "building": "building1",
+                "floor": "floor2",
+                "room": "104"
+            },
+            "state": "online"
+        },
+        "raspy11": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor3",
+                "room": "101"
+            },
+            "state": "online"
+        },
+        "raspy12": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": "102"
+            },
+            "state": "online"
+        },
+        "raspy13": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor2",
+                "room": "103"
+            },
+            "state": "online"
+        },
+        "raspy14": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor3",
+                "room": "104"
+            },
+            "state": "online"
+        },
+        "raspy15": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": "105"
+            },
+            "state": "online"
+        },
+        "raspy16": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor2",
+                "room": "101"
+            },
+            "state": "online"
+        },
+        "raspy17": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor3",
+                "room": "102"
+            },
+            "state": "online"
+        },
+        "raspy18": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": "103"
+            },
+            "state": "online"
+        },
+        "raspy19": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor2",
+                "room": "104"
+            },
+            "state": "online"
+        },
+        "raspy20": {
+            "type": "device",
+            "hardware": ["heat_controller"],
+            "location": {
+                "building": "building1",
+                "floor": "floor3",
+                "room": "105"
+            },
+            "state": "online"
+        }
+    }
+}

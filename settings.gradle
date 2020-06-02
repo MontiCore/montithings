@@ -1,0 +1,17 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        maven {
+            credentials.username mavenUser
+            credentials.password mavenPassword
+            url repo
+        }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'prolog-generator'
+
+include ':json'
+project(':json').projectDir = new File(settingsDir, 'json')
+
