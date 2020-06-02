@@ -20,7 +20,6 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.junit.Test;
 
 import de.monticore.lang.json._ast.ASTJSONDocument;
-import sun.security.krb5.Config;
 
 public class GenerateQueryTest {
 

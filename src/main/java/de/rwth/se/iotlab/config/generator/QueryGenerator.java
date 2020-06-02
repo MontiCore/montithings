@@ -30,17 +30,17 @@ public class QueryGenerator {
 
 
     /**
-     * Generates a Prolog file containing facts for devices
-     * @param devices An AST based on an facts.json file
+     * Generates a Prolog file containing a query based on a config
+     * @param config An AST based on an config.json file
      */
-    public static void generateQuery(ASTConfig devices) {
+    public static void generateQuery(ASTConfig config) {
         GeneratorSetup setup = new GeneratorSetup();
         // Prolog Comment
         setup.setCommentStart("%");
         setup.setCommentEnd("");
 
         GeneratorEngine engine = new GeneratorEngine(setup);
-        engine.generate("templates/facts.ftl", Paths.get("facts" + ".pl"), devices);
+        engine.generate("templates/query.ftl", Paths.get("query" + ".pl"), config);
 
     }
 
