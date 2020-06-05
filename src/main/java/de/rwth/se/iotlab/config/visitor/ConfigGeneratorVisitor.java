@@ -16,6 +16,8 @@ import de.rwth.se.iotlab.config._ast.ASTConfig;
 import de.rwth.se.iotlab.config._ast.ASTConfigNode;
 import de.rwth.se.iotlab.config._visitor.ConfigVisitor;
 
+import java.io.Console;
+
 public class ConfigGeneratorVisitor implements ConfigVisitor {
     ConfigVisitor realThis = this;
 
