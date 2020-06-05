@@ -1,12 +1,13 @@
 /* (c) https://github.com/MontiCore/monticore */
 package montithings.helper;
 
+import de.monticore.expressions.expressionsbasis._symboltable.IExpressionsBasisScope;
+import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
-import de.monticore.mcexpressions._ast.ASTExpression;
-import de.monticore.mcexpressions._ast.ASTNameExpression;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.symboltable.Scope;
-import montiarc._symboltable.PortSymbol;
+import arcbasis._symboltable.PortSymbol;
 import montithings.visitor.GuardExpressionVisitor;
 
 import java.util.ArrayList;
@@ -25,17 +26,19 @@ public class ExpressionUtil {
     List<PortSymbol> ports = new ArrayList<>();
 
     for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {
+      /*
       String name = guardExpressionElement.getName();
-      Scope s = node.getEnclosingScopeOpt().get();
+      Scope s = node.getEnclosingScope();
       Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
       port.ifPresent(ports::add);
+       */
     }
     return ports;
   }
 
   public static String printExpression(ASTExpression node) {
     IndentPrinter printer = new IndentPrinter();
-    JavaDSLPrettyPrinter prettyPrinter = new JavaDSLPrettyPrinter(printer);
+    ExpressionsBasisPrettyPrinter prettyPrinter = new ExpressionsBasisPrettyPrinter(printer);
     node.accept(prettyPrinter);
     return printer.getContent();
   }

@@ -10,44 +10,29 @@ grammar MontiThings extends MontiArc {
      * @attribute MTImportStatements List of imported elements (data types and component types)
      * @attribute component The outermost component model defined in this compilation unit
      */
-    MTCompilationUnit =
+    scope MTCompilationUnit =
       ("package" package:(Name& || ".")+ ";")?  // optional package declaration
-      (MTImportStatement)*
-      (ImportStatementLOCAL)*                   // import statements
-      Component                                 // single outermost component declaration 
-      EOF;                                      // and nothing (end of file) afterwards
+      importStatement:MCImportStatement*
+      ComponentType                             // single outermost component declaration
+      EOF                                       // and nothing (end of file) afterwards
+    ;
 
     /**
      * Interface component has no implementation except Ports
      */
-    symbol scope Component implements Element =
-      Stereotype?
+    symbol scope ComponentType implements ArcElement =
       (["interface"] | ["specification"])? (["component"] | ["application"])  Name
       head:ComponentHead
-      (instanceName:Name actualTypeArgument:TypeArguments?)?
-      body:ComponentBody;
-
-    /* ============================================================ */
-    /* ===================== Import Statements ==================== */
-    /* ============================================================ */
-
-    interface MTImportStatement;
-
-    /**
-     * Imported CPP elements (data types, components etc)
-     */
-    CPPImportStatementLOCAL implements MTImportStatement =
-      "#include" cppImport:String;
-
-    CPPImportStatementSYSTEM implements MTImportStatement =
-      "#include" "<" cppSystemImport:(Name& || ".")+ ">";
+      (ComponentInstance || ",")*
+      body:ComponentBody
+    ;
 
     /* ============================================================ */
     /* ================= Assumptions & Guarantees ================= */
     /* ============================================================ */
 
-    Assumption implements Element = "assume" ":" guard:Expression ";";
-    Guarantee implements Element = "guarantee" ":" guard:Expression ";";
+    Assumption implements ArcElement = "assume" ":" guard:Expression ";";
+    Guarantee implements ArcElement = "guarantee" ":" guard:Expression ";";
 
     /* ============================================================ */
     /* ========================== Ports =========================== */
@@ -55,18 +40,17 @@ grammar MontiThings extends MontiArc {
 
     interface AllowedValues;
 
-    Port implements Element =
-        Stereotype?
-        (incoming:["in"] | outgoing:["out"])    // direction
-        Type ("(" AllowedValues ")" )?
-        (MTPortDeclaration || ",")+;
+    PortDeclaration =
+        PortDirection
+        MCType ("(" AllowedValues ")" )?
+        (Port || ",")+;
 
-    MTPortDeclaration = Name ("=" default:Valuation)?;
+    symbol Port = Name ("=" default:Expression)?;
 
     //StreamHistoryValue implements Expression = "[" IntLiteral | "pre" "]";
 
-    MTValueList   implements AllowedValues = (Valuation | MTValueRange) ("," (Valuation | MTValueRange))*;
-    MTValueRange  implements AllowedValues = lowerBound:Valuation (":" stepsize:Valuation)? ":" upperBound:Valuation;
+    MTValueList   implements AllowedValues = (Expression | MTValueRange) ("," (Expression | MTValueRange))*;
+    MTValueRange  implements AllowedValues = lowerBound:Expression (":" stepsize:Expression)? ":" upperBound:Expression;
     MTValueFormat implements AllowedValues = "format" ":" format:String; // RegEx to which value has to conform
 
 
@@ -78,12 +62,10 @@ grammar MontiThings extends MontiArc {
      * Defines an interface of a component containing
      * incoming and outgoing ports to external resources.
      *
-     * @attribute stereotype an optional stereotype
      * @attribute resourcePorts a list of ports that are contained in
      *   this interface
      */
-    ResourceInterface implements Element =
-      Stereotype?
+    ResourceInterface implements ArcElement =
       "resource" "port"
       resourcePort:(ResourcePort || ",")+ ";";
 
@@ -91,7 +73,6 @@ grammar MontiThings extends MontiArc {
       * An incoming resource port is used to receive messages from external sources, an
       * outgoing resource port is used to send messages to external resources.
       *
-      * @attribute stereotype an optional stereotype
       * @attribute incoming true, if this is an incoming port
       * @attribute outgoing true, if this is an outgoing port
       * @attribute type the message type of this port
@@ -101,9 +82,8 @@ grammar MontiThings extends MontiArc {
       * @attribute Parameters for the generated resource server
       */
     symbol ResourcePort =
-      Stereotype?
       (incoming:["in"] | outgoing:["out"])
-      Type Name ("("(
+      MCType Name ("("(
                    (
                      ((ResourceOption "," uri:String ) |
                      ResourceOption |
@@ -135,7 +115,7 @@ grammar MontiThings extends MontiArc {
      * (hwc, automatons, etc) and thus does not implement the
      * BehaviorElement interface.
      */
-    ControlBlock implements Element =
+    ControlBlock implements ArcElement =
         "control" "{"
         ControlStatement*
         "}";
@@ -147,7 +127,7 @@ grammar MontiThings extends MontiArc {
      * interval the component is executed.
      */
     CalculationInterval implements ControlStatement =
-      "update" "interval" interval:IntLiteral TimeUnit";";
+      "update" "interval" interval:NatLiteral TimeUnit";";
 
     enum TimeUnit = "msec" | "sec" | "min";
 
@@ -173,14 +153,14 @@ grammar MontiThings extends MontiArc {
      *  RequirementStatements contain information about what physical requirements
      *  a component has. E.g Sensors/Actuators etc.
      */
-    RequirementStatement implements Element =
+    RequirementStatement implements ArcElement =
       "requires" (propertiess:Property | "{" properties:Property+ "}");
 
     Property = Name& ":" 
       (
         stringValue:StringLiteral | booleanValue:BooleanLiteral |
-        doubleValue:DoubleLiteral | integerValue:IntLiteral | 
-        longValue:LongLiteral
+        doubleValue:SignedBasicDoubleLiteral | integerValue:SignedNatLiteral |
+        longValue:SignedBasicLongLiteral
       ) ";";
 
     /* ============================================================ */
@@ -192,12 +172,12 @@ grammar MontiThings extends MontiArc {
      * control the behavior combined with handwritten code
      * functions.
      */
-    ExecutionBlock implements BehaviorElement =
+    ExecutionBlock implements ArcElement =
       "behavior" "{" ExecutionStatement* "}";
 
     interface ExecutionStatement;
 
-    PortValuation = (port:Name "=" value:Valuation);
+    PortValuation = (port:Name "=" value:Expression);
 
     /**
      * IfStatements specify which function in the
@@ -206,9 +186,9 @@ grammar MontiThings extends MontiArc {
      * values of current messages.
      */
     ExecutionIfStatement implements ExecutionStatement =
-        "if" (guard:GuardExpression) ":"
+        "if" (guard:Expression) ":"
         ((method:Name&"()")? | (PortValuation || ",")+)
-        ("|" ("prio" | "priority") "=" priority:IntLiteral)? ";";
+        ("|" ("prio" | "priority") "=" priority:NatLiteral)? ";";
 
     ExecutionElseStatement implements ExecutionStatement =
         "else" ((method:Name&"()")? | (PortValuation || ",")+) ";";

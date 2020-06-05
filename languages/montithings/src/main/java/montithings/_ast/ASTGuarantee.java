@@ -1,8 +1,8 @@
 /* (c) https://github.com/MontiCore/monticore */
 package montithings._ast;
 
-import de.monticore.mcexpressions._ast.ASTExpression;
-import montiarc._symboltable.PortSymbol;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import arcbasis._symboltable.PortSymbol;
 import montithings.helper.ExpressionUtil;
 
 import java.util.List;
@@ -21,16 +21,5 @@ public class ASTGuarantee extends ASTGuaranteeTOP {
 
   @Override public String toString() {
     return ExpressionUtil.printExpression(this.getGuard());
-  }
-
-  /* ============================================================ */
-  /* ====================== GENERATED CODE ====================== */
-  /* ============================================================ */
-
-  public ASTGuarantee() {
-  }
-
-  public ASTGuarantee(ASTExpression guard) {
-    super(guard);
   }
 }

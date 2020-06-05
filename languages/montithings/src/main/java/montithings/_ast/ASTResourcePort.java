@@ -4,7 +4,6 @@
 
 package montithings._ast;
 
-import montiarc._ast.ASTStereotype;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Optional;
@@ -59,35 +58,6 @@ public class ASTResourcePort extends ASTResourcePortTOP {
   /* ============================================================ */
   /* ====================== GENERATED CODE ====================== */
   /* ============================================================ */
-
-  protected ASTResourcePort(
-      Optional<ASTStereotype> stereotype,
-      de.monticore.types.types._ast.ASTType type,
-      String name,
-      Optional<montithings._ast.ASTResourceOption> resourceOption,
-      Optional<String> uriOpt,
-      java.util.List<montithings._ast.ASTResourceParameter> resourceParameters,
-      Optional<String> requiresType,
-      Optional<de.monticore.literals.literals._ast.ASTStringLiteral> requiresName,
-      boolean incoming,
-      boolean outgoing
-  ) {
-    super(stereotype, type, name, resourceOption, uriOpt, resourceParameters, requiresType,
-        requiresName, incoming, outgoing);
-
-    if (uriString.startsWith("tcp://")) {
-      tcp = true;
-    }
-    else if (uriString.startsWith("ipc://")) {
-      Ipc = true;
-    }
-    else if (uriString.startsWith("ws://")) {
-      WS = true;
-    }
-    else {
-      FileSystem = true;
-    }
-  }
 
   public boolean isIpc() {
     return Ipc;
