@@ -33,7 +33,7 @@
             <groupId>montiarc.libraries</groupId>
             <artifactId>maJavaLib</artifactId>
             <classifier>${majavalib.classifier}</classifier>
-            <version>5.1.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
