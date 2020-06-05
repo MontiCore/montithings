@@ -15,6 +15,34 @@
           ["location_floor", "5", "==", 0],
           ["location_floor", "6", "==", "all"]
         ]
+      },
+      "room_temp_sensor:latest": {
+        "distribution_selection": [
+          ["has_hardware", "sensor_temperature", "==", 1]
+        ],
+        "distribution_constraints": [
+          ["location_room", "building1_101", "==", 1],
+          ["location_room", "building1_102", "==", 1],
+          ["location_room", "building1_103", "==", 1],
+          ["location_room", "building1_104", "==", 1],
+          ["location_building", "building1", ">=", 5],
+          ["location_building", "building1", "<=", 6]
+        ]
+      },
+      "room_temp_controller:latest": {
+        "distribution_selection": [
+          [
+            ["has_hardware", "heat_controller", "==", 1]
+          ]
+        ],
+        "distribution_constraints": [
+          ["location_room", "building1_101", "==", 1],
+          ["location_room", "building1_102", "==", 1],
+          ["location_room", "building1_103", "==", 1],
+          ["location_room", "building1_104", "==", 1],
+          ["location_building", "building1", ">=", 5],
+          ["location_building", "building1", "<=", 6]
+        ]
       }
     },
     "incompatibilities": [

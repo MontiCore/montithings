@@ -3,10 +3,7 @@ package de.rwth.se.iotlab.config._ast;
 import de.monticore.lang.json._ast.*;
 
 import javax.json.JsonValue;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class ASTConfig extends ASTConfigTOP {
 
@@ -48,6 +45,62 @@ public class ASTConfig extends ASTConfigTOP {
             }
         }
 
+        return result;
+    }
+
+    public ArrayList<String> getDistributions() {
+        ArrayList<String> result = new ArrayList<>();
+        ASTJSONObject root = (ASTJSONObject) this.getJSONDocument().getJSONValue();
+
+        for (ASTJSONProperty prop : root.getPropList()) {
+            if (prop.getKey().equals("distribution")) {
+                List<ASTJSONProperty> distributionProperties = ((ASTJSONObject) prop.getValue()).getPropList();
+                distributionProperties.forEach(distributionProperty -> {
+                    result.add(formatComponentString(distributionProperty.getKey()));
+                });
+            }
+        }
+
+        return result;
+    }
+
+    public ArrayList<String> getDependencies() {
+        ArrayList<String> result = new ArrayList<>();
+        ASTJSONObject root = (ASTJSONObject) this.getJSONDocument().getJSONValue();
+
+        for (ASTJSONProperty prop : root.getPropList()) {
+            if (prop.getKey().equals("dependencies")) {
+                ((ASTJSONArray) prop.getValue())
+                        .forEachJSONValues(dependenciesArray -> {
+
+                            String dependent = null;
+                            String dependency = null;
+                            String type = null;
+                            Integer amount_at_least = null;
+
+                            List<ASTJSONProperty> propList = ((ASTJSONObject) dependenciesArray).getPropList();
+                            for (ASTJSONProperty dprop : propList) {
+                                switch (dprop.getKey()) {
+                                    case "type":
+                                        type = ((ASTJSONString) dprop.getValue()).getStringLiteral().getValue();
+                                        break;
+                                    case "dependent":
+                                        dependent = ((ASTJSONString) dprop.getValue()).getStringLiteral().getValue();
+                                        break;
+                                    case "dependency":
+                                        dependency = ((ASTJSONString) dprop.getValue()).getStringLiteral().getValue();
+                                        break;
+                                    case "amount_at_least":
+                                        amount_at_least = ((ASTJSONNumber) dprop.getValue()).getSignedNumericLiteral().getValue();
+                                        break;
+                                    default:
+                                        throw new IllegalStateException("Unexpected value: " + dprop.getKey());
+                                }
+                            }
+                            Integer t = 1;
+                        });
+            }
+        }
         return result;
     }
 }

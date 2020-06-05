@@ -22,8 +22,9 @@ get_available_devices(Devices),
 
 distribution(Droom_temp_controller_latest, Droom_temp_sensor_latest) :-
 % retrieve possible lists of devices
-get_distribution(Droom_temp_controller_latest),
-get_distribution(Droom_temp_sensor_latest),
+<#list ast.distributions as distribution>
+    get_distribution(${distribution}),
+</#list>
 
 % apply incompatible checks
 <#list ast.incompatibilities as incompatibilitiesList>
@@ -32,7 +33,14 @@ get_distribution(Droom_temp_sensor_latest),
     </#list>
 </#list>
 % apply dependency checks
-
-
+<#list ast.dependencies as dependency>
+    <#list dependency as key, value>
+        <#if type.equals("distinct")>
+            check_dependency_distinct(${compA},${compB},${num}),
+        <#else>
+            check_dependency(${compA},${compB},${num}),
+        </#if>
+    </#list>
+</#list>
 % finishing query with a .
     1 == 1.
