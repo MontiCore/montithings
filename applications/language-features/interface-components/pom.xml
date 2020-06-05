@@ -8,7 +8,7 @@
     <parent>
         <artifactId>language-features</artifactId>
         <groupId>montithings.applications</groupId>
-        <version>5.0.2-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,31 +21,31 @@
         <dependency>
             <groupId>montithings.languages</groupId>
             <artifactId>montithings</artifactId>
-            <version>5.0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>montithings.languages</groupId>
             <artifactId>bindings</artifactId>
-            <version>5.0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>montiarc.libraries</groupId>
             <artifactId>maJavaLib</artifactId>
-            <version>${project.version}</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>montiarc.libraries</groupId>
             <artifactId>simulator-rte</artifactId>
-            <version>${project.version}</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>montiarc.libraries</groupId>
             <artifactId>maa-rte</artifactId>
-            <version>${project.version}</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
@@ -63,7 +63,7 @@
             <groupId>montiarc.libraries</groupId>
             <artifactId>maJavaLib</artifactId>
             <classifier>${majavalib.classifier}</classifier>
-            <version>${project.version}</version>
+            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
@@ -171,7 +171,7 @@
                                     <groupId>montithings.generators</groupId>
                                     <artifactId>montithings2cpp</artifactId>
                                     <classifier>montithings-rte</classifier>
-                                    <version>5.0.2-SNAPSHOT</version>
+                                    <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${basedir}/target/generated-sources</outputDirectory>
@@ -189,7 +189,7 @@
                                     <groupId>montithings.generators</groupId>
                                     <artifactId>montithings2cpp</artifactId>
                                     <classifier>${montithings-libs.classifier}</classifier>
-                                    <version>5.0.2-SNAPSHOT</version>
+                                    <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${basedir}/target/generated-sources/lib</outputDirectory>
@@ -207,7 +207,7 @@
                                     <groupId>montithings.generators</groupId>
                                     <artifactId>montithings2cpp</artifactId>
                                     <classifier>${montithings-headers.classifier}</classifier>
-                                    <version>5.0.2-SNAPSHOT</version>
+                                    <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${basedir}/target/generated-sources/header</outputDirectory>
@@ -240,7 +240,7 @@
                     <dependency>
                         <groupId>montithings.generators</groupId>
                         <artifactId>montithings2cpp</artifactId>
-                        <version>5.0.2-SNAPSHOT</version>
+                        <version>${project.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>de.se_rwth.commons</groupId>
