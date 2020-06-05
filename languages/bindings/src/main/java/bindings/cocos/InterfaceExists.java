@@ -4,10 +4,10 @@ package bindings.cocos;
 import bindings._ast.ASTBindingRule;
 import bindings._cocos.BindingsASTBindingRuleCoCo;
 import bindings._symboltable.BindingsLanguage;
-import montithings.generator.cd2cpp.Modelfinder;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.MontiThingsLanguage;
+import montithings.generator.cd2cpp.Modelfinder;
 
 import java.nio.file.Paths;
 import java.util.List;

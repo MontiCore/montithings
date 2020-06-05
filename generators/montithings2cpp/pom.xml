@@ -51,12 +51,7 @@
 			<groupId>de.monticore</groupId>
 			<artifactId>monticore-runtime</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>montiarc.libraries</groupId>
-			<artifactId>maJavaLib</artifactId>
-			<classifier>${majavalib.classifier}</classifier>
-			<version>${montiarc.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>de.monticore</groupId>
 			<artifactId>monticore-grammar</artifactId>
@@ -183,29 +178,7 @@
 				</execution>
 			</executions>
 		</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.1</version>
-				<executions>
-					<execution>
-						<id>unpack-dependencies</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>montiarc.libraries</groupId>
-									<artifactId>maJavaLib</artifactId>
-								</artifactItem>
-							</artifactItems>
-							<outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+
 			<plugin>
 				<groupId>org.eclipse.xtend</groupId>
 				<artifactId>xtend-maven-plugin</artifactId>
