@@ -1,12 +1,5 @@
 :- include('facts').
 
-
-<#list ast.incompatibilities as device>
-
-        property(${device}).
-
-</#list>
-
 get_distribution(Droom_temp_sensor_latest) :-
 get_available_devices(Devices),
 % apply device properties that have to be matched
@@ -33,5 +26,13 @@ get_distribution(Droom_temp_controller_latest),
 get_distribution(Droom_temp_sensor_latest),
 
 % apply incompatible checks
-
+<#list ast.incompatibilities as incompatibilitiesList>
+    <#list incompatibilitiesList as key, value>
+    check_incompatible(${key}, ${value}),
+    </#list>
+</#list>
 % apply dependency checks
+
+
+% finishing query with a .
+    1 == 1.

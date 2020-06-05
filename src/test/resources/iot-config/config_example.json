@@ -18,7 +18,8 @@
       }
     },
     "incompatibilities": [
-      ["room_temp_controller:latest","room_temp_sensor:latest"]
+      ["room_temp_controller:latest","room_temp_sensor:latest","room_temp_sensor2:latest"],
+      ["AA:latest","BB:latest","CC:latest"]
     ],
     "dependencies": [
       {
