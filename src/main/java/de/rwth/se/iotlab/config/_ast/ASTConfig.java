@@ -183,8 +183,8 @@ public class ASTConfig extends ASTConfigTOP {
                                     dependent != null) {
                                 Map<String, String> item = new HashMap<>();
                                 item.put("type", type);
-                                item.put("dependency", dependency);
-                                item.put("dependent", dependent);
+                                item.put("dependency", formatComponentString(dependency));
+                                item.put("dependent", formatComponentString(dependent));
                                 item.put("amount_at_least", amount_at_least.toString());
                                 result.add(item);
                             }
