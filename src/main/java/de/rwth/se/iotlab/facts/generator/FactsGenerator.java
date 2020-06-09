@@ -22,7 +22,17 @@ public class FactsGenerator {
         Optional<ASTDevices> result = parser.parse(file);
 
         assert result.isPresent();
-        generateFacts(result.get());
+        System.out.println(generateFacts(result.get()));
+
+    }
+
+    public static String generateFacts(String json) throws IOException {
+
+        FactsParser parser = new FactsParser();
+        Optional<ASTDevices> result = parser.parse_String(json);
+
+        assert result.isPresent();
+        return generateFacts(result.get());
 
     }
 
@@ -31,14 +41,14 @@ public class FactsGenerator {
      * Generates a Prolog file containing facts for devices
      * @param devices An AST based on an facts.json file
      */
-    public static void generateFacts(ASTDevices devices) {
+    public static String generateFacts(ASTDevices devices) {
         GeneratorSetup setup = new GeneratorSetup();
         // Prolog Comment
         setup.setCommentStart("%");
         setup.setCommentEnd("");
 
         GeneratorEngine engine = new GeneratorEngine(setup);
-        engine.generate("templates/facts.ftl", Paths.get("facts" + ".pl"), devices);
+        return engine.generate("templates/facts.ftl", devices).toString();
 
     }
 

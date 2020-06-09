@@ -9,10 +9,3 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-
-rootProject.name = 'prolog-generator'
-
-include ':json'
-project(':json').projectDir = new File(settingsDir, 'json')
-include 'server'
-

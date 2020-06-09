@@ -24,7 +24,17 @@ public class QueryGenerator {
         Optional<ASTConfig> result = parser.parse(file);
 
         assert result.isPresent();
-        generateQuery(result.get());
+        System.out.println(generateQuery(result.get()));
+
+    }
+
+    public static String generateQuery(String json) throws IOException {
+
+        ConfigParser parser = new ConfigParser();
+        Optional<ASTConfig> result = parser.parse_String(json);
+
+        assert result.isPresent();
+        return generateQuery(result.get());
 
     }
 
@@ -33,14 +43,14 @@ public class QueryGenerator {
      * Generates a Prolog file containing a query based on a config
      * @param config An AST based on an config.json file
      */
-    public static void generateQuery(ASTConfig config) {
+    public static String generateQuery(ASTConfig config) {
         GeneratorSetup setup = new GeneratorSetup();
         // Prolog Comment
         setup.setCommentStart("%");
         setup.setCommentEnd("");
 
         GeneratorEngine engine = new GeneratorEngine(setup);
-        engine.generate("templates/query.ftl", Paths.get("query" + ".pl"), config);
+        return engine.generate("templates/query.ftl", config).toString();
 
     }
 

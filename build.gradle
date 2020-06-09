@@ -112,15 +112,15 @@ task grammarJar(type: Jar) {
 //     }
 // }
 
-shadowJar {
-    destinationDir = file("$projectDir/target/jar")
-}
 
-task release {
-    shadowJar
-}
 
-release.dependsOn(shadowJar)
+subprojects {
+    task release {
+        shadowJar
+    }
+
+    release.dependsOn(shadowJar)
+}
 
 repositories {
     mavenLocal()
