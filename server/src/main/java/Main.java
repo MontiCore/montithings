@@ -5,15 +5,29 @@ import de.rwth.se.iotlab.config.generator.QueryGenerator;
 public class Main {
     public static void main(String[] args) {
         post("/facts", ((request, response) -> {
-            String json = request.body();
-
-            return FactsGenerator.generateFacts(json);
+            try {
+                String json = request.body();
+                if (json == null || json.equals("")) {
+                    throw new Exception("Empty body");
+                }
+                return FactsGenerator.generateFacts(json);
+            } catch (Exception e) {
+                response.status(500);
+                return e.getMessage();
+            }
         }));
 
         post("/config", ((request, response) -> {
-            String json = request.body();
-
-            return QueryGenerator.generateQuery(json);
+            try {
+                String json = request.body();
+                if (json == null || json.equals("")) {
+                    throw new Exception("Empty body");
+                }
+                return QueryGenerator.generateQuery(json);
+            } catch (Exception e) {
+                response.status(500);
+                return e.getMessage();
+            }
         }));
     }
 }

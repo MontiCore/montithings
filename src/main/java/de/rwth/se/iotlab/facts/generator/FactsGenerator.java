@@ -26,13 +26,18 @@ public class FactsGenerator {
 
     }
 
-    public static String generateFacts(String json) throws IOException {
+    public static String generateFacts(String json) throws Exception {
 
-        FactsParser parser = new FactsParser();
-        Optional<ASTDevices> result = parser.parse_String(json);
-
-        assert result.isPresent();
-        return generateFacts(result.get());
+        try {
+            FactsParser parser = new FactsParser();
+            Optional<ASTDevices> result = parser.parse_String(json);
+    
+            assert result.isPresent();
+            return generateFacts(result.get());
+    
+        } catch (Exception e) {
+            throw e;
+        }
 
     }
 
