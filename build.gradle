@@ -84,21 +84,6 @@ task sourcesJar(type: Jar) {
     archiveClassifier = "sources"
 }
 
-// build javadoc jar in addition
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier =  "javadoc"
-}
-// generated java doc contains errors, disable for now
-javadoc.failOnError(false)
-
-// shadowJar { // all in one jar
-//    manifest {
-//        attributes "Main-Class": "de.monticore.umlcd4a.CD4ACLI"
-//    }
-//    archiveClassifier =  "cli"
-// }
-
 // build grammar jar as well
 task grammarJar(type: Jar) {
     from ("$projectDir/src/main/grammars/"){ include "**/*.mc4" }
@@ -106,26 +91,36 @@ task grammarJar(type: Jar) {
 }
 
 // configure deployment
-publishing {
-    // configure what artifacts to publish
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = "$project.name"
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            artifact shadowJar
-            artifact grammarJar
-        }
-    }
-    repositories.maven {
-        credentials.username mavenUser
-        credentials.password mavenPassword
-        def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-releases/"
-        def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-snapshots/"
-        url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
-    }
+// publishing {
+//     // configure what artifacts to publish
+//     publications {
+//         mavenJava(MavenPublication) {
+//             artifactId = "$project.name"
+//             from components.java
+//             artifact sourcesJar
+//             artifact javadocJar
+//             artifact shadowJar
+//             artifact grammarJar
+//         }
+//     }
+//     repositories.maven {
+//         credentials.username mavenUser
+//         credentials.password mavenPassword
+//         def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-releases/"
+//         def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-snapshots/"
+//         url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+//     }
+// }
+
+shadowJar {
+    destinationDir = file("$projectDir/target/jar")
 }
+
+task release {
+    shadowJar
+}
+
+release.dependsOn(shadowJar)
 
 repositories {
     mavenLocal()
