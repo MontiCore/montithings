@@ -8,7 +8,7 @@ RUN gradle --no-daemon clean release
 
 FROM openjdk:11-jre
 
-COPY --from=build /src/main/app/target/jar /src/main/app
-COPY --from=build /src/main/app/src/test/resources /src/main/app/resources
+COPY --from=build /src/main/app/server/target/jar /src/main/app
 
-CMD [ "sh" ]
+WORKDIR /src/main/app
+CMD [ "java", "-cp", "server.jar", "-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog", "Main" ]
