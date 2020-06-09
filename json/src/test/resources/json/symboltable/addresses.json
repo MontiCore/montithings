@@ -1,0 +1,19 @@
+/* (c) https://github.com/MontiCore/monticore */
+{
+	"Alice": {
+		"name": "Alice Anderson",
+		"address": {
+			"postal_code": 10459,
+			"street": "Beck Street",
+			"number": 56
+		}
+	},
+	"Bob": {
+		"name": "Bob Barkley",
+		"address": {
+			"postal_code": 10459,
+			"street": "Freeman Street",
+			"number": 73
+		}
+	}
+}
