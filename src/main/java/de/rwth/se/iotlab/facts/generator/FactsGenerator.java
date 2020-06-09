@@ -30,6 +30,7 @@ public class FactsGenerator {
 
         try {
             FactsParser parser = new FactsParser();
+            // This can crash for invalid input, despite try catch. Ist that intentional?
             Optional<ASTDevices> result = parser.parse_String(json);
     
             assert result.isPresent();
