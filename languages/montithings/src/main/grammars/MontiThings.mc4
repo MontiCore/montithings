@@ -1,149 +1,33 @@
 // (c) https://github.com/MontiCore/monticore
-grammar MontiThings extends MontiArc {
+grammar MontiThings extends MontiArc,
+                            AssumptionGuarantee,
+                            IfThenElse,
+                            MessageHandling,
+                            ValueRanges {
 
-    start MTCompilationUnit;
+    start MACompilationUnit;
 
-    /** 
-     * ASTMTCompilationUnit represents the entire content of a MontiArc model artifact
-     *
-     * @attribute package          The package declaration of the component model
-     * @attribute MTImportStatements List of imported elements (data types and component types)
-     * @attribute component The outermost component model defined in this compilation unit
-     */
-    scope MTCompilationUnit =
-      ("package" package:(Name& || ".")+ ";")?  // optional package declaration
-      importStatement:MCImportStatement*
-      ComponentType                             // single outermost component declaration
-      EOF                                       // and nothing (end of file) afterwards
-    ;
-
-    /**
-     * Interface component has no implementation except Ports
-     */
-    symbol scope ComponentType implements ArcElement =
-      (["interface"] | ["specification"])? (["component"] | ["application"])  Name
+    symbol scope MTComponentType extends ComponentType =
+      MTComponentModifier Name
       head:ComponentHead
       (ComponentInstance || ",")*
       body:ComponentBody
     ;
 
-    /* ============================================================ */
-    /* ================= Assumptions & Guarantees ================= */
-    /* ============================================================ */
-
-    Assumption implements ArcElement = "assume" ":" guard:Expression ";";
-    Guarantee implements ArcElement = "guarantee" ":" guard:Expression ";";
+    MTComponentModifier =  ["interface"]? (["component"] | ["application"]);
 
     /* ============================================================ */
-    /* ========================== Ports =========================== */
+    /* ==================== Control Statements ==================== */
     /* ============================================================ */
-
-    interface AllowedValues;
-
-    PortDeclaration =
-        PortDirection
-        MCType ("(" AllowedValues ")" )?
-        (Port || ",")+;
-
-    symbol Port = Name ("=" default:Expression)?;
-
-    //StreamHistoryValue implements Expression = "[" IntLiteral | "pre" "]";
-
-    MTValueList   implements AllowedValues = (Expression | MTValueRange) ("," (Expression | MTValueRange))*;
-    MTValueRange  implements AllowedValues = lowerBound:Expression (":" stepsize:Expression)? ":" upperBound:Expression;
-    MTValueFormat implements AllowedValues = "format" ":" format:String; // RegEx to which value has to conform
-
-
-    /* ============================================================ */
-    /* ====================== Resource Ports ====================== */
-    /* ============================================================ */
-
-    /**
-     * Defines an interface of a component containing
-     * incoming and outgoing ports to external resources.
-     *
-     * @attribute resourcePorts a list of ports that are contained in
-     *   this interface
-     */
-    ResourceInterface implements ArcElement =
-      "resource" "port"
-      resourcePort:(ResourcePort || ",")+ ";";
-
-     /**
-      * An incoming resource port is used to receive messages from external sources, an
-      * outgoing resource port is used to send messages to external resources.
-      *
-      * @attribute incoming true, if this is an incoming port
-      * @attribute outgoing true, if this is an outgoing port
-      * @attribute type the message type of this port
-      * @attribute name an optional name of this port
-      * @attribute resourceoption optional configuration for the
-      *    resource port
-      * @attribute Parameters for the generated resource server
-      */
-    symbol ResourcePort =
-      (incoming:["in"] | outgoing:["out"])
-      MCType Name ("("(
-                   (
-                     ((ResourceOption "," uri:String ) |
-                     ResourceOption |
-                     uri:String )
-                     ("," (ResourceParameter || ",")+)?
-                   ) |
-                   ((ResourceParameter || ",")+)
-                )
-                ")")?
-      ("requires" requiresType:Name ":" requiresName:StringLiteral)?  ;
-
-    ResourceParameter = key:Name "=" value:String;
-
-    /**
-     * Optional settings for resource ports
-     */
-    enum ResourceOption =
-      "netserver" | "netclient" | "ipcreqrep" |
-      "ipclisten" | "fsappend" | "fsoverwrite";
-
-    /* ============================================================ */
-    /* ====================== Control Blocks ====================== */
-    /* ============================================================ */
-
-    /**
-     * A Control Block consists of statements controlling the execution
-     * behavior of the component. The described behavior in this block
-     * only modifies the already existing behavior of the component
-     * (hwc, automatons, etc) and thus does not implement the
-     * BehaviorElement interface.
-     */
-    ControlBlock implements ArcElement =
-        "control" "{"
-        ControlStatement*
-        "}";
-
-    interface ControlStatement;
 
     /**
      * The calculation interval specifies in which 
      * interval the component is executed.
      */
-    CalculationInterval implements ControlStatement =
+    CalculationInterval implements ArcElement =
       "update" "interval" interval:NatLiteral TimeUnit";";
 
-    enum TimeUnit = "msec" | "sec" | "min";
-
-    /**
-     * BatchStatements define which ports should be
-     * handled in batch processing mode instead of
-     * handling only one incoming message per tick
-     */
-    BatchStatement implements ControlStatement =
-        "batch" batchPorts:(Name& || ",")+ ";";
-
-    /** SyncStatements allow the specification of groups of ports
-     * that should only be handled together
-     */
-    symbol SyncStatement implements ControlStatement =
-        "sync" "port" "group" Name& "(" syncedPort:(Name || ",")* ")" ";";
+    enum TimeUnit = key("msec") | key("sec") | key("min");
 
     /* ============================================================ */
     /* ================ Requirements & Capabilities =============== */
@@ -162,36 +46,6 @@ grammar MontiThings extends MontiArc {
         doubleValue:SignedBasicDoubleLiteral | integerValue:SignedNatLiteral |
         longValue:SignedBasicLongLiteral
       ) ";";
-
-    /* ============================================================ */
-    /* =================== If-Then-Else Behavior ================== */
-    /* ============================================================ */
-
-    /**
-     * Executionblocks contain If and Else Statements that
-     * control the behavior combined with handwritten code
-     * functions.
-     */
-    ExecutionBlock implements ArcElement =
-      "behavior" "{" ExecutionStatement* "}";
-
-    interface ExecutionStatement;
-
-    PortValuation = (port:Name "=" value:Expression);
-
-    /**
-     * IfStatements specify which function in the
-     * handwritten implementation should be executed depending
-     * on the presence on messages on incoming ports and
-     * values of current messages.
-     */
-    ExecutionIfStatement implements ExecutionStatement =
-        "if" (guard:Expression) ":"
-        ((method:Name&"()")? | (PortValuation || ",")+)
-        ("|" ("prio" | "priority") "=" priority:NatLiteral)? ";";
-
-    ExecutionElseStatement implements ExecutionStatement =
-        "else" ((method:Name&"()")? | (PortValuation || ",")+) ";";
 
     /**
      * The Value for empty data
