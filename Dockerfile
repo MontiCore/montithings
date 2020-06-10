@@ -1,4 +1,4 @@
-FROM gradle:6.1-jdk8 as build
+FROM gradle:6.1-jdk11 as build
 
 COPY . /src/main/app
 WORKDIR /src/main/app
