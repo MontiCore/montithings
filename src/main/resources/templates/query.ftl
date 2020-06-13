@@ -18,15 +18,15 @@ get_distribution(${distribution.name}) :-
     </#list>
 
     % apply distribution constraints
-    % first constrains less than equal: =<
-    <#list distribution.lteConstraints as constraint>
-    include_lte(property(${constraint.key}, ${constraint.value}), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    % first constrains equal: ==
+    <#list distribution.equalConstraints as constraint>
+    include_equal(property(${constraint.key}, ${constraint.value}), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
         <#assign count++>
     </#list>
 
-    % then constrains equal: ==
-    <#list distribution.equalConstraints as constraint>
-    include_equal(property(${constraint.key}, ${constraint.value}), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    % then constrains less than equal: =<
+    <#list distribution.lteConstraints as constraint>
+    include_lte(property(${constraint.key}, ${constraint.value}), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
         <#assign count++>
     </#list>
 

@@ -5,7 +5,6 @@
         [
           "has_hardware",
           "sensor_temperature",
-          "==",
           1
         ]
       ],
