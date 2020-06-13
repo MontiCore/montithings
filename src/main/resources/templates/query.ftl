@@ -9,7 +9,11 @@ get_distribution(${distribution.name}) :-
     include(property(state,online),AllAvailableDevices,AllAvailableDevicesFiltered1),
     <#assign count=1>
     <#list distribution.selectionConjunctionProperties as selection>
+        <#if selection.number == "1">
     include(property(${selection.key},${selection.value}),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        <#elseif selection.number == "0">
+    exclude(property(${selection.key},${selection.value}),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        </#if>
         <#assign count++>
     </#list>
 
@@ -43,25 +47,24 @@ get_distribution(${distribution.name}) :-
 
 distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>) :-
     % retrieve possible lists of devices
-    <#list ast.distributions as distribution>
+<#list ast.distributions as distribution>
     get_distribution(${distribution.name}),
-    </#list>
+</#list>
 
     % apply incompatible checks
-    <#list ast.incompatibilities as incompatibilitiesList>
-        <#list incompatibilitiesList as key, value>
+<#list ast.incompatibilities as incompatibilitiesList>
+    <#list incompatibilitiesList as key, value>
     check_incompatible(${key}, ${value}),
-        </#list>
     </#list>
+</#list>
 
     % apply dependency checks
-    <#list ast.dependencies as dependency>
-        <#if dependency.type == "distinct">
+<#list ast.dependencies as dependency>
+    <#if dependency.type == "distinct">
     check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
-        <#else>
+    <#else>
     check_dependency(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
-        </#if>
-    </#list>
-
+    </#if>
+</#list>
     % finishing query with a .
     1 == 1.

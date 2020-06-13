@@ -81,8 +81,8 @@ public class ASTConfig extends ASTConfigTOP {
                                             distribution.addSelectionConjunctionProperty(
                                                     ((ASTJSONString) itemValue.get(0)).getStringLiteral().getValue(),
                                                     ((ASTJSONString) itemValue.get(1)).getStringLiteral().getValue(),
-                                                    ((ASTJSONString) itemValue.get(2)).getStringLiteral().getValue(),
-                                                    String.valueOf(aSTJSONNumber2Int((ASTJSONNumber) itemValue.get(3))));
+                                                    "==",
+                                                    String.valueOf(aSTJSONNumber2Int((ASTJSONNumber) itemValue.get(2))));
                                         } else {
                                             //disjunction
                                         }

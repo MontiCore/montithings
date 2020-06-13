@@ -57,6 +57,7 @@ public class Distribution {
     }
 
     public void addSelectionConjunctionProperty(String key, String value, String operator, String number) {
+        assert number.equals("0") || number.equals("1"): "Ony boolean values allowed";
         this.selectionConjunctionProperties.add(new Constraint(key, value, operator, number));
     }
 
