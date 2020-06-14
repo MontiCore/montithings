@@ -2,7 +2,7 @@
 :- include('helpers').
 
 <#list ast.distributions as distribution>
-get_distribution(${distribution.name}) :-
+get_distribution_${distribution.name}(Distribution) :-
     get_available_devices(AllAvailableDevices),
 
     % apply device properties that have to be matched
@@ -48,7 +48,7 @@ get_distribution(${distribution.name}) :-
 distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>) :-
     % retrieve possible lists of devices
 <#list ast.distributions as distribution>
-    get_distribution(${distribution.name}),
+    get_distribution_${distribution.name}(${distribution.name}),
 </#list>
 
     % apply incompatible checks
