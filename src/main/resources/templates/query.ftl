@@ -2,7 +2,7 @@
 :- include('helpers').
 
 <#list ast.distributions as distribution>
-get_distribution_${distribution.name}(Distribution) :-
+get_distribution_${distribution.name}(${distribution.name}) :-
     get_available_devices(AllAvailableDevices),
 
     % apply device properties that have to be matched
