@@ -9,8 +9,20 @@ import java.util.Map;
 
 public class ASTDevices extends ASTDevicesTOP {
 
+    private List<List<String>> getSublists(List<String> list) {
+        List<List<String>> res = new ArrayList<>();
+
+        for (int a = 0; a < list.size(); a++) {
+            for (int b = a + 1; b <= list.size(); b++) {
+                res.add(list.subList(a, b));
+            }
+        }
+        return res;
+    }
+
     /**
      * Returns a map of all device properties specified for all devices in the AST
+     *
      * @return A map with keys device names, containing maps with properties for each device
      */
     public Map<String, Map<String, List<String>>> getProperties() {
@@ -43,15 +55,27 @@ public class ASTDevices extends ASTDevicesTOP {
 
             } else if (prop.getKey().equals("location")) {
 
-                ASTJSONObject value = (ASTJSONObject) prop.getValue();
+                ASTJSONObject locationProperties = (ASTJSONObject) prop.getValue();
 
-                for (ASTJSONProperty arrayValue : value.getPropList()) {
+                List<String> locationKeys = new ArrayList<>();
+                for (ASTJSONProperty arrayValue : locationProperties.getPropList()) {
                     ASTJSONString stringValue = (ASTJSONString) arrayValue.getValue();
+                    String value = stringValue.getStringLiteral().getValue();
 
                     List<String> locationValues = new ArrayList<>();
-                    locationValues.add(stringValue.getStringLiteral().getValue());
-                    result.put("location_"+arrayValue.getKey(), locationValues);
+                    locationValues.add(value);
+                    result.put("location_" + arrayValue.getKey(), locationValues);
+                    locationKeys.add(value);
                 }
+
+                // Add additional properties like property(location,building1_floor1_room101,device)
+                List<String> locationValues = new ArrayList<>();
+                for (List<String> sublistOfKeys : this.getSublists(locationKeys)) {
+                    String joinedValue = String.join("_", sublistOfKeys);
+                    locationValues.add(joinedValue);
+                }
+                result.put("location", locationValues);
+
 
             } else {
                 ASTJSONString value = (ASTJSONString) prop.getValue();
