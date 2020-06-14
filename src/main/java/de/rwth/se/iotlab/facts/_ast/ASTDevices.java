@@ -1,22 +1,40 @@
 package de.rwth.se.iotlab.facts._ast;
 
 import de.monticore.lang.json._ast.*;
+import sun.nio.cs.Surrogate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ASTDevices extends ASTDevicesTOP {
 
     private List<List<String>> getSublists(List<String> list) {
         List<List<String>> res = new ArrayList<>();
 
-        for (int a = 0; a < list.size(); a++) {
-            for (int b = a + 1; b <= list.size(); b++) {
-                res.add(list.subList(a, b));
+        // Iterate over all possible combinations by iterating in binary from 11...111 to 00..001
+        String[] binaryMax = new String[list.size()];
+        Arrays.fill(binaryMax, "1");
+        int binaryMaxInt = Integer.parseInt(String.join("", binaryMax), 2);
+
+        for (int i = binaryMaxInt; i > 0; i--) {
+            List<String> combination = new ArrayList<>();
+            char[] binaryArray = new char[binaryMax.length];
+            Arrays.fill(binaryArray, '0');
+
+            char[] iAsBinaryArray = Integer.toBinaryString(i).toCharArray();
+            int lengthDiff = binaryArray.length - iAsBinaryArray.length;
+            for (int k = 0; k < iAsBinaryArray.length; k++) {
+                binaryArray[k+lengthDiff] = iAsBinaryArray[k];
             }
+
+            for (int index = 0; index < binaryArray.length; index++) {
+                if (binaryArray[index] == '1') {
+                    combination.add((String) list.toArray()[index]);
+                }
+            }
+            res.add(combination);
+
         }
+
         return res;
     }
 
@@ -70,6 +88,7 @@ public class ASTDevices extends ASTDevicesTOP {
 
                 // Add additional properties like property(location,building1_floor1_room101,device)
                 List<String> locationValues = new ArrayList<>();
+
                 for (List<String> sublistOfKeys : this.getSublists(locationKeys)) {
                     String joinedValue = String.join("_", sublistOfKeys);
                     locationValues.add(joinedValue);
