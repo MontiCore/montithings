@@ -65,7 +65,7 @@ public class ASTDevices extends ASTDevicesTOP {
                     List<String> locationValues = new ArrayList<>();
                     locationValues.add(value);
                     result.put("location_" + arrayValue.getKey(), locationValues);
-                    locationKeys.add(value);
+                    locationKeys.add(arrayValue.getKey() + value);
                 }
 
                 // Add additional properties like property(location,building1_floor1_room101,device)
