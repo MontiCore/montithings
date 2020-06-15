@@ -1,33 +1,26 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
-import de.monticore.ast.ASTNode;
-import de.monticore.modelloader.ModelingLanguageModelLoader;
-import montiarc._symboltable.MontiArcLanguage;
-
-/**
- * TODO
- *
- * @author (last commit) Joshua Fürste
- */
 public class MontiThingsLanguage extends MontiThingsLanguageTOP {
 
-  public static final String FILE_ENDING = "mt";
+  protected MontiThingsModelLoader modelLoader = new MontiThingsModelLoader(this);
+
+  public MontiThingsLanguage(String langName, String fileEnding) {
+    super(langName, fileEnding);
+  }
 
   public MontiThingsLanguage() {
-    super("MontiThings Language", FILE_ENDING);
+    super("MontiThings", ".mc4");
   }
 
   @Override
-  protected ModelingLanguageModelLoader<? extends ASTNode> provideModelLoader() {
-    return new MontiThingsModelLoader(this);
+  protected MontiThingsModelLoader provideModelLoader() {
+    return this.modelLoader;
   }
 
   @Override
-  protected void initResolvingFilters() {
-    super.initResolvingFilters();
-    MontiArcLanguage montiarc = new MontiArcLanguage();
-    addResolvingFilters(montiarc.getResolvingFilters());
+  public String getSymbolFileExtension() {
+    return null;
   }
 
 }

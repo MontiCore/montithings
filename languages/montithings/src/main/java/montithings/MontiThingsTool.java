@@ -1,75 +1,52 @@
-// (c) https://github.com/MontiCore/monticore
+/* (c) https://github.com/MontiCore/monticore */
 package montithings;
 
+import arcbasis._ast.ASTArcBasisNode;
+import arcbasis._ast.ASTComponentType;
+import arcbasis._symboltable.ComponentTypeSymbol;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import de.monticore.ModelingLanguageFamily;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.java.symboltable.JavaSymbolFactory;
-import de.monticore.java.symboltable.JavaTypeSymbol;
-import de.monticore.symboltable.ArtifactScope;
-import de.monticore.symboltable.GlobalScope;
-import de.monticore.symboltable.Scope;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMontiArcNode;
-import montiarc._symboltable.ComponentSymbol;
-import montithings._ast.ASTMTCompilationUnit;
+import montiarc.MontiArcTool;
+import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
-import montithings._symboltable.MontiThingsLanguageFamily;
+import montithings._symboltable.IMontiThingsScope;
+import montithings._symboltable.MontiThingsGlobalScope;
+import montithings._symboltable.MontiThingsLanguage;
 import montithings.cocos.MontiThingsCoCos;
+import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * TODO
- *
- * @author (last commit) Joshua Fürste
- */
-public class MontiThingsTool {
+public class MontiThingsTool extends MontiArcTool {
 
-  private static final String[] primitiveTypes = { "boolean", "std::byte", "char", "double", "float",
-      "int", "long", "short", "null", "char16_t", "char32_t", "wchar_t", "std::string",
-      "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t",
-      "uint64_t", "Integer" };
+  protected MontiThingsLanguage language;
 
-  private final ModelingLanguageFamily family;
+  protected MontiThingsCoCoChecker checker;
 
-  private final MontiThingsCoCoChecker checker;
+  protected boolean isSymTabInitialized;
 
-  private boolean isSymTabInitialized;
-
-  /**
-   * Constructor for montiarc.MontiArcTool
-   */
   public MontiThingsTool() {
-    this(new MontiThingsLanguageFamily(), MontiThingsCoCos.createChecker());
+    this(MontiThingsCoCos.createChecker(), new MontiThingsLanguage("MontiThings", ".mt"));
   }
 
-  /**
-   * Constructor for montiarc.MontiArcTool
-   */
-  public MontiThingsTool(ModelingLanguageFamily fam, MontiThingsCoCoChecker checker) {
-    this.family = fam;
+  public MontiThingsTool(@NotNull MontiThingsCoCoChecker checker, MontiThingsLanguage language) {
+    Preconditions.checkArgument(checker != null);
     this.checker = checker;
-    isSymTabInitialized = false;
+    this.isSymTabInitialized = false;
   }
 
-  /**
-   * Constructor for montiarc.MontiArcTool
-   */
-  public MontiThingsTool(ModelingLanguageFamily fam) {
-    this(fam, MontiThingsCoCos.createChecker());
-  }
-
-  public Optional<ASTMTCompilationUnit> parse(String filename) {
+  public Optional<ASTMACompilationUnit> parse(@NotNull String filename) {
+    Preconditions.checkArgument(filename != null);
     MontiThingsParser p = new MontiThingsParser();
-    Optional<ASTMTCompilationUnit> compUnit;
+    Optional<ASTMACompilationUnit> compUnit;
     try {
       compUnit = p.parse(filename);
       return compUnit;
@@ -81,23 +58,11 @@ public class MontiThingsTool {
 
   }
 
-  /**
-   * Executes CoCos on MontiArcNode
-   *
-   * @param node
-   * @return true if no errors occurred
-   */
-  public boolean checkCoCos(ASTMontiArcNode node) {
-    if (!isSymTabInitialized) {
-      Log.error("Symtab has to be initialized before checking CoCos");
-      return false;
-    }
-    if (!node.getSymbolOpt().isPresent() && !node.getSpannedScopeOpt().isPresent()) {
-      Log.error(
-          "Symtab is not linked with passed node! Call getSymbol() or getASTNode() for getting the ast.");
-    }
-
-    checker.checkAll(node);
+  public boolean checkCoCos(@NotNull ASTArcBasisNode node) {
+    Preconditions.checkArgument(node != null);
+    Preconditions.checkState(this.isSymTabInitialized, "Please initialize symbol-table before "
+        + "checking cocos.");
+    this.checker.checkAll(node);
     if (Log.getErrorCount() != 0) {
       Log.debug("Found " + Log.getErrorCount() + " errors in node " + node + ".", "XX");
       return false;
@@ -113,35 +78,61 @@ public class MontiThingsTool {
    *
    * @param componentName Name of the component
    * @param modelPaths    Folders containing the packages with models
-   * @return
+   * @return an {@code Optional} of the loaded component type
    */
-  public Optional<ComponentSymbol> loadComponentSymbolWithoutCocos(String componentName,
+  public Optional<ComponentTypeSymbol> loadComponentSymbolWithoutCocos(String componentName,
       File... modelPaths) {
-    Scope s = initSymbolTable(modelPaths);
-    return s.resolve(componentName, ComponentSymbol.KIND);
+    IMontiThingsScope s = initSymbolTable(modelPaths);
+    return s.resolveComponentType(componentName);
   }
 
-  public Optional<ComponentSymbol> loadComponentSymbolWithCocos(String componentName,
+  public Optional<ComponentTypeSymbol> loadComponentSymbolWithCocos(String componentName,
       File... modelPaths) {
-    Optional<ComponentSymbol> compSym = loadComponentSymbolWithoutCocos(componentName, modelPaths);
-
-    compSym.ifPresent(
-        componentSymbol -> checkCoCos((ASTMontiArcNode) componentSymbol.getAstNode().get()));
-
+    Optional<ComponentTypeSymbol> compSym = loadComponentSymbolWithoutCocos(componentName,
+        modelPaths);
+    compSym.ifPresent(componentTypeSymbol -> this.checkCoCos(componentTypeSymbol.getAstNode()));
     return compSym;
   }
 
   /**
-   * Initializes the symbol table by introducing scopes for the passed modelpaths. It does not create
+   * Loads the AST of the passed model with name componentName. The componentName is the fully
+   * qualified. Modelpaths are folders relative to the project path and containing the packages the
+   * models are located in. When the ComponentSymbol is resolvable it is returned. Otherwise the
+   * optional is empty.
+   *
+   * @param modelPath The model path containing the package with the model
+   * @param model     the fully qualified model name
+   * @return the AST node of the model
+   */
+  public Optional<ASTComponentType> getAstNode(String modelPath, String model) {
+    // ensure an empty log
+    Log.getFindings().clear();
+    Optional<ComponentTypeSymbol> comp = loadComponentSymbolWithoutCocos(model,
+        Paths.get(modelPath).toFile());
+
+    if (!comp.isPresent()) {
+      Log.error("Model could not be resolved!");
+      return Optional.empty();
+    }
+
+    if (!comp.get().isPresentAstNode()) {
+      Log.debug("Symbol not linked with node.", "XX");
+      return Optional.empty();
+    }
+    return Optional.of(comp.get().getAstNode());
+  }
+
+  /**
+   * Initializes the Symboltable by introducing scopes for the passed modelpaths. It does not create
    * the symbol table! Symbols for models within the modelpaths are not added to the symboltable
    * until resolve() is called. Modelpaths are relative to the project path and do contain all the
    * packages the models are located in. E.g. if model with fqn a.b.C lies in folder
    * src/main/resources/models/a/b/C.arc, the modelpath is src/main/resources.
    *
-   * @param modelPaths
+   * @param modelPaths paths of all folders containing models
    * @return The initialized symbol table
    */
-  public Scope initSymbolTable(File... modelPaths) {
+  public IMontiThingsScope initSymbolTable(File... modelPaths) {
     Set<Path> p = Sets.newHashSet();
     for (File mP : modelPaths) {
       p.add(Paths.get(mP.getAbsolutePath()));
@@ -149,25 +140,23 @@ public class MontiThingsTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    GlobalScope gs = new GlobalScope(mp, family);
-    addCPPPrimitiveTypes(gs);
+    MontiThingsGlobalScope gs = new MontiThingsGlobalScope(mp, language);
     isSymTabInitialized = true;
     return gs;
   }
 
-  public Scope initSymbolTable(String modelPath) {
+  /**
+   * Initializes the Symboltable by introducing scopes for the passed modelpaths. It does not create
+   * the symbol table! Symbols for models within the modelpaths are not added to the symboltable
+   * until resolve() is called. Modelpaths are relative to the project path and do contain all the
+   * packages the models are located in. E.g. if model with fqn a.b.C lies in folder
+   * src/main/resources/models/a/b/C.arc, the modelPath is src/main/resources.
+   *
+   * @param modelPath The model path for the symbol table
+   * @return the initialized symbol table
+   */
+  public IMontiThingsScope initSymbolTable(String modelPath) {
     return initSymbolTable(Paths.get(modelPath).toFile());
-  }
-
-  private static void addCPPPrimitiveTypes(GlobalScope globalScope) {
-    for (String primType : primitiveTypes) {
-      JavaTypeSymbol jTypeSymbol = new JavaSymbolFactory().createClassSymbol(primType);
-      ArtifactScope spannedScope = new ArtifactScope("java.lang", new ArrayList<>());
-      spannedScope.setResolvingFilters(globalScope.getResolvingFilters());
-      spannedScope.setEnclosingScope(globalScope);
-      spannedScope.add(jTypeSymbol);
-      globalScope.addSubScope(spannedScope);
-    }
   }
 
 }
