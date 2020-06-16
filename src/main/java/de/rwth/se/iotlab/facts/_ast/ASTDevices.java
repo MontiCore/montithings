@@ -1,11 +1,21 @@
 package de.rwth.se.iotlab.facts._ast;
 
 import de.monticore.lang.json._ast.*;
+import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
+import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
 import sun.nio.cs.Surrogate;
 
 import java.util.*;
 
 public class ASTDevices extends ASTDevicesTOP {
+    private int aSTJSONNumber2Int(ASTJSONNumber number) {
+        ASTSignedLiteral literal = number.getSignedNumericLiteral();
+        if (literal instanceof ASTSignedLiteral) {
+            ASTSignedNatLiteral nat = (ASTSignedNatLiteral) literal;
+            return nat.getValue();
+        }
+        throw new IllegalArgumentException("Unexpected Could not convert number to int");
+    }
 
     private List<List<String>> getSublists(List<String> list) {
         List<List<String>> res = new ArrayList<>();
@@ -23,7 +33,7 @@ public class ASTDevices extends ASTDevicesTOP {
             char[] iAsBinaryArray = Integer.toBinaryString(i).toCharArray();
             int lengthDiff = binaryArray.length - iAsBinaryArray.length;
             for (int k = 0; k < iAsBinaryArray.length; k++) {
-                binaryArray[k+lengthDiff] = iAsBinaryArray[k];
+                binaryArray[k + lengthDiff] = iAsBinaryArray[k];
             }
 
             for (int index = 0; index < binaryArray.length; index++) {
@@ -97,9 +107,17 @@ public class ASTDevices extends ASTDevicesTOP {
 
 
             } else {
-                ASTJSONString value = (ASTJSONString) prop.getValue();
+                String value = "";
+                if (prop.getValue() instanceof ASTJSONNumber) {
+                    value = String.valueOf(this.aSTJSONNumber2Int((ASTJSONNumber) prop.getValue()));
+                } else if (prop.getValue() instanceof ASTJSONNull) {
+                    continue;
+                } else {
+                    ASTJSONString astValue = (ASTJSONString) prop.getValue();
+                    value = astValue.getStringLiteral().getValue();
+                }
                 List<String> values = new ArrayList<>();
-                values.add(value.getStringLiteral().getValue());
+                values.add(value);
                 result.put(prop.getKey(), values);
             }
 
