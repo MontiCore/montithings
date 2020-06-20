@@ -7,47 +7,10 @@ import sun.nio.cs.Surrogate;
 
 import java.util.*;
 
+import static de.rwth.se.iotlab.Utils.astJsonValue2String;
+import static de.rwth.se.iotlab.Utils.getSublists;
+
 public class ASTDevices extends ASTDevicesTOP {
-    private int aSTJSONNumber2Int(ASTJSONNumber number) {
-        ASTSignedLiteral literal = number.getSignedNumericLiteral();
-        if (literal instanceof ASTSignedLiteral) {
-            ASTSignedNatLiteral nat = (ASTSignedNatLiteral) literal;
-            return nat.getValue();
-        }
-        throw new IllegalArgumentException("Unexpected Could not convert number to int");
-    }
-
-    private List<List<String>> getSublists(List<String> list) {
-        List<List<String>> res = new ArrayList<>();
-
-        // Iterate over all possible combinations by iterating in binary from 11...111 to 00..001
-        String[] binaryMax = new String[list.size()];
-        Arrays.fill(binaryMax, "1");
-        int binaryMaxInt = Integer.parseInt(String.join("", binaryMax), 2);
-
-        for (int i = binaryMaxInt; i > 0; i--) {
-            List<String> combination = new ArrayList<>();
-            char[] binaryArray = new char[binaryMax.length];
-            Arrays.fill(binaryArray, '0');
-
-            char[] iAsBinaryArray = Integer.toBinaryString(i).toCharArray();
-            int lengthDiff = binaryArray.length - iAsBinaryArray.length;
-            for (int k = 0; k < iAsBinaryArray.length; k++) {
-                binaryArray[k + lengthDiff] = iAsBinaryArray[k];
-            }
-
-            for (int index = 0; index < binaryArray.length; index++) {
-                if (binaryArray[index] == '1') {
-                    combination.add((String) list.toArray()[index]);
-                }
-            }
-            res.add(combination);
-
-        }
-
-        return res;
-    }
-
     /**
      * Returns a map of all device properties specified for all devices in the AST
      *
@@ -87,8 +50,7 @@ public class ASTDevices extends ASTDevicesTOP {
 
                 List<String> locationKeys = new ArrayList<>();
                 for (ASTJSONProperty arrayValue : locationProperties.getPropList()) {
-                    ASTJSONString stringValue = (ASTJSONString) arrayValue.getValue();
-                    String value = stringValue.getStringLiteral().getValue();
+                    String value = astJsonValue2String(arrayValue.getValue());
 
                     List<String> locationValues = new ArrayList<>();
                     locationValues.add(value);
@@ -99,7 +61,7 @@ public class ASTDevices extends ASTDevicesTOP {
                 // Add additional properties like property(location,building1_floor1_room101,device)
                 List<String> locationValues = new ArrayList<>();
 
-                for (List<String> sublistOfKeys : this.getSublists(locationKeys)) {
+                for (List<String> sublistOfKeys : getSublists(locationKeys)) {
                     String joinedValue = String.join("_", sublistOfKeys);
                     locationValues.add(joinedValue);
                 }
@@ -109,7 +71,7 @@ public class ASTDevices extends ASTDevicesTOP {
             } else {
                 String value = "";
                 if (prop.getValue() instanceof ASTJSONNumber) {
-                    value = String.valueOf(this.aSTJSONNumber2Int((ASTJSONNumber) prop.getValue()));
+                    value = String.valueOf(astJsonValue2String(prop.getValue()));
                 } else if (prop.getValue() instanceof ASTJSONNull) {
                     continue;
                 } else {

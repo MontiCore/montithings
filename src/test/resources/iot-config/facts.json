@@ -1,34 +1,654 @@
 {
-    "devices" : {
-        "raspy_b1_f1_temp_1": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "1", "floor": "1", "room": "101" }, "state": "online"},
-        "raspy_b1_f1_temp_2": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "1", "floor": "1", "room": "102" }, "state": "online"},
-        "raspy_b1_f2_temp_1": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "1", "floor": "2", "room": "201" }, "state": "online"},
-        "raspy_b1_f2_temp_2": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "1", "floor": "2", "room": "202" }, "state": "online"},
-        "raspy_b1_f3_temp_1": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "1", "floor": "3", "room": "301" }, "state": "online"},
-        "raspy_b1_f3_temp_2": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "1", "floor": "3", "room": "302" }, "state": "online"},
-        "raspy_b1_f1_controller_1": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "1", "floor": "1", "room": "101" }, "state": "online"},
-        "raspy_b1_f1_controller_2": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "1", "floor": "1", "room": "102" }, "state": "online"},
-        "raspy_b1_f2_controller_1": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "1", "floor": "2", "room": "201" }, "state": "online"},
-        "raspy_b1_f2_controller_2": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "1", "floor": "2", "room": "202" }, "state": "online"},
-        "raspy_b1_f3_controller_1": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "1", "floor": "3", "room": "301" }, "state": "online"},
-        "raspy_b1_f3_controller_2": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "1", "floor": "3", "room": "302" }, "state": "online"},
-        "raspy_b2_f1_temp_1": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "2", "floor": "1", "room": "101" }, "state": "online"},
-        "raspy_b2_f1_temp_2": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "2", "floor": "1", "room": "102" }, "state": "online"},
-        "raspy_b2_f2_temp_1": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "2", "floor": "2", "room": "201" }, "state": "online"},
-        "raspy_b2_f2_temp_2": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "2", "floor": "2", "room": "202" }, "state": "online"},
-        "raspy_b2_f3_temp_1": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "2", "floor": "3", "room": "301" }, "state": "online"},
-        "raspy_b2_f3_temp_2": { "type": "device", "hardware": ["sensor_temperature"], "location": { "building": "2", "floor": "3", "room": "302" }, "state": "online"},
-        "raspy_b2_f1_controller_1": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "2", "floor": "1", "room": "101" }, "state": "online"},
-        "raspy_b2_f1_controller_2": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "2", "floor": "1", "room": "102" }, "state": "online"},
-        "raspy_b2_f2_controller_1": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "2", "floor": "2", "room": "201" }, "state": "online"},
-        "raspy_b2_f2_controller_2": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "2", "floor": "2", "room": "202" }, "state": "online"},
-        "raspy_b2_f3_controller_1": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "2", "floor": "3", "room": "301" }, "state": "online"},
-        "raspy_b2_f3_controller_2": { "type": "device", "hardware": ["heat_controller"], "location": { "building": "2", "floor": "3", "room": "302" }, "state": "online"},
-        "raspy_b3_f1_controller_temp_1": { "type": "device", "hardware": ["sensor_temperature","heat_controller"], "location": { "building": "3", "floor": "1", "room": "101" }, "state": "online"},
-        "raspy_b3_f1_controller_temp_2": { "type": "device", "hardware": ["sensor_temperature","heat_controller"], "location": { "building": "3", "floor": "1", "room": "102" }, "state": "online"},
-        "raspy_b3_f2_controller_temp_1": { "type": "device", "hardware": ["sensor_temperature","heat_controller"], "location": { "building": "3", "floor": "2", "room": "201" }, "state": "online"},
-        "raspy_b3_f2_controller_temp_2": { "type": "device", "hardware": ["sensor_temperature","heat_controller"], "location": { "building": "3", "floor": "2", "room": "202" }, "state": "online"},
-        "raspy_b3_f3_controller_temp_1": { "type": "device", "hardware": ["sensor_temperature","heat_controller"], "location": { "building": "3", "floor": "3", "room": "301" }, "state": "online"},
-        "raspy_b3_f3_controller_temp_2": { "type": "device", "hardware": ["sensor_temperature","heat_controller"], "location": { "building": "3", "floor": "3", "room": "302" }, "state": "online"}
+    "devices": {
+        "11:22:11:11:21:1f": {
+            "hardware": [
+                "termostat_actuator",
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 30,
+            "hostname": "pi",
+            "id": 1,
+            "ip": "134.61.97.36",
+            "is_docker": 1,
+            "last_seen": "2020-06-20 14:06:09.167623",
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": 101
+            },
+            "mac": "11:22:11:11:21:1f",
+            "other_properties": null,
+            "state": "online",
+            "type": "RaspberryPi4"
+        },
+        "11:22:11:11:21:ss": {
+            "hardware": [
+                "termostat_actuator",
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 30,
+            "hostname": "pi",
+            "id": 2,
+            "ip": "134.61.97.36",
+            "is_docker": 1,
+            "last_seen": "2020-06-20 14:06:19.441603",
+            "location": {
+                "building": "building1",
+                "floor": "floor1",
+                "room": 101
+            },
+            "mac": "11:22:11:11:21:ss",
+            "other_properties": null,
+            "state": "online",
+            "type": "RaspberryPi4"
+        },
+        "aa:bb:cc:dd:aa": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f1_temp_2",
+            "id": 3,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "1",
+                "room": "102"
+            },
+            "mac": "aa:bb:cc:dd:aa",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ab": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f1_temp_1",
+            "id": 4,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "1",
+                "room": "101"
+            },
+            "mac": "aa:bb:cc:dd:ab",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ac": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f2_temp_1",
+            "id": 5,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "2",
+                "room": "201"
+            },
+            "mac": "aa:bb:cc:dd:ac",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ad": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f2_temp_2",
+            "id": 6,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "2",
+                "room": "202"
+            },
+            "mac": "aa:bb:cc:dd:ad",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ae": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f3_temp_1",
+            "id": 7,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "3",
+                "room": "301"
+            },
+            "mac": "aa:bb:cc:dd:ae",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:af": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f3_temp_2",
+            "id": 8,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "3",
+                "room": "302"
+            },
+            "mac": "aa:bb:cc:dd:af",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:bb": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f1_controller_1",
+            "id": 9,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "1",
+                "room": "101"
+            },
+            "mac": "aa:bb:cc:dd:bb",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:bc": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f1_controller_2",
+            "id": 10,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "1",
+                "room": "102"
+            },
+            "mac": "aa:bb:cc:dd:bc",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:bd": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f2_controller_1",
+            "id": 11,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "2",
+                "room": "201"
+            },
+            "mac": "aa:bb:cc:dd:bd",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:be": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f2_controller_2",
+            "id": 12,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "2",
+                "room": "202"
+            },
+            "mac": "aa:bb:cc:dd:be",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:bf": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f3_controller_1",
+            "id": 13,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "3",
+                "room": "301"
+            },
+            "mac": "aa:bb:cc:dd:bf",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ca": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b1_f3_controller_2",
+            "id": 14,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "1",
+                "floor": "3",
+                "room": "302"
+            },
+            "mac": "aa:bb:cc:dd:ca",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:cb": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f1_temp_1",
+            "id": 15,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "1",
+                "room": "101"
+            },
+            "mac": "aa:bb:cc:dd:cb",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:cc": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f1_temp_2",
+            "id": 16,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "1",
+                "room": "102"
+            },
+            "mac": "aa:bb:cc:dd:cc",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:cd": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f2_temp_1",
+            "id": 17,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "2",
+                "room": "201"
+            },
+            "mac": "aa:bb:cc:dd:cd",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ce": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f2_temp_2",
+            "id": 18,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "2",
+                "room": "202"
+            },
+            "mac": "aa:bb:cc:dd:ce",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:cf": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f3_temp_1",
+            "id": 19,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "3",
+                "room": "301"
+            },
+            "mac": "aa:bb:cc:dd:cf",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:da": {
+            "hardware": [
+                "sensor_temperature"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f3_temp_2",
+            "id": 20,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "3",
+                "room": "302"
+            },
+            "mac": "aa:bb:cc:dd:da",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:db": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f1_controller_1",
+            "id": 21,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "1",
+                "room": "101"
+            },
+            "mac": "aa:bb:cc:dd:db",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:dc": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f1_controller_2",
+            "id": 22,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "1",
+                "room": "102"
+            },
+            "mac": "aa:bb:cc:dd:dc",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:dd": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f2_controller_1",
+            "id": 23,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "2",
+                "room": "201"
+            },
+            "mac": "aa:bb:cc:dd:dd",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:de": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f2_controller_2",
+            "id": 24,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "2",
+                "room": "202"
+            },
+            "mac": "aa:bb:cc:dd:de",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:df": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f3_controller_1",
+            "id": 25,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "3",
+                "room": "301"
+            },
+            "mac": "aa:bb:cc:dd:df",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ea": {
+            "hardware": [
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b2_f3_controller_2",
+            "id": 26,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "2",
+                "floor": "3",
+                "room": "302"
+            },
+            "mac": "aa:bb:cc:dd:ea",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:eb": {
+            "hardware": [
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b3_f1_controller_temp_1",
+            "id": 27,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "3",
+                "floor": "1",
+                "room": "101"
+            },
+            "mac": "aa:bb:cc:dd:eb",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ec": {
+            "hardware": [
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b3_f1_controller_temp_2",
+            "id": 28,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "3",
+                "floor": "1",
+                "room": "102"
+            },
+            "mac": "aa:bb:cc:dd:ec",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ed": {
+            "hardware": [
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b3_f2_controller_temp_1",
+            "id": 29,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "3",
+                "floor": "2",
+                "room": "201"
+            },
+            "mac": "aa:bb:cc:dd:ed",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ee": {
+            "hardware": [
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b3_f2_controller_temp_2",
+            "id": 30,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "3",
+                "floor": "2",
+                "room": "202"
+            },
+            "mac": "aa:bb:cc:dd:ee",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:ef": {
+            "hardware": [
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b3_f3_controller_temp_1",
+            "id": 31,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "3",
+                "floor": "3",
+                "room": "301"
+            },
+            "mac": "aa:bb:cc:dd:ef",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        },
+        "aa:bb:cc:dd:fa": {
+            "hardware": [
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 300,
+            "hostname": "raspy_b3_f3_controller_temp_2",
+            "id": 32,
+            "ip": "123.134.135.1",
+            "is_docker": null,
+            "last_seen": null,
+            "location": {
+                "building": "3",
+                "floor": "3",
+                "room": "302"
+            },
+            "mac": "aa:bb:cc:dd:fa",
+            "other_properties": null,
+            "state": "offline",
+            "type": "device"
+        }
     }
 }
