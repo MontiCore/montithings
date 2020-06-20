@@ -10,9 +10,9 @@ get_distribution_${distribution.name}(${distribution.name}) :-
     <#assign count=1>
     <#list distribution.selectionConjunctionProperties as selection>
         <#if selection.number == "1">
-    include(property(${selection.key},${selection.value}),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    include(property("${selection.key}","${selection.value}"),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
         <#elseif selection.number == "0">
-    exclude(property(${selection.key},${selection.value}),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    exclude(property("${selection.key}","${selection.value}"),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
         </#if>
         <#assign count++>
     </#list>
@@ -20,24 +20,24 @@ get_distribution_${distribution.name}(${distribution.name}) :-
     % apply distribution constraints
     % first constrains equal: ==
     <#list distribution.equalConstraints as constraint>
-    include_equal(property(${constraint.key}, ${constraint.value}), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    include_equal(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
         <#assign count++>
     </#list>
 
     % then constrains less than equal: =<
     <#list distribution.lteConstraints as constraint>
-    include_lte(property(${constraint.key}, ${constraint.value}), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    include_lte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
         <#assign count++>
     </#list>
 
     % then constrains greater than equal: >=
     <#list distribution.gteConstraints as constraint>
-    check_gte(property(${constraint.key}, ${constraint.value}), ${constraint.number}, AllAvailableDevicesFiltered${count}),
+    check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
     </#list>
 
     % then constrains that check all equal
     <#list distribution.checkAllConstraints as constraint>
-    check_include_all(property(${constraint.key}, ${constraint.value}), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
+    check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
     </#list>
 
     % bind result to target variable
