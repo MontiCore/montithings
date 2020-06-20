@@ -3,10 +3,9 @@
 
 <#list ast.distributions as distribution>
 get_distribution_${distribution.name}(${distribution.name}) :-
-    get_available_devices(AllAvailableDevices),
+    get_available_devices(AllAvailableDevicesFiltered1),
 
     % apply device properties that have to be matched
-    include(property(state,online),AllAvailableDevices,AllAvailableDevicesFiltered1),
     <#assign count=1>
     <#list distribution.selectionConjunctionProperties as selection>
         <#if selection.number == "1">
