@@ -99,6 +99,13 @@ public class Distribution {
         return name;
     }
 
+    public String getPrologName() {
+        String replaced = this.name.replace(".","");
+        replaced = replaced.replace("/","");
+        replaced = replaced.replace("@","");
+        return replaced;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

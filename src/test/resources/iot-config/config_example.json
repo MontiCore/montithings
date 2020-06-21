@@ -1,6 +1,6 @@
 {
   "distribution": {
-    "room_temp_sensor:latest": {
+    "registry.git.rwth-aachen.de/se-student/ss20/labs/iot-smart-home/deployment/arm-cmake/arm-cmake-nng:latest": {
       "distribution_selection": [
         [
           "has_hardware",
