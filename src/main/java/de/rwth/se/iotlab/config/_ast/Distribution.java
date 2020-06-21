@@ -3,6 +3,7 @@ package de.rwth.se.iotlab.config._ast;
 import java.util.ArrayList;
 
 public class Distribution {
+    private int id;
     private String name;
     final private ArrayList<Constraint> selectionConjunctionProperties = new ArrayList<>();
     final private ArrayList<Constraint> lteConstraints = new ArrayList<>();
@@ -56,6 +57,14 @@ public class Distribution {
         }
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void addSelectionConjunctionProperty(String key, String value, String operator, String number) {
         assert number.equals("0") || number.equals("1"): "Ony boolean values allowed";
         this.selectionConjunctionProperties.add(new Constraint(key, value, operator, number));
@@ -100,10 +109,7 @@ public class Distribution {
     }
 
     public String getPrologName() {
-        String replaced = this.name.replace(".","");
-        replaced = replaced.replace("/","");
-        replaced = replaced.replace("@","");
-        return replaced;
+        return "D" + this.getId();
     }
 
     public void setName(String name) {

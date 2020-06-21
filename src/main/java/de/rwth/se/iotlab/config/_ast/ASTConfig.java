@@ -63,12 +63,15 @@ public class ASTConfig extends ASTConfigTOP {
         ArrayList<Distribution> result = new ArrayList<>();
         ASTJSONObject root = (ASTJSONObject) this.getJSONDocument().getJSONValue();
 
+        int distributionCounter = 0;
         for (ASTJSONProperty prop : root.getPropList()) {
             if (prop.getKey().equals("distribution")) {
                 List<ASTJSONProperty> distributionProperties = ((ASTJSONObject) prop.getValue()).getPropList();
-                distributionProperties.forEach(distributionProperty -> {
+                for (ASTJSONProperty distributionProperty : distributionProperties) {
                     Distribution distribution = new Distribution();
                     distribution.setName(formatComponentString(distributionProperty.getKey()));
+                    distributionCounter+=1;
+                    distribution.setId(distributionCounter);
 
                     List<ASTJSONProperty> distributionProperties2 = ((ASTJSONObject) distributionProperty.getValue()).getPropList();
                     distributionProperties2.forEach(prop2 -> {
@@ -137,7 +140,7 @@ public class ASTConfig extends ASTConfigTOP {
                         }
                     });
                     result.add(distribution);
-                });
+                }
             }
         }
 
