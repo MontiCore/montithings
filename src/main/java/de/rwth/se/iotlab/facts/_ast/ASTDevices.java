@@ -74,9 +74,11 @@ public class ASTDevices extends ASTDevicesTOP {
                     value = String.valueOf(astJsonValue2String(prop.getValue()));
                 } else if (prop.getValue() instanceof ASTJSONNull) {
                     continue;
-                } else {
+                } else if(prop.getValue() instanceof ASTJSONString) {
                     ASTJSONString astValue = (ASTJSONString) prop.getValue();
                     value = astValue.getStringLiteral().getValue();
+                } else {
+                    continue;
                 }
                 List<String> values = new ArrayList<>();
                 values.add(value);
