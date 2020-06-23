@@ -8,13 +8,6 @@ import de.monticore.prettyprint.IndentPrinter;
 import montiarc._visitor.MontiArcVisitor;
 import montithings._visitor.MontiThingsVisitor;
 
-/**
- * TODO
- *
- * @author (last commit) kirchhof
- * @version , 09.02.2020
- * @since
- */
 public class ASTNoData extends ASTNoDataTOP implements ASTMontiThingsNode {
 
   @Override

@@ -1,13 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 grammar MontiThings extends MontiArc,
-                            AssumptionGuarantee,
+                            PrePostCondition,
                             IfThenElse,
                             MessageHandling,
                             ValueRanges {
 
     start MACompilationUnit;
 
-    symbol scope MTComponentType extends ComponentType =
+    MTComponentType extends ComponentType =
       MTComponentModifier Name
       head:ComponentHead
       (ComponentInstance || ",")*
@@ -27,7 +27,7 @@ grammar MontiThings extends MontiArc,
     CalculationInterval implements ArcElement =
       "update" "interval" interval:NatLiteral TimeUnit";";
 
-    enum TimeUnit = key("msec") | key("sec") | key("min");
+    enum TimeUnit = "msec" | "sec" | "min";
 
     /* ============================================================ */
     /* ================ Requirements & Capabilities =============== */
@@ -38,7 +38,7 @@ grammar MontiThings extends MontiArc,
      *  a component has. E.g Sensors/Actuators etc.
      */
     RequirementStatement implements ArcElement =
-      "requires" (propertiess:Property | "{" properties:Property+ "}");
+      "requires" (properties:Property | "{" properties:Property+ "}");
 
     Property = Name& ":" 
       (

@@ -28,6 +28,17 @@
 
         <dependency>
             <groupId>montiarc.languages</groupId>
+            <artifactId>behavior-fe</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>behavior-fe</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
         </dependency>
 
@@ -99,6 +110,31 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc</groupId>
+            <artifactId>util</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
 
