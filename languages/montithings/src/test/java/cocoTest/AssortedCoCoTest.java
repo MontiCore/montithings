@@ -87,24 +87,6 @@ public class AssortedCoCoTest extends AbstractCoCoTest {
   }
 
   @Test
-  public void resourcePortsInNonDeployTest() {
-    ASTMontiThingsNode node = loadComponentAST(PACKAGE
-        + "." + "ResourcePortInNonDeploy");
-    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ResourcePortsOnlyOnOutermostComponent()),
-        node,
-        new ExpectedErrorInfo(2, "xMT127"));
-  }
-
-  @Test
-  public void resourcePortNameLowercaseTest() {
-    ASTMontiThingsNode node = loadComponentAST(PACKAGE
-        + "." + "ResourcePortLowercase");
-    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new LowerCaseResourcePort()),
-        node,
-        new ExpectedErrorInfo(2, "xMT133"));
-  }
-
-  @Test
   public void notInterface() {
     ASTMontiThingsNode node = loadComponentAST(PACKAGE
         + "." +"genericBindingTest.interfaceNotFound."+ "Bind");

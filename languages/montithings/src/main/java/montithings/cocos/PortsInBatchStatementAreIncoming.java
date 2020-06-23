@@ -8,7 +8,6 @@ import montiarc._ast.ASTComponent;
 import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.PortSymbol;
 import montithings._ast.ASTBatchStatement;
-import montithings._ast.ASTControlBlock;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,13 +49,18 @@ public class PortsInBatchStatementAreIncoming implements MontiArcASTComponentCoC
 
   }
 
+  /**
+   * TODO modify since ASTControlBlock was removed.
+   * @param node
+   * @return
+   */
   public List<ASTBatchStatement> getBatchPortNames(ASTComponent node) {
-    return node.getBody().getElementList()
+    return new ArrayList<ASTBatchStatement>();/*node.getBody().getElementList()
         .stream()
         .filter(e -> e instanceof ASTControlBlock)
         .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
         .filter(e -> e instanceof ASTBatchStatement)
         .map(e -> (ASTBatchStatement) e)
-        .collect(Collectors.toList());
+        .collect(Collectors.toList());*/
   }
 }

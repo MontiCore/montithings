@@ -7,7 +7,7 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTComponent;
 import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.PortSymbol;
-import montithings._ast.ASTControlBlock;
+//import montithings._ast.ASTControlBlock;
 import montithings._ast.ASTSyncStatement;
 
 import java.util.List;
@@ -51,13 +51,18 @@ public class PortsInSyncGroupAreIncoming implements MontiArcASTComponentCoCo {
 
   }
 
+  /**
+   * TODO modify since ASTControlBlock was removed.
+   * @param node
+   * @return
+   */
   public List<ASTSyncStatement> getSyncGroups(ASTComponent node) {
-    return node.getBody().getElementList()
+    return new ArrayList<>();/*node.getBody().getElementList()
         .stream()
         .filter(e -> e instanceof ASTControlBlock)
         .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
         .filter(ASTSyncStatement.class::isInstance)
         .map(ASTSyncStatement.class::cast)
-        .collect(Collectors.toList());
+        .collect(Collectors.toList());*/
   }
 }

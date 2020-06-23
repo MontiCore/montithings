@@ -2,9 +2,10 @@
 package montithings.cocos;
 
 import de.se_rwth.commons.logging.Log;
+import messagehandling._ast.ASTSyncStatement;
 import montiarc._ast.ASTComponent;
 import montiarc._cocos.MontiArcASTComponentCoCo;
-import montithings._ast.ASTControlBlock;
+//import montithings._ast.ASTControlBlock;
 import montithings._ast.ASTSyncStatement;
 
 import java.util.ArrayList;
@@ -40,14 +41,19 @@ public class SyncGroupIsNoSubset implements MontiArcASTComponentCoCo {
 
   }
 
+  /**
+   * TODO modify since ASTControlBlock was removed.
+   * @param comp
+   * @return
+   */
   private List<ASTSyncStatement> getSyncGroups(ASTComponent comp) {
-    return comp.getBody().getElementList()
+    return new ArrayList<ASTSyncStatement>();/*comp.getBody().getElementList()
         .stream()
         .filter(ASTControlBlock.class::isInstance)
         .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
         .filter(ASTSyncStatement.class::isInstance)
         .map(ASTSyncStatement.class::cast)
-        .collect(Collectors.toList());
+        .collect(Collectors.toList());*/
   }
 
   private Set<String> syncGroupToSet(ASTSyncStatement sync) {

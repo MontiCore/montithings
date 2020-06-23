@@ -8,7 +8,7 @@ import montiarc._cocos.MontiArcASTComponentCoCo;
 import montiarc._symboltable.ComponentInstanceSymbol;
 import montiarc._symboltable.ComponentSymbol;
 import montithings._ast.ASTCalculationInterval;
-import montithings._ast.ASTControlBlock;
+//import montithings._ast.ASTControlBlock;
 
 /**
  * Gives a warning if a timesync component contains subcomponents that use timing options
@@ -60,7 +60,8 @@ public class TimeSyncInSubComponents implements MontiArcASTComponentCoCo {
     }
 
     //Check for Update interval
-    node.getBody().getElementList()
+    //TODO modify since ASTControlBlock was removed.
+    /*node.getBody().getElementList()
         .stream()
         .filter(ASTControlBlock.class::isInstance)
         .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
@@ -69,6 +70,7 @@ public class TimeSyncInSubComponents implements MontiArcASTComponentCoCo {
             Log.warn("0xMT120 Timesynced component " + topCompName + " contains " +
                     "subcomponent " + node.getName() + " with timing options.",
                 e.get_SourcePositionStart()));
+                */
   }
 
 }

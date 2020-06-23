@@ -93,28 +93,17 @@ public class MontiThingsCoCos {
         .addCoCo(new JavaPVariableIdentifiersUnique())
 
         // MONTITHINGS
-        .addCoCo(new ResourcePortsOnlyOnOutermostComponent())
         .addCoCo(new TimeSyncInSubComponents())
         .addCoCo(new TimeSyncOnlyInComposedComponents())
         .addCoCo(new MaxOneUpdateInterval())
-        .addCoCo(new UpdateIntervalPositive())
-        .addCoCo(new SyncGroupNamesUppercase())
         .addCoCo(new SyncGroupIsNoSubset())
-        .addCoCo(new SyncGroupHasAtLeastOneElement())
         .addCoCo(new PortsInSyncGroupAreIncoming())
         .addCoCo(new PortsInBatchStatementAreIncoming())
         .addCoCo(new NoJavaImportStatements())
-        .addCoCo(new NoJavaPBehavior())
         .addCoCo(new MaxOneBehaviorPerComponent())
         .addCoCo(new ExecutionGuardIsValid())
-        .addCoCo(new MaxOneControlBlock())
-        .addCoCo(new ExecutionBlockPriorityCorrectness())
-        .addCoCo(new ExecutionBlockWellFormed())
-        .addCoCo(new ControlBlockStatementsInComposedComponent())
-        .addCoCo(new ControlBlockNotEmpty())
         .addCoCo(new InterfaceComponentContainsOnlyPorts())
         .addCoCo(new AssumptionDoesNotDependOnOutputPort())
-        .addCoCo(new SpecificationComponentHasSpecification())
 
         // MONTITHINGS Generic Binding
         .addCoCo(new InterfaceExists())

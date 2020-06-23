@@ -8,6 +8,7 @@ import montithings.cocos.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+//TODO modify since ASTControlBlock was removed.
 public class ControlBlockCoCoTest extends AbstractCoCoTest {
 
   private static final String PACKAGE = "cocoTest";
@@ -15,34 +16,6 @@ public class ControlBlockCoCoTest extends AbstractCoCoTest {
   @BeforeClass
   public static void setup() {
     Log.enableFailQuick(false);
-  }
-
-  @Test
-  public void emptyControlBlockTest() {
-    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
-        "." + "ControlBlockEmpty");
-    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new ControlBlockNotEmpty()),
-        node,
-        new ExpectedErrorInfo(1, "xMT102"));
-  }
-
-  @Test
-  public void controlStatementsInComposedComponentTest() {
-    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
-        "." + "ControlBlockInComposedComponent");
-    checkInvalid(new MontiThingsCoCoChecker()
-            .addCoCo(new ControlBlockStatementsInComposedComponent()),
-        node,
-        new ExpectedErrorInfo(1, "xMT103"));
-  }
-
-  @Test
-  public void multipleControlBlockTest() {
-    ASTMontiThingsNode node = loadComponentAST(PACKAGE +
-        "." + "MultipleControlBlocks");
-    checkInvalid(new MontiThingsCoCoChecker().addCoCo(new MaxOneControlBlock()),
-        node,
-        new ExpectedErrorInfo(1, "xMT101"));
   }
 
   @Test
