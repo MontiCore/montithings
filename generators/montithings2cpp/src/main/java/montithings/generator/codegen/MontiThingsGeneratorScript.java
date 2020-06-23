@@ -10,7 +10,6 @@ import montithings.generator.MontiThingsGeneratorTool;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 import java.io.File;
-import java.lang.annotation.Target;
 
 /**
  * TODO
@@ -57,8 +56,8 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
    * Gets called by Groovy Script. Generates component artifacts for each
    * component in {@code modelPath} to {@code targetFilepath}
    */
-  public void generate(File modelPath, File targetFilepath, File hwcPath, TargetPlatform platform) {
-    new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath, platform);
+  public void generate(File modelPath, File targetFilepath, File hwcPath, ConfigParams configParams) {
+    new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath, configParams);
   }
 
   // #######################

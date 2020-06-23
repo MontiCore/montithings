@@ -25,7 +25,7 @@ public class MontiThingsConfiguration implements Configuration {
 
   public static final String DEFAULT_HWC_DIRECTORY = "src";
 
-  public static final TargetPlatform DEFAULT_PLATFORM = TargetPlatform.GENERIC;
+  public ConfigParams configParams = new ConfigParams();
 
   /**
    * The names of the specific MontiArc options used in this configuration.
@@ -66,6 +66,7 @@ public class MontiThingsConfiguration implements Configuration {
   private MontiThingsConfiguration(Configuration internal) {
     this.configuration = ConfigurationContributorChainBuilder.newChain()
         .add(DelegatingConfigurationContributor.with(internal)).build();
+    configParams.setTargetPlatform(getPlatform());
   }
 
   /**
@@ -251,26 +252,26 @@ public class MontiThingsConfiguration implements Configuration {
     return new File(DEFAULT_OUTPUT_DIRECTORY);
   }
 
-  public TargetPlatform getPlatform() {
+  public ConfigParams.TargetPlatform getPlatform() {
     Optional<String> platform = getAsString(Options.PLATFORM);
     if (platform.isPresent()) {
       switch (platform.get()) {
         case "GENERIC":
-          return TargetPlatform.GENERIC;
+          return ConfigParams.TargetPlatform.GENERIC;
         case "DSA_VCG":
         case "l06":
         case "DSA":
         case "VCG":
-          return TargetPlatform.DSA_VCG;
+          return ConfigParams.TargetPlatform.DSA_VCG;
         case "ARDUINO":
         case "ESP32":
-          return TargetPlatform.ARDUINO;
+          return ConfigParams.TargetPlatform.ARDUINO;
         default:
           throw new IllegalArgumentException("0xMT300 Platform " + platform + " in pom.xml is unknown");
       }
     }
     // fallback default is "generic"
-    return TargetPlatform.GENERIC;
+    return ConfigParams.TargetPlatform.GENERIC;
   }
 
   /**

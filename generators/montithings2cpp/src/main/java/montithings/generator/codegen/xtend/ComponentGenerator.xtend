@@ -7,7 +7,7 @@ import de.monticore.types.typesymbols._symboltable.FieldSymbol
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
-import montithings.generator.codegen.TargetPlatform
+import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.codegen.xtend.util.Init
 import montithings.generator.codegen.xtend.util.Ports
@@ -18,7 +18,7 @@ import montithings.generator.helper.ComponentHelper
 
 class ComponentGenerator {
 	
-	def static generateHeader(ComponentTypeSymbol comp, String compname, HashMap<String, String> interfaceToImplementation, TargetPlatform platform) {
+	def static generateHeader(ComponentTypeSymbol comp, String compname, HashMap<String, String> interfaceToImplementation, ConfigParams config) {
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    
 		return '''
@@ -30,7 +30,7 @@ class ComponentGenerator {
 		#include <vector>
 		#include <list>
 		#include <set>
-		«IF platform != TargetPlatform.ARDUINO»
+		«IF config.getTargetPlatform() != ConfigParams.TargetPlatform.ARDUINO»
 		#include "IPCPort.h"
 		#include "WSPort.h"
 		«ENDIF»

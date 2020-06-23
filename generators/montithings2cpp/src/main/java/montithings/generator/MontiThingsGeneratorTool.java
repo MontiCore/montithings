@@ -18,7 +18,8 @@ import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings.generator.cd2cpp.CppGenerator;
-import montithings.generator.codegen.TargetPlatform;
+import montithings.generator.cd2cpp.Modelfinder;
+import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
 import org.apache.commons.io.FileUtils;
@@ -38,13 +39,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   private static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
   private static final String TOOL_NAME = "MontiThingsGeneratorTool";
 
-  public void generate(File modelPath, File target, File hwcPath, TargetPlatform platform) {
+  public void generate(File modelPath, File target, File hwcPath, ConfigParams config) {
 
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
     try {
-      if (platform == TargetPlatform.ARDUINO) {
+      if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
         FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile());
       }
       else {
@@ -155,10 +156,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
 
         // 6 generate make file
-        if (platform != TargetPlatform.ARDUINO) { // Arduino uses its own build system
+        if (config.getTargetPlatform() != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
           Log.info("Generate CMake file", "MontiThingsGeneratorTool");
           MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
-              subPackagesPath, platform);
+              subPackagesPath, config);
         }
       }
     }
