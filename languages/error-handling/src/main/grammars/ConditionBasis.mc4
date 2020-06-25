@@ -1,0 +1,14 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * Base grammar for conditions that evaluate the state of something
+ * (e.g. a component).
+ */
+component grammar ConditionBasis
+{
+
+  interface Condition;
+
+}

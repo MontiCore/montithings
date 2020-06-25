@@ -15,6 +15,49 @@
 
     <dependencies>
 
+        <!-- Languages within this project -->
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montiarc-extensions</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montiarc-extensions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>monticore-extensions</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>monticore-extensions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>error-handling</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>error-handling</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- MontiArc's languages -->
+
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>arc-fe</artifactId>
@@ -28,17 +71,6 @@
 
         <dependency>
             <groupId>montiarc.languages</groupId>
-            <artifactId>behavior-fe</artifactId>
-            <classifier>${grammars.classifier}</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>montiarc.languages</groupId>
-            <artifactId>behavior-fe</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
         </dependency>
 
@@ -46,6 +78,31 @@
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
             <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <!-- MontiCore Languages -->
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-grammar</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-grammar</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>cd4analysis</artifactId>
+        </dependency>
+
+        <!-- MontiCore / SE / ANTLR -->
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-runtime</artifactId>
         </dependency>
 
         <dependency>
@@ -54,44 +111,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>de.monticore.lang</groupId>
-            <artifactId>cd4analysis</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
         </dependency>
 
-        <!-- MontiCore Dependencies -->
-        <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>monticore-runtime</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>monticore-grammar</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>monticore-grammar</artifactId>
-            <classifier>${grammars.classifier}</classifier>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Java -->
-        <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>javaDSL</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -99,11 +123,8 @@
         </dependency>
 
         <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>javaDSL</artifactId>
-            <classifier>${grammars.classifier}</classifier>
-            <version>${javadsl.version}</version>
-            <scope>provided</scope>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
 
         <!-- .. Test Libraries ............................................... -->

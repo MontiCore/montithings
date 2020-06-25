@@ -1,0 +1,45 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * This grammar can be used to define sets of values using, e.g., single values,
+ * ranges of values, or regular expressions.
+ */
+
+component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
+                                         de.monticore.types.MCBasicTypes,
+                                         de.monticore.expressions.ExpressionsBasis
+{
+    interface SetAllowedValues;
+
+    // list of allowed values
+    SetValueList implements SetAllowedValues =
+      (Expression || ",")+
+    ;
+
+    // range of allowed values (optionally with stepsize)
+    SetValueRange implements SetAllowedValues =
+      lowerBound:Expression
+      (":" stepsize:Expression)?
+      ":" upperBound:Expression
+    ;
+
+    /**
+     * Mathmatical set builder pattern. Allows to specify sets based on
+     * conditions that need to be fulfilled, such as {int x | x < 4} for
+     * the set of all integers smaller than 4.
+     */
+    SetByCondition implements SetAllowedValues =
+      MCType variable:Name "|" condition:Expression
+    ;
+
+    // RegEx to which value has to conform
+    SetValueRegEx implements SetAllowedValues =
+      key("format") ":" format:StringLiteral
+    ;
+
+    SetDefinition implements Expression =
+      "{" (SetAllowedValues || ",")+ "}"
+    ;
+}

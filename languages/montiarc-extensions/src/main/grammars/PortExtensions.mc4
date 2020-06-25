@@ -1,0 +1,39 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * This grammar describes additions to ports of a component
+ */
+component grammar PortExtensions extends ArcBasis {
+
+  /**
+   * Annotated ports are extended by a keyword before "port".
+   * Depending on the keyword, the ports behavior is changed
+   * (see particular implementations of PortAnnotation).
+   */
+  AnnotatedPort extends ComponentInterface =
+     PortAnnotation key("port") (PortDeclaration || ",")+ ";"
+   ;
+
+  interface PortAnnotation;
+
+  /**
+   * Buffered ports buffer all messages between two compute cycles
+   * of a component. The buffered messages are given to the component
+   * together instead of being processed one by one.
+   */
+  BufferedPort implements PortAnnotation = key("buffer");
+
+  /**
+   * SyncStatements allow the specification of groups of ports
+   * that should only be handled together. Components only start
+   * processing messages if all ports of at least one sync group
+   * have data available. If a component cannot process messages
+   * because no full sync group has data available, the messages
+   * are buffered for later processing.
+   */
+  SyncStatement implements ArcElement =
+      key("sync") syncedPort:(Name || ",")+ ";";
+
+}

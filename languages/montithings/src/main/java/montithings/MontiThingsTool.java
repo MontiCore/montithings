@@ -61,7 +61,7 @@ public class MontiThingsTool extends MontiArcTool {
   public boolean checkCoCos(@NotNull ASTArcBasisNode node) {
     Preconditions.checkArgument(node != null);
     Preconditions.checkState(this.isSymTabInitialized, "Please initialize symbol-table before "
-        + "checking cocos.");
+        + "checking portextensions.cocos.");
     this.checker.checkAll(node);
     if (Log.getErrorCount() != 0) {
       Log.debug("Found " + Log.getErrorCount() + " errors in node " + node + ".", "XX");

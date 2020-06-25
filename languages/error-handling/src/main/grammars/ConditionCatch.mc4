@@ -1,0 +1,21 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * Catches violated conditions
+ */
+component grammar ConditionCatch extends ConditionBasis,
+                                         de.monticore.statements.MCCommonStatements
+{
+
+  /**
+   * Defines a catch statement describing how to handle a violated assumption.
+   * If the condition is violated, the handler is executed.
+   */
+  ConditionCatch =
+    Condition // the catch statement must directly follow a condition
+    key("catch") handler:MCJavaBlock ";"
+  ;
+
+}

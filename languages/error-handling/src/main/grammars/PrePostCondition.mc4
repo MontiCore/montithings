@@ -1,0 +1,32 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * Pre- and Postconditions for components. Preconditions are evaluated before executing the behavior
+ * of a component. Postconditions are evaluated after executing the behavior of a component.
+ */
+component grammar PrePostCondition extends ConditionBasis,
+                                           de.monticore.expressions.ExpressionsBasis
+{
+
+  /**
+   * Preconditions are evaluated before executing the behavior
+   * of a component. If a precondition is not fulfilled, the
+   * component throws an error. Preconditions may not access
+   * the output ports of a component (as they only hold a valid
+   * value after the behavior is executed).
+   */
+  Precondition implements Condition =
+    "pre" guard:Expression ";"
+  ;
+
+  /**
+   * Preconditions are evaluated before executing the behavior
+   * of a component. If a precondition is not fulfilled, the
+   * component throws an error.
+   */
+  Postcondition implements Condition =
+    "post" guard:Expression ";"
+  ;
+}

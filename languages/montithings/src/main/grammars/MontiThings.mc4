@@ -1,10 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 grammar MontiThings extends MontiArc,
+                            ClockControl,
+                            PortExtensions,
+                            ConditionBasis,
                             PrePostCondition,
-                            IfThenElse,
-                            MessageHandling,
-                            ValueRanges {
-
+                            ConditionCatch,
+                            SetDefinitions,
+                            de.monticore.expressions.SetExpressions
+{
     start MACompilationUnit;
 
     MTComponentType extends ComponentType =
@@ -17,41 +20,16 @@ grammar MontiThings extends MontiArc,
     MTComponentModifier =  ["interface"]? (["component"] | ["application"]);
 
     /* ============================================================ */
-    /* ==================== Control Statements ==================== */
+    /* ================== ArcElement Insertions =================== */
     /* ============================================================ */
 
-    /**
-     * The calculation interval specifies in which 
-     * interval the component is executed.
-     */
-    CalculationInterval implements ArcElement =
-      "update" "interval" interval:NatLiteral TimeUnit";";
+    MTCondition implements ArcElement = Condition;
+    MTCatch implements ArcElement = ConditionCatch;
 
-    enum TimeUnit = "msec" | "sec" | "min";
 
     /* ============================================================ */
-    /* ================ Requirements & Capabilities =============== */
+    /* ========================= Behavior ========================= */
     /* ============================================================ */
 
-    /**
-     *  RequirementStatements contain information about what physical requirements
-     *  a component has. E.g Sensors/Actuators etc.
-     */
-    RequirementStatement implements ArcElement =
-      "requires" (properties:Property | "{" properties:Property+ "}");
-
-    Property = Name& ":" 
-      (
-        stringValue:StringLiteral | booleanValue:BooleanLiteral |
-        doubleValue:SignedBasicDoubleLiteral | integerValue:SignedNatLiteral |
-        longValue:SignedBasicLongLiteral
-      ) ";";
-
-    /**
-     * The Value for empty data
-     * Copied from MontiArc. We dont actually need a different syntax but MontiArc's AST class
-     * also specifies how to print NoData as "null" in the target language. For C++, we need to
-     * overwrite this to write an empty optional.
-     */
-    NoData implements Expression = "--";
+    Behavior implements ArcElement = "behavior" MCJavaBlock;
 }

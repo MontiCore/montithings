@@ -1,24 +1,23 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.cocos;
 
+import arcbasis._ast.ASTComponentType;
+import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTComponent;
-import montiarc._ast.ASTStereotype;
-import montiarc._cocos.MontiArcASTComponentCoCo;
-import montiarc._symboltable.ComponentInstanceSymbol;
-import montiarc._symboltable.ComponentSymbol;
-import montithings._ast.ASTCalculationInterval;
-//import montithings._ast.ASTControlBlock;
 
 /**
  * Gives a warning if a timesync component contains subcomponents that use timing options
- *
- * @author (last commit)
  */
-public class TimeSyncInSubComponents implements MontiArcASTComponentCoCo {
+public class TimeSyncInSubComponents implements ArcBasisASTComponentTypeCoCo {
 
+  @Override public void check(ASTComponentType node) {
+    // TODO: Write me
+  }
+
+  // MontiThings 5 version below
+
+  /*
   String topCompName = "";
-
   @Override
   public void check(ASTComponent node) {
     topCompName = node.getName();
@@ -26,7 +25,7 @@ public class TimeSyncInSubComponents implements MontiArcASTComponentCoCo {
       Log.error(
           String.format("0xMT010 ASTComponent node \"%s\" has no " +
                   "symbol. Did you forget to run the " +
-                  "SymbolTableCreator before checking cocos?",
+                  "SymbolTableCreator before checking portextensions.cocos?",
               node.getName()));
       return;
     }
@@ -70,7 +69,8 @@ public class TimeSyncInSubComponents implements MontiArcASTComponentCoCo {
             Log.warn("0xMT120 Timesynced component " + topCompName + " contains " +
                     "subcomponent " + node.getName() + " with timing options.",
                 e.get_SourcePositionStart()));
-                */
+
   }
 
+  */
 }
