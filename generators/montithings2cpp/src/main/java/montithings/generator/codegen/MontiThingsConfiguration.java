@@ -25,7 +25,7 @@ public class MontiThingsConfiguration implements Configuration {
 
   public static final String DEFAULT_HWC_DIRECTORY = "src";
 
-  public ConfigParams configParams = new ConfigParams();
+  public static final ConfigParams configParams = new ConfigParams();
 
   /**
    * The names of the specific MontiArc options used in this configuration.
