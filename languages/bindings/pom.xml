@@ -30,13 +30,6 @@
         </dependency>
 
         <dependency>
-            <groupId>montiarc.libraries</groupId>
-            <artifactId>maJavaLib</artifactId>
-            <classifier>${majavalib.classifier}</classifier>
-            <version>${montiarc.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>de.se_rwth.commons</groupId>
             <artifactId>se-commons-logging</artifactId>
         </dependency>
@@ -76,22 +69,9 @@
 
         <!-- Java -->
         <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>javaDSL</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
-        </dependency>
-
-        <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>javaDSL</artifactId>
-            <classifier>${grammars.classifier}</classifier>
-            <version>${javadsl.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- .. Test Libraries ............................................... -->

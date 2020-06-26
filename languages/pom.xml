@@ -20,7 +20,7 @@
 		<module>montiarc-extensions</module>
 		<module>monticore-extensions</module>
 		<module>montithings</module>
-		<module>bindings</module>
+		<!-- <module>bindings</module> -->
 	</modules>
 
 </project>
