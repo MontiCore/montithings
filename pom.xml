@@ -14,7 +14,7 @@
 
 	<modules>
 		<module>languages</module>
-		<!-- <module>generators</module> -->
+		<module>generators</module>
 		<!-- <module>libraries</module> -->
 		<!-- <module>applications</module> -->
 	</modules>
@@ -25,7 +25,7 @@
 
 		<!-- DSLs -->
 		<javadsl.version>4.3.11.1</javadsl.version> 
-		<cd4a.version>1.6.0</cd4a.version>
+		<cd4a.version>1.7.0</cd4a.version>
 		<montiarc.version>6.0.0-SNAPSHOT</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->

@@ -1,15 +1,10 @@
 /* (c) https://github.com/MontiCore/monticore */
 package montithings.generator.cd2cpp;
 
-import de.monticore.ModelingLanguageFamily;
+import de.monticore.cd.cd4analysis._symboltable.*;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.symboltable.GlobalScope;
-import de.monticore.symboltable.Scope;
-import de.monticore.umlcd4a.CD4AnalysisLanguage;
-import de.monticore.umlcd4a.symboltable.CDSymbol;
-import de.monticore.umlcd4a.symboltable.CDTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 
@@ -23,6 +18,9 @@ import java.util.Optional;
 
 public class CppGenerator {
 
+  private static final String[] primitiveTypes = { "boolean", "byte", "char", "double", "float",
+      "int", "long", "short", "String" };
+
   private Path outputDir;
 
   private TypeHelper typeHelper;
@@ -33,7 +31,7 @@ public class CppGenerator {
 
   private String _package = "";
 
-  private CDSymbol cdSymbol;
+  private CDDefinitionSymbol cdSymbol;
 
   public CppGenerator(Path outputDir, Path modelPath, String modelName) {
     this(outputDir, modelPath, modelName, Optional.empty());
@@ -51,10 +49,9 @@ public class CppGenerator {
     this.outputDir = outputDir;
 
     CD4AnalysisLanguage lang = new CD4AnalysisLanguage();
-    ModelingLanguageFamily fam = new ModelingLanguageFamily();
-    fam.addModelingLanguage(lang);
-    Scope st = new GlobalScope(new ModelPath(modelPath), fam);
-    cdSymbol = st.<CDSymbol>resolve(modelName, CDSymbol.KIND).get();
+    ICD4AnalysisScope st = new CD4AnalysisGlobalScope(new ModelPath(modelPath), lang);
+    st = injectPrimitives(st);
+    cdSymbol = st.resolveCDDefinition(modelName).orElse(null);
     _package = targetPackage.orElse(cdSymbol.getName().toLowerCase());
 
     this.typeHelper = new TypeHelper(_package);
@@ -69,7 +66,15 @@ public class CppGenerator {
     Log.info("Done.", "Generator");
   }
 
-  private void generatePackageHeader(Collection<CDTypeSymbol> types) {
+  protected ICD4AnalysisScope injectPrimitives(ICD4AnalysisScope scope) {
+    for (String primitive : primitiveTypes) {
+      CDTypeSymbol primitiveCdType = new CDTypeSymbol(primitive);
+      scope.add(primitiveCdType);
+    }
+    return scope;
+  }
+
+  protected void generatePackageHeader(Collection<CDTypeSymbol> types) {
     List<String> imports = new ArrayList<>();
     types.forEach(a -> imports.add(a.getName()));
     Path filePath = Paths.get(Names.getPathFromPackage(_package));
@@ -79,28 +84,28 @@ public class CppGenerator {
   }
 
   private void generate(CDTypeSymbol type) {
-    String kind = type.isClass() ? "class" : (type.isEnum() ? "enum" : "class");
+    String kind = type.isIsClass() ? "class" : (type.isIsEnum() ? "enum" : "class");
 
     final StringBuilder _super = new StringBuilder();
-    if (type.getSuperClass().isPresent()) {
+    if (type.isPresentSuperClass()) {
       _super.append("public ");
-      _super.append(typeHelper.printType(type.getSuperClass().get()));
+      _super.append(typeHelper.printType(type.getSuperClass().getLoadedSymbol()));
       _super.append(" ");
-      if (!type.getInterfaces().isEmpty()) {
+      if (!type.isEmptyCdInterfaces()) {
         _super.append(",");
       }
     }
-    else if (type.isInterface() && !type.getInterfaces().isEmpty()) {
+    else if (type.isIsInterface() && !type.isEmptyCdInterfaces()) {
       // Allows extending other interfaces
       _super.append("public ");
-      _super.append(typeHelper.printType(type.getInterfaces().get(0)));
+      _super.append(typeHelper.printType(type.getCdInterface(0).getLoadedSymbol()));
       _super.append(" ");
     }
-    if (!type.getInterfaces().isEmpty() && !type.isInterface()) {
+    if (!type.isEmptyCdInterfaces() && !type.isIsInterface()) {
       _super.append(" ");
-      type.getInterfaces().forEach(i -> {
+      type.getCdInterfaceList().forEach(i -> {
         _super.append(" public ");
-        _super.append(typeHelper.printType(i));
+        _super.append(typeHelper.printType(i.getLoadedSymbol()));
         _super.append(",");
       });
       _super.deleteCharAt(_super.length() - 1);
@@ -130,7 +135,7 @@ public class CppGenerator {
       }
     }
 
-    ge.generate("templates.type.ftl", filePath, type.getAstNode().get(),
+    ge.generate("templates.type.ftl", filePath, type.getAstNode(),
         "montithings::" + _package.replace(".", "::"), kind,
         type, _super, typeHelper, imports);
   }

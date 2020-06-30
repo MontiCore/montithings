@@ -16,8 +16,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>montithings2cpp</module>
-    <module>cd2cpp</module>
+    <!-- <module>montithings2cpp</module>  -->
+     <module>cd2cpp</module>
   </modules>
 
 </project>

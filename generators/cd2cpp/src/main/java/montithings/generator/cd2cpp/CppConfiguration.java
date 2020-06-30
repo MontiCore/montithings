@@ -15,19 +15,11 @@ import de.se_rwth.commons.configuration.DelegatingConfigurationContributor;
 
 /**
  * TODO: Write me!
- *
- * @author  (last commit) $Author$
- * @version $Revision$,
- *          $Date$
- * @since   TODO: add version number
- *
  */
 public class CppConfiguration implements Configuration{
   public static final String CONFIGURATION_PROPERTY = "_configuration";
   public static final String DEFAULT_OUTPUT_DIRECTORY = "out";
-  
 
-  
   /**
    * The names of the specific MontiArc options used in this configuration.
    */
@@ -56,14 +48,14 @@ public class CppConfiguration implements Configuration{
   private final Configuration configuration;
   
   /**
-   * Factory method for {@link TemplateClassGeneratorConfiguration}.
+   * Factory method for {@link CppConfiguration}.
    */
   public static CppConfiguration withConfiguration(Configuration configuration) {
     return new CppConfiguration(configuration);
   }
   
   /**
-   * Constructor for {@link TemplateClassGeneratorConfiguration}
+   * Constructor for {@link CppConfiguration}
    */
   private CppConfiguration(Configuration internal) {
     this.configuration = ConfigurationContributorChainBuilder.newChain()

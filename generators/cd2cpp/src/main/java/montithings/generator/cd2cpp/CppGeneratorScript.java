@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
-import de.monticore.umlcd4a.CD4AnalysisLanguage;
+import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.configuration.Configuration;
 import de.se_rwth.commons.groovy.GroovyInterpreter;
@@ -18,13 +18,7 @@ import de.se_rwth.commons.logging.Log;
 import groovy.lang.Script;
 
 /**
- * TODO: Write me!
- *
- * @author  (last commit) $Author$
- * @version $Revision$,
- *          $Date$
- * @since   TODO: add version number
- *
+ * Script for generating C++ Code from CD4A models
  */
 public class CppGeneratorScript extends Script implements GroovyRunner {
   
