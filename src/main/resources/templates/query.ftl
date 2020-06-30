@@ -17,6 +17,12 @@ get_distribution_${distribution.prologName}(${distribution.prologName}) :-
         <#assign count++>
     </#list>
 
+    <#if distribution.selectionDisjunctionProperties?size gt 0>
+    include_disjunction([<#list distribution.selectionDisjunctionProperties as selection>property("${selection.key}","${selection.value}")<#sep>,</#sep></#list>], AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        <#assign count++>
+    </#if>
+
+
     % apply distribution constraints
     % first constrains equal: ==
     <#list distribution.equalConstraints as constraint>

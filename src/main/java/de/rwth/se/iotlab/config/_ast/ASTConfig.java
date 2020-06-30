@@ -4,6 +4,8 @@ import de.monticore.lang.json._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
 
+import static de.rwth.se.iotlab.Utils.astJsonValue2String;
+
 import javax.json.JsonValue;
 import java.util.*;
 
@@ -86,8 +88,16 @@ public class ASTConfig extends ASTConfigTOP {
                                                     ((ASTJSONString) itemValue.get(1)).getStringLiteral().getValue(),
                                                     "==",
                                                     String.valueOf(aSTJSONNumber2Int((ASTJSONNumber) itemValue.get(2))));
-                                        } else {
+                                        } else if((((ASTJSONArray) item).getJSONValue(0) instanceof ASTJSONArray)) {
                                             //disjunction
+                                            for (ASTJSONValue disjuctionItem : (((ASTJSONArray) item).getJSONValueList())) {
+                                                List<ASTJSONValue> itemValue = ((ASTJSONArray) disjuctionItem).getJSONValueList();
+                                                distribution.addSelectionDisjunctionProperty(
+                                                        astJsonValue2String(itemValue.get(0)),
+                                                        astJsonValue2String(itemValue.get(1)),
+                                                        "==",
+                                                        String.valueOf(aSTJSONNumber2Int((ASTJSONNumber) itemValue.get(2))));
+                                            }
                                         }
                                     }
                             );

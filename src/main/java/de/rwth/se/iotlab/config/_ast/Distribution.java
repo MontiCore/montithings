@@ -6,6 +6,7 @@ public class Distribution {
     private int id;
     private String name;
     final private ArrayList<Constraint> selectionConjunctionProperties = new ArrayList<>();
+    final private ArrayList<Constraint> selectionDisjunctionProperties = new ArrayList<>();
     final private ArrayList<Constraint> lteConstraints = new ArrayList<>();
     final private ArrayList<Constraint> equalConstraints = new ArrayList<>();
     final private ArrayList<Constraint> gteConstraints = new ArrayList<>();
@@ -66,20 +67,31 @@ public class Distribution {
     }
 
     public void addSelectionConjunctionProperty(String key, String value, String operator, String number) {
-        assert number.equals("0") || number.equals("1"): "Ony boolean values allowed";
+        assert number.equals("0") || number.equals("1") : "Ony boolean values allowed";
         this.selectionConjunctionProperties.add(new Constraint(key, value, operator, number));
+    }
+
+    public void addSelectionDisjunctionProperty(String key, String value, String operator, String number) {
+        assert number.equals("0") || number.equals("1") : "Ony boolean values allowed";
+        this.selectionDisjunctionProperties.add(new Constraint(key, value, operator, number));
     }
 
     public ArrayList<Constraint> getSelectionConjunctionProperties() {
         return this.selectionConjunctionProperties;
     }
 
+    public ArrayList<Constraint> getSelectionDisjunctionProperties() {
+        return this.selectionDisjunctionProperties;
+    }
+
     public void addLteConstraint(String key, String value, String operator, String number) {
         this.lteConstraints.add(new Constraint(key, value, operator, number));
     }
+
     public void addEqualConstraint(String key, String value, String operator, String number) {
         this.equalConstraints.add(new Constraint(key, value, operator, number));
     }
+
     public void addGteConstraint(String key, String value, String operator, String number) {
         this.gteConstraints.add(new Constraint(key, value, operator, number));
     }
