@@ -5,6 +5,7 @@ import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
 
 import static de.rwth.se.iotlab.Utils.astJsonValue2String;
+import static de.rwth.se.iotlab.Utils.generatePrologCompliantName;
 
 import javax.json.JsonValue;
 import java.util.*;
@@ -35,10 +36,6 @@ public class ASTConfig extends ASTConfigTOP {
         return res;
     }
 
-    private String formatComponentString(String component) {
-        component = component.replace(":", "_");
-        return "D" + component;
-    }
 
     public ArrayList<Map<String, String>> getIncompatibilities() {
         ArrayList<Map<String, String>> result = new ArrayList<>();
@@ -50,8 +47,8 @@ public class ASTConfig extends ASTConfigTOP {
                         .forEachJSONValues(incompatibilitiesArray -> {
                             ArrayList<String> stringOfComponents = new ArrayList<>();
                             ((ASTJSONArray) incompatibilitiesArray).forEachJSONValues(value -> {
-                                String component = ((ASTJSONString) value).getStringLiteral().getValue();
-                                stringOfComponents.add(formatComponentString(component));
+                                String component = astJsonValue2String(value);
+                                stringOfComponents.add(generatePrologCompliantName(component));
                             });
                             result.addAll(getAllPairsOfListItems(stringOfComponents));
                         });
@@ -65,15 +62,12 @@ public class ASTConfig extends ASTConfigTOP {
         ArrayList<Distribution> result = new ArrayList<>();
         ASTJSONObject root = (ASTJSONObject) this.getJSONDocument().getJSONValue();
 
-        int distributionCounter = 0;
         for (ASTJSONProperty prop : root.getPropList()) {
             if (prop.getKey().equals("distribution")) {
                 List<ASTJSONProperty> distributionProperties = ((ASTJSONObject) prop.getValue()).getPropList();
                 for (ASTJSONProperty distributionProperty : distributionProperties) {
                     Distribution distribution = new Distribution();
-                    distribution.setName(formatComponentString(distributionProperty.getKey()));
-                    distributionCounter+=1;
-                    distribution.setId(distributionCounter);
+                    distribution.setName(generatePrologCompliantName(distributionProperty.getKey()));
 
                     List<ASTJSONProperty> distributionProperties2 = ((ASTJSONObject) distributionProperty.getValue()).getPropList();
                     distributionProperties2.forEach(prop2 -> {
@@ -196,8 +190,8 @@ public class ASTConfig extends ASTConfigTOP {
                                     dependent != null) {
                                 Map<String, String> item = new HashMap<>();
                                 item.put("type", type);
-                                item.put("dependency", formatComponentString(dependency));
-                                item.put("dependent", formatComponentString(dependent));
+                                item.put("dependency", generatePrologCompliantName(dependency));
+                                item.put("dependent", generatePrologCompliantName(dependent));
                                 item.put("amount_at_least", amount_at_least.toString());
                                 result.add(item);
                             }

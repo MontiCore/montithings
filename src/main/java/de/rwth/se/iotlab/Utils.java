@@ -56,4 +56,8 @@ public class Utils {
             return astValue.getStringLiteral().getValue();
         }
     }
+
+    public static String generatePrologCompliantName(String name) {
+        return "D" + Math.abs(name.hashCode());
+    }
 }

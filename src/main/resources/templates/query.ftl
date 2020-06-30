@@ -2,7 +2,7 @@
 :- include('helpers').
 
 <#list ast.distributions as distribution>
-get_distribution_${distribution.prologName}(${distribution.prologName}) :-
+get_distribution_${distribution.name}(${distribution.name}) :-
     get_available_devices(AllAvailableDevices),
 
     % apply device properties that have to be matched
@@ -47,14 +47,14 @@ get_distribution_${distribution.prologName}(${distribution.prologName}) :-
     </#list>
 
     % bind result to target variable
-    AllAvailableDevicesFiltered${count} = ${distribution.prologName}.
+    AllAvailableDevicesFiltered${count} = ${distribution.name}.
 
 </#list>
 
-distribution(<#list ast.distributions as distribution>${distribution.prologName}<#sep>,</#sep></#list>) :-
+distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>) :-
     % retrieve possible lists of devices
 <#list ast.distributions as distribution>
-    get_distribution_${distribution.prologName}(${distribution.prologName}),
+    get_distribution_${distribution.name}(${distribution.name}),
 </#list>
 
     % apply incompatible checks
