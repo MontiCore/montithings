@@ -3,6 +3,16 @@
     "registry.git.rwth-aachen.de/se-student/ss20/labs/iot-smart-home/deployment/arm-cmake/arm-cmake-nng:latest": {
       "distribution_selection": [
         [
+          "location",
+          "building1",
+          1
+        ],
+        [
+          "location",
+          "floor2",
+          0
+        ],
+        [
           [
             "has_hardware",
             "sensor_temperature",
@@ -57,9 +67,9 @@
     "room_temp_controller:latest": {
       "distribution_selection": [
         [
-            "has_hardware",
-            "heat_controller",
-            1
+          "has_hardware",
+          "heat_controller",
+          1
         ]
       ],
       "distribution_constraints": [

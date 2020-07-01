@@ -6,22 +6,32 @@ get_distribution_${distribution.name}(${distribution.name}) :-
     get_available_devices(AllAvailableDevices),
 
     % apply device properties that have to be matched
+
+    % all devices should be online
     include(property("state","online"),AllAvailableDevices,AllAvailableDevicesFiltered1),
+
+    % The following output lists have to be conjuncted
     <#assign count=1>
+    <#assign count_conjunction=1>
     <#list distribution.selectionConjunctionProperties as selection>
         <#if selection.number == "1">
-    include(property("${selection.key}","${selection.value}"),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    include(property("${selection.key}","${selection.value}"),AllAvailableDevicesFiltered${count},ConjunctionOutput${count_conjunction}),
         <#elseif selection.number == "0">
-    exclude(property("${selection.key}","${selection.value}"),AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    exclude(property("${selection.key}","${selection.value}"),AllAvailableDevicesFiltered${count},ConjunctionOutput${count_conjunction}),
         </#if>
-        <#assign count++>
+        <#assign count_conjunction++>
     </#list>
 
     <#if distribution.selectionDisjunctionProperties?size gt 0>
-    include_disjunction([<#list distribution.selectionDisjunctionProperties as selection>property("${selection.key}","${selection.value}")<#sep>,</#sep></#list>], AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
-        <#assign count++>
+    selection_disjunction([<#list distribution.selectionDisjunctionProperties as selection>["${selection.key}","${selection.value}",${selection.number}]<#sep>,</#sep></#list>], AllAvailableDevicesFiltered${count},ConjunctionOutput${count_conjunction}),
+        <#assign count_conjunction++>
     </#if>
 
+    % Finally apply conjunction
+    <#if count_conjunction gt 1>
+    apply_conjunction([<#list 1..count_conjunction-1 as i>ConjunctionOutput${i}<#sep>,</#sep></#list>],AllAvailableDevicesFiltered${count+1}),
+    <#assign count++>
+    </#if>
 
     % apply distribution constraints
     % first constrains equal: ==
