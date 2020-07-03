@@ -40,8 +40,8 @@
 		<junit.version>4.12</junit.version>
 		<logback.version>1.1.2</logback.version>
 		<javalib.version>4.3.10-SNAPSHOT</javalib.version>
-		<junit.jupiter.version>5.1.0</junit.jupiter.version>
-        <junit.vintage.version>5.1.0</junit.vintage.version>
+		<junit.jupiter.version>5.5.2</junit.jupiter.version>
+        <junit.vintage.version>5.5.2</junit.vintage.version>
         <junit.platform.version>1.1.0</junit.platform.version>
 		<assertj.version>3.7.0</assertj.version>
 		
@@ -53,8 +53,8 @@
 		<source.plugin>3.2.1</source.plugin>
 		<jacoco.plugin>0.8.5</jacoco.plugin>
 		<jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
-		<surefire.plugin>2.19.1</surefire.plugin>
-		<failsafe.plugin>2.19.1</failsafe.plugin>
+		<surefire.plugin>3.0.0-M4</surefire.plugin>
+		<failsafe.plugin>3.0.0-M4</failsafe.plugin>
 		<xtend.version>2.20.0</xtend.version>
 
 		<!-- Classifiers -->
@@ -348,12 +348,6 @@
 	                    <useSystemClassLoader>false</useSystemClassLoader>
 	                </configuration>
 	                <dependencies>
-	                    <!-- let surefire run JUnit 4 but also JUnit 5 tests -->
-	                    <dependency>
-	                        <groupId>org.junit.platform</groupId>
-	                        <artifactId>junit-platform-surefire-provider</artifactId>
-	                        <version>${junit.platform.version}</version>
-	                    </dependency>
 	                    <!-- let JUnit vintage engine run JUnit 3 or JUnit 4 tests -->
 	                    <dependency>
 	                        <groupId>org.junit.vintage</groupId>
