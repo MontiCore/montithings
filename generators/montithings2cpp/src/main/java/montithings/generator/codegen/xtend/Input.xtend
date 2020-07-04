@@ -3,12 +3,12 @@ package montithings.generator.codegen.xtend
 
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
-import montithings._symboltable.ComponentSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Ports
 
 class Input {
 
-	def static generateImplementationFile(ComponentSymbol comp, String compname) {
+	def static generateImplementationFile(ComponentTypeSymbol comp, String compname) {
     return '''
     #include "«compname»Input.h"
     «Utils.printNamespaceStart(comp)»
@@ -20,7 +20,7 @@ class Input {
   }
 	
 	
-    def static generateInputBody(ComponentSymbol comp, String compname) {
+    def static generateInputBody(ComponentTypeSymbol comp, String compname) {
     var ComponentHelper helper = new ComponentHelper(comp)
     var isBatch = ComponentHelper.usesBatchMode(comp);
     
@@ -30,8 +30,8 @@ class Input {
 «IF !comp.allIncomingPorts.empty»
 «Utils.printTemplateArguments(comp)»
 «compname»Input«Utils.printFormalTypeParameters(comp, false)»::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
-«IF comp.superComponent.present»
-	super(«FOR port : comp.superComponent.get.allIncomingPorts» «port.name» «ENDFOR»);
+«IF comp.presentParentComponent»
+	super(«FOR port : comp.parent.allIncomingPorts» «port.name» «ENDFOR»);
 «ENDIF»
 «FOR port : comp.incomingPorts»
 	this->«port.name» = std::move(«port.name»); 
@@ -73,7 +73,7 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 '''
   }
 	
-	def static generateInputHeader(ComponentSymbol comp, String compname) {
+	def static generateInputHeader(ComponentTypeSymbol comp, String compname) {
 	var ComponentHelper helper = new ComponentHelper(comp)
 	var isBatch = ComponentHelper.usesBatchMode(comp);
 		
@@ -95,9 +95,9 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 
 «Utils.printTemplateArguments(comp)»
 class «compname»Input
-«IF comp.superComponent.present» : 
+«IF comp.presentParentComponent» : 
 	«Utils.printSuperClassFQ(comp)»Input
-«IF comp.superComponent.get.hasFormalTypeParameters»<
+«IF comp.parent.hasFormalTypeParameters»<
 «FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
     «scTypeParams»
 «ENDFOR»>«ENDIF»

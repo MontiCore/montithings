@@ -1,12 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
-import montithings._symboltable.ComponentSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.helper.ComponentHelper
 
 class Deploy {
 	
-	def static generateDeploy(ComponentSymbol comp, String compname) {
+	def static generateDeploy(ComponentTypeSymbol comp, String compname) {
 		return '''
 		#include "«compname».h"
 		#include <chrono>
@@ -41,7 +41,7 @@ class Deploy {
 		'''
 	}
 	
-	def static generateDeployArduino(ComponentSymbol comp, String compname) {
+	def static generateDeployArduino(ComponentTypeSymbol comp, String compname) {
 		return '''
 		#include "«compname».h"
 		

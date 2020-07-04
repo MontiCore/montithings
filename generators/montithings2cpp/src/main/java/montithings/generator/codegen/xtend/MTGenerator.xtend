@@ -14,11 +14,11 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.List
 import java.util.HashMap
-import montiarc._ast.ASTAutomatonBehavior
-import montiarc._ast.ASTBehaviorElement
-import montiarc._ast.ASTComponent
-import montiarc._ast.ASTJavaPBehavior
-import montithings._symboltable.ComponentSymbol
+import arcbasis._ast.ASTAutomatonBehavior
+import arcbasis._ast.ASTBehaviorElement
+import arcbasis._ast.ASTComponent
+import arcbasis._ast.ASTJavaPBehavior
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 import montithings._ast.ASTExecutionBlock
@@ -34,7 +34,7 @@ import montithings.generator.codegen.TargetPlatform
  */
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentSymbol comp, List<String> foundModels, String compname,
+  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, List<String> foundModels, String compname,
                          HashMap<String, String> interfaceToImplementation, TargetPlatform platform) {
     Identifier.createInstance(comp)
 
@@ -56,7 +56,7 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp as ComponentSymbol, foundModels, compname, interfaceToImplementation, platform);
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp as ComponentTypeSymbol, foundModels, compname, interfaceToImplementation, platform);
     }
     
 	// Generate deploy class
@@ -73,8 +73,8 @@ class MTGenerator {
 
   }
 
-  def static generateBehaviorImplementation(ComponentSymbol comp, File targetPath, String compname) {
-    var compAST = comp.astNode.get as ASTComponent
+  def static generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath, String compname) {
+    var compAST = comp.astNode as ASTComponent
     var boolean hasBehavior = false
     for (element : compAST.body.elementList) {
       if (element instanceof ASTBehaviorElement) {
@@ -108,24 +108,23 @@ class MTGenerator {
 
   def static private toFile(File targetPath, String name, String content, String fileExtension) {
     var Path path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
-    var FileReaderWriter writer = new FileReaderWriter()
     println("Writing to file " + path + ".");
-    writer.storeInFile(path, content)
+    FileReaderWriter.storeInFile(path, content)
   }
 
-  def private static dispatch generateBehavior(ASTJavaPBehavior ajava, ComponentSymbol comp, File targetPath, String compname) {
+  def private static dispatch generateBehavior(ASTJavaPBehavior ajava, ComponentTypeSymbol comp, File targetPath, String compname) {
     return ""
   }
 
-  def private static dispatch generateBehavior(ASTAutomatonBehavior automaton, ComponentSymbol comp, File targetPath, String compname) {
+  def private static dispatch generateBehavior(ASTAutomatonBehavior automaton, ComponentTypeSymbol comp, File targetPath, String compname) {
   	return ""
   }
   
-  def private static dispatch generateBehavior(ASTExecutionBlock execBlock, ComponentSymbol comp, File targetPath, String compname) {
+  def private static dispatch generateBehavior(ASTExecutionBlock execBlock, ComponentTypeSymbol comp, File targetPath, String compname) {
   	return ""
   }
 	
-  def static generateMakeFile(File targetPath, ComponentSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, TargetPlatform platform){
+  def static generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, TargetPlatform platform){
 	
 	toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
 		comp,
@@ -134,7 +133,7 @@ class MTGenerator {
 		subPackagesPath, platform), ".txt")
   }
 
-  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath, TargetPlatform platform, boolean headerOnly){
+  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentTypeSymbol comp, File libraryPath, File hwcPath, TargetPlatform platform, boolean headerOnly){
   	var existsHWC = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, port.name)
   	var ipcPath = ComponentHelper.getIPCHWCPath(port, comp, hwcPath);
 	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerHeader(port, comp), ".h")

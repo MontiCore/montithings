@@ -1,13 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.behavior
 
-import montithings._symboltable.ComponentSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper
 
 class AtomicComponentStandardImplementation {
-	def static generateAbstractAtomicImplementationHeader(ComponentSymbol comp, String compname) {
+	def static generateAbstractAtomicImplementationHeader(ComponentTypeSymbol comp, String compname) {
     var String generics = Utils.printFormalTypeParameters(comp)
     return '''
 #pragma once
@@ -54,7 +54,7 @@ public:
 '''
   }
   
-  def static String generateImplementationFile(ComponentSymbol comp, String compname) {
+  def static String generateImplementationFile(ComponentTypeSymbol comp, String compname) {
 	  return '''
 	#include "«compname»Impl.h"
 	«Utils.printNamespaceStart(comp)»
@@ -65,7 +65,7 @@ public:
 	'''
   }
   
-  	def static generateAbstractAtomicImplementationBody(ComponentSymbol comp, String compname) {
+  	def static generateAbstractAtomicImplementationBody(ComponentTypeSymbol comp, String compname) {
     var String generics = Utils.printFormalTypeParameters(comp)
     return '''
 «Utils.printTemplateArguments(comp)»
@@ -97,7 +97,7 @@ public:
 '''
   }
   
-    def static String printConstructor(ComponentSymbol comp) {
+    def static String printConstructor(ComponentTypeSymbol comp) {
     return '''
 «comp.name»Impl(«Utils.printConfigurationParametersAsList(comp)»)
 «IF !comp.configParameters.isEmpty»

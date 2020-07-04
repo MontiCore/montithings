@@ -2,15 +2,15 @@
 package montithings.generator.codegen.xtend.util
 
 import montithings.generator.helper.ComponentHelper
-import montithings._symboltable.ComponentSymbol
-import montiarc._symboltable.ComponentInstanceSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
+import arcbasis._symboltable.ComponentInstanceSymbol
 import java.util.HashMap
 import java.util.HashSet
 import java.util.Set
 
 class Subcomponents {
 	
-  def static String printIncludes(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
+  def static String printIncludes(ComponentTypeSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
   	var Set<String> compIncludes = new HashSet<String>()
     for (subcomponent : comp.subComponents) {
       compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
@@ -28,7 +28,7 @@ class Subcomponents {
 	'''
   }
 
-  def static String printVars(ComponentSymbol comp, HashMap<String, String> interfaceToImplementation) {
+  def static String printVars(ComponentTypeSymbol comp, HashMap<String, String> interfaceToImplementation) {
     return '''
       «FOR subcomponent : comp.subComponents»
         «var type = ComponentHelper.getSubComponentTypeNameWithBinding(comp, subcomponent, interfaceToImplementation)»
@@ -38,7 +38,7 @@ class Subcomponents {
   }
 
 
-  def static String printInitializerList(ComponentSymbol comp) {
+  def static String printInitializerList(ComponentTypeSymbol comp) {
     var helper = new ComponentHelper(comp)
     return '''
       «FOR subcomponent : comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty] SEPARATOR ','»
@@ -50,8 +50,8 @@ class Subcomponents {
     '''
   }
   
-  def static String printPackageNamespace(ComponentSymbol comp, ComponentInstanceSymbol subcomp) {
-  	var subcomponentType = subcomp.componentType.referencedSymbol
+  def static String printPackageNamespace(ComponentTypeSymbol comp, ComponentInstanceSymbol subcomp) {
+  	var subcomponentType = subcomp.typeInfo
   	var fullNamespaceSubcomponent = ComponentHelper.printPackageNamespaceForComponent(subcomponentType)
   	var fullNamespaceEnclosingComponent = ComponentHelper.printPackageNamespaceForComponent(comp)
   	if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) && 

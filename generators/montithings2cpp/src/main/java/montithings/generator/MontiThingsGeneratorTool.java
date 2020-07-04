@@ -1,21 +1,21 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
+import arcbasis._ast.ASTMontiArcNode;
 import bindings.BindingsTool;
 import bindings.CocoInput;
 import bindings._symboltable.BindingsLanguage;
-import de.monticore.umlcd4a.CD4AnalysisLanguage;
-import montithings.generator.cd2cpp.CppGenerator;
-import montithings.generator.cd2cpp.Modelfinder;
 import de.monticore.symboltable.Scope;
+import de.monticore.umlcd4a.CD4AnalysisLanguage;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMontiArcNode;
-import montithings._symboltable.ComponentSymbol;
 import montithings.MontiThingsTool;
+import montithings._symboltable.ComponentTypeSymbol;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings._symboltable.ResourcePortSymbol;
+import montithings.generator.cd2cpp.CppGenerator;
+import montithings.generator.cd2cpp.Modelfinder;
 import montithings.generator.codegen.TargetPlatform;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
@@ -99,8 +99,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       // 3. parse + resolve model
       Log.info("Parsing model:" + qualifiedModelName, "MontiThingsGeneratorTool");
-      ComponentSymbol comp = symTab.<ComponentSymbol>resolve(qualifiedModelName,
-          ComponentSymbol.KIND).get();
+      ComponentTypeSymbol comp = symTab.<ComponentTypeSymbol>resolve(qualifiedModelName,
+          ComponentTypeSymbol.KIND).get();
 
       // 4. check cocos
       Log.info("Check model: " + qualifiedModelName, "MontiThingsGeneratorTool");
@@ -186,8 +186,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-      montithings._symboltable.ComponentSymbol comp = symTab.<montithings._symboltable.ComponentSymbol>resolve(qualifiedModelName,
-          montithings._symboltable.ComponentSymbol.KIND).get();
+      montithings._symboltable.ComponentTypeSymbol comp = symTab.<montithings._symboltable.ComponentTypeSymbol>resolve(qualifiedModelName,
+          montithings._symboltable.ComponentTypeSymbol.KIND).get();
 
       if (comp.isApplication()) {
         File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();

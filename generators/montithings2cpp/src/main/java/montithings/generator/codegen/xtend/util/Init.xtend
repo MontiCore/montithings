@@ -1,15 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.util
 
-import montiarc._ast.ASTConnector
-import montithings.generator.helper.ComponentHelper
-import montithings._symboltable.ComponentSymbol
-import montiarc._ast.ASTComponent
-import de.monticore.types.types._ast.ASTQualifiedName
-import montithings.generator.codegen.xtend.util.Utils
+import arcbasis._ast.ASTConnector
+import arcbasis._ast.ASTPortAccess
+import arcbasis._symboltable.ComponentTypeSymbol
+import montithings._ast.ASTMTComponentType
 
 class Init {
-	def static print(ComponentSymbol comp, String compname) {
+	def static print(ComponentTypeSymbol comp, String compname) {
     if (comp.isAtomic) {
     	return printInitAtomic(comp, compname)
     } else {
@@ -17,11 +15,11 @@ class Init {
     }
   }
 	
-	def static printInitAtomic(ComponentSymbol comp, String compname) {
+	def static printInitAtomic(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp, false)»::init(){
-			«IF comp.superComponent.present»
+			«IF comp.presentParentComponent»
 			super.init();
 		    «ENDIF»
 		 
@@ -30,21 +28,19 @@ class Init {
 		'''
 	}
 	
-	def static printInitComposed(ComponentSymbol comp, String compname) {
-		var helper = new ComponentHelper(comp);
+	def static printInitComposed(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp, false)»::init(){
-		«IF comp.superComponent.present»
+		«IF comp.presentParentComponent»
 			super.init();
 		    «ENDIF»
 			
-		«FOR ASTConnector connector : (comp.getAstNode().get() as ASTComponent)
-		          .getConnectors()»
-		          «FOR ASTQualifiedName target : connector.targetsList»
-		            «IF helper.isIncomingPort(comp, connector.source, target, false)»
+		«FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
+		          «FOR ASTPortAccess target : connector.targetList»
+		            «IF target.portSymbol.isIncoming»
 		            	// implements "connect «connector»"
-                  	    «helper.getConnectorComponentName(connector.source, target,false)»«IF helper.getConnectorComponentName(connector.source, target,false).equals("this")»->«ELSE».«ENDIF»getPort«helper.getConnectorPortName(connector.source, target,false).toFirstUpper» ()->setDataProvidingPort(«helper.getConnectorComponentName(connector.source, target, true)»«IF helper.getConnectorComponentName(connector.source, target,true).equals("this")»->«ELSE».«ENDIF»getPort«helper.getConnectorPortName(connector.source, target, true).toFirstUpper» ());
+                  	    «target.component»«IF target.component.equals("this")»->«ELSE».«ENDIF»getPort«target.port.toFirstUpper» ()->setDataProvidingPort(«connector.source.component»«IF connector.source.component.equals("this")»->«ELSE».«ENDIF»getPort«connector.source.port.toFirstUpper» ());
 		            «ENDIF»
 		          «ENDFOR»
 		    «ENDFOR» 

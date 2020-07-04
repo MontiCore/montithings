@@ -1,23 +1,24 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.behavior
 
-import montithings._symboltable.ComponentSymbol
-import montiarc._ast.ASTAutomaton
-import montiarc._ast.ASTElement
-import montiarc._ast.ASTComponent
-import montiarc._ast.ASTAutomatonBehavior
+import arcbasis._symboltable.ComponentTypeSymbol
+import arcbasis._ast.ASTAutomaton
+import arcbasis._ast.ASTElement
+import arcbasis._ast.ASTComponent
+import arcbasis._ast.ASTAutomatonBehavior
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
-import montiarc._ast.ASTIOAssignment
-import montiarc._symboltable.VariableSymbol
+import arcbasis._ast.ASTIOAssignment
+import arcbasis._symboltable.VariableSymbol
 import java.util.Optional
 import java.util.Collection
-import montiarc._symboltable.StateSymbol
-import montiarc._symboltable.TransitionSymbol
+import arcbasis._symboltable.StateSymbol
+import arcbasis._symboltable.TransitionSymbol
 import java.util.ArrayList
-import montiarc._ast.ASTValueList
+import arcbasis._ast.ASTValueList
 import montithings.generator.helper.ComponentHelper
 import java.util.stream.Collectors
+import montithings._ast.ASTMTComponentType
 
 class AutomatonGenerator{
 	
@@ -27,9 +28,9 @@ class AutomatonGenerator{
 
   var Collection<TransitionSymbol> transitions
 
-  var ComponentSymbol comp;
+  var ComponentTypeSymbol comp;
 
-  new(ComponentSymbol component, String compname) {
+  new(ComponentTypeSymbol component, String compname) {
     this.comp = comp
     this.states = new ArrayList;
     this.transitions = new ArrayList;
@@ -60,10 +61,10 @@ class AutomatonGenerator{
 /**
    * Prints the compute implementation of automaton behavior.
    */
-  def String printCompute(ComponentSymbol comp, String compname) {
+  def String printCompute(ComponentTypeSymbol comp, String compname) {
     var resultName = compname + "Result"
     var ASTAutomaton automaton = null
-    for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
+    for (ASTElement element : (comp.astNode as ASTMTComponentType).body.elementList) {
       if (element instanceof ASTAutomatonBehavior) {
         automaton = element.automaton
       }
@@ -121,10 +122,10 @@ class AutomatonGenerator{
 			  }
 		'''
   }
-def String printGetInitialValues(ComponentSymbol comp, String compname) {
+def String printGetInitialValues(ComponentTypeSymbol comp, String compname) {
     var resultName = compname + "Result"
     var ASTAutomaton automaton = null
-    for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
+    for (ASTElement element : (comp.astNode as ASTMTComponentType).body.elementList) {
       if (element instanceof ASTAutomatonBehavior) {
         automaton = element.automaton
       }
@@ -166,9 +167,9 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
    * Adds a enum for all states of the automaton and the attribute currentState for storing 
    * the current state of the automaton.
    */
-  def String hook(ComponentSymbol comp, String compname) {
+  def String hook(ComponentTypeSymbol comp, String compname) {
     var ASTAutomaton automaton = null
-    for (ASTElement element : (comp.astNode.get as ASTComponent).body.elementList) {
+    for (ASTElement element : (comp.astNode as ASTMTComponentType).body.elementList) {
       if (element instanceof ASTAutomatonBehavior) {
         automaton = element.automaton
       }
@@ -183,7 +184,7 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
 	 /**
    * Prints a enum with all states of the automaton.
    */
-  def private String printStateEnum(ASTAutomaton automaton, ComponentSymbol comp, String compname) {
+  def private String printStateEnum(ASTAutomaton automaton, ComponentTypeSymbol comp, String compname) {
     return '''
 			enum «compname»State {
 			«FOR stateDecl : automaton.stateDeclarationList SEPARATOR ','»
@@ -229,7 +230,7 @@ def String printGetInitialValues(ComponentSymbol comp, String compname) {
     }
   }
 	
-	  def String generateHeader(ComponentSymbol comp, String compname) {
+	  def String generateHeader(ComponentTypeSymbol comp, String compname) {
   	var String generics = Utils.printFormalTypeParameters(comp)
     return '''
 #pragma once
@@ -258,7 +259,7 @@ public:
 '''
   }
   
-  def String generateBody(ComponentSymbol comp, String compname){
+  def String generateBody(ComponentTypeSymbol comp, String compname){
   	return'''
   	#include "«compname»Impl.h"
 
@@ -269,7 +270,7 @@ public:
   	'''
   }
 
-  def String printConstructor(ComponentSymbol comp, String compname) {
+  def String printConstructor(ComponentTypeSymbol comp, String compname) {
     return '''
        «compname»Impl(«Utils.printConfigurationParametersAsList(comp)») {
         «FOR param : comp.configParameters»
