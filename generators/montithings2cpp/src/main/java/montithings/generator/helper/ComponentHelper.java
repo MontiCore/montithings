@@ -67,8 +67,7 @@ public class ComponentHelper {
   }
 
   public static String printCPPTypeName(SymTypeExpression expression) {
-    // TODO: Write me
-    return "";
+    return expression.print();
   }
 
   /**
@@ -76,6 +75,7 @@ public class ComponentHelper {
    * assigned to the super component
    */
   public List<String> getSuperCompActualTypeArguments() {
+    // TODO: Write me
     final List<String> paramList = new ArrayList<>();
     if (component.isPresentParentComponent()) {
       final ComponentTypeSymbolLoader componentSymbolReference = component.getParent();

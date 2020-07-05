@@ -12,6 +12,7 @@ import de.monticore.java.prettyprint.JavaDSLPrettyPrinter
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 import montithings.generator.visitor.CDAttributeGetterTransformationVisitor
+import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter
 
 class Utils {
 
@@ -22,7 +23,7 @@ class Utils {
     var helper = new ComponentHelper(comp)
     return '''
       «FOR param : comp.parameters SEPARATOR ','» 
-        «param.type.toString» «param.name» 
+        «param.type.print» «param.name»
       «ENDFOR»
     '''.toString().replace("\n", "")
   }
@@ -169,10 +170,7 @@ class Utils {
 	
 	def static String printExpression(ASTExpression expr, boolean isAssignment) {
     	var IndentPrinter printer = new IndentPrinter();
-    	var JavaDSLPrettyPrinter prettyPrinter = new JavaDSLPrettyPrinter(printer);
-    	if (isAssignment) {
-      		prettyPrinter = new CDAttributeGetterTransformationVisitor(printer);
-    	}
+    	var ExpressionsBasisPrettyPrinter prettyPrinter = new ExpressionsBasisPrettyPrinter(printer);
     	expr.accept(prettyPrinter);
     	return printer.getContent();
   	}
