@@ -54,7 +54,8 @@ class MontiThingsParserTest extends AbstractTest {
   }
 
   @ParameterizedTest
-  @CsvSource({ "valid/Composed.mt", "valid/Sink.mt" })
+  @CsvSource({ "valid/Composed.mt", "valid/Sink.mt", "valid/PrePostcondition.mt",
+      "valid/PortExtensions.mt", "valid/SetExpressions.mt" })
   public void shouldParseWithoutError(String fileName) {
     parse(Paths.get(RELATIVE_MODEL_PATH, PACKAGE, fileName).toString(), false);
   }
