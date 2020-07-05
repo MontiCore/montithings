@@ -58,21 +58,6 @@ public class ComponentHelper {
     }
   }
 
-  public void test() {
-    ComponentTypeSymbol t;
-    t.getTypeParameters();
-    t.hasTypeParameter();
-    TypeVarSymbol s;
-    s.getName();
-    t.getParameters();
-    FieldSymbol f;
-    f.getType().toString();
-    t.getOuterComponent().get();
-    ASTPrecondition p;
-    p.getGuard()
-
-  }
-
   public static List<ImportStatement> getImports(ComponentTypeSymbol symbol) {
     while (symbol.getOuterComponent().isPresent()) {
       symbol = symbol.getOuterComponent().get();
