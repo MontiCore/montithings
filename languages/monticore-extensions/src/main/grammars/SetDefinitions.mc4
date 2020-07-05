@@ -6,7 +6,6 @@
  * This grammar can be used to define sets of values using, e.g., single values,
  * ranges of values, or regular expressions.
  */
-
 component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
                                          de.monticore.types.MCBasicTypes,
                                          de.monticore.expressions.ExpressionsBasis

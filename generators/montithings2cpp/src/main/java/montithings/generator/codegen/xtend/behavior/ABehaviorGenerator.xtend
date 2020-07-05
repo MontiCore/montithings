@@ -37,8 +37,6 @@ abstract class ABehaviorGenerator {
 #include "«compname»Result.h"
 #include "IComputable.h"
 #include <stdexcept>
-«Utils.printCPPImports(comp)»
-
 «Utils.printNamespaceStart(comp)»
 
 «Utils.printTemplateArguments(comp)»
@@ -56,7 +54,7 @@ public:
 
     };
     
-    «IF Utils.hasTypeParameters(comp)»
+    «IF comp.hasTypeParameter()»
     	«generateBody(comp, compname)»
 	«ENDIF»
 «Utils.printNamespaceEnd(comp)»
@@ -67,7 +65,7 @@ public:
 	  return '''
 	#include "«compname»Impl.h"
 	«Utils.printNamespaceStart(comp)»
-	«IF !Utils.hasTypeParameters(comp)»
+	«IF !comp.hasTypeParameter()»
 	«generateBody(comp, compname)»
 	«ENDIF»
 	«Utils.printNamespaceEnd(comp)»
@@ -87,10 +85,10 @@ public:
   def String printConstructor(ComponentTypeSymbol comp, String compname) {
     return '''
 «compname»Impl(«Utils.printConfigurationParametersAsList(comp)»)
-«IF !comp.configParameters.isEmpty»
+«IF !comp.parameters.isEmpty»
 :
 «ENDIF»
-«FOR param : comp.configParameters SEPARATOR ','»
+«FOR param : comp.parameters SEPARATOR ','»
    «param.name» («param.name»)
 «ENDFOR»
 {

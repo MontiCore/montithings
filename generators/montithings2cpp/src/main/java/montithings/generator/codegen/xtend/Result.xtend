@@ -12,7 +12,7 @@ class Result {
     return '''
     #include "«compname»Result.h"
     «Utils.printNamespaceStart(comp)»
-    «IF !Utils.hasTypeParameters(comp)»
+    «IF !comp.hasTypeParameter»
     «generateResultBody(comp, compname)»
     «ENDIF»
     «Utils.printNamespaceEnd(comp)»
@@ -27,7 +27,7 @@ class Result {
 «Utils.printTemplateArguments(comp)»
 «compname»Result«Utils.printFormalTypeParameters(comp, false)»::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
 	«IF comp.presentParentComponent»
-	super(«FOR port : comp.parent.allOutgoingPorts» «port.name» «ENDFOR»);
+	super(«FOR port : comp.parent.loadedSymbol.allOutgoingPorts» «port.name» «ENDFOR»);
 «ENDIF»
 «FOR port : comp.outgoingPorts»
 	  this->«port.name» = «port.name»; 
@@ -62,7 +62,6 @@ return '''
 #include <vector>
 #include <list>
 #include <set>
-«Utils.printCPPImports(comp)»
 «Ports.printIncludes(comp)»
 
 «Utils.printNamespaceStart(comp)»
@@ -71,7 +70,7 @@ return '''
 class «compname»Result
   «IF comp.presentParentComponent» : 
     «Utils.printSuperClassFQ(comp)»Result
-    «IF comp.parent.hasFormalTypeParameters»<
+    «IF comp.parent.loadedSymbol.hasTypeParameter()»<
     «FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
         «scTypeParams»
         «ENDFOR» > «ENDIF»
@@ -94,7 +93,7 @@ public:
 	«ENDFOR»
 };
 
-«IF Utils.hasTypeParameters(comp)»
+«IF comp.hasTypeParameter()»
   «generateResultBody(comp, compname)»
 «ENDIF»
 «Utils.printNamespaceEnd(comp)»

@@ -7,9 +7,9 @@ grammar Phyprops extends de.monticore.types.MCBasicTypes, de.monticore.literals.
 
   start PhypropsUnit;
 
-      /* ============================================================ */
-      /* ================ Requirements & Capabilities =============== */
-      /* ============================================================ */
+  /* ============================================================ */
+  /* ================ Requirements & Capabilities =============== */
+  /* ============================================================ */
 
   /**
    * PhypropsUnit represents the complete requirements & capabilities
@@ -20,15 +20,15 @@ grammar Phyprops extends de.monticore.types.MCBasicTypes, de.monticore.literals.
 
   interface Element;
 
-      /**
-       *  RequirementStatements contain information about what physical requirements
-       *  a component has. E.g Sensors/Actuators etc.
-       */
-      scope RequirementStatement implements Element =
-        "requires" (propertiess:Property | "{" propertiess:Property+ "}");
+  /**
+   *  RequirementStatements contain information about what physical requirements
+   *  a component has. E.g Sensors/Actuators etc.
+   */
+  scope RequirementStatement implements Element =
+    "requires" (propertiess:Property | "{" propertiess:Property+ "}");
 
-      symbol Property = Name& ":"
-        (
-          stringValue:StringLiteral | numericValue:SignedNumericLiteral
-        ) ";";
+  symbol Property = Name& ":"
+    (
+      stringValue:StringLiteral | numericValue:SignedNumericLiteral
+    ) ";";
 }

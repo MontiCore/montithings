@@ -24,7 +24,7 @@ public class ExpressionUtil {
    * @param node
    * @return
    */
-  private static List<ASTNameExpression> getNameExpressionElements(ASTExpression node) {
+  public static List<ASTNameExpression> getNameExpressionElements(ASTExpression node) {
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
     node.accept(visitor);
     return visitor.getExpressions();

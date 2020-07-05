@@ -1,11 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.util
-
-import de.monticore.symboltable.types.JFieldSymbol
 import arcbasis._symboltable.ComponentInstanceSymbol
 import arcbasis._symboltable.ComponentTypeSymbol
 import arcbasis._symboltable.PortSymbol
-import arcbasis._symboltable.VariableSymbol
 
 
 class Identifier {
@@ -41,16 +38,8 @@ class Identifier {
       }
     }
 
-    for (JFieldSymbol jFieldSymbol : component.getConfigParameters()) {
-      if (jFieldSymbol.getName().equals(identifier)) {
-        return true;
-      }
-    }
-
-    for (VariableSymbol variableSymbol : component.getVariables()) {
-      if (variableSymbol.getName().equals(identifier)) {
-        return true;
-      }
+    if (component.getFields(identifier).isPresent()) {
+      return true;
     }
 
     for (ComponentInstanceSymbol instanceSymbol : component.getSubComponents()) {

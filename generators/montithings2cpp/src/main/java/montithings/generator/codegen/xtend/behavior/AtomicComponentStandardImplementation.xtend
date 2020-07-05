@@ -15,8 +15,6 @@ class AtomicComponentStandardImplementation {
 #include "«compname»Result.h"
 #include "IComputable.h"
 #include <stdexcept>
-«Utils.printCPPImports(comp)»
-
 «Utils.printNamespaceStart(comp)»
 
 «Utils.printTemplateArguments(comp)»
@@ -30,24 +28,10 @@ public:
     «printConstructor(comp)»
 	//«compname»Impl() = default;
 	«compname»Result«generics» getInitialValues() override;
-	«IF ComponentHelper.getExecutionStatements(comp).size > 0»
-	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
-	«IF statement.isPresentMethod»
-	«compname»Result«generics» «statement.method»(«compname»Input«generics» input);
-	«ENDIF»
-	«ENDFOR»
-	«IF ComponentHelper.getElseStatement(comp).get.isPresentMethod»
-	«compname»Result«generics» «ComponentHelper.getElseStatement(comp).get.method»(«compname»Input«generics» input);
-	«ENDIF»
-	«compname»Result«generics» compute(«compname»Input«generics» input) override {
-	  throw std::runtime_error("Invoking compute() on component «comp.packageName».«compname» which has if-then-else behavior");
-	}
-	«ELSE»
 	«compname»Result«generics» compute(«compname»Input«generics» input) override;
-	«ENDIF»
 };
 
-«IF Utils.hasTypeParameters(comp)»
+«IF comp.hasTypeParameter»
 	«generateAbstractAtomicImplementationBody(comp, compname)»
 «ENDIF»
 «Utils.printNamespaceEnd(comp)»
@@ -58,7 +42,7 @@ public:
 	  return '''
 	#include "«compname»Impl.h"
 	«Utils.printNamespaceStart(comp)»
-	«IF !Utils.hasTypeParameters(comp)»
+	«IF !comp.hasTypeParameter»
 	«generateAbstractAtomicImplementationBody(comp, compname)»
 	«ENDIF»
 	«Utils.printNamespaceEnd(comp)»
@@ -73,37 +57,21 @@ public:
 	throw std::runtime_error("Invoking getInitialValues() on abstract implementation «comp.packageName».«compname»");
 }
 
-«IF ComponentHelper.getExecutionStatements(comp).size > 0»
-	«FOR statement : ComponentHelper.getExecutionStatements(comp)»
-	«IF statement.isPresentMethod»
-		«Utils.printTemplateArguments(comp)»
-		«compname»Result«generics» «compname»Impl«generics»::«statement.method»(«compname»Input«generics» «Identifier.inputName»){
-			throw std::runtime_error("Invoking «statement.method»() on abstract implementation «comp.packageName».«compname»");  	
-		}
-	«ENDIF»
-	«ENDFOR»
-	«IF ComponentHelper.getElseStatement(comp).get.isPresentMethod»
-	«Utils.printTemplateArguments(comp)»
-	«compname»Result«generics» «compname»Impl«generics»::«ComponentHelper.getElseStatement(comp).get.method»(«compname»Input«generics» «Identifier.inputName»){
-		throw std::runtime_error("Invoking «ComponentHelper.getElseStatement(comp).get.method»() on abstract implementation «comp.packageName».«compname»");
-	}
-	«ENDIF»
-«ELSE»
+// TODO: Replace compute method by code generated from MCStatements
 «Utils.printTemplateArguments(comp)»
 «compname»Result«generics» «compname»Impl«generics»::compute(«compname»Input«generics» «Identifier.inputName»){
 	throw std::runtime_error("Invoking compute() on abstract implementation «comp.packageName».«compname»");  	
 }
-«ENDIF»
 '''
   }
   
     def static String printConstructor(ComponentTypeSymbol comp) {
     return '''
 «comp.name»Impl(«Utils.printConfigurationParametersAsList(comp)»)
-«IF !comp.configParameters.isEmpty»
+«IF !comp.parameters.isEmpty»
 :
 «ENDIF»
-«FOR param : comp.configParameters SEPARATOR ','»
+«FOR param : comp.parameters SEPARATOR ','»
     «param.name» («param.name»)
 «ENDFOR»
 {

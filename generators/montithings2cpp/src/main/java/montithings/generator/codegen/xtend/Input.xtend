@@ -12,7 +12,7 @@ class Input {
     return '''
     #include "«compname»Input.h"
     «Utils.printNamespaceStart(comp)»
-    «IF !Utils.hasTypeParameters(comp)»
+    «IF !comp.hasTypeParameter»
     «generateInputBody(comp, compname)»
     «ENDIF»
     «Utils.printNamespaceEnd(comp)»
@@ -31,7 +31,7 @@ class Input {
 «Utils.printTemplateArguments(comp)»
 «compname»Input«Utils.printFormalTypeParameters(comp, false)»::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
 «IF comp.presentParentComponent»
-	super(«FOR port : comp.parent.allIncomingPorts» «port.name» «ENDFOR»);
+	super(«FOR port : comp.parent.loadedSymbol.allIncomingPorts» «port.name» «ENDFOR»);
 «ENDIF»
 «FOR port : comp.incomingPorts»
 	this->«port.name» = std::move(«port.name»); 
@@ -88,7 +88,6 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 #include <set>
 #include <utility>
 #include "tl/optional.hpp"
-«Utils.printCPPImports(comp)»
 «Ports.printIncludes(comp)»
 
 «Utils.printNamespaceStart(comp)»
@@ -97,7 +96,7 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 class «compname»Input
 «IF comp.presentParentComponent» : 
 	«Utils.printSuperClassFQ(comp)»Input
-«IF comp.parent.hasFormalTypeParameters»<
+«IF comp.parent.loadedSymbol.hasTypeParameter»<
 «FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
     «scTypeParams»
 «ENDFOR»>«ENDIF»
@@ -126,7 +125,7 @@ public:
 	«ENDFOR»
 };
 
-«IF Utils.hasTypeParameters(comp)»
+«IF comp.hasTypeParameter»
   «generateInputBody(comp, compname)»
 «ENDIF»
 «Utils.printNamespaceEnd(comp)»

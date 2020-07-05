@@ -5,17 +5,18 @@ import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.xtend.util.Utils
-import montithings.generator.codegen.xtend.util.ValueCheck
+//import montithings.generator.codegen.xtend.util.ValueCheck
 import montithings.generator.codegen.xtend.util.Subcomponents
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.codegen.xtend.util.Setup
 import montithings.generator.codegen.xtend.util.Init
+import montithings.generator.codegen.TargetPlatform
 import java.util.List
 import java.util.ArrayList
 import java.util.HashMap
-import de.monticore.symboltable.types.JFieldSymbol
 import arcbasis._symboltable.ComponentTypeSymbolLoader
-import montithings.generator.codegen.TargetPlatform
+import de.monticore.types.typesymbols._symboltable.FieldSymbol;
+import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 
 class ComponentGenerator {
 	
@@ -38,7 +39,6 @@ class ComponentGenerator {
 		#include <thread>
 		#include "sole/sole.hpp"
 		#include <iostream>
-		«Utils.printCPPImports(comp)»
 		«Ports.printIncludes(comp)»
 		
 		«IF comp.isDecomposed»
@@ -51,19 +51,18 @@ class ComponentGenerator {
 
 		«Utils.printTemplateArguments(comp)»
 		class «compname» : IComponent «IF comp.presentParentComponent» , «Utils.printSuperClassFQ(comp)»
-		            «IF comp.parent.hasFormalTypeParameters»<«FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
+		            «IF comp.parent.loadedSymbol.hasTypeParameter»<«FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
 		              «scTypeParams»«ENDFOR»>
 		            «ENDIF»«ENDIF»
 		{
 		private:
 			«Ports.printVars(comp, comp.ports)»
-			«Ports.printResourcePortVars(ComponentHelper.getResourcePortsInComponent(comp))»
 			«Utils.printVariables(comp)»
 			«Utils.printConfigParameters(comp)»
 			std::vector< std::thread > threads;
-			TimeMode timeMode = «IF comp.getStereotype().containsKey("timesync")»TIMESYNC«ELSE»EVENTBASED«ENDIF»;
+			TimeMode timeMode = «IF ComponentHelper.isTimesync(comp)»TIMESYNC«ELSE»EVENTBASED«ENDIF»;
 			«IF comp.isDecomposed»
-			«IF comp.getStereotype().containsKey("timesync") && !comp.isApplication»
+			«IF ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)»
 			void run();
 			«ENDIF»
 			«Subcomponents.printVars(comp, interfaceToImplementation)»
@@ -77,7 +76,6 @@ class ComponentGenerator {
 			
 		public:
 			«Ports.printMethodHeaders(comp.ports)»
-			«Ports.printResourcePortMethodHeaders(ComponentHelper.getResourcePortsInComponent(comp))»
 			«compname»(«Utils.printConfigurationParametersAsList(comp)»);
 			
 			void setUp(TimeMode enclosingComponentTiming) override;
@@ -87,7 +85,7 @@ class ComponentGenerator {
 			void start() override;
 		};
 		            
-		«IF Utils.hasTypeParameters(comp)»
+		«IF comp.hasTypeParameter()»
 	      «generateBody(comp, compname)»
 	    «ENDIF»
 
@@ -100,7 +98,7 @@ class ComponentGenerator {
   	#include "«compname».h"
   	#include <regex>
   	«Utils.printNamespaceStart(comp)»
-  	«IF !Utils.hasTypeParameters(comp)»
+  	«IF !comp.hasTypeParameter()»
     «generateBody(comp, compname)»
     «ENDIF»
     «Utils.printNamespaceEnd(comp)»
@@ -110,10 +108,9 @@ class ComponentGenerator {
 	def static generateBody(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Ports.printMethodBodies(comp.ports, comp, compname)»
-		«Ports.printResourcePortMethodBodies(ComponentHelper.getResourcePortsInComponent(comp),comp, compname)»
 				
 		«IF comp.isDecomposed»
-		«IF comp.getStereotype().containsKey("timesync") && !comp.isApplication»
+		«IF ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)»
 		«printRun(comp, compname)»
 		«ENDIF»
 		«printComputeDecomposed(comp, compname)»
@@ -155,22 +152,22 @@ class ComponentGenerator {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
-		«IF comp.isAtomic || !comp.configParameters.isEmpty || !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»
+		«IF comp.isAtomic || !comp.parameters.isEmpty || !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»
 		:
     	«ENDIF»
     	«IF comp.isAtomic»
 			«printBehaviorInitializerListEntry(comp, compname)»
         «ENDIF»
-    	«IF comp.isAtomic && !comp.configParameters.isEmpty»,«ENDIF»
+    	«IF comp.isAtomic && !comp.parameters.isEmpty»,«ENDIF»
 		«Subcomponents.printInitializerList(comp)»
-		«IF !comp.configParameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
-		«IF comp.isAtomic && comp.configParameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
-		«FOR param : comp.configParameters SEPARATOR ','»
+		«IF !comp.parameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
+		«IF comp.isAtomic && comp.parameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
+		«FOR param : comp.parameters SEPARATOR ','»
       	«param.name» («param.name»)
     	«ENDFOR»
 		{
 			«IF comp.presentParentComponent»
-			super(«FOR inhParam : getInheritedParams(comp, compname) SEPARATOR ','» «inhParam» «ENDFOR»);
+			super(«FOR inhParam : getInheritedParams(comp) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»
 		}
 		'''
@@ -179,8 +176,8 @@ class ComponentGenerator {
 	def static printBehaviorInitializerListEntry(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Identifier.behaviorImplName»(«compname»Impl«Utils.printFormalTypeParameters(comp, false)»(
-		«IF comp.hasConfigParameters»
-	        «FOR param : comp.configParameters SEPARATOR ','»
+		«IF comp.hasParameters»
+	        «FOR param : comp.parameters SEPARATOR ','»
 	          «param.name»
 	        «ENDFOR»
     «ENDIF»
@@ -196,16 +193,12 @@ class ComponentGenerator {
 				«printComputeInputs(comp, compname)»
 				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
 				«FOR port: comp.incomingPorts»
-        «ValueCheck.printPortValuecheck(comp, port)»
+        ««« «ValueCheck.printPortValuecheck(comp, port)»
         «ENDFOR»
 				«printAssumptionsCheck(comp, compname)»
-				«IF !ComponentHelper.hasExecutionStatement(comp)»
 				result = «Identifier.behaviorImplName».compute(input);
-				«ELSE»
-				«printIfThenElseExecution(comp, compname)»
-				«ENDIF»
 				«FOR port: comp.outgoingPorts»
-          «ValueCheck.printPortValuecheck(comp, port)»
+          ««« «ValueCheck.printPortValuecheck(comp, port)»
         «ENDFOR»
 				«printGuaranteesCheck(comp, compname)»
 				setResult(result);				
@@ -265,11 +258,11 @@ class ComponentGenerator {
 	}
 	
 	def static printAssumptionsCheck(ComponentTypeSymbol comp, String compname) {
-		var assumptions = ComponentHelper.getAssumptions(comp);
+		var assumptions = ComponentHelper.getPreconditions(comp);
 		return '''
 		«FOR statement : assumptions»
 		if (
-		«FOR port : statement.portsInGuardExpression SEPARATOR ' && '»
+		«FOR port : ComponentHelper.getPortsInGuardExpression(statement.guard) SEPARATOR ' && '»
 			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
 				input.get«port.name.toFirstUpper»()
 			«ELSE»
@@ -303,11 +296,11 @@ class ComponentGenerator {
 	}
 	
 	def static printGuaranteesCheck(ComponentTypeSymbol comp, String compname) {
-		var guarantees = ComponentHelper.getGuarantees(comp);
+		var guarantees = ComponentHelper.getPostconditions(comp);
 		return '''
 		«FOR statement : guarantees»
 		if (
-		«FOR port : statement.portsInGuardExpression SEPARATOR ' && '»
+		«FOR port : ComponentHelper.getPortsInGuardExpression(statement.guard) SEPARATOR ' && '»
 			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
 				«IF port.isIncoming»
 				input.get«port.name.toFirstUpper»()
@@ -349,45 +342,7 @@ class ComponentGenerator {
 		}
 		«ENDFOR»
 		'''
-	}
-	
-	def static printIfThenElseExecution(ComponentTypeSymbol comp, String compname) {
-		return '''
-		«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
-		if (
-			«FOR port : statement.portsInGuardExpression SEPARATOR ' && '»
-			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard.expression, port.name)»
-			input.get«port.name.toFirstUpper»()
-			«ELSE»
-			true // presence of value on port «port.name» not checked as it is compared to NoData
-			«ENDIF»
-			«ENDFOR»
-			«IF statement.portsInGuardExpression.length() > 0»&&«ENDIF» «Utils.printExpression(statement.guard.expression)»
-			)
-		{
-			«IF statement.isPresentMethod»
-			result = «Identifier.behaviorImplName».«statement.method»(input);
-			«ELSE»
-			«FOR valuation : statement.portValuationList»
-			result.set«valuation.port.toFirstUpper»(«Utils.printExpression(valuation.value.expression)»);
-			«ENDFOR»
-			«ENDIF»	
-		}
-		«ENDFOR»
-		«IF ComponentHelper.getElseStatement(comp) !== null»
-		else {
-		«IF ComponentHelper.getElseStatement(comp).get.isPresentMethod»
-			result = «Identifier.behaviorImplName».«ComponentHelper.getElseStatement(comp).get.method»(input);
-		«ELSE»
-			«FOR valuation : ComponentHelper.getElseStatement(comp).get.portValuationList»
-			result.set«valuation.port.toFirstUpper»(«Utils.printExpression(valuation.value.expression)»);
-			«ENDFOR»
-		«ENDIF»
-		}
-		«ENDIF»
-		'''
-	}
-		
+	}	
 	
 	def static printComputeDecomposed(ComponentTypeSymbol comp, String compname) {
 		return '''
@@ -397,7 +352,7 @@ class ComponentGenerator {
 			
 			«printComputeInputs(comp, compname)»
 			«FOR port: comp.incomingPorts»
-			«ValueCheck.printPortValuecheck(comp, port)»
+			««« «ValueCheck.printPortValuecheck(comp, port)»
 			«ENDFOR»
 			«printAssumptionsCheck(comp, compname)»
 			
@@ -407,7 +362,7 @@ class ComponentGenerator {
 
       «printComputeResults(comp, compname, true)»
       «FOR port: comp.outgoingPorts»
-        «ValueCheck.printPortValuecheck(comp, port)»
+        ««« «ValueCheck.printPortValuecheck(comp, port)»
       «ENDFOR»
       «printGuaranteesCheck(comp, compname)»
 			}
@@ -430,7 +385,7 @@ class ComponentGenerator {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
-			«IF comp.getStereotype().containsKey("timesync") && !comp.isApplication»
+			«IF ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)»
 			threads.push_back(std::thread{&«compname»«Utils.printFormalTypeParameters(comp)»::run, this});
 			«ELSE»
 			«FOR subcomponent : comp.subComponents»
@@ -472,12 +427,13 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def private static List<String> getInheritedParams(ComponentTypeSymbol component, String compname) {
+	def protected static List<String> getInheritedParams(ComponentTypeSymbol component) {
     var List<String> result = new ArrayList;
-    var List<JFieldSymbol> configParameters = component.getConfigParameters();
-    if (component.presentParentComponent) {
-      var ComponentTypeSymbol superCompReference = component.parentInfo;
-      var List<JFieldSymbol> superConfigParams = superCompReference.getConfigParameters();
+    var List<FieldSymbol> configParameters = component.getParameters();
+    if (component.isPresentParentComponent()) {
+      var ComponentTypeSymbolLoader superCompReference = component.getParent();
+      var List<FieldSymbol> superConfigParams = superCompReference.getLoadedSymbol()
+      .getParameters();
       if (!configParameters.isEmpty()) {
         for (var i = 0; i < superConfigParams.size(); i++) {
           result.add(configParameters.get(i).getName());

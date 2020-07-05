@@ -6,7 +6,6 @@ import java.util.HashSet
 import arcbasis._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
-//import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 
 class Ports {
@@ -45,57 +44,6 @@ class Ports {
 		
 	}
 	
-	def static printResourcePortVars(Collection<ResourcePortSymbol> ports) {
-	return	'''
-«FOR port : ports»
-«var type = ComponentHelper.getResourcePortType(port)»
-«var name = port.name»
-«IF (port.ipc && !port.outgoing)»
-Port<«type»>* «name» = new IPCPort<«type»>(IN, "«port.uri»");
-«ENDIF»
-«IF (port.ipc && port.outgoing)»
-Port<«type»>* «name» = new IPCPort<«type»>(OUT, "«port.uri»");
-«ENDIF»
-«IF (port.webSocket && !port.outgoing)»
-Port<«type»>* «name» = new WSPort<«type»>(IN, "«port.uri»");
-«ENDIF»
-«IF (port.webSocket && port.outgoing)»
-Port<«type»>* «name» = new WSPort<«type»>(OUT, "«port.uri»");
-«ENDIF»
-«ENDFOR»
-    '''
-		
-	}
-	
-	def static printResourcePortMethodHeaders(Collection<ResourcePortSymbol> ports){
-	return	'''
-    «FOR port : ports»
-    «var type = ComponentHelper.getResourcePortType(port)»
-    «var name = port.name»
-    Port<«type»>* getPort«name.toFirstUpper»();
-    void setPort«name.toFirstUpper»(Port<«type»>* «name»);
-    «ENDFOR»
-    '''
-	}
-	
-		def static printResourcePortMethodBodies(Collection<ResourcePortSymbol> ports, ComponentTypeSymbol comp, String compname){
-	return	'''
-    «FOR port : ports»
-    «var type = ComponentHelper.getResourcePortType(port)»
-    «var name = port.name»
-    «Utils.printTemplateArguments(comp)»
-    Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getPort«name.toFirstUpper»(){
-    	return «name»;
-    }
-
-    «Utils.printTemplateArguments(comp)»
-    void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
-    	«name» = port;
-    }
-    «ENDFOR»
-    '''
-	}
-	
 	def static printMethodHeaders(Collection<PortSymbol> ports){
 	return	'''
     «FOR port : ports»
@@ -130,10 +78,5 @@ Port<«type»>* «name» = new WSPort<«type»>(OUT, "«port.uri»");
     
     «ENDFOR»
     '''
-	}
-	
-
-	
-	
-	
+    }
 }

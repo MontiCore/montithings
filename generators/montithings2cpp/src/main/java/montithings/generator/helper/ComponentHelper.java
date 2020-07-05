@@ -5,10 +5,7 @@ import arcbasis._ast.ASTArcElement;
 import arcbasis._ast.ASTArcParameter;
 import arcbasis._ast.ASTComponentType;
 import arcbasis._ast.ASTPortAccess;
-import arcbasis._symboltable.ComponentInstanceSymbol;
-import arcbasis._symboltable.ComponentTypeSymbol;
-import arcbasis._symboltable.ComponentTypeSymbolLoader;
-import arcbasis._symboltable.PortSymbol;
+import arcbasis._symboltable.*;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.collect.FluentIterable;
 import de.monticore.cd.cd4analysis._symboltable.CDTypeSymbol;
@@ -16,15 +13,22 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symboltable.ImportStatement;
+import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.prettyprint.MCFullGenericTypesPrettyPrinter;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 import de.se_rwth.commons.StringTransformations;
 import messagehandling._ast.ASTSyncStatement;
+import montiarc._ast.ASTArcSync;
+import montiarc._ast.ASTArcTiming;
+import montiarc._symboltable.MontiArcArtifactScope;
+import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings.generator.codegen.xtend.util.Utils;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
+import prepostcondition.helper.ExpressionUtil;
 import prepostcondition.visitor.GuardExpressionVisitor;
 
 import java.io.File;
@@ -52,6 +56,88 @@ public class ComponentHelper {
     else {
       componentNode = null;
     }
+  }
+
+  public void test() {
+    ComponentTypeSymbol t;
+    t.getTypeParameters();
+    t.hasTypeParameter();
+    TypeVarSymbol s;
+    s.getName();
+    t.getParameters();
+    FieldSymbol f;
+    f.getType().toString();
+    t.getOuterComponent().get();
+    ASTPrecondition p;
+    p.getGuard()
+
+  }
+
+  public static List<ImportStatement> getImports(ComponentTypeSymbol symbol) {
+    while (symbol.getOuterComponent().isPresent()) {
+      symbol = symbol.getOuterComponent().get();
+    }
+    ASTComponentType ast = symbol.getAstNode();
+    return ((MontiArcArtifactScope) ast.getEnclosingScope()).getImportList();
+  }
+
+  public static String printCPPTypeName(SymTypeExpression expression) {
+    // TODO: Write me
+    return "";
+  }
+
+  /**
+   * @return A list of String representations of the actual type arguments
+   * assigned to the super component
+   */
+  public List<String> getSuperCompActualTypeArguments() {
+    final List<String> paramList = new ArrayList<>();
+    if (component.isPresentParentComponent()) {
+      final ComponentTypeSymbolLoader componentSymbolReference = component.getParent();
+/*      final List<ActualTypeArgument> actualTypeArgs = componentSymbolReference
+        .getActualTypeArguments();
+      String componentPrefix = this.component.getFullName() + ".";
+      for (ActualTypeArgument actualTypeArg : actualTypeArgs) {
+        final String printedTypeArg = SymbolPrinter.printTypeArgument(actualTypeArg);
+        if (printedTypeArg.startsWith(componentPrefix)) {
+          paramList.add(printedTypeArg.substring(componentPrefix.length()));
+        } else {
+          paramList.add(printedTypeArg);
+        }
+      }*/
+    }
+    return paramList;
+  }
+
+  /**
+   * Set of components used as generic type argument as include string
+   *
+   * @param comp     component that gets the new includes
+   * @param instance component instance that assigns component to generic
+   * @return Set of components used as generic type argument as include string.
+   * Is empty if include is not needed.
+   */
+  public static Set<String> includeGenericComponent(ComponentTypeSymbol comp,
+      ComponentInstanceSymbol instance) {
+    /*
+    final ComponentSymbolReference componentTypeReference = instance.getComponentType();
+    if (componentTypeReference.hasActualTypeArguments()) {
+      List<ActualTypeArgument> types = new ArrayList<>(
+          componentTypeReference.getActualTypeArguments());
+      return includeGenericComponentIterate(comp, instance, types);
+    }
+    */
+    return new HashSet<>();
+  }
+
+  public static boolean portUsesCdType(PortSymbol portSymbol) {
+    // TODO: Write me
+    return false;
+  }
+  public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
+      PortSymbol portSymbol) {
+    //TODO: Write me
+    return "";
   }
 
   /**
@@ -591,6 +677,48 @@ public class ComponentHelper {
 
   public static List<ASTPostcondition> getPostconditions(ComponentTypeSymbol component) {
     return elementsOf(component).filter(ASTPostcondition.class).toList();
+  }
+
+  public static List<ASTArcTiming> getTiming(ComponentTypeSymbol component) {
+    return elementsOf(component).filter(ASTArcTiming.class).toList();
+  }
+
+  public static boolean isTimesync(ComponentTypeSymbol component) {
+    return getTiming(component).stream()
+        .filter(e -> e.getArcTimeMode() instanceof ASTArcSync)
+        .collect(Collectors.toSet()).size() > 0;
+  }
+
+  public static boolean hasBehavior(ComponentTypeSymbol component) {
+    return !elementsOf(component).filter(ASTBehavior.class).isEmpty();
+  }
+
+  public static boolean isApplication(ComponentTypeSymbol component) {
+    ASTMTComponentType ast = (ASTMTComponentType) component.getAstNode();
+    return ast.getMTComponentModifier().isApplication();
+  }
+
+  public static List<PortSymbol> getPortsInGuardExpression(ASTExpression node) {
+    List<PortSymbol> ports = new ArrayList<>();
+
+    for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {
+      String name = guardExpressionElement.getName();
+      IArcBasisScope s = (IArcBasisScope) node.getEnclosingScope();
+      Optional<PortSymbol> port = s.resolvePort(name);
+      port.ifPresent(ports::add);
+    }
+    return ports;
+  }
+
+
+  public static boolean portIsComparedToNoData(ASTExpression e, String portName) {
+    List<ASTNameExpression> usedNames = ExpressionUtil.getNameExpressionElements(e);
+    for (ASTNameExpression name : usedNames) {
+      if (name.getName().equals(portName)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
