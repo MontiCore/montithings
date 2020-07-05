@@ -2,17 +2,17 @@
 package montithings.generator.codegen.xtend.util
 
 import de.monticore.symboltable.types.JFieldSymbol
-import montiarc._symboltable.ComponentInstanceSymbol
-import montithings._symboltable.ComponentSymbol
-import montiarc._symboltable.PortSymbol
-import montiarc._symboltable.VariableSymbol
+import arcbasis._symboltable.ComponentInstanceSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
+import arcbasis._symboltable.PortSymbol
+import arcbasis._symboltable.VariableSymbol
 
 
 class Identifier {
 
   static Identifier instance;
 
-  def static createInstance(ComponentSymbol comp) {
+  def static createInstance(ComponentTypeSymbol comp) {
     instance = new Identifier()
     instance.checkIdentifiers(comp)
   }
@@ -33,7 +33,7 @@ class Identifier {
    * @return True, iff. there is at least one identifier that is equal to the
    * given identifier
    */
-  def boolean containsIdentifier(String identifier, ComponentSymbol component) {
+  def boolean containsIdentifier(String identifier, ComponentTypeSymbol component) {
 
     for (PortSymbol portSymbol : component.getPorts()) {
       if (portSymbol.getName().equals(identifier)) {
@@ -62,7 +62,7 @@ class Identifier {
     return false;
   }
 
-  def private void checkIdentifiers(ComponentSymbol comp) {
+  def private void checkIdentifiers(ComponentTypeSymbol comp) {
     if (containsIdentifier("result", comp)) {
       resultName = "r__result";
     }

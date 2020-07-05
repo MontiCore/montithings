@@ -2,29 +2,29 @@
 package montithings.generator.codegen.xtend.util
 
 import montithings.generator.helper.ComponentHelper
-import montithings._symboltable.ComponentSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
 import de.se_rwth.commons.logging.Log
-import montiarc._ast.ASTValuation
+import arcbasis._ast.ASTValuation
 import montithings._ast.ASTPort
 import montithings._ast.ASTMTValueList
 import montithings._ast.ASTMTValueRange
 import montithings._ast.ASTMTValueFormat
-import montiarc._symboltable.PortSymbol
+import arcbasis._symboltable.PortSymbol
 
 class ValueCheck {
 
 
-	def static String printPortValuecheck(ComponentSymbol component, PortSymbol port) {
-	    if (!port.getAstNode().isPresent()) {
+	def static String printPortValuecheck(ComponentTypeSymbol component, PortSymbol port) {
+	    if (!port.presentAstNode) {
 	      Log.warn("0xMT011 Port " + port.getName() + " has no AST Node in symbol.")
 	      return ""
 	    }
-	    if (!(port.getAstNode().get() instanceof ASTPort)) {
+	    if (!(port.astNode instanceof ASTPort)) {
 	      Log.info("0xMT012 Port " + port.getName() + " is no MT Port. No value checks generated.",
 	          "printPortValuecheck")
 	      return ""
 	    }
-	    var mtPort = port.getAstNode().get() as ASTPort
+	    var mtPort = port.astNode as ASTPort
 	    if (!mtPort.isPresentAllowedValues()) {
 	      return ""
 	    }

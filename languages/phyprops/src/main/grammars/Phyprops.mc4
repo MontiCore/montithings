@@ -1,0 +1,34 @@
+// (c) https://github.com/MontiCore/monticore
+
+/**
+ * Phyprops provides deployment language dependent import statements.
+ */
+grammar Phyprops extends de.monticore.types.MCBasicTypes, de.monticore.literals.MCCommonLiterals  {
+
+  start PhypropsUnit;
+
+      /* ============================================================ */
+      /* ================ Requirements & Capabilities =============== */
+      /* ============================================================ */
+
+  /**
+   * PhypropsUnit represents the complete requirements & capabilities
+   * @attribute package  The package declaration of the elements.
+   * @attribute DepLanguage List of elements.
+  */
+  scope PhypropsUnit = ("package" package:(Name& || ".")+ ";")?  Element*;
+
+  interface Element;
+
+      /**
+       *  RequirementStatements contain information about what physical requirements
+       *  a component has. E.g Sensors/Actuators etc.
+       */
+      scope RequirementStatement implements Element =
+        "requires" (propertiess:Property | "{" propertiess:Property+ "}");
+
+      symbol Property = Name& ":"
+        (
+          stringValue:StringLiteral | numericValue:SignedNumericLiteral
+        ) ";";
+}

@@ -2,8 +2,7 @@
 package montithings.generator.codegen.xtend.util
 
 import java.io.File
-import montithings._symboltable.ComponentSymbol
-import montithings._symboltable.ResourcePortSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.TargetPlatform
 
 class CMake {
@@ -32,7 +31,7 @@ class CMake {
 		'''
 	}
 	
-	def static printTopLevelCMake(File[] files, ComponentSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, TargetPlatform platform) {
+	def static printTopLevelCMake(File[] files, ComponentTypeSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, TargetPlatform platform) {
 		return '''
 		cmake_minimum_required(VERSION 3.8)
 		project("«comp.name»")
@@ -110,11 +109,11 @@ class CMake {
 		'''
 	}
 		
-	def static printIPCServerCMake(ResourcePortSymbol port, String libraryPath, String ipcPath, Boolean existsHWC, TargetPlatform platform){
+	def static printIPCServerCMake(/*ResourcePortSymbol port,*/ String libraryPath, String ipcPath, Boolean existsHWC, TargetPlatform platform){
 		return 
 		'''
 		cmake_minimum_required(VERSION 3.8)
-		project(«port.name.toFirstUpper»Server)
+«««		project(«port.name.toFirstUpper»Server) TODO
 		
 		set(CMAKE_CXX_STANDARD 11)
 
@@ -134,11 +133,11 @@ class CMake {
 		"«libraryPath.replace("\\","/")»/*.cpp"
 		"«libraryPath.replace("\\","/")»/*.h")
 		
-		add_executable(«port.name.toFirstUpper»Server ${SOURCES})
+«««		add_executable(«port.name.toFirstUpper»Server ${SOURCES}) TODO
 		«IF platform == TargetPlatform.DSA_VCG»
-		«printDsaLinkLibraries(port.name.toFirstUpper+"Server")»
+«««		«printDsaLinkLibraries(port.name.toFirstUpper+"Server")» TODO
 		«ELSE»
-		target_link_libraries(«port.name.toFirstUpper»Server nng::nng)
+«««		target_link_libraries(«port.name.toFirstUpper»Server nng::nng) TODO
 		«ENDIF»
 		'''
 	}

@@ -1,8 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.visitor;
 
-import montiarc._ast.ASTJavaPBehavior;
-import montiarc._visitor.MontiArcVisitor;
+import arcbasis._ast.ASTJavaPBehavior;
+import arcbasis._visitor.MontiArcVisitor;
 
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ public class BehaviorVisitor implements MontiArcVisitor {
   Optional<ASTJavaPBehavior> javaPBehavior = Optional.empty();
 
   /**
-   * @see montiarc._visitor.MontiArcVisitor#visit(montiarc._ast.ASTJavaPBehavior)
+   * @see arcbasis._visitor.MontiArcVisitor#visit(arcbasis._ast.ASTJavaPBehavior)
    */
   @Override
   public void visit(ASTJavaPBehavior node) {

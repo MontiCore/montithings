@@ -3,12 +3,12 @@ package montithings.generator.codegen.xtend
 
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
-import montithings._symboltable.ComponentSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Ports
 
 class Result {
 
-  def static generateImplementationFile(ComponentSymbol comp, String compname) {
+  def static generateImplementationFile(ComponentTypeSymbol comp, String compname) {
     return '''
     #include "«compname»Result.h"
     «Utils.printNamespaceStart(comp)»
@@ -20,14 +20,14 @@ class Result {
   }
 
 
-	def static generateResultBody(ComponentSymbol comp, String compname){
+	def static generateResultBody(ComponentTypeSymbol comp, String compname){
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    return '''
 «IF !comp.allOutgoingPorts.empty»
 «Utils.printTemplateArguments(comp)»
 «compname»Result«Utils.printFormalTypeParameters(comp, false)»::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
-	«IF comp.superComponent.present»
-	super(«FOR port : comp.superComponent.get.allOutgoingPorts» «port.name» «ENDFOR»);
+	«IF comp.presentParentComponent»
+	super(«FOR port : comp.parent.allOutgoingPorts» «port.name» «ENDFOR»);
 «ENDIF»
 «FOR port : comp.outgoingPorts»
 	  this->«port.name» = «port.name»; 
@@ -51,7 +51,7 @@ this->«port.name» = «port.name»;
 	    '''
 	}
 	
-	def static generateResultHeader(ComponentSymbol comp, String compname){
+	def static generateResultHeader(ComponentTypeSymbol comp, String compname){
 	    var ComponentHelper helper = new ComponentHelper(comp)
 return '''
 #pragma once
@@ -69,9 +69,9 @@ return '''
 
 «Utils.printTemplateArguments(comp)»
 class «compname»Result
-  «IF comp.superComponent.present» : 
+  «IF comp.presentParentComponent» : 
     «Utils.printSuperClassFQ(comp)»Result
-    «IF comp.superComponent.get.hasFormalTypeParameters»<
+    «IF comp.parent.hasFormalTypeParameters»<
     «FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
         «scTypeParams»
         «ENDFOR» > «ENDIF»

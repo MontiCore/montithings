@@ -1,19 +1,18 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.visitor;
 
+import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
+import arcbasis._symboltable.TransitionSymbol;
+import arcbasis._symboltable.VariableSymbol;
+import arcbasis._symboltable.adapters.CDTypeSymbol2JavaType;
 import de.monticore.java.prettyprint.JavaDSLPrettyPrinter;
 import de.monticore.java.symboltable.JavaTypeSymbol;
-import de.monticore.mcexpressions._ast.*;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symboltable.Scope;
 import de.monticore.symboltable.types.JTypeSymbol;
 import de.se_rwth.commons.logging.Log;
-import montiarc._symboltable.ComponentSymbol;
-import montiarc._symboltable.PortSymbol;
-import montiarc._symboltable.TransitionSymbol;
-import montiarc._symboltable.VariableSymbol;
-import montiarc._symboltable.adapters.CDTypeSymbol2JavaType;
 import montithings._ast.ASTNoData;
 import montithings._symboltable.SyncStatementSymbol;
 import montithings.generator.helper.ComponentHelper;
@@ -143,13 +142,13 @@ public class CDAttributeGetterTransformationVisitor extends JavaDSLPrettyPrinter
     Optional<PortSymbol> port = s.resolve(name, PortSymbol.KIND);
     Optional<SyncStatementSymbol> sync = s.resolve(name, SyncStatementSymbol.KIND);
 
-    ComponentSymbol comp = new ComponentSymbol("", ComponentSymbol.KIND);
-    if (s.getSpanningSymbol().get() instanceof ComponentSymbol) {
+    ComponentTypeSymbol comp = new ComponentTypeSymbol("", ComponentTypeSymbol.KIND);
+    if (s.getSpanningSymbol().get() instanceof ComponentTypeSymbol) {
       // If-then-else expression
-      comp = (ComponentSymbol) s.getSpanningSymbol().get();
+      comp = (ComponentTypeSymbol) s.getSpanningSymbol().get();
     } else if (s.getSpanningSymbol().get() instanceof TransitionSymbol) {
       // Automaton expression
-      comp = (ComponentSymbol) s.getSpanningSymbol().get().getEnclosingScope().getEnclosingScope().get().getSpanningSymbol().get();
+      comp = (ComponentTypeSymbol) s.getSpanningSymbol().get().getEnclosingScope().getEnclosingScope().get().getSpanningSymbol().get();
     } else {
       Log.error("ASTNameExpression " + node.getName() + "has an unknown scope (neither if-then-else nor automaton)");
     }

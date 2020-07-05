@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
-import montithings._symboltable.ComponentSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.xtend.util.Utils
@@ -14,12 +14,12 @@ import java.util.List
 import java.util.ArrayList
 import java.util.HashMap
 import de.monticore.symboltable.types.JFieldSymbol
-import montiarc._symboltable.ComponentSymbolReference
+import arcbasis._symboltable.ComponentTypeSymbolLoader
 import montithings.generator.codegen.TargetPlatform
 
 class ComponentGenerator {
 	
-	def static generateHeader(ComponentSymbol comp, String compname, HashMap<String, String> interfaceToImplementation, TargetPlatform platform) {
+	def static generateHeader(ComponentTypeSymbol comp, String compname, HashMap<String, String> interfaceToImplementation, TargetPlatform platform) {
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    
 		return '''
@@ -50,8 +50,8 @@ class ComponentGenerator {
 		«Utils.printNamespaceStart(comp)»
 
 		«Utils.printTemplateArguments(comp)»
-		class «compname» : IComponent «IF comp.superComponent.present» , «Utils.printSuperClassFQ(comp)»
-		            «IF comp.superComponent.get.hasFormalTypeParameters»<«FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
+		class «compname» : IComponent «IF comp.presentParentComponent» , «Utils.printSuperClassFQ(comp)»
+		            «IF comp.parent.hasFormalTypeParameters»<«FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
 		              «scTypeParams»«ENDFOR»>
 		            «ENDIF»«ENDIF»
 		{
@@ -95,7 +95,7 @@ class ComponentGenerator {
 		'''
 	}
 
-	def static generateImplementationFile(ComponentSymbol comp, String compname) {
+	def static generateImplementationFile(ComponentTypeSymbol comp, String compname) {
 	  return '''
   	#include "«compname».h"
   	#include <regex>
@@ -107,7 +107,7 @@ class ComponentGenerator {
     '''
 	}
 	
-	def static generateBody(ComponentSymbol comp, String compname) {
+	def static generateBody(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Ports.printMethodBodies(comp.ports, comp, compname)»
 		«Ports.printResourcePortMethodBodies(ComponentHelper.getResourcePortsInComponent(comp),comp, compname)»
@@ -151,7 +151,7 @@ class ComponentGenerator {
 	}
 	
 
-	def static printConstructor(ComponentSymbol comp, String compname) {
+	def static printConstructor(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
@@ -169,14 +169,14 @@ class ComponentGenerator {
       	«param.name» («param.name»)
     	«ENDFOR»
 		{
-			«IF comp.superComponent.present»
+			«IF comp.presentParentComponent»
 			super(«FOR inhParam : getInheritedParams(comp, compname) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»
 		}
 		'''
 	}
 	
-	def static printBehaviorInitializerListEntry(ComponentSymbol comp, String compname) {
+	def static printBehaviorInitializerListEntry(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Identifier.behaviorImplName»(«compname»Impl«Utils.printFormalTypeParameters(comp, false)»(
 		«IF comp.hasConfigParameters»
@@ -187,7 +187,7 @@ class ComponentGenerator {
 	))'''.toString().replace("\n", "")
 	}
 	
-	def static printComputeAtomic(ComponentSymbol comp, String compname) {
+	def static printComputeAtomic(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::compute() {
@@ -214,11 +214,11 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printComputeInputs(ComponentSymbol comp, String compname) {
+	def static printComputeInputs(ComponentTypeSymbol comp, String compname) {
 		return printComputeInputs(comp, compname, false);
 	}
 	
-	def static printComputeInputs(ComponentSymbol comp, String compname, boolean isMonitor) {
+	def static printComputeInputs(ComponentTypeSymbol comp, String compname, boolean isMonitor) {
 		return '''
 		«IF !ComponentHelper.usesBatchMode(comp)»
 		«compname»Input«Utils.printFormalTypeParameters(comp)» input«IF !comp.allIncomingPorts.empty»(«FOR inPort : comp.allIncomingPorts SEPARATOR ','»getPort«inPort.name.toFirstUpper»()->getCurrentValue(«IF isMonitor»portMonitorUuid«inPort.name.toFirstUpper»«ELSE»this->uuid«ENDIF»)«ENDFOR»)«ENDIF»;
@@ -236,7 +236,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printShouldComputeCheck(ComponentSymbol comp, String compname) {
+	def static printShouldComputeCheck(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		bool «compname»«Utils.printFormalTypeParameters(comp)»::shouldCompute() {
@@ -264,7 +264,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printAssumptionsCheck(ComponentSymbol comp, String compname) {
+	def static printAssumptionsCheck(ComponentTypeSymbol comp, String compname) {
 		var assumptions = ComponentHelper.getAssumptions(comp);
 		return '''
 		«FOR statement : assumptions»
@@ -302,7 +302,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printGuaranteesCheck(ComponentSymbol comp, String compname) {
+	def static printGuaranteesCheck(ComponentTypeSymbol comp, String compname) {
 		var guarantees = ComponentHelper.getGuarantees(comp);
 		return '''
 		«FOR statement : guarantees»
@@ -351,7 +351,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printIfThenElseExecution(ComponentSymbol comp, String compname) {
+	def static printIfThenElseExecution(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«FOR statement : ComponentHelper.getExecutionStatements(comp) SEPARATOR " else "»
 		if (
@@ -389,7 +389,7 @@ class ComponentGenerator {
 	}
 		
 	
-	def static printComputeDecomposed(ComponentSymbol comp, String compname) {
+	def static printComputeDecomposed(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
@@ -415,7 +415,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printComputeResults(ComponentSymbol comp, String compname, boolean isMonitor) {
+	def static printComputeResults(ComponentTypeSymbol comp, String compname, boolean isMonitor) {
 		return '''
 		«compname»Result«Utils.printFormalTypeParameters(comp)» result;
 		«FOR outPort : comp.allOutgoingPorts»
@@ -426,7 +426,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printStartDecomposed(ComponentSymbol comp, String compname) {
+	def static printStartDecomposed(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
@@ -441,7 +441,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printStartAtomic(ComponentSymbol comp, String compname) {
+	def static printStartAtomic(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
@@ -450,7 +450,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printRun(ComponentSymbol comp, String compname) {
+	def static printRun(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::run(){
@@ -472,12 +472,12 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def private static List<String> getInheritedParams(ComponentSymbol component, String compname) {
+	def private static List<String> getInheritedParams(ComponentTypeSymbol component, String compname) {
     var List<String> result = new ArrayList;
     var List<JFieldSymbol> configParameters = component.getConfigParameters();
-    if (component.getSuperComponent().isPresent()) {
-      var ComponentSymbolReference superCompReference = component.getSuperComponent().get();
-      var List<JFieldSymbol> superConfigParams = superCompReference.getReferencedSymbol().getConfigParameters();
+    if (component.presentParentComponent) {
+      var ComponentTypeSymbol superCompReference = component.parentInfo;
+      var List<JFieldSymbol> superConfigParams = superCompReference.getConfigParameters();
       if (!configParameters.isEmpty()) {
         for (var i = 0; i < superConfigParams.size(); i++) {
           result.add(configParameters.get(i).getName());

@@ -1,0 +1,71 @@
+// (c) https://github.com/MontiCore/monticore
+
+/**
+ * CDLangExtension provides deployment language dependent import statements.
+ */
+grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.literals.MCCommonLiterals, de.monticore.cd.CD4Analysis  {
+
+  start CDLangExtensionUnit;
+
+  /**
+   * CDLangExtensionUnit represents the complete language extension
+   * @attribute package  The package declaration of this extension
+   * @attribute DepLanguage List of programming languages.
+  */
+  CDLangExtensionUnit = ("package" package:(Name& || ".")+ ";")?  DepLanguage*;
+
+  /**
+   * DepLanguage represents different programming languages like java or cpp.
+   * @attribute Name The language name.
+   * @attribute CDEImportStatement List of language specific import statements.
+   */
+  scope symbol DepLanguage =
+    Name "{" CDEImportStatement* "}"
+    ;
+
+  /**
+   * CDEElement as future extension point and common interface.
+   */
+  interface CDEElement;
+
+  /**
+   * CDEImportStatement contains the package, class, and the name of a classdiagram element.
+   * @attribute Name classdiagram element Name.
+   * @attribute importSource package from which to import.
+   * @attribute importClass class in the importSource that is imported.
+   */
+  // Example: from <arma> import armadillo::vector as Vector;
+  symbol CDEImportStatement implements CDEElement =
+    "from" importSource:CDEImportName "import" importClass:CDEImportName "as" Name@CDType ";"
+    ;
+
+  /**
+   * CDEImportName String in different forms of representation.
+   */
+  CDEImportName =
+    String
+      | AngledString
+      | MCQualifiedName
+      | CDEQualifiedColonName
+      | CDEQualifiedDoubleColonName
+    ;
+
+  /**
+   * AngledString is a String surrounded by '<' and '>'.
+   */
+  token AngledString
+    = '<' (StringCharacters)? '>'
+    : {setText(getText().substring(1, getText().length() - 1));};
+
+  /**
+   * CDEQualifiedColonName are Names concatenated by ':'.
+   */
+  CDEQualifiedColonName extends MCQualifiedName=
+    part:(Name || ":")+;
+
+  /**
+   * CDEQualifiedDoubleColonName are Names concatenated by '::'.
+   */
+  CDEQualifiedDoubleColonName extends MCQualifiedName=
+      part:(Name || "::")+;
+}

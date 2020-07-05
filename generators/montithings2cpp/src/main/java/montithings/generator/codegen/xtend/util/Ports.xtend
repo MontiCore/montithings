@@ -3,15 +3,15 @@ package montithings.generator.codegen.xtend.util
 
 import java.util.Collection
 import java.util.HashSet
-import montiarc._symboltable.PortSymbol
+import arcbasis._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
-import montithings._symboltable.ComponentSymbol
-import montithings._symboltable.ResourcePortSymbol
+import arcbasis._symboltable.ComponentTypeSymbol
+//import montithings._symboltable.ResourcePortSymbol
 import montithings.generator.codegen.xtend.util.Utils
 
 class Ports {
 
-  def static String printIncludes(ComponentSymbol comp) {
+  def static String printIncludes(ComponentTypeSymbol comp) {
   	var HashSet<String> portIncludes = new HashSet<String>()
     for (port : comp.ports) {
     	if (ComponentHelper.portUsesCdType(port)) {
@@ -26,7 +26,7 @@ class Ports {
 	'''
   }
 	
-	def static printVars(ComponentSymbol comp, Collection<PortSymbol> ports) {
+	def static printVars(ComponentTypeSymbol comp, Collection<PortSymbol> ports) {
 	return	'''
 	  // Ports
     «FOR port : ports»
@@ -78,7 +78,7 @@ Port<«type»>* «name» = new WSPort<«type»>(OUT, "«port.uri»");
     '''
 	}
 	
-		def static printResourcePortMethodBodies(Collection<ResourcePortSymbol> ports, ComponentSymbol comp, String compname){
+		def static printResourcePortMethodBodies(Collection<ResourcePortSymbol> ports, ComponentTypeSymbol comp, String compname){
 	return	'''
     «FOR port : ports»
     «var type = ComponentHelper.getResourcePortType(port)»
@@ -107,7 +107,7 @@ Port<«type»>* «name» = new WSPort<«type»>(OUT, "«port.uri»");
     '''
 	}
 	
-	def static printMethodBodies(Collection<PortSymbol> ports, ComponentSymbol comp, String compname){
+	def static printMethodBodies(Collection<PortSymbol> ports, ComponentTypeSymbol comp, String compname){
 	return	'''
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»

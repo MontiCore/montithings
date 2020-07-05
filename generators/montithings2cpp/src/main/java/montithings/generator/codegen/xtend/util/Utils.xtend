@@ -5,9 +5,9 @@ import montithings.generator.helper.ComponentHelper
 import de.monticore.types.types._ast.ASTTypeVariableDeclaration
 import java.util.ArrayList
 import java.util.List
-import montithings._ast.ASTComponent
-import montiarc._ast.ASTVariableDeclaration
-import montithings._symboltable.ComponentSymbol
+import montithings._ast.ASTMTComponentType
+import arcbasis._ast.ASTVariableDeclaration
+import arcbasis._symboltable.ComponentTypeSymbol
 import montithings._symboltable.ResourcePortSymbol
 import de.monticore.mcexpressions._ast.ASTExpression
 import de.monticore.prettyprint.IndentPrinter
@@ -19,17 +19,17 @@ class Utils {
   /**
    * Prints the component's configuration parameters as a comma separated list.
    */
-  def static printConfigurationParametersAsList(ComponentSymbol comp) {
+  def static printConfigurationParametersAsList(ComponentTypeSymbol comp) {
     var helper = new ComponentHelper(comp)
     return '''
-      «FOR param : comp.configParameters SEPARATOR ','» «helper.printParamTypeName(comp.astNode.get as ASTComponent, param.type)» «param.name» «ENDFOR»
+      «FOR param : comp.configParameters SEPARATOR ','» «helper.printParamTypeName(comp.astNode as ASTMTComponentType, param.type)» «param.name» «ENDFOR»
     '''.toString().replace("\n", "")
   }
 
   /**
    * Prints the component's imports
    */
-  def static printImports(ComponentSymbol comp) {
+  def static printImports(ComponentTypeSymbol comp) {
     return '''
       «FOR _import : comp.imports»
         import «_import.statement»«IF _import.isStar».*«ENDIF»;
@@ -52,9 +52,9 @@ class Utils {
   /**
    * Prints members for configuration parameters.
    */
-  def static printConfigParameters(ComponentSymbol comp) {
+  def static printConfigParameters(ComponentTypeSymbol comp) {
     return '''
-      «FOR param : (comp.astNode.get as ASTComponent).head.parameterList»
+      «FOR param : (comp.astNode as ASTMTComponentType).head.parameterList»
         «printMember(ComponentHelper.printCPPTypeName(param.type), param.name, "")»
       «ENDFOR»
     '''.toString().replace("\n", "")
@@ -63,10 +63,10 @@ class Utils {
   /**
    * Prints members for variables
    */
-  def static printVariables(ComponentSymbol comp) {
+  def static printVariables(ComponentTypeSymbol comp) {
     return '''
       «FOR variable : comp.variables»
-        «printMember(ComponentHelper.printCPPTypeName((variable.astNode.get as ASTVariableDeclaration).type), variable.name, "")»
+        «printMember(ComponentHelper.printCPPTypeName((variable.astNode as ASTVariableDeclaration).type), variable.name, "")»
       «ENDFOR»
     '''
   }
@@ -74,17 +74,17 @@ class Utils {
   /**
    * Check if a component is generic
    */
-  def static Boolean hasTypeParameters(ComponentSymbol comp) {
-    return (comp.astNode.get as ASTComponent).head.isPresentGenericTypeParameters;
+  def static Boolean hasTypeParameters(ComponentTypeSymbol comp) {
+    return (comp.astNode as ASTMTComponentType).head.isPresentGenericTypeParameters;
   }
 
   /**
    * Prints formal parameters of a component.
    */
-  def static printFormalTypeParameters(ComponentSymbol comp) {
+  def static printFormalTypeParameters(ComponentTypeSymbol comp) {
     return printFormalTypeParameters(comp, false)
   }
-  def static printFormalTypeParameters(ComponentSymbol comp, Boolean withClassPrefix) {
+  def static printFormalTypeParameters(ComponentTypeSymbol comp, Boolean withClassPrefix) {
     return '''
       «IF hasTypeParameters(comp)»
         <
@@ -96,7 +96,7 @@ class Utils {
     '''.toString().replace("\n", "")
   }
 
-  def static String printTemplateArguments(ComponentSymbol comp) {
+  def static String printTemplateArguments(ComponentTypeSymbol comp) {
     return '''
     «IF Utils.hasTypeParameters(comp)»
       template«Utils.printFormalTypeParameters(comp, true)»
@@ -104,8 +104,8 @@ class Utils {
     '''.toString().replace("\n", "")
   }
 
-  def private static List<String> getGenericParameters(ComponentSymbol comp) {
-    var componentNode = comp.astNode.get as ASTComponent
+  def private static List<String> getGenericParameters(ComponentTypeSymbol comp) {
+    var componentNode = comp.astNode as ASTMTComponentType
     var List<String> output = new ArrayList
     if (componentNode.getHead().isPresentGenericTypeParameters()) {
       var List<ASTTypeVariableDeclaration> parameterList = componentNode.getHead().getGenericTypeParameters().
@@ -123,7 +123,7 @@ class Utils {
    * with at least two levels of inner component. These require changing the package name
    * to avoid name clashes between the generated packages and the outermost component.
    */
-  def static String printPackage(ComponentSymbol comp) {
+  def static String printPackage(ComponentTypeSymbol comp) {
   	return '''
   	«IF comp.isInnerComponent»
   	package «printPackageWithoutKeyWordAndSemicolon(comp.definingComponent.get) + "." + comp.definingComponent.get.name + "gen"»;
@@ -136,7 +136,7 @@ class Utils {
   /**
    * Helper function used to determine package names.
    */
-  def static String printPackageWithoutKeyWordAndSemicolon(montiarc._symboltable.ComponentSymbol comp){
+  def static String printPackageWithoutKeyWordAndSemicolon(arcbasis._symboltable.ComponentTypeSymbol comp){
   	return '''
   	«IF comp.isInnerComponent»
   	«printPackageWithoutKeyWordAndSemicolon(comp.definingComponent.get) + "." + comp.definingComponent.get.name + "gen"»
@@ -146,16 +146,16 @@ class Utils {
   	'''
   }
   
-  def static String printSuperClassFQ(ComponentSymbol comp){
-  	var String packageName = printPackageWithoutKeyWordAndSemicolon(comp.superComponent.get.referencedSymbol);
+  def static String printSuperClassFQ(ComponentTypeSymbol comp){
+  	var String packageName = printPackageWithoutKeyWordAndSemicolon(comp.parentInfo);
   	if(packageName.equals("")){
-  		return '''«comp.superComponent.get.name»'''
+  		return '''«comp.parent.name»'''
   	} else {
-  		return '''«packageName».«comp.superComponent.get.name»'''
+  		return '''«packageName».«comp.parent.name»'''
   	}
   }
   
-  def static String printNamespaceStart(ComponentSymbol comp) {
+  def static String printNamespaceStart(ComponentTypeSymbol comp) {
   	var packages = ComponentHelper.getPackages(comp);
   	return '''
   	namespace montithings {
@@ -165,7 +165,7 @@ class Utils {
   	'''
   }
   
-  def static String printNamespaceEnd(ComponentSymbol comp) {
+  def static String printNamespaceEnd(ComponentTypeSymbol comp) {
   	var packages = ComponentHelper.getPackages(comp);
   	return '''
 	«FOR i : 0..<packages.size»
@@ -175,7 +175,7 @@ class Utils {
   	'''
   }
   
-  def static String printCPPImports(ComponentSymbol comp){
+  def static String printCPPImports(ComponentTypeSymbol comp){
   	return '''
   	
   	«FOR importString : ComponentHelper.getCPPImports(comp)»
@@ -184,7 +184,7 @@ class Utils {
   	'''
   }
 	
-	def static printIPCServerHeader(ResourcePortSymbol symbol, ComponentSymbol comp) {
+	def static printIPCServerHeader(ResourcePortSymbol symbol, ComponentTypeSymbol comp) {
 		var type = ComponentHelper.getResourcePortType(symbol)
 		return
 		'''
@@ -221,7 +221,7 @@ class Utils {
 		'''
 	}
 	
-	def static printIPCServerBody(ResourcePortSymbol port, ComponentSymbol comp, Boolean existsHWC){
+	def static printIPCServerBody(ResourcePortSymbol port, ComponentTypeSymbol comp, Boolean existsHWC){
 		var type = ComponentHelper.getResourcePortType(port)
 		return 
 		'''
