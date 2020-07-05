@@ -25,15 +25,6 @@ component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
       ":" upperBound:Expression
     ;
 
-    /**
-     * Mathmatical set builder pattern. Allows to specify sets based on
-     * conditions that need to be fulfilled, such as {int x | x < 4} for
-     * the set of all integers smaller than 4.
-     */
-    SetByCondition implements SetAllowedValues =
-      MCType variable:Name "|" condition:Expression
-    ;
-
     // RegEx to which value has to conform
     SetValueRegEx implements SetAllowedValues =
       key("format") ":" format:StringLiteral
