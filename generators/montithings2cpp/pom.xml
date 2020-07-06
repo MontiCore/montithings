@@ -69,6 +69,18 @@
 		</dependency>
 
 		<dependency>
+			<groupId>montithings.languages</groupId>
+			<artifactId>cdlangextension</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>montithings.languages</groupId>
+			<artifactId>montiarc-extensions</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>de.monticore</groupId>
 			<artifactId>monticore-generator</artifactId>
 			<version>${monticore.version}</version>
@@ -121,6 +133,12 @@
         <dependency>
             <groupId>montithings.languages</groupId>
             <artifactId>montithings</artifactId>
+            <version>6.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montiarc-extensions</artifactId>
             <version>6.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

@@ -1,8 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.util
+
+import de.monticore.types.typesymbols._symboltable.FieldSymbol
 import arcbasis._symboltable.ComponentInstanceSymbol
 import arcbasis._symboltable.ComponentTypeSymbol
 import arcbasis._symboltable.PortSymbol
+import de.monticore.types.typesymbols._symboltable.TypeVarSymbol
 
 
 class Identifier {
@@ -38,8 +41,16 @@ class Identifier {
       }
     }
 
-    if (component.getFields(identifier).isPresent()) {
-      return true;
+    for (FieldSymbol FieldSymbol : component.parameters) {
+      if (FieldSymbol.getName().equals(identifier)) {
+        return true;
+      }
+    }
+
+    for (TypeVarSymbol TypeVarSymbol : component.typeParameters) {
+      if (TypeVarSymbol.getName().equals(identifier)) {
+        return true;
+      }
     }
 
     for (ComponentInstanceSymbol instanceSymbol : component.getSubComponents()) {

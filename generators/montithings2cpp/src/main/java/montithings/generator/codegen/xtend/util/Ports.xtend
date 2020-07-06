@@ -72,7 +72,7 @@ class Ports {
 «««    	«ENDIF»
 «««    	«IF comp.isDecomposed»
 «««    	port->registerPort(portMonitorUuid«name.toFirstUpper»);
-«««    	«ENDIF»
+«««    	«ENDIF» TDOD
     	«name» = port;
     }
     

@@ -2,21 +2,19 @@
 package montithings.generator.codegen.xtend
 
 import arcbasis._symboltable.ComponentTypeSymbol
-import montithings.generator.codegen.xtend.util.Ports
-import montithings.generator.helper.ComponentHelper
-import montithings.generator.codegen.xtend.util.Utils
-//import montithings.generator.codegen.xtend.util.ValueCheck
-import montithings.generator.codegen.xtend.util.Subcomponents
-import montithings.generator.codegen.xtend.util.Identifier
-import montithings.generator.codegen.xtend.util.Setup
-import montithings.generator.codegen.xtend.util.Init
-import montithings.generator.codegen.TargetPlatform
-import java.util.List
+import arcbasis._symboltable.ComponentTypeSymbolLoader
+import de.monticore.types.typesymbols._symboltable.FieldSymbol
 import java.util.ArrayList
 import java.util.HashMap
-import arcbasis._symboltable.ComponentTypeSymbolLoader
-import de.monticore.types.typesymbols._symboltable.FieldSymbol;
-import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
+import java.util.List
+import montithings.generator.codegen.TargetPlatform
+import montithings.generator.codegen.xtend.util.Identifier
+import montithings.generator.codegen.xtend.util.Init
+import montithings.generator.codegen.xtend.util.Ports
+import montithings.generator.codegen.xtend.util.Setup
+import montithings.generator.codegen.xtend.util.Subcomponents
+import montithings.generator.codegen.xtend.util.Utils
+import montithings.generator.helper.ComponentHelper
 
 class ComponentGenerator {
 	
@@ -342,7 +340,7 @@ class ComponentGenerator {
 		}
 		«ENDFOR»
 		'''
-	}	
+	}
 	
 	def static printComputeDecomposed(ComponentTypeSymbol comp, String compname) {
 		return '''

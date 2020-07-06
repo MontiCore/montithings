@@ -1,18 +1,14 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.util
 
-import montithings.generator.helper.ComponentHelper
-import java.util.ArrayList
-import java.util.List
-import montithings._ast.ASTMTComponentType
 import arcbasis._symboltable.ComponentTypeSymbol
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression
-import de.monticore.prettyprint.IndentPrinter
-import de.monticore.java.prettyprint.JavaDSLPrettyPrinter
-import de.monticore.types.typesymbols._symboltable.FieldSymbol;
-import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
-import montithings.generator.visitor.CDAttributeGetterTransformationVisitor
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter
+import de.monticore.prettyprint.IndentPrinter
+import de.monticore.types.typesymbols._symboltable.TypeVarSymbol
+import java.util.ArrayList
+import java.util.List
+import montithings.generator.helper.ComponentHelper
 
 class Utils {
 
@@ -20,9 +16,8 @@ class Utils {
    * Prints the component's configuration parameters as a comma separated list.
    */
   def static printConfigurationParametersAsList(ComponentTypeSymbol comp) {
-    var helper = new ComponentHelper(comp)
     return '''
-      «FOR param : comp.parameters SEPARATOR ','» 
+      «FOR param : comp.parameters SEPARATOR ','»
         «param.type.print» «param.name»
       «ENDFOR»
     '''.toString().replace("\n", "")
