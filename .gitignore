@@ -5,6 +5,7 @@ target
 /applications/bumperbot/.gitignore
 
 \.idea/
+\.vscode/
 
 /generators/maa2java/generated-test-sources/
 
