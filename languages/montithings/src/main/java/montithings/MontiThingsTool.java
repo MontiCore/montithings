@@ -34,12 +34,14 @@ public class MontiThingsTool extends MontiArcTool {
   protected boolean isSymTabInitialized;
 
   public MontiThingsTool() {
-    this(MontiThingsCoCos.createChecker(), new MontiThingsLanguage("MontiThings", ".mt"));
+    this(MontiThingsCoCos.createChecker(), new MontiThingsLanguage());
   }
 
-  public MontiThingsTool(@NotNull MontiThingsCoCoChecker checker, MontiThingsLanguage language) {
+  public MontiThingsTool(@NotNull MontiThingsCoCoChecker checker, @NotNull MontiThingsLanguage language) {
     Preconditions.checkArgument(checker != null);
+    Preconditions.checkArgument(language != null);
     this.checker = checker;
+    this.language = language;
     this.isSymTabInitialized = false;
   }
 

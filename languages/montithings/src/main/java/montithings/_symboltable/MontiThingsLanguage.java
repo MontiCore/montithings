@@ -7,19 +7,21 @@ public class MontiThingsLanguage extends MontiThingsLanguageTOP {
 
   public static final String FILE_ENDING = "mt";
 
-  protected MontiThingsModelLoader modelLoader = new MontiThingsModelLoader(this);
+  protected MontiThingsModelLoader modelLoader;
 
   public MontiThingsLanguage(String langName, String fileEnding) {
     super(langName, fileEnding);
+    modelLoader = super.getModelLoader();
   }
 
   public MontiThingsLanguage() {
     super(LANGUAGE_NAME, FILE_ENDING);
+    modelLoader = super.getModelLoader();
   }
 
   @Override
   protected MontiThingsModelLoader provideModelLoader() {
-    return this.modelLoader;
+    return new MontiThingsModelLoader(this);
   }
 
   @Override
