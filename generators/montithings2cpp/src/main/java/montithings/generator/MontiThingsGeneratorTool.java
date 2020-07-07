@@ -1,19 +1,15 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
-import arcbasis._ast.ASTMontiArcNode;
-import bindings.BindingsTool;
-import bindings.CocoInput;
-import bindings._symboltable.BindingsLanguage;
-import de.monticore.symboltable.Scope;
-import de.monticore.umlcd4a.CD4AnalysisLanguage;
+import arcbasis._symboltable.ComponentTypeSymbol;
+import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import de.se_rwth.commons.Names;
-import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
+import montiarc._ast.ASTMontiArcNode;
+import montiarc._symboltable.IMontiArcScope;
 import montithings.MontiThingsTool;
-import montithings._symboltable.ComponentTypeSymbol;
+import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsLanguage;
-import montithings._symboltable.ResourcePortSymbol;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cd2cpp.Modelfinder;
 import montithings.generator.codegen.TargetPlatform;
@@ -31,16 +27,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static java.util.Collections.EMPTY_LIST;
+//import bindings.BindingsTool;
+//import bindings.CocoInput;
+//import bindings._symboltable.BindingsLanguage;
 
-/**
- * TODO
- *
- * @authors (last commit) JFuerste, Daniel von Mirbach
- */
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   private static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
+  private static final String TOOL_NAME = "MontiThingsGeneratorTool";
 
   public void generate(File modelPath, File target, File hwcPath, TargetPlatform platform) {
 
@@ -50,7 +44,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     try {
       if (platform == TargetPlatform.ARDUINO) {
         FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile());
-      } else {
+      }
+      else {
         FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath(), "hwc").toFile());
       }
     }
@@ -62,9 +57,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     /* ====================== Check Bindings ====================== */
     /* ============================================================ */
+
     // 1. Get Bindings
     HashMap<String, String> interfaceToImplementation = getInterfaceImplementationMatching(
         hwcPath.getAbsolutePath());
+    /*
     List<String> foundBindings = Modelfinder
         .getModelsInModelPath(hwcPath, BindingsLanguage.FILE_ENDING);
     Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
@@ -80,6 +77,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       bindingsTool.executeCoCo(input);
       bindingsTool.checkResults(EMPTY_LIST);
     }
+    */
 
     /* ============================================================ */
     /* ======================= Check Models ======================= */
@@ -88,26 +86,26 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     List<String> foundModels = Modelfinder
         .getModelsInModelPath(modelPath, MontiThingsLanguage.FILE_ENDING);
     // 2. Initialize SymbolTable
-    Log.info("Initializing symboltable", "MontiArcGeneratorTool");
+    Log.info("Initializing symboltable", TOOL_NAME);
     String basedir = getBasedirFromModelAndTargetPath(modelPath.getAbsolutePath(),
         target.getAbsolutePath());
-    Scope symTab = initSymbolTable(modelPath, Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
+    IMontiThingsScope symTab = initSymbolTable(modelPath,
+        Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
         hwcPath);
 
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
 
       // 3. parse + resolve model
-      Log.info("Parsing model:" + qualifiedModelName, "MontiThingsGeneratorTool");
-      ComponentTypeSymbol comp = symTab.<ComponentTypeSymbol>resolve(qualifiedModelName,
-          ComponentTypeSymbol.KIND).get();
+      Log.info("Parsing model:" + qualifiedModelName, TOOL_NAME);
+      ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
       // 4. check cocos
-      Log.info("Check model: " + qualifiedModelName, "MontiThingsGeneratorTool");
-      checkCoCos((ASTMontiArcNode) comp.getAstNode().get());
+      Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
+      checkCoCos(comp.getAstNode());
 
       // 5. generate
-      Log.info("Generate model: " + qualifiedModelName, "MontiThingsGeneratorTool");
+      Log.info("Generate model: " + qualifiedModelName, TOOL_NAME);
 
       // check if component is implementation
       if (interfaceToImplementation.containsValue(comp.getName())) {
@@ -130,54 +128,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       MTGenerator.generateAll(
           Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
               .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation, platform);
-
-      for (ResourcePortSymbol resourcePortSymbol : ComponentHelper
-          .getResourcePortsInComponent(comp)) {
-        if (resourcePortSymbol.isIpc()) {
-          // Generate necessary headers for application
-          File headerPath = Paths.get(target.getAbsolutePath(),
-              Names.getPathFromPackage(comp.getPackageName()),
-              comp.getName() + "-" + StringTransformations.capitalize(resourcePortSymbol.getName()))
-              .toFile();
-          headerPath.mkdir();
-          File libraryPath = Paths.get("target/generated-sources/montithings-RTE").toFile();
-          MTGenerator.generateIPCServer(headerPath, resourcePortSymbol, comp, libraryPath, hwcPath, platform, true);
-
-          // Generate IPC Port implementation
-          File implPath = Paths.get(target.getAbsolutePath(),
-              "resource-ports",
-              Names.getPathFromPackage(comp.getPackageName()),
-              comp.getName() + "-" + StringTransformations.capitalize(resourcePortSymbol.getName()))
-              .toFile();
-          implPath.mkdir();
-          MTGenerator.generateIPCServer(implPath, resourcePortSymbol, comp, libraryPath, hwcPath, platform, false);
-
-          // Copy IPC Port HWC to target
-          boolean existsHwc = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, resourcePortSymbol.getName());
-          if (existsHwc) {
-            try {
-              // Copy HWC files
-              String resourcePortName = comp.getName() + "-" +
-                  StringTransformations.capitalize(resourcePortSymbol.getName());
-              File hwcDirectory = Paths.get(hwcPath.getAbsolutePath(),
-                  Names.getPathFromPackage(comp.getPackageName()),
-                  resourcePortName).toFile();
-              FileUtils.copyDirectory(hwcDirectory, implPath);
-
-              // Remove HWC files from components' HWC
-              File componentResourcePortImplPath = Paths.get(target.getAbsolutePath(), "hwc",
-                  Names.getPathFromPackage(comp.getPackageName()),
-                  comp.getName() + "-" + StringTransformations.capitalize(resourcePortSymbol.getName()))
-                  .toFile();
-              FileUtils.deleteDirectory(componentResourcePortImplPath);
-            }
-            catch (IOException e) {
-              System.err.println(e.getMessage());
-              e.printStackTrace();
-            }
-          }
-        }
-      }
     }
 
     /* ============================================================ */
@@ -186,10 +136,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-      montithings._symboltable.ComponentTypeSymbol comp = symTab.<montithings._symboltable.ComponentTypeSymbol>resolve(qualifiedModelName,
-          montithings._symboltable.ComponentTypeSymbol.KIND).get();
+      ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
-      if (comp.isApplication()) {
+      if (ComponentHelper.isApplication(comp)) {
         File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
         // Check for Subpackages
         File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
@@ -206,7 +155,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     /* ====================== Class Diagrams ====================== */
     /* ============================================================ */
-
     generateCD(modelPath, target);
   }
 
@@ -216,7 +164,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
    * @param modelPath
    * @return
    */
-  private File[] getSubPackagesPath(String modelPath) {
+  protected File[] getSubPackagesPath(String modelPath) {
     ArrayList<File> subPackagesPaths = new ArrayList<>();
     File[] subDirs = new File(modelPath).listFiles(File::isDirectory);
 
@@ -231,11 +179,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   /**
    * Returns InterfaceComponent name matching to Implementation name as HashMap
-   *
-   * @param hwcPath
-   * @return
    */
-  private HashMap<String, String> getInterfaceImplementationMatching(String hwcPath) {
+  protected HashMap<String, String> getInterfaceImplementationMatching(String hwcPath) {
     // Every entry contains matching from interface to implementation (interface -> implementation)
     HashMap<String, String> interfaceToImplementation = new HashMap<String, String>();
 
@@ -247,9 +192,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         ArrayList<String> bindingList = new ArrayList<String>();
 
         // 2. Append all lines to bindingList
-        try {
-          String bindingsPath = subdir.getAbsolutePath() + "/bindings.mtb";
-          BufferedReader reader = new BufferedReader(new FileReader(bindingsPath));
+        String bindingsPath = subdir.getAbsolutePath() + "/bindings.mtb";
+        try (BufferedReader reader = new BufferedReader(new FileReader(bindingsPath))) {
           String line = reader.readLine();
           while (line != null) {
             bindingList.add(line);
@@ -276,12 +220,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /**
    * Compares the two paths and returns the common path. The common path is the
    * basedir.
-   *
-   * @param modelPath
-   * @param targetPath
-   * @return
    */
-  private String getBasedirFromModelAndTargetPath(String modelPath, String targetPath) {
+  protected String getBasedirFromModelAndTargetPath(String modelPath, String targetPath) {
     String basedir = "";
 
     StringBuilder sb = new StringBuilder();
@@ -308,8 +248,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     return basedir;
   }
 
-  private void generateCD(File modelPath, File targetFilepath) {
-    List<String> foundModels = Modelfinder.getModelsInModelPath(modelPath, CD4AnalysisLanguage.FILE_ENDING);
+  protected void generateCD(File modelPath, File targetFilepath) {
+    List<String> foundModels = Modelfinder
+        .getModelsInModelPath(modelPath, CD4AnalysisLanguage.FILE_ENDING);
     for (String model : foundModels) {
       String simpleName = Names.getSimpleName(model);
       String packageName = Names.getQualifier(model);

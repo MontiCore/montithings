@@ -20,7 +20,7 @@
 		<module>montiarc-extensions</module>
 		<module>monticore-extensions</module>
 		<module>montithings</module>
-		<module>cdlangextension</module>
+		<!-- <module>cdlangextension</module> -->
 		<module>phyprops</module>
 		<!-- <module>bindings</module> -->
 	</modules>

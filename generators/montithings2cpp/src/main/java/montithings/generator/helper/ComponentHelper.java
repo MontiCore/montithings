@@ -1,10 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
-import arcbasis._ast.ASTArcElement;
-import arcbasis._ast.ASTArcParameter;
-import arcbasis._ast.ASTComponentType;
-import arcbasis._ast.ASTPortAccess;
+import arcbasis._ast.*;
 import arcbasis._symboltable.*;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.collect.FluentIterable;
@@ -19,13 +16,15 @@ import de.monticore.types.prettyprint.MCFullGenericTypesPrettyPrinter;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 import de.se_rwth.commons.StringTransformations;
-import messagehandling._ast.ASTSyncStatement;
 import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
 import montiarc._symboltable.MontiArcArtifactScope;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings.generator.codegen.xtend.util.Utils;
+import portextensions._ast.ASTAnnotatedPort;
+import portextensions._ast.ASTBufferedPort;
+import portextensions._ast.ASTSyncStatement;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
 import prepostcondition.helper.ExpressionUtil;
@@ -40,8 +39,6 @@ import java.util.stream.Collectors;
 /**
  * Helper class used in the template to generate target code of atomic or
  * composed components.
- *
- * @author Gerrit Leonhardt
  */
 public class ComponentHelper {
   private final ComponentTypeSymbol component;
@@ -119,6 +116,7 @@ public class ComponentHelper {
     // TODO: Write me
     return false;
   }
+
   public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
       PortSymbol portSymbol) {
     //TODO: Write me
@@ -260,7 +258,7 @@ public class ComponentHelper {
       for (int counter = 0; counter < numberOfMissingParameters; counter++) {
         // Fill up from the last parameter
         final ASTArcParameter astParameter = parameters.get(parameters.size() - 1 - counter);
-        final String prettyprint = printer.prettyprint(astParameter.getValue());
+        final String prettyprint = printer.prettyprint(astParameter.getDefault());
         outputParameters.add(outputParameters.size() - counter, prettyprint);
       }
     }
@@ -270,11 +268,11 @@ public class ComponentHelper {
 
   public static String printTypeArguments(List<TypeVarSymbol> types) {
     String result = "";
-    MCFullGenericTypesPrettyPrinter printer = new MCFullGenericTypesPrettyPrinter(
-        new IndentPrinter());
+    List<String> typeNames = new ArrayList<>();
     for (TypeVarSymbol type : types) {
-      result +=
+      typeNames.add(type.getName());
     }
+    return String.join(", ", typeNames);
   }
 
   /**
@@ -313,7 +311,8 @@ public class ComponentHelper {
       // format simple component type name to full component type name
       List<TypeVarSymbol> types = new ArrayList<>(
           componentTypeReference.getLoadedSymbol().getTypeParameters());
-      types = addTypeParameterComponentPackage(instance, types);
+      //TODO: we probably still need the following call?
+      //types = addTypeParameterComponentPackage(instance, types);
       result += printTypeArguments(types);
     }
     if (interfaceToImplementation.containsKey(result)) {
@@ -321,6 +320,7 @@ public class ComponentHelper {
     }
     return result;
   }
+
 
   /**
    * Replace subcomponent instance type with generic if it is an interface type.
@@ -337,9 +337,13 @@ public class ComponentHelper {
    * @param interfaceToImplementation binding which replaces an interface type if no generic is used.
    * @return the subcomponent type name without package.
    */
+
   public static String getSubComponentTypeNameWithBinding(ComponentTypeSymbol comp,
       ComponentInstanceSymbol instance,
       HashMap<String, String> interfaceToImplementation) {
+    return comp.getName();
+    //TODO: Implement me
+    /*
     HashMap<String, String> interfaceToImplementationGeneric = new HashMap<>(
         interfaceToImplementation);
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
@@ -353,7 +357,7 @@ public class ComponentHelper {
         // get interface component type name and the replacing generic name.
         String interfaceCompName = interfaceComp.getName();
         if (comp.isPresentAstNode()) {
-          ASTComponentType compBind = (ASTComponentType) (comp.getAstNode());
+          ASTComponentType compBind = comp.getAstNode();
           String typeName = GenericBindingUtil.getSubComponentType(compBind, instance);
           // replace the interface component type of the instance with the generic type.
           if (typeName != null && interfaceCompName != null && !interfaceCompName
@@ -365,6 +369,7 @@ public class ComponentHelper {
       }
     }
     return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementationGeneric);
+     */
   }
 
   /**
@@ -652,7 +657,7 @@ public class ComponentHelper {
   /* =================== MontiThings Adapter ==================== */
   /* ============================================================ */
 
-  protected static FluentIterable<ASTArcElement> elementsOf(ComponentTypeSymbol component) {
+  public static FluentIterable<ASTArcElement> elementsOf(ComponentTypeSymbol component) {
     return FluentIterable.from(component.getAstNode().getBody().getArcElementList());
   }
 
@@ -695,7 +700,6 @@ public class ComponentHelper {
     return ports;
   }
 
-
   public static boolean portIsComparedToNoData(ASTExpression e, String portName) {
     List<ASTNameExpression> usedNames = ExpressionUtil.getNameExpressionElements(e);
     for (ASTNameExpression name : usedNames) {
@@ -720,16 +724,34 @@ public class ComponentHelper {
    * @return unsorted list of all ports for which a batch statement exists
    */
   public static List<PortSymbol> getPortsInBatchStatement(ComponentTypeSymbol component) {
-    List<PortSymbol> result = component.getAllPorts();
-    result.removeAll(getPortsNotInBatchStatements(component));
-    return result;
+    List<ASTAnnotatedPort> bufferPorts = elementsOf(component)
+        .filter(ASTAnnotatedPort.class)
+        .filter(p -> p.getPortAnnotation() instanceof ASTBufferedPort)
+        .toList();
+    List<String> bufferPortsNames = new ArrayList<>();
+    for (ASTAnnotatedPort port : bufferPorts) {
+      for (ASTPortDeclaration decl : port.getPortDeclarationList()) {
+        for (ASTPort p : decl.getPortList()) {
+          bufferPortsNames.add(p.getName());
+        }
+      }
+    }
+
+    List<PortSymbol> ports = new ArrayList<>();
+    IArcBasisScope s = component.getSpannedScope();
+    for (String bufferedPort : bufferPortsNames) {
+      Optional<PortSymbol> resolve = s.resolvePort(bufferedPort);
+      resolve.ifPresent(ports::add);
+    }
+    return ports;
   }
 
   /**
    * Find all ports of a component that DON'T appear in any batch statement
    */
   public static List<PortSymbol> getPortsNotInBatchStatements(ComponentTypeSymbol component) {
-    // TODO: Write me
-    return new ArrayList<>();
+    List<PortSymbol> result = component.getAllPorts();
+    result.removeAll(getPortsInBatchStatement(component));
+    return result;
   }
 }

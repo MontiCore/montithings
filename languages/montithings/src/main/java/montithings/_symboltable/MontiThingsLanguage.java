@@ -3,6 +3,10 @@ package montithings._symboltable;
 
 public class MontiThingsLanguage extends MontiThingsLanguageTOP {
 
+  public static final String LANGUAGE_NAME = "MontiThings";
+
+  public static final String FILE_ENDING = "mt";
+
   protected MontiThingsModelLoader modelLoader = new MontiThingsModelLoader(this);
 
   public MontiThingsLanguage(String langName, String fileEnding) {
@@ -10,7 +14,7 @@ public class MontiThingsLanguage extends MontiThingsLanguageTOP {
   }
 
   public MontiThingsLanguage() {
-    super("MontiThings", ".mc4");
+    super(LANGUAGE_NAME, FILE_ENDING);
   }
 
   @Override
