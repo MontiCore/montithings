@@ -3,11 +3,11 @@ package montithings._visitor;
 
 import arcbasis._ast.ASTArcBasisNode;
 import com.google.common.base.Preconditions;
-import de.monticore.expressions.setexpressions._ast.ASTSetInExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentModifier;
 import montithings._ast.ASTMTComponentType;
+import montithings._ast.ASTSetInExpression;
 import net.sourceforge.plantuml.Log;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -66,7 +66,7 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
   }
 
   @Override
-  public void handle(ASTMTComponentModifier node) {
+  public void handle(@NotNull ASTMTComponentModifier node) {
     if(node.isInterface()){
       this.getPrinter().print("interface ");
     }
@@ -82,9 +82,9 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
   }
 
   @Override
-  public void handle(@NotNull ASTSetInExpression node) {
+  public void handle(@NotNull ASTSetInExpression node){
     node.getElem().accept(this.getRealThis());
-    this.getPrinter().print(node.getOperator());
+    this.getPrinter().print(" "+node.getOperator()+" ");
     node.getSet().accept(this.getRealThis());
   }
 
