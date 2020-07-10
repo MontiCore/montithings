@@ -1,15 +1,13 @@
 package hierarchy;
 
 <<timesync>> application Example {
-  component Source source;
-  component Mod3 mod;
-  component Sink sink;
+  Source source;
+  Mod3 mod;
+  Sink sink;
 
-  connect source.value -> mod.inport;
-  connect mod.outport -> sink.value;
+  source.value -> mod.inport;
+  mod.outport -> sink.value;
 
-  control {
-    update interval 1sec;
-  }
+  update interval 1sec;
 
 }

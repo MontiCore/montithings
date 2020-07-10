@@ -1,19 +1,17 @@
 package hierarchy;
 
-<<timesync>> application Example {
-  component Source source;
-  component Sink sink;
-  component LowPassFilter (5) lpf;
-  component Converter c;
-  component Double d;
+application Example {
+  Source source;
+  Sink sink;
+  LowPassFilter lpf (5);
+  Converter c;
+  Double d;
 
-  connect source.value -> lpf.inport;
-  connect lpf.outport -> c.inport;
-  connect c.outport -> d.x;
-  connect d.y -> sink.value;
+  source.value -> lpf.inport;
+  lpf.outport -> c.inport;
+  c.outport -> d.x;
+  d.y -> sink.value;
 
-  control {
-    update interval 1sec;
-  }
+  update interval 1sec;
 
 }
