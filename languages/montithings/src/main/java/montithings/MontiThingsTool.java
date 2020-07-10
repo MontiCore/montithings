@@ -176,6 +176,16 @@ public class MontiThingsTool extends MontiArcTool {
     scope.add(new TypeSymbol("Double"));
     scope.add(new TypeSymbol("Float"));
 
+    //primitives
+    scope.add(new TypeSymbol("int"));
+    scope.add(new TypeSymbol("boolean"));
+    scope.add(new TypeSymbol("float"));
+    scope.add(new TypeSymbol("double"));
+    scope.add(new TypeSymbol("char"));
+    scope.add(new TypeSymbol("long"));
+    scope.add(new TypeSymbol("short"));
+    scope.add(new TypeSymbol("byte"));
+
     return scope;
   }
 
