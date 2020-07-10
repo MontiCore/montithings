@@ -16,6 +16,7 @@ import de.se_rwth.commons.groovy.GroovyInterpreter;
 import de.se_rwth.commons.groovy.GroovyRunner;
 import de.se_rwth.commons.logging.Log;
 import groovy.lang.Script;
+import montiarc.util.Modelfinder;
 
 /**
  * Script for generating C++ Code from CD4A models

@@ -5,13 +5,12 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMontiArcNode;
-import montiarc._symboltable.IMontiArcScope;
+import montiarc.util.DirectoryUtil;
+import montiarc.util.Modelfinder;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings.generator.cd2cpp.CppGenerator;
-import montithings.generator.cd2cpp.Modelfinder;
 import montithings.generator.codegen.TargetPlatform;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
@@ -87,10 +86,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         .getModelsInModelPath(modelPath, MontiThingsLanguage.FILE_ENDING);
     // 2. Initialize SymbolTable
     Log.info("Initializing symboltable", TOOL_NAME);
-    String basedir = getBasedirFromModelAndTargetPath(modelPath.getAbsolutePath(),
+    String basedir = DirectoryUtil.getBasedirFromModelAndTargetPath(modelPath.getAbsolutePath(),
         target.getAbsolutePath());
     IMontiThingsScope symTab = initSymbolTable(modelPath,
-        Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
+        //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
         hwcPath);
 
     for (String model : foundModels) {
@@ -215,37 +214,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     return interfaceToImplementation;
-  }
-
-  /**
-   * Compares the two paths and returns the common path. The common path is the
-   * basedir.
-   */
-  protected String getBasedirFromModelAndTargetPath(String modelPath, String targetPath) {
-    String basedir = "";
-
-    StringBuilder sb = new StringBuilder();
-    String seperator = File.separator;
-    int lastFolderIndex = 0;
-    for (int i = 0; i < modelPath.length(); i++) {
-      // Assuming a seperator is always length 1
-      if (seperator.length() != 1) {
-        Log.error("0x???? File separator should be a single char. Use a less strange system");
-      }
-      else if (modelPath.charAt(i) == seperator.charAt(0)) {
-        lastFolderIndex = i;
-      }
-
-      if (modelPath.charAt(i) == targetPath.charAt(i)) {
-        sb.append(modelPath.charAt(i));
-      }
-      else {
-        // basedir includes the seperator
-        basedir = sb.substring(0, lastFolderIndex + 1);
-        break;
-      }
-    }
-    return basedir;
   }
 
   protected void generateCD(File modelPath, File targetFilepath) {

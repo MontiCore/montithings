@@ -5,6 +5,8 @@ import arcbasis._ast.ASTConnector
 import arcbasis._ast.ASTPortAccess
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings._ast.ASTMTComponentType
+import montithings.generator.helper.ComponentHelper
+import montithings.generator.codegen.xtend.util.Utils
 
 class Init {
 	def static print(ComponentTypeSymbol comp, String compname) {
@@ -37,17 +39,17 @@ class Init {
 		    «ENDIF»
 			
 		«FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
-		          «FOR ASTPortAccess target : connector.targetList»
-		            «IF target.portSymbol.isIncoming»
-		            	// implements "connect «connector»"
-                  	    «target.component»«IF target.component.equals("this")»->«ELSE».«ENDIF»getPort«target.port.toFirstUpper» ()->setDataProvidingPort(«connector.source.component»«IF connector.source.component.equals("this")»->«ELSE».«ENDIF»getPort«connector.source.port.toFirstUpper» ());
-		            «ENDIF»
-		          «ENDFOR»
-		    «ENDFOR» 
+			«FOR ASTPortAccess target : connector.targetList»
+			«IF ComponentHelper.isIncomingPort(comp, target)»
+				// implements "connect «connector»"
+				«Utils.printGetPort(target)» ()->setDataProvidingPort («Utils.printGetPort(connector.source)»);
+			«ENDIF»
+			«ENDFOR»
+		«ENDFOR» 
 		    
-		    «FOR subcomponent : comp.subComponents»
-    		  «subcomponent.name».init();
-            «ENDFOR» 
+		«FOR subcomponent : comp.subComponents»
+			«subcomponent.name».init();
+		«ENDFOR» 
 		}
 		'''
 	}

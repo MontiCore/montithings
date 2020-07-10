@@ -5,20 +5,15 @@ import montithings.generator.codegen.xtend.behavior.AtomicComponentStandardImple
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.codegen.xtend.util.ArduinoReadme
-import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.TargetPlatform
-import de.monticore.ast.ASTCNode
 import de.monticore.io.FileReaderWriter
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.List
 import java.util.HashMap
-import arcbasis._ast.ASTComponentType
 import arcbasis._symboltable.ComponentTypeSymbol
-import montithings._ast.ASTMTComponentType
-import montithings._ast.ASTBehavior
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -52,7 +47,7 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp as ComponentTypeSymbol, foundModels, compname, interfaceToImplementation, platform);
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, interfaceToImplementation, platform);
     }
     
 	// Generate deploy class
@@ -70,7 +65,6 @@ class MTGenerator {
   }
 
   def static generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath, String compname) {
-    var compAST = comp.astNode as ASTMTComponentType
     var boolean hasBehavior = ComponentHelper.hasBehavior(comp);
 
     if (!hasBehavior) {

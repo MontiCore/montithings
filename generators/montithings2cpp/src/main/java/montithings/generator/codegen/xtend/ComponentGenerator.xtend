@@ -355,14 +355,14 @@ class ComponentGenerator {
 			«printAssumptionsCheck(comp, compname)»
 			
 			«FOR subcomponent : comp.subComponents»
-				this->«subcomponent.name».compute();
-      «ENDFOR»
+			this->«subcomponent.name».compute();
+		«ENDFOR»
 
-      «printComputeResults(comp, compname, true)»
-      «FOR port: comp.outgoingPorts»
-        ««« «ValueCheck.printPortValuecheck(comp, port)»
-      «ENDFOR»
-      «printGuaranteesCheck(comp, compname)»
+		«printComputeResults(comp, compname, true)»
+		«FOR port: comp.outgoingPorts»
+		««« «ValueCheck.printPortValuecheck(comp, port)»
+		«ENDFOR»
+		«printGuaranteesCheck(comp, compname)»
 			}
 		}
 		'''

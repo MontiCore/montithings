@@ -2,7 +2,7 @@
 package montithings.generator
 
 info("--------------------------------")
-info("MAA Generator")
+info("MT Generator")
 info("--------------------------------")
 debug("Model path     : " + modelPath)
 debug("Output dir     : " + out.getAbsolutePath())
@@ -11,5 +11,5 @@ debug("Platform       : " + platform)
 debug("--------------------------------")
 generate(modelPath, out, handwrittenCode, platform)
 info("--------------------------------")
-info("MAA Generator END")
+info("MT Generator END")
 info("--------------------------------")

@@ -4,7 +4,6 @@ package montithings.generator.codegen.xtend.behavior
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
-import montithings.generator.helper.ComponentHelper
 
 class AtomicComponentStandardImplementation {
 	def static generateAbstractAtomicImplementationHeader(ComponentTypeSymbol comp, String compname) {

@@ -377,12 +377,10 @@ public class ComponentHelper {
    * port.
    *
    * @param cmp      The component defining the connector
-   * @param isSource Specifies whether the port to check is the source port of the
-   *                 connector or the target port
+   * @param portAccess the portaccess to evaluate
    * @return true, if the port is an incoming port. False, otherwise.
    */
-  public boolean isIncomingPort(ComponentTypeSymbol cmp, ASTPortAccess portAccess,
-      boolean isSource) {
+  public static boolean isIncomingPort(ComponentTypeSymbol cmp, ASTPortAccess portAccess) {
     Optional<PortSymbol> port;
     String portNameUnqualified = portAccess.getPort();
     // port is of subcomponent
