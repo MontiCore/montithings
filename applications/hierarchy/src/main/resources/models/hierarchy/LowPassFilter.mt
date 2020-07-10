@@ -5,8 +5,8 @@ component LowPassFilter (int threshold) {
   port out int outport;
 
   behavior {
-    if (inport < threshold)  : passthrough();
-    else dismiss();
+    if (inport < threshold)  outport = inport;
+    else outport = 0;
   }
 
 }

@@ -4,8 +4,8 @@ component Calc<T extends MathExpression> {
   port in int x;
   port out int y;
 
-  component T t;
+  T t;
 
-  connect x -> t.x;
-  connect t.y -> y;
+  x -> t.x;
+  t.y -> y;
 }
