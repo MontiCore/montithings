@@ -7,6 +7,7 @@ import comfortablearc._visitor.ComfortableArcPrettyPrinter;
 import conditionbasis._visitor.ConditionBasisPrettyPrinter;
 import conditioncatch._visitor.ConditionCatchPrettyPrinter;
 import de.monticore.MCCommonLiteralsPrettyPrinter;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
 import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
@@ -105,6 +106,12 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
   }
 
   public String prettyprint(ASTMontiArcNode a) {
+    getPrinter().clearBuffer();
+    a.accept(getRealThis());
+    return getPrinter().getContent();
+  }
+
+  public String prettyprint(ASTExpression a) {
     getPrinter().clearBuffer();
     a.accept(getRealThis());
     return getPrinter().getContent();
