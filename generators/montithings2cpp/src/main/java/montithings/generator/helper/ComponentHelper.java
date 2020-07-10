@@ -146,7 +146,7 @@ public class ComponentHelper {
    */
   public static String getRealPortTypeString(ComponentTypeSymbol ComponentTypeSymbol,
       PortSymbol portSymbol) {
-    return portSymbol.getType().toString();
+    return portSymbol.getType().print();
   }
 
   public static String printPackageNamespace(ComponentTypeSymbol comp, CDTypeSymbol cdtype) {
@@ -341,7 +341,7 @@ public class ComponentHelper {
   public static String getSubComponentTypeNameWithBinding(ComponentTypeSymbol comp,
       ComponentInstanceSymbol instance,
       HashMap<String, String> interfaceToImplementation) {
-    return comp.getName();
+    return instance.getType().getLoadedSymbol().getName();
     //TODO: Implement me
     /*
     HashMap<String, String> interfaceToImplementationGeneric = new HashMap<>(

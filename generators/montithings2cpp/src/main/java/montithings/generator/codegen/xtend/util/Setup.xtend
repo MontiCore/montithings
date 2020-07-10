@@ -39,7 +39,7 @@ class Setup {
 			if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 			«IF comp.presentParentComponent»
 			super.setUp(enclosingComponentTiming);
-			«ENDIF» TODO
+			«ENDIF» 
 			«FOR subcomponent : comp.subComponents»
 			«subcomponent.name».setUp(enclosingComponentTiming);
 	        «ENDFOR»
@@ -48,7 +48,7 @@ class Setup {
 			«FOR ASTPortAccess target : connector.targetList»
 			«IF !ComponentHelper.isIncomingPort(comp, target)»
 			// implements "connect «connector»"
-			«Utils.printGetPort(target)» ()->setDataProvidingPort («Utils.printGetPort(connector.source)»);
+			«Utils.printGetPort(target)»->setDataProvidingPort («Utils.printGetPort(connector.source)»);
 			«ENDIF»
 			«ENDFOR»
 		«ENDFOR»
