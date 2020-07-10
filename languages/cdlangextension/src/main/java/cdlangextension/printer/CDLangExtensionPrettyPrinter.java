@@ -1,17 +1,19 @@
 package cdlangextension.printer;
 
 import cdlangextension._ast.ASTCDEImportStatement;
+import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._ast.ASTDepLanguage;
 import cdlangextension._visitor.CDLangExtensionVisitor;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * PrettyPrinter for the CDLangExtension Language.
  *
  * @author Julian Krebber
  */
-public class CDLangExtensionPrinter extends MCBasicTypesPrettyPrinter implements CDLangExtensionVisitor {
+public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter implements CDLangExtensionVisitor {
 
   private CDLangExtensionVisitor realThis = this;
 
@@ -20,7 +22,7 @@ public class CDLangExtensionPrinter extends MCBasicTypesPrettyPrinter implements
    *
    * @param printer the printer to write to.
    */
-  public CDLangExtensionPrinter(IndentPrinter printer) {
+  public CDLangExtensionPrettyPrinter(IndentPrinter printer) {
     super(printer);
   }
 
@@ -67,9 +69,19 @@ public class CDLangExtensionPrinter extends MCBasicTypesPrettyPrinter implements
    *
    * @param a AST to be printed.
    */
+  @Override
   public void traverse(ASTCDEImportStatement a){
     String s = "from " + a.getImportSource() + " import " + a.getImportClass() + " as " + a.getName() + ";";
     getPrinter().println(s);
+  }
+
+  @Override
+  public void visit(ASTCDLangExtensionUnit a){
+    if(!a.isEmptyPackages()) {
+      this.getPrinter().print("package ");
+      StringUtils.join(a.getPackageList(),".");
+      this.getPrinter().println(";");
+    }
   }
 
 

@@ -80,6 +80,11 @@
             <classifier>${grammars.classifier}</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>montiarc-fe</artifactId>
+        </dependency>
+
         <!-- MontiCore Languages -->
         <dependency>
             <groupId>de.monticore</groupId>

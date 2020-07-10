@@ -1,11 +1,11 @@
 /* (c) https://github.com/MontiCore/monticore */
 package prepostcondition.helper;
 
-import prepostcondition.visitor.GuardExpressionVisitor;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import prepostcondition._visitor.GuardExpressionVisitor;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package prepostcondition.visitor;
+package prepostcondition._visitor;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisVisitor;
