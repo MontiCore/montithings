@@ -74,11 +74,13 @@
 			<version>${project.version}</version>
 		</dependency>
 
+        <!--
 		<dependency>
 			<groupId>montithings.languages</groupId>
 			<artifactId>cdlangextension</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        -->
 
 		<dependency>
 			<groupId>montithings.languages</groupId>
