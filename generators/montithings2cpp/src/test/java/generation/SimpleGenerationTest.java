@@ -14,9 +14,9 @@ import java.nio.file.Paths;
 
 public class SimpleGenerationTest {
 
-  private static final Path MODELPATH = Paths.get("src/test/resources/models/portTest/");
+  private static final Path MODELPATH = Paths.get("src/test/resources/models/hierarchy/");
 
-  private static final Path HWCPATH = Paths.get("src/test/resources/hwc/portTest/");
+  private static final Path HWCPATH = Paths.get("src/test/resources/hwc/hierarchy/");
 
   private static final Path TARGETPATH = Paths.get("target/generated-test-sources/");
 
