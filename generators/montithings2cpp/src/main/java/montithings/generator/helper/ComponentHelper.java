@@ -8,11 +8,9 @@ import com.google.common.collect.FluentIterable;
 import de.monticore.cd.cd4analysis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
-import de.monticore.types.prettyprint.MCFullGenericTypesPrettyPrinter;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 import de.se_rwth.commons.StringTransformations;
@@ -21,6 +19,7 @@ import montiarc._ast.ASTArcTiming;
 import montiarc._symboltable.MontiArcArtifactScope;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
+import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.xtend.util.Utils;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
@@ -235,7 +234,7 @@ public class ComponentHelper {
    */
   public Collection<String> getParamValues(ComponentInstanceSymbol param) {
     List<ASTExpression> configArguments = param.getArguments();
-    ExpressionsBasisPrettyPrinter printer = new ExpressionsBasisPrettyPrinter(new IndentPrinter());
+    MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator(new IndentPrinter());
 
     List<String> outputParameters = new ArrayList<>();
     for (ASTExpression configArgument : configArguments) {
