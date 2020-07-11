@@ -28,7 +28,7 @@ import portextensions._ast.ASTSyncStatement;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
 import prepostcondition.helper.ExpressionUtil;
-import prepostcondition.visitor.GuardExpressionVisitor;
+import prepostcondition._visitor.GuardExpressionVisitor;
 
 import java.io.File;
 import java.nio.file.Paths;

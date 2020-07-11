@@ -35,18 +35,6 @@
 			<version>${monticore.version}</version>
 		</dependency>
 
-		<!--<dependency>
-			<groupId>montiarc.libraries</groupId>
-			<artifactId>simulator-rte</artifactId>
-			<version>${montiarc.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>montiarc.libraries</groupId>
-			<artifactId>maa-rte</artifactId>
-			<version>${montiarc.version}</version>
-		</dependency>-->
-
 		<dependency>
 			<groupId>de.se_rwth.commons</groupId>
 			<artifactId>se-commons-groovy</artifactId>
@@ -85,6 +73,24 @@
 		<dependency>
 			<groupId>montithings.languages</groupId>
 			<artifactId>montiarc-extensions</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>montithings.languages</groupId>
+			<artifactId>monticore-extensions</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>montithings.languages</groupId>
+			<artifactId>error-handling</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>montithings.languages</groupId>
+			<artifactId>phyprops</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

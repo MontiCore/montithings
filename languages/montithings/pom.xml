@@ -80,11 +80,6 @@
             <classifier>${grammars.classifier}</classifier>
         </dependency>
 
-        <dependency>
-            <groupId>montiarc.languages</groupId>
-            <artifactId>montiarc-fe</artifactId>
-        </dependency>
-
         <!-- MontiCore Languages -->
         <dependency>
             <groupId>de.monticore</groupId>
@@ -154,6 +149,12 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc</groupId>
+            <artifactId>util</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
