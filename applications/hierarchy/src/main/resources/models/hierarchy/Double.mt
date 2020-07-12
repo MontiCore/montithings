@@ -4,7 +4,7 @@ component Double {
   port in int x;
   port out int y;
 
-  Sum;
+  Sum sum;
 
   x -> sum.in1;
   x -> sum.in2;

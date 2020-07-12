@@ -80,14 +80,14 @@ class MontiThingsParserTest extends AbstractTest {
 
   @ParameterizedTest
   @CsvSource({ "valid/Composed.mt", "valid/Sink.mt", "valid/PrePostcondition.mt",
-      "valid/PortExtensions.mt", "valid/SetExpressions.mt", "valid/Timing.mt" })
+      "valid/PortExtensions.mt", "valid/SetExpressions.mt", "valid/Timing.mt", "valid/Statements.mt" })
   public void shouldParseWithoutError(String fileName) {
     parse(Paths.get(RELATIVE_MODEL_PATH, PACKAGE, fileName).toString(), false);
   }
 
   @ParameterizedTest
   @CsvSource({ "valid/Composed.mt", "valid/Sink.mt", "valid/PrePostcondition.mt",
-      "valid/PortExtensions.mt", "valid/SetExpressions.mt", "valid/Timing.mt"})
+      "valid/PortExtensions.mt", "valid/SetExpressions.mt", "valid/Timing.mt", "valid/Statements.mt"})
   public void shouldPrettyPrintWithoutError(String fileName) {
     ASTMACompilationUnit unit = parse(Paths.get(RELATIVE_MODEL_PATH, PACKAGE, fileName).toString(), false).orElse(null);
     String s = new MontiThingsPrettyPrinterDelegator().prettyprint(unit);
