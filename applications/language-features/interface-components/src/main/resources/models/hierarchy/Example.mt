@@ -1,6 +1,6 @@
 package hierarchy;
 
-<<timesync>> application Example {
+application Example {
   Source source;
   Calc<Double> c;
   Sink sink;
@@ -9,5 +9,5 @@ package hierarchy;
   c.y -> sink.value;
 
   update interval 1sec;
-
+  timing sync;
 }
