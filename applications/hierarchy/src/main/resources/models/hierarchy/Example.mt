@@ -13,4 +13,5 @@ application Example {
   d.y -> sink.value;
 
   update interval 1sec;
+  timing sync;
 }
