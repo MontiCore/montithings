@@ -63,7 +63,7 @@ class Utils {
    */
   def static printVariables(ComponentTypeSymbol comp) {
     return '''
-      «FOR variable : comp.fields»
+      «FOR variable : ComponentHelper.getFields(comp)»
         «printMember(ComponentHelper.printCPPTypeName(variable.type), variable.name)»
       «ENDFOR»
     '''

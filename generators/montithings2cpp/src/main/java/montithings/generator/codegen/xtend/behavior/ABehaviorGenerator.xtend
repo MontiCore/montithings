@@ -40,7 +40,7 @@ abstract class ABehaviorGenerator {
 «Utils.printNamespaceStart(comp)»
 
 «Utils.printTemplateArguments(comp)»
-class «compname»Impl : IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
+class «compname»Impl : public IComputable<«compname»Input«generics»,«compname»Result«generics»>{ {
 private:  
     «Utils.printVariables(comp)»
     «Utils.printConfigParameters(comp)»

@@ -14,6 +14,7 @@ import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.expressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.prettyprint.MCBasicsPrettyPrinter;
+import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
@@ -95,7 +96,7 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
     setMontiThingsVisitor(new MontiThingsPrettyPrinter(printer));
   }
 
-  protected IndentPrinter getPrinter() {
+  public IndentPrinter getPrinter() {
     return this.printer;
   }
 
@@ -112,6 +113,12 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
   }
 
   public String prettyprint(ASTExpression a) {
+    getPrinter().clearBuffer();
+    a.accept(getRealThis());
+    return getPrinter().getContent();
+  }
+
+  public String prettyprint(ASTMCJavaBlock a) {
     getPrinter().clearBuffer();
     a.accept(getRealThis());
     return getPrinter().getContent();

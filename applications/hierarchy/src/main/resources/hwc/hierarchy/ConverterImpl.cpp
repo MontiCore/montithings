@@ -8,7 +8,7 @@ ConverterResult ConverterImpl::getInitialValues(){
 }
 
 ConverterResult ConverterImpl::compute(ConverterInput input){
-  if (!input.getInport()) : return {0};
+  if (!input.getInport()) return {0};
 	return {input.getInport().value()};
 }
 
