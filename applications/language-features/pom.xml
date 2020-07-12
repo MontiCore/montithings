@@ -15,7 +15,6 @@
 
   <modules>
     <!--
-    <module>automata</module>
     <module>assumptions-guarantees</module>
     <module>class-diagrams</module>
     <module>error-handling</module>
