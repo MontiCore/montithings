@@ -6,7 +6,7 @@ import fireAlarm.actuator.*;
 import fireAlarm.contr.FireExtinguisherContr;
 
 /* Test component FireAlarm */
-<<deploy>> component FireAlarm {
+application FireAlarm {
 
   /* Subcomponents */
   
