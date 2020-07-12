@@ -21,7 +21,7 @@ class Implementation {
 «Utils.printTemplateArguments(comp)»
 class «compname»Impl«IF existsHWC»TOP«ENDIF» : public IComputable<«compname»Input«generics»,«compname»Result«generics»>{
 	
-private:  
+protected:  
     «Utils.printVariables(comp)»
     ««« Currently useless. MontiArc 6's getFields() returns both variables and parameters
     ««« «Utils.printConfigParameters(comp)»
