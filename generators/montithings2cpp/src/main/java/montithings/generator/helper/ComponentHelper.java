@@ -18,7 +18,9 @@ import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
 import montiarc._symboltable.MontiArcArtifactScope;
 import montithings._ast.ASTBehavior;
+import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
+import montithings._ast.ASTMTCondition;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.generator.visitor.CppAssignmentPrettyPrinter;
@@ -49,7 +51,7 @@ public class ComponentHelper {
   public ComponentHelper(ComponentTypeSymbol component) {
     this.component = component;
     if (component.isPresentAstNode()) {
-      componentNode = (ASTComponentType) component.getAstNode();
+      componentNode = component.getAstNode();
     }
     else {
       componentNode = null;
@@ -660,11 +662,23 @@ public class ComponentHelper {
   }
 
   public static List<ASTPrecondition> getPreconditions(ComponentTypeSymbol component) {
-    return elementsOf(component).filter(ASTPrecondition.class).toList();
+    List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
+    return conditions.stream()
+      .filter(c -> c.getCondition() instanceof ASTPrecondition)
+      .map(c -> (ASTPrecondition)c.getCondition())
+      .collect(Collectors.toList());
   }
 
   public static List<ASTPostcondition> getPostconditions(ComponentTypeSymbol component) {
-    return elementsOf(component).filter(ASTPostcondition.class).toList();
+    List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
+    return conditions.stream()
+      .filter(c -> c.getCondition() instanceof ASTPostcondition)
+      .map(c -> (ASTPostcondition)c.getCondition())
+      .collect(Collectors.toList());
+  }
+
+  public static List<ASTMTCatch> getCatchedConditions(ComponentTypeSymbol component) {
+    return elementsOf(component).filter(ASTMTCatch.class).toList();
   }
 
   public static List<ASTArcTiming> getTiming(ComponentTypeSymbol component) {
