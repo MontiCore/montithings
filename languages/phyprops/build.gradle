@@ -24,21 +24,21 @@ configurations { grammar }
 dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
 
-  implementation "montiarc.languages:montiarc-fe:6.0.0-SNAPSHOT"
-  implementation "montiarc.languages:montiarc-fe:6.0.0-SNAPSHOT"
-  implementation "de.se_rwth.commons:se-commons-logging:1.7.9"
-  implementation "com.google.guava:guava:18.0"
+  implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+  implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+  implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+  implementation "com.google.guava:guava:$guava_version"
   implementation "org.antlr:antlr4-runtime:4.7.1"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:javaDSL:4.3.11.1"
+  implementation "de.monticore:javaDSL:$javadsl_version"
   implementation "org.apache.commons:commons-lang3:3.9"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
-  testImplementation "ch.qos.logback:logback-classic:1.1.2"
-  testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.2"
-  testImplementation "org.junit.jupiter:junit-jupiter-params:5.5.2"
+  testImplementation "ch.qos.logback:logback-classic:$logback_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
   compileOnly "de.monticore:monticore-grammar:$monticore_version"
-  compileOnly "de.monticore:javaDSL:4.3.11.1"
+  compileOnly "de.monticore:javaDSL:$javadsl_version"
 }
 
 task generateGrammarPhyprops(type: MCTask) {
