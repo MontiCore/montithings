@@ -1,0 +1,57 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+pluginManagement {
+  repositories {
+    mavenLocal()
+    maven {
+      credentials.username mavenUser
+      credentials.password mavenPassword
+      url sePublicRepo
+    }
+    gradlePluginPortal()
+  }
+}
+
+rootProject.name = 'montithings-core'
+include(':languages:montithings')
+//include(':languages:bindings')
+//include(':languages:cdlangextension')
+include(':languages:error-handling')
+include(':languages:montiarc-extensions')
+include(':languages:monticore-extensions')
+include(':languages:phyprops')
+include(':languages')
+include(':generators:montithings2cpp')
+include(':generators:cd2cpp')
+include(':generators')
+include(':libraries')
+/*include(':applications:fireAlarm')
+include(':applications:hierarchy')
+include(':applications:language-features:automata')
+include(':applications:language-features:assumptions-guarantees')
+include(':applications:language-features:class-diagrams')
+include(':applications:language-features:error-handling')
+include(':applications:language-features:if-then-else-behavior')
+include(':applications:language-features:interface-components')
+include(':applications:language-features:resource-ports')
+include(':applications:language-features')
+include(':applications')*/
+project(':languages:montithings').projectDir = file('languages/montithings')
+//project(':languages:bindings').projectDir = file('languages/bindings')
+//project(':languages:cdlangextension').projectDir = file('languages/cdlangextension')
+project(':languages:error-handling').projectDir = file('languages/error-handling')
+project(':languages:montiarc-extensions').projectDir = file('languages/montiarc-extensions')
+project(':languages:monticore-extensions').projectDir = file('languages/monticore-extensions')
+project(':languages:phyprops').projectDir = file('languages/phyprops')
+project(':generators:montithings2cpp').projectDir = file('generators/montithings2cpp')
+project(':generators:cd2cpp').projectDir = file('generators/cd2cpp')
+/*project(':applications:fireAlarm').projectDir = file('applications/fireAlarm')
+project(':applications:hierarchy').projectDir = file('applications/hierarchy')
+project(':applications:language-features:automata').projectDir = file('applications/language-features/automata')
+project(':applications:language-features:assumptions-guarantees').projectDir = file('applications/language-features/assumptions-guarantees')
+project(':applications:language-features:class-diagrams').projectDir = file('applications/language-features/class-diagrams')
+project(':applications:language-features:error-handling').projectDir = file('applications/language-features/error-handling')
+project(':applications:language-features:if-then-else-behavior').projectDir = file('applications/language-features/if-then-else-behavior')
+project(':applications:language-features:interface-components').projectDir = file('applications/language-features/interface-components')
+project(':applications:language-features:resource-ports').projectDir = file('applications/language-features/resource-ports')
+project(':applications:language-features').projectDir = file('applications/language-features')*/

@@ -1,0 +1,71 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+  id "org.xtext.xtend"
+}
+
+sourceSets {
+  main.xtendOutputDir = "$buildDir/xtend-gen/main"
+  test.xtendOutputDir = "$buildDir/xtend-gen/test"
+}
+
+group = "montithings.generators"
+
+test { useJUnitPlatform() }
+
+dependencies {
+  implementation "org.eclipse.xtend:org.eclipse.xtend.lib:2.22.0" //needed for the xtend plugin?
+  implementation "com.google.guava:guava:$guava_version"
+
+  implementation "montiarc.languages:montiarc-fe:6.0.0-SNAPSHOT"
+  implementation "de.monticore:monticore-emf-runtime:$monticore_version"
+  //implementation "montiarc.libraries:simulator-rte:6.0.0-SNAPSHOT" //TODO this is not in the MontiArc project anymore?
+  //implementation "montiarc.libraries:maa-rte:6.0.0-SNAPSHOT" //TODO this is not in the MontiArc project anymore?
+  implementation "de.se_rwth.commons:se-commons-groovy:1.7.9"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
+  implementation "de.monticore:monticore-grammar:$monticore_version"
+  implementation "de.monticore:javaDSL:4.3.11.1"
+  implementation project(":generators:cd2cpp")
+  implementation "de.monticore:monticore-generator:$monticore_version"
+  implementation project(":languages:montithings")
+  //implementation project(":languages:bindings")
+  runtimeOnly "ch.qos.logback:logback-classic:1.1.2"
+  testImplementation "junit:junit:4.12"
+  testImplementation "de.monticore:monticore-runtime:$monticore_version"
+  testImplementation "org.eclipse.emf:org.eclipse.emf.compare:1.2.0"
+  testImplementation "org.eclipse.emf:org.eclipse.emf.compare.match:1.2.0"
+  testImplementation "org.eclipse.emf:org.eclipse.emf.compare.diff:1.2.0"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+}
+
+task montithings_rte_Jar(type: Jar) {
+  from "$projectDir/src/main/resources/rte"
+  archiveClassifier = "$montithings_rte_classifier"
+}
+
+task montithings_headers_Jar(type: Jar) {
+  from "$projectDir/src/main/resources/header"
+  archiveClassifier = "$montithings_headers_classifier"
+}
+
+task montithings_libs_Jar(type: Jar) {
+  from "$projectDir/src/main/resources/lib"
+  archiveClassifier = "$montithings_libs_classifier"
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      artifactId = "$project.name"
+      from components.java
+      artifact montithings_rte_Jar
+      artifact montithings_headers_Jar
+      artifact montithings_libs_Jar
+    }
+  }
+}
+
+/*build.dependsOn generateXtext
+build.dependsOn generateTestXtext*/
