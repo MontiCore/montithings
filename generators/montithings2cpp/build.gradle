@@ -1,7 +1,7 @@
 /* (c) https://github.com/MontiCore/monticore */
 
 plugins {
-  id "org.xtext.xtend"
+  id "org.xtext.xtend" version "2.0.8"
 }
 
 sourceSets {
@@ -22,7 +22,7 @@ dependencies {
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:javaDSL:$javadsl_version"
+  implementation "de.monticore:javaDSL:4.3.11.1"
   implementation project(":generators:cd2cpp")
   implementation "de.monticore:monticore-generator:$monticore_version"
   implementation project(":languages:montithings")
