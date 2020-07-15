@@ -3,6 +3,8 @@ package montithings.generator.helper;
 
 import arcbasis._ast.*;
 import arcbasis._symboltable.*;
+import cdlangextension._ast.ASTCDEImportStatement;
+import cdlangextension._symboltable.CDEImportStatementSymbol;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
@@ -12,11 +14,13 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
+import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 import de.se_rwth.commons.StringTransformations;
 import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
 import montiarc._symboltable.MontiArcArtifactScope;
+import montiarc._symboltable.adapters.CDType2TypeAdapter;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
@@ -116,14 +120,60 @@ public class ComponentHelper {
   }
 
   public static boolean portUsesCdType(PortSymbol portSymbol) {
-    // TODO: Write me
-    return false;
+    return portSymbol.getType().getTypeInfo() instanceof CDType2TypeAdapter;
   }
 
   public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
     PortSymbol portSymbol) {
-    //TODO: Write me
-    return "";
+    if (!portUsesCdType(portSymbol)) {
+      throw new IllegalArgumentException(
+        "Can't print namespace of non-CD type " + portSymbol.getType().getTypeInfo().getFullName());
+    }
+    TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
+
+    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(portSymbol);
+    if (cdeImportStatementOpt.isPresent()) {
+      String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
+      return printPackageNamespaceFromString(
+        cdeImportStatementOpt.get().getImportClass().toString(), componentNamespace);
+    }
+    return printPackageNamespace(componentSymbol, cdTypeSymbol);
+  }
+
+  protected static String printPackageNamespaceFromString(String fullNamespaceSubcomponent,
+    String fullNamespaceEnclosingComponent) {
+    if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
+      fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
+      return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent)[1];
+    }
+    else {
+      return fullNamespaceSubcomponent;
+    }
+  }
+
+  /**
+   * Gets the c++ import statement for a given port type if available.
+   *
+   * @param portSymbol port using a class diagram type.
+   * @return c++ import statement of the port type if specified in the cd model. Otherwise empty.
+   */
+  public static Optional<ASTCDEImportStatement> getCppImportExtension(PortSymbol portSymbol) {
+    if (!portUsesCdType(portSymbol)) {
+      return Optional.empty();
+    }
+    //TODO
+    /*
+    TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
+    String CDEImportStatementSymbolId =
+      cdTypeSymbol.getPackageName() + "." + "Cpp" + "." + cdTypeSymbol.getName();
+    Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = portSymbol.getEnclosingScope()
+      .resolve(CDEImportStatementSymbolId, CDEImportStatementSymbol);
+    if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get()
+      .getCDEImportStatementNode().isPresent()) {
+      return Optional.of(cdeImportStatementSymbol.get().getCDEImportStatementNode().get());
+    }
+     */
+    return Optional.empty();
   }
 
   /**
@@ -142,17 +192,16 @@ public class ComponentHelper {
    * takes in to account whether the port is inherited and possible required
    * renamings due to generic type parameters and their actual arguments.
    *
-   * @param ComponentTypeSymbol Symbol of the component which contains the port
-   * @param portSymbol          Symbol of the port for which the type name should be
-   *                            determined.
+   * @param comp       Symbol of the component which contains the port
+   * @param portSymbol Symbol of the port for which the type name should be
+   *                   determined.
    * @return The String representation of the type of the port.
    */
-  public static String getRealPortTypeString(ComponentTypeSymbol ComponentTypeSymbol,
-    PortSymbol portSymbol) {
+  public static String getRealPortTypeString(ComponentTypeSymbol comp, PortSymbol portSymbol) {
     return portSymbol.getType().print();
   }
 
-  public static String printPackageNamespace(ComponentTypeSymbol comp, CDTypeSymbol cdtype) {
+  public static String printPackageNamespace(ComponentTypeSymbol comp, TypeSymbol cdtype) {
     String fullNamespaceSubcomponent = "montithings::" + cdtype.getFullName().replace(".", "::");
     String fullNamespaceEnclosingComponent = printPackageNamespaceForComponent(comp);
     if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
@@ -423,12 +472,15 @@ public class ComponentHelper {
   }
 
   public String getRealPortCppTypeString(PortSymbol port) {
-    return java2cppTypeString(getRealPortTypeString(port));
-
+    return java2cppTypeString(getRealPortCppTypeString(this.component, port));
   }
 
   public static String getRealPortCppTypeString(ComponentTypeSymbol comp, PortSymbol port) {
-    return java2cppTypeString(getRealPortTypeString(comp, port));
+    if (ComponentHelper.portUsesCdType(port)) {
+      return printCdPortPackageNamespace(comp, port);
+    } else {
+      return java2cppTypeString(getRealPortTypeString(comp, port));
+    }
   }
 
   /**
@@ -665,7 +717,7 @@ public class ComponentHelper {
     List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
     return conditions.stream()
       .filter(c -> c.getCondition() instanceof ASTPrecondition)
-      .map(c -> (ASTPrecondition)c.getCondition())
+      .map(c -> (ASTPrecondition) c.getCondition())
       .collect(Collectors.toList());
   }
 
@@ -673,7 +725,7 @@ public class ComponentHelper {
     List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
     return conditions.stream()
       .filter(c -> c.getCondition() instanceof ASTPostcondition)
-      .map(c -> (ASTPostcondition)c.getCondition())
+      .map(c -> (ASTPostcondition) c.getCondition())
       .collect(Collectors.toList());
   }
 
