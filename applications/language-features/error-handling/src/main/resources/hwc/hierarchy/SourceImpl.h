@@ -1,26 +1,17 @@
 #pragma once
-#include "SourceInput.h"
-#include "SourceResult.h"
-#include "IComputable.h"
-#include <stdexcept>
+#include <SourceImplTOP.h>
 
 namespace montithings {
 namespace hierarchy {
 
-class SourceImpl : IComputable<SourceInput,SourceResult>{
-	
-private:  
-    
+class SourceImpl : public SourceImplTOP {
+
+private:
+  int lastValue;
 public:
-    SourceImpl()
-    {
-    }
-
-    int lastValue;
-
-	//SourceImpl() = default;
-	SourceResult getInitialValues() override;
-	SourceResult compute(SourceInput input) override;
+  SourceImpl() = default;
+  SourceResult getInitialValues() override;
+  SourceResult compute(SourceInput input) override;
 };
 
 }}
