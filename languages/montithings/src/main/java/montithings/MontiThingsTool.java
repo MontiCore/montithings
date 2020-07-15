@@ -6,13 +6,17 @@ import arcbasis._ast.ASTComponentType;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import de.monticore.cd.cd4analysis.CD4AnalysisMill;
+import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisGlobalScope;
+import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import de.se_rwth.commons.logging.Log;
-import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._symboltable.*;
+import montiarc._symboltable.adapters.Field2CDFieldResolvingDelegate;
+import montiarc._symboltable.adapters.Type2CDTypeResolvingDelegate;
 import montiarc.util.Modelfinder;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
@@ -144,7 +148,20 @@ public class MontiThingsTool extends MontiArcTool {
 
     final ModelPath mp = new ModelPath(p);
 
+    CD4AnalysisLanguage cd4ALanguage = CD4AnalysisMill.cD4AnalysisLanguageBuilder().build();
+    CD4AnalysisGlobalScope cd4AGlobalScope = CD4AnalysisMill.cD4AnalysisGlobalScopeBuilder()
+      .setModelPath(mp)
+      .setCD4AnalysisLanguage(cd4ALanguage)
+      .build();
+
+    Field2CDFieldResolvingDelegate fieldDelegate =
+      new Field2CDFieldResolvingDelegate(cd4AGlobalScope);
+    Type2CDTypeResolvingDelegate typeDelegate =
+      new Type2CDTypeResolvingDelegate(cd4AGlobalScope);
+
     MontiThingsGlobalScope gs = new MontiThingsGlobalScope(mp, language);
+    gs.addAdaptedFieldSymbolResolvingDelegate(fieldDelegate);
+    gs.addAdaptedTypeSymbolResolvingDelegate(typeDelegate);
     addBasicTypes(gs);
 
     isSymTabInitialized = true;
