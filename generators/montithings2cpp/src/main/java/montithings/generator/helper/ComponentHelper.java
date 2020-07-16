@@ -62,7 +62,7 @@ public class ComponentHelper {
     }
   }
 
-  public static List<ImportStatement> getImports(ComponentTypeSymbol symbol) {
+  public static List<de.monticore.symboltable.ImportStatement> getImports(arcbasis._symboltable.ComponentTypeSymbol symbol) {
     while (symbol.getOuterComponent().isPresent()) {
       symbol = symbol.getOuterComponent().get();
     }
@@ -106,7 +106,7 @@ public class ComponentHelper {
    * @return Set of components used as generic type argument as include string.
    * Is empty if include is not needed.
    */
-  public static Set<String> includeGenericComponent(ComponentTypeSymbol comp,
+  public static Set<String> includeGenericComponent(arcbasis._symboltable.ComponentTypeSymbol comp,
     ComponentInstanceSymbol instance) {
     /*
     final ComponentSymbolReference componentTypeReference = instance.getComponentType();
@@ -119,11 +119,11 @@ public class ComponentHelper {
     return new HashSet<>();
   }
 
-  public static boolean portUsesCdType(PortSymbol portSymbol) {
+  public static boolean portUsesCdType(arcbasis._symboltable.PortSymbol portSymbol) {
     return portSymbol.getType().getTypeInfo() instanceof CDType2TypeAdapter;
   }
 
-  public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
+  public static String printCdPortPackageNamespace(arcbasis._symboltable.ComponentTypeSymbol componentSymbol,
     PortSymbol portSymbol) {
     if (!portUsesCdType(portSymbol)) {
       throw new IllegalArgumentException(
@@ -157,7 +157,7 @@ public class ComponentHelper {
    * @param portSymbol port using a class diagram type.
    * @return c++ import statement of the port type if specified in the cd model. Otherwise empty.
    */
-  public static Optional<ASTCDEImportStatement> getCppImportExtension(PortSymbol portSymbol) {
+  public static Optional<cdlangextension._ast.ASTCDEImportStatement> getCppImportExtension(arcbasis._symboltable.PortSymbol portSymbol) {
     if (!portUsesCdType(portSymbol)) {
       return Optional.empty();
     }
@@ -183,7 +183,7 @@ public class ComponentHelper {
    * @param port Symbol of the port of which to determine the type
    * @return The string representation of the type
    */
-  public String getRealPortTypeString(PortSymbol port) {
+  public String getRealPortTypeString(arcbasis._symboltable.PortSymbol port) {
     return getRealPortTypeString(this.component, port);
   }
 
@@ -197,11 +197,11 @@ public class ComponentHelper {
    *                   determined.
    * @return The String representation of the type of the port.
    */
-  public static String getRealPortTypeString(ComponentTypeSymbol comp, PortSymbol portSymbol) {
+  public static String getRealPortTypeString(arcbasis._symboltable.ComponentTypeSymbol comp, arcbasis._symboltable.PortSymbol portSymbol) {
     return portSymbol.getType().print();
   }
 
-  public static String printPackageNamespace(ComponentTypeSymbol comp, TypeSymbol cdtype) {
+  public static String printPackageNamespace(arcbasis._symboltable.ComponentTypeSymbol comp, TypeSymbol cdtype) {
     String fullNamespaceSubcomponent = "montithings::" + cdtype.getFullName().replace(".", "::");
     String fullNamespaceEnclosingComponent = printPackageNamespaceForComponent(comp);
     if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
@@ -213,7 +213,7 @@ public class ComponentHelper {
     }
   }
 
-  public static boolean isInterfaceComponent(ComponentTypeSymbol comp) {
+  public static boolean isInterfaceComponent(arcbasis._symboltable.ComponentTypeSymbol comp) {
     if (comp.getAstNode() instanceof ASTMTComponentType) {
       ASTMTComponentType astmtComponentType = (ASTMTComponentType) comp.getAstNode();
       return astmtComponentType.getMTComponentModifier().isInterface();
@@ -221,7 +221,7 @@ public class ComponentHelper {
     return false;
   }
 
-  public static String printPackageNamespaceForComponent(ComponentTypeSymbol comp) {
+  public static String printPackageNamespaceForComponent(arcbasis._symboltable.ComponentTypeSymbol comp) {
     List<String> packages = ComponentHelper.getPackages(comp);
     if (isInterfaceComponent(comp)) {
       return "";
@@ -285,7 +285,7 @@ public class ComponentHelper {
    *              should be calculated.
    * @return The parameters.
    */
-  public Collection<String> getParamValues(ComponentInstanceSymbol param) {
+  public Collection<String> getParamValues(arcbasis._symboltable.ComponentInstanceSymbol param) {
     List<ASTExpression> configArguments = param.getArguments();
     MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator();
 
@@ -318,7 +318,7 @@ public class ComponentHelper {
     return outputParameters;
   }
 
-  public static String printTypeArguments(List<TypeVarSymbol> types) {
+  public static String printTypeArguments(List<de.monticore.types.typesymbols._symboltable.TypeVarSymbol> types) {
     String result = "";
     List<String> typeNames = new ArrayList<>();
     for (TypeVarSymbol type : types) {
@@ -333,7 +333,7 @@ public class ComponentHelper {
    * @param instance The instance of which the type should be printed
    * @return The printed subcomponent type
    */
-  public static String getSubComponentTypeName(ComponentInstanceSymbol instance) {
+  public static String getSubComponentTypeName(arcbasis._symboltable.ComponentInstanceSymbol instance) {
     String result = "";
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
 
@@ -349,12 +349,12 @@ public class ComponentHelper {
     return result;
   }
 
-  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
+  public static String getSubComponentTypeNameWithoutPackage(arcbasis._symboltable.ComponentInstanceSymbol instance,
     HashMap<String, String> interfaceToImplementation) {
     return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementation, true);
   }
 
-  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
+  public static String getSubComponentTypeNameWithoutPackage(arcbasis._symboltable.ComponentInstanceSymbol instance,
     HashMap<String, String> interfaceToImplementation, boolean printTypeParameters) {
     String result = "";
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
@@ -389,8 +389,8 @@ public class ComponentHelper {
    * @return the subcomponent type name without package.
    */
 
-  public static String getSubComponentTypeNameWithBinding(ComponentTypeSymbol comp,
-    ComponentInstanceSymbol instance,
+  public static String getSubComponentTypeNameWithBinding(arcbasis._symboltable.ComponentTypeSymbol comp,
+    arcbasis._symboltable.ComponentInstanceSymbol instance,
     HashMap<String, String> interfaceToImplementation) {
     return instance.getType().getLoadedSymbol().getName();
     //TODO: Implement me
@@ -431,8 +431,8 @@ public class ComponentHelper {
    * @param portAccess the portaccess to evaluate
    * @return true, if the port is an incoming port. False, otherwise.
    */
-  public static boolean isIncomingPort(ComponentTypeSymbol cmp, ASTPortAccess portAccess) {
-    Optional<PortSymbol> port;
+  public static boolean isIncomingPort(arcbasis._symboltable.ComponentTypeSymbol cmp, arcbasis._ast.ASTPortAccess portAccess) {
+    Optional<arcbasis._symboltable.PortSymbol> port;
     String portNameUnqualified = portAccess.getPort();
     // port is of subcomponent
     if (portAccess.isPresentComponent()) {
@@ -471,11 +471,11 @@ public class ComponentHelper {
     return type;
   }
 
-  public String getRealPortCppTypeString(PortSymbol port) {
+  public String getRealPortCppTypeString(arcbasis._symboltable.PortSymbol port) {
     return java2cppTypeString(getRealPortCppTypeString(this.component, port));
   }
 
-  public static String getRealPortCppTypeString(ComponentTypeSymbol comp, PortSymbol port) {
+  public static String getRealPortCppTypeString(arcbasis._symboltable.ComponentTypeSymbol comp, arcbasis._symboltable.PortSymbol port) {
     if (ComponentHelper.portUsesCdType(port)) {
       return printCdPortPackageNamespace(comp, port);
     } else {
@@ -500,7 +500,7 @@ public class ComponentHelper {
    * @param resourcePortName
    * @return Returns true if a handwritten implementation for the IPC Server exists
    */
-  public static Boolean existsIPCServerHWCClass(File hwcPath, ComponentTypeSymbol comp,
+  public static Boolean existsIPCServerHWCClass(File hwcPath, arcbasis._symboltable.ComponentTypeSymbol comp,
     String resourcePortName) {
     String fqCompName = comp.getPackageName() + "." + comp.getName();
     File implLocation = Paths.get(hwcPath.toString() + File.separator
@@ -510,7 +510,7 @@ public class ComponentHelper {
     return implLocation.isFile();
   }
 
-  protected static String getCalculationIntervalUnit(ComponentTypeSymbol comp) {
+  protected static String getCalculationIntervalUnit(arcbasis._symboltable.ComponentTypeSymbol comp) {
     return elementsOf(comp)
       .filter(ASTCalculationInterval.class)
       .first()
@@ -518,7 +518,7 @@ public class ComponentHelper {
       .or("MSEC");
   }
 
-  protected static int getCalculationInterval(ComponentTypeSymbol comp) {
+  protected static int getCalculationInterval(arcbasis._symboltable.ComponentTypeSymbol comp) {
     return elementsOf(comp)
       .filter(ASTCalculationInterval.class)
       .first()
@@ -532,7 +532,7 @@ public class ComponentHelper {
    * @param comp
    * @return CPP duration
    */
-  public static String getExecutionIntervalMethod(ComponentTypeSymbol comp) {
+  public static String getExecutionIntervalMethod(arcbasis._symboltable.ComponentTypeSymbol comp) {
     int interval = getCalculationInterval(comp);
     String intervalUnit = getCalculationIntervalUnit(comp);
     String method = "std::chrono::milliseconds(" + interval + ")";
@@ -551,7 +551,7 @@ public class ComponentHelper {
     return method;
   }
 
-  public static String getExecutionIntervalInMillis(ComponentTypeSymbol comp) {
+  public static String getExecutionIntervalInMillis(arcbasis._symboltable.ComponentTypeSymbol comp) {
     int interval = getCalculationInterval(comp);
     String intervalUnit = getCalculationIntervalUnit(comp);
 
@@ -569,7 +569,7 @@ public class ComponentHelper {
   /**
    * Returns true iff comp contains at least one buffered port
    */
-  public static Boolean usesBatchMode(ComponentTypeSymbol comp) {
+  public static Boolean usesBatchMode(arcbasis._symboltable.ComponentTypeSymbol comp) {
     // TODO: MontiArc 6
     return false;
     /*
@@ -583,7 +583,7 @@ public class ComponentHelper {
      */
   }
 
-  public static Boolean hasSyncGroups(ComponentTypeSymbol comp) {
+  public static Boolean hasSyncGroups(arcbasis._symboltable.ComponentTypeSymbol comp) {
     return getSyncGroups(comp).size() > 0;
   }
 
@@ -593,7 +593,7 @@ public class ComponentHelper {
    * @param comp
    * @return
    */
-  public static List<List<String>> getSyncGroups(ComponentTypeSymbol comp) {
+  public static List<List<String>> getSyncGroups(arcbasis._symboltable.ComponentTypeSymbol comp) {
     return elementsOf(comp)
       .filter(ASTSyncStatement.class)
       .transform(ASTSyncStatement::getSyncedPortList)
@@ -606,7 +606,7 @@ public class ComponentHelper {
    * @param comp
    * @return
    */
-  public static List<PortSymbol> getPortsNotInSyncGroup(ComponentTypeSymbol comp) {
+  public static List<arcbasis._symboltable.PortSymbol> getPortsNotInSyncGroup(arcbasis._symboltable.ComponentTypeSymbol comp) {
     List<String> portsInSyncGroups = getSyncGroups(comp).stream()
       .flatMap(Collection::stream)
       .collect(Collectors.toList());
@@ -621,7 +621,7 @@ public class ComponentHelper {
    * @param node
    * @return
    */
-  public static List<ASTNameExpression> getGuardExpressionElements(ASTExpression node) {
+  public static List<de.monticore.expressions.expressionsbasis._ast.ASTNameExpression> getGuardExpressionElements(de.monticore.expressions.expressionsbasis._ast.ASTExpression node) {
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
     node.accept(visitor);
     return visitor.getExpressions();
@@ -671,11 +671,11 @@ public class ComponentHelper {
     return packageNames;
   }
 
-  public static String getPackagePath(ComponentTypeSymbol comp, ComponentInstanceSymbol subComp) {
+  public static String getPackagePath(arcbasis._symboltable.ComponentTypeSymbol comp, arcbasis._symboltable.ComponentInstanceSymbol subComp) {
     return getPackagePath(comp, subComp.getType().getLoadedSymbol());
   }
 
-  public static String getPackagePath(ComponentTypeSymbol comp, ComponentTypeSymbol subComp) {
+  public static String getPackagePath(arcbasis._symboltable.ComponentTypeSymbol comp, arcbasis._symboltable.ComponentTypeSymbol subComp) {
     // Get package name of subcomponent
     String subCompPackageName = subComp.getPackageName();
     // Check if subcomponent is in different package than parent component
@@ -699,7 +699,7 @@ public class ComponentHelper {
     return "";
   }
 
-  public static List<String> getPackages(ComponentTypeSymbol component) {
+  public static List<String> getPackages(arcbasis._symboltable.ComponentTypeSymbol component) {
     String packageName = component.getPackageName();
     String[] packages = packageName.split("\\.");
     return Arrays.asList(packages);
@@ -709,11 +709,11 @@ public class ComponentHelper {
   /* =================== MontiThings Adapter ==================== */
   /* ============================================================ */
 
-  public static FluentIterable<ASTArcElement> elementsOf(ComponentTypeSymbol component) {
+  public static FluentIterable<arcbasis._ast.ASTArcElement> elementsOf(arcbasis._symboltable.ComponentTypeSymbol component) {
     return FluentIterable.from(component.getAstNode().getBody().getArcElementList());
   }
 
-  public static List<ASTPrecondition> getPreconditions(ComponentTypeSymbol component) {
+  public static List<prepostcondition._ast.ASTPrecondition> getPreconditions(arcbasis._symboltable.ComponentTypeSymbol component) {
     List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
     return conditions.stream()
       .filter(c -> c.getCondition() instanceof ASTPrecondition)
@@ -721,7 +721,7 @@ public class ComponentHelper {
       .collect(Collectors.toList());
   }
 
-  public static List<ASTPostcondition> getPostconditions(ComponentTypeSymbol component) {
+  public static List<prepostcondition._ast.ASTPostcondition> getPostconditions(arcbasis._symboltable.ComponentTypeSymbol component) {
     List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
     return conditions.stream()
       .filter(c -> c.getCondition() instanceof ASTPostcondition)
@@ -729,30 +729,30 @@ public class ComponentHelper {
       .collect(Collectors.toList());
   }
 
-  public static List<ASTMTCatch> getCatchedConditions(ComponentTypeSymbol component) {
+  public static List<montithings._ast.ASTMTCatch> getCatchedConditions(arcbasis._symboltable.ComponentTypeSymbol component) {
     return elementsOf(component).filter(ASTMTCatch.class).toList();
   }
 
-  public static List<ASTArcTiming> getTiming(ComponentTypeSymbol component) {
+  public static List<montiarc._ast.ASTArcTiming> getTiming(arcbasis._symboltable.ComponentTypeSymbol component) {
     return elementsOf(component).filter(ASTArcTiming.class).toList();
   }
 
-  public static boolean isTimesync(ComponentTypeSymbol component) {
+  public static boolean isTimesync(arcbasis._symboltable.ComponentTypeSymbol component) {
     return getTiming(component).stream()
       .filter(e -> e.getArcTimeMode() instanceof ASTArcSync)
       .collect(Collectors.toSet()).size() > 0;
   }
 
-  public static boolean hasBehavior(ComponentTypeSymbol component) {
+  public static boolean hasBehavior(arcbasis._symboltable.ComponentTypeSymbol component) {
     return !elementsOf(component).filter(ASTBehavior.class).isEmpty();
   }
 
-  public static boolean isApplication(ComponentTypeSymbol component) {
+  public static boolean isApplication(arcbasis._symboltable.ComponentTypeSymbol component) {
     ASTMTComponentType ast = (ASTMTComponentType) component.getAstNode();
     return ast.getMTComponentModifier().isApplication();
   }
 
-  public static List<PortSymbol> getPortsInGuardExpression(ASTExpression node) {
+  public static List<arcbasis._symboltable.PortSymbol> getPortsInGuardExpression(de.monticore.expressions.expressionsbasis._ast.ASTExpression node) {
     List<PortSymbol> ports = new ArrayList<>();
 
     for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {
@@ -764,7 +764,7 @@ public class ComponentHelper {
     return ports;
   }
 
-  public static boolean portIsComparedToNoData(ASTExpression e, String portName) {
+  public static boolean portIsComparedToNoData(de.monticore.expressions.expressionsbasis._ast.ASTExpression e, String portName) {
     List<ASTNameExpression> usedNames = ExpressionUtil.getNameExpressionElements(e);
     for (ASTNameExpression name : usedNames) {
       if (name.getName().equals(portName)) {
@@ -777,7 +777,7 @@ public class ComponentHelper {
   /**
    * Returns true iff the port appears in a batch expression
    */
-  public static Boolean isBatchPort(PortSymbol port, ComponentTypeSymbol component) {
+  public static Boolean isBatchPort(arcbasis._symboltable.PortSymbol port, arcbasis._symboltable.ComponentTypeSymbol component) {
     // TODO: Fix for MontiArc 6
     return false;
   }
@@ -785,11 +785,11 @@ public class ComponentHelper {
   /**
    * Workaround for the fact that MontiArc returns parameters twice
    */
-  public static Set<FieldSymbol> getFields(ComponentTypeSymbol component) {
+  public static Set<de.monticore.types.typesymbols._symboltable.FieldSymbol> getFields(arcbasis._symboltable.ComponentTypeSymbol component) {
     return component.getFields().stream().collect(Collectors.toSet());
   }
 
-  public static String printStatementBehavior(ComponentTypeSymbol component) {
+  public static String printStatementBehavior(arcbasis._symboltable.ComponentTypeSymbol component) {
     List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class).toList();
     Preconditions.checkArgument(!behaviors.isEmpty(),
       "0xMT800 Trying to print behavior of component \"" + component.getName()
@@ -809,7 +809,7 @@ public class ComponentHelper {
    *
    * @return unsorted list of all ports for which a batch statement exists
    */
-  public static List<PortSymbol> getPortsInBatchStatement(ComponentTypeSymbol component) {
+  public static List<arcbasis._symboltable.PortSymbol> getPortsInBatchStatement(arcbasis._symboltable.ComponentTypeSymbol component) {
     List<ASTAnnotatedPort> bufferPorts = elementsOf(component)
       .filter(ASTAnnotatedPort.class)
       .filter(p -> p.getPortAnnotation() instanceof ASTBufferedPort)
@@ -835,7 +835,7 @@ public class ComponentHelper {
   /**
    * Find all ports of a component that DON'T appear in any batch statement
    */
-  public static List<PortSymbol> getPortsNotInBatchStatements(ComponentTypeSymbol component) {
+  public static List<arcbasis._symboltable.PortSymbol> getPortsNotInBatchStatements(arcbasis._symboltable.ComponentTypeSymbol component) {
     List<PortSymbol> result = component.getAllPorts();
     result.removeAll(getPortsInBatchStatement(component));
     return result;

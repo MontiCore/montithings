@@ -41,6 +41,7 @@ dependencies {
   implementation "org.antlr:antlr4-runtime:4.7.1"
   implementation "org.apache.commons:commons-lang3:3.9"
   implementation "org.assertj:assertj-core:$assertj_version"
+  implementation "org.codehaus.janino:janino:$janino_version"
   testImplementation "junit:junit:$junit_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
   testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
