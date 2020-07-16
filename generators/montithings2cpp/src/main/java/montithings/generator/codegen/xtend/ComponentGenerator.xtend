@@ -43,6 +43,8 @@ class ComponentGenerator {
 		«Subcomponents.printIncludes(comp, compname, interfaceToImplementation)»
 		«ELSE»
 		#include "«compname»Impl.h"
+		#include "«compname»Input.h"
+		#include "«compname»Result.h"
 		«ENDIF»
 		
 		«Utils.printNamespaceStart(comp)»
@@ -56,7 +58,8 @@ class ComponentGenerator {
 		private:
 			«Ports.printVars(comp, comp.ports)»
 			«Utils.printVariables(comp)»
-			«Utils.printConfigParameters(comp)»
+			««« Currently useless. MontiArc 6's getFields() returns both variables and parameters
+			««««Utils.printConfigParameters(comp)»
 			std::vector< std::thread > threads;
 			TimeMode timeMode = «IF ComponentHelper.isTimesync(comp)»TIMESYNC«ELSE»EVENTBASED«ENDIF»;
 			«IF comp.isDecomposed»
@@ -67,6 +70,7 @@ class ComponentGenerator {
 			«ELSE»
 
 			«compname»Impl«Utils.printFormalTypeParameters(comp)» «Identifier.behaviorImplName»;
+
 			void initialize();
 			void setResult(«compname»Result«Utils.printFormalTypeParameters(comp)» result);
 			void run();
@@ -191,20 +195,20 @@ class ComponentGenerator {
 				«printComputeInputs(comp, compname)»
 				«compname»Result«Utils.printFormalTypeParameters(comp)» result;
 				«FOR port: comp.incomingPorts»
-        ««« «ValueCheck.printPortValuecheck(comp, port)»
-        «ENDFOR»
+				««« «ValueCheck.printPortValuecheck(comp, port)»
+				«ENDFOR»
 				«printAssumptionsCheck(comp, compname)»
 				result = «Identifier.behaviorImplName».compute(input);
 				«FOR port: comp.outgoingPorts»
-          ««« «ValueCheck.printPortValuecheck(comp, port)»
-        «ENDFOR»
+				««« «ValueCheck.printPortValuecheck(comp, port)»
+				«ENDFOR»
 				«printGuaranteesCheck(comp, compname)»
 				setResult(result);				
 			}
 		}
 		'''
 	}
-	
+
 	def static printComputeInputs(ComponentTypeSymbol comp, String compname) {
 		return printComputeInputs(comp, compname, false);
 	}
@@ -355,14 +359,14 @@ class ComponentGenerator {
 			«printAssumptionsCheck(comp, compname)»
 			
 			«FOR subcomponent : comp.subComponents»
-				this->«subcomponent.name».compute();
-      «ENDFOR»
+			this->«subcomponent.name».compute();
+		«ENDFOR»
 
-      «printComputeResults(comp, compname, true)»
-      «FOR port: comp.outgoingPorts»
-        ««« «ValueCheck.printPortValuecheck(comp, port)»
-      «ENDFOR»
-      «printGuaranteesCheck(comp, compname)»
+		«printComputeResults(comp, compname, true)»
+		«FOR port: comp.outgoingPorts»
+		««« «ValueCheck.printPortValuecheck(comp, port)»
+		«ENDFOR»
+		«printGuaranteesCheck(comp, compname)»
 			}
 		}
 		'''

@@ -24,29 +24,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>montithings.languages</groupId>
             <artifactId>bindings</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>montiarc.libraries</groupId>
-            <artifactId>maJavaLib</artifactId>
-            <version>${montiarc.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>montiarc.libraries</groupId>
-            <artifactId>simulator-rte</artifactId>
-            <version>${montiarc.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>montiarc.libraries</groupId>
-            <artifactId>maa-rte</artifactId>
-            <version>${montiarc.version}</version>
-        </dependency>
+        -->
 
         <dependency>
             <groupId>de.se_rwth.commons</groupId>
@@ -57,13 +41,6 @@
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-runtime</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>montiarc.libraries</groupId>
-            <artifactId>maJavaLib</artifactId>
-            <classifier>${majavalib.classifier}</classifier>
-            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
@@ -131,6 +108,7 @@
                             <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
                         </configuration>
                     </execution>
+                    <!--
                     <execution>
                         <id>unpack</id>
                         <phase>validate</phase>
@@ -147,18 +125,7 @@
                             <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>unpack-maa-rte</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-
-                            <includeClassifiers>montithings-rte</includeClassifiers>
-                            <outputDirectory>${basedir}/target/generated-sources/backendController/${montithings-rte.classifier}/</outputDirectory>
-                        </configuration>
-                    </execution>
+                        -->
                     <execution>
                         <id>unpack-mt-rte</id>
                         <phase>validate</phase>
@@ -227,7 +194,7 @@
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
                     </arguments>
-                    <script>montithings/generator/maagenerator.groovy</script>
+                    <script>montithings/generator/mtgenerator.groovy</script>
                 </configuration>
                 <executions>
                     <execution>

@@ -6,14 +6,18 @@ component Source {
   // Only allow values between 0 and 5,
   // default to 3 if actual value not between 0 and 5
   // Will return 1, 2, 3, 4, 5, 3, 3, 3, ...
-  port out int ( 0  :  5 ) value = 3;
+  port out int value;
+  pre value in { 0 : 5 }
+  catch value = 3;
 
   // Check if a value is one of the given values.
   // Only allow values 0, 1, and 4,
   // default to 3 if actual value is not 0, 1, or 4
   // (note that the default value does not have to be an allowed value)
   // Will return 1, 3, 3, 4, 3, 3, 3, 3, ...
-  // port out int ( 0, 1, 4 ) value = 3;
+  // port out int value;
+  // pre value in { 0, 1, 4 }
+  // catch value = 3;
 
   // Combine multiple checks.
   // Allow 1, 15, and values between 3 and 11 with a stepsize of 4

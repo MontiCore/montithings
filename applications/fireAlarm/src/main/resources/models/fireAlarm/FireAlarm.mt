@@ -6,23 +6,23 @@ import fireAlarm.actuator.*;
 import fireAlarm.contr.FireExtinguisherContr;
 
 /* Test component FireAlarm */
-<<deploy>> component FireAlarm {
+application FireAlarm {
 
   /* Subcomponents */
   
-  component Alarm alarm;
-  //component Alarm alarm2;
-  component Sprinkler sprinkler;
-  component FireExtinguisherContr fireExt;
-  component SmokeSensor smokeSensor;
-  component TemperatureSensor tempSensor;
+  Alarm alarm;
+  //Alarm alarm2;
+  Sprinkler sprinkler;
+  FireExtinguisherContr fireExt;
+  SmokeSensor smokeSensor;
+  TemperatureSensor tempSensor;
   
 
   /* Connections */
   
-  connect fireExt.alarmOn -> alarm.onn;
-  connect fireExt.sprinklerOn -> sprinkler.onn;
-  connect smokeSensor.value -> fireExt.smoke;
-  connect tempSensor.value -> fireExt.temp;
+  fireExt.alarmOn -> alarm.onn;
+  fireExt.sprinklerOn -> sprinkler.onn;
+  smokeSensor.value -> fireExt.smoke;
+  tempSensor.value -> fireExt.temp;
   
 }

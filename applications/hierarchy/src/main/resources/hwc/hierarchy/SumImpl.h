@@ -1,23 +1,15 @@
 #pragma once
-#include "SumInput.h"
-#include "SumResult.h"
-#include "IComputable.h"
-#include <stdexcept>
+#include <SumImplTOP.h>
 
 namespace montithings {
 namespace hierarchy {
 
-class SumImpl : IComputable<SumInput,SumResult>{
-	
-private:  
-    
-public:
-    SumImpl()
-    {
-    }
-	//SumImpl() = default;
-	SumResult getInitialValues() override;
-	SumResult compute(SumInput input) override;
+class SumImpl : public SumImplTOP
+{
+  public:
+  SumImpl () = default;
+  SumResult getInitialValues () override;
+  SumResult compute (SumInput input) override;
 };
 
 }}

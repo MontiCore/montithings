@@ -11,16 +11,18 @@
   </parent>
 
   <artifactId>language-features</artifactId>
-  <packaging>pom</packaging>
-
   <modules>
-    <module>automata</module>
-    <module>assumptions-guarantees</module>
+
+    <module>behavior</module>
+
     <module>class-diagrams</module>
+    <!--
     <module>error-handling</module>
-    <module>if-then-else-behavior</module>
     <module>interface-components</module>
-    <module>resource-ports</module>
+    <module>pre-postconditions</module>
+    -->
   </modules>
+
+  <packaging>pom</packaging>
 
 </project>

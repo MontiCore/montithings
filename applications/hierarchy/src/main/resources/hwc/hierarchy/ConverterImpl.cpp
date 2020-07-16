@@ -7,7 +7,8 @@ ConverterResult ConverterImpl::getInitialValues(){
 	return {0};
 }
 
-ConverterResult ConverterImpl::propagate(ConverterInput input){
+ConverterResult ConverterImpl::compute(ConverterInput input){
+  if (!input.getInport()) return {0};
 	return {input.getInport().value()};
 }
 

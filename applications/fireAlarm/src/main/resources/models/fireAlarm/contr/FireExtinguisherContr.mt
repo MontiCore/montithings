@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package fireAlarm.contr;
 
-/* Component for alarm*/
 component FireExtinguisherContr {
 
   port

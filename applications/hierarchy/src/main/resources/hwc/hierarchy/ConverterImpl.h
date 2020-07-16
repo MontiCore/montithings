@@ -1,26 +1,17 @@
 #pragma once
-#include "ConverterInput.h"
-#include "ConverterResult.h"
-#include "IComputable.h"
-#include <stdexcept>
+#include <ConverterImplTOP.h>
 
 namespace montithings {
 namespace hierarchy {
 
-class ConverterImpl : IComputable<ConverterInput,ConverterResult>{
-	
-private:  
-    
+class ConverterImpl : ConverterImplTOP {
+
+private:
+
 public:
-    ConverterImpl()
-    {
-    }
-	//ConverterImpl() = default;
+  ConverterImpl() = default;
 	ConverterResult getInitialValues() override;
-	ConverterResult propagate(ConverterInput input);
-	ConverterResult compute(ConverterInput input) override {
-	  throw std::runtime_error("Invoking compute() on component hierarchy.Converter which has if-then-else behavior");
-	}
+	ConverterResult compute(ConverterInput input) override;
 };
 
 }}

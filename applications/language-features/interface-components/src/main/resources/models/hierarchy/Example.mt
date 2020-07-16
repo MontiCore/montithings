@@ -1,15 +1,13 @@
 package hierarchy;
 
-<<timesync>> application Example {
-  component Source source;
-  component Calc<Double> c;
-  component Sink sink;
+application Example {
+  Source source;
+  Calc<Double> c;
+  Sink sink;
 
-  connect source.value -> c.x;
-  connect c.y -> sink.value;
+  source.value -> c.x;
+  c.y -> sink.value;
 
-  control {
-    update interval 1sec;
-  }
-
+  update interval 1sec;
+  timing sync;
 }

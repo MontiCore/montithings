@@ -2,6 +2,7 @@
 package montithings.generator.codegen.xtend.util
 
 import arcbasis._symboltable.ComponentTypeSymbol
+import arcbasis._ast.ASTPortAccess
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter
 import de.monticore.prettyprint.IndentPrinter
@@ -62,7 +63,7 @@ class Utils {
    */
   def static printVariables(ComponentTypeSymbol comp) {
     return '''
-      «FOR variable : comp.fields»
+      «FOR variable : ComponentHelper.getFields(comp)»
         «printMember(ComponentHelper.printCPPTypeName(variable.type), variable.name)»
       «ENDFOR»
     '''
@@ -162,6 +163,17 @@ class Utils {
 	} // namespace montithings
   	'''
   }
+
+  def static printGetPort(ASTPortAccess access) {
+		return '''
+		«IF access.isPresentComponent»
+			«access.component».
+		«ELSE»
+			this->
+		«ENDIF»
+		getPort«access.port.toFirstUpper» ()
+		'''.toString().replace("\n", "")
+	}
 	
 	def static String printExpression(ASTExpression expr, boolean isAssignment) {
     	var IndentPrinter printer = new IndentPrinter();

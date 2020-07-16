@@ -7,10 +7,10 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._parser.MontiArcParser;
-import montiarc._parser.MontiArcParserTOP;
 import montiarc.util.MontiArcError;
 import org.codehaus.commons.nullanalysis.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -44,7 +44,13 @@ public class MontiThingsParser extends MontiThingsParserTOP {
     if (optAst.isPresent()) {
       String fileRoot = Files.getNameWithoutExtension(relativeFilePath);
       String modelName = optAst.get().getComponentType().getName();
-      String packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath));
+      String packageOfFile;
+      if(relativeFilePath.lastIndexOf(File.separator)!=-1) {
+        packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath));
+      }
+      else {
+        packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath, "/"),"/");
+      }
       String packageOfModel = Names.getQualifiedName(optAst.get().getPackage().getPartList());
       if (!modelName.equals(fileRoot)) {
         Log.error(String
@@ -53,7 +59,7 @@ public class MontiThingsParser extends MontiThingsParserTOP {
       }
       if (!packageOfFile.endsWith(packageOfModel)) {
         Log.error(String
-            .format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(), packageOfModel,
+            .format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(), packageOfModel, modelName,
                 packageOfFile));
         setError(true);
       }

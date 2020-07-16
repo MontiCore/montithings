@@ -5,6 +5,8 @@ import arcbasis._ast.ASTConnector
 import arcbasis._ast.ASTPortAccess
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings._ast.ASTMTComponentType
+import montithings.generator.helper.ComponentHelper
+import montithings.generator.codegen.xtend.util.Utils
 
 class Setup {
 	
@@ -37,21 +39,20 @@ class Setup {
 			if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 			«IF comp.presentParentComponent»
 			super.setUp(enclosingComponentTiming);
-			«ENDIF» TODO
+			«ENDIF» 
 			«FOR subcomponent : comp.subComponents»
 			«subcomponent.name».setUp(enclosingComponentTiming);
 	        «ENDFOR»
 		
 		«FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
-		          «FOR ASTPortAccess target : connector.targetList»
-		            «IF !target.portSymbol.isIncoming»
-		            // implements "connect «connector»"
-		            «target.component»«IF target.component.equals("this")»->«ELSE».«ENDIF»getPort«target.port.toFirstUpper»()->setDataProvidingPort («connector.source.component»«IF connector.source.component.equals("this")»->«ELSE».«ENDIF»getPort«connector.source.port.toFirstUpper»());
-		            «ENDIF»
-		          «ENDFOR»
+			«FOR ASTPortAccess target : connector.targetList»
+			«IF !ComponentHelper.isIncomingPort(comp, target)»
+			// implements "connect «connector.source» -> «target»"
+			«Utils.printGetPort(target)»->setDataProvidingPort («Utils.printGetPort(connector.source)»);
+			«ENDIF»
+			«ENDFOR»
 		«ENDFOR»
 		}
 		'''
 	}
-	
 }
