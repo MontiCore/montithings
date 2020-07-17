@@ -2,6 +2,13 @@
 package montithings.generator;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
+import bindings.BindingsTool;
+import bindings._ast.ASTBindingRule;
+import bindings._ast.ASTBindingsCompilationUnit;
+import bindings._cocos.BindingsCoCos;
+import bindings._parser.BindingsParser;
+import bindings._symboltable.BindingsGlobalScope;
+import bindings._symboltable.BindingsLanguage;
 import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
@@ -25,10 +32,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-//import bindings.BindingsTool;
-//import bindings.CocoInput;
-//import bindings._symboltable.BindingsLanguage;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
@@ -60,23 +63,33 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // 1. Get Bindings
     HashMap<String, String> interfaceToImplementation = getInterfaceImplementationMatching(
         hwcPath.getAbsolutePath());
-    /*
     List<String> foundBindings = Modelfinder
         .getModelsInModelPath(hwcPath, BindingsLanguage.FILE_ENDING);
     Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
+    BindingsTool bindingsTool = new BindingsTool();
+    BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath,hwcPath);
 
     // 2. Parse and check Cocos of bindings
     for (String binding : foundBindings) {
+      ASTBindingsCompilationUnit bindingsAST = null;
+      try {
+        bindingsAST = new BindingsParser().parseBindingsCompilationUnit(binding).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+binding));
+      }
+      catch (IOException e) {
+        Log.error("File '" + binding + "' Bindings artifact was not found");
+      }
+      Log.info("Parsing model:" + binding, TOOL_NAME);
+      bindingsTool.createSymboltable(bindingsAST,binTab);
+
       Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
-      String qualifiedModelName =
-          hwcPath.getAbsolutePath() + "/" + Names.getQualifier(binding) + "/" +
-              Names.getSimpleName(binding) + ".mtb";
-      BindingsTool bindingsTool = new BindingsTool();
-      CocoInput input = bindingsTool.prepareTest(qualifiedModelName);
-      bindingsTool.executeCoCo(input);
-      bindingsTool.checkResults(EMPTY_LIST);
+      BindingsCoCos.createChecker().checkAll(bindingsAST);
+
+          for(bindings._ast.ASTElement rule:bindingsAST.getElementList()){
+            if(rule instanceof ASTBindingRule){
+              interfaceToImplementation.put(((ASTBindingRule)rule).getInterfaceComponent().getQName(),((ASTBindingRule)rule).getImplementationComponent().getQName());
+            }
+          }
     }
-    */
 
     /* ============================================================ */
     /* ======================= Check Models ======================= */
@@ -107,7 +120,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Log.info("Generate model: " + qualifiedModelName, TOOL_NAME);
 
       // check if component is implementation
-      if (interfaceToImplementation.containsValue(comp.getName())) {
+      if (interfaceToImplementation.containsValue(comp.getFullName())) {
         // Dont generate files for implementation. They are generated when interface is there
         continue;
       }
@@ -119,8 +132,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       String compname = comp.getName();
 
       // Check if component is interface
-      if (interfaceToImplementation.containsKey(comp.getName())) {
-        compname = interfaceToImplementation.get(comp.getName());
+      if (interfaceToImplementation.containsKey(comp.getFullName())) {
+        compname = interfaceToImplementation.get(comp.getFullName());
       }
 
       // Generate Files

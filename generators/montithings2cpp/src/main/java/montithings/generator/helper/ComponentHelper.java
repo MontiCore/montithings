@@ -367,8 +367,8 @@ public class ComponentHelper {
       //types = addTypeParameterComponentPackage(instance, types);
       result += printTypeArguments(types);
     }
-    if (interfaceToImplementation.containsKey(result)) {
-      return interfaceToImplementation.get(result);
+    if (interfaceToImplementation.containsKey(componentTypeReference.getLoadedSymbol().getFullName())) {
+      return interfaceToImplementation.get(componentTypeReference.getLoadedSymbol().getFullName());
     }
     return result;
   }
