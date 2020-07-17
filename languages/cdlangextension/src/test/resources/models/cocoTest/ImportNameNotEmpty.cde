@@ -1,8 +1,8 @@
 /* (c) https://github.com/MontiCore/monticore */
 package cocoTest;
 Cpp {
-  from <> import armadillo::vector as Vector;
+  from <> import armadillo::vector as cocoTest.ImportValid.Vector;
 }
 Java {
-  from java.util.list import List as Vector;
+  from java.util.list import List as cocoTest.ImportValid.Vector;
 }
