@@ -12,7 +12,6 @@ import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
 import de.monticore.cd.cd4analysis._parser.CD4AnalysisParser;
 import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisArtifactScope;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMontiArcNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 

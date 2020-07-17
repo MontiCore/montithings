@@ -4,9 +4,10 @@ plugins {
   id "monticore"
 }
 
-group = 'montithings.languages'
+group = "montithings.languages"
 
 def grammarDir = "$projectDir/src/main/grammars"
+def reportsDir = "$buildDir/generated-sources/monticore/sourcecode/reports/"
 
 sourceSets {
   main {
@@ -14,6 +15,12 @@ sourceSets {
   }
   test {
     java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+  }
+  grammars {
+    resources {
+      srcDirs(grammarDir, reportsDir)
+      include("**/*.mc4", "**/*.cd")
+    }
   }
 }
 
@@ -25,22 +32,18 @@ dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
   grammar "de.monticore.lang:cd4analysis:$cd4a_version:$grammars_classifier"
 
-  implementation 'de.se_rwth.commons:se-commons-logging:$se_commons_version'
-  implementation 'com.google.guava:guava:$guava_version'
-  implementation 'de.monticore.lang:cd4analysis:$cd4a_version'
-  implementation 'org.antlr:antlr4-runtime:4.7.1'
-  implementation 'de.monticore:monticore-runtime:6.1.0.1'
-  implementation 'de.monticore:monticore-grammar:6.1.0.1'
-  implementation 'de.monticore.lang:cd4analysis:$cd4a_version'
-  implementation 'de.monticore.lang:cd4analysis:$cd4a_version'
-  implementation 'de.monticore:javaDSL:$javadsl_version'
-  implementation 'org.apache.commons:commons-lang3:3.9'
-  testImplementation 'de.monticore:monticore-runtime:6.1.0.1'
-  testImplementation 'ch.qos.logback:logback-classic:$logback_version'
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version'
-  testImplementation 'org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version'
-  compileOnly 'de.monticore:monticore-grammar:6.1.0.1'
-  compileOnly 'de.monticore:javaDSL:$javadsl_version'
+  implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+  implementation "com.google.guava:guava:$guava_version"
+  implementation "de.monticore.lang:cd4analysis:$cd4a_version"
+  implementation "org.antlr:antlr4-runtime:$antlr_version"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
+  implementation "de.monticore:monticore-grammar:$monticore_version"
+  implementation "de.monticore:javaDSL:$javadsl_version"
+  implementation "org.apache.commons:commons-lang3:3.9"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+  testImplementation "ch.qos.logback:logback-classic:$logback_version"
 }
 
 task generateGrammarCDLangExtension(type: MCTask) {
@@ -51,25 +54,28 @@ task generateGrammarCDLangExtension(type: MCTask) {
   outputs.upToDateWhen { upToDate }
 }
 
-//TODO maven assembly plugin equivalent?
-
 //TODO surefire?
 
 compileJava {
   dependsOn project.collect { it.tasks.findAll { task -> task.name.startsWith("generateGrammar") } }
 }
 
-task grammars_Jar(type: Jar) {
-  from "$projectDir/src/main/grammars"
-  archiveClassifier = "$grammars_classifier"
+java {
+  //withJavadocJar()
+  withSourcesJar()
+  registerFeature("grammars") {
+    usingSourceSet(sourceSets.grammars)
+  }
 }
 
 publishing {
   publications {
-    mavenJava(MavenPublication) {
-      artifactId = "$project.name"
-      from components.java
-      artifact grammars_Jar
-    }
+    mavenJava(MavenPublication) { from components.java }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
   }
 }

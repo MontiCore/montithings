@@ -7,6 +7,7 @@ plugins {
 group = "montithings.languages"
 
 def grammarDir = "$projectDir/src/main/grammars"
+def reportsDir = "$buildDir/generated-sources/monticore/sourcecode/reports"
 
 sourceSets {
   main {
@@ -14,6 +15,12 @@ sourceSets {
   }
   test {
     java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+  }
+  grammars {
+    resources {
+      srcDirs(grammarDir, reportsDir)
+      include("**/*.mc4", "**/*.cd")
+    }
   }
 }
 
@@ -37,8 +44,7 @@ dependencies {
   testImplementation "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
   testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
-  compileOnly "de.monticore:monticore-grammar:$monticore_version"
-  compileOnly "de.monticore:javaDSL:$javadsl_version"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
 }
 
 task generateGrammarPhyprops(type: MCTask) {
@@ -49,25 +55,28 @@ task generateGrammarPhyprops(type: MCTask) {
   outputs.upToDateWhen { upToDate }
 }
 
-//TODO maven assembly plugin equivalent?
-
 //TODO surefire?
 
 compileJava {
   dependsOn project.collect { it.tasks.findAll { task -> task.name.startsWith("generateGrammar") } }
 }
 
-task grammars_Jar(type: Jar) {
-  from "$projectDir/src/main/grammars"
-  archiveClassifier = "$grammars_classifier"
+java {
+  //withJavadocJar()
+  withSourcesJar()
+  registerFeature("grammars") {
+    usingSourceSet(sourceSets.grammars)
+  }
 }
 
 publishing {
   publications {
-    mavenJava(MavenPublication) {
-      artifactId = "$project.name"
-      from components.java
-      artifact grammars_Jar
-    }
+    mavenJava(MavenPublication) { from components.java }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
   }
 }

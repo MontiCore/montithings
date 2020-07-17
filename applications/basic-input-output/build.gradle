@@ -1,0 +1,16 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+group = 'montithings.applications'
+
+dependencies {
+    implementation 'montithings.languages:montithings:6.0.0-SNAPSHOT'
+    implementation 'de.se_rwth.commons:se-commons-groovy:1.7.9'
+    implementation 'de.monticore:monticore-runtime:6.1.0.1'
+    implementation 'de.monticore:monticore-grammar:6.1.0.1'
+    implementation 'de.monticore:javaDSL:4.3.11.1'
+    implementation 'montithings.generators:cd2cpp:6.0.0-SNAPSHOT'
+    implementation 'de.monticore:monticore-generator:6.1.0.1'
+    runtimeOnly 'ch.qos.logback:logback-classic:1.1.2'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'de.monticore:monticore-runtime:6.1.0.1'
+}

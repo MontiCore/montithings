@@ -6,18 +6,18 @@ plugins {
 
 apply plugin: 'org.xtext.xtend'
 
-sourceSets {
-  main.xtendOutputDir = "$buildDir/xtend-gen/main"
-  test.xtendOutputDir = "$buildDir/xtend-gen/test"
-}
-
 group = "montithings.generators"
 
-test { useJUnitPlatform() }
+test { useJUnit() }
 
 dependencies {
   implementation "org.eclipse.xtend:org.eclipse.xtend.lib:$xtend_version" //needed for the xtend plugin?
-  implementation "com.google.guava:guava:$guava_version"
+
+  implementation project(":languages:error-handling")
+  implementation project(":languages:montiarc-extensions")
+  implementation project(":languages:montithings")
+  //implementation project(":languages:bindings")
+  implementation project(":generators:cd2cpp")
 
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "montiarc:util:$montiarc_version"
@@ -30,8 +30,7 @@ dependencies {
   implementation project(":languages:montithings")
   implementation project(":languages:monticore-extensions")
   implementation project(":languages:montiarc-extensions")
-//  implementation project(":languages:cdlangextensions")
-  implementation "montithings.languages:cdlangextension:6.0.0-SNAPSHOT"
+  implementation project(":languages:cdlangextension")
   implementation project(":languages:error-handling")
   implementation project(":languages:phyprops")
   //implementation project(":languages:bindings")
@@ -41,9 +40,20 @@ dependencies {
   testImplementation "org.eclipse.emf:org.eclipse.emf.compare:$emf_version"
   testImplementation "org.eclipse.emf:org.eclipse.emf.compare.match:$emf_version"
   testImplementation "org.eclipse.emf:org.eclipse.emf.compare.diff:$emf_version"
-  testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
-  testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+  testImplementation("com.google.guava:guava:$guava_version"){
+    version {
+      strictly "[18.0, 23.0]"
+      prefer "23.0"
+      because "Guava's CharMatcher breaks parts of se-commons if ver > 23 (e.g. Names.getQualifiedName)"
+    }
+  }
+}
+
+xtend {
+  sourceSets {
+    main.xtendOutputDir = "$projectDir/src/main/generated-sources"
+    test.xtendOutputDir = "$projectDir/src/test/generated-sources"
+  }
 }
 
 task montithings_rte_Jar(type: Jar) {
@@ -61,6 +71,11 @@ task montithings_libs_Jar(type: Jar) {
   archiveClassifier = "$montithings_libs_classifier"
 }
 
+java {
+  //withJavadocJar()
+  withSourcesJar()
+}
+
 publishing {
   publications {
     mavenJava(MavenPublication) {
@@ -71,7 +86,10 @@ publishing {
       artifact montithings_libs_Jar
     }
   }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+  }
 }
-
-/*build.dependsOn generateXtext
-build.dependsOn generateTestXtext*/
