@@ -13,7 +13,7 @@ sourceSets {
 }
 
 configurations {
-  librarymodels //into $buildDir/$librarymodels_classifier
+  librarymodels
   mt_rte
   mt_libs
   mt_headers
@@ -24,22 +24,24 @@ dependencies {
   mt_rte "montithings.generators:montithings2cpp:$version:$montithings_rte_classifier"
   mt_libs "montithings.generators:montithings2cpp:$version:$montithings_libs_classifier"
   mt_headers "montithings.generators:montithings2cpp:$version:$montithings_headers_classifier"
+
   implementation project(":generators:montithings2cpp")
-  implementation "de.se_rwth.commons:se-commons-utilities:$se_commons_version"
+  implementation project(":generators:cd2cpp")
   implementation project(":languages:montithings")
   //implementation project(":languages:bindings")
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
-  implementation "de.monticore:monticore-runtime:6.1.0.1"
+  implementation "de.se_rwth.commons:se-commons-utilities:$se_commons_version"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "montiarc.libraries:maJavaLib:$majavalib_version"
-  implementation "de.monticore:monticore-grammar:6.1.0.1"
+  implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "de.monticore:javaDSL:$javadsl_version"
-  implementation project(":generators:cd2cpp")
-  implementation "de.monticore:monticore-generator:6.1.0.1"
+  implementation "de.monticore:monticore-generator:$monticore_version"
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "junit:junit:$junit_version"
-  testImplementation "de.monticore:monticore-runtime:6.1.0.1"
+  testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
+/*
 task unpack_librarymodels(type:Sync) {
     dependsOn configurations.librarymodels
 
@@ -48,6 +50,7 @@ task unpack_librarymodels(type:Sync) {
     }
   into "$buildDir/$librarymodels_classifier"
 }
+*/
 
 task unpack_mt2cppGenerators(type:Sync) {
   def mt2cpp = "montithings.generators:montithings2cpp:$version"
