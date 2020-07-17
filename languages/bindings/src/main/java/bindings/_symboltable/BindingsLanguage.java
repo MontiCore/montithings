@@ -1,16 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package bindings._symboltable;
 
-import de.monticore.ast.ASTNode;
-import de.monticore.modelloader.ModelingLanguageModelLoader;
-import montiarc._symboltable.MontiArcLanguage;
-
 /**
  * TODO
  *
  * @author (last commit) Daniel von Mirbach
  */
-public abstract class BindingsLanguage extends BindingsLanguageTOP {
+public class BindingsLanguage extends BindingsLanguageTOP {
 
   public static final String FILE_ENDING = "mtb";
 
@@ -18,16 +14,18 @@ public abstract class BindingsLanguage extends BindingsLanguageTOP {
     super("Bindings Language", FILE_ENDING);
   }
 
+  public  BindingsLanguage(String langName,String fileEnding)  {
+    super(langName, fileEnding);
+  }
+
   @Override
-  protected ModelingLanguageModelLoader<? extends ASTNode> provideModelLoader() {
+  protected BindingsModelLoader provideModelLoader() {
     return new BindingsModelLoader(this);
   }
 
   @Override
-  protected void initResolvingFilters() {
-    super.initResolvingFilters();
-    MontiArcLanguage montiarc = new MontiArcLanguage();
-    addResolvingFilters(montiarc.getResolvingFilters());
+  public String getSymbolFileExtension() {
+    return null;
   }
 
 }
