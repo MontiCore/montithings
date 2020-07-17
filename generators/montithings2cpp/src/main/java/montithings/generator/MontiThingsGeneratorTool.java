@@ -61,13 +61,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
 
     // 1. Get Bindings
-    HashMap<String, String> interfaceToImplementation = getInterfaceImplementationMatching(
-        hwcPath.getAbsolutePath());
+    HashMap<String, String> interfaceToImplementation = new HashMap<>();
     List<String> foundBindings = Modelfinder
-        .getModelsInModelPath(hwcPath, BindingsLanguage.FILE_ENDING);
+        .getModelsInModelPath(modelPath, BindingsLanguage.FILE_ENDING);
     Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
     BindingsTool bindingsTool = new BindingsTool();
-    BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath,hwcPath);
+    BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
     // 2. Parse and check Cocos of bindings
     for (String binding : foundBindings) {
@@ -187,46 +186,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     // cast to ArrayList to File[] and return
     return subPackagesPaths.toArray(new File[subPackagesPaths.size()]);
-  }
-
-  /**
-   * Returns InterfaceComponent name matching to Implementation name as HashMap
-   */
-  protected HashMap<String, String> getInterfaceImplementationMatching(String hwcPath) {
-    // Every entry contains matching from interface to implementation (interface -> implementation)
-    HashMap<String, String> interfaceToImplementation = new HashMap<String, String>();
-
-    // 1. Check if binding exists
-    File[] hwcSubDirs = new File(hwcPath).listFiles(File::isDirectory);
-    for (File subdir : hwcSubDirs) {
-      if (new File(subdir.getAbsolutePath(), "bindings.mtb").exists()) {
-        // Every entry contains 1 binding
-        ArrayList<String> bindingList = new ArrayList<String>();
-
-        // 2. Append all lines to bindingList
-        String bindingsPath = subdir.getAbsolutePath() + "/bindings.mtb";
-        try (BufferedReader reader = new BufferedReader(new FileReader(bindingsPath))) {
-          String line = reader.readLine();
-          while (line != null) {
-            bindingList.add(line);
-            line = reader.readLine();
-          }
-        }
-        catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        // 3. Append interface to implementation matching to map
-        for (String binding : bindingList) {
-          String interfaceComponent = binding.split("->")[0].replace(" ", "");
-          String implementationComponent = binding.split(" -> ")[1].replace(";", "")
-              .replace(" ", "");
-          interfaceToImplementation.put(interfaceComponent, implementationComponent);
-        }
-      }
-    }
-
-    return interfaceToImplementation;
   }
 
   protected void generateCD(File modelPath, File targetFilepath) {
