@@ -18,7 +18,6 @@ import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings.generator.cd2cpp.CppGenerator;
-import montithings.generator.cd2cpp.Modelfinder;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
@@ -139,7 +138,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // Generate Files
       MTGenerator.generateAll(
           Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-              .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation, platform);
+              .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation, config);
     }
 
     /* ============================================================ */

@@ -6,7 +6,6 @@ import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.codegen.xtend.util.ArduinoReadme
 import montithings.generator.helper.ComponentHelper
-import montithings.generator.codegen.TargetPlatform
 import de.monticore.io.FileReaderWriter
 import java.io.File
 import java.nio.file.Path
@@ -91,23 +90,4 @@ class MTGenerator {
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
 		subPackagesPath, config), ".txt")
   }
-
-  def static generateIPCServer(File targetPath, ResourcePortSymbol port, ComponentSymbol comp, File libraryPath, File hwcPath, ConfigParams config, boolean headerOnly){
-  	var existsHWC = ComponentHelper.existsIPCServerHWCClass(hwcPath, comp, port.name)
-  	var ipcPath = ComponentHelper.getIPCHWCPath(port, comp, hwcPath);
-	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerHeader(port, comp), ".h")
-	if (!headerOnly) {
-
-	toFile(targetPath, port.name.toFirstUpper() + "Server", Utils.printIPCServerBody(port, comp, existsHWC), ".cpp")
-	toFile(targetPath, "CMakeLists", CMake.printIPCServerCMake(
-		port,
-		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
-		targetPath.toPath.toAbsolutePath.relativize(ipcPath.toPath.toAbsolutePath).toString,
-		existsHWC, config
-		), ".txt")
-	}
-  }
-
-	
-
 }
