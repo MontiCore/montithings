@@ -12,7 +12,6 @@ import cdlangextension._symboltable.adapters.MCQualifiedName2CDTypeResolvingDele
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import de.monticore.cd.cd4analysis.CD4AnalysisMill;
-import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
 import de.monticore.cd.cd4analysis._symboltable.*;
 import de.monticore.io.paths.ModelPath;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -20,9 +19,7 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Provides useful methods for handling the CDLangExtension language.
@@ -37,6 +34,8 @@ public class CDLangExtensionTool {
   protected CDLangExtensionCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
+
+  private CD4AnalysisGlobalScope cdGlobalScope;
 
   public CDLangExtensionTool() {
     this(CDLangExtensionCoCos.createChecker() ,new CDLangExtensionLanguage());
@@ -72,14 +71,19 @@ public class CDLangExtensionTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    CD4AnalysisLanguage mtLang = CD4AnalysisMill.cD4AnalysisLanguageBuilder().build();
-    CD4AnalysisGlobalScope mtGlobalScope = CD4AnalysisMill.cD4AnalysisGlobalScopeBuilder()
-        .setModelPath(mp)
-        .setCD4AnalysisLanguage(mtLang)
-        .build();
 
-    MCQualifiedName2CDTypeResolvingDelegate componentTypeResolvingDelegate =
-        new MCQualifiedName2CDTypeResolvingDelegate(mtGlobalScope);
+    MCQualifiedName2CDTypeResolvingDelegate componentTypeResolvingDelegate;
+    if(this.cdGlobalScope ==null) {
+      CD4AnalysisLanguage mtLang = CD4AnalysisMill.cD4AnalysisLanguageBuilder().build();
+      CD4AnalysisGlobalScope newMtGlobalScope = CD4AnalysisMill.cD4AnalysisGlobalScopeBuilder()
+          .setModelPath(mp)
+          .setCD4AnalysisLanguage(mtLang)
+          .build();
+      componentTypeResolvingDelegate = new MCQualifiedName2CDTypeResolvingDelegate(newMtGlobalScope);
+    }
+    else{
+      componentTypeResolvingDelegate = new MCQualifiedName2CDTypeResolvingDelegate(this.cdGlobalScope);
+    }
 
     CDLangExtensionGlobalScope cDLangExtensionGlobalScope = new CDLangExtensionGlobalScope(mp, language);
     cDLangExtensionGlobalScope.addAdaptedCDTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
@@ -118,5 +122,13 @@ public class CDLangExtensionTool {
     artifactScope = stc.createFromAST(ast);
 
     return globalScope;
+  }
+
+  public CD4AnalysisGlobalScope getCdGlobalScope() {
+    return cdGlobalScope;
+  }
+
+  public void setCdGlobalScope(CD4AnalysisGlobalScope cdGlobalScope) {
+    this.cdGlobalScope = cdGlobalScope;
   }
 }

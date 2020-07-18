@@ -33,6 +33,8 @@ public class BindingsTool {
 
   protected boolean isSymTabInitialized;
 
+  private MontiThingsGlobalScope mtGlobalScope;
+
   public BindingsTool() {
     this(BindingsCoCos.createChecker(), new BindingsLanguage());
   }
@@ -77,14 +79,18 @@ public class BindingsTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
-    MontiThingsGlobalScope mtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
-        .setModelPath(mp)
-        .setMontiThingsLanguage(mtLang)
-        .build();
-
-    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate =
-        new MCQualifiedName2ComponentTypeResolvingDelegate(mtGlobalScope);
+    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
+    if(this.mtGlobalScope==null) {
+      MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
+      MontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
+          .setModelPath(mp)
+          .setMontiThingsLanguage(mtLang)
+          .build();
+      componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
+    }
+    else{
+      componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
+    }
 
     BindingsGlobalScope bindingsGlobalScope = new BindingsGlobalScope(mp, language);
     bindingsGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
@@ -138,5 +144,12 @@ public class BindingsTool {
   public IBindingsScope initSymbolTable(String modelPath) {
     return initSymbolTable(Paths.get(modelPath).toFile());
   }
-  
+
+  public MontiThingsGlobalScope getMtGlobalScope() {
+    return mtGlobalScope;
+  }
+
+  public void setMtGlobalScope(MontiThingsGlobalScope mtGlobalScope) {
+    this.mtGlobalScope = mtGlobalScope;
+  }
 }

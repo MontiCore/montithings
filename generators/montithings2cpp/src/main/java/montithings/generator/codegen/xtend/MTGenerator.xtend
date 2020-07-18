@@ -25,15 +25,14 @@ import montithings.generator.codegen.ConfigParams
  */
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, List<String> foundModels, String compname,
-                         HashMap<String, String> interfaceToImplementation, ConfigParams config) {
+  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, List<String> foundModels, String compname, ConfigParams config) {
     Identifier.createInstance(comp)
 
     toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname), ".h");
     toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname), ".cpp");
     toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname), ".h");
     toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname), ".cpp");
-    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, interfaceToImplementation, config), ".h");
+    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, config), ".h");
     toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname), ".cpp");
     
     if (comp.isAtomic) {
@@ -45,7 +44,7 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, interfaceToImplementation, config);
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, config);
     }
     
 	// Generate deploy class

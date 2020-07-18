@@ -4,11 +4,9 @@ package montithings.generator.helper;
 import arcbasis._ast.*;
 import arcbasis._symboltable.*;
 import cdlangextension._ast.ASTCDEImportStatement;
-import cdlangextension._symboltable.CDEImportStatementSymbol;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
-import de.monticore.cd.cd4analysis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.symboltable.ImportStatement;
@@ -26,6 +24,7 @@ import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
 import montithings._ast.ASTMTCondition;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
+import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.generator.visitor.CppAssignmentPrettyPrinter;
 import montithings.generator.visitor.CppExpressionPrettyPrinter;
@@ -350,12 +349,12 @@ public class ComponentHelper {
   }
 
   public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
-    HashMap<String, String> interfaceToImplementation) {
-    return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementation, true);
+    ConfigParams config) {
+    return getSubComponentTypeNameWithoutPackage(instance, config, true);
   }
 
   public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
-    HashMap<String, String> interfaceToImplementation, boolean printTypeParameters) {
+    ConfigParams config, boolean printTypeParameters) {
     String result = "";
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
     result += componentTypeReference.getName();
@@ -367,8 +366,9 @@ public class ComponentHelper {
       //types = addTypeParameterComponentPackage(instance, types);
       result += printTypeArguments(types);
     }
-    if (interfaceToImplementation.containsKey(componentTypeReference.getLoadedSymbol().getFullName())) {
-      return interfaceToImplementation.get(componentTypeReference.getLoadedSymbol().getFullName());
+    Optional<ComponentTypeSymbol> implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
+    if (implementation.isPresent()) {
+      return implementation.get().getFullName();
     }
     return result;
   }
@@ -391,11 +391,11 @@ public class ComponentHelper {
 
   public static String getSubComponentTypeNameWithBinding(ComponentTypeSymbol comp,
     ComponentInstanceSymbol instance,
-    HashMap<String, String> interfaceToImplementation) {
+    ConfigParams config) {
     return instance.getType().getLoadedSymbol().getName();
     //TODO: Implement me
     /*
-    HashMap<String, String> interfaceToImplementationGeneric = new HashMap<>(
+    ConfigParams configGeneric = new HashMap<>(
         interfaceToImplementation);
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
     // check if needed optional values are present and if the instance component type is an interface

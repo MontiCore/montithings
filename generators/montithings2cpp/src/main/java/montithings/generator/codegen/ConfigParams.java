@@ -57,6 +57,24 @@ public class ConfigParams {
     return Optional.empty();
   }
 
+  public boolean isImplementation(ASTComponentType componentType){
+    for(ASTBindingRule binding : componentBindings){
+      if(binding.getImplementationComponentDefinition().equals(componentType)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isImplementation(ComponentTypeSymbol componentType){
+    for(ASTBindingRule binding : componentBindings){
+      if(binding.getImplementationComponentSymbol().equals(componentType)){
+        return true;
+      }
+    }
+    return false;
+  }
+
   public CDLangExtensionScope getCdLangExtensionScope() {
     return cdLangExtensionScope;
   }

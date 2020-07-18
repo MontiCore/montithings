@@ -26,6 +26,7 @@ import montiarc.util.DirectoryUtil;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;
+import montithings._symboltable.MontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.codegen.ConfigParams;
@@ -38,8 +39,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
@@ -128,6 +129,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     List<String> foundCDExtensionModels =
       Modelfinder.getModelFiles(CDLangExtensionLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
+    cdExtensionTool.setCdGlobalScope((CD4AnalysisGlobalScope) symCDTab);
 
     for (String model : foundCDExtensionModels) {
       ASTCDLangExtensionUnit cdExtensionAST = null;
@@ -157,10 +159,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
 
     // 1. Get Bindings
-    HashMap<String, String> interfaceToImplementation = new HashMap<>();
     List<String> foundBindings = Modelfinder.getModelFiles(BindingsLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
     Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
     BindingsTool bindingsTool = new BindingsTool();
+    bindingsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
     BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
     // 2. Parse and check Cocos of bindings
@@ -197,7 +199,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Log.info("Generate model: " + qualifiedModelName, TOOL_NAME);
 
       // check if component is implementation
-      if (interfaceToImplementation.containsValue(comp.getFullName())) {
+      if (config.isImplementation(comp)) {
         // Dont generate files for implementation. They are generated when interface is there
         continue;
       }
@@ -205,14 +207,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       String compname = comp.getName();
 
       // Check if component is interface
-      if (interfaceToImplementation.containsKey(comp.getFullName())) {
-        compname = interfaceToImplementation.get(comp.getFullName());
+      Optional<ComponentTypeSymbol> implementation = config.getBinding(comp);
+      if (implementation.isPresent()) {
+        compname = implementation.get().getName();
       }
 
       // Generate Files
       MTGenerator.generateAll(
           Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-              .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation, config);
+              .toFile(), hwcPath, comp, foundModels, compname, config);
     }
 
     /* ============================================================ */

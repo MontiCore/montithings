@@ -18,7 +18,7 @@ import montithings.generator.helper.ComponentHelper
 
 class ComponentGenerator {
 	
-	def static generateHeader(ComponentTypeSymbol comp, String compname, HashMap<String, String> interfaceToImplementation, ConfigParams config) {
+	def static generateHeader(ComponentTypeSymbol comp, String compname, ConfigParams config) {
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    
 		return '''
@@ -40,7 +40,7 @@ class ComponentGenerator {
 		«Ports.printIncludes(comp)»
 		
 		«IF comp.isDecomposed»
-		«Subcomponents.printIncludes(comp, compname, interfaceToImplementation)»
+		«Subcomponents.printIncludes(comp, compname, config)»
 		«ELSE»
 		#include "«compname»Impl.h"
 		#include "«compname»Input.h"
@@ -66,7 +66,7 @@ class ComponentGenerator {
 			«IF ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)»
 			void run();
 			«ENDIF»
-			«Subcomponents.printVars(comp, interfaceToImplementation)»
+			«Subcomponents.printVars(comp, config)»
 			«ELSE»
 
 			«compname»Impl«Utils.printFormalTypeParameters(comp)» «Identifier.behaviorImplName»;
