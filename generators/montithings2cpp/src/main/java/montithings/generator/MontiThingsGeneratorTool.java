@@ -9,7 +9,17 @@ import bindings._cocos.BindingsCoCos;
 import bindings._parser.BindingsParser;
 import bindings._symboltable.BindingsGlobalScope;
 import bindings._symboltable.BindingsLanguage;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
+import cdlangextension.CDLangExtensionTool;
+import cdlangextension._ast.ASTCDLangExtensionUnit;
+import cdlangextension._cocos.CDLangExtensionCoCos;
+import cdlangextension._parser.CDLangExtensionParser;
+import cdlangextension._symboltable.CDLangExtensionGlobalScope;
+import cdlangextension._symboltable.CDLangExtensionLanguage;
+import de.monticore.cd.CD4ACoCos;
+import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
+import de.monticore.cd.cd4analysis._parser.CD4AnalysisParser;
+import de.monticore.cd.cd4analysis._symboltable.*;
+import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.DirectoryUtil;
@@ -23,15 +33,14 @@ import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
 import org.apache.commons.io.FileUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
@@ -54,40 +63,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     catch (IOException e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
-    }
-
-    /* ============================================================ */
-    /* ====================== Check Bindings ====================== */
-    /* ============================================================ */
-
-    // 1. Get Bindings
-    HashMap<String, String> interfaceToImplementation = new HashMap<>();
-    List<String> foundBindings = Modelfinder
-        .getModelsInModelPath(modelPath, BindingsLanguage.FILE_ENDING);
-    Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
-    BindingsTool bindingsTool = new BindingsTool();
-    BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
-
-    // 2. Parse and check Cocos of bindings
-    for (String binding : foundBindings) {
-      ASTBindingsCompilationUnit bindingsAST = null;
-      try {
-        bindingsAST = new BindingsParser().parseBindingsCompilationUnit(binding).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+binding));
-      }
-      catch (IOException e) {
-        Log.error("File '" + binding + "' Bindings artifact was not found");
-      }
-      Log.info("Parsing model:" + binding, TOOL_NAME);
-      bindingsTool.createSymboltable(bindingsAST,binTab);
-
-      Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
-      BindingsCoCos.createChecker().checkAll(bindingsAST);
-
-          for(bindings._ast.ASTElement rule:bindingsAST.getElementList()){
-            if(rule instanceof ASTBindingRule){
-              interfaceToImplementation.put(((ASTBindingRule)rule).getInterfaceComponent().getQName(),((ASTBindingRule)rule).getImplementationComponent().getQName());
-            }
-          }
     }
 
     /* ============================================================ */
@@ -114,6 +89,109 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // 4. check cocos
       Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
       checkCoCos(comp.getAstNode());
+    }
+
+    /* ============================================================ */
+    /* =========================== Check CDs ====================== */
+    /* ============================================================ */
+
+    // Find all .cd files
+    List<String> foundCDModels = Modelfinder.getModelFiles(CD4AnalysisLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
+    ICD4AnalysisScope symCDTab = new CD4AnalysisGlobalScopeBuilder()
+        .setModelPath(new ModelPath((Paths.get(modelPath.getAbsolutePath()))))
+        .setCD4AnalysisLanguage(new CD4AnalysisLanguage())
+        .build();
+
+    for (String model : foundCDModels) {
+      ASTCDCompilationUnit cdAST = null;
+      try {
+        cdAST = new CD4AnalysisParser().parseCDCompilationUnit(model).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+ model));
+      }
+      catch (IOException e) {
+        Log.error("File '" + model + "' CD4A artifact was not found");
+      }
+
+      // parse + resolve model
+      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      new CD4AnalysisModelLoader(new CD4AnalysisLanguage()).createSymbolTableFromAST(cdAST,model, (CD4AnalysisGlobalScope) symCDTab);
+
+      // check cocos
+      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
+      new CD4ACoCos().getCheckerForAllCoCos().checkAll(cdAST);
+    }
+
+    /* ============================================================ */
+    /* =================== Check CDExtension ====================== */
+    /* ============================================================ */
+
+    // Find all .cd files
+    List<String> foundCDExtensionModels =
+      Modelfinder.getModelFiles(CDLangExtensionLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
+    CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
+
+    for (String model : foundCDExtensionModels) {
+      ASTCDLangExtensionUnit cdExtensionAST = null;
+      try {
+        cdExtensionAST = new CDLangExtensionParser().parseCDLangExtensionUnit(model).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+ model));
+      }
+      catch (IOException e) {
+        Log.error("File '" + model + "' CDLangExtension artifact was not found");
+      }
+
+      // parse + resolve model
+      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      if(config.getCdLangExtensionScope()==null) {
+        config.setCdLangExtensionScope(cdExtensionTool.createSymboltable(cdExtensionAST, modelPath));
+      }
+      else{
+        cdExtensionTool.createSymboltable(cdExtensionAST, (CDLangExtensionGlobalScope) config.getCdLangExtensionScope());
+      }
+
+      // check cocos
+      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
+      new CDLangExtensionCoCos().createChecker().checkAll(cdExtensionAST);
+    }
+
+    /* ============================================================ */
+    /* ====================== Check Bindings ====================== */
+    /* ============================================================ */
+
+    // 1. Get Bindings
+    HashMap<String, String> interfaceToImplementation = new HashMap<>();
+    List<String> foundBindings = Modelfinder.getModelFiles(BindingsLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
+    Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
+    BindingsTool bindingsTool = new BindingsTool();
+    BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
+
+    // 2. Parse and check Cocos of bindings
+    for (String binding : foundBindings) {
+      ASTBindingsCompilationUnit bindingsAST = null;
+      try {
+        bindingsAST = new BindingsParser().parseBindingsCompilationUnit(binding).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+binding));
+      }
+      catch (IOException e) {
+        Log.error("File '" + binding + "' Bindings artifact was not found");
+      }
+      Log.info("Parsing model:" + binding, TOOL_NAME);
+      bindingsTool.createSymboltable(bindingsAST,binTab);
+
+      Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
+      BindingsCoCos.createChecker().checkAll(bindingsAST);
+
+          for(bindings._ast.ASTElement rule:bindingsAST.getElementList()){
+            if(rule instanceof ASTBindingRule){
+              config.getComponentBindings().add((ASTBindingRule)rule);
+            }
+          }
+    }
+
+    /* ============================================================ */
+    /* ==================== Generate Components =================== */
+    /* ============================================================ */
+
+    for (String model : foundModels) {
+      String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
+      ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
       // 5. generate
       Log.info("Generate model: " + qualifiedModelName, TOOL_NAME);
@@ -123,10 +201,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         // Dont generate files for implementation. They are generated when interface is there
         continue;
       }
-
-      /* ============================================================ */
-      /* ==================== Generate Components =================== */
-      /* ============================================================ */
 
       String compname = comp.getName();
 
