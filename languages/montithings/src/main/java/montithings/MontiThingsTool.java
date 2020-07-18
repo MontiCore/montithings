@@ -39,6 +39,8 @@ public class MontiThingsTool extends MontiArcTool {
 
   protected boolean isSymTabInitialized;
 
+  private CD4AnalysisGlobalScope cdGlobalScope;
+
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker(), new MontiThingsLanguage());
   }
@@ -148,16 +150,21 @@ public class MontiThingsTool extends MontiArcTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    CD4AnalysisLanguage cd4ALanguage = CD4AnalysisMill.cD4AnalysisLanguageBuilder().build();
-    CD4AnalysisGlobalScope cd4AGlobalScope = CD4AnalysisMill.cD4AnalysisGlobalScopeBuilder()
-      .setModelPath(mp)
-      .setCD4AnalysisLanguage(cd4ALanguage)
-      .build();
-
-    Field2CDFieldResolvingDelegate fieldDelegate =
-      new Field2CDFieldResolvingDelegate(cd4AGlobalScope);
-    Type2CDTypeResolvingDelegate typeDelegate =
-      new Type2CDTypeResolvingDelegate(cd4AGlobalScope);
+    Field2CDFieldResolvingDelegate fieldDelegate;
+    Type2CDTypeResolvingDelegate typeDelegate;
+    if(this.cdGlobalScope ==null) {
+      CD4AnalysisLanguage cd4ALanguage = CD4AnalysisMill.cD4AnalysisLanguageBuilder().build();
+      CD4AnalysisGlobalScope cd4AGlobalScope = CD4AnalysisMill.cD4AnalysisGlobalScopeBuilder()
+          .setModelPath(mp)
+          .setCD4AnalysisLanguage(cd4ALanguage)
+          .build();
+      fieldDelegate = new Field2CDFieldResolvingDelegate(cd4AGlobalScope);
+      typeDelegate =  new Type2CDTypeResolvingDelegate(cd4AGlobalScope);
+    }
+    else{
+      fieldDelegate = new Field2CDFieldResolvingDelegate(this.cdGlobalScope);
+      typeDelegate =  new Type2CDTypeResolvingDelegate(this.cdGlobalScope);
+    }
 
     MontiThingsGlobalScope gs = new MontiThingsGlobalScope(mp, language);
     gs.addAdaptedFieldSymbolResolvingDelegate(fieldDelegate);
@@ -225,4 +232,11 @@ public class MontiThingsTool extends MontiArcTool {
     return gs;
   }
 
+  public CD4AnalysisGlobalScope getCdGlobalScope() {
+    return cdGlobalScope;
+  }
+
+  public void setCdGlobalScope(CD4AnalysisGlobalScope cdGlobalScope) {
+    this.cdGlobalScope = cdGlobalScope;
+  }
 }

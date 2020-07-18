@@ -4,6 +4,7 @@ package montithings.generator.helper;
 import arcbasis._ast.*;
 import arcbasis._symboltable.*;
 import cdlangextension._ast.ASTCDEImportStatement;
+import cdlangextension._symboltable.CDEImportStatementSymbol;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
@@ -123,14 +124,14 @@ public class ComponentHelper {
   }
 
   public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
-    PortSymbol portSymbol) {
+    PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       throw new IllegalArgumentException(
         "Can't print namespace of non-CD type " + portSymbol.getType().getTypeInfo().getFullName());
     }
     TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
 
-    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(portSymbol);
+    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(portSymbol, config);
     if (cdeImportStatementOpt.isPresent()) {
       String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
       return printPackageNamespaceFromString(
@@ -156,22 +157,17 @@ public class ComponentHelper {
    * @param portSymbol port using a class diagram type.
    * @return c++ import statement of the port type if specified in the cd model. Otherwise empty.
    */
-  public static Optional<ASTCDEImportStatement> getCppImportExtension(PortSymbol portSymbol) {
+  public static Optional<ASTCDEImportStatement> getCppImportExtension(PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       return Optional.empty();
     }
-    //TODO
-    /*
-    TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
-    String CDEImportStatementSymbolId =
-      cdTypeSymbol.getPackageName() + "." + "Cpp" + "." + cdTypeSymbol.getName();
-    Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = portSymbol.getEnclosingScope()
-      .resolve(CDEImportStatementSymbolId, CDEImportStatementSymbol);
-    if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get()
-      .getCDEImportStatementNode().isPresent()) {
-      return Optional.of(cdeImportStatementSymbol.get().getCDEImportStatementNode().get());
+    TypeSymbol typeSymbol = portSymbol.getTypeInfo();
+    if(config.getCdLangExtensionScope() != null && typeSymbol instanceof CDType2TypeAdapter){
+      Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = config.getCdLangExtensionScope().resolveASTCDEImportStatement("Cpp",((CDType2TypeAdapter)typeSymbol).getAdaptee());
+      if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get().isPresentAstNode()) {
+        return Optional.of(cdeImportStatementSymbol.get().getAstNode());
+      }
     }
-     */
     return Optional.empty();
   }
 
@@ -471,13 +467,13 @@ public class ComponentHelper {
     return type;
   }
 
-  public String getRealPortCppTypeString(PortSymbol port) {
-    return java2cppTypeString(getRealPortCppTypeString(this.component, port));
+  public String getRealPortCppTypeString(PortSymbol port, ConfigParams config) {
+    return java2cppTypeString(getRealPortCppTypeString(this.component, port, config));
   }
 
-  public static String getRealPortCppTypeString(ComponentTypeSymbol comp, PortSymbol port) {
+  public static String getRealPortCppTypeString(ComponentTypeSymbol comp, PortSymbol port, ConfigParams config) {
     if (ComponentHelper.portUsesCdType(port)) {
-      return printCdPortPackageNamespace(comp, port);
+      return printCdPortPackageNamespace(comp, port, config);
     } else {
       return java2cppTypeString(getRealPortTypeString(comp, port));
     }

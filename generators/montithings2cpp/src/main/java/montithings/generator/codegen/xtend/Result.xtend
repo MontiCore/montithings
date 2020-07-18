@@ -5,27 +5,28 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Ports
+import montithings.generator.codegen.ConfigParams
 
 class Result {
 
-  def static generateImplementationFile(ComponentTypeSymbol comp, String compname) {
+  def static generateImplementationFile(ComponentTypeSymbol comp, String compname, ConfigParams config) {
     return '''
     #include "«compname»Result.h"
     «Utils.printNamespaceStart(comp)»
     «IF !comp.hasTypeParameter»
-    «generateResultBody(comp, compname)»
+    «generateResultBody(comp, compname, config)»
     «ENDIF»
     «Utils.printNamespaceEnd(comp)»
     '''
   }
 
 
-	def static generateResultBody(ComponentTypeSymbol comp, String compname){
+	def static generateResultBody(ComponentTypeSymbol comp, String compname, ConfigParams config){
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    return '''
 «IF !comp.allOutgoingPorts.empty»
 «Utils.printTemplateArguments(comp)»
-«compname»Result«Utils.printFormalTypeParameters(comp, false)»::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»){
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port, config)» «port.name» «ENDFOR»){
 	«IF comp.presentParentComponent»
 	super(«FOR port : comp.parent.loadedSymbol.allOutgoingPorts» «port.name» «ENDFOR»);
 «ENDIF»
@@ -37,21 +38,21 @@ class Result {
 
 «FOR port : comp.outgoingPorts»
 «Utils.printTemplateArguments(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
+tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
  }
  «ENDFOR»
  
  «FOR port : comp.outgoingPorts»
 «Utils.printTemplateArguments(comp)»
-void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»){
+void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»){
 this->«port.name» = «port.name»; 
  }
  «ENDFOR»
 	    '''
 	}
 	
-	def static generateResultHeader(ComponentTypeSymbol comp, String compname){
+	def static generateResultHeader(ComponentTypeSymbol comp, String compname, ConfigParams config){
 	    var ComponentHelper helper = new ComponentHelper(comp)
 return '''
 #pragma once
@@ -62,7 +63,7 @@ return '''
 #include <vector>
 #include <list>
 #include <set>
-«Ports.printIncludes(comp)»
+«Ports.printIncludes(comp, config)»
 
 «Utils.printNamespaceStart(comp)»
 
@@ -78,23 +79,23 @@ class «compname»Result
 {
 private:
 	«FOR port : comp.outgoingPorts»
-	tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name»;
+	tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name»;
 	«ENDFOR»
 public:	
 	«compname»Result() = default;
 	«IF !comp.allOutgoingPorts.empty»
-	«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port)» «port.name» «ENDFOR»);
+	«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port, config)» «port.name» «ENDFOR»);
 	«ENDIF»
 	«FOR port : comp.outgoingPorts»
-	 tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
+	 tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
 	«ENDFOR»
 	«FOR port : comp.outgoingPorts»
-	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port)» «port.name»);
+	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»);
 	«ENDFOR»
 };
 
 «IF comp.hasTypeParameter()»
-  «generateResultBody(comp, compname)»
+  «generateResultBody(comp, compname, config)»
 «ENDIF»
 «Utils.printNamespaceEnd(comp)»
 '''

@@ -69,16 +69,48 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     /* ======================= Check Models ======================= */
     /* ============================================================ */
+
+    /* ============================================================ */
+    /* =========================== Check CDs ====================== */
+    /* ============================================================ */
+    CD4AnalysisGlobalScope symCDTab = new CD4AnalysisGlobalScopeBuilder()
+        .setModelPath(new ModelPath((Paths.get(modelPath.getAbsolutePath()))))
+        .setCD4AnalysisLanguage(new CD4AnalysisLanguage())
+        .build();
+    this.setCdGlobalScope(symCDTab);
+
+    // Find all .cd files
+    List<String> foundCDModels = Modelfinder.getModelFiles(CD4AnalysisLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
+    for (String model : foundCDModels) {
+      ASTCDCompilationUnit cdAST = null;
+      try {
+        cdAST = new CD4AnalysisParser().parseCDCompilationUnit(model).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+ model));
+      }
+      catch (IOException e) {
+        Log.error("File '" + model + "' CD4A artifact was not found");
+      }
+
+      // parse + resolve model
+      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      new CD4AnalysisModelLoader(new CD4AnalysisLanguage()).createSymbolTableFromAST(cdAST,model, symCDTab);
+
+      // check cocos
+      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
+      new CD4ACoCos().getCheckerForAllCoCos().checkAll(cdAST);
+    }
+
+    /* ============================================================ */
+    /* ==================== Check MT Models ======================= */
+    /* ============================================================ */
     // 1. Find all .mt files
     List<String> foundModels = Modelfinder
         .getModelsInModelPath(modelPath, MontiThingsLanguage.FILE_ENDING);
     // 2. Initialize SymbolTable
     Log.info("Initializing symboltable", TOOL_NAME);
-    String basedir = DirectoryUtil.getBasedirFromModelAndTargetPath(modelPath.getAbsolutePath(),
-        target.getAbsolutePath());
     IMontiThingsScope symTab = initSymbolTable(modelPath,
         //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
         hwcPath);
+
 
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
@@ -93,35 +125,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     /* ============================================================ */
-    /* =========================== Check CDs ====================== */
-    /* ============================================================ */
-
-    // Find all .cd files
-    List<String> foundCDModels = Modelfinder.getModelFiles(CD4AnalysisLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
-    ICD4AnalysisScope symCDTab = new CD4AnalysisGlobalScopeBuilder()
-        .setModelPath(new ModelPath((Paths.get(modelPath.getAbsolutePath()))))
-        .setCD4AnalysisLanguage(new CD4AnalysisLanguage())
-        .build();
-
-    for (String model : foundCDModels) {
-      ASTCDCompilationUnit cdAST = null;
-      try {
-        cdAST = new CD4AnalysisParser().parseCDCompilationUnit(model).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+ model));
-      }
-      catch (IOException e) {
-        Log.error("File '" + model + "' CD4A artifact was not found");
-      }
-
-      // parse + resolve model
-      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
-      new CD4AnalysisModelLoader(new CD4AnalysisLanguage()).createSymbolTableFromAST(cdAST,model, (CD4AnalysisGlobalScope) symCDTab);
-
-      // check cocos
-      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
-      new CD4ACoCos().getCheckerForAllCoCos().checkAll(cdAST);
-    }
-
-    /* ============================================================ */
     /* =================== Check CDExtension ====================== */
     /* ============================================================ */
 
@@ -129,7 +132,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     List<String> foundCDExtensionModels =
       Modelfinder.getModelFiles(CDLangExtensionLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
-    cdExtensionTool.setCdGlobalScope((CD4AnalysisGlobalScope) symCDTab);
+    cdExtensionTool.setCdGlobalScope(symCDTab);
 
     for (String model : foundCDExtensionModels) {
       ASTCDLangExtensionUnit cdExtensionAST = null;

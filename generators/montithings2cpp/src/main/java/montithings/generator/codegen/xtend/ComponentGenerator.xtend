@@ -5,7 +5,6 @@ import arcbasis._symboltable.ComponentTypeSymbol
 import arcbasis._symboltable.ComponentTypeSymbolLoader
 import de.monticore.types.typesymbols._symboltable.FieldSymbol
 import java.util.ArrayList
-import java.util.HashMap
 import java.util.List
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.util.Identifier
@@ -37,7 +36,7 @@ class ComponentGenerator {
 		#include <thread>
 		#include "sole/sole.hpp"
 		#include <iostream>
-		«Ports.printIncludes(comp)»
+		«Ports.printIncludes(comp, config)»
 		
 		«IF comp.isDecomposed»
 		«Subcomponents.printIncludes(comp, compname, config)»
@@ -56,7 +55,7 @@ class ComponentGenerator {
 		            «ENDIF»«ENDIF»
 		{
 		private:
-			«Ports.printVars(comp, comp.ports)»
+			«Ports.printVars(comp, comp.ports, config)»
 			«Utils.printVariables(comp)»
 			««« Currently useless. MontiArc 6's getFields() returns both variables and parameters
 			««««Utils.printConfigParameters(comp)»
@@ -77,7 +76,7 @@ class ComponentGenerator {
 			«ENDIF»
 			
 		public:
-			«Ports.printMethodHeaders(comp.ports)»
+			«Ports.printMethodHeaders(comp.ports, config)»
 			«compname»(«Utils.printConfigurationParametersAsList(comp)»);
 			
 			void setUp(TimeMode enclosingComponentTiming) override;
@@ -88,28 +87,28 @@ class ComponentGenerator {
 		};
 		            
 		«IF comp.hasTypeParameter()»
-	      «generateBody(comp, compname)»
+	      «generateBody(comp, compname, config)»
 	    «ENDIF»
 
 	    «Utils.printNamespaceEnd(comp)»
 		'''
 	}
 
-	def static generateImplementationFile(ComponentTypeSymbol comp, String compname) {
+	def static generateImplementationFile(ComponentTypeSymbol comp, String compname, ConfigParams config) {
 	  return '''
   	#include "«compname».h"
   	#include <regex>
   	«Utils.printNamespaceStart(comp)»
   	«IF !comp.hasTypeParameter()»
-    «generateBody(comp, compname)»
+    «generateBody(comp, compname, config)»
     «ENDIF»
     «Utils.printNamespaceEnd(comp)»
     '''
 	}
 	
-	def static generateBody(ComponentTypeSymbol comp, String compname) {
+	def static generateBody(ComponentTypeSymbol comp, String compname, ConfigParams config) {
 		return '''
-		«Ports.printMethodBodies(comp.ports, comp, compname)»
+		«Ports.printMethodBodies(comp.ports, comp, compname, config)»
 				
 		«IF comp.isDecomposed»
 		«IF ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)»

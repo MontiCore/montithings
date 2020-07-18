@@ -1,13 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.util
 
-import montithings.generator.helper.ComponentHelper
-import arcbasis._symboltable.ComponentTypeSymbol
 import arcbasis._symboltable.ComponentInstanceSymbol
-import montithings.generator.codegen.ConfigParams
-import java.util.HashMap
+import arcbasis._symboltable.ComponentTypeSymbol
 import java.util.HashSet
 import java.util.Set
+import montithings.generator.codegen.ConfigParams
+import montithings.generator.helper.ComponentHelper
 
 class Subcomponents {
 	

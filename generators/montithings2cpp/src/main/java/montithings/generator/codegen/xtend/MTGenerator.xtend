@@ -1,19 +1,18 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
-import montithings.generator.codegen.xtend.behavior.Implementation
-import montithings.generator.codegen.xtend.util.CMake
-import montithings.generator.codegen.xtend.util.Identifier
-import montithings.generator.codegen.xtend.util.ArduinoReadme
-import montithings.generator.helper.ComponentHelper
+import arcbasis._symboltable.ComponentTypeSymbol
 import de.monticore.io.FileReaderWriter
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.List
-import java.util.HashMap
-import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.ConfigParams
+import montithings.generator.codegen.xtend.behavior.Implementation
+import montithings.generator.codegen.xtend.util.ArduinoReadme
+import montithings.generator.codegen.xtend.util.CMake
+import montithings.generator.codegen.xtend.util.Identifier
+import montithings.generator.helper.ComponentHelper
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -28,12 +27,12 @@ class MTGenerator {
   def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, List<String> foundModels, String compname, ConfigParams config) {
     Identifier.createInstance(comp)
 
-    toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname), ".h");
-    toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname), ".cpp");
-    toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname), ".h");
-    toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname), ".cpp");
+    toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname, config), ".h");
+    toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname, config), ".cpp");
+    toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname, config), ".h");
+    toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname, config), ".cpp");
     toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, config), ".h");
-    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname), ".cpp");
+    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname, config), ".cpp");
     
     if (comp.isAtomic) {
       var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + compname + "Impl");
