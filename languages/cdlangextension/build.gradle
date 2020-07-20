@@ -2,6 +2,7 @@
 
 plugins {
   id "monticore"
+  id "jacoco"
 }
 
 group = "montithings.languages"
@@ -24,7 +25,10 @@ sourceSets {
   }
 }
 
-test { useJUnitPlatform() }
+test {
+  useJUnitPlatform()
+  finalizedBy jacocoTestReport
+}
 
 configurations { grammar }
 
@@ -53,8 +57,6 @@ task generateGrammarCDLangExtension(type: MCTask) {
   def upToDate = incCheck("CDLangExtension.mc4")
   outputs.upToDateWhen { upToDate }
 }
-
-//TODO surefire?
 
 compileJava {
   dependsOn project.collect { it.tasks.findAll { task -> task.name.startsWith("generateGrammar") } }

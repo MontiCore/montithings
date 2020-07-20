@@ -2,6 +2,7 @@
 
 plugins {
   id "monticore"
+  id "jacoco"
 }
 
 group = "montithings.languages"
@@ -24,7 +25,10 @@ sourceSets {
   }
 }
 
-test { useJUnitPlatform() }
+test {
+  useJUnitPlatform()
+  finalizedBy jacocoTestReport
+}
 
 configurations { grammar }
 
@@ -60,7 +64,7 @@ fileTree(grammarDir).matching { include "**/*.mc4" }.each {
   def g = it
   def grammarName = it.getName().substring(0, it.getName().lastIndexOf("."))
 
-  task "generateGrammar$grammarName" (type: MCTask) {
+  task "generateGrammar$grammarName"(type: MCTask) {
     grammar = file g
     outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
     handcodedPath file("$projectDir/src/main/java")
@@ -69,8 +73,6 @@ fileTree(grammarDir).matching { include "**/*.mc4" }.each {
     outputs.upToDateWhen { upToDate }
   }
 }
-
-//TODO surefire?
 
 def grammarDependencies = ext {
   ConditionBasis = []

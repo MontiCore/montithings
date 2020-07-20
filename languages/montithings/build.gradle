@@ -2,6 +2,7 @@
 
 plugins {
   id "monticore"
+  id "jacoco"
 }
 
 group = "montithings.languages"
@@ -24,7 +25,10 @@ sourceSets {
   }
 }
 
-test { useJUnitPlatform() }
+test {
+  useJUnitPlatform()
+  finalizedBy jacocoTestReport
+}
 
 configurations { grammar }
 
@@ -70,8 +74,6 @@ task generateGrammarMontiThings(type: MCTask) {
   def upToDate = incCheck("MontiThings.mc4")
   outputs.upToDateWhen { upToDate }
 }
-
-//TODO surefire?
 
 def grammarDependencies = ext {
   MontiThings = [":languages:montiarc-extensions:generateGrammarClockControl",
