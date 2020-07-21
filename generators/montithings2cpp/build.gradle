@@ -51,8 +51,8 @@ dependencies {
 
 xtend {
   sourceSets {
-    main.xtendOutputDir = "$projectDir/src/main/generated-sources"
-    test.xtendOutputDir = "$projectDir/src/test/generated-sources"
+    main.xtendOutputDir = "$projectDir/target/generated-sources"
+    //test.xtendOutputDir = "$projectDir/target/generated-test-sources"
   }
 }
 
