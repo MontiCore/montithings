@@ -13,9 +13,12 @@ dependencies {
   implementation "de.monticore.lang:cd4analysis:$cd4a_version"
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
 
-  testImplementation "junit:junit:$junit_version"
   testImplementation "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version:tests"
+  //testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+  testImplementation "junit:junit:$junit_version"
+  /*testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.2"
+  testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.5.2"*/
 }
 
 java {
@@ -36,6 +39,6 @@ publishing {
     name = "$SE_Nexus_ID"
     credentials.username mavenUser
     credentials.password mavenPassword
-    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+    url = version.endsWith("SNAPSHOT") ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
   }
 }

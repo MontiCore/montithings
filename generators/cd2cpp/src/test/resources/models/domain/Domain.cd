@@ -118,6 +118,7 @@ classdiagram Domain {
     P2P, BROADCAST;
   }
 
+/*
   class StringList {
    List<String> listOfStrings;
   }
@@ -125,4 +126,5 @@ classdiagram Domain {
   class StringListList {
      List<List<String>> listOfListOfStrings;
   }
+*/
 }
