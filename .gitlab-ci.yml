@@ -38,8 +38,21 @@ Validate Gradle:
   image: gradle:6.5.1-jdk8
   stage: build
   allow_failure: true
+  artifacts:
+    paths:
+      - generators/montithings2cpp/target/
+      - languages/montithings/target/
   script:
-    - gradle clean build
+    - gradle clean assemble
+    
+Unit Test Gradle:
+  image: gradle:6.5.1-jdk8
+  stage: build
+  allow_failure: true
+  dependencies: 
+    - Validate Gradle #download artifacts from build
+  script:
+    - gradle test
 
 # Run Unit Tests after build
 .unit_test_template: &unit_test_definition
