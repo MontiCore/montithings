@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-grammar Bindings extends de.monticore.types.MCBasicTypes, MontiThings {
+grammar Bindings extends de.monticore.types.MCBasicTypes, MontiArc {
   start BindingsCompilationUnit;
   BindingsCompilationUnit = Element*;
 
