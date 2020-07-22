@@ -3,7 +3,7 @@ package montithings.generator.codegen.xtend.util
 
 import java.io.File
 import arcbasis._symboltable.ComponentTypeSymbol
-import montithings.generator.codegen.TargetPlatform
+import montithings.generator.codegen.ConfigParams
 
 class CMake {
 	
@@ -31,7 +31,7 @@ class CMake {
 		'''
 	}
 	
-	def static printTopLevelCMake(File[] files, ComponentTypeSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, TargetPlatform platform) {
+	def static printTopLevelCMake(File[] files, ComponentTypeSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, ConfigParams config) {
 		return '''
 		cmake_minimum_required(VERSION 3.8)
 		project("«comp.name»")
@@ -51,11 +51,11 @@ class CMake {
 		ENDMACRO()
 		SET(dir_list "")
 		
-		«IF platform == TargetPlatform.DSA_VCG»
+		«IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
 		«printDsaParameters()»
 		«ENDIF»
 
-		«IF platform != TargetPlatform.DSA_VCG»
+		«IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG»
 		find_package(nng 1.1.1 CONFIG REQUIRED)
 		«ENDIF»
 		
@@ -100,7 +100,7 @@ class CMake {
 		«FOR subdir : subPackagesPath»
 		${«subdir.name.toUpperCase()»_SOURCES}
 		«ENDFOR»)
-		«IF platform == TargetPlatform.DSA_VCG»
+		«IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
 		«printDsaLinkLibraries(comp.name)»
 		«ELSE»
 		target_link_libraries(«comp.name» nng::nng)
@@ -109,7 +109,7 @@ class CMake {
 		'''
 	}
 		
-	def static printIPCServerCMake(/*ResourcePortSymbol port,*/ String libraryPath, String ipcPath, Boolean existsHWC, TargetPlatform platform){
+	def static printIPCServerCMake(/*ResourcePortSymbol port,*/ String libraryPath, String ipcPath, Boolean existsHWC, ConfigParams config){
 		return 
 		'''
 		cmake_minimum_required(VERSION 3.8)
@@ -117,11 +117,11 @@ class CMake {
 		
 		set(CMAKE_CXX_STANDARD 11)
 
-		«IF platform == TargetPlatform.DSA_VCG»
+		«IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
 		«printDsaParameters()»
 		«ENDIF»
 		
-		«IF platform != TargetPlatform.DSA_VCG»
+		«IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG»
 		find_package(nng 1.1.1 CONFIG REQUIRED)
 		«ENDIF»
 		
@@ -134,7 +134,7 @@ class CMake {
 		"«libraryPath.replace("\\","/")»/*.h")
 		
 «««		add_executable(«port.name.toFirstUpper»Server ${SOURCES}) TODO
-		«IF platform == TargetPlatform.DSA_VCG»
+		«IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
 «««		«printDsaLinkLibraries(port.name.toFirstUpper+"Server")» TODO
 		«ELSE»
 «««		target_link_libraries(«port.name.toFirstUpper»Server nng::nng) TODO

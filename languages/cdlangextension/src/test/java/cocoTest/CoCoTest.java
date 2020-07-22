@@ -10,7 +10,6 @@ import cdlangextension.util.CDLangExtensionError;
 import com.google.common.collect.Lists;
 import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
 import de.monticore.cd.cd4analysis._parser.CD4AnalysisParser;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisArtifactScope;
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -41,7 +40,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void valid() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getCDEAST("cocoTest/ImportValid.cde",getCDAST("cocoTest/ImportValid.cd")));
+    checker.checkAll(getAST("cocoTest/ImportValid.cde"));
     Assertions.assertEquals(0, Log.getErrorCount());
   }
 
@@ -51,7 +50,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importNameEmpty() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getCDEAST("cocoTest/ImportNameNotEmpty.cde",getCDAST("cocoTest/ImportValid.cd")));
+    checker.checkAll(getAST("cocoTest/ImportNameNotEmpty.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.EMPTY_IMPORT_FIELD });
   }
@@ -62,7 +61,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importNameNotUnique() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getCDEAST("cocoTest/ImportNameUnique.cde",getCDAST("cocoTest/ImportValid.cd")));
+    checker.checkAll(getAST("cocoTest/ImportNameUnique.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_IMPORT_NAME });
   }
@@ -73,7 +72,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importLanguageNotUnique() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getCDEAST("cocoTest/ImportLanguageUnique.cde",getCDAST("cocoTest/ImportValid.cd")));
+    checker.checkAll(getAST("cocoTest/ImportLanguageUnique.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_LANGUAGE_NAME });
   }
@@ -84,12 +83,12 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importNameNotExistsInCD() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getCDEAST("cocoTest/ImportNameExists.cde",getCDAST("cocoTest/ImportValid.cd")));
+    checker.checkAll(getAST("cocoTest/ImportNameExists.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.MISSING_IMPORT_NAME });
   }
 
-  public ASTCDLangExtensionUnit getCDEAST(String fileName, ASTCDCompilationUnit astCD) {
+  public ASTCDLangExtensionUnit getAST(String fileName) {
     ASTCDLangExtensionUnit astCDE = null;
     try {
       astCDE = new CDLangExtensionParser().parseCDLangExtensionUnit(MODEL_PATH + fileName).orElse(null);
@@ -99,22 +98,8 @@ public class CoCoTest extends AbstractTest {
     }
     Assertions.assertNotNull(astCDE);
     CDLangExtensionTool tool = new CDLangExtensionTool();
-    List<File> modelPath = Lists.newArrayList(new File(MODEL_PATH));
-    CD4AnalysisArtifactScope artifactScope = tool.createCDSymboltable(astCD,modelPath);
-    tool.createCDESymboltable(astCDE, modelPath,artifactScope);
+    tool.createSymboltable(astCDE, new File(MODEL_PATH));
     return astCDE;
-  }
-
-  public ASTCDCompilationUnit getCDAST(String fileName) {
-    ASTCDCompilationUnit astCD = null;
-    try {
-      astCD = new CD4AnalysisParser().parseCDCompilationUnit(MODEL_PATH + fileName).orElse(null);
-    }
-    catch (IOException e) {
-      Log.error("File '" + MODEL_PATH + fileName + "' CD artifact was not found");
-    }
-    Assertions.assertNotNull(astCD);
-    return astCD;
   }
 }
 

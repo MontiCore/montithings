@@ -8,8 +8,7 @@ import montithings.generator.helper.ComponentHelper
 
 class Implementation {
 	def static generateImplementationHeader(ComponentTypeSymbol comp, String compname, boolean existsHWC) {
-    var String generics = Utils.printFormalTypeParameters(comp)
-    var boolean hasBehavior = ComponentHelper.hasBehavior(comp);
+    var String generics = Utils.printFormalTypeParameters(comp);
     return '''
 #pragma once
 #include "«compname»Input.h"
@@ -57,8 +56,7 @@ public:
   }
   
   	def static generateImplementationBody(ComponentTypeSymbol comp, String compname, boolean isTOP) {
-    var String generics = Utils.printFormalTypeParameters(comp)
-    var boolean hasBehavior = ComponentHelper.hasBehavior(comp);
+    var String generics = Utils.printFormalTypeParameters(comp);
     return '''
 «IF ComponentHelper.hasBehavior(comp)»
 «Utils.printTemplateArguments(comp)»

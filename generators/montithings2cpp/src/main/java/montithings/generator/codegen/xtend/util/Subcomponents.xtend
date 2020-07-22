@@ -1,19 +1,19 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend.util
 
-import montithings.generator.helper.ComponentHelper
-import arcbasis._symboltable.ComponentTypeSymbol
 import arcbasis._symboltable.ComponentInstanceSymbol
-import java.util.HashMap
+import arcbasis._symboltable.ComponentTypeSymbol
 import java.util.HashSet
 import java.util.Set
+import montithings.generator.codegen.ConfigParams
+import montithings.generator.helper.ComponentHelper
 
 class Subcomponents {
 	
-  def static String printIncludes(ComponentTypeSymbol comp, String compname, HashMap<String, String> interfaceToImplementation) {
+  def static String printIncludes(ComponentTypeSymbol comp, String compname, ConfigParams config) {
   	var Set<String> compIncludes = new HashSet<String>()
     for (subcomponent : comp.subComponents) {
-      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, interfaceToImplementation, false)».h"''')
+      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)».h"''')
 	  var Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent)
 	  for (String genericInclude : genericIncludes) {
 	    compIncludes.add('''#include "«genericInclude».h"''')
@@ -28,10 +28,10 @@ class Subcomponents {
 	'''
   }
 
-  def static String printVars(ComponentTypeSymbol comp, HashMap<String, String> interfaceToImplementation) {
+  def static String printVars(ComponentTypeSymbol comp, ConfigParams config) {
     return '''
       «FOR subcomponent : comp.subComponents»
-        «var type = ComponentHelper.getSubComponentTypeNameWithBinding(comp, subcomponent, interfaceToImplementation)»
+        «var type = ComponentHelper.getSubComponentTypeNameWithBinding(comp, subcomponent, config)»
         «printPackageNamespace(comp, subcomponent)»«type» «subcomponent.name»;
       «ENDFOR»
     '''

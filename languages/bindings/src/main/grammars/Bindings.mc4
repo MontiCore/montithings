@@ -1,11 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
-grammar Bindings extends de.monticore.types.Types {
+grammar Bindings extends de.monticore.types.MCBasicTypes, MontiThings {
+  start BindingsCompilationUnit;
   BindingsCompilationUnit = Element*;
 
   interface Element;
 
   BindingRule implements Element =
-    interfaceComponent:QualifiedName
+    interfaceComponent:MCQualifiedName
     "->"
-    implementationComponent:QualifiedName";";
+    implementationComponent:MCQualifiedName";";
 }

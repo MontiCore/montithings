@@ -8,7 +8,6 @@ import cdlangextension._symboltable.CDEImportStatementSymbol;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
-import de.monticore.cd.cd4analysis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.symboltable.ImportStatement;
@@ -26,6 +25,7 @@ import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
 import montithings._ast.ASTMTCondition;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
+import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.generator.visitor.CppAssignmentPrettyPrinter;
 import montithings.generator.visitor.CppExpressionPrettyPrinter;
@@ -124,14 +124,14 @@ public class ComponentHelper {
   }
 
   public static String printCdPortPackageNamespace(arcbasis._symboltable.ComponentTypeSymbol componentSymbol,
-    PortSymbol portSymbol) {
+    arcbasis._symboltable.PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       throw new IllegalArgumentException(
         "Can't print namespace of non-CD type " + portSymbol.getType().getTypeInfo().getFullName());
     }
     TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
 
-    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(portSymbol);
+    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(portSymbol, config);
     if (cdeImportStatementOpt.isPresent()) {
       String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
       return printPackageNamespaceFromString(
@@ -157,22 +157,17 @@ public class ComponentHelper {
    * @param portSymbol port using a class diagram type.
    * @return c++ import statement of the port type if specified in the cd model. Otherwise empty.
    */
-  public static Optional<cdlangextension._ast.ASTCDEImportStatement> getCppImportExtension(arcbasis._symboltable.PortSymbol portSymbol) {
+  public static Optional<cdlangextension._ast.ASTCDEImportStatement> getCppImportExtension(arcbasis._symboltable.PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       return Optional.empty();
     }
-    //TODO
-    /*
-    TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
-    String CDEImportStatementSymbolId =
-      cdTypeSymbol.getPackageName() + "." + "Cpp" + "." + cdTypeSymbol.getName();
-    Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = portSymbol.getEnclosingScope()
-      .resolve(CDEImportStatementSymbolId, CDEImportStatementSymbol);
-    if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get()
-      .getCDEImportStatementNode().isPresent()) {
-      return Optional.of(cdeImportStatementSymbol.get().getCDEImportStatementNode().get());
+    TypeSymbol typeSymbol = portSymbol.getTypeInfo();
+    if(config.getCdLangExtensionScope() != null && typeSymbol instanceof CDType2TypeAdapter){
+      Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = config.getCdLangExtensionScope().resolveASTCDEImportStatement("Cpp",((CDType2TypeAdapter)typeSymbol).getAdaptee());
+      if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get().isPresentAstNode()) {
+        return Optional.of(cdeImportStatementSymbol.get().getAstNode());
+      }
     }
-     */
     return Optional.empty();
   }
 
@@ -350,12 +345,12 @@ public class ComponentHelper {
   }
 
   public static String getSubComponentTypeNameWithoutPackage(arcbasis._symboltable.ComponentInstanceSymbol instance,
-    HashMap<String, String> interfaceToImplementation) {
-    return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementation, true);
+    ConfigParams config) {
+    return getSubComponentTypeNameWithoutPackage(instance, config, true);
   }
 
   public static String getSubComponentTypeNameWithoutPackage(arcbasis._symboltable.ComponentInstanceSymbol instance,
-    HashMap<String, String> interfaceToImplementation, boolean printTypeParameters) {
+    ConfigParams config, boolean printTypeParameters) {
     String result = "";
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
     result += componentTypeReference.getName();
@@ -367,8 +362,9 @@ public class ComponentHelper {
       //types = addTypeParameterComponentPackage(instance, types);
       result += printTypeArguments(types);
     }
-    if (interfaceToImplementation.containsKey(result)) {
-      return interfaceToImplementation.get(result);
+    Optional<ComponentTypeSymbol> implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
+    if (implementation.isPresent()) {
+      return implementation.get().getFullName();
     }
     return result;
   }
@@ -389,13 +385,14 @@ public class ComponentHelper {
    * @return the subcomponent type name without package.
    */
 
+
   public static String getSubComponentTypeNameWithBinding(arcbasis._symboltable.ComponentTypeSymbol comp,
     arcbasis._symboltable.ComponentInstanceSymbol instance,
-    HashMap<String, String> interfaceToImplementation) {
+    ConfigParams config) {
     return instance.getType().getLoadedSymbol().getName();
     //TODO: Implement me
     /*
-    HashMap<String, String> interfaceToImplementationGeneric = new HashMap<>(
+    ConfigParams configGeneric = new HashMap<>(
         interfaceToImplementation);
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
     // check if needed optional values are present and if the instance component type is an interface
@@ -471,13 +468,13 @@ public class ComponentHelper {
     return type;
   }
 
-  public String getRealPortCppTypeString(arcbasis._symboltable.PortSymbol port) {
-    return java2cppTypeString(getRealPortCppTypeString(this.component, port));
+  public String getRealPortCppTypeString(arcbasis._symboltable.PortSymbol port, ConfigParams config) {
+    return java2cppTypeString(getRealPortCppTypeString(this.component, port, config));
   }
 
-  public static String getRealPortCppTypeString(arcbasis._symboltable.ComponentTypeSymbol comp, arcbasis._symboltable.PortSymbol port) {
+  public static String getRealPortCppTypeString(arcbasis._symboltable.ComponentTypeSymbol comp, arcbasis._symboltable.PortSymbol port, ConfigParams config) {
     if (ComponentHelper.portUsesCdType(port)) {
-      return printCdPortPackageNamespace(comp, port);
+      return printCdPortPackageNamespace(comp, port, config);
     } else {
       return java2cppTypeString(getRealPortTypeString(comp, port));
     }

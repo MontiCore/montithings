@@ -1,19 +1,18 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.xtend
 
-import montithings.generator.codegen.xtend.behavior.Implementation
-import montithings.generator.codegen.xtend.util.CMake
-import montithings.generator.codegen.xtend.util.Identifier
-import montithings.generator.codegen.xtend.util.ArduinoReadme
-import montithings.generator.helper.ComponentHelper
-import montithings.generator.codegen.TargetPlatform
+import arcbasis._symboltable.ComponentTypeSymbol
 import de.monticore.io.FileReaderWriter
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.List
-import java.util.HashMap
-import arcbasis._symboltable.ComponentTypeSymbol
+import montithings.generator.codegen.ConfigParams
+import montithings.generator.codegen.xtend.behavior.Implementation
+import montithings.generator.codegen.xtend.util.ArduinoReadme
+import montithings.generator.codegen.xtend.util.CMake
+import montithings.generator.codegen.xtend.util.Identifier
+import montithings.generator.helper.ComponentHelper
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -25,16 +24,15 @@ import arcbasis._symboltable.ComponentTypeSymbol
  */
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, List<String> foundModels, String compname,
-                         HashMap<String, String> interfaceToImplementation, TargetPlatform platform) {
+  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, List<String> foundModels, String compname, ConfigParams config) {
     Identifier.createInstance(comp)
 
-    toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname), ".h");
-    toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname), ".cpp");
-    toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname), ".h");
-    toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname), ".cpp");
-    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, interfaceToImplementation, platform), ".h");
-    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname), ".cpp");
+    toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname, config), ".h");
+    toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname, config), ".cpp");
+    toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname, config), ".h");
+    toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname, config), ".cpp");
+    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, config), ".h");
+    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname, config), ".cpp");
     
     if (comp.isAtomic) {
       var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + compname + "Impl");
@@ -45,12 +43,12 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, interfaceToImplementation, platform);
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, config);
     }
     
 	// Generate deploy class
     if (ComponentHelper.isApplication(comp)) {
-      if (platform == TargetPlatform.ARDUINO) {
+      if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
       	var sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
       	sketchDirectory.mkdir();
         toFile(sketchDirectory, "Deploy" + compname, Deploy.generateDeployArduino(comp, compname),".ino");
@@ -82,12 +80,12 @@ class MTGenerator {
     FileReaderWriter.storeInFile(path, content)
   }
 	
-  def static generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, TargetPlatform platform){
+  def static generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
 	
 	toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
 		comp,
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
-		subPackagesPath, platform), ".txt")
+		subPackagesPath, config), ".txt")
   }
 }

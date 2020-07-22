@@ -7,15 +7,23 @@ import arcbasis._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Utils
+import montithings.generator.codegen.ConfigParams
 
 class Ports {
 
-  def static String printIncludes(ComponentTypeSymbol comp) {
+  def static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {
   	var HashSet<String> portIncludes = new HashSet<String>()
     for (port : comp.ports) {
     	if (ComponentHelper.portUsesCdType(port)) {
-    		var portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port)
+    	    var cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config);
+            if(cdeImportStatementOpt.isPresent()) {
+              var portPackage = cdeImportStatementOpt.get().getImportSource().toString();
+              portIncludes.add('''#include «portPackage»''');
+            }
+            else {
+    		var portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
       		portIncludes.add('''#include "«portNamespace.replace("::", "/")».h"''')
+      		}
       	}
       }
 	return '''
@@ -25,16 +33,16 @@ class Ports {
 	'''
   }
 	
-	def static printVars(ComponentTypeSymbol comp, Collection<PortSymbol> ports) {
+	def static printVars(ComponentTypeSymbol comp, Collection<PortSymbol> ports, ConfigParams config) {
 	return	'''
 	  // Ports
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
     Port<«type»>* «name» = new Port<«type»>;
     «ENDFOR»
     «IF comp.isDecomposed»
-	  // Internal monitoring of ports
+// Internal monitoring of ports
     «FOR port : ports»
     «var name = port.name»
     sole::uuid portMonitorUuid«name.toFirstUpper» = sole::uuid4 ();
@@ -44,10 +52,10 @@ class Ports {
 		
 	}
 	
-	def static printMethodHeaders(Collection<PortSymbol> ports){
+	def static printMethodHeaders(Collection<PortSymbol> ports, ConfigParams config){
 	return	'''
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
     Port<«type»>* getPort«name.toFirstUpper»();
     void setPort«name.toFirstUpper»(Port<«type»>* «name»);
@@ -55,10 +63,10 @@ class Ports {
     '''
 	}
 	
-	def static printMethodBodies(Collection<PortSymbol> ports, ComponentTypeSymbol comp, String compname){
+	def static printMethodBodies(Collection<PortSymbol> ports, ComponentTypeSymbol comp, String compname, ConfigParams config){
 	return	'''
     «FOR port : ports»
-    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port)»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
     «Utils.printTemplateArguments(comp)»
     Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getPort«name.toFirstUpper»(){

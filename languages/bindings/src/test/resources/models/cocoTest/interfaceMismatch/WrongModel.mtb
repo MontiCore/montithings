@@ -1,0 +1,1 @@
+cocoTest.interfaceMismatch.InterfaceWithoutInterfaceComponent -> cocoTest.interfaceMismatch.ImplementationWithInterfaceComponent;

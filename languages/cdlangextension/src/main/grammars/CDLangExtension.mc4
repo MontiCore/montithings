@@ -36,7 +36,7 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.li
    */
   // Example: from <arma> import armadillo::vector as Vector;
   symbol CDEImportStatement implements CDEElement =
-    "from" importSource:CDEImportName "import" importClass:CDEImportName "as" Name@CDType ";"
+    "from" importSource:CDEImportName "import" importClass:CDEImportName "as" (package:MCQualifiedName ".")? Name@CDType ";"
     ;
 
   /**

@@ -22,7 +22,7 @@
 		<module>montithings</module>
 		<module>cdlangextension</module>
 		<module>phyprops</module>
-		<!-- <module>bindings</module> -->
+		<module>bindings</module>
 	</modules>
 
 </project>

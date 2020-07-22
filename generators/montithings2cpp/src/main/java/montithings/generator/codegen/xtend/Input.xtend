@@ -5,22 +5,23 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Ports
+import montithings.generator.codegen.ConfigParams
 
 class Input {
 
-	def static generateImplementationFile(ComponentTypeSymbol comp, String compname) {
+	def static generateImplementationFile(ComponentTypeSymbol comp, String compname, ConfigParams config) {
     return '''
     #include "«compname»Input.h"
     «Utils.printNamespaceStart(comp)»
     «IF !comp.hasTypeParameter»
-    «generateInputBody(comp, compname)»
+    «generateInputBody(comp, compname, config)»
     «ENDIF»
     «Utils.printNamespaceEnd(comp)»
     '''
   }
 	
 	
-    def static generateInputBody(ComponentTypeSymbol comp, String compname) {
+    def static generateInputBody(ComponentTypeSymbol comp, String compname, ConfigParams config) {
     var ComponentHelper helper = new ComponentHelper(comp)
     var isBatch = ComponentHelper.usesBatchMode(comp);
     
@@ -29,7 +30,7 @@ class Input {
 
 «IF !comp.allIncomingPorts.empty»
 «Utils.printTemplateArguments(comp)»
-«compname»Input«Utils.printFormalTypeParameters(comp, false)»::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»){
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::«compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name» «ENDFOR»){
 «IF comp.presentParentComponent»
 	super(«FOR port : comp.parent.loadedSymbol.allIncomingPorts» «port.name» «ENDFOR»);
 «ENDIF»
@@ -41,31 +42,31 @@ class Input {
 «ENDIF»  
 «FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
 «Utils.printTemplateArguments(comp)»
-std::vector<«helper.getRealPortCppTypeString(port)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
+std::vector<«helper.getRealPortCppTypeString(port, config)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
 
 «Utils.printTemplateArguments(comp)»
-void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element){
 	if (element){
 		«port.name».push_back(element.value());
  	}
 }
 
 «Utils.printTemplateArguments(comp)»
-void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(std::vector<«helper.getRealPortCppTypeString(port)»> vector){
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(std::vector<«helper.getRealPortCppTypeString(port, config)»> vector){
 	this->«port.name» = std::move(vector);
 }
 «ENDFOR»
 
 «FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
 «Utils.printTemplateArguments(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
+tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
 	return «port.name»;
 }
 
 «Utils.printTemplateArguments(comp)»
-void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»> element){
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element){
 	this->«port.name» = std::move(element);
 } 
 «ENDFOR»
@@ -73,7 +74,7 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 '''
   }
 	
-	def static generateInputHeader(ComponentTypeSymbol comp, String compname) {
+	def static generateInputHeader(ComponentTypeSymbol comp, String compname, ConfigParams config) {
 	var ComponentHelper helper = new ComponentHelper(comp)
 	var isBatch = ComponentHelper.usesBatchMode(comp);
 		
@@ -88,7 +89,7 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 #include <set>
 #include <utility>
 #include "tl/optional.hpp"
-«Ports.printIncludes(comp)»
+«Ports.printIncludes(comp, config)»
 
 «Utils.printNamespaceStart(comp)»
 
@@ -104,29 +105,29 @@ class «compname»Input
 {
 private:
 «FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
-	tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name»;
+	tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name»;
 «ENDFOR»
 «FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
-	std::vector<«helper.getRealPortCppTypeString(port)»> «port.name» = {};
+	std::vector<«helper.getRealPortCppTypeString(port, config)»> «port.name» = {};
 «ENDFOR»
 public:
 	«compname»Input() = default;
 	«IF !comp.allIncomingPorts.empty && !isBatch»
-	explicit «compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port)»> «port.name» «ENDFOR»);
+	explicit «compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name» «ENDFOR»);
     «ENDIF»
 	«FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
-	tl::optional<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
-	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»>);
+	tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
+	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»>);
 	«ENDFOR»
 	«FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
-	std::vector<«helper.getRealPortCppTypeString(port)»> get«port.name.toFirstUpper»();
-	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port)»>);
-	void set«port.name.toFirstUpper»(std::vector<«helper.getRealPortCppTypeString(port)»> vector);
+	std::vector<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
+	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»>);
+	void set«port.name.toFirstUpper»(std::vector<«helper.getRealPortCppTypeString(port, config)»> vector);
 	«ENDFOR»
 };
 
 «IF comp.hasTypeParameter»
-  «generateInputBody(comp, compname)»
+  «generateInputBody(comp, compname, config)»
 «ENDIF»
 «Utils.printNamespaceEnd(comp)»
 '''

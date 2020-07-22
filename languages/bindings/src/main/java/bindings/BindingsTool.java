@@ -3,65 +3,153 @@ package bindings;
 
 import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._cocos.BindingsCoCoChecker;
+import bindings._cocos.BindingsCoCos;
 import bindings._parser.BindingsParser;
-import de.se_rwth.commons.logging.Finding;
-import de.se_rwth.commons.logging.Log;
+import bindings._symboltable.BindingsGlobalScope;
+import bindings._symboltable.BindingsLanguage;
+import bindings._symboltable.BindingsSymbolTableCreatorDelegator;
+import bindings._symboltable.IBindingsScope;
+import bindings._symboltable.adapters.MCQualifiedName2ComponentTypeResolvingDelegate;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
+import de.monticore.io.paths.ModelPath;
+import montithings.MontiThingsMill;
+import montithings._symboltable.MontiThingsGlobalScope;
+import montithings._symboltable.MontiThingsLanguage;
+import org.codehaus.commons.nullanalysis.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Set;
 
 public class BindingsTool {
 
-  protected ASTBindingsCompilationUnit parseModel(String modelFile) {
-    Path model = Paths.get(modelFile);
-    BindingsParser parser = new BindingsParser();
-    Optional<ASTBindingsCompilationUnit> optAutomaton;
+  protected BindingsLanguage language;
+
+  protected BindingsCoCoChecker checker;
+
+  protected boolean isSymTabInitialized;
+
+  private MontiThingsGlobalScope mtGlobalScope;
+
+  public BindingsTool() {
+    this(BindingsCoCos.createChecker(), new BindingsLanguage());
+  }
+
+  public BindingsTool(@NotNull BindingsCoCoChecker checker, @NotNull BindingsLanguage language) {
+    Preconditions.checkArgument(checker != null);
+    Preconditions.checkArgument(language != null);
+    this.checker = checker;
+    this.language = language;
+    this.isSymTabInitialized = false;
+  }
+
+  public Optional<ASTBindingsCompilationUnit> parse(@NotNull String filename) {
+    Preconditions.checkArgument(filename != null);
+    BindingsParser p = new BindingsParser();
+    Optional<ASTBindingsCompilationUnit> compUnit;
     try {
-      optAutomaton = parser.parse(model.toString());
-      assertFalse(parser.hasErrors());
-      assertTrue(optAutomaton.isPresent());
-      return optAutomaton.get();
+      compUnit = p.parse(filename);
+      return compUnit;
     }
-    catch (Exception e) {
+    catch (IOException e) {
       e.printStackTrace();
-      fail("There was an exception when parsing the model " + modelFile + ": "
-          + e.getMessage());
     }
-    return null;
+    return Optional.empty();
   }
 
-  public CocoInput prepareTest(String pathToModelFile) {
-    // prepare input
-    ASTBindingsCompilationUnit ast = parseModel(pathToModelFile);
-    BindingsCoCoChecker checker = new BindingsCoCoChecker();
+  /**
+   * Initializes the Symboltable by introducing scopes for the passed modelpaths. It does not create
+   * the symbol table! Symbols for models within the modelpaths are not added to the symboltable
+   * until resolve() is called. Modelpaths are relative to the project path and do contain all the
+   * packages the models are located in. E.g. if model with fqn a.b.C lies in folder
+   * src/main/resources/models/a/b/C.arc, the modelpath is src/main/resources.
+   *
+   * @param modelPaths paths of all folders containing models
+   * @return The initialized symbol table
+   */
+  public BindingsGlobalScope initSymbolTable(File... modelPaths) {
+    Set<Path> p = Sets.newHashSet();
+    for (File mP : modelPaths) {
+      p.add(Paths.get(mP.getAbsolutePath()));
+    }
 
-    // bundle input
-    return new CocoInput(ast, checker);
+    final ModelPath mp = new ModelPath(p);
+
+    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
+    if(this.mtGlobalScope==null) {
+      MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
+      MontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
+          .setModelPath(mp)
+          .setMontiThingsLanguage(mtLang)
+          .build();
+      componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
+    }
+    else{
+      componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
+    }
+
+    BindingsGlobalScope bindingsGlobalScope = new BindingsGlobalScope(mp, language);
+    bindingsGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
+
+    isSymTabInitialized = true;
+    return bindingsGlobalScope;
   }
 
-  public void executeCoCo(CocoInput input) {
-    input.getChecker().checkAll(input.getAst());
+  /**
+   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   *
+   * @param ast node used to create symboltable
+   * @param modelPaths path that contains all models
+   * @return created global scope
+   */
+  public BindingsGlobalScope createSymboltable(ASTBindingsCompilationUnit ast,
+      File... modelPaths) {
+
+    BindingsGlobalScope globalScope = initSymbolTable(modelPaths);
+
+    return createSymboltable(ast,globalScope);
   }
 
-  public void checkResults(String expectedError) {
-    checkResults(Collections.singletonList(expectedError));
+  /**
+   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   *
+   * @param ast node used to create symboltable
+   * @param globalScope globalScope used for the symbolTable
+   * @return created global scope
+   */
+  public BindingsGlobalScope createSymboltable(ASTBindingsCompilationUnit ast,
+      BindingsGlobalScope globalScope) {
+
+    BindingsSymbolTableCreatorDelegator stc = language
+        .getSymbolTableCreator(globalScope);
+    stc.createFromAST(ast);
+
+    return globalScope;
   }
 
-  public void checkResults(Collection<String> expectedErrors) {
-    Collection<Finding> findings = Log.getFindings();
-    List<Finding> expectedFindings = expectedErrors.stream()
-        .map(Finding::error)
-        .collect(Collectors.toList());
-    assertThat(findings).containsExactlyElementsOf(expectedFindings);
+  /**
+   * Initializes the Symboltable by introducing scopes for the passed modelpaths. It does not create
+   * the symbol table! Symbols for models within the modelpaths are not added to the symboltable
+   * until resolve() is called. Modelpaths are relative to the project path and do contain all the
+   * packages the models are located in. E.g. if model with fqn a.b.C lies in folder
+   * src/main/resources/models/a/b/C.arc, the modelPath is src/main/resources.
+   *
+   * @param modelPath The model path for the symbol table
+   * @return the initialized symbol table
+   */
+  public IBindingsScope initSymbolTable(String modelPath) {
+    return initSymbolTable(Paths.get(modelPath).toFile());
+  }
+
+  public MontiThingsGlobalScope getMtGlobalScope() {
+    return mtGlobalScope;
+  }
+
+  public void setMtGlobalScope(MontiThingsGlobalScope mtGlobalScope) {
+    this.mtGlobalScope = mtGlobalScope;
   }
 }

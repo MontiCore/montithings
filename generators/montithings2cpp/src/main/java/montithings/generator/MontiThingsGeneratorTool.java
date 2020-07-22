@@ -2,46 +2,59 @@
 package montithings.generator;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
+import bindings.BindingsTool;
+import bindings._ast.ASTBindingRule;
+import bindings._ast.ASTBindingsCompilationUnit;
+import bindings._cocos.BindingsCoCos;
+import bindings._parser.BindingsParser;
+import bindings._symboltable.BindingsGlobalScope;
+import bindings._symboltable.BindingsLanguage;
+import cdlangextension.CDLangExtensionTool;
+import cdlangextension._ast.ASTCDLangExtensionUnit;
+import cdlangextension._cocos.CDLangExtensionCoCos;
+import cdlangextension._parser.CDLangExtensionParser;
+import cdlangextension._symboltable.CDLangExtensionGlobalScope;
+import cdlangextension._symboltable.CDLangExtensionLanguage;
+import de.monticore.cd.CD4ACoCos;
+import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
+import de.monticore.cd.cd4analysis._parser.CD4AnalysisParser;
+import de.monticore.cd.cd4analysis._symboltable.*;
+import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.DirectoryUtil;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;
+import montithings._symboltable.MontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsLanguage;
 import montithings.generator.cd2cpp.CppGenerator;
-import montithings.generator.codegen.TargetPlatform;
+import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.helper.ComponentHelper;
 import org.apache.commons.io.FileUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-//import bindings.BindingsTool;
-//import bindings.CocoInput;
-//import bindings._symboltable.BindingsLanguage;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   private static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
   private static final String TOOL_NAME = "MontiThingsGeneratorTool";
 
-  public void generate(File modelPath, File target, File hwcPath, TargetPlatform platform) {
+  public void generate(File modelPath, File target, File hwcPath, ConfigParams config) {
 
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
     try {
-      if (platform == TargetPlatform.ARDUINO) {
+      if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
         FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile());
       }
       else {
@@ -54,43 +67,50 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     /* ============================================================ */
-    /* ====================== Check Bindings ====================== */
-    /* ============================================================ */
-
-    // 1. Get Bindings
-    HashMap<String, String> interfaceToImplementation = getInterfaceImplementationMatching(
-        hwcPath.getAbsolutePath());
-    /*
-    List<String> foundBindings = Modelfinder
-        .getModelsInModelPath(hwcPath, BindingsLanguage.FILE_ENDING);
-    Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
-
-    // 2. Parse and check Cocos of bindings
-    for (String binding : foundBindings) {
-      Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
-      String qualifiedModelName =
-          hwcPath.getAbsolutePath() + "/" + Names.getQualifier(binding) + "/" +
-              Names.getSimpleName(binding) + ".mtb";
-      BindingsTool bindingsTool = new BindingsTool();
-      CocoInput input = bindingsTool.prepareTest(qualifiedModelName);
-      bindingsTool.executeCoCo(input);
-      bindingsTool.checkResults(EMPTY_LIST);
-    }
-    */
-
-    /* ============================================================ */
     /* ======================= Check Models ======================= */
+    /* ============================================================ */
+
+    /* ============================================================ */
+    /* =========================== Check CDs ====================== */
+    /* ============================================================ */
+    CD4AnalysisGlobalScope symCDTab = new CD4AnalysisGlobalScopeBuilder()
+        .setModelPath(new ModelPath((Paths.get(modelPath.getAbsolutePath()))))
+        .setCD4AnalysisLanguage(new CD4AnalysisLanguage())
+        .build();
+    this.setCdGlobalScope(symCDTab);
+
+    // Find all .cd files
+    List<String> foundCDModels = Modelfinder.getModelFiles(CD4AnalysisLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
+    for (String model : foundCDModels) {
+      ASTCDCompilationUnit cdAST = null;
+      try {
+        cdAST = new CD4AnalysisParser().parseCDCompilationUnit(model).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+ model));
+      }
+      catch (IOException e) {
+        Log.error("File '" + model + "' CD4A artifact was not found");
+      }
+
+      // parse + resolve model
+      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      new CD4AnalysisModelLoader(new CD4AnalysisLanguage()).createSymbolTableFromAST(cdAST,model, symCDTab);
+
+      // check cocos
+      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
+      new CD4ACoCos().getCheckerForAllCoCos().checkAll(cdAST);
+    }
+
+    /* ============================================================ */
+    /* ==================== Check MT Models ======================= */
     /* ============================================================ */
     // 1. Find all .mt files
     List<String> foundModels = Modelfinder
         .getModelsInModelPath(modelPath, MontiThingsLanguage.FILE_ENDING);
     // 2. Initialize SymbolTable
     Log.info("Initializing symboltable", TOOL_NAME);
-    String basedir = DirectoryUtil.getBasedirFromModelAndTargetPath(modelPath.getAbsolutePath(),
-        target.getAbsolutePath());
     IMontiThingsScope symTab = initSymbolTable(modelPath,
         //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
         hwcPath);
+
 
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
@@ -102,31 +122,103 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // 4. check cocos
       Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
       checkCoCos(comp.getAstNode());
+    }
+
+    /* ============================================================ */
+    /* =================== Check CDExtension ====================== */
+    /* ============================================================ */
+
+    // Find all .cd files
+    List<String> foundCDExtensionModels =
+      Modelfinder.getModelFiles(CDLangExtensionLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
+    CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
+    cdExtensionTool.setCdGlobalScope(symCDTab);
+
+    for (String model : foundCDExtensionModels) {
+      ASTCDLangExtensionUnit cdExtensionAST = null;
+      try {
+        cdExtensionAST = new CDLangExtensionParser().parseCDLangExtensionUnit(model).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+ model));
+      }
+      catch (IOException e) {
+        Log.error("File '" + model + "' CDLangExtension artifact was not found");
+      }
+
+      // parse + resolve model
+      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      if(config.getCdLangExtensionScope()==null) {
+        config.setCdLangExtensionScope(cdExtensionTool.createSymboltable(cdExtensionAST, modelPath));
+      }
+      else{
+        cdExtensionTool.createSymboltable(cdExtensionAST, (CDLangExtensionGlobalScope) config.getCdLangExtensionScope());
+      }
+
+      // check cocos
+      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
+      new CDLangExtensionCoCos().createChecker().checkAll(cdExtensionAST);
+    }
+
+    /* ============================================================ */
+    /* ====================== Check Bindings ====================== */
+    /* ============================================================ */
+
+    // 1. Get Bindings
+    List<String> foundBindings = Modelfinder.getModelFiles(BindingsLanguage.FILE_ENDING,modelPath).stream().map(e->e.toString()).collect(Collectors.toList());
+    Log.info("Initializing Bindings: ", "MontiArcGeneratorTool");
+    BindingsTool bindingsTool = new BindingsTool();
+    bindingsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
+    BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
+
+    // 2. Parse and check Cocos of bindings
+    for (String binding : foundBindings) {
+      ASTBindingsCompilationUnit bindingsAST = null;
+      try {
+        bindingsAST = new BindingsParser().parseBindingsCompilationUnit(binding).orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: "+binding));
+      }
+      catch (IOException e) {
+        Log.error("File '" + binding + "' Bindings artifact was not found");
+      }
+      Log.info("Parsing model:" + binding, TOOL_NAME);
+      bindingsTool.createSymboltable(bindingsAST,binTab);
+
+      Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
+      BindingsCoCos.createChecker().checkAll(bindingsAST);
+
+          for(bindings._ast.ASTElement rule:bindingsAST.getElementList()){
+            if(rule instanceof ASTBindingRule){
+              config.getComponentBindings().add((ASTBindingRule)rule);
+            }
+          }
+    }
+
+    /* ============================================================ */
+    /* ==================== Generate Components =================== */
+    /* ============================================================ */
+
+    for (String model : foundModels) {
+      String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
+      ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
       // 5. generate
       Log.info("Generate model: " + qualifiedModelName, TOOL_NAME);
 
       // check if component is implementation
-      if (interfaceToImplementation.containsValue(comp.getName())) {
+      if (config.isImplementation(comp)) {
         // Dont generate files for implementation. They are generated when interface is there
         continue;
       }
 
-      /* ============================================================ */
-      /* ==================== Generate Components =================== */
-      /* ============================================================ */
-
       String compname = comp.getName();
 
       // Check if component is interface
-      if (interfaceToImplementation.containsKey(comp.getName())) {
-        compname = interfaceToImplementation.get(comp.getName());
+      Optional<ComponentTypeSymbol> implementation = config.getBinding(comp);
+      if (implementation.isPresent()) {
+        compname = implementation.get().getName();
       }
 
       // Generate Files
       MTGenerator.generateAll(
           Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-              .toFile(), hwcPath, comp, foundModels, compname, interfaceToImplementation, platform);
+              .toFile(), hwcPath, comp, foundModels, compname, config);
     }
 
     /* ============================================================ */
@@ -143,10 +235,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
 
         // 6 generate make file
-        if (platform != TargetPlatform.ARDUINO) { // Arduino uses its own build system
+        if (config.getTargetPlatform() != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
           Log.info("Generate CMake file", "MontiThingsGeneratorTool");
           MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
-              subPackagesPath, platform);
+              subPackagesPath, config);
         }
       }
     }
@@ -174,46 +266,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     // cast to ArrayList to File[] and return
     return subPackagesPaths.toArray(new File[subPackagesPaths.size()]);
-  }
-
-  /**
-   * Returns InterfaceComponent name matching to Implementation name as HashMap
-   */
-  protected HashMap<String, String> getInterfaceImplementationMatching(String hwcPath) {
-    // Every entry contains matching from interface to implementation (interface -> implementation)
-    HashMap<String, String> interfaceToImplementation = new HashMap<String, String>();
-
-    // 1. Check if binding exists
-    File[] hwcSubDirs = new File(hwcPath).listFiles(File::isDirectory);
-    for (File subdir : hwcSubDirs) {
-      if (new File(subdir.getAbsolutePath(), "bindings.mtb").exists()) {
-        // Every entry contains 1 binding
-        ArrayList<String> bindingList = new ArrayList<String>();
-
-        // 2. Append all lines to bindingList
-        String bindingsPath = subdir.getAbsolutePath() + "/bindings.mtb";
-        try (BufferedReader reader = new BufferedReader(new FileReader(bindingsPath))) {
-          String line = reader.readLine();
-          while (line != null) {
-            bindingList.add(line);
-            line = reader.readLine();
-          }
-        }
-        catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        // 3. Append interface to implementation matching to map
-        for (String binding : bindingList) {
-          String interfaceComponent = binding.split("->")[0].replace(" ", "");
-          String implementationComponent = binding.split(" -> ")[1].replace(";", "")
-              .replace(" ", "");
-          interfaceToImplementation.put(interfaceComponent, implementationComponent);
-        }
-      }
-    }
-
-    return interfaceToImplementation;
   }
 
   protected void generateCD(File modelPath, File targetFilepath) {
