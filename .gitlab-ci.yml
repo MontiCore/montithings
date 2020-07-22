@@ -40,8 +40,15 @@ Validate Gradle:
   allow_failure: true
   artifacts:
     paths:
+      - generators/cd2cpp/target/
       - generators/montithings2cpp/target/
+      - languages/bindings/target/
+      - languages/cdlangextension/target/
+      - languages/error-handling/target/
+      - languages/montiarc-extensions/target/
+      - languages/monticore-extensions/target/
       - languages/montithings/target/
+      - languages/phyprops/target/
   script:
     - gradle clean assemble
     
