@@ -37,10 +37,19 @@ configurations {
 
 dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+  grammar "montiarc.languages:montiarc-fe:$montiarc_version:$grammars_classifier"
+  grammar "montiarc.languages:arc-fe:$montiarc_version:$grammars_classifier"
+  grammar files(project(":languages:monticore-extensions").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:montiarc-extensions").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:error-handling").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:montithings").projectDir.toPath().resolve("src/main/grammars"))
 
   librarymodels "montiarc.libraries:maJavaLib:$majavalib_version"
   implementation project(":generators:cd2cpp")
   implementation project(":languages:montithings")
+  implementation project(":languages:montiarc-extensions")
+  implementation project(":languages:monticore-extensions")
+  implementation project(":languages:error-handling")
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.monticore:javaDSL:$javadsl_version"
   implementation "de.monticore.lang:cd4analysis:1.6.0"

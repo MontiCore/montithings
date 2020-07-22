@@ -26,6 +26,7 @@ dependencies {
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "de.monticore:monticore-generator:$monticore_version"
+  implementation project(":languages:bindings")
   implementation project(":languages:montithings")
   implementation project(":languages:monticore-extensions")
   implementation project(":languages:cdlangextension")
