@@ -34,7 +34,7 @@ class Ports {
     Port<«type»>* «name» = new Port<«type»>;
     «ENDFOR»
     «IF comp.isDecomposed»
-	// Internal monitoring of ports
+	  // Internal monitoring of ports
     «FOR port : ports»
     «var name = port.name»
     sole::uuid portMonitorUuid«name.toFirstUpper» = sole::uuid4 ();
