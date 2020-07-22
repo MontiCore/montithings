@@ -44,6 +44,7 @@ dependencies {
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "de.monticore:javaDSL:$javadsl_version"
   implementation "org.apache.commons:commons-lang3:3.9"
+  implementation "org.codehaus.janino:janino:$janino_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
   testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
