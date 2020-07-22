@@ -47,7 +47,7 @@ Validate Gradle:
     
 Unit Test Gradle:
   image: gradle:6.5.1-jdk8
-  stage: build
+  stage: test
   allow_failure: true
   dependencies: 
     - Validate Gradle #download artifacts from build
