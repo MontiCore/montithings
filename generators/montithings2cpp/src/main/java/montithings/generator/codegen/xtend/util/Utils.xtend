@@ -10,6 +10,7 @@ import de.monticore.types.typesymbols._symboltable.TypeVarSymbol
 import java.util.ArrayList
 import java.util.List
 import montithings.generator.helper.ComponentHelper
+import montithings.generator.helper.CppPrettyPrinter
 
 class Utils {
 
@@ -174,12 +175,9 @@ class Utils {
 		getPort«access.port.toFirstUpper» ()
 		'''.toString().replace("\n", "")
 	}
-	
+
 	def static String printExpression(ASTExpression expr, boolean isAssignment) {
-    	var IndentPrinter printer = new IndentPrinter();
-    	var ExpressionsBasisPrettyPrinter prettyPrinter = new ExpressionsBasisPrettyPrinter(printer);
-    	expr.accept(prettyPrinter);
-    	return printer.getContent();
+    	return CppPrettyPrinter.print(expr);
   	}
 
 	def static String printExpression(ASTExpression expr) {

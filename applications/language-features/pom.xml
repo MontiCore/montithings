@@ -19,8 +19,8 @@
     <!--
     <module>error-handling</module>
     <module>interface-components</module>
-    <module>pre-postconditions</module>
     -->
+    <module>pre-postconditions</module>
   </modules>
 
   <packaging>pom</packaging>

@@ -10,7 +10,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeSymbol;
@@ -24,18 +23,19 @@ import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
 import montithings._ast.ASTMTCondition;
+import montithings._visitor.MontiThingsDelegatorVisitor;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.util.Utils;
 import montithings.generator.visitor.CppAssignmentPrettyPrinter;
 import montithings.generator.visitor.CppExpressionPrettyPrinter;
+import montithings.generator.visitor.NoDataComparisionsVisitor;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
 import portextensions._ast.ASTSyncStatement;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
-import prepostcondition._visitor.GuardExpressionVisitor;
-import prepostcondition.helper.ExpressionUtil;
+import montithings.generator.visitor.GuardExpressionVisitor;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -282,7 +282,7 @@ public class ComponentHelper {
    */
   public Collection<String> getParamValues(arcbasis._symboltable.ComponentInstanceSymbol param) {
     List<ASTExpression> configArguments = param.getArguments();
-    MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator();
+    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
 
     List<String> outputParameters = new ArrayList<>();
     for (ASTExpression configArgument : configArguments) {
@@ -619,8 +619,10 @@ public class ComponentHelper {
    * @return
    */
   public static List<de.monticore.expressions.expressionsbasis._ast.ASTNameExpression> getGuardExpressionElements(de.monticore.expressions.expressionsbasis._ast.ASTExpression node) {
+    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
-    node.accept(visitor);
+    printer.setExpressionsBasisVisitor(visitor);
+    node.accept(printer);
     return visitor.getExpressions();
   }
 
@@ -762,13 +764,13 @@ public class ComponentHelper {
   }
 
   public static boolean portIsComparedToNoData(de.monticore.expressions.expressionsbasis._ast.ASTExpression e, String portName) {
-    List<ASTNameExpression> usedNames = ExpressionUtil.getNameExpressionElements(e);
-    for (ASTNameExpression name : usedNames) {
-      if (name.getName().equals(portName)) {
-        return true;
-      }
-    }
-    return false;
+    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
+    NoDataComparisionsVisitor visitor = new NoDataComparisionsVisitor();
+    printer.setExpressionsBasisVisitor(visitor);
+    e.accept(printer);
+    return visitor.getFoundExpressions().stream()
+      .map(ASTNameExpression::getName)
+      .anyMatch(n -> n.equals(portName));
   }
 
   /**
@@ -795,9 +797,7 @@ public class ComponentHelper {
       "0xMT801 Trying to print behavior of component \"" + component.getName()
         + "\" which has multiple conflicting behaviors.");
 
-    MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator();
-    printer.setExpressionsBasisVisitor(new CppExpressionPrettyPrinter(printer.getPrinter()));
-    printer.setAssignmentExpressionsVisitor(new CppAssignmentPrettyPrinter(printer.getPrinter()));
+    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
     return printer.prettyprint(behaviors.get(0).getMCJavaBlock());
   }
 

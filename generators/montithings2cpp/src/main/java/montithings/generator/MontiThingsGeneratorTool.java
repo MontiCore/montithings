@@ -22,7 +22,6 @@ import de.monticore.cd.cd4analysis._symboltable.*;
 import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montiarc.util.DirectoryUtil;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;

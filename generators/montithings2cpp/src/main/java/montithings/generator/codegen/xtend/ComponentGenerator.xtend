@@ -269,12 +269,16 @@ class ComponentGenerator {
 			«ELSE»
 				true // presence of value on port «port.name» not checked as it is compared to NoData
 			«ENDIF»
-		«ENDFOR» && 
+		«ENDFOR»
+		«IF ComponentHelper.getPortsInGuardExpression(statement.guard).isEmpty»
+		true // presence of value on ports not checked as they are not used in precondition
+		«ENDIF»
+		 && 
 		!(
 			«Utils.printExpression(statement.guard)»
 		)) {
 			std::stringstream error;
-			error << "Violated assumption «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
+			error << "Violated precondition «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
 			error << "Input port values: " << std::endl;
 			«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
 			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
@@ -311,12 +315,16 @@ class ComponentGenerator {
 			«ELSE»
 				true // presence of value on port «port.name» not checked as it is compared to NoData
 			«ENDIF»
-		«ENDFOR» && 
+		«ENDFOR»
+		«IF ComponentHelper.getPortsInGuardExpression(statement.guard).isEmpty»
+		true // presence of value on ports not checked as they are not used in precondition
+		«ENDIF» 
+		&& 
 		!(
 			«Utils.printExpression(statement.guard)»
 		)) {
 			std::stringstream error;
-			error << "Violated guarantee «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
+			error << "Violated postcondition «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
 			error << "Port values: " << std::endl;
 			«FOR inPort : ComponentHelper.getPortsNotInBatchStatements(comp)»
 			if (input.get«inPort.name.toFirstUpper» ().has_value()) {
