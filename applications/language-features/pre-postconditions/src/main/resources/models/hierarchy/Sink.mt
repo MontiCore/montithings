@@ -7,4 +7,5 @@ component Sink {
   // Comment out the guarantee in the Sink component
   // to let this assumption trigger
   pre value < 5;
+  catch { value = 3; };
 }

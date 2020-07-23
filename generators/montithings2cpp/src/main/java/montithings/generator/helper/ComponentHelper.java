@@ -8,8 +8,11 @@ import cdlangextension._symboltable.CDEImportStatementSymbol;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
+import conditionbasis._ast.ASTCondition;
+import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
+import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeSymbol;
@@ -619,10 +622,8 @@ public class ComponentHelper {
    * @return
    */
   public static List<de.monticore.expressions.expressionsbasis._ast.ASTNameExpression> getGuardExpressionElements(de.monticore.expressions.expressionsbasis._ast.ASTExpression node) {
-    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
-    printer.setExpressionsBasisVisitor(visitor);
-    node.accept(printer);
+    node.accept(visitor);
     return visitor.getExpressions();
   }
 
@@ -704,6 +705,11 @@ public class ComponentHelper {
     return Arrays.asList(packages);
   }
 
+  public static String printJavaBlock(ASTMCJavaBlock block) {
+    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
+    return printer.prettyprint(block);
+  }
+
   /* ============================================================ */
   /* =================== MontiThings Adapter ==================== */
   /* ============================================================ */
@@ -712,19 +718,50 @@ public class ComponentHelper {
     return FluentIterable.from(component.getAstNode().getBody().getArcElementList());
   }
 
+  public static List<conditionbasis._ast.ASTCondition> getConditions(arcbasis._symboltable.ComponentTypeSymbol component) {
+    List<ASTCondition> conditions = new ArrayList<>();
+
+    // get uncatched conditions
+    conditions.addAll(elementsOf(component)
+      .filter(ASTMTCondition.class)
+      .transform(ASTMTCondition::getCondition)
+      .toList());
+
+    // get catched conditions
+    List<ASTMTCatch> catchedConditions = elementsOf(component).filter(ASTMTCatch.class).toList();
+    conditions.addAll(catchedConditions.stream()
+        .map(c -> c.getConditionCatch().getCondition())
+        .collect(Collectors.toList()));
+    return conditions;
+  }
+
+  public static Optional<conditioncatch._ast.ASTConditionCatch> getCatch(arcbasis._symboltable.ComponentTypeSymbol component, conditionbasis._ast.ASTCondition condition) {
+    Optional<ASTConditionCatch> result = Optional.empty();
+    List<ASTMTCatch> catchedConditions = elementsOf(component).filter(ASTMTCatch.class).toList();
+    Optional<ASTMTCatch> mtcatch = catchedConditions.stream()
+      .filter(c -> c.getConditionCatch().getCondition() == condition)
+      .findFirst();
+    if (mtcatch.isPresent()) {
+      result = Optional.of(mtcatch.get().getConditionCatch());
+    }
+    return result;
+  }
+
   public static List<prepostcondition._ast.ASTPrecondition> getPreconditions(arcbasis._symboltable.ComponentTypeSymbol component) {
-    List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
+    List<ASTCondition> conditions = getConditions(component);
+
     return conditions.stream()
-      .filter(c -> c.getCondition() instanceof ASTPrecondition)
-      .map(c -> (ASTPrecondition) c.getCondition())
+      .filter(c -> c instanceof ASTPrecondition)
+      .map(c -> (ASTPrecondition) c)
       .collect(Collectors.toList());
   }
 
   public static List<prepostcondition._ast.ASTPostcondition> getPostconditions(arcbasis._symboltable.ComponentTypeSymbol component) {
-    List<ASTMTCondition> conditions = elementsOf(component).filter(ASTMTCondition.class).toList();
+    List<ASTCondition> conditions = getConditions(component);
+
     return conditions.stream()
-      .filter(c -> c.getCondition() instanceof ASTPostcondition)
-      .map(c -> (ASTPostcondition) c.getCondition())
+      .filter(c -> c instanceof ASTPostcondition)
+      .map(c -> (ASTPostcondition) c)
       .collect(Collectors.toList());
   }
 
@@ -764,10 +801,8 @@ public class ComponentHelper {
   }
 
   public static boolean portIsComparedToNoData(de.monticore.expressions.expressionsbasis._ast.ASTExpression e, String portName) {
-    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
     NoDataComparisionsVisitor visitor = new NoDataComparisionsVisitor();
-    printer.setExpressionsBasisVisitor(visitor);
-    e.accept(printer);
+    e.accept(visitor);
     return visitor.getFoundExpressions().stream()
       .map(ASTNameExpression::getName)
       .anyMatch(n -> n.equals(portName));
@@ -797,8 +832,7 @@ public class ComponentHelper {
       "0xMT801 Trying to print behavior of component \"" + component.getName()
         + "\" which has multiple conflicting behaviors.");
 
-    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
-    return printer.prettyprint(behaviors.get(0).getMCJavaBlock());
+    return printJavaBlock(behaviors.get(0).getMCJavaBlock());
   }
 
   /**

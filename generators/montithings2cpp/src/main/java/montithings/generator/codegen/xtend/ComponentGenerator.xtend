@@ -277,6 +277,9 @@ class ComponentGenerator {
 		!(
 			«Utils.printExpression(statement.guard)»
 		)) {
+			«IF ComponentHelper.getCatch(comp, statement).isPresent»
+				«ComponentHelper.printJavaBlock(ComponentHelper.getCatch(comp, statement).get().handler)»
+			«ELSE»
 			std::stringstream error;
 			error << "Violated precondition «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
 			error << "Input port values: " << std::endl;
@@ -295,6 +298,7 @@ class ComponentGenerator {
 			}
 			«ENDFOR»
 			throw std::runtime_error(error.str ());
+			«ENDIF»
 		}
 		«ENDFOR»
 		'''
@@ -323,6 +327,9 @@ class ComponentGenerator {
 		!(
 			«Utils.printExpression(statement.guard)»
 		)) {
+			«IF ComponentHelper.getCatch(comp, statement).isPresent»
+				«ComponentHelper.printJavaBlock(ComponentHelper.getCatch(comp, statement).get().handler)»
+			«ELSE»
 			std::stringstream error;
 			error << "Violated postcondition «Utils.printExpression(statement.guard, false)» on component «comp.packageName».«compname»" << std::endl;
 			error << "Port values: " << std::endl;
@@ -348,6 +355,7 @@ class ComponentGenerator {
 			}
 			«ENDFOR»
 			throw std::runtime_error(error.str ());
+			«ENDIF»
 		}
 		«ENDFOR»
 		'''

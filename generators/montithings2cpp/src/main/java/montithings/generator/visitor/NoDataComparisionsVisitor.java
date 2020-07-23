@@ -4,6 +4,7 @@ package montithings.generator.visitor;
 import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisVisitor;
+import montithings._visitor.MontiThingsVisitor;
 import montithings.generator.helper.ASTNoData;
 
 import java.util.ArrayList;
@@ -12,17 +13,17 @@ import java.util.List;
 /**
  * Searches for name expressions (here: ports) that are compared to NoData.
  */
-public class NoDataComparisionsVisitor implements ExpressionsBasisVisitor {
+public class NoDataComparisionsVisitor implements MontiThingsVisitor {
 
-  private ExpressionsBasisVisitor realThis = this;
+  private MontiThingsVisitor realThis = this;
 
   @Override
-  public void setRealThis(ExpressionsBasisVisitor realThis) {
+  public void setRealThis(MontiThingsVisitor realThis) {
     this.realThis = realThis;
   }
 
   @Override
-  public ExpressionsBasisVisitor getRealThis() {
+  public MontiThingsVisitor getRealThis() {
     return realThis;
   }
 
