@@ -66,7 +66,7 @@ tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Inpu
 }
 
 «Utils.printTemplateArguments(comp)»
-void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element){
+void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element){
 	this->«port.name» = std::move(element);
 } 
 «ENDFOR»
@@ -117,7 +117,7 @@ public:
     «ENDIF»
 	«FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
 	tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
-	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»>);
+	void set«port.name.toFirstUpper»(tl::optional<«helper.getRealPortCppTypeString(port, config)»>);
 	«ENDFOR»
 	«FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
 	std::vector<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
