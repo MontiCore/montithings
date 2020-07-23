@@ -116,13 +116,17 @@ public:
 	explicit «compname»Input(«FOR port : comp.allIncomingPorts SEPARATOR ','» tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name» «ENDFOR»);
     «ENDIF»
 	«FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
-	tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
+	«IF port.isIncoming»
+	tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»() const;
 	void set«port.name.toFirstUpper»(tl::optional<«helper.getRealPortCppTypeString(port, config)»>);
+	«ENDIF»
 	«ENDFOR»
 	«FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
-	std::vector<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
+	«IF port.isIncoming»
+	std::vector<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»() const;
 	void add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»>);
 	void set«port.name.toFirstUpper»(std::vector<«helper.getRealPortCppTypeString(port, config)»> vector);
+	«ENDIF»
 	«ENDFOR»
 };
 
