@@ -4,8 +4,6 @@ package montithings.generator.codegen.xtend.util
 import arcbasis._symboltable.ComponentTypeSymbol
 import arcbasis._ast.ASTPortAccess
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression
-import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter
-import de.monticore.prettyprint.IndentPrinter
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol
 import java.util.ArrayList
 import java.util.List
