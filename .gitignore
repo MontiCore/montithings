@@ -12,3 +12,5 @@ target
 *.iml
 .DS_Store
 generated-test-sources
+
+.gradle

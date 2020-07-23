@@ -27,7 +27,7 @@
     <dependency>
       <groupId>montiarc</groupId>
       <artifactId>util</artifactId>
-      <version>${project.version}</version>
+      <version>${montiarc.version}</version>
     </dependency>
 
     <dependency>

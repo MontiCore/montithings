@@ -1,0 +1,46 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+  //plugin is only resolved, not applied here -> no need to separately specify version in every subproject
+  id 'monticore' version '6.1.0' apply false
+  id 'com.adarshr.test-logger' version "2.0.0"
+}
+
+allprojects {
+  group = 'montithings'
+  version = '6.0.0-SNAPSHOT'
+  buildDir = "$projectDir/target"
+  apply plugin: 'com.adarshr.test-logger'
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'maven-publish'
+
+  repositories {
+    mavenLocal()
+
+    maven {
+      credentials.username mavenUser
+      credentials.password mavenPassword
+      url sePublicRepo
+    }
+
+    maven {
+      credentials.username mavenUser
+      credentials.password mavenPassword
+      url sePrivateRepo
+    }
+
+    mavenCentral()
+  }
+
+  sourceCompatibility = '1.8'
+
+  tasks.withType(JavaCompile) {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = 'UTF-8'
+  }
+
+}

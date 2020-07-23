@@ -1,0 +1,93 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+  id "org.xtext.xtend" version "2.0.8"
+}
+
+apply plugin: 'org.xtext.xtend'
+
+group = "montithings.generators"
+
+test { useJUnit() }
+
+dependencies {
+  implementation "org.eclipse.xtend:org.eclipse.xtend.lib:$xtend_version" //needed for the xtend plugin?
+
+  implementation project(":languages:error-handling")
+  implementation project(":languages:montiarc-extensions")
+  implementation project(":languages:montithings")
+  //implementation project(":languages:bindings")
+  implementation project(":generators:cd2cpp")
+
+  implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+  implementation "montiarc:util:$montiarc_version"
+  implementation "de.monticore:monticore-emf-runtime:$monticore_version"
+  implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
+  implementation "de.monticore:monticore-grammar:$monticore_version"
+  implementation "de.monticore:monticore-generator:$monticore_version"
+  implementation project(":languages:bindings")
+  implementation project(":languages:montithings")
+  implementation project(":languages:monticore-extensions")
+  implementation project(":languages:cdlangextension")
+  implementation project(":languages:phyprops")
+  //implementation project(":languages:bindings")
+  runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
+  testImplementation "junit:junit:$junit_version"
+  testImplementation "de.monticore:monticore-runtime:$monticore_version"
+  testImplementation "org.eclipse.emf:org.eclipse.emf.compare:$emf_version"
+  testImplementation "org.eclipse.emf:org.eclipse.emf.compare.match:$emf_version"
+  testImplementation "org.eclipse.emf:org.eclipse.emf.compare.diff:$emf_version"
+  testImplementation("com.google.guava:guava:$guava_version"){
+    version {
+      strictly "[18.0, 23.0]"
+      prefer "23.0"
+      because "Guava's CharMatcher breaks parts of se-commons if ver > 23 (e.g. Names.getQualifiedName)"
+    }
+  }
+}
+
+xtend {
+  sourceSets {
+    main.xtendOutputDir = "$projectDir/target/generated-sources"
+    //test.xtendOutputDir = "$projectDir/target/generated-test-sources"
+  }
+}
+
+task montithings_rte_Jar(type: Jar) {
+  from "$projectDir/src/main/resources/rte"
+  archiveClassifier = "$montithings_rte_classifier"
+}
+
+task montithings_headers_Jar(type: Jar) {
+  from "$projectDir/src/main/resources/header"
+  archiveClassifier = "$montithings_headers_classifier"
+}
+
+task montithings_libs_Jar(type: Jar) {
+  from "$projectDir/src/main/resources/lib"
+  archiveClassifier = "$montithings_libs_classifier"
+}
+
+java {
+  //withJavadocJar()
+  withSourcesJar()
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      artifactId = "$project.name"
+      from components.java
+      artifact montithings_rte_Jar
+      artifact montithings_headers_Jar
+      artifact montithings_libs_Jar
+    }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+  }
+}

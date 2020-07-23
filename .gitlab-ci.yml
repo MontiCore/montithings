@@ -23,7 +23,7 @@ variables:
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
-Validate:
+Validate Maven:
   image: maven:3-jdk-8
   stage: build
   script:
@@ -33,6 +33,33 @@ Validate:
       - generators/montithings2cpp/target/
       - languages/montithings/target/
     expire_in: 1 week
+    
+Validate Gradle:
+  image: gradle:6.5.1-jdk8
+  stage: build
+  allow_failure: true
+  artifacts:
+    paths:
+      - generators/cd2cpp/target/
+      - generators/montithings2cpp/target/
+      - languages/bindings/target/
+      - languages/cdlangextension/target/
+      - languages/error-handling/target/
+      - languages/montiarc-extensions/target/
+      - languages/monticore-extensions/target/
+      - languages/montithings/target/
+      - languages/phyprops/target/
+  script:
+    - gradle clean assemble
+    
+Unit Test Gradle:
+  image: gradle:6.5.1-jdk8
+  stage: test
+  allow_failure: true
+  dependencies: 
+    - Validate Gradle #download artifacts from build
+  script:
+    - gradle test
 
 # Run Unit Tests after build
 .unit_test_template: &unit_test_definition
@@ -42,7 +69,7 @@ Validate:
     - mvn $MAVEN_CLI_OPTS test package
     - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
   dependencies: 
-    - Validate #download artifacts from build
+    - Validate Maven #download artifacts from build
   artifacts:
     reports:
       junit:
