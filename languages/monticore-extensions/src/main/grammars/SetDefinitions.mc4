@@ -26,7 +26,7 @@ component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
 
     // RegEx to which value has to conform
     SetValueRegEx implements SetAllowedValues =
-      key("format") ":" format:StringLiteral
+      "format" ":" format:StringLiteral
     ;
 
     SetDefinition implements Expression =
