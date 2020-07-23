@@ -196,12 +196,12 @@ class ComponentGenerator {
 				«FOR port: comp.incomingPorts»
 				««« «ValueCheck.printPortValuecheck(comp, port)»
 				«ENDFOR»
-				«printAssumptionsCheck(comp, compname)»
+				«printPreconditionsCheck(comp, compname)»
 				result = «Identifier.behaviorImplName».compute(input);
 				«FOR port: comp.outgoingPorts»
 				««« «ValueCheck.printPortValuecheck(comp, port)»
 				«ENDFOR»
-				«printGuaranteesCheck(comp, compname)»
+				«printPostconditionsCheck(comp, compname)»
 				setResult(result);				
 			}
 		}
@@ -258,10 +258,10 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printAssumptionsCheck(ComponentTypeSymbol comp, String compname) {
-		var assumptions = ComponentHelper.getPreconditions(comp);
+	def static printPreconditionsCheck(ComponentTypeSymbol comp, String compname) {
+		var preconditions = ComponentHelper.getPreconditions(comp);
 		return '''
-		«FOR statement : assumptions»
+		«FOR statement : preconditions»
 		if (
 		«FOR port : ComponentHelper.getPortsInGuardExpression(statement.guard) SEPARATOR ' && '»
 			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
@@ -304,10 +304,10 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printGuaranteesCheck(ComponentTypeSymbol comp, String compname) {
-		var guarantees = ComponentHelper.getPostconditions(comp);
+	def static printPostconditionsCheck(ComponentTypeSymbol comp, String compname) {
+		var postconditions = ComponentHelper.getPostconditions(comp);
 		return '''
-		«FOR statement : guarantees»
+		«FOR statement : postconditions»
 		if (
 		«FOR port : ComponentHelper.getPortsInGuardExpression(statement.guard) SEPARATOR ' && '»
 			«IF !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.name)»
@@ -371,7 +371,7 @@ class ComponentGenerator {
 			«FOR port: comp.incomingPorts»
 			««« «ValueCheck.printPortValuecheck(comp, port)»
 			«ENDFOR»
-			«printAssumptionsCheck(comp, compname)»
+			«printPreconditionsCheck(comp, compname)»
 			
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».compute();
@@ -381,7 +381,7 @@ class ComponentGenerator {
 		«FOR port: comp.outgoingPorts»
 		««« «ValueCheck.printPortValuecheck(comp, port)»
 		«ENDFOR»
-		«printGuaranteesCheck(comp, compname)»
+		«printPostconditionsCheck(comp, compname)»
 			}
 		}
 		'''
