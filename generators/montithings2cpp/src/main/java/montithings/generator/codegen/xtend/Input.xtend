@@ -41,14 +41,17 @@ class Input {
 «ENDIF»
 «ENDIF»  
 «FOR port : ComponentHelper.getPortsInBatchStatement(comp)»
+«IF port.isIncoming»
 «Utils.printTemplateArguments(comp)»
-std::vector<«helper.getRealPortCppTypeString(port, config)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»() const
+std::vector<«helper.getRealPortCppTypeString(port, config)»> 
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»() const
 {
 	return «port.name»;
 }
 
 «Utils.printTemplateArguments(comp)»
-void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element)
+void 
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«port.name.toFirstUpper»Element(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element)
 {
 	if (element)
 	  {
@@ -57,24 +60,30 @@ void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::add«por
 }
 
 «Utils.printTemplateArguments(comp)»
-void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(std::vector<«helper.getRealPortCppTypeString(port, config)»> vector)
+void 
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(std::vector<«helper.getRealPortCppTypeString(port, config)»> vector)
 {
-	this->«port.name» = std::move(vector);
+  this->«port.name» = std::move(vector);
 }
+«ENDIF»
 «ENDFOR»
 
 «FOR port : ComponentHelper.getPortsNotInBatchStatements(comp)»
+«IF port.isIncoming»
 «Utils.printTemplateArguments(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»() const
+tl::optional<«helper.getRealPortCppTypeString(port, config)»> 
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»() const
 {
-	return «port.name»;
+  return «port.name»;
 }
 
 «Utils.printTemplateArguments(comp)»
-void «compname»Input«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element)
+void 
+«compname»Input«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(tl::optional<«helper.getRealPortCppTypeString(port, config)»> element)
 {
-	this->«port.name» = std::move(element);
+  this->«port.name» = std::move(element);
 } 
+«ENDIF»
 «ENDFOR»
 
 '''

@@ -38,7 +38,8 @@ class Result {
 
 «FOR port : comp.outgoingPorts»
 «Utils.printTemplateArguments(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»() const
+tl::optional<«helper.getRealPortCppTypeString(port, config)»> 
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»() const
 {
   return «port.name»;
 }
@@ -46,7 +47,8 @@ tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Resu
  
 «FOR port : comp.outgoingPorts»
 «Utils.printTemplateArguments(comp)»
-void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»)
+void 
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»)
 {
   this->«port.name» = «port.name»; 
 }
