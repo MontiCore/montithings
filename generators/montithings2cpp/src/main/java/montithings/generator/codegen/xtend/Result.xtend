@@ -38,18 +38,20 @@ class Result {
 
 «FOR port : comp.outgoingPorts»
 «Utils.printTemplateArguments(comp)»
-tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»(){
-	return «port.name»;
- }
- «ENDFOR»
+tl::optional<«helper.getRealPortCppTypeString(port, config)»> «compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»() const
+{
+  return «port.name»;
+}
+«ENDFOR»
  
- «FOR port : comp.outgoingPorts»
+«FOR port : comp.outgoingPorts»
 «Utils.printTemplateArguments(comp)»
-void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»){
-this->«port.name» = «port.name»; 
- }
- «ENDFOR»
-	    '''
+void «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»)
+{
+  this->«port.name» = «port.name»; 
+}
+«ENDFOR»
+'''
 	}
 	
 	def static generateResultHeader(ComponentTypeSymbol comp, String compname, ConfigParams config){
@@ -87,7 +89,7 @@ public:
 	«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port, config)» «port.name» «ENDFOR»);
 	«ENDIF»
 	«FOR port : comp.outgoingPorts»
-	 tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»();
+	 tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»() const;
 	«ENDFOR»
 	«FOR port : comp.outgoingPorts»
 	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»);
