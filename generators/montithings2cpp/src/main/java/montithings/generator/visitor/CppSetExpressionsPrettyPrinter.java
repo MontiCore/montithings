@@ -62,18 +62,26 @@ public class CppSetExpressionsPrettyPrinter extends MontiThingsPrettyPrinter {
   @Override
   public void handle(ASTUnionExpressionInfix node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
+    getPrinter().print("(");
     node.getLeft().accept(getRealThis());
+    getPrinter().print(")");
     getPrinter().print(" || ");
+    getPrinter().print("(");
     node.getRight().accept(getRealThis());
+    getPrinter().print(")");
     CommentPrettyPrinter.printPostComments(node, getPrinter());
   }
 
   @Override
   public void handle(ASTIntersectionExpressionInfix node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
+    getPrinter().print("(");
     node.getLeft().accept(getRealThis());
+    getPrinter().print(")");
     getPrinter().print(" && ");
+    getPrinter().print("(");
     node.getRight().accept(getRealThis());
+    getPrinter().print(")");
     CommentPrettyPrinter.printPostComments(node, getPrinter());
   }
 
@@ -150,10 +158,16 @@ public class CppSetExpressionsPrettyPrinter extends MontiThingsPrettyPrinter {
     getPrinter().print(")))");
   }
 
+  @Override public void traverse(ASTSetValueRegEx node) {
+    // do not visit format node
+  }
+
   @Override
   public void handle(ASTSetDefinition node){
     for (int i = 0; i < node.sizeSetAllowedValuess(); i++) {
+      getPrinter().print("(");
       node.getSetAllowedValues(i).accept(getRealThis());
+      getPrinter().print(")");
       if (i < node.sizeSetAllowedValuess()-1) {
         getPrinter().print(" && ");
       }
