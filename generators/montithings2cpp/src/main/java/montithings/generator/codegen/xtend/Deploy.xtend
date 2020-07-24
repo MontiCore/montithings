@@ -12,7 +12,8 @@ class Deploy {
 		#include <chrono>
 		#include <thread>
 		
-		int main()
+		[[noreturn]] int 
+		main ()
 		{
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp;
 			cmp.setUp(«IF ComponentHelper.isTimesync(comp)»TIMESYNC«ELSE»EVENTBASED«ENDIF»);

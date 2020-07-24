@@ -425,7 +425,9 @@ class ComponentGenerator {
 	def static printRun(ComponentTypeSymbol comp, String compname) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		void «compname»«Utils.printFormalTypeParameters(comp)»::run(){
+		[[noreturn]] void 
+    «compname»«Utils.printFormalTypeParameters(comp)»::run ()
+    {
 			std::cout << "Thread for «compname» started\n";
 			
 			while (true)
