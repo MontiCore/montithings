@@ -129,7 +129,7 @@ public class CppSetExpressionsPrettyPrinter extends MontiThingsPrettyPrinter {
     getPrinter().print(" && ");
 
 		if (node.isPresentStepsize()) {
-      getPrinter().print("(");
+      getPrinter().print("((");
       expressions.peek().accept(getRealThis());
       getPrinter().print(" - ");
       node.getLowerBound().accept(getRealThis());
@@ -169,7 +169,7 @@ public class CppSetExpressionsPrettyPrinter extends MontiThingsPrettyPrinter {
       node.getSetAllowedValues(i).accept(getRealThis());
       getPrinter().print(")");
       if (i < node.sizeSetAllowedValuess()-1) {
-        getPrinter().print(" && ");
+        getPrinter().print(" || ");
       }
     }
   }
