@@ -12,7 +12,7 @@ class Deploy {
 		#include <chrono>
 		#include <thread>
 		
-		[[noreturn]] int 
+		int
 		main ()
 		{
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp;
