@@ -705,7 +705,7 @@ public class ComponentHelper {
     return Arrays.asList(packages);
   }
 
-  public static String printJavaBlock(ASTMCJavaBlock block) {
+  public static String printJavaBlock(de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock block) {
     MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
     return printer.prettyprint(block);
   }
