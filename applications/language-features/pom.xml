@@ -17,7 +17,6 @@
 
     <module>class-diagrams</module>
     <!--
-    <module>error-handling</module>
     <module>interface-components</module>
     -->
     <module>pre-postconditions</module>
