@@ -19,25 +19,32 @@ class WSPort : public Port<T>
   std::future<bool> futInSocket;
   const char *uri;
   Direction direction;
+  bool outIsListener; // determines whether out or in port is listener
+  std::atomic<bool> killSwitch;
 
   public:
-  explicit WSPort (Direction direction, const char *uri) : uri (uri), direction (direction)
+  explicit WSPort (Direction direction, const char *uri, bool outIsListener = true)
+      : uri (uri), direction (direction), outIsListener (outIsListener)
   {
+    killSwitch = false;
     if (direction == IN)
       {
         inSocket = nng::sub::open ();
         nng_setopt (inSocket.get (), NNG_OPT_SUB_SUBSCRIBE, "", 0);
-        try
+        if (!outIsListener)
           {
-            inSocket.listen (uri, nng::flag::alloc);
+            try
+              {
+                inSocket.listen (uri, nng::flag::alloc);
+              }
+            catch (const std::exception &e)
+              {
+                std::cout << "Could not create listener for: " << uri << " (" << e.what () << ")\n";
+                return;
+              }
+            std::cout << "Created listener for: " << uri << "\n";
           }
-        catch (const std::exception &e)
-          {
-            std::cout << "Could not create listener for: " << uri << " (" << e.what () << ")\n";
-            return;
-          }
-        std::cout << "Created listener for: " << uri << "\n";
-        futInSocket = std::async (std::launch::async, &WSPort::listen, this);
+        futInSocket = std::async (std::launch::async, &WSPort::accept, this);
       }
     else
       {
@@ -51,7 +58,7 @@ class WSPort : public Port<T>
   void getExternalMessages () override
   {
     // Intentionally not implemented.
-    // Functionality is provided by listen() to be non blocking.
+    // Functionality is provided by accept() to be non blocking.
   }
 
   void sendToExternal (tl::optional<T> nextVal) override
@@ -60,11 +67,37 @@ class WSPort : public Port<T>
     // Functionality is provided by send() to be non-blocking and to
   }
 
-  bool listen ()
+  void killThread ()
   {
+    killSwitch = true;
+  }
+
+  bool accept ()
+  {
+    if (outIsListener)
+      {
+        while (true)
+          {
+            if (killSwitch)
+              { return false; }
+            try
+              {
+                inSocket.dial (uri, nng::flag::alloc);
+                break;
+              }
+            catch (const std::exception &e)
+              {
+                std::cout << "Could not create listener for: " << uri << " (" << e.what () << ")\n";
+              }
+          }
+        std::cout << "Created listener for: " << uri << "\n";
+      }
+
     //Receive Message and convert to target type T
     while (true)
       {
+        if (killSwitch)
+          { return false; }
         auto msg = inSocket.recv_msg ();
         auto data = msg.body ().template data<char> ();
         T result = jsonToData<T> (data);
@@ -79,9 +112,18 @@ class WSPort : public Port<T>
   {
     while (true)
       {
+        if (killSwitch)
+          { return false; }
         try
           {
-            outSocket.dial (uri, nng::flag::alloc);
+            if (outIsListener)
+              {
+                outSocket.listen (uri, nng::flag::alloc);
+              }
+            else
+              {
+                outSocket.dial (uri, nng::flag::alloc);
+              }
             break;
           }
         catch (const std::exception &)
@@ -93,7 +135,17 @@ class WSPort : public Port<T>
 
     while (true)
       {
-        tl::optional<T> dataOpt = this->dataProvider->getCurrentValue (this->uuid);
+        if (killSwitch)
+          { return false; }
+        tl::optional<T> dataOpt;
+        if (!this->dataProvider)
+          {
+            dataOpt = this->getCurrentValue (this->uuid);
+          }
+        else
+          {
+            dataOpt = this->dataProvider->getCurrentValue (this->uuid);
+          }
         if (dataOpt)
           {
             auto dataString = dataToJson (dataOpt);
