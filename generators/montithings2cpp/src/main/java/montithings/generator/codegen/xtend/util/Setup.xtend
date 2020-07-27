@@ -47,7 +47,7 @@ class Setup {
 		«FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
 			«FOR ASTPortAccess target : connector.targetList»
 			«IF !ComponentHelper.isIncomingPort(comp, target)»
-			// implements "connect «connector.source» -> «target»"
+			// implements "«connector.source.getQName» -> «target.getQName»"
 			«Utils.printGetPort(target)»->setDataProvidingPort («Utils.printGetPort(connector.source)»);
 			«ENDIF»
 			«ENDFOR»
