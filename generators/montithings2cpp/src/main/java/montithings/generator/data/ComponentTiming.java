@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.helper;
+package montithings.generator.data;
 
 import montiarc._ast.ASTArcInstant;
 import montiarc._ast.ASTArcSync;

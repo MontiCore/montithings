@@ -24,7 +24,7 @@ import montithings.generator.helper.ComponentHelper
  */
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, List<String> foundModels, String compname, ConfigParams config) {
+  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config) {
     Identifier.createInstance(comp)
 
     toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname, config), ".h");
@@ -43,7 +43,7 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, foundModels, compname, config);
+    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, compname, config);
     }
     
 	// Generate deploy class
