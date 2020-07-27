@@ -255,6 +255,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // Generate code for each subcomponent type
     for (ComponentTypeSymbol subcomp : subcomponentTypes) {
       generateCppForComponent(subcomp.getFullName(), symTab, target, hwcPath, config, false);
+      generateCppForSubcomponents(subcomp.getFullName(), modelPath, mtModels, symTab, target, hwcPath, config);
     }
   }
 
