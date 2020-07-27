@@ -13,6 +13,7 @@ import montithings.generator.codegen.xtend.util.ArduinoReadme
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper
+import montithings.generator.helper.FileHelper
 
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component. 
@@ -24,7 +25,7 @@ import montithings.generator.helper.ComponentHelper
  */
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config) {
+  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config, boolean generateDeploy) {
     Identifier.createInstance(comp)
 
     toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname, config), ".h");
@@ -35,7 +36,7 @@ class MTGenerator {
     toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname, config), ".cpp");
     
     if (comp.isAtomic) {
-      var boolean existsHWC = ComponentHelper.existsHWCClass(hwc, comp.packageName + "." + compname + "Impl");
+      var boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.packageName + "." + compname);
 		  generateBehaviorImplementation(comp, targetPath, compname, existsHWC)
     }
     
@@ -43,11 +44,11 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config);
+    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config, false);
     }
     
 	// Generate deploy class
-    if (ComponentHelper.isApplication(comp)) {
+    if (ComponentHelper.isApplication(comp) || (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy)) {
       if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
       	var sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
       	sketchDirectory.mkdir();

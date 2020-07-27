@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
 
 /**
  * Utility class for file-related actions of the generator
@@ -29,6 +32,51 @@ public class FileHelper {
       System.err.println(e.getMessage());
       e.printStackTrace();
     }
+  }
+
+  public static void copyHwcToTarget(File target, File hwcPath, String fqComponentName,
+    ConfigParams config) {
+    Set<File> hwcFiles = getHwcClassWithoutExtension(hwcPath, fqComponentName);
+    for (File file : hwcFiles) {
+      try {
+        if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
+          FileUtils.copyFileToDirectory(file, Paths.get(target.getAbsolutePath()).toFile());
+        }
+        else {
+          FileUtils.copyFileToDirectory(file, Paths.get(target.getAbsolutePath(), "hwc").toFile());
+        }
+      }
+      catch (IOException e) {
+        System.err.println(e.getMessage());
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * @param hwcPath
+   * @return Returns true if a handwritten implementation for the component exist
+   */
+  public static Boolean existsHWCClass(File hwcPath, String fqComponentName) {
+    return !getHwcClassWithoutExtension(hwcPath, fqComponentName).isEmpty();
+  }
+
+  public static Set<File> getHwcClassWithoutExtension(File hwcPath, String fqComponentName) {
+    Set<File> result = new HashSet<>();
+    Set<String> fileEndings = new HashSet<>();
+    fileEndings.add(".h");
+    fileEndings.add(".cpp");
+
+    for (String ending : fileEndings) {
+      File hwcFile = Paths.get(hwcPath.toString() + File.separator
+        + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + "Impl"
+        + ending)
+        .toFile();
+      if (hwcFile.isFile()) {
+        result.add(hwcFile);
+      }
+    }
+    return result;
   }
 
   /**

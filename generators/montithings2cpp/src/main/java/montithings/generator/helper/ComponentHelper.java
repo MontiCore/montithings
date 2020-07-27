@@ -485,17 +485,6 @@ public class ComponentHelper {
 
   /**
    * @param hwcPath
-   * @return Returns true if a handwritten implementation for the component exist
-   */
-  public static Boolean existsHWCClass(File hwcPath, String fqComponentName) {
-    File ImplLocation = Paths.get(hwcPath.toString() + File.separator
-      + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".h")
-      .toFile();
-    return ImplLocation.isFile();
-  }
-
-  /**
-   * @param hwcPath
    * @param comp
    * @param resourcePortName
    * @return Returns true if a handwritten implementation for the IPC Server exists

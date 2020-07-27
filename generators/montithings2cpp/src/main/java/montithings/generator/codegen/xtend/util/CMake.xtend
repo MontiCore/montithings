@@ -32,6 +32,10 @@ class CMake {
 	}
 	
 	def static printTopLevelCMake(File[] files, ComponentTypeSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, ConfigParams config) {
+	  var commonCodePrefix = ""
+	  if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+	    commonCodePrefix = "../"
+	  }
 		return '''
 		cmake_minimum_required(VERSION 3.8)
 		project("«comp.name»")
@@ -80,7 +84,7 @@ class CMake {
 		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 		
 «««		include_directories("«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»")
-		include_directories("«libraryPath.replace("\\","/")»") 
+		include_directories("«commonCodePrefix»«libraryPath.replace("\\","/")»")
 		
 		# Include packages
 		«FOR subdir : subPackagesPath»
@@ -94,8 +98,9 @@ class CMake {
 		include_directories("hwc" ${dir_list})
 		
 		# Include RTE
-		file(GLOB SOURCES "montithings-RTE/*.cpp" "montithings-RTE/*.h")
-		
+		file(GLOB SOURCES "«commonCodePrefix»montithings-RTE/*.cpp" "«commonCodePrefix»montithings-RTE/*.h")
+
+
 		add_executable(«comp.name» ${SOURCES} ${HWC_SOURCES} 
 		«FOR subdir : subPackagesPath»
 		${«subdir.name.toUpperCase()»_SOURCES}

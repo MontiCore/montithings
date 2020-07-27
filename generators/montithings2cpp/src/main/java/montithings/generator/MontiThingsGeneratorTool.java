@@ -32,16 +32,14 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
-import montithings.generator.helper.FileHelper;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static montithings.generator.helper.FileHelper.copyHwcToTarget;
 import static montithings.generator.helper.FileHelper.getSubPackagesPath;
@@ -100,8 +98,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
 
     for (String model : models.getMontithings()) {
-      generateCppForComponent(model, symTab, target, hwcPath, config);
-      generateCMakeForComponent(model, symTab, modelPath, target, hwcPath, config);
+      File compTarget = target;
+
+      if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+        compTarget = Paths.get(target.getAbsolutePath(), model).toFile();
+        generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab, compTarget,
+          hwcPath, config);
+      }
+
+      generateCppForComponent(model, symTab, compTarget, hwcPath, config);
+      generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config);
     }
 
     generateCD(modelPath, target);
@@ -207,6 +213,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
     File hwcPath, ConfigParams config) {
+    generateCppForComponent(model, symTab, target, hwcPath, config, true);
+  }
+
+  protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
+    File hwcPath, ConfigParams config, boolean generateDeploy) {
     String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
     ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
     Log.info("Generate model: " + qualifiedModelName, TOOL_NAME);
@@ -228,7 +239,22 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // Generate Files
     MTGenerator.generateAll(
       Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-        .toFile(), hwcPath, comp, compname, config);
+        .toFile(), hwcPath, comp, compname, config, generateDeploy);
+
+    copyHwcToTarget(target, hwcPath, model, config);
+  }
+
+  protected void generateCppForSubcomponents(String model, File modelPath, List<String> mtModels,
+    IMontiThingsScope symTab, File target, File hwcPath, ConfigParams config) {
+    // Find subcomponent types
+    ComponentTypeSymbol comp = loadComponentSymbolWithoutCocos(model, modelPath).get();
+    List<ComponentTypeSymbol> subcomponentTypes = comp.getSubComponents().stream()
+      .map(c -> c.getType().getLoadedSymbol()).collect(Collectors.toList());
+
+    // Generate code for each subcomponent type
+    for (ComponentTypeSymbol subcomp : subcomponentTypes) {
+      generateCppForComponent(subcomp.getFullName(), symTab, target, hwcPath, config, false);
+    }
   }
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
@@ -236,7 +262,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
     ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
-    if (ComponentHelper.isApplication(comp)) {
+    if (ComponentHelper.isApplication(comp)
+      || config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
       // Check for Subpackages
       File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
