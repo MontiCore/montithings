@@ -13,7 +13,8 @@ class Subcomponents {
   def static String printIncludes(ComponentTypeSymbol comp, String compname, ConfigParams config) {
   	var Set<String> compIncludes = new HashSet<String>()
     for (subcomponent : comp.subComponents) {
-      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)».h"''')
+      var isInner = subcomponent.type.loadedSymbol.isInnerComponent
+      compIncludes.add('''#include "«ComponentHelper.getPackagePath(comp, subcomponent)»«IF isInner»«comp.name»-Inner/«ENDIF»«ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)».h"''')
 	  var Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent)
 	  for (String genericInclude : genericIncludes) {
 	    compIncludes.add('''#include "«genericInclude».h"''')

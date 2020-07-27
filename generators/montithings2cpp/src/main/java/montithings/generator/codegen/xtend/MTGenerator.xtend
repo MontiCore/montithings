@@ -43,7 +43,7 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "gen").toFile, hwc, innerComp, compname, config);
+    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config);
     }
     
 	// Generate deploy class
