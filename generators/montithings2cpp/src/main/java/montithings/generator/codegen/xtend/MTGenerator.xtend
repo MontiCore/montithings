@@ -6,6 +6,8 @@ import de.monticore.io.FileReaderWriter
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.ArrayList
+import java.util.Comparator
 import java.util.List
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.behavior.Implementation
@@ -88,5 +90,13 @@ class MTGenerator {
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
 		subPackagesPath, config), ".txt")
+  }
+
+  def static generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
+    var sortedDirs = new ArrayList<String>
+    sortedDirs.addAll(subdirectories)
+    sortedDirs.sort(Comparator.naturalOrder())
+
+    toFile(targetPath, "CMakeLists", CMake.printCMakeForSubdirectories(sortedDirs), ".txt")
   }
 }

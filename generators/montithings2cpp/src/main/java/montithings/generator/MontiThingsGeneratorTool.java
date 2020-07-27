@@ -102,8 +102,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
         compTarget = Paths.get(target.getAbsolutePath(), model).toFile();
-        generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab, compTarget,
-          hwcPath, config);
+        generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab,
+          compTarget, hwcPath, config);
+        MTGenerator.generateMakeFileForSubdirs(target, models.getMontithings());
       }
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);

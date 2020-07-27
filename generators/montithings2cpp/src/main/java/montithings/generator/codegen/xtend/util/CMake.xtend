@@ -2,6 +2,8 @@
 package montithings.generator.codegen.xtend.util
 
 import java.io.File
+import java.util.List
+import java.util.ArrayList
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.ConfigParams
 
@@ -28,6 +30,15 @@ class CMake {
 	def static printDsaLinkLibraries(String targetName) {
 		return '''
 		target_link_libraries(«targetName» nng pthread curl ${ATOMIC_LIBRARY})
+		'''
+	}
+
+	def static printCMakeForSubdirectories(List<String> subdirectories) {
+		return '''
+		cmake_minimum_required (VERSION 3.8)
+		«FOR subdir : subdirectories»
+		add_subdirectory ("«subdir»")
+		«ENDFOR»
 		'''
 	}
 	
