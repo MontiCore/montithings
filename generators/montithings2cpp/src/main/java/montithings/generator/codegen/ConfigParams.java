@@ -16,8 +16,28 @@ import java.util.*;
  * @since 5.0.2
  */
 public class ConfigParams {
+  public enum TargetPlatform {
+    GENERIC,
+    DSA_VCG,
+    ARDUINO
+  }
+
+  /**
+   * Defines how the architecture is splitted in different binaries
+   * OFF = No splitting, create a single binary containing everything
+   * LOCAL = Deploy on a single machine
+   * DISTRIBUTED = Deploy on multiple machines
+   */
+  public enum SplittingMode {
+    OFF,
+    LOCAL,
+    DISTRIBUTED
+  }
+
   /** property for target platform */
   private TargetPlatform targetPlatform = TargetPlatform.GENERIC;
+
+  private SplittingMode splittingMode = SplittingMode.OFF;
 
   private Set<ASTBindingRule> componentBindings = new HashSet<>();
 
@@ -83,9 +103,11 @@ public class ConfigParams {
     this.cdLangExtensionScope = cdLangExtensionScope;
   }
 
-  public enum TargetPlatform {
-    GENERIC,
-    DSA_VCG,
-    ARDUINO
+  public SplittingMode getSplittingMode() {
+    return splittingMode;
+  }
+
+  public void setSplittingMode(SplittingMode splittingMode) {
+    this.splittingMode = splittingMode;
   }
 }

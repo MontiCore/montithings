@@ -33,7 +33,8 @@ public class MontiThingsConfiguration implements Configuration {
   public enum Options {
 
     MODELPATH("modelPath"), MODELPATH_SHORT("mp"), HANDWRITTENCODEPATH("handwrittenCode"),
-    HANDWRITTENCODEPATH_SHORT("hwc"), OUT("out"), OUT_SHORT("o"), PLATFORM("platform");
+    HANDWRITTENCODEPATH_SHORT("hwc"), OUT("out"), OUT_SHORT("o"), PLATFORM("platform"),
+    SPLITTING("splitting");
 
     String name;
 
@@ -67,6 +68,7 @@ public class MontiThingsConfiguration implements Configuration {
     this.configuration = ConfigurationContributorChainBuilder.newChain()
         .add(DelegatingConfigurationContributor.with(internal)).build();
     configParams.setTargetPlatform(getPlatform());
+    configParams.setSplittingMode(getSplittingMode());
   }
 
   /**
@@ -272,6 +274,24 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "generic"
     return ConfigParams.TargetPlatform.GENERIC;
+  }
+
+  public ConfigParams.SplittingMode getSplittingMode() {
+    Optional<String> platform = getAsString(Options.SPLITTING);
+    if (platform.isPresent()) {
+      switch (platform.get()) {
+        case "OFF":
+          return ConfigParams.SplittingMode.OFF;
+        case "LOCAL":
+          return ConfigParams.SplittingMode.LOCAL;
+        case "DISTRIBUTED":
+          return ConfigParams.SplittingMode.DISTRIBUTED;
+        default:
+          throw new IllegalArgumentException("0xMT300 Platform " + platform + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "generic"
+    return ConfigParams.SplittingMode.OFF;
   }
 
   /**

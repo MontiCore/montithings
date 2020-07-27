@@ -49,7 +49,6 @@ class Ports {
     «ENDFOR»
     «ENDIF»
     '''
-		
 	}
 	
 	def static printMethodHeaders(Collection<PortSymbol> ports, ConfigParams config){
