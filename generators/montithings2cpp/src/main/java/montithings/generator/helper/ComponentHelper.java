@@ -316,6 +316,28 @@ public class ComponentHelper {
     return outputParameters;
   }
 
+  public static String printConstructorArguments(arcbasis._symboltable.ComponentTypeSymbol comp) {
+    String result = "";
+    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
+    List<ASTArcParameter> parameters = comp.getAstNode().getHead().getArcParameterList();
+
+    for (int i = 0; i < parameters.size(); i++) {
+      ASTArcParameter param = parameters.get(i);
+      result += printer.prettyprint(param.getMCType());;
+      result += " ";
+      result += param.getName();
+      if (param.isPresentDefault()) {
+        result += " = ";
+        result += printer.prettyprint(param.getDefault());
+      }
+      if (i < parameters.size()-1) {
+        result += ", ";
+      }
+    }
+
+    return result;
+  }
+
   public static String printTypeArguments(List<de.monticore.types.typesymbols._symboltable.TypeVarSymbol> types) {
     String result = "";
     List<String> typeNames = new ArrayList<>();

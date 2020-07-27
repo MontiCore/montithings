@@ -77,7 +77,7 @@ class ComponentGenerator {
 			
 		public:
 			«Ports.printMethodHeaders(comp.ports, config)»
-			«compname»(«Utils.printConfigurationParametersAsList(comp)»);
+			«compname»(«ComponentHelper.printConstructorArguments(comp)»);
 			
 			void setUp(TimeMode enclosingComponentTiming) override;
 			void init() override;
