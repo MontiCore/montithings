@@ -242,7 +242,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
         .toFile(), hwcPath, comp, compname, config, generateDeploy);
 
-    copyHwcToTarget(target, hwcPath, model, config);
+    if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+      copyHwcToTarget(target, hwcPath, model, config);
+    }
   }
 
   protected void generateCppForSubcomponents(String model, File modelPath, List<String> mtModels,
