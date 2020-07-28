@@ -1,1 +1,3 @@
 cocoTest.interfaceMismatch.InterfaceWithoutInterfaceComponent -> cocoTest.interfaceMismatch.ImplementationWithInterfaceComponent;
+instance cocoTest.interfaceMismatch.InterfaceWithAndWithoutInterfaceInstance.x -> cocoTest.interfaceMismatch.InterfaceWithoutInterfaceComponent;
+instance cocoTest.interfaceMismatch.InterfaceWithAndWithoutInterfaceInstance.y -> cocoTest.interfaceMismatch.InterfaceWithoutInterfaceComponent;

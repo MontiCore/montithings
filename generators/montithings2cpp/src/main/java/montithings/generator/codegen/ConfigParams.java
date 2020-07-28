@@ -5,7 +5,9 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Bundle of parameters for montithings2cpp generator.
@@ -61,7 +63,7 @@ public class ConfigParams {
 
   public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getInterfaceComponentSymbol().equals(componentType)){
+      if(binding.getInterfaceComponentSymbol()==componentType){
         return Optional.of(binding.getImplementationComponentSymbol());
       }
     }
@@ -70,7 +72,7 @@ public class ConfigParams {
 
   public Optional<ASTComponentType> getBinding(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getInterfaceComponentDefinition().equals(componentType)){
+      if(binding.getInterfaceComponentDefinition()==componentType){
         return Optional.of(binding.getImplementationComponentDefinition());
       }
     }
@@ -79,7 +81,7 @@ public class ConfigParams {
 
   public boolean isImplementation(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentDefinition().equals(componentType)){
+      if(binding.getImplementationComponentDefinition()==componentType){
         return true;
       }
     }
@@ -88,7 +90,7 @@ public class ConfigParams {
 
   public boolean isImplementation(ComponentTypeSymbol componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentSymbol().equals(componentType)){
+      if(binding.getImplementationComponentSymbol()==componentType){
         return true;
       }
     }

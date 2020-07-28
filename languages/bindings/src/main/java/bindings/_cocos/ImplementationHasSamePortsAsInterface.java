@@ -20,12 +20,18 @@ public class ImplementationHasSamePortsAsInterface implements BindingsASTBinding
     if (!node.isPresentImplementationComponentDefinition()) {
       new ImplementationExists().check(node);
     }
-    else if (!node.isPresentInterfaceComponentDefinition()) {
+    else if ((!node.isInstance() &&!node.isPresentInterfaceComponentDefinition())||(node.isInstance()&&!node.isPresentInterfaceInstanceDefinition())) {
       new InterfaceExists().check(node);
     }
     else {
-      checkIfPortsMatch(node.getInterfaceComponentSymbol(), node.getImplementationComponentSymbol());
-      checkIfPortsMatch(node.getImplementationComponentSymbol(), node.getInterfaceComponentSymbol());
+      if(node.isInstance()){
+        checkIfPortsMatch(node.getInterfaceInstanceSymbol().getTypeInfo(), node.getImplementationComponentSymbol());
+        checkIfPortsMatch(node.getImplementationComponentSymbol(), node.getInterfaceInstanceSymbol().getTypeInfo());
+      }
+      else {
+        checkIfPortsMatch(node.getInterfaceComponentSymbol(), node.getImplementationComponentSymbol());
+        checkIfPortsMatch(node.getImplementationComponentSymbol(), node.getInterfaceComponentSymbol());
+      }
     }
   }
 

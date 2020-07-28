@@ -9,6 +9,7 @@ import bindings._symboltable.BindingsGlobalScope;
 import bindings._symboltable.BindingsLanguage;
 import bindings._symboltable.BindingsSymbolTableCreatorDelegator;
 import bindings._symboltable.IBindingsScope;
+import bindings._symboltable.adapters.MCQualifiedName2ComponentInstanceResolvingDelegate;
 import bindings._symboltable.adapters.MCQualifiedName2ComponentTypeResolvingDelegate;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -80,6 +81,7 @@ public class BindingsTool {
     final ModelPath mp = new ModelPath(p);
 
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
+    MCQualifiedName2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
     if(this.mtGlobalScope==null) {
       MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
       MontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
@@ -87,13 +89,16 @@ public class BindingsTool {
           .setMontiThingsLanguage(mtLang)
           .build();
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
+      componentInstanceResolvingDelegate = new MCQualifiedName2ComponentInstanceResolvingDelegate(newMtGlobalScope);
     }
     else{
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
+      componentInstanceResolvingDelegate = new MCQualifiedName2ComponentInstanceResolvingDelegate(this.mtGlobalScope);
     }
 
     BindingsGlobalScope bindingsGlobalScope = new BindingsGlobalScope(mp, language);
     bindingsGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
+    bindingsGlobalScope.addAdaptedComponentInstanceSymbolResolvingDelegate(componentInstanceResolvingDelegate);
 
     isSymTabInitialized = true;
     return bindingsGlobalScope;
