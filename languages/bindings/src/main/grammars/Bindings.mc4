@@ -6,7 +6,7 @@ grammar Bindings extends de.monticore.types.MCBasicTypes, MontiArc {
   interface Element;
 
   BindingRule implements Element =
-    interfaceComponent:MCQualifiedName
+    ((["instance"] interfaceInstance:MCQualifiedName)|interfaceComponent:MCQualifiedName)
     "->"
     implementationComponent:MCQualifiedName";";
 }
