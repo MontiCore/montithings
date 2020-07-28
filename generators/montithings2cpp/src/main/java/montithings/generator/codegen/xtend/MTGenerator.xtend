@@ -6,7 +6,6 @@ import de.monticore.io.FileReaderWriter
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.List
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.behavior.Implementation
 import montithings.generator.codegen.xtend.util.ArduinoReadme

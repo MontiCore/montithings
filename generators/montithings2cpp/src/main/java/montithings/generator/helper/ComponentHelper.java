@@ -358,12 +358,12 @@ public class ComponentHelper {
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
     Optional<ComponentTypeSymbol> implementation = config.getBinding(instance);
     if(implementation.isPresent()){
-      implementation.get().getName();
+      result += implementation.get().getName();
     }
     else{
       implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
       if(implementation.isPresent()){
-        implementation.get().getName();
+        result += implementation.get().getName();
       }
       else{
         result += componentTypeReference.getName();
