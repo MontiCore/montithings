@@ -69,14 +69,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     Log.info("Initializing symboltable", TOOL_NAME);
 
-    IMontiThingsScope symTab = initSymbolTable(modelPath,
-      //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
-      hwcPath);
-
     CD4AnalysisGlobalScope cdSymTab = new CD4AnalysisGlobalScopeBuilder()
       .setModelPath(new ModelPath((Paths.get(modelPath.getAbsolutePath()))))
       .setCD4AnalysisLanguage(new CD4AnalysisLanguage())
       .build();
+
+    this.setCdGlobalScope(cdSymTab);
+    IMontiThingsScope symTab = initSymbolTable(modelPath,
+        //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
+        hwcPath);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     cdExtensionTool.setCdGlobalScope(cdSymTab);
@@ -90,8 +91,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     Log.info("Checking models", TOOL_NAME);
 
-    checkMtModels(models.getMontithings(), symTab);
     checkCds(models.getClassdiagrams(), cdSymTab);
+    checkMtModels(models.getMontithings(), symTab);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
 
