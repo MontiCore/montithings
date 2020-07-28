@@ -107,12 +107,6 @@
 
 		<dependency>
 			<groupId>montithings.languages</groupId>
-			<artifactId>montithings</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>montithings.languages</groupId>
 			<artifactId>bindings</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
