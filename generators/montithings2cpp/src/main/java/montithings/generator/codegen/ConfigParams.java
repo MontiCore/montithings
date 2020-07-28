@@ -1,6 +1,8 @@
 package montithings.generator.codegen;
 
+import arcbasis._ast.ASTComponentInstance;
 import arcbasis._ast.ASTComponentType;
+import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
@@ -63,7 +65,7 @@ public class ConfigParams {
 
   public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getInterfaceComponentSymbol()==componentType){
+      if(!binding.isInstance() && binding.getInterfaceComponentSymbol()==componentType){
         return Optional.of(binding.getImplementationComponentSymbol());
       }
     }
@@ -72,7 +74,25 @@ public class ConfigParams {
 
   public Optional<ASTComponentType> getBinding(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getInterfaceComponentDefinition()==componentType){
+      if(!binding.isInstance()&&binding.getInterfaceComponentDefinition()==componentType){
+        return Optional.of(binding.getImplementationComponentDefinition());
+      }
+    }
+    return Optional.empty();
+  }
+
+  public Optional<ComponentTypeSymbol> getBinding(ComponentInstanceSymbol componentInstance){
+    for(ASTBindingRule binding : componentBindings){
+      if(binding.isInstance()&&binding.getInterfaceInstanceSymbol()==componentInstance){
+        return Optional.of(binding.getImplementationComponentSymbol());
+      }
+    }
+    return Optional.empty();
+  }
+
+  public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance){
+    for(ASTBindingRule binding : componentBindings){
+      if(binding.isInstance()&&binding.getInterfaceInstanceDefinition()==componentInstance){
         return Optional.of(binding.getImplementationComponentDefinition());
       }
     }

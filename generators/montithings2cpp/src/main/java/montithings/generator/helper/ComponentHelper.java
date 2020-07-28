@@ -356,7 +356,19 @@ public class ComponentHelper {
     ConfigParams config, boolean printTypeParameters) {
     String result = "";
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
-    result += componentTypeReference.getName();
+    Optional<ComponentTypeSymbol> implementation = config.getBinding(instance);
+    if(implementation.isPresent()){
+      implementation.get().getName();
+    }
+    else{
+      implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
+      if(implementation.isPresent()){
+        implementation.get().getName();
+      }
+      else{
+        result += componentTypeReference.getName();
+      }
+    }
     if (componentTypeReference.getLoadedSymbol().hasTypeParameter() && printTypeParameters) {
       // format simple component type name to full component type name
       List<TypeVarSymbol> types = new ArrayList<>(
@@ -364,10 +376,6 @@ public class ComponentHelper {
       //TODO: we probably still need the following call?
       //types = addTypeParameterComponentPackage(instance, types);
       result += printTypeArguments(types);
-    }
-    Optional<ComponentTypeSymbol> implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
-    if (implementation.isPresent()) {
-      return implementation.get().getFullName();
     }
     return result;
   }
@@ -384,7 +392,7 @@ public class ComponentHelper {
    *
    * @param comp                      component containing the subcomponent instances.
    * @param instance                  the instance where it's type may be replaced.
-   * @param interfaceToImplementation binding which replaces an interface type if no generic is used.
+   * @param config binding which replaces an interface type if no generic is used.
    * @return the subcomponent type name without package.
    */
 
@@ -392,7 +400,8 @@ public class ComponentHelper {
   public static String getSubComponentTypeNameWithBinding(arcbasis._symboltable.ComponentTypeSymbol comp,
     arcbasis._symboltable.ComponentInstanceSymbol instance,
     ConfigParams config) {
-    return instance.getType().getLoadedSymbol().getName();
+    return getSubComponentTypeNameWithoutPackage(instance, config);
+    //Temporary fixreturn instance.getType().getLoadedSymbol().getName();
     //TODO: Implement me
     /*
     ConfigParams configGeneric = new HashMap<>(
