@@ -176,6 +176,38 @@ public class MontiThingsTool extends MontiArcTool {
   }
 
   /**
+   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   *
+   * @param ast node used to create symboltable
+   * @param modelPaths path that contains all models
+   * @return created global scope
+   */
+  public MontiThingsGlobalScope createSymboltable(ASTMACompilationUnit ast,
+      File... modelPaths) {
+
+    MontiThingsGlobalScope globalScope = (MontiThingsGlobalScope) initSymbolTable(modelPaths);
+
+    return createSymboltable(ast,globalScope);
+  }
+
+  /**
+   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   *
+   * @param ast node used to create symboltable
+   * @param globalScope globalScope used for the symbolTable
+   * @return created global scope
+   */
+  public MontiThingsGlobalScope createSymboltable(ASTMACompilationUnit ast,
+      MontiThingsGlobalScope globalScope) {
+
+    MontiThingsSymbolTableCreatorDelegator stc = language
+        .getSymbolTableCreator(globalScope);
+    stc.createFromAST(ast);
+
+    return globalScope;
+  }
+
+  /**
    * Initializes the Symboltable by introducing scopes for the passed modelpaths. It does not create
    * the symbol table! Symbols for models within the modelpaths are not added to the symboltable
    * until resolve() is called. Modelpaths are relative to the project path and do contain all the
