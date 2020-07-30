@@ -8,6 +8,7 @@
 #include <future>
 #include <iostream>
 #include "Port.h"
+#include "Utils.h"
 
 template<typename T>
 class WSPort : public Port<T>
