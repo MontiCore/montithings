@@ -24,15 +24,12 @@ class ComponentGenerator {
 		#pragma once
 		#include "IComponent.h"
 		#include "Port.h"
+		#include "MultiPort.h"
 		#include <string>
 		#include <map>
 		#include <vector>
 		#include <list>
 		#include <set>
-		«IF config.getTargetPlatform() != ConfigParams.TargetPlatform.ARDUINO»
-		#include "IPCPort.h"
-		#include "WSPort.h"
-		«ENDIF»
 		#include <thread>
 		#include "sole/sole.hpp"
 		#include <iostream>

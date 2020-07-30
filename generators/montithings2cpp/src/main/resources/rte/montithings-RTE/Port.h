@@ -51,7 +51,6 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
       }
   }
 
-  public:
   void setNextValue (T nextVal) override
   {
     if (!this->queueMap.size ())

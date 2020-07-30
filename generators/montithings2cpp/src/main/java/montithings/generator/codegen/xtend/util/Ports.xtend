@@ -39,7 +39,7 @@ class Ports {
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
-    Port<«type»>* «name» = new Port<«type»>;
+    MultiPort<«type»>* «name» = new MultiPort<«type»>;
     «ENDFOR»
     «IF comp.isDecomposed»
 // Internal monitoring of ports (for pre- and postconditions of composed components)
@@ -57,7 +57,8 @@ class Ports {
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
     Port<«type»>* getPort«name.toFirstUpper»();
-    void setPort«name.toFirstUpper»(Port<«type»>* «name»);
+    void addPort«name.toFirstUpper»(Port<«type»>* «name»);
+    void removePort«name.toFirstUpper»(Port<«type»>* «name»);
     «ENDFOR»
     '''
 	}
@@ -73,14 +74,19 @@ class Ports {
     }
 
     «Utils.printTemplateArguments(comp)»
-    void «compname»«Utils.printFormalTypeParameters(comp)»::setPort«name.toFirstUpper»(Port<«type»>* port){
+    void «compname»«Utils.printFormalTypeParameters(comp)»::addPort«name.toFirstUpper»(Port<«type»>* port){
 «««    	«IF comp.atomic»
 «««    	port->registerPort(portUuid«name.toFirstUpper»);
 «««    	«ENDIF»
 «««    	«IF comp.isDecomposed»
 «««    	port->registerPort(portMonitorUuid«name.toFirstUpper»);
 «««    	«ENDIF» TDOD
-    	«name» = port;
+    	«name»->addManagedPort (port);
+    }
+
+    «Utils.printTemplateArguments(comp)»
+    void «compname»«Utils.printFormalTypeParameters(comp)»::removePort«name.toFirstUpper»(Port<«type»>* port){
+    	«name»->removeManagedPort (port);
     }
     
     «ENDFOR»
