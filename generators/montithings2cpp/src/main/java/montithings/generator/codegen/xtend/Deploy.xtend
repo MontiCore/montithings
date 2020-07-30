@@ -74,6 +74,10 @@ class Deploy {
 		
 			while (true)
         {
+		  «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
+          // check for new management instructions
+          waitForSuperComponent(&cmp);
+		  «ENDIF»
           auto end = std::chrono::high_resolution_clock::now() + «ComponentHelper.getExecutionIntervalMethod(comp)»;
           «IF ComponentHelper.isTimesync(comp)»
           cmp.compute();

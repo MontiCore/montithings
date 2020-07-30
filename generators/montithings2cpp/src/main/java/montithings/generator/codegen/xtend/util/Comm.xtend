@@ -79,17 +79,17 @@ class Comm {
               std::cout << "Received connection from " + ip + remote_port + "\n";
               «p.name»_uri = "ws://" + ip + remote_port;
               cmp->addPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri.c_str()));
-«««              «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
-«««              «FOR ASTPortAccess target : connector.targetList»
-«««              «FOR subcomponent : comp.subComponents»
-«««                «var subcomponentSymbol = subcomponent.type.loadedSymbol»
-«««                  «IF p.name == connector.source.port»
-«««                    // implements "«connector.source.getQName» -> «target.getQName»"
-«««                    cmp->getTo«subcomponent.name.toFirstUpper»_«target.port»()->setDataProvidingPort(cmp->getPort«p.name.toFirstUpper»());
-«««                  «ENDIF»
-«««              «ENDFOR»
-«««              «ENDFOR»
-«««              «ENDFOR»
+              «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
+              «FOR ASTPortAccess target : connector.targetList»
+              «FOR subcomponent : comp.subComponents»
+                «var subcomponentSymbol = subcomponent.type.loadedSymbol»
+                  «IF p.name == connector.source.port»
+                    // implements "«connector.source.getQName» -> «target.getQName»"
+                    cmp->getTo«subcomponent.name.toFirstUpper»_«target.port»()->setDataProvidingPort(cmp->getPort«p.name.toFirstUpper»());
+                  «ENDIF»
+              «ENDFOR»
+              «ENDFOR»
+              «ENDFOR»
             }
             «ENDIF»
             «ENDFOR»
