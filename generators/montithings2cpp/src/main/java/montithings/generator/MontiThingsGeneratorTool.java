@@ -37,8 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static montithings.generator.helper.FileHelper.copyHwcToTarget;
@@ -46,9 +45,13 @@ import static montithings.generator.helper.FileHelper.getSubPackagesPath;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
-  private static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
+  protected static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
 
-  private static final String TOOL_NAME = "MontiThingsGeneratorTool";
+  protected static final String TOOL_NAME = "MontiThingsGeneratorTool";
+
+  protected static final int COMM_IN_PORT_BASE = 1337;
+
+  protected static final int REMOTE_PORT_BASE = 8080;
 
   public void generate(File modelPath, File target, File hwcPath, ConfigParams config) {
 
@@ -61,6 +64,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ======================== Find Models ======================= */
     /* ============================================================ */
     Models models = new Models(modelPath);
+    config.setComponentPortMap(getComponentPortMap(models.getMontithings(), config));
 
     /* ============================================================ */
     /* ===================== Set up Symbol Tabs =================== */
@@ -240,7 +244,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // Generate Files
     MTGenerator.generateAll(
       Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-        .toFile(), hwcPath, comp, compname, config, generateDeploy);
+        .toFile(), hwcPath, comp, compname, config, config.getComponentPortMap(), generateDeploy);
 
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       copyHwcToTarget(target, hwcPath, model, config);
@@ -257,7 +261,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // Generate code for each subcomponent type
     for (ComponentTypeSymbol subcomp : subcomponentTypes) {
       generateCppForComponent(subcomp.getFullName(), symTab, target, hwcPath, config, false);
-      generateCppForSubcomponents(subcomp.getFullName(), modelPath, mtModels, symTab, target, hwcPath, config);
+      generateCppForSubcomponents(subcomp.getFullName(), modelPath, mtModels, symTab, target,
+        hwcPath, config);
     }
   }
 
@@ -293,6 +298,27 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model,
         Names.getQualifiedName(packageName, simpleName)).generate();
     }
+  }
+
+  protected Map<String, List<String>> getComponentPortMap(List<String> models,
+    ConfigParams config) {
+    Map<String, List<String>> componentPortMap = new HashMap();
+    int commInPort = COMM_IN_PORT_BASE;
+    int remotePort = REMOTE_PORT_BASE;
+    for (String model : models) {
+      String comp = model.split("\\.")[1];
+      if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
+        componentPortMap
+          .put(comp, Arrays.asList(String.valueOf(commInPort), String.valueOf(remotePort)));
+        commInPort = commInPort + 1;
+        remotePort = remotePort + 1;
+      }
+      else {
+        componentPortMap.put(comp,
+          Arrays.asList(String.valueOf(COMM_IN_PORT_BASE), String.valueOf(REMOTE_PORT_BASE)));
+      }
+    }
+    return componentPortMap;
   }
 
 }

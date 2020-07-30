@@ -17,7 +17,7 @@ import montithings.generator.helper.ComponentHelper
 
 class ComponentGenerator {
 	
-	def static generateHeader(ComponentTypeSymbol comp, String compname, ConfigParams config) {
+	def static generateHeader(ComponentTypeSymbol comp, String compname, ConfigParams config, boolean useWsPorts) {
 		var ComponentHelper helper = new ComponentHelper(comp)
 	    
 		return '''
@@ -91,7 +91,7 @@ class ComponentGenerator {
 		'''
 	}
 
-	def static generateImplementationFile(ComponentTypeSymbol comp, String compname, ConfigParams config) {
+	def static generateImplementationFile(ComponentTypeSymbol comp, String compname, ConfigParams config, boolean useWsPorts) {
 	  return '''
   	#include "«compname».h"
   	#include <regex>

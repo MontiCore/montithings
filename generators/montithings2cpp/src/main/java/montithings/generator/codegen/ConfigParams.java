@@ -43,6 +43,16 @@ public class ConfigParams {
 
   private CDLangExtensionScope cdLangExtensionScope;
 
+  private Map<String, List<String>> componentPortMap;
+
+  public Map<String, List<String>> getComponentPortMap() {
+    return componentPortMap;
+  }
+
+  public void setComponentPortMap(Map<String, List<String>> componentPortMap) {
+    this.componentPortMap = componentPortMap;
+  }
+
   public TargetPlatform getTargetPlatform() {
     return targetPlatform;
   }

@@ -9,6 +9,7 @@ import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.Comparator
 import java.util.List
+import java.util.Map
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.behavior.Implementation
 import montithings.generator.codegen.xtend.util.ArduinoReadme
@@ -27,15 +28,17 @@ import montithings.generator.helper.FileHelper
  */
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config, boolean generateDeploy) {
+  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config, Map<String,List<String>> componentPortMap, boolean generateDeploy) {
     Identifier.createInstance(comp)
+
+    var useWsPorts = (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy);
 
     toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname, config), ".h");
     toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname, config), ".cpp");
     toFile(targetPath, compname + "Result", Result.generateResultHeader(comp, compname, config), ".h");
     toFile(targetPath, compname + "Result", Result.generateImplementationFile(comp, compname, config), ".cpp");
-    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, config), ".h");
-    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname, config), ".cpp");
+    toFile(targetPath, compname, ComponentGenerator.generateHeader(comp, compname, config, useWsPorts), ".h");
+    toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname, config, useWsPorts), ".cpp");
     
     if (comp.isAtomic) {
       var boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.packageName + "." + compname);
@@ -46,7 +49,7 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config, false);
+    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config, componentPortMap, false);
     }
     
 	// Generate deploy class
@@ -57,7 +60,7 @@ class MTGenerator {
         toFile(sketchDirectory, "Deploy" + compname, Deploy.generateDeployArduino(comp, compname),".ino");
         toFile(targetPath.getParentFile(), "README", ArduinoReadme.printArduinoReadme(targetPath.name, compname),".txt");
       } else {
-        toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname),".cpp");
+        toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname, config, componentPortMap),".cpp");
       }
     }
 
