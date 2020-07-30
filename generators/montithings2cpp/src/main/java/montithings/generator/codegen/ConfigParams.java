@@ -42,9 +42,9 @@ public class ConfigParams {
   private TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 
   private SplittingMode splittingMode = SplittingMode.OFF;
-
+  /** Rules that bind a interface component/componentInstance to another non interface component */
   private Set<ASTBindingRule> componentBindings = new HashSet<>();
-
+  /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
   public TargetPlatform getTargetPlatform() {
@@ -63,6 +63,11 @@ public class ConfigParams {
     this.componentBindings = componentBindings;
   }
 
+  /**
+   * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+   * @param componentType interface component
+   * @return implementing component if present
+   */
   public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType){
     for(ASTBindingRule binding : componentBindings){
       if(!binding.isInstance() && binding.getInterfaceComponentSymbol()==componentType){
@@ -72,6 +77,11 @@ public class ConfigParams {
     return Optional.empty();
   }
 
+  /**
+   * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+   * @param componentType interface component
+   * @return implementing component if present
+   */
   public Optional<ASTComponentType> getBinding(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
       if(!binding.isInstance()&&binding.getInterfaceComponentDefinition()==componentType){
@@ -81,6 +91,11 @@ public class ConfigParams {
     return Optional.empty();
   }
 
+  /**
+   * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+   * @param componentInstance interface component instance
+   * @return implementing component if present
+   */
   public Optional<ComponentTypeSymbol> getBinding(ComponentInstanceSymbol componentInstance){
     for(ASTBindingRule binding : componentBindings){
       if(binding.isInstance()&&binding.getInterfaceInstanceSymbol()==componentInstance){
@@ -90,6 +105,11 @@ public class ConfigParams {
     return Optional.empty();
   }
 
+  /**
+   * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+   * @param componentInstance interface component instance
+   * @return implementing component if present
+   */
   public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance){
     for(ASTBindingRule binding : componentBindings){
       if(binding.isInstance()&&binding.getInterfaceInstanceDefinition()==componentInstance){
@@ -99,6 +119,11 @@ public class ConfigParams {
     return Optional.empty();
   }
 
+  /**
+   * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+   * @param componentType implementing component
+   * @return If the component implements according to componentBindings.
+   */
   public boolean isImplementation(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
       if(binding.getImplementationComponentDefinition()==componentType){
@@ -108,6 +133,11 @@ public class ConfigParams {
     return false;
   }
 
+  /**
+   * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+   * @param componentType implementing component
+   * @return If the component implements according to componentBindings.
+   */
   public boolean isImplementation(ComponentTypeSymbol componentType){
     for(ASTBindingRule binding : componentBindings){
       if(binding.getImplementationComponentSymbol()==componentType){

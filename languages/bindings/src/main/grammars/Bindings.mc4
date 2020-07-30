@@ -5,6 +5,15 @@ grammar Bindings extends de.monticore.types.MCBasicTypes, MontiArc {
 
   interface Element;
 
+  /**
+    * Rule that binds either a MontiThings interface component,
+    * or a MontiThings interface subcomponent instance
+    * to another non interface component.
+    * @attribute instance Determines if a subcomponent instance is used.
+    * @attribute interfaceInstance The Qualified name of a MontiThings interface subcomponent instance.
+    * @attribute interfaceComponent The Qualified name of a MontiThings interface component.
+    * @attribute implementationComponent The Qualified name of a MontiThings non-interface component.
+    */
   BindingRule implements Element =
     ((["instance"] interfaceInstance:MCQualifiedName)|interfaceComponent:MCQualifiedName)
     "->"

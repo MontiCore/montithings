@@ -9,6 +9,11 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * ResolvingDelegate that makes resolving of ComponentInstanceSymbols from MontiThings by a qualified name possible.
+ *
+ * @author Julian Krebber
+ */
 public class MCQualifiedName2ComponentInstanceResolvingDelegate implements IComponentInstanceSymbolResolvingDelegate {
 
   protected MontiThingsGlobalScope globalScope;

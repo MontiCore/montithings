@@ -1,8 +1,24 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.cocos;
 
+import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._ast.ASTComponentType;
 import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
+import arcbasis._symboltable.ComponentTypeSymbol;
+import de.monticore.types.mcbasictypes._ast.ASTMCType;
+import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
+import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
+import de.se_rwth.commons.logging.Log;
+import genericarc._ast.ASTArcTypeParameter;
+import genericarc._ast.ASTGenericComponentHead;
+import montithings._ast.ASTMTComponentType;
+import montithings._symboltable.MontiThingsArtifactScope;
+import montithings.util.GenericBindingUtil;
+import montithings.util.MontiThingsError;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Checks if implementation of interface components is correct.
@@ -19,41 +35,15 @@ public class ImplementationFitsInterface implements ArcBasisASTComponentTypeCoCo
    */
   @Override
   public void check(ASTComponentType node) {
-    /*if (!node.getEnclosingScopeOpt().isPresent()) {
-      Log.error("No Component enclosing Scope. Was SymbolTable initialized?");
+    if (node.getEnclosingScope() == null) {
+      Log.error(MontiThingsError.NO_ENCLOSING_SCOPE.toString());
     }
     // iterate over every subComponent and collect their type aswell as their type arguments
-    for (ASTSubComponent subComponent : node.getSubComponents()) {
-      ASTSimpleReferenceType type = (ASTSimpleReferenceType) subComponent.getType();
+    for (ASTComponentInstantiation subComponent : node.getSubComponentInstantiations()) {
+      ASTMCType type = subComponent.getMCType();
       checkBindingAssignment(type,node,subComponent);
-    }*/
+    }
   }
-
-  /**
-   * Checks if a component can formally implement an interface component, by
-   * checking if a component has the same ports as another component.
-   *
-   * @param implementComp component implementing an interface component.
-   * @param interfaceComp interface component.
-   * @return if all ports match completely.
-   */
-  /*private static boolean canImplementInterface(ASTComponentType implementComp, ASTComponentType interfaceComp) {
-    boolean result = true;
-    List<ASTPort> portsImpl = implementComp.getPorts().stream().map(p -> (montithings._ast.ASTPort) p).collect(Collectors.toList());
-    List<ASTPort> portsInter = interfaceComp.getPorts().stream().map(p -> (montithings._ast.ASTPort) p).collect(Collectors.toList());
-
-    for (ASTPort portInter : portsInter) {
-      if (portsImpl.stream().noneMatch(pImp -> pImp.deepEquals(portInter))) {
-        result = false;
-      }
-    }
-    for (ASTPort portImpl : portsImpl) {
-      if (portsInter.stream().noneMatch(pImp -> pImp.deepEquals(portImpl))) {
-        result = false;
-      }
-    }
-    return result;
-  }*/
 
   /**
    * Checks if the given type is a generic of the node and if it uses the same given interface.
@@ -64,95 +54,98 @@ public class ImplementationFitsInterface implements ArcBasisASTComponentTypeCoCo
    * @return true, if it is an valid generic type for binding implementation. false if it is not an generic of the given node.
    * logs error if it is an generic of the node, but is not valid.
    */
-  /*protected static boolean genericInterfaceType(String implementingType, ASTComponentType node, List<ComponentSymbol> interfaceComps, String subComponentName) {
-    Map<String, ASTSimpleReferenceType> nodeGenerics = GenericBindingUtil.getGenericBindings(node);
+  protected static boolean genericInterfaceType(String implementingType, ASTComponentType node, List<ComponentTypeSymbol> interfaceComps, String subComponentName) {
+    Map<String, String> nodeGenerics = GenericBindingUtil.getGenericBindings(node);
     if(nodeGenerics.containsKey(implementingType)){
-      List<ComponentSymbol> interfaceCompOthers = new ArrayList<>();
-      for(String interfaceCompName : nodeGenerics.get(implementingType).getNameList()) {
-        ComponentSymbol interfaceCompOther = GenericBindingUtil.getComponentFromString((MontiArcArtifactScope) node.getEnclosingScopeOpt().get(),
+      List<ComponentTypeSymbol> interfaceCompOthers = new ArrayList<>();
+        String interfaceCompName = nodeGenerics.get(implementingType);
+        ComponentTypeSymbol interfaceCompOther = GenericBindingUtil.getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(),
             interfaceCompName);
         if(interfaceCompOther==null) {
-          Log.error("0xMT146 Interface component " + interfaceCompName
-                  + " of Generic " +  implementingType + " in component " + node.getName()
-                  + " not found. "
-                  + "Is the interface component model available and resolve able?",
-              node.getHead().get_SourcePositionStart());
+          Log.error(
+              String.format(
+                  MontiThingsError.GENERIC_PARAMTER_INTERFACE_NOT_FOUND.toString(),
+                  interfaceCompName, implementingType, node.getName(), node.getHead().get_SourcePositionStart().toString()));
           return true;
         }
         interfaceCompOthers.add(interfaceCompOther);
-      }
-      for(ComponentSymbol interfaceComp : interfaceCompOthers) {
+      for(ComponentTypeSymbol interfaceComp : interfaceCompOthers) {
         if (!interfaceComps.contains(interfaceComp)) {
-          Log.error("0xMT147 Generic " + implementingType +
-              " of SubComponent " + subComponentName +
-              " in component " + node.getName() +
-              " does not allow the interface component " + interfaceComp.getName() + "."
-              + "Is a valid resolve able interface component model available and does the generic extend it?",
-              node.getHead().get_SourcePositionStart());
+          Log.error(
+            String.format(
+              MontiThingsError.GENERIC_PARAMTER_NOT_FITS_INTERFACE.toString(),
+              implementingType, subComponentName, node.getName(), interfaceComp.getName() ,node.getHead().get_SourcePositionStart().toString()));
+          return true;
         }
       }
       return true;
     }
-    else if(node.getHead().getGenericTypeParametersOpt().isPresent()&&
-        node.getHead().getGenericTypeParameters().getTypeVariableDeclarationList().stream().anyMatch(g -> g.getName().equals(implementingType))){
-      Log.error("0xMT148 Generic " + implementingType
-              + " of SubComponent " + subComponentName + " in component " + node.getName()
-              + " requires an interface component."
-              + "Does the generic extend an component?",
-          node.getHead().get_SourcePositionStart());
+    else if(node.getHead() instanceof ASTGenericComponentHead &&
+        ((ASTGenericComponentHead)node.getHead()).getArcTypeParameterList().stream().anyMatch(g -> g.getName().equals(implementingType))){
+      Log.error(String.format(
+          MontiThingsError.GENERIC_PARAMETER_NEEDS_INTERFACE.toString(),
+          implementingType, subComponentName, node.getName(), node.getHead().get_SourcePositionStart().toString()));
       return true;
     }
     return false;
-  }*/
+  }
 
-  /*private void checkBindingAssignment(ASTSimpleReferenceType type,ASTComponentType node, ASTSubComponent subComponent) {
-    if (!GenericBindingUtil.getGenericBindings(node).containsKey(type.getName(0))) {
-      ComponentSymbol componentSymbol = GenericBindingUtil.getComponentFromString((MontiArcArtifactScope) node.getEnclosingScopeOpt().get(), type.getName(0));
-      if (componentSymbol == null || !componentSymbol.getAstNode().isPresent()) {
-        Log.error("0xMT142 Type " + type.getName(0) + " could not be found.", subComponent.get_SourcePositionStart());
+  private void checkBindingAssignment(ASTMCType type,ASTComponentType node, ASTComponentInstantiation subComponent) {
+    if (!GenericBindingUtil.getGenericBindings(node).containsKey(GenericBindingUtil.printSimpleType(type))) {
+      ComponentTypeSymbol ComponentTypeSymbol = GenericBindingUtil.getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), GenericBindingUtil.printSimpleType(type));
+      if (ComponentTypeSymbol == null || !ComponentTypeSymbol.isPresentAstNode()) {
+        Log.error(String.format(
+            MontiThingsError.TYPE_NOT_FOUND.toString(),
+            GenericBindingUtil.printSimpleType(type), subComponent.get_SourcePositionStart().toString()));
       }
       else {
         // only subComponents that assign an implementation to interface components are relevant,
         // so we first get the needed data to decide.
-        if (type.getTypeArgumentsOpt().isPresent()) {
-          List<ASTTypeVariableDeclaration> generics;
-          if (((ASTComponentType) componentSymbol.getAstNode().get()).getHead().getGenericTypeParametersOpt().isPresent()) {
+        if (type instanceof ASTMCGenericType) {
+          if(ComponentTypeSymbol.getAstNode().getHead() instanceof ASTGenericComponentHead) {
 
-            ASTComponentType nodeAssigningGenerics = (ASTComponentType) componentSymbol.getAstNode().get();
-            generics = nodeAssigningGenerics.getHead().getGenericTypeParameters().getTypeVariableDeclarationList();
+            ASTComponentType nodeAssigningGenerics = ComponentTypeSymbol.getAstNode();
+            List<ASTArcTypeParameter> generics = ((ASTGenericComponentHead)nodeAssigningGenerics.getHead()).getArcTypeParameterList();
 
-            List<ASTTypeArgument> implementations = type.getTypeArguments().getTypeArgumentList();
+            List<ASTMCTypeArgument> implementations = ((ASTMCGenericType)type).getMCTypeArgumentList();
             // we match the potential implementation to a potential interface
             for (int i = 0; i < implementations.size(); i++) {
               if (generics.get(i).getUpperBoundList().size() > 0) {
                 // is an implementation of the generic required?
                 boolean needsImplementation = false;
                 // all interface components for the generic, from which one needs to be implemented
-                List<ComponentSymbol> interfaceComps = new ArrayList<>();
-                for (ASTComplexReferenceType complexReferenceType : generics.get(i).getUpperBoundList()) {
-                  ComponentSymbol interfaceComp = GenericBindingUtil.getComponentFromString((MontiArcArtifactScope) nodeAssigningGenerics.getEnclosingScopeOpt().get(), complexReferenceType.getSimpleReferenceType(0).getName(0));
-                  if (interfaceComp != null && ((montithings._symboltable.ComponentSymbol) interfaceComp).isInterfaceComponent()) {
+                List<ComponentTypeSymbol> interfaceComps = new ArrayList<>();
+                for (ASTMCType complexReferenceType : generics.get(i).getUpperBoundList()) {
+                  ComponentTypeSymbol interfaceComp = GenericBindingUtil.getComponentFromString((MontiThingsArtifactScope) nodeAssigningGenerics.getEnclosingScope(), GenericBindingUtil.printSimpleType(complexReferenceType));
+                  if (interfaceComp != null && interfaceComp.getAstNode() instanceof ASTMTComponentType && ((ASTMTComponentType) interfaceComp.getAstNode()).getMTComponentModifier().isInterface()) {
                     needsImplementation = true;
                     interfaceComps.add(interfaceComp);
                   }
                 }
-                if (needsImplementation) {
+                if (needsImplementation && implementations.get(i).getMCTypeOpt().isPresent()) {
+                  String typeName = GenericBindingUtil.printSimpleType(implementations.get(i).getMCTypeOpt().get());
                   //check that the given name corresponds to an existing implementing component
-                  ComponentSymbol implementation = GenericBindingUtil.getComponentFromString((MontiArcArtifactScope) node.getEnclosingScopeOpt().get(), ((ASTSimpleReferenceType) implementations.get(i)).getName(0));
-                  if (!genericInterfaceType(((ASTSimpleReferenceType) implementations.get(i)).getName(0), node, interfaceComps, subComponent.getInstances(0).getName())) {
+                  ComponentTypeSymbol implementation = GenericBindingUtil.getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), typeName);
+                  if (!genericInterfaceType(typeName, node, interfaceComps, subComponent.getInstanceName(0))) {
                     if (implementation == null) {
-                      Log.error("0xMT143 Implementation Component " + ((ASTSimpleReferenceType) implementations.get(i)).getName(0) + " of SubComponent " + subComponent.getInstances(0).getName() + " in component " + node.getName() + " does not exist." + "Is an resolveable implementing component model available?", subComponent.getInstances(0).get_SourcePositionStart());
+                      Log.error(String.format(
+                          MontiThingsError.IMPLEMENTATION_MISSING.toString(),
+                          typeName, subComponent.getInstanceName(0), node.getName(), subComponent.getComponentInstance(0).get_SourcePositionStart().toString()));
                     }
                     //check that the implementing component is not an interface component
-                    else if (((montithings._symboltable.ComponentSymbol) implementation).isInterfaceComponent()) {
-                      Log.error("0xMT144 Implementation Component " + ((ASTSimpleReferenceType) implementations.get(i)).getName(0) + " of SubComponent " + subComponent.getInstances(0).getName() + " in component " + node.getName() + " can not be an interface component.", subComponent.getInstances(0).get_SourcePositionStart());
+                    else if (implementation.getAstNode() instanceof ASTMTComponentType && ((ASTMTComponentType) implementation.getAstNode()).getMTComponentModifier().isInterface()) {
+                      Log.error(String.format(
+                          MontiThingsError.INTERFACE_IMPLEMENTS_INTERFACE.toString(),
+                          typeName, subComponent.getInstanceName(0), node.getName(), subComponent.getComponentInstance(0).get_SourcePositionStart().toString()));
                     }
                     //check that the implementing component is compatible to any given interface component.
-                    else if (interfaceComps.stream().noneMatch(interfaceC -> canImplementInterface((ASTComponentType) implementation.getAstNode().get(), (ASTComponentType) interfaceC.getAstNode().get()))) {
-                      Log.error("0xMT145 Implementation Component " + ((ASTSimpleReferenceType) implementations.get(i)).getName(0) + " of SubComponent " + subComponent.getInstances(0).getName() + " in component " + node.getName() + " does not meet required interface component specification.", subComponent.getInstances(0).get_SourcePositionStart());
+                    else if (interfaceComps.stream().noneMatch(interfaceC -> GenericBindingUtil.canImplementInterface(implementation, interfaceC))) {
+                      Log.error(String.format(
+                          MontiThingsError.NOT_FITS_INTERFACE.toString(),
+                          typeName, subComponent.getInstanceName(0), node.getName(), subComponent.getComponentInstance(0).get_SourcePositionStart().toString()));
                     }
                     else {
-                      checkBindingAssignment((ASTSimpleReferenceType) implementations.get(i), node, subComponent);
+                        checkBindingAssignment(implementations.get(i).getMCTypeOpt().get(), node, subComponent);
                     }
                   }
                 }
@@ -162,5 +155,5 @@ public class ImplementationFitsInterface implements ArcBasisASTComponentTypeCoCo
         }
       }
     }
-  }*/
+  }
 }

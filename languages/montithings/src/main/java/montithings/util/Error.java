@@ -4,7 +4,7 @@ package montithings.util;
 import java.util.regex.Pattern;
 
 /**
- * This is the mixin interface for all CDLangExtension errors. This interface serves as an extension
+ * This is the mixin interface for all MontiThings errors. This interface serves as an extension
  * point to add new error codes in submodules of the MontiThings framework.
  */
 public interface Error {

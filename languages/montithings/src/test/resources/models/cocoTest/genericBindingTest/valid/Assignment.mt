@@ -5,9 +5,9 @@ import cocoTest.genericBindingTest.valid.*;
 import cocoTest.genericBindingTest.valid.sensors.*;
 
 /* Test component Assignment */
-<<deploy>> component Assignment {
+component Assignment {
 
   /* Subcomponents */
-  component Bind<SmokeSensor<int>,Intermediate<SmokeSensor<int>>> binding;
-
+  Bind<SmokeSensor<int>,Intermediate<SmokeSensor<int>>> binding;
+  //Bind binding;
 }

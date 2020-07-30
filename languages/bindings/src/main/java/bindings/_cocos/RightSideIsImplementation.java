@@ -8,6 +8,8 @@ import montithings._ast.ASTMTComponentType;
 
 /**
  * Checks that Right Side of Binding is Implementation
+ *
+ * @author Julian Krebber
  */
 public class RightSideIsImplementation implements BindingsASTBindingRuleCoCo {
 

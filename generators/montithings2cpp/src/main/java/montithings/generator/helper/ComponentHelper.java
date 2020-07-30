@@ -1,7 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
-import arcbasis._ast.*;
+import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.ASTComponentType;
+import arcbasis._ast.ASTPort;
+import arcbasis._ast.ASTPortDeclaration;
 import arcbasis._symboltable.*;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
@@ -12,7 +15,6 @@ import conditionbasis._ast.ASTCondition;
 import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeSymbol;
@@ -26,19 +28,16 @@ import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
 import montithings._ast.ASTMTCondition;
-import montithings._visitor.MontiThingsDelegatorVisitor;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.util.Utils;
-import montithings.generator.visitor.CppAssignmentPrettyPrinter;
-import montithings.generator.visitor.CppExpressionPrettyPrinter;
+import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
 import portextensions._ast.ASTSyncStatement;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
-import montithings.generator.visitor.GuardExpressionVisitor;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -158,7 +157,8 @@ public class ComponentHelper {
    * Gets the c++ import statement for a given port type if available.
    *
    * @param portSymbol port using a class diagram type.
-   * @return c++ import statement of the port type if specified in the cd model. Otherwise empty.
+   * @param config config containing a cdlangextension, that is used to search for import statements.
+   * @return c++ import statement of the port type if specified in the cde model. Otherwise empty.
    */
   public static Optional<cdlangextension._ast.ASTCDEImportStatement> getCppImportExtension(arcbasis._symboltable.PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
@@ -356,6 +356,7 @@ public class ComponentHelper {
     ConfigParams config, boolean printTypeParameters) {
     String result = "";
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
+    //Use the bound name if present.
     Optional<ComponentTypeSymbol> implementation = config.getBinding(instance);
     if(implementation.isPresent()){
       result += implementation.get().getName();
@@ -369,6 +370,7 @@ public class ComponentHelper {
         result += componentTypeReference.getName();
       }
     }
+
     if (componentTypeReference.getLoadedSymbol().hasTypeParameter() && printTypeParameters) {
       // format simple component type name to full component type name
       List<TypeVarSymbol> types = new ArrayList<>(

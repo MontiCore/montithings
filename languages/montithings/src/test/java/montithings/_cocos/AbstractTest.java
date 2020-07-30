@@ -1,12 +1,12 @@
 package montithings._cocos;/* (c) https://github.com/MontiCore/monticore */
 
+import de.se_rwth.commons.logging.Finding;
+import de.se_rwth.commons.logging.Log;
+import de.se_rwth.commons.logging.LogStub;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsTool;
 import montithings._parser.MontiThingsParser;
 import montithings.util.Error;
-import de.se_rwth.commons.logging.Finding;
-import de.se_rwth.commons.logging.Log;
-import de.se_rwth.commons.logging.LogStub;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,7 +102,6 @@ public abstract class AbstractTest {
     catch (IOException e) {
       Log.error("File '" + MODEL_PATH + fileName + "' MontiThings artifact was not found");
     }
-    List<de.se_rwth.commons.logging.Finding> findings = Log.getFindings();
     Assertions.assertNotNull(montiThingsAST);
     MontiThingsTool tool = new MontiThingsTool();
     tool.createSymboltable(montiThingsAST, new File(MODEL_PATH));

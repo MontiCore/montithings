@@ -7,5 +7,5 @@ import cocoTest.genericBindingTest.genericParameterNeedsInterface.sensors.*;
 component Bind<T> {
 
   /* Subcomponents */
-  component Intermediate<T> intermediate;
+  Intermediate<T> intermediate;
 }

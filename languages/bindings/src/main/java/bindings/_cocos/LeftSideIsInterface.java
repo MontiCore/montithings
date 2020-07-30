@@ -9,6 +9,8 @@ import montithings._ast.ASTMTComponentType;
 
 /**
  * Checks that Left Side of Binding is Interface
+ *
+ * @author Julian Krebber
  */
 public class LeftSideIsInterface implements BindingsASTBindingRuleCoCo {
 

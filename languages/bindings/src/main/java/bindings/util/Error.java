@@ -4,8 +4,8 @@ package bindings.util;
 import java.util.regex.Pattern;
 
 /**
- * This is the mixin interface for all CDLangExtension errors. This interface serves as an extension
- * point to add new error codes in submodules of the MontiThings framework.
+ * This is the mixin interface for all Bindings errors. This interface serves as an extension
+ * point to add new error codes in submodules of the Bindings framework.
  */
 public interface Error {
 

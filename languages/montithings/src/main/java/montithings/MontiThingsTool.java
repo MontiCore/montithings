@@ -14,7 +14,7 @@ import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
 import montiarc._ast.ASTMACompilationUnit;
-import montiarc._symboltable.*;
+import montiarc._symboltable.IMontiArcScope;
 import montiarc._symboltable.adapters.Field2CDFieldResolvingDelegate;
 import montiarc._symboltable.adapters.Type2CDTypeResolvingDelegate;
 import montiarc.util.Modelfinder;
@@ -31,6 +31,9 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Provides useful methods for handling the MontiThings language.
+ */
 public class MontiThingsTool extends MontiArcTool {
 
   protected MontiThingsLanguage language;
@@ -176,7 +179,7 @@ public class MontiThingsTool extends MontiArcTool {
   }
 
   /**
-   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   * Creates a GlobalScope from a given model path and adds the given AST to it.
    *
    * @param ast node used to create symboltable
    * @param modelPaths path that contains all models
@@ -191,11 +194,11 @@ public class MontiThingsTool extends MontiArcTool {
   }
 
   /**
-   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   * Creates the symbol table for a given AST and adds it to the given global scope.
    *
    * @param ast node used to create symboltable
    * @param globalScope globalScope used for the symbolTable
-   * @return created global scope
+   * @return extended global scope
    */
   public MontiThingsGlobalScope createSymboltable(ASTMACompilationUnit ast,
       MontiThingsGlobalScope globalScope) {
@@ -268,6 +271,10 @@ public class MontiThingsTool extends MontiArcTool {
     return cdGlobalScope;
   }
 
+  /**
+   * Setter for the global scope that should be used for resolving non native symbols.
+   * @param cdGlobalScope globalScope used for resolving non native symbols
+   */
   public void setCdGlobalScope(CD4AnalysisGlobalScope cdGlobalScope) {
     this.cdGlobalScope = cdGlobalScope;
   }

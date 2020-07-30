@@ -1,6 +1,8 @@
 package cdlangextension._ast;
 
-
+/**
+ * AST that provides necessary import information for CDTypes.
+ */
 public class ASTCDEImportStatement extends ASTCDEImportStatementTOP {
 
   @Override

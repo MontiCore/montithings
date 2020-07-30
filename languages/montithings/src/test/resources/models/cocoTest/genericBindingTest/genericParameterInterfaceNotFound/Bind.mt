@@ -6,9 +6,9 @@ import cocoTest.genericBindingTest.genericParameterInterfaceNotFound.*;
 component Bind<T extends SmokeSensorInterface> {
 
   /* Subcomponents */
-  component Intermediate<T> intermediate;
-  component T smokeSensor;
-  component Accept a;
+  Intermediate<T> intermediate;
+  T smokeSensor;
+  Accept a;
 
-  connect smokeSensor.value -> a.accept;
+  smokeSensor.value -> a.accept;
 }
