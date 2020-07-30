@@ -54,8 +54,9 @@ class ComponentGenerator {
 		private:
 			«Ports.printVars(comp, comp.ports, config)»
 			«Utils.printVariables(comp)»
-			««« Currently useless. MontiArc 6's getFields() returns both variables and parameters
-			««««Utils.printConfigParameters(comp)»
+			
+««« Currently useless. MontiArc 6's getFields() returns both variables and parameters
+««««Utils.printConfigParameters(comp)»
 			std::vector< std::thread > threads;
 			TimeMode timeMode = «IF ComponentHelper.isTimesync(comp)»TIMESYNC«ELSE»EVENTBASED«ENDIF»;
 			«IF comp.isDecomposed»
@@ -75,6 +76,12 @@ class ComponentGenerator {
 		public:
 			«Ports.printMethodHeaders(comp.ports, config)»
 			«compname»(«ComponentHelper.printConstructorArguments(comp)»);
+
+			«IF comp.isDecomposed»
+			«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
+			«Subcomponents.printMethodDeclarations(comp, config)»
+			«ENDIF»
+			«ENDIF»
 			
 			void setUp(TimeMode enclosingComponentTiming) override;
 			void init() override;
@@ -108,11 +115,15 @@ class ComponentGenerator {
 		«Ports.printMethodBodies(comp.ports, comp, compname, config)»
 				
 		«IF comp.isDecomposed»
+		«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
+		«Subcomponents.printMethodDefinitions(comp, config)»
+		«ENDIF»
+
 		«IF ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)»
 		«printRun(comp, compname)»
 		«ENDIF»
-		«printComputeDecomposed(comp, compname)»
-		«printStartDecomposed(comp, compname)»
+		«printComputeDecomposed(comp, compname, config)»
+		«printStartDecomposed(comp, compname, config)»
 		«ELSE»
 		«printComputeAtomic(comp, compname)»
 		«printStartAtomic(comp, compname)»
@@ -137,9 +148,9 @@ class ComponentGenerator {
 		
 		«printShouldComputeCheck(comp, compname)»
 
-		«Setup.print(comp, compname)»
+		«Setup.print(comp, compname, config)»
 
-		«Init.print(comp, compname)»
+		«Init.print(comp, compname, config)»
 		
 		«printConstructor(comp, compname)»
 		'''
@@ -358,7 +369,7 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printComputeDecomposed(ComponentTypeSymbol comp, String compname) {
+	def static printComputeDecomposed(ComponentTypeSymbol comp, String compname, ConfigParams config) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::compute(){
@@ -370,9 +381,11 @@ class ComponentGenerator {
 			«ENDFOR»
 			«printPreconditionsCheck(comp, compname)»
 			
+			«IF config.getSplittingMode() == ConfigParams.SplittingMode.OFF»
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».compute();
-		«ENDFOR»
+			«ENDFOR»
+			«ENDIF»
 
 		«printComputeResults(comp, compname, true)»
 		«FOR port: comp.outgoingPorts»
@@ -395,16 +408,18 @@ class ComponentGenerator {
 		'''
 	}
 	
-	def static printStartDecomposed(ComponentTypeSymbol comp, String compname) {
+	def static printStartDecomposed(ComponentTypeSymbol comp, String compname, ConfigParams config) {
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		void «compname»«Utils.printFormalTypeParameters(comp)»::start(){
 			«IF ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)»
 			threads.push_back(std::thread{&«compname»«Utils.printFormalTypeParameters(comp)»::run, this});
 			«ELSE»
+			«IF config.getSplittingMode() == ConfigParams.SplittingMode.OFF»
 			«FOR subcomponent : comp.subComponents»
 			this->«subcomponent.name».start();
 	        «ENDFOR»
+			«ENDIF»
 			«ENDIF»		
 		}
 		'''

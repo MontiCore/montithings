@@ -16,8 +16,10 @@ class Deploy {
 		#include "«compname».h"
 		#include <chrono>
 		#include <thread>
+		«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
 		#include "cpp-httplib/httplib.h"
 		#include "json/json.hpp"
+		#include "sole/sole.hpp"
 		#include "WSPort.h"
 
 		using json = nlohmann::json;
@@ -32,10 +34,17 @@ class Deploy {
 		// declare URIs globally to ensure the ports work correctly
 		«Comm.printInitURIs(comp)»
 
+		// Ports for management communication between composed comp and its subcomps
+		WSPort<std::string>* managementIn  = nullptr;
+		WSPort<std::string>* managementOut = nullptr;
+		sole::uuid uuid = sole::uuid4 ();
+		«ENDIF»
+
 		int main()
 		{
 		    «ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp;
 
+			«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
 		    // read IoT Manager IP from config file
 		    std::string manager_ip = readManagerIP();
 
@@ -52,12 +61,13 @@ class Deploy {
 		    searchForSubComps(this_ip, manager_ip, &cmp);
 		    
 		    std::cout << "Found all subcomponents." << std::endl;
+			«ENDIF»
 
 			cmp.setUp(«IF ComponentHelper.isTimesync(comp)»TIMESYNC«ELSE»EVENTBASED«ENDIF»);
-      cmp.init();
-      «IF !ComponentHelper.isTimesync(comp)»
-      cmp.start();
-      «ENDIF»
+			cmp.init();
+			«IF !ComponentHelper.isTimesync(comp)»
+			cmp.start();
+			«ENDIF»
 
 			
 			std::cout << "Started." << std::endl;
@@ -80,6 +90,7 @@ class Deploy {
 			return 0;
 		}
 
+		«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
 		// read IoT Manager IP from config file
 		std::string readManagerIP(){
 		    «Comm.printReadManagerIP()»
@@ -92,7 +103,7 @@ class Deploy {
 
 		// initialize ports
 		void initializePorts(std::string this_ip, «ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp){
-            «Comm.printInitDetails(comp, componentPortMap, config)»
+            «Comm.printInitializePorts(comp, componentPortMap, config)»
 		}
 
 		// wait for super component to connect
@@ -103,6 +114,7 @@ class Deploy {
 		void searchForSubComps(std::string this_ip, std::string manager_ip, «ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp){
             «Comm.printSubConnectDetails(comp, componentPortMap, config)»
 		}
+		«ENDIF»
 		'''
 	}
 

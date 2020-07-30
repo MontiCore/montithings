@@ -31,13 +31,40 @@ class Subcomponents {
 
   def static String printVars(ComponentTypeSymbol comp, ConfigParams config) {
     return '''
+    «IF config.getSplittingMode() == ConfigParams.SplittingMode.OFF»
       «FOR subcomponent : comp.subComponents»
         «var type = ComponentHelper.getSubComponentTypeNameWithBinding(comp, subcomponent, config)»
         «printPackageNamespace(comp, subcomponent)»«type» «subcomponent.name»;
       «ENDFOR»
+    «ELSE»
+      «FOR subcomponent : comp.subComponents»
+        std::string subcomp«subcomponent.name.toFirstUpper»IP;
+      «ENDFOR»
+    «ENDIF»
     '''
   }
 
+  def static String printMethodDeclarations(ComponentTypeSymbol comp, ConfigParams config) {
+    return '''
+    «FOR subcomponent : comp.subComponents»
+          std::string get«subcomponent.name.toFirstUpper»IP();
+          void set«subcomponent.name.toFirstUpper»IP(std::string «subcomponent.name»IP);
+    «ENDFOR»
+    '''
+  }
+
+  def static String printMethodDefinitions(ComponentTypeSymbol comp, ConfigParams config) {
+    return '''
+    «FOR subcomponent : comp.subComponents»
+        std::string «comp.name»::get«subcomponent.name.toFirstUpper»IP(){
+          return subcomp«subcomponent.name.toFirstUpper»IP;
+        }
+        void «comp.name»::set«subcomponent.name.toFirstUpper»IP(std::string «subcomponent.name»IP){
+          subcomp«subcomponent.name.toFirstUpper»IP = «subcomponent.name»IP;
+        }
+    «ENDFOR»
+    '''
+  }
 
   def static String printInitializerList(ComponentTypeSymbol comp) {
     var helper = new ComponentHelper(comp)

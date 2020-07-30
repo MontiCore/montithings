@@ -14,7 +14,7 @@ import montithings.generator.codegen.ConfigParams
 
 class Comm {
 
-    def static String printInitDetails(ComponentTypeSymbol comp, Map<String,List<String>> componentPortMap, ConfigParams config){
+    def static String printInitializePorts(ComponentTypeSymbol comp, Map<String,List<String>> componentPortMap, ConfigParams config){
         var helper = new ComponentHelper(comp);
         return '''
         // initialize ports
@@ -22,29 +22,32 @@ class Comm {
         «var type = ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»
         «IF p.outgoing»
         «p.name»_uri = "ws://" + this_ip + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/«p.name»";
-        cmp->setPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri.c_str()));
+        cmp->addPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri.c_str()));
+        «ELSE»
+        «p.name»_uri = "ws://" + this_ip + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/«p.name»";
+        cmp->addReversePort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri.c_str()));
         «ENDIF»
         «ENDFOR»
 
-        «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
-		«FOR ASTPortAccess target : connector.targetList»
-        «FOR subcomponent : comp.subComponents»
-            «var subcomponentSymbol = subcomponent.type.loadedSymbol»
-            «IF !connector.source.isPresentComponent && subcomponent.name == target.component»
-                «FOR PortSymbol p: subcomponentSymbol.ports»
-                «IF p.name == target.port»
-                to«subcomponent.name.toFirstUpper»_«p.name»_uri = "ws://" + this_ip + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/to«subcomponent.name.toFirstUpper»/«p.name»";
-                cmp->setTo«subcomponent.name.toFirstUpper»_«p.name»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(OUT, to«subcomponent.name.toFirstUpper»_«p.name»_uri.c_str()));
-                «ENDIF»
-                «ENDFOR»
-            «ENDIF»
-        «ENDFOR»
-        «ENDFOR»
-        «ENDFOR»
+«««        «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
+«««		«FOR ASTPortAccess target : connector.targetList»
+«««        «FOR subcomponent : comp.subComponents»
+«««            «var subcomponentSymbol = subcomponent.type.loadedSymbol»
+«««            «IF !connector.source.isPresentComponent && subcomponent.name == target.component»
+«««                «FOR PortSymbol p: subcomponentSymbol.ports»
+«««                «IF p.name == target.port»
+«««                to«subcomponent.name.toFirstUpper»_«p.name»_uri = "ws://" + this_ip + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/to«subcomponent.name.toFirstUpper»/«p.name»";
+«««                cmp->setTo«subcomponent.name.toFirstUpper»_«p.name»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(OUT, to«subcomponent.name.toFirstUpper»_«p.name»_uri.c_str()));
+«««                «ENDIF»
+«««                «ENDFOR»
+«««            «ENDIF»
+«««        «ENDFOR»
+«««        «ENDFOR»
+«««        «ENDFOR»
 
         // communication in_port
         comm_in_uri = "ws://" + this_ip + ":«componentPortMap.get(comp.name).get(0)»";
-        cmp->setInCommPort(new WSPort<std::string>(IN, comm_in_uri.c_str(), false));
+        managementIn = new WSPort<std::string>(IN, comm_in_uri.c_str(), false);
         '''
     }
 
@@ -62,7 +65,8 @@ class Comm {
             std::cout << "Waiting for connection\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-            m = cmp->getCommMessage();
+            tl::optional<std::string> msg = managementIn->getCurrentValue(uuid);
+            if(msg){ m = msg.value(); }
             if(m.length() > 0){
                 local_port = m.substr(11, m.find(",ip=") - 11);
                 ip = m.substr(m.find(",ip=") + 4, m.find(",remote_port=") - m.find(",ip=") - 4);
@@ -74,18 +78,18 @@ class Comm {
             if(local_port == "«p.name»"){
               std::cout << "Received connection from " + ip + remote_port + "\n";
               «p.name»_uri = "ws://" + ip + remote_port;
-              cmp->setPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri.c_str()));
-              «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
-              «FOR ASTPortAccess target : connector.targetList»
-              «FOR subcomponent : comp.subComponents»
-                «var subcomponentSymbol = subcomponent.type.loadedSymbol»
-                  «IF p.name == connector.source.port»
-                    // implements "«connector.source.getQName» -> «target.getQName»"
-                    cmp->getTo«subcomponent.name.toFirstUpper»_«target.port»()->setDataProvidingPort(cmp->getPort«p.name.toFirstUpper»());
-                  «ENDIF»
-              «ENDFOR»
-              «ENDFOR»
-              «ENDFOR»
+              cmp->addPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri.c_str()));
+«««              «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
+«««              «FOR ASTPortAccess target : connector.targetList»
+«««              «FOR subcomponent : comp.subComponents»
+«««                «var subcomponentSymbol = subcomponent.type.loadedSymbol»
+«««                  «IF p.name == connector.source.port»
+«««                    // implements "«connector.source.getQName» -> «target.getQName»"
+«««                    cmp->getTo«subcomponent.name.toFirstUpper»_«target.port»()->setDataProvidingPort(cmp->getPort«p.name.toFirstUpper»());
+«««                  «ENDIF»
+«««              «ENDFOR»
+«««              «ENDFOR»
+«««              «ENDFOR»
             }
             «ENDIF»
             «ENDFOR»
@@ -139,7 +143,7 @@ class Comm {
                 if («subcomponent.name»_ip.length() != 0){
                 // tell subcomponent where to connect to
                 comm_out_uri = "ws://" + «subcomponent.name»_ip + ":" + «subcomponent.name»_port;
-                cmp->setOutCommPort(new WSPort<std::string>(OUT, comm_out_uri.c_str(), false));
+                managementOut = new WSPort<std::string>(OUT, comm_out_uri.c_str(), false);
                 «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
                 «FOR ASTPortAccess target : connector.targetList»
                     «IF !target.isPresentComponent && subcomponent.name == connector.source.component»
@@ -147,9 +151,10 @@ class Comm {
                         «IF p.name == connector.source.port»
                         // set receiver
                         «subcomponent.name»_uri = "ws://" + «subcomponent.name»_ip + ":«componentPortMap.get(subcomponentSymbol.name).get(1)»/«subcomponent.name.toFirstUpper()»/out/«p.name»";
-                        cmp->setFrom«subcomponent.name.toFirstUpper»_«p.name»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «subcomponent.name»_uri.c_str()));
-                        // set provider
-                        cmp->getPort«target.port.toFirstUpper»()->setDataProvidingPort(cmp->getFrom«subcomponent.name.toFirstUpper»_«p.name»());
+                        
+                        // implements "«connector.source.getQName» -> «target.getQName»"
+                        cmp->addReversePort«target.port.toFirstUpper»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «subcomponent.name»_uri.c_str()));
+                        
                         «ENDIF»
                         «ENDFOR»
                     «ENDIF»
@@ -157,12 +162,12 @@ class Comm {
                     «IF target.isPresentComponent && subcomponent.name == target.component»
                         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                         «IF !connector.source.isPresentComponent»
-                            cmp->getOutCommPort()->setNextValue("local_port=«target.port»,ip=" + this_ip + ":«componentPortMap.get(comp.name).get(1)»,remote_port=/«comp.name»/out/to«subcomponent.name.toFirstUpper»/«target.port»");
+                            managementOut->setNextValue("local_port=«target.port»,ip=" + this_ip + ":«componentPortMap.get(comp.name).get(1)»,remote_port=/«comp.name»/out/to«subcomponent.name.toFirstUpper»/«target.port»");
                         «ELSE»
                             «FOR source_sc : comp.subComponents»
                             «var source_sc_symbol = source_sc.type.loadedSymbol»
                             «IF source_sc.name == connector.source.component»
-                            cmp->getOutCommPort()->setNextValue("local_port=«target.port»,ip=" + cmp->get«connector.source.component.toFirstUpper»IP() + ":«componentPortMap.get(source_sc_symbol.name).get(1)»,remote_port=/«source_sc_symbol.name»/out/«connector.source.port»");
+                            managementOut->setNextValue("local_port=«target.port»,ip=" + cmp->get«connector.source.component.toFirstUpper»IP() + ":«componentPortMap.get(source_sc_symbol.name).get(1)»,remote_port=/«source_sc_symbol.name»/out/«connector.source.port»");
                             «ENDIF»
                             «ENDFOR»
                         «ENDIF»
@@ -173,8 +178,8 @@ class Comm {
                 std::cout << "Found «subcomponentSymbol.name»\n";
                 // kill communication port
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                cmp->getOutCommPort()->killThread();
-                cmp->setOutCommPort(nullptr);
+                managementOut->killThread();
+                managementOut = nullptr;
                 }
                 continue;
             }

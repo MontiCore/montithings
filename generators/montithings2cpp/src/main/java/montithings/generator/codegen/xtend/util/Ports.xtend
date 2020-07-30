@@ -39,13 +39,23 @@ class Ports {
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
-    MultiPort<«type»>* «name» = new MultiPort<«type»>;
+	  MultiPort<«type»>* «name» = new MultiPort<«type»>;
     «ENDFOR»
+
+    «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
+	  // Reverse ports (used to forward data to/from subcomponents)
+    «FOR port : ports»
+    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
+    «var name = port.name»
+	  MultiPort<«type»>* reverse«name.toFirstUpper» = new MultiPort<«type»>;
+    «ENDFOR»
+    «ENDIF»
+
     «IF comp.isDecomposed»
-// Internal monitoring of ports (for pre- and postconditions of composed components)
+	  // Internal monitoring of ports (for pre- and postconditions of composed components)
     «FOR port : ports»
     «var name = port.name»
-    sole::uuid portMonitorUuid«name.toFirstUpper» = sole::uuid4 ();
+	  sole::uuid portMonitorUuid«name.toFirstUpper» = sole::uuid4 ();
     «ENDFOR»
     «ENDIF»
     '''
@@ -59,6 +69,12 @@ class Ports {
     Port<«type»>* getPort«name.toFirstUpper»();
     void addPort«name.toFirstUpper»(Port<«type»>* «name»);
     void removePort«name.toFirstUpper»(Port<«type»>* «name»);
+
+    «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
+    Port<«type»>* getReversePort«name.toFirstUpper»();
+    void addReversePort«name.toFirstUpper»(Port<«type»>* «name»);
+    void removeReversePort«name.toFirstUpper»(Port<«type»>* «name»);
+    «ENDIF»
     «ENDFOR»
     '''
 	}
@@ -80,7 +96,7 @@ class Ports {
 «««    	«ENDIF»
 «««    	«IF comp.isDecomposed»
 «««    	port->registerPort(portMonitorUuid«name.toFirstUpper»);
-«««    	«ENDIF» TDOD
+«««    	«ENDIF» TODO
     	«name»->addManagedPort (port);
     }
 
@@ -88,6 +104,23 @@ class Ports {
     void «compname»«Utils.printFormalTypeParameters(comp)»::removePort«name.toFirstUpper»(Port<«type»>* port){
     	«name»->removeManagedPort (port);
     }
+
+    «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
+    «Utils.printTemplateArguments(comp)»
+    Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getReversePort«name.toFirstUpper»(){
+    	return reverse«name.toFirstUpper»;
+    }
+
+    «Utils.printTemplateArguments(comp)»
+    void «compname»«Utils.printFormalTypeParameters(comp)»::addReversePort«name.toFirstUpper»(Port<«type»>* port){
+    	reverse«name.toFirstUpper»->addManagedPort (port);
+    }
+
+    «Utils.printTemplateArguments(comp)»
+    void «compname»«Utils.printFormalTypeParameters(comp)»::removeReversePort«name.toFirstUpper»(Port<«type»>* port){
+    	reverse«name.toFirstUpper»->removeManagedPort (port);
+    }
+    «ENDIF»
     
     «ENDFOR»
     '''
