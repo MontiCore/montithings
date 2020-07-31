@@ -28,7 +28,7 @@ class Deploy {
 		std::string readManagerIP();
 		std::string readComponentIP();
 		void initializePorts(std::string this_ip, «ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp);
-		void waitForSuperComponent(«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp);
+		void checkForManagementInstructions(«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp);
 		void searchForSubComps(std::string this_ip, std::string manager_ip, «ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp);
 
 		// declare URIs globally to ensure the ports work correctly
@@ -54,11 +54,10 @@ class Deploy {
 		    // initialization
 		    initializePorts(this_ip, &cmp);
 
-		    // wait for super component to connect
-		    waitForSuperComponent(&cmp);
-
+			«IF comp.isDecomposed»
 		    // search for subcomponents
 		    searchForSubComps(this_ip, manager_ip, &cmp);
+			«ENDIF»
 		    
 		    std::cout << "Found all subcomponents." << std::endl;
 			«ENDIF»
@@ -76,7 +75,7 @@ class Deploy {
         {
 		  «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
           // check for new management instructions
-          waitForSuperComponent(&cmp);
+          checkForManagementInstructions(&cmp);
 		  «ENDIF»
           auto end = std::chrono::high_resolution_clock::now() + «ComponentHelper.getExecutionIntervalMethod(comp)»;
           «IF ComponentHelper.isTimesync(comp)»
@@ -105,18 +104,27 @@ class Deploy {
 		    «Comm.printReadComponentIP()»
 		}
 
-		// initialize ports
+		/*
+		 * Initially create ports of this component
+		 */
 		void initializePorts(std::string this_ip, «ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp){
             «Comm.printInitializePorts(comp, componentPortMap, config)»
 		}
 
-		// wait for super component to connect
-		void waitForSuperComponent(«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp){
-		    «Comm.printSuperConnectDetails(comp, config)»
+		/* 
+		 * Checks for management instructions from the enclosing component
+		 * Those are mostly connectors to other components
+		 */
+		void checkForManagementInstructions(«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp){
+		    «Comm.printCheckForManagementInstructions(comp, config)»
 		}
-		// search for subcomponents
+
+		/*
+		 * Search for subcomponents
+		 * Tell subcomponents to which ports of other components they should connect
+		 */
 		void searchForSubComps(std::string this_ip, std::string manager_ip, «ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»* cmp){
-            «Comm.printSubConnectDetails(comp, componentPortMap, config)»
+            «Comm.printSearchForSubComps(comp, componentPortMap, config)»
 		}
 		«ENDIF»
 		'''

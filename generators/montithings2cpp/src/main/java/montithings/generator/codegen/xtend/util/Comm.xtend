@@ -51,7 +51,7 @@ class Comm {
         '''
     }
 
-    def static String printSuperConnectDetails(ComponentTypeSymbol comp, ConfigParams config){
+    def static String printCheckForManagementInstructions(ComponentTypeSymbol comp, ConfigParams config){
         var helper = new ComponentHelper(comp);
         return '''
         // declare communication strings
@@ -76,6 +76,7 @@ class Comm {
             «FOR PortSymbol p: comp.ports»
             «IF !p.isOutgoing()»
             if(local_port == "«p.name»"){
+              // connection information for port «p.name» was received
               std::cout << "Received connection from " + ip + remote_port + "\n";
               «p.name»_uri = "ws://" + ip + remote_port;
               cmp->addPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri.c_str()));
@@ -105,7 +106,7 @@ class Comm {
         '''
     }
 
-    def static String printSubConnectDetails(ComponentTypeSymbol comp, Map<String,List<String>> componentPortMap, ConfigParams config){
+    def static String printSearchForSubComps(ComponentTypeSymbol comp, Map<String,List<String>> componentPortMap, ConfigParams config){
         var helper = new ComponentHelper(comp);
         return '''
         bool allConnected = 0;
