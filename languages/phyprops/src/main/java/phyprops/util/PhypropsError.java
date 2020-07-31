@@ -5,6 +5,7 @@ package phyprops.util;
  * The enum of all Phyprops errors. Extends the mixing interface {@link phyprops.util.Error}
  */
 public enum PhypropsError implements phyprops.util.Error {
+  MISSING_REQUIREMENT_NAME("0xPHY1030", "ASTRequirementStatement '%s' at <%d,%d> has no corresponding ComponentTypeSymbols."),
 ;
 
   private final String errorCode;

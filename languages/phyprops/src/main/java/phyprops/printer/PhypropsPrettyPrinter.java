@@ -55,7 +55,12 @@ public class PhypropsPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
 
   @Override
   public void handle(ASTRequirementStatement a){
-    this.getPrinter().print("requires ");
+    if(a.isPresentPackage()){
+      this.getPrinter().print(a.getPackage());
+      this.getPrinter().print(".");
+    }
+    this.getPrinter().print(a.getName());
+    this.getPrinter().print(" requires ");
     if(a.getPropertiessList().size()==1){
       a.getPropertiess(0).accept(this.getRealThis());
     }

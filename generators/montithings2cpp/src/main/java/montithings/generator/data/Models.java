@@ -6,6 +6,7 @@ import cdlangextension._symboltable.CDLangExtensionLanguage;
 import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import montiarc.util.Modelfinder;
 import montithings._symboltable.MontiThingsLanguage;
+import phyprops._symboltable.PhypropsLanguage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +33,11 @@ public class Models {
   private List<String> classdiagrams = new ArrayList<>();
 
   /**
+   * Physical requirements
+   */
+  private List<String> phyprops = new ArrayList<>();
+
+  /**
    * CD Lang Extension models
    */
   private List<String> cdextensions = new ArrayList<>();
@@ -48,6 +54,8 @@ public class Models {
       .map(File::toString).collect(Collectors.toList());
     cdextensions = Modelfinder.getModelFiles(CDLangExtensionLanguage.FILE_ENDING, modelPath).stream()
       .map(File::toString).collect(Collectors.toList());
+    phyprops = Modelfinder.getModelFiles(PhypropsLanguage.FILE_ENDING, modelPath).stream()
+        .map(File::toString).collect(Collectors.toList());
   }
 
   /* ============================================================ */
@@ -55,11 +63,12 @@ public class Models {
   /* ============================================================ */
 
   public Models(List<String> montithings, List<String> bindings,
-    List<String> classdiagrams, List<String> cdextensions) {
+    List<String> classdiagrams, List<String> cdextensions,List<String> phyprops) {
     this.montithings = montithings;
     this.bindings = bindings;
     this.classdiagrams = classdiagrams;
     this.cdextensions = cdextensions;
+    this.phyprops = phyprops;
   }
 
   public List<String> getMontithings() {
@@ -92,5 +101,13 @@ public class Models {
 
   public void setCdextensions(List<String> cdextensions) {
     this.cdextensions = cdextensions;
+  }
+
+  public List<String> getPhyprops() {
+    return phyprops;
+  }
+
+  public void setPhyprops(List<String> phyprops) {
+    this.phyprops = phyprops;
   }
 }

@@ -15,6 +15,25 @@
     <dependencies>
 
         <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montithings</artifactId>
+            <version>${project.version}</version>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montithings</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>bindings</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
             <version>${montiarc.version}</version>

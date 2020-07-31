@@ -32,14 +32,18 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
-import montithings.generator.helper.FileHelper;
-import org.apache.commons.io.FileUtils;
+import phyprops.PhypropsTool;
+import phyprops._ast.ASTPhypropsUnit;
+import phyprops._cocos.PhypropsCoCos;
+import phyprops._parser.PhypropsParser;
+import phyprops._symboltable.PhypropsGlobalScope;
+import phyprops._symboltable.PhypropsLanguage;
+import phyprops._symboltable.PhypropsModelLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,6 +90,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     bindingsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
     BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
+    PhypropsTool phypropsTool = new PhypropsTool();
+    phypropsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
+
+
     /* ============================================================ */
     /* ====================== Check Models ======================== */
     /* ============================================================ */
@@ -95,6 +103,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkMtModels(models.getMontithings(), symTab);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
+    checkPhyprops(models.getPhyprops(),  phypropsTool.initSymbolTable(modelPath));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -199,6 +208,28 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           config.getComponentBindings().add((ASTBindingRule) rule);
         }
       }
+    }
+  }
+
+  protected void checkPhyprops(List<String> foundModels, PhypropsGlobalScope symTab) {
+    for (String model : foundModels) {
+      ASTPhypropsUnit ast = null;
+      try {
+        ast = new PhypropsParser().parsePhypropsUnit(model)
+            .orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: " + model));
+      }
+      catch (IOException e) {
+        Log.error("File '" + model + "' Phyprops artifact was not found");
+      }
+
+      // parse + resolve model
+      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      new PhypropsModelLoader(new PhypropsLanguage())
+          .createSymbolTableFromAST(ast, model, symTab);
+
+      // check cocos
+      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
+      new PhypropsCoCos().createChecker().checkAll(ast);
     }
   }
 
