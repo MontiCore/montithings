@@ -32,7 +32,7 @@ class Subcomponents {
   def static String printVars(ComponentTypeSymbol comp, ConfigParams config) {
     return '''
       «FOR subcomponent : comp.subComponents»
-        «var type = ComponentHelper.getSubComponentTypeNameWithBinding(comp, subcomponent, config)»
+        «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)»
         «printPackageNamespace(comp, subcomponent)»«type» «subcomponent.name»;
       «ENDFOR»
     '''

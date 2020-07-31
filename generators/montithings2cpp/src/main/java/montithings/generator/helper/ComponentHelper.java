@@ -383,58 +383,6 @@ public class ComponentHelper {
   }
 
   /**
-   * Replace subcomponent instance type with generic if it is an interface type.
-   * component top<T extends InterfaceComponent>{
-   * component InterfaceComponent xy;
-   * }
-   * results in
-   * component top<T extends InterfaceComponent>{
-   * component T xy;
-   * }
-   *
-   * @param comp                      component containing the subcomponent instances.
-   * @param instance                  the instance where it's type may be replaced.
-   * @param config binding which replaces an interface type if no generic is used.
-   * @return the subcomponent type name without package.
-   */
-
-
-  public static String getSubComponentTypeNameWithBinding(arcbasis._symboltable.ComponentTypeSymbol comp,
-    arcbasis._symboltable.ComponentInstanceSymbol instance,
-    ConfigParams config) {
-    return getSubComponentTypeNameWithoutPackage(instance, config);
-    //Temporary fixreturn instance.getType().getLoadedSymbol().getName();
-    //TODO: Implement me
-    /*
-    ConfigParams configGeneric = new HashMap<>(
-        interfaceToImplementation);
-    final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
-    // check if needed optional values are present and if the instance component type is an interface
-    if (componentTypeReference.isSymbolLoaded()
-        && componentTypeReference.getLoadedSymbol().getAstNode()
-        instanceof ASTMTComponentType) {
-      ASTMTComponentType interfaceComp = (ASTMTComponentType) componentTypeReference
-          .getLoadedSymbol().getAstNode();
-      if (interfaceComp.getMTComponentModifier().isInterface()) {
-        // get interface component type name and the replacing generic name.
-        String interfaceCompName = interfaceComp.getName();
-        if (comp.isPresentAstNode()) {
-          ASTComponentType compBind = comp.getAstNode();
-          String typeName = GenericBindingUtil.getSubComponentType(compBind, instance);
-          // replace the interface component type of the instance with the generic type.
-          if (typeName != null && interfaceCompName != null && !interfaceCompName
-              .equals(typeName)) {
-            interfaceToImplementationGeneric.remove(interfaceCompName);
-            interfaceToImplementationGeneric.put(interfaceCompName, typeName);
-          }
-        }
-      }
-    }
-    return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementationGeneric);
-     */
-  }
-
-  /**
    * Determine whether the port of the given connector is an incoming or outgoing
    * port.
    *
