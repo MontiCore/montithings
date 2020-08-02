@@ -39,17 +39,8 @@ class Ports {
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
-	  MultiPort<«type»>* «name» = new MultiPort<«type»>;
+	  InOutPort<«type»>* «name» = new InOutPort<«type»>(new MultiPort<«type»>(), new MultiPort<«type»>());
     «ENDFOR»
-
-    «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
-	  // Reverse ports (used to forward data to/from subcomponents)
-    «FOR port : ports»
-    «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
-    «var name = port.name»
-	  MultiPort<«type»>* reverse«name.toFirstUpper» = new MultiPort<«type»>;
-    «ENDFOR»
-    «ENDIF»
 
     «IF comp.isDecomposed»
 	  // Internal monitoring of ports (for pre- and postconditions of composed components)
@@ -66,15 +57,11 @@ class Ports {
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
-    Port<«type»>* getPort«name.toFirstUpper»();
-    void addPort«name.toFirstUpper»(Port<«type»>* «name»);
-    void removePort«name.toFirstUpper»(Port<«type»>* «name»);
-
-    «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
-    Port<«type»>* getReversePort«name.toFirstUpper»();
-    void addReversePort«name.toFirstUpper»(Port<«type»>* «name»);
-    void removeReversePort«name.toFirstUpper»(Port<«type»>* «name»);
-    «ENDIF»
+    InOutPort<«type»>* getPort«name.toFirstUpper»();
+    void addInPort«name.toFirstUpper»(Port<«type»>* «name»);
+    void removeInPort«name.toFirstUpper»(Port<«type»>* «name»);
+    void addOutPort«name.toFirstUpper»(Port<«type»>* «name»);
+    void removeOutPort«name.toFirstUpper»(Port<«type»>* «name»);
     «ENDFOR»
     '''
 	}
@@ -85,43 +72,29 @@ class Ports {
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
     «Utils.printTemplateArguments(comp)»
-    Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getPort«name.toFirstUpper»(){
+    InOutPort<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getPort«name.toFirstUpper»(){
     	return «name»;
     }
 
     «Utils.printTemplateArguments(comp)»
-    void «compname»«Utils.printFormalTypeParameters(comp)»::addPort«name.toFirstUpper»(Port<«type»>* port){
-«««    	«IF comp.atomic»
-«««    	port->registerPort(portUuid«name.toFirstUpper»);
-«««    	«ENDIF»
-«««    	«IF comp.isDecomposed»
-«««    	port->registerPort(portMonitorUuid«name.toFirstUpper»);
-«««    	«ENDIF» TODO
-    	«name»->addManagedPort (port);
+    void «compname»«Utils.printFormalTypeParameters(comp)»::addInPort«name.toFirstUpper»(Port<«type»>* port){
+    	«name»->getInport ()->addManagedPort (port);
     }
 
     «Utils.printTemplateArguments(comp)»
-    void «compname»«Utils.printFormalTypeParameters(comp)»::removePort«name.toFirstUpper»(Port<«type»>* port){
-    	«name»->removeManagedPort (port);
-    }
-
-    «IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
-    «Utils.printTemplateArguments(comp)»
-    Port<«type»>* «compname»«Utils.printFormalTypeParameters(comp)»::getReversePort«name.toFirstUpper»(){
-    	return reverse«name.toFirstUpper»;
+    void «compname»«Utils.printFormalTypeParameters(comp)»::removeInPort«name.toFirstUpper»(Port<«type»>* port){
+    	«name»->getInport ()->removeManagedPort (port);
     }
 
     «Utils.printTemplateArguments(comp)»
-    void «compname»«Utils.printFormalTypeParameters(comp)»::addReversePort«name.toFirstUpper»(Port<«type»>* port){
-    	reverse«name.toFirstUpper»->addManagedPort (port);
+    void «compname»«Utils.printFormalTypeParameters(comp)»::addOutPort«name.toFirstUpper»(Port<«type»>* port){
+    	«name»->getOutport ()->addManagedPort (port);
     }
 
     «Utils.printTemplateArguments(comp)»
-    void «compname»«Utils.printFormalTypeParameters(comp)»::removeReversePort«name.toFirstUpper»(Port<«type»>* port){
-    	reverse«name.toFirstUpper»->removeManagedPort (port);
+    void «compname»«Utils.printFormalTypeParameters(comp)»::removeOutPort«name.toFirstUpper»(Port<«type»>* port){
+    	«name»->getOutport ()->removeManagedPort (port);
     }
-    «ENDIF»
-    
     «ENDFOR»
     '''
     }

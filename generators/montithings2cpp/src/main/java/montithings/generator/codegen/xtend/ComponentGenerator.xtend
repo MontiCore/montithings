@@ -24,7 +24,7 @@ class ComponentGenerator {
 		#pragma once
 		#include "IComponent.h"
 		#include "Port.h"
-		#include "MultiPort.h"
+		#include "InOutPort.h"
 		#include <string>
 		#include <map>
 		#include <vector>
