@@ -14,7 +14,9 @@ class Deploy {
 		var helper = new ComponentHelper(comp);
 		return '''
 		#include "«compname».h"
+		«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»	
 		#include "«compname»Manager.h"
+		«ENDIF»
 		#include <chrono>
 		#include <thread>
 
