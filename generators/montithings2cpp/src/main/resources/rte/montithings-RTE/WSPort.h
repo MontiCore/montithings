@@ -70,6 +70,9 @@ class WSPort : public Port<T>
 
   void killThread ()
   {
+    // Do not directly kill the threads.
+    // The killswitch ensures each thread is stopped in a safe state
+    // (e.g. not while sending data)
     killSwitch = true;
   }
 
@@ -89,6 +92,9 @@ class WSPort : public Port<T>
             catch (const std::exception &e)
               {
                 std::cout << "Could not create listener for: " << uri << " (" << e.what () << ")\n";
+
+                // Do not make this process eat up all resources in an endless loop
+                std::this_thread::sleep_for (std::chrono::seconds (1));
               }
           }
         std::cout << "Created listener for: " << uri << "\n";
@@ -130,6 +136,9 @@ class WSPort : public Port<T>
         catch (const std::exception &)
           {
             std::cout << "Connection to " << uri << " could not be established!\n";
+
+            // Do not make this process eat up all resources in an endless loop
+            std::this_thread::sleep_for (std::chrono::seconds (1));
           }
       }
     std::cout << "Connection to " << uri << " established\n";

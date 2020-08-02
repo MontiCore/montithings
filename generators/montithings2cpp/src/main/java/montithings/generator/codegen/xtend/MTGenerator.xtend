@@ -14,6 +14,7 @@ import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.behavior.Implementation
 import montithings.generator.codegen.xtend.util.ArduinoReadme
 import montithings.generator.codegen.xtend.util.CMake
+import montithings.generator.codegen.xtend.util.Comm
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.helper.FileHelper
@@ -61,6 +62,10 @@ class MTGenerator {
         toFile(targetPath.getParentFile(), "README", ArduinoReadme.printArduinoReadme(targetPath.name, compname),".txt");
       } else {
         toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname, config, componentPortMap),".cpp");
+        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+          toFile(targetPath, compname + "Manager", Comm.generateHeader(comp), ".h");
+          toFile(targetPath, compname + "Manager", Comm.generateImplementationFile(comp, componentPortMap, config), ".cpp");
+        }
       }
     }
 

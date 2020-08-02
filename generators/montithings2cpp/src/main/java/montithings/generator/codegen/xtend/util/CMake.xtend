@@ -36,6 +36,7 @@ class CMake {
 	def static printCMakeForSubdirectories(List<String> subdirectories) {
 		return '''
 		cmake_minimum_required (VERSION 3.8)
+		project ("MontiThings Application")
 		«FOR subdir : subdirectories»
 		add_subdirectory ("«subdir»")
 		«ENDFOR»

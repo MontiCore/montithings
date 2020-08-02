@@ -13,7 +13,11 @@ template<class T>
 class Port : public MessageAcceptor<T>, public MessageProvider<T>, public UniqueElement
 {
   protected:
+  /// The port that this port gets its incoming data from
   Port<T> *dataProvider = nullptr;
+
+  /// Indicates whether an connection has already been established
+  bool connectionEstablished = false;
 
   public:
   /**
@@ -71,7 +75,16 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
       }
   }
 
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
   Port ()
   {
+  }
+
+  bool isConnectionEstablished () const
+  {
+    return connectionEstablished;
   }
 };
