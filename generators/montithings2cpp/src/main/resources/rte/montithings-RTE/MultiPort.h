@@ -5,6 +5,15 @@
 #include "tl/optional.hpp"
 #include "Port.h"
 
+/**
+ * A port that consists of multiple ports acting as one port in the architecture.
+ * This can be used to utilize different communication technologies within the same port.
+ * For example, a multiport with a CAN bus port and a websocket port could forward
+ * its incoming messages to devices requiring different communication technologies.
+ *
+ * For each communication technology, add an appropriate port using addManagedPort(Port*).
+ * By default, the multiport consists of a regular port.
+ */
 template<class T>
 class MultiPort : public Port<T>
 {
