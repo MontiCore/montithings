@@ -139,14 +139,8 @@ class WSPort : public Port<T>
         if (killSwitch)
           { return false; }
         tl::optional<T> dataOpt;
-        if (!this->dataProvider)
-          {
-            dataOpt = this->getCurrentValue (this->uuid);
-          }
-        else
-          {
-            dataOpt = this->dataProvider->getCurrentValue (this->uuid);
-          }
+        this->updateMessageSource ();
+        dataOpt = this->getCurrentValue (this->uuid);
         if (dataOpt)
           {
             auto dataString = dataToJson (dataOpt);
