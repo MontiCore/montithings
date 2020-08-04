@@ -52,6 +52,10 @@ class CMake {
 		cmake_minimum_required(VERSION 3.8)
 		project("«comp.name»")
 		set(CMAKE_CXX_STANDARD 11)
+
+		# Enable (more comfortable) debugging
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-3")
+		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -gdwarf-3")
 		
 		# Find all subdirectories with .h files
 		# Adapted from https://stackoverflow.com/a/31004567
