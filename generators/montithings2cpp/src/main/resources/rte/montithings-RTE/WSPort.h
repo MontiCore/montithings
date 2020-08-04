@@ -24,9 +24,13 @@ class WSPort : public Port<T>
   std::atomic<bool> killSwitch;
 
   public:
-  explicit WSPort (Direction direction, const char *uri, bool outIsListener = true)
-      : uri (uri), direction (direction), outIsListener (outIsListener)
+  explicit WSPort (Direction direction, std::string uri, bool outIsListener = true)
+      : direction (direction), outIsListener (outIsListener)
   {
+    char * cstr = new char [uri.length()+1];
+    std::strcpy (cstr, uri.c_str());
+    this->uri = cstr;
+
     killSwitch = false;
     if (direction == IN)
       {
@@ -36,14 +40,15 @@ class WSPort : public Port<T>
           {
             try
               {
-                inSocket.listen (uri, nng::flag::alloc);
+                inSocket.listen (this->uri, nng::flag::alloc);
               }
             catch (const std::exception &e)
               {
-                std::cout << "Could not create listener for: " << uri << " (" << e.what () << ")\n";
+                std::cout << "Could not create listener for URI \"" << uri
+                          << "\". Exception: " << e.what () << std::endl;
                 return;
               }
-            std::cout << "Created listener for: " << uri << "\n";
+            std::cout << "Created listener for URI " << uri << "\n";
           }
         futInSocket = std::async (std::launch::async, &WSPort::accept, this);
       }
@@ -91,7 +96,8 @@ class WSPort : public Port<T>
               }
             catch (const std::exception &e)
               {
-                std::cout << "Could not create listener for: " << uri << " (" << e.what () << ")\n";
+                std::cout << "Could not create listener for URI \"" << uri
+                          << "\". Exception" << e.what () << std::endl;
 
                 // Do not make this process eat up all resources in an endless loop
                 std::this_thread::sleep_for (std::chrono::seconds (1));
@@ -135,20 +141,19 @@ class WSPort : public Port<T>
           }
         catch (const std::exception &)
           {
-            std::cout << "Connection to " << uri << " could not be established!\n";
+            std::cout << "Connection to \"" << uri << "\" could not be established!\n";
 
             // Do not make this process eat up all resources in an endless loop
             std::this_thread::sleep_for (std::chrono::seconds (1));
           }
       }
-    std::cout << "Connection to " << uri << " established\n";
+    std::cout << "Connection to \"" << uri << "\" established\n";
 
     while (true)
       {
         if (killSwitch)
           { return false; }
         tl::optional<T> dataOpt;
-        this->updateMessageSource ();
         dataOpt = this->getCurrentValue (this->uuid);
         if (dataOpt)
           {

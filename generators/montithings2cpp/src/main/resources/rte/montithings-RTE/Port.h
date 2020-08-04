@@ -63,7 +63,9 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
       }
     for (auto &x : this->queueMap)
       {
-        x.second.push (nextVal);
+        x.second.second.lock ();
+        x.second.first.push (nextVal);
+        x.second.second.unlock ();
       }
   }
 

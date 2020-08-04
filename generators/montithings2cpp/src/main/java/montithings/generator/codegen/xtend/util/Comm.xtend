@@ -99,10 +99,10 @@ class Comm {
         «var type = ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»
         «IF p.outgoing»
         std::string «p.name»_uri = "ws://" + comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/«p.name»";
-        comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri.c_str()));
+        comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri));
         «ELSE»
         std::string «p.name»_uri = "ws://" + comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/«p.name»";
-        comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri.c_str()));
+        comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri));
         «ENDIF»
         «ENDFOR»
         '''
@@ -118,9 +118,9 @@ class Comm {
         if (message.getLocalPort() == "«p.name»")
         {
             // connection information for port «p.name» was received
-            std::cout << "Received connection from " + message.getIpAndPort() + message.getRemotePort() + "\n";
             std::string «p.name»_uri = "ws://" + message.getIpAndPort() + message.getRemotePort();
-            comp->addInPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri.c_str()));
+            std::cout << "Received connection: " << «p.name»_uri << std::endl;
+            comp->addInPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri));
             «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
             «FOR ASTPortAccess target : connector.targetList»
             «FOR subcomponent : comp.subComponents»
@@ -167,7 +167,7 @@ class Comm {
                         «subcomponent.name»_uri = "ws://" + «subcomponent.name»_ip + ":«componentPortMap.get(subcomponentSymbol.name).get(1)»/«subcomponent.name.toFirstUpper()»/out/«p.name»";
                         
                         // implements "«connector.source.getQName» -> «target.getQName»"
-                        comp->addInPort«target.port.toFirstUpper»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «subcomponent.name»_uri.c_str()));
+                        comp->addInPort«target.port.toFirstUpper»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «subcomponent.name»_uri));
                         
                         «ENDIF»
                         «ENDFOR»
