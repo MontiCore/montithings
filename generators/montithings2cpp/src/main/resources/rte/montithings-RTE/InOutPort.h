@@ -85,6 +85,7 @@ class InOutPort : public Port<T>
     inport->addManagedPort(new Port<T> ());
     outportInterface = new Port<T> ();
     outport->addManagedPort(outportInterface);
+    outport->setDataProvidingPort (inport);
   }
 
   InOutPort (MultiPort<T> *inport, MultiPort<T> *outport)
