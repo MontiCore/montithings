@@ -39,7 +39,7 @@ class Ports {
     «FOR port : ports»
     «var type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)»
     «var name = port.name»
-	  InOutPort<«type»>* «name» = new InOutPort<«type»>(new MultiPort<«type»>(), new MultiPort<«type»>());
+	  InOutPort<«type»>* «name» = new InOutPort<«type»>();
     «ENDFOR»
 
     «IF comp.isDecomposed»
