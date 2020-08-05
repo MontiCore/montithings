@@ -25,7 +25,6 @@ class MultiPort : public Port<T>
   public:
   MultiPort ()
   {
-    managedPorts.emplace (new Port<T> ());
   }
 
   void addManagedPort (Port<T> *portToAdd)

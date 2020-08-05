@@ -32,7 +32,7 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
    * Send the given message to external message acceptors, e.g. using web sockets or CAN bus
    * \param nextVal the value to be sent. May be empty
    */
-  virtual void sendToExternal(tl::optional<T> nextVal)
+  virtual void sendToExternal (tl::optional<T> nextVal)
   {
   }
 
@@ -59,12 +59,17 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
   {
     if (!this->queueMap.size ())
       {
-        this->sendToExternal(nextVal);
+        this->sendToExternal (nextVal);
       }
     for (auto &x : this->queueMap)
       {
         x.second.second.lock ();
-        x.second.first.push (nextVal);
+        while (!x.second.first.try_push (nextVal))
+          {
+            // if no more messages can be added, remove the oldest message
+            // to make room for new messages
+            x.second.first.pop ();
+          }
         x.second.second.unlock ();
       }
   }

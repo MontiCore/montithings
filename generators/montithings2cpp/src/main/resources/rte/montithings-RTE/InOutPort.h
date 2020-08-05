@@ -24,20 +24,24 @@ class InOutPort : public Port<T>
   MultiPort<T> *inport = new MultiPort<T>;
   MultiPort<T> *outport = new MultiPort<T>;
 
+  // a regular outport that is used to provide data to
+  // components on the same system
+  Port<T> *outportInterface;
+
   public:
   void registerListeningPort (sole::uuid requester) override
   {
-    outport->registerListeningPort (requester);
+    outportInterface->registerListeningPort (requester);
   }
 
   bool hasValue (sole::uuid requester) override
   {
-    return outport->hasValue (requester);
+    return outportInterface->hasValue (requester);
   }
 
   tl::optional<T> getCurrentValue (sole::uuid requester) override
   {
-    return outport->getCurrentValue (requester);
+    return outportInterface->getCurrentValue (requester);
   }
 
   void getExternalMessages () override
@@ -77,8 +81,23 @@ class InOutPort : public Port<T>
     outport->updateMessageSource ();
   }
 
-  InOutPort (MultiPort<T> *inport, MultiPort<T> *outport) : inport (inport), outport (outport)
+  InOutPort () {
+    inport->addManagedPort(new Port<T> ());
+    outportInterface = new Port<T> ();
+    outport->addManagedPort(outportInterface);
+  }
+
+  InOutPort (MultiPort<T> *inport, MultiPort<T> *outport)
   {
+    // throw away defaults
+    delete this->inport;
+    delete this->outport;
+
+    this->inport = inport;
+    this->outport = outport;
+    inport->addManagedPort(new Port<T> ());
+    outportInterface = new Port<T> ();
+    outport->addManagedPort(outportInterface);
     outport->setDataProvidingPort (inport);
   }
 
