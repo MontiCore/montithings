@@ -50,7 +50,7 @@ class CMake {
 	  }
 		return '''
 		cmake_minimum_required(VERSION 3.8)
-		project("«comp.name»")
+		project("«comp.fullName»")
 		set(CMAKE_CXX_STANDARD 11)
 
 		# Enable (more comfortable) debugging
@@ -117,16 +117,16 @@ class CMake {
 		file(GLOB SOURCES "«commonCodePrefix»montithings-RTE/*.cpp" "«commonCodePrefix»montithings-RTE/*.h")
 
 
-		add_executable(«comp.name» ${SOURCES} ${HWC_SOURCES} 
+		add_executable(«comp.fullName» ${SOURCES} ${HWC_SOURCES} 
 		«FOR subdir : subPackagesPath»
 		${«subdir.name.toUpperCase()»_SOURCES}
 		«ENDFOR»)
 		«IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
 		«printDsaLinkLibraries(comp.name)»
 		«ELSE»
-		target_link_libraries(«comp.name» nng::nng)
+		target_link_libraries(«comp.fullName» nng::nng)
 		«ENDIF»
-		set_target_properties(«comp.name» PROPERTIES LINKER_LANGUAGE CXX)
+		set_target_properties(«comp.fullName» PROPERTIES LINKER_LANGUAGE CXX)
 		'''
 	}
 		

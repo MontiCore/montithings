@@ -16,6 +16,7 @@ import montithings.generator.codegen.xtend.util.ArduinoReadme
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Comm
 import montithings.generator.codegen.xtend.util.Identifier
+import montithings.generator.codegen.xtend.util.Scripts
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.helper.FileHelper
 
@@ -106,5 +107,14 @@ class MTGenerator {
     sortedDirs.sort(Comparator.naturalOrder())
 
     toFile(targetPath, "CMakeLists", CMake.printCMakeForSubdirectories(sortedDirs), ".txt")
+  }
+
+  def static generateScripts(File targetPath, List<String> subdirectories) {
+    var sortedDirs = new ArrayList<String>
+    sortedDirs.addAll(subdirectories)
+    sortedDirs.sort(Comparator.naturalOrder())
+
+    toFile(targetPath, "run", Scripts.printRunScript(sortedDirs), ".sh")
+    toFile(targetPath, "kill", Scripts.printKillScript(sortedDirs), ".sh")
   }
 }
