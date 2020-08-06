@@ -1,6 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
+import arcbasis._ast.ASTConnector;
+import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
@@ -32,6 +34,7 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
+import org.eclipse.xtext.xbase.lib.Pair;
 import phyprops.PhypropsTool;
 import phyprops._ast.ASTPhypropsUnit;
 import phyprops._cocos.PhypropsCoCos;
@@ -46,8 +49,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.List;
-import java.util.Optional;
 
 import static montithings.generator.helper.FileHelper.copyHwcToTarget;
 import static montithings.generator.helper.FileHelper.getSubPackagesPath;
@@ -57,10 +58,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected static final String LIBRARY_MODELS_FOLDER = "target/librarymodels/";
 
   protected static final String TOOL_NAME = "MontiThingsGeneratorTool";
-
-  protected static final int COMM_IN_PORT_BASE = 1337;
-
-  protected static final int REMOTE_PORT_BASE = 8080;
 
   public void generate(File modelPath, File target, File hwcPath, ConfigParams config) {
 
@@ -73,7 +70,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ======================== Find Models ======================= */
     /* ============================================================ */
     Models models = new Models(modelPath);
-    config.setComponentPortMap(getComponentPortMap(models.getMontithings(), config));
 
     /* ============================================================ */
     /* ===================== Set up Symbol Tabs =================== */
@@ -87,8 +83,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     this.setCdGlobalScope(cdSymTab);
     IMontiThingsScope symTab = initSymbolTable(modelPath,
-        //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
-        hwcPath);
+      //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
+      hwcPath);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     cdExtensionTool.setCdGlobalScope(cdSymTab);
@@ -110,7 +106,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkMtModels(models.getMontithings(), symTab);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkPhyprops(models.getPhyprops(),  phypropsTool.initSymbolTable(modelPath));
+    checkPhyprops(models.getPhyprops(), phypropsTool.initSymbolTable(modelPath));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -124,6 +120,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab,
           compTarget, hwcPath, config);
         MTGenerator.generateMakeFileForSubdirs(target, models.getMontithings());
+
+        if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
+          ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+          MTGenerator.generatePortJson(compTarget, comp, config);
+        }
       }
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
@@ -164,7 +165,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
 
       // parse + resolve model
-      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
       new CD4AnalysisModelLoader(new CD4AnalysisLanguage())
         .createSymbolTableFromAST(cdAST, model, symTab);
 
@@ -187,7 +188,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
 
       // parse + resolve model
-      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
       if (config.getCdLangExtensionScope() == null) {
         config
           .setCdLangExtensionScope(cdExtensionTool.createSymboltable(cdExtensionAST, modelPath));
@@ -214,7 +215,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       catch (IOException e) {
         Log.error("File '" + binding + "' Bindings artifact was not found");
       }
-      Log.info("Parsing model:" + binding, TOOL_NAME);
+      Log.info("Parsing model: " + binding, TOOL_NAME);
       bindingsTool.createSymboltable(bindingsAST, binTab);
 
       Log.info("Check Binding: " + binding, "MontiArcGeneratorTool");
@@ -233,16 +234,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       ASTPhypropsUnit ast = null;
       try {
         ast = new PhypropsParser().parsePhypropsUnit(model)
-            .orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: " + model));
+          .orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: " + model));
       }
       catch (IOException e) {
         Log.error("File '" + model + "' Phyprops artifact was not found");
       }
 
       // parse + resolve model
-      Log.info("Parsing model:" + model, "MontiThingsGeneratorTool");
+      Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
       new PhypropsModelLoader(new PhypropsLanguage())
-          .createSymbolTableFromAST(ast, model, symTab);
+        .createSymbolTableFromAST(ast, model, symTab);
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
@@ -261,9 +262,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
     File hwcPath, ConfigParams config, boolean generateDeploy) {
-    String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-    ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
-    Log.info("Generate model: " + qualifiedModelName, TOOL_NAME);
+    ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+    Log.info("Generate model: " + comp.getFullName(), TOOL_NAME);
 
     // check if component is implementation
     if (config.isImplementation(comp)) {
@@ -282,7 +282,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // Generate Files
     MTGenerator.generateAll(
       Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-        .toFile(), hwcPath, comp, compname, config, config.getComponentPortMap(), generateDeploy);
+        .toFile(), hwcPath, comp, compname, config, generateDeploy);
 
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       copyHwcToTarget(target, hwcPath, model, config);
@@ -292,7 +292,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected void generateCppForSubcomponents(String model, File modelPath, List<String> mtModels,
     IMontiThingsScope symTab, File target, File hwcPath, ConfigParams config) {
     // Find subcomponent types
-    ComponentTypeSymbol comp = loadComponentSymbolWithoutCocos(model, modelPath).get();
+    ComponentTypeSymbol comp = modelToSymbol(model, symTab);
     List<ComponentTypeSymbol> subcomponentTypes = comp.getSubComponents().stream()
       .map(c -> c.getType().getLoadedSymbol()).collect(Collectors.toList());
 
@@ -306,8 +306,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
     File target, File hwcPath, ConfigParams config, Models models) {
-    String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-    ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
+    ComponentTypeSymbol comp = modelToSymbol(model, symTab);
 
     if (ComponentHelper.isApplication(comp)
       || config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
@@ -321,7 +320,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Log.info("Generate CMake file", "MontiThingsGeneratorTool");
         MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
           subPackagesPath, config);
-        MTGenerator.generateScripts(target, comp, models.getMontithings());
+        MTGenerator.generateScripts(target, comp, config, models.getMontithings());
       }
     }
   }
@@ -339,25 +338,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
-  protected Map<String, List<String>> getComponentPortMap(List<String> models,
-    ConfigParams config) {
-    Map<String, List<String>> componentPortMap = new HashMap();
-    int commInPort = COMM_IN_PORT_BASE;
-    int remotePort = REMOTE_PORT_BASE;
-    for (String model : models) {
-      String comp = model.split("\\.")[1];
-      if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
-        componentPortMap
-          .put(comp, Arrays.asList(String.valueOf(commInPort), String.valueOf(remotePort)));
-        commInPort = commInPort + 1;
-        remotePort = remotePort + 1;
-      }
-      else {
-        componentPortMap.put(comp,
-          Arrays.asList(String.valueOf(COMM_IN_PORT_BASE), String.valueOf(REMOTE_PORT_BASE)));
-      }
-    }
-    return componentPortMap;
+  protected ComponentTypeSymbol modelToSymbol(String model, IMontiThingsScope symTab) {
+    String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
+    return symTab.resolveComponentType(qualifiedModelName).get();
   }
-
 }

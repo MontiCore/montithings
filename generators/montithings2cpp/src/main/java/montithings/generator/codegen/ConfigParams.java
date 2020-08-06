@@ -6,6 +6,7 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
+import montithings.generator.data.PortMap;
 
 import java.util.*;
 
@@ -45,14 +46,10 @@ public class ConfigParams {
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
-  private Map<String, List<String>> componentPortMap;
+  private final PortMap componentPortMap = new PortMap();
 
-  public Map<String, List<String>> getComponentPortMap() {
+  public PortMap getComponentPortMap() {
     return componentPortMap;
-  }
-
-  public void setComponentPortMap(Map<String, List<String>> componentPortMap) {
-    this.componentPortMap = componentPortMap;
   }
 
   public TargetPlatform getTargetPlatform() {

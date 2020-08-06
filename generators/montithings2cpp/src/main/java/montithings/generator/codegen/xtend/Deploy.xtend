@@ -10,7 +10,7 @@ import montithings.generator.codegen.xtend.util.Comm
 
 class Deploy {
 	
-	def static generateDeploy(ComponentTypeSymbol comp, String compname, ConfigParams config, Map<String,List<String>> componentPortMap) {
+	def static generateDeploy(ComponentTypeSymbol comp, String compname, ConfigParams config) {
 		var helper = new ComponentHelper(comp);
 		return '''
 		#include "«compname».h"
@@ -24,12 +24,17 @@ class Deploy {
 		{
 			if (argc == 1) 
 			{
-				std::cerr << "Called with no arguments. First argument should be the component's instance name. Aborting." << std::endl;
+				std::cerr << "Called with no arguments. Please provide the following arguments:" << std::endl;
+				std::cerr << "1) The component's instance name" << std::endl;
+				std::cerr << "2) Network port for management traffic" << std::endl;
+				std::cerr << "3) Network port for data traffic" << std::endl;
+				std::cerr << std::endl;
+				std::cerr << "Aborting." << std::endl;
 				exit(1);
 			}
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp (argv[1]);
 			«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»	
-			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»Manager manager (&cmp);
+			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»Manager manager (&cmp, argv[2], argv[3]);
 			manager.initializePorts ();
 			«IF comp.isDecomposed»
 		    manager.searchSubcomponents ();

@@ -2,10 +2,14 @@
 package montithings.generator.codegen.xtend
 
 import arcbasis._symboltable.ComponentTypeSymbol
+import arcbasis._symboltable.ComponentInstanceSymbol
 import de.monticore.io.FileReaderWriter
 import java.io.File
+import java.nio.file.Files;
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList
 import java.util.Comparator
 import java.util.List
@@ -30,7 +34,7 @@ import montithings.generator.helper.FileHelper
  */
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config, Map<String,List<String>> componentPortMap, boolean generateDeploy) {
+  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config, boolean generateDeploy) {
     Identifier.createInstance(comp)
 
     var useWsPorts = (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy);
@@ -51,7 +55,7 @@ class MTGenerator {
     for(innerComp : comp.innerComponents) {
     	//TODO Fix hwc path for inner components
     	
-    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config, componentPortMap, false);
+    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config, false);
     }
     
 	// Generate deploy class
@@ -62,10 +66,10 @@ class MTGenerator {
         toFile(sketchDirectory, "Deploy" + compname, Deploy.generateDeployArduino(comp, compname),".ino");
         toFile(targetPath.getParentFile(), "README", ArduinoReadme.printArduinoReadme(targetPath.name, compname),".txt");
       } else {
-        toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname, config, componentPortMap),".cpp");
+        toFile(targetPath, "Deploy" + compname, Deploy.generateDeploy(comp, compname, config),".cpp");
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          toFile(targetPath, compname + "Manager", Comm.generateHeader(comp), ".h");
-          toFile(targetPath, compname + "Manager", Comm.generateImplementationFile(comp, componentPortMap, config), ".cpp");
+          toFile(targetPath, compname + "Manager", Comm.generateHeader(comp, config), ".h");
+          toFile(targetPath, compname + "Manager", Comm.generateImplementationFile(comp, config), ".cpp");
         }
       }
     }
@@ -87,13 +91,20 @@ class MTGenerator {
   }
 
   def static private toFile(File targetPath, String name, String content, String fileExtension) {
-    var Path path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
-    println("Writing to file " + path + ".");
+    var path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
+    println("Writing to file " + path + ".")
     FileReaderWriter.storeInFile(path, content)
   }
 
+  def static private makeExecutable(File targetPath, String name, String fileExtension) {
+    var permissions = PosixFilePermissions.fromString("rwxr-xr-x")
+    var path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
+    Files.setPosixFilePermissions(path, permissions)
+  }
+
   def static generateBuildScript(File targetPath) {
-  toFile(targetPath, "build", Scripts.printBuildScript(), ".sh")
+    toFile(targetPath, "build", Scripts.printBuildScript(), ".sh")
+    makeExecutable(targetPath, "build", ".sh")
   }
 	
   def static generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
@@ -112,12 +123,34 @@ class MTGenerator {
     toFile(targetPath, "CMakeLists", CMake.printCMakeForSubdirectories(sortedDirs), ".txt")
   }
 
-  def static generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> subdirectories) {
+  def static generateScripts(File targetPath, ComponentTypeSymbol comp, ConfigParams config, List<String> subdirectories) {
     var sortedDirs = new ArrayList<String>
     sortedDirs.addAll(subdirectories)
     sortedDirs.sort(Comparator.naturalOrder())
 
-    toFile(targetPath, "run", Scripts.printRunScript(comp, sortedDirs), ".sh")
+    toFile(targetPath, "run", Scripts.printRunScript(comp, config), ".sh")
     toFile(targetPath, "kill", Scripts.printKillScript(sortedDirs), ".sh")
+    makeExecutable(targetPath, "run", ".sh")
+    makeExecutable(targetPath, "kill", ".sh")
+  }
+
+  def static generatePortJson(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
+    if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
+      var path = Paths.get(targetPath.absolutePath + File.separator + "ports")
+      toFile(path.toFile, comp.fullName, Comm.printPortJson(comp, config), ".json");
+      for (subcomp : comp.subComponents) {
+        generatePortJson(targetPath, subcomp, config, comp.fullName)
+      }
+    }
+  }
+
+  def static generatePortJson(File targetPath, ComponentInstanceSymbol comp, ConfigParams config, String prefix) {
+    if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
+      var path = Paths.get(targetPath.absolutePath + File.separator + "ports")
+      toFile(path.toFile, prefix + "." + comp.name, Comm.printPortJson(comp.type.loadedSymbol, config, prefix + "." + comp.name), ".json");
+      for (subcomp : comp.type.loadedSymbol.subComponents) {
+        generatePortJson(targetPath, subcomp, config, prefix + "." + comp.name)
+      }
+    }
   }
 }
