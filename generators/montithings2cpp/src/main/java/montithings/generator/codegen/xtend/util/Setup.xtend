@@ -57,17 +57,6 @@ class Setup {
 				«ENDIF»
 				«ENDFOR»
 			«ENDFOR»
-
-		«ELSE»
-			// connect ports to their reverse counterparts
-			«FOR port : comp.ports»
-				«IF port.isIncoming»
-				reverse«port.name.toFirstUpper»->setDataProvidingPort («port.name»);
-				«ELSE»
-				«port.name»->setDataProvidingPort (reverse«port.name.toFirstUpper»);
-				«ENDIF»
-			«ENDFOR»
-
 		«ENDIF»
 		}
 		'''

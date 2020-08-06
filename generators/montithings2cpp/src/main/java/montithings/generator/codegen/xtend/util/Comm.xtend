@@ -121,17 +121,6 @@ class Comm {
             std::string «p.name»_uri = "ws://" + message.getIpAndPort() + message.getRemotePort();
             std::cout << "Received connection: " << «p.name»_uri << std::endl;
             comp->addInPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri));
-            «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
-            «FOR ASTPortAccess target : connector.targetList»
-            «FOR subcomponent : comp.subComponents»
-            «var subcomponentSymbol = subcomponent.type.loadedSymbol»
-                «IF p.name == connector.source.port»
-                // implements "«connector.source.getQName» -> «target.getQName»"
-                comp->getTo«subcomponent.name.toFirstUpper»_«target.port»()->setDataProvidingPort(comp->getPort«p.name.toFirstUpper»());
-                «ENDIF»
-            «ENDFOR»
-            «ENDFOR»
-            «ENDFOR»
         }
         «ENDIF»
         «ENDFOR»
@@ -164,7 +153,7 @@ class Comm {
                         «FOR PortSymbol p: subcomponentSymbol.ports»
                         «IF p.name == connector.source.port»
                         // set receiver
-                        «subcomponent.name»_uri = "ws://" + «subcomponent.name»_ip + ":«componentPortMap.get(subcomponentSymbol.name).get(1)»/«subcomponent.name.toFirstUpper()»/out/«p.name»";
+                        std::string «subcomponent.name»_uri = "ws://" + «subcomponent.name»_ip + ":«componentPortMap.get(subcomponentSymbol.name).get(1)»/«subcomponent.name.toFirstUpper()»/out/«p.name»";
                         
                         // implements "«connector.source.getQName» -> «target.getQName»"
                         comp->addInPort«target.port.toFirstUpper»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «subcomponent.name»_uri));
@@ -176,7 +165,7 @@ class Comm {
                     «IF target.isPresentComponent && subcomponent.name == target.component»
                     {
                         «IF !connector.source.isPresentComponent»
-                            PortToSocket message ("«target.port»", comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)», "/«comp.name»/out/to«subcomponent.name.toFirstUpper»/«target.port»");
+                            PortToSocket message ("«target.port»", comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»", "/«comp.name»/out/to«subcomponent.name.toFirstUpper»/«target.port»");
                         «ELSE»
                             «FOR source_sc : comp.subComponents»
                             «var source_sc_symbol = source_sc.type.loadedSymbol»

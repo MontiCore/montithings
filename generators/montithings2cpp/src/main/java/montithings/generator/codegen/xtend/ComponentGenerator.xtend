@@ -152,25 +152,29 @@ class ComponentGenerator {
 
 		«Init.print(comp, compname, config)»
 		
-		«printConstructor(comp, compname)»
+		«printConstructor(comp, compname, config)»
 		'''
 	}
 	
 
-	def static printConstructor(ComponentTypeSymbol comp, String compname) {
+	def static printConstructor(ComponentTypeSymbol comp, String compname, ConfigParams config) {
+		var thereAreSubCompsWithParameters = !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty
+		var shouldPrintSubCompParameters = thereAreSubCompsWithParameters && (config.getSplittingMode() == ConfigParams.SplittingMode.OFF)
 		return '''
 		«Utils.printTemplateArguments(comp)»
 		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
-		«IF comp.isAtomic || !comp.parameters.isEmpty || !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»
+		«IF comp.isAtomic || !comp.parameters.isEmpty || shouldPrintSubCompParameters»
 		:
     	«ENDIF»
     	«IF comp.isAtomic»
 			«printBehaviorInitializerListEntry(comp, compname)»
         «ENDIF»
     	«IF comp.isAtomic && !comp.parameters.isEmpty»,«ENDIF»
+		«IF shouldPrintSubCompParameters»
 		«Subcomponents.printInitializerList(comp)»
-		«IF !comp.parameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
-		«IF comp.isAtomic && comp.parameters.isEmpty && !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty»,«ENDIF»
+		«ENDIF»
+		«IF !comp.parameters.isEmpty && shouldPrintSubCompParameters»,«ENDIF»
+		«IF comp.isAtomic && comp.parameters.isEmpty && shouldPrintSubCompParameters»,«ENDIF»
 		«FOR param : comp.parameters SEPARATOR ','»
       	«param.name» («param.name»)
     	«ENDFOR»
