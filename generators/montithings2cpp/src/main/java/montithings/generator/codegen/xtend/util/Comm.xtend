@@ -98,10 +98,10 @@ class Comm {
         «FOR PortSymbol p: comp.ports»
         «var type = ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»
         «IF p.outgoing»
-        std::string «p.name»_uri = "ws://" + comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/«p.name»";
+        std::string «p.name»_uri = "ws://" + comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»/" + comp->getInstanceName () + "/out/«p.name»";
         comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri));
         «ELSE»
-        std::string «p.name»_uri = "ws://" + comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»/«comp.name»/out/«p.name»";
+        std::string «p.name»_uri = "ws://" + comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»/" + comp->getInstanceName () + "/out/«p.name»";
         comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri));
         «ENDIF»
         «ENDFOR»
@@ -165,12 +165,12 @@ class Comm {
                     «IF target.isPresentComponent && subcomponent.name == target.component»
                     {
                         «IF !connector.source.isPresentComponent»
-                            PortToSocket message ("«target.port»", comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»", "/«comp.name»/out/«connector.source.port»");
+                            PortToSocket message ("«target.port»", comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»", "/" + comp->getInstanceName () + "/out/«connector.source.port»");
                         «ELSE»
                             «FOR source_sc : comp.subComponents»
                             «var source_sc_symbol = source_sc.type.loadedSymbol»
                             «IF source_sc.name == connector.source.component»
-                            PortToSocket message ("«target.port»", comp->get«connector.source.component.toFirstUpper»IP() + ":«componentPortMap.get(source_sc_symbol.name).get(1)»", "/«source_sc_symbol.name»/out/«connector.source.port»");
+                            PortToSocket message ("«target.port»", comp->get«connector.source.component.toFirstUpper»IP() + ":«componentPortMap.get(source_sc_symbol.name).get(1)»", "/«source_sc.name»/out/«connector.source.port»");
                             «ENDIF»
                             «ENDFOR»
                         «ENDIF»

@@ -97,7 +97,7 @@ class WSPort : public Port<T>
             catch (const std::exception &e)
               {
                 std::cout << "Could not create listener for URI \"" << uri
-                          << "\". Exception" << e.what () << std::endl;
+                          << "\". Exception: " << e.what () << std::endl;
 
                 // Do not make this process eat up all resources in an endless loop
                 std::this_thread::sleep_for (std::chrono::seconds (1));

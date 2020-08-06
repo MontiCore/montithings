@@ -46,7 +46,7 @@ class ComponentGenerator {
 		«Utils.printNamespaceStart(comp)»
 
 		«Utils.printTemplateArguments(comp)»
-		class «compname» : IComponent «IF comp.presentParentComponent» , «Utils.printSuperClassFQ(comp)»
+		class «compname» : public IComponent «IF comp.presentParentComponent» , «Utils.printSuperClassFQ(comp)»
 		            «IF comp.parent.loadedSymbol.hasTypeParameter»<«FOR scTypeParams : helper.superCompActualTypeArguments SEPARATOR ','»
 		              «scTypeParams»«ENDFOR»>
 		            «ENDIF»«ENDIF»
@@ -75,7 +75,7 @@ class ComponentGenerator {
 			
 		public:
 			«Ports.printMethodHeaders(comp.ports, config)»
-			«compname»(«ComponentHelper.printConstructorArguments(comp)»);
+			«compname»(std::string instanceName«IF !comp.parameters.isEmpty»,«ENDIF»«ComponentHelper.printConstructorArguments(comp)»);
 
 			«IF comp.isDecomposed»
 			«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»
@@ -158,27 +158,27 @@ class ComponentGenerator {
 	
 
 	def static printConstructor(ComponentTypeSymbol comp, String compname, ConfigParams config) {
-		var thereAreSubCompsWithParameters = !comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty].isEmpty
-		var shouldPrintSubCompParameters = thereAreSubCompsWithParameters && (config.getSplittingMode() == ConfigParams.SplittingMode.OFF)
+		var shouldPrintSubcomponents = !comp.subComponents.isEmpty && (config.getSplittingMode() == ConfigParams.SplittingMode.OFF)
 		return '''
 		«Utils.printTemplateArguments(comp)»
-		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(«Utils.printConfigurationParametersAsList(comp)»)
-		«IF comp.isAtomic || !comp.parameters.isEmpty || shouldPrintSubCompParameters»
+		«compname»«Utils.printFormalTypeParameters(comp)»::«compname»(std::string instanceName«IF !comp.parameters.isEmpty»,«ENDIF»«Utils.printConfigurationParametersAsList(comp)»)
+		«IF comp.isAtomic || !comp.parameters.isEmpty || shouldPrintSubcomponents»
 		:
     	«ENDIF»
     	«IF comp.isAtomic»
 			«printBehaviorInitializerListEntry(comp, compname)»
         «ENDIF»
     	«IF comp.isAtomic && !comp.parameters.isEmpty»,«ENDIF»
-		«IF shouldPrintSubCompParameters»
-		«Subcomponents.printInitializerList(comp)»
+		«IF shouldPrintSubcomponents»
+		«Subcomponents.printInitializerList(comp, config)»
 		«ENDIF»
-		«IF !comp.parameters.isEmpty && shouldPrintSubCompParameters»,«ENDIF»
-		«IF comp.isAtomic && comp.parameters.isEmpty && shouldPrintSubCompParameters»,«ENDIF»
+		«IF !comp.parameters.isEmpty && shouldPrintSubcomponents»,«ENDIF»
+		«IF comp.isAtomic && comp.parameters.isEmpty && shouldPrintSubcomponents»,«ENDIF»
 		«FOR param : comp.parameters SEPARATOR ','»
       	«param.name» («param.name»)
     	«ENDFOR»
 		{
+			this->instanceName = instanceName;
 			«IF comp.presentParentComponent»
 			super(«FOR inhParam : getInheritedParams(comp) SEPARATOR ','» «inhParam» «ENDFOR»);
 			«ENDIF»

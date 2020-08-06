@@ -66,14 +66,16 @@ class Subcomponents {
     '''
   }
 
-  def static String printInitializerList(ComponentTypeSymbol comp) {
+  def static String printInitializerList(ComponentTypeSymbol comp, ConfigParams config) {
     var helper = new ComponentHelper(comp)
     return '''
-      «FOR subcomponent : comp.subComponents.filter[x | !(new ComponentHelper(comp)).getParamValues(x).isEmpty] SEPARATOR ','»
-        «subcomponent.name»(
-          «FOR param : helper.getParamValues(subcomponent) SEPARATOR ','»
+      «FOR subcomponent : comp.subComponents SEPARATOR ','»
+        «subcomponent.name»( "«subcomponent.name»"
+          «IF config.getSplittingMode() == ConfigParams.SplittingMode.OFF»
+          «FOR param : helper.getParamValues(subcomponent) BEFORE ','»
             «param»
-          «ENDFOR»)
+          «ENDFOR»
+          «ENDIF»)
       «ENDFOR»
     '''
   }

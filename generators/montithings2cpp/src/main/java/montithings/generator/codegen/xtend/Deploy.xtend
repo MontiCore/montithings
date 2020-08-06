@@ -20,9 +20,9 @@ class Deploy {
 		#include <chrono>
 		#include <thread>
 
-		int main()
+		int main(int argc, char* argv[])
 		{
-			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp;
+			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp (argv[1]);
 			«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»	
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»Manager manager (&cmp);
 			manager.initializePorts ();
