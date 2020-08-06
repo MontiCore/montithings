@@ -21,6 +21,7 @@ public class ImplementationHasSamePortsAsInterfaceTest extends AbstractTest {
   void shouldFailWithNotSamePortsImplemented() {
     BindingsCoCoChecker checker = new BindingsCoCoChecker().addCoCo(new ImplementationHasSamePortsAsInterface());
     checker.checkAll(getAST("cocoTest/implementationPortTest/WrongPortBinding.mtb"));
+    Assertions.assertEquals(2, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new BindingsError[] { BindingsError.NOT_SAME_PORTS_IMPLEMENTED });
   }

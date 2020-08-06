@@ -4,9 +4,9 @@ package cocoTest.genericBindingTest.implementationMissing;
 import cocoTest.genericBindingTest.implementationMissing.*;
 
 /* Test component Assignment */
-<<deploy>> component Assignment {
+component Assignment {
 
   /* Subcomponents */
-  component Bind<SmokeSensorNotExistant<int>,Intermediate<SmokeSensor<int>>> binding;
+  Bind<SmokeSensorNotExistant<int>,Intermediate<SmokeSensor<int>>> binding;
 
 }

@@ -2,9 +2,10 @@
 package bindings._symboltable;
 
 /**
- * TODO
+ * Provides basic Binding Language information
+ * e.g. the standard file ending.
  *
- * @author (last commit) Daniel von Mirbach
+ * @author (last commit) Julian Krebber
  */
 public class BindingsLanguage extends BindingsLanguageTOP {
 

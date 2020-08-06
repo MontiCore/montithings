@@ -8,7 +8,8 @@ package phyprops._cocos;
  */
 public class PhypropsCoCos {
   public static PhypropsCoCoChecker createChecker() {
-    final PhypropsCoCoChecker checker = new PhypropsCoCoChecker();
+    final PhypropsCoCoChecker checker = new PhypropsCoCoChecker()
+        .addCoCo(new RequirementNameExists());
     return checker;
   }
 }

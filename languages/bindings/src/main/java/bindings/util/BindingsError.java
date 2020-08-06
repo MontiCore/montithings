@@ -2,7 +2,7 @@
 package bindings.util;
 
 /**
- * The enum of all CDLangExtension errors. Extends the mixing interface {@link Error}
+ * The enum of all Bindings errors. Extends the mixing interface {@link Error}
  */
 public enum BindingsError implements bindings.util.Error {
   NO_MODEL_IMPLEMENTATION("0xMTB0000", "Implementation has no model implementation!"),

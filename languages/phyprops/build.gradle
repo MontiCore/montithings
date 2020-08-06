@@ -34,7 +34,10 @@ configurations { grammar }
 
 dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+  grammar "montithings.languages:montithings:$montithings_version:$grammars_classifier"
 
+  implementation "montithings.languages:montithings:$montithings_version"
+  implementation "montithings.languages:bindings:$montithings_version"
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"

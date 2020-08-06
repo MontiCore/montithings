@@ -12,7 +12,7 @@ public  interface ICDLangExtensionScope extends ICDLangExtensionScopeTOP {
   public Optional<CDEImportStatementSymbol> resolveASTCDEImportStatement(String language, CDTypeSymbol symbol) {
     List<CDEImportStatementSymbol> cdeImportStatementSymbols = this.resolveCDEImportStatementMany(language + "." + symbol.getName());
     for (CDEImportStatementSymbol cdeImportStatementSymbol : cdeImportStatementSymbols) {
-      if (cdeImportStatementSymbol.isPresentAstNode() && cdeImportStatementSymbol.getAstNode().isPresentNameSymbol() && cdeImportStatementSymbol.getAstNode().getNameSymbol().equals(symbol)) {
+      if (cdeImportStatementSymbol.isPresentAstNode() && cdeImportStatementSymbol.getAstNode().isPresentNameSymbol() && cdeImportStatementSymbol.getAstNode().getNameSymbol()==symbol) {
         return Optional.of(cdeImportStatementSymbol);
       }
     }

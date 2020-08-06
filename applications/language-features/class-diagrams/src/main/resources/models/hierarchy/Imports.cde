@@ -1,0 +1,8 @@
+/* (c) https://github.com/MontiCore/monticore */
+package hierarchy;
+Cpp {
+  from <arma> import armadillo::vector as hierarchy.Colors.Color;
+}
+Java {
+  from java.util.list import List as hierarchy.Colors.Color;
+}

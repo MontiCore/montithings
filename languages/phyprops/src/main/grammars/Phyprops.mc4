@@ -3,7 +3,7 @@
 /**
  * Phyprops provides deployment language dependent import statements.
  */
-grammar Phyprops extends de.monticore.types.MCBasicTypes, de.monticore.literals.MCCommonLiterals  {
+grammar Phyprops extends MontiThings  {
 
   start PhypropsUnit;
 
@@ -24,8 +24,8 @@ grammar Phyprops extends de.monticore.types.MCBasicTypes, de.monticore.literals.
    *  RequirementStatements contain information about what physical requirements
    *  a component has. E.g Sensors/Actuators etc.
    */
-  scope RequirementStatement implements Element =
-    "requires" (propertiess:Property | "{" propertiess:Property+ "}");
+  scope symbol RequirementStatement implements Element =
+    (package:MCQualifiedName ".")? component:Name@ComponentType "requires" (propertiess:Property | "{" propertiess:Property+ "}");
 
   symbol Property = Name& ":"
     (

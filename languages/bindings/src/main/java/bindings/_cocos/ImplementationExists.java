@@ -7,6 +7,8 @@ import de.se_rwth.commons.logging.Log;
 
 /**
  * Checks that Implementation component exists
+ *
+ * @author Julian Krebber
  */
 public class ImplementationExists implements BindingsASTBindingRuleCoCo {
 

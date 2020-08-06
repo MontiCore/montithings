@@ -30,7 +30,8 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.li
 
   /**
    * CDEImportStatement contains the package, class, and the name of a classdiagram element.
-   * @attribute Name classdiagram element Name.
+   * @attribute package qualified CDType package name.
+   * @attribute Name CDType Name.
    * @attribute importSource package from which to import.
    * @attribute importClass class in the importSource that is imported.
    */

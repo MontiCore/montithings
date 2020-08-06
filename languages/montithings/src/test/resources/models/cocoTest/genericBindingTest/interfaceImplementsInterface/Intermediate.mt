@@ -7,8 +7,8 @@ import cocoTest.genericBindingTest.interfaceImplementsInterface.sensors.*;
 component Intermediate<T extends SmokeSensorInterface> {
 
   /* Subcomponents */
-  component T smokeSensor;
-  component Accept a;
+   T smokeSensor;
+   Accept a;
 
-  connect smokeSensor.value -> a.accept;
+   smokeSensor.value -> a.accept;
 }
