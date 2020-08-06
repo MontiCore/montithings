@@ -124,6 +124,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab,
           compTarget, hwcPath, config);
         MTGenerator.generateMakeFileForSubdirs(target, models.getMontithings());
+        MTGenerator.generateScripts(target, models.getMontithings());
       }
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
