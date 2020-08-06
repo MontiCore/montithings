@@ -167,10 +167,10 @@ class Comm {
                         «IF !connector.source.isPresentComponent»
                             PortToSocket message ("«target.port»", comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»", "/" + comp->getInstanceName () + "/out/«connector.source.port»");
                         «ELSE»
-                            «FOR source_sc : comp.subComponents»
-                            «var source_sc_symbol = source_sc.type.loadedSymbol»
-                            «IF source_sc.name == connector.source.component»
-                            PortToSocket message ("«target.port»", comp->get«connector.source.component.toFirstUpper»IP() + ":«componentPortMap.get(source_sc_symbol.name).get(1)»", "/«source_sc.name»/out/«connector.source.port»");
+                            «FOR sourceSubcomp : comp.subComponents»
+                            «var sourceSubcompSymb = sourceSubcomp.type.loadedSymbol»
+                            «IF sourceSubcomp.name == connector.source.component»
+                            PortToSocket message ("«target.port»", comp->get«connector.source.component.toFirstUpper»IP() + ":«componentPortMap.get(sourceSubcompSymb.name).get(1)»", "/«sourceSubcomp.fullName»/out/«connector.source.port»");
                             «ENDIF»
                             «ENDFOR»
                         «ENDIF»

@@ -91,9 +91,12 @@ class MTGenerator {
     println("Writing to file " + path + ".");
     FileReaderWriter.storeInFile(path, content)
   }
+
+  def static generateBuildScript(File targetPath) {
+  toFile(targetPath, "build", Scripts.printBuildScript(), ".sh")
+  }
 	
   def static generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
-	
 	toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
 		comp,
 		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
@@ -109,12 +112,12 @@ class MTGenerator {
     toFile(targetPath, "CMakeLists", CMake.printCMakeForSubdirectories(sortedDirs), ".txt")
   }
 
-  def static generateScripts(File targetPath, List<String> subdirectories) {
+  def static generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> subdirectories) {
     var sortedDirs = new ArrayList<String>
     sortedDirs.addAll(subdirectories)
     sortedDirs.sort(Comparator.naturalOrder())
 
-    toFile(targetPath, "run", Scripts.printRunScript(sortedDirs), ".sh")
+    toFile(targetPath, "run", Scripts.printRunScript(comp, sortedDirs), ".sh")
     toFile(targetPath, "kill", Scripts.printKillScript(sortedDirs), ".sh")
   }
 }

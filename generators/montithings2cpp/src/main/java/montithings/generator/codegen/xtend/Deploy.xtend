@@ -22,6 +22,11 @@ class Deploy {
 
 		int main(int argc, char* argv[])
 		{
+			if (argc == 1) 
+			{
+				std::cerr << "Called with no arguments. First argument should be the component's instance name. Aborting." << std::endl;
+				exit(1);
+			}
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp (argv[1]);
 			«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»	
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»Manager manager (&cmp);
@@ -41,22 +46,22 @@ class Deploy {
 			std::cout << "Started." << std::endl;
 		
 			while (true)
-        {
-          auto end = std::chrono::high_resolution_clock::now() + «ComponentHelper.getExecutionIntervalMethod(comp)»;
-          «IF ComponentHelper.isTimesync(comp)»
-          cmp.compute();
-          «ENDIF»
-          do {
-            std::this_thread::yield();
-            «IF ComponentHelper.isTimesync(comp)»
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            «ELSE»
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            «ENDIF»
-          } while (std::chrono::high_resolution_clock::now()  < end);
-        }
-			return 0;
-		}
+			{
+				auto end = std::chrono::high_resolution_clock::now() + «ComponentHelper.getExecutionIntervalMethod(comp)»;
+				«IF ComponentHelper.isTimesync(comp)»
+				cmp.compute();
+				«ENDIF»
+				do {
+					std::this_thread::yield();
+					«IF ComponentHelper.isTimesync(comp)»
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					«ELSE»
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+					«ENDIF»
+					} while (std::chrono::high_resolution_clock::now()  < end);
+				}
+				return 0;
+			}
 		'''
 	}
 

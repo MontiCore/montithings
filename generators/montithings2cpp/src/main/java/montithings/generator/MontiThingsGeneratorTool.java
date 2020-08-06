@@ -124,14 +124,14 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab,
           compTarget, hwcPath, config);
         MTGenerator.generateMakeFileForSubdirs(target, models.getMontithings());
-        MTGenerator.generateScripts(target, models.getMontithings());
       }
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
-      generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config);
+      generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
     }
 
     generateCD(modelPath, target);
+    MTGenerator.generateBuildScript(target);
   }
 
   /* ============================================================ */
@@ -305,7 +305,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
-    File target, File hwcPath, ConfigParams config) {
+    File target, File hwcPath, ConfigParams config, Models models) {
     String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
     ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
@@ -321,6 +321,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Log.info("Generate CMake file", "MontiThingsGeneratorTool");
         MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
           subPackagesPath, config);
+        MTGenerator.generateScripts(target, comp, models.getMontithings());
       }
     }
   }
