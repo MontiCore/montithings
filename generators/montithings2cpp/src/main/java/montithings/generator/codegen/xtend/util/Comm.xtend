@@ -144,7 +144,7 @@ class Comm {
             «printSCDetailsHelper(comp, subcomponent)»
 
                 std::string «subcomponent.name»_ip = comm->getIpOfComponent ("«subcomponent.name»");
-                std::string «subcomponent.name»_port = «subcomponent.name»_ip != "127.0.0.1" ? "«componentPortMap.get(subcomponentSymbol.name).get(0)»" : "1337";
+                std::string «subcomponent.name»_port = «subcomponent.name»_ip == "127.0.0.1" ? "«componentPortMap.get(subcomponentSymbol.name).get(0)»" : "1337";
 
                 // tell subcomponent where to connect to
                 «FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()»
@@ -165,7 +165,7 @@ class Comm {
                     «IF target.isPresentComponent && subcomponent.name == target.component»
                     {
                         «IF !connector.source.isPresentComponent»
-                            PortToSocket message ("«target.port»", comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»", "/«comp.name»/out/to«subcomponent.name.toFirstUpper»/«target.port»");
+                            PortToSocket message ("«target.port»", comm->getOurIp() + ":«componentPortMap.get(comp.name).get(1)»", "/«comp.name»/out/«connector.source.port»");
                         «ELSE»
                             «FOR source_sc : comp.subComponents»
                             «var source_sc_symbol = source_sc.type.loadedSymbol»
