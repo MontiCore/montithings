@@ -7,9 +7,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Bundle of parameters for montithings2cpp generator.
