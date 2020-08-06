@@ -153,7 +153,7 @@ class Comm {
                         «FOR PortSymbol p: subcomponentSymbol.ports»
                         «IF p.name == connector.source.port»
                         // set receiver
-                        std::string «subcomponent.name»_uri = "ws://" + «subcomponent.name»_ip + ":«componentPortMap.get(subcomponentSymbol.name).get(1)»/«subcomponent.name.toFirstUpper()»/out/«p.name»";
+                        std::string «subcomponent.name»_uri = "ws://" + «subcomponent.name»_ip + ":«componentPortMap.get(subcomponentSymbol.name).get(1)»/" + comp->getInstanceName () + ".«subcomponent.name»/out/«p.name»";
                         
                         // implements "«connector.source.getQName» -> «target.getQName»"
                         comp->addInPort«target.port.toFirstUpper»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «subcomponent.name»_uri));
