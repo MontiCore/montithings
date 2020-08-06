@@ -2,7 +2,7 @@
 package bindings._cocos;
 
 /**
- * Context Conditions for MontiThings language
+ * Context Conditions for Bindings language
  *
  * @author (last commit) Joshua Fürste
  */

@@ -1,11 +1,15 @@
 package montithings.generator.codegen;
 
+import arcbasis._ast.ASTComponentInstance;
 import arcbasis._ast.ASTComponentType;
+import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Bundle of parameters for montithings2cpp generator.
@@ -38,9 +42,9 @@ public class ConfigParams {
   private TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 
   private SplittingMode splittingMode = SplittingMode.OFF;
-
+  /** Rules that bind a interface component/componentInstance to another non interface component */
   private Set<ASTBindingRule> componentBindings = new HashSet<>();
-
+  /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
   private Map<String, List<String>> componentPortMap;
@@ -69,36 +73,84 @@ public class ConfigParams {
     this.componentBindings = componentBindings;
   }
 
+  /**
+   * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+   * @param componentType interface component
+   * @return implementing component if present
+   */
   public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getInterfaceComponentSymbol().equals(componentType)){
+      if(!binding.isInstance() && binding.getInterfaceComponentSymbol()==componentType){
         return Optional.of(binding.getImplementationComponentSymbol());
       }
     }
     return Optional.empty();
   }
 
+  /**
+   * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+   * @param componentType interface component
+   * @return implementing component if present
+   */
   public Optional<ASTComponentType> getBinding(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getInterfaceComponentDefinition().equals(componentType)){
+      if(!binding.isInstance()&&binding.getInterfaceComponentDefinition()==componentType){
         return Optional.of(binding.getImplementationComponentDefinition());
       }
     }
     return Optional.empty();
   }
 
+  /**
+   * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+   * @param componentInstance interface component instance
+   * @return implementing component if present
+   */
+  public Optional<ComponentTypeSymbol> getBinding(ComponentInstanceSymbol componentInstance){
+    for(ASTBindingRule binding : componentBindings){
+      if(binding.isInstance()&&binding.getInterfaceInstanceSymbol()==componentInstance){
+        return Optional.of(binding.getImplementationComponentSymbol());
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+   * @param componentInstance interface component instance
+   * @return implementing component if present
+   */
+  public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance){
+    for(ASTBindingRule binding : componentBindings){
+      if(binding.isInstance()&&binding.getInterfaceInstanceDefinition()==componentInstance){
+        return Optional.of(binding.getImplementationComponentDefinition());
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+   * @param componentType implementing component
+   * @return If the component implements according to componentBindings.
+   */
   public boolean isImplementation(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentDefinition().equals(componentType)){
+      if(binding.getImplementationComponentDefinition()==componentType){
         return true;
       }
     }
     return false;
   }
 
+  /**
+   * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+   * @param componentType implementing component
+   * @return If the component implements according to componentBindings.
+   */
   public boolean isImplementation(ComponentTypeSymbol componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentSymbol().equals(componentType)){
+      if(binding.getImplementationComponentSymbol()==componentType){
         return true;
       }
     }

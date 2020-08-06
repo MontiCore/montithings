@@ -14,7 +14,7 @@ import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
 import montiarc._ast.ASTMACompilationUnit;
-import montiarc._symboltable.*;
+import montiarc._symboltable.IMontiArcScope;
 import montiarc._symboltable.adapters.Field2CDFieldResolvingDelegate;
 import montiarc._symboltable.adapters.Type2CDTypeResolvingDelegate;
 import montiarc.util.Modelfinder;
@@ -31,6 +31,9 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Provides useful methods for handling the MontiThings language.
+ */
 public class MontiThingsTool extends MontiArcTool {
 
   protected MontiThingsLanguage language;
@@ -176,6 +179,38 @@ public class MontiThingsTool extends MontiArcTool {
   }
 
   /**
+   * Creates a GlobalScope from a given model path and adds the given AST to it.
+   *
+   * @param ast node used to create symboltable
+   * @param modelPaths path that contains all models
+   * @return created global scope
+   */
+  public MontiThingsGlobalScope createSymboltable(ASTMACompilationUnit ast,
+      File... modelPaths) {
+
+    MontiThingsGlobalScope globalScope = (MontiThingsGlobalScope) initSymbolTable(modelPaths);
+
+    return createSymboltable(ast,globalScope);
+  }
+
+  /**
+   * Creates the symbol table for a given AST and adds it to the given global scope.
+   *
+   * @param ast node used to create symboltable
+   * @param globalScope globalScope used for the symbolTable
+   * @return extended global scope
+   */
+  public MontiThingsGlobalScope createSymboltable(ASTMACompilationUnit ast,
+      MontiThingsGlobalScope globalScope) {
+
+    MontiThingsSymbolTableCreatorDelegator stc = language
+        .getSymbolTableCreator(globalScope);
+    stc.createFromAST(ast);
+
+    return globalScope;
+  }
+
+  /**
    * Initializes the Symboltable by introducing scopes for the passed modelpaths. It does not create
    * the symbol table! Symbols for models within the modelpaths are not added to the symboltable
    * until resolve() is called. Modelpaths are relative to the project path and do contain all the
@@ -236,6 +271,10 @@ public class MontiThingsTool extends MontiArcTool {
     return cdGlobalScope;
   }
 
+  /**
+   * Setter for the global scope that should be used for resolving non native symbols.
+   * @param cdGlobalScope globalScope used for resolving non native symbols
+   */
   public void setCdGlobalScope(CD4AnalysisGlobalScope cdGlobalScope) {
     this.cdGlobalScope = cdGlobalScope;
   }

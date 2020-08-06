@@ -1,7 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
-import arcbasis._ast.*;
+import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.ASTComponentType;
+import arcbasis._ast.ASTPort;
+import arcbasis._ast.ASTPortDeclaration;
 import arcbasis._symboltable.*;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
@@ -12,7 +15,6 @@ import conditionbasis._ast.ASTCondition;
 import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeSymbol;
@@ -26,19 +28,16 @@ import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
 import montithings._ast.ASTMTCondition;
-import montithings._visitor.MontiThingsDelegatorVisitor;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.util.Utils;
-import montithings.generator.visitor.CppAssignmentPrettyPrinter;
-import montithings.generator.visitor.CppExpressionPrettyPrinter;
+import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
 import portextensions._ast.ASTSyncStatement;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
-import montithings.generator.visitor.GuardExpressionVisitor;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -158,7 +157,8 @@ public class ComponentHelper {
    * Gets the c++ import statement for a given port type if available.
    *
    * @param portSymbol port using a class diagram type.
-   * @return c++ import statement of the port type if specified in the cd model. Otherwise empty.
+   * @param config config containing a cdlangextension, that is used to search for import statements.
+   * @return c++ import statement of the port type if specified in the cde model. Otherwise empty.
    */
   public static Optional<cdlangextension._ast.ASTCDEImportStatement> getCppImportExtension(arcbasis._symboltable.PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
@@ -378,7 +378,21 @@ public class ComponentHelper {
     ConfigParams config, boolean printTypeParameters) {
     String result = "";
     final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
-    result += componentTypeReference.getName();
+    //Use the bound name if present.
+    Optional<ComponentTypeSymbol> implementation = config.getBinding(instance);
+    if(implementation.isPresent()){
+      result += implementation.get().getName();
+    }
+    else{
+      implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
+      if(implementation.isPresent()){
+        result += implementation.get().getName();
+      }
+      else{
+        result += componentTypeReference.getName();
+      }
+    }
+
     if (componentTypeReference.getLoadedSymbol().hasTypeParameter() && printTypeParameters) {
       // format simple component type name to full component type name
       List<TypeVarSymbol> types = new ArrayList<>(
@@ -387,62 +401,7 @@ public class ComponentHelper {
       //types = addTypeParameterComponentPackage(instance, types);
       result += printTypeArguments(types);
     }
-    Optional<ComponentTypeSymbol> implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
-    if (implementation.isPresent()) {
-      return implementation.get().getFullName();
-    }
     return result;
-  }
-
-  /**
-   * Replace subcomponent instance type with generic if it is an interface type.
-   * component top<T extends InterfaceComponent>{
-   * component InterfaceComponent xy;
-   * }
-   * results in
-   * component top<T extends InterfaceComponent>{
-   * component T xy;
-   * }
-   *
-   * @param comp                      component containing the subcomponent instances.
-   * @param instance                  the instance where it's type may be replaced.
-   * @param interfaceToImplementation binding which replaces an interface type if no generic is used.
-   * @return the subcomponent type name without package.
-   */
-
-
-  public static String getSubComponentTypeNameWithBinding(arcbasis._symboltable.ComponentTypeSymbol comp,
-    arcbasis._symboltable.ComponentInstanceSymbol instance,
-    ConfigParams config) {
-    return instance.getType().getLoadedSymbol().getName();
-    //TODO: Implement me
-    /*
-    ConfigParams configGeneric = new HashMap<>(
-        interfaceToImplementation);
-    final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
-    // check if needed optional values are present and if the instance component type is an interface
-    if (componentTypeReference.isSymbolLoaded()
-        && componentTypeReference.getLoadedSymbol().getAstNode()
-        instanceof ASTMTComponentType) {
-      ASTMTComponentType interfaceComp = (ASTMTComponentType) componentTypeReference
-          .getLoadedSymbol().getAstNode();
-      if (interfaceComp.getMTComponentModifier().isInterface()) {
-        // get interface component type name and the replacing generic name.
-        String interfaceCompName = interfaceComp.getName();
-        if (comp.isPresentAstNode()) {
-          ASTComponentType compBind = comp.getAstNode();
-          String typeName = GenericBindingUtil.getSubComponentType(compBind, instance);
-          // replace the interface component type of the instance with the generic type.
-          if (typeName != null && interfaceCompName != null && !interfaceCompName
-              .equals(typeName)) {
-            interfaceToImplementationGeneric.remove(interfaceCompName);
-            interfaceToImplementationGeneric.put(interfaceCompName, typeName);
-          }
-        }
-      }
-    }
-    return getSubComponentTypeNameWithoutPackage(instance, interfaceToImplementationGeneric);
-     */
   }
 
   /**

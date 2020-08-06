@@ -33,7 +33,7 @@ class Subcomponents {
     return '''
     «IF config.getSplittingMode() == ConfigParams.SplittingMode.OFF»
       «FOR subcomponent : comp.subComponents»
-        «var type = ComponentHelper.getSubComponentTypeNameWithBinding(comp, subcomponent, config)»
+        «var type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)»
         «printPackageNamespace(comp, subcomponent)»«type» «subcomponent.name»;
       «ENDFOR»
     «ELSE»

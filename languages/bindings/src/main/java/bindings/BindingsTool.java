@@ -9,6 +9,7 @@ import bindings._symboltable.BindingsGlobalScope;
 import bindings._symboltable.BindingsLanguage;
 import bindings._symboltable.BindingsSymbolTableCreatorDelegator;
 import bindings._symboltable.IBindingsScope;
+import bindings._symboltable.adapters.MCQualifiedName2ComponentInstanceResolvingDelegate;
 import bindings._symboltable.adapters.MCQualifiedName2ComponentTypeResolvingDelegate;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -25,6 +26,9 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Provides useful methods for handling the Bindings language.
+ */
 public class BindingsTool {
 
   protected BindingsLanguage language;
@@ -80,6 +84,7 @@ public class BindingsTool {
     final ModelPath mp = new ModelPath(p);
 
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
+    MCQualifiedName2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
     if(this.mtGlobalScope==null) {
       MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
       MontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
@@ -87,20 +92,23 @@ public class BindingsTool {
           .setMontiThingsLanguage(mtLang)
           .build();
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
+      componentInstanceResolvingDelegate = new MCQualifiedName2ComponentInstanceResolvingDelegate(newMtGlobalScope);
     }
     else{
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
+      componentInstanceResolvingDelegate = new MCQualifiedName2ComponentInstanceResolvingDelegate(this.mtGlobalScope);
     }
 
     BindingsGlobalScope bindingsGlobalScope = new BindingsGlobalScope(mp, language);
     bindingsGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
+    bindingsGlobalScope.addAdaptedComponentInstanceSymbolResolvingDelegate(componentInstanceResolvingDelegate);
 
     isSymTabInitialized = true;
     return bindingsGlobalScope;
   }
 
   /**
-   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   * Creates a GlobalScope from a given model path and adds the given AST to it.
    *
    * @param ast node used to create symboltable
    * @param modelPaths path that contains all models
@@ -115,11 +123,11 @@ public class BindingsTool {
   }
 
   /**
-   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   * Creates the symbol table for a given AST and adds it to the given global scope.
    *
    * @param ast node used to create symboltable
    * @param globalScope globalScope used for the symbolTable
-   * @return created global scope
+   * @return extended global scope
    */
   public BindingsGlobalScope createSymboltable(ASTBindingsCompilationUnit ast,
       BindingsGlobalScope globalScope) {
@@ -149,6 +157,10 @@ public class BindingsTool {
     return mtGlobalScope;
   }
 
+  /**
+   * Setter for the global scope that should be used for resolving non native symbols.
+   * @param mtGlobalScope globalScope used for resolving non native symbols
+   */
   public void setMtGlobalScope(MontiThingsGlobalScope mtGlobalScope) {
     this.mtGlobalScope = mtGlobalScope;
   }

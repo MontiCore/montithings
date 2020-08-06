@@ -1,0 +1,2 @@
+hierarchy.MathExpression -> hierarchy.Double;
+instance hierarchy.Example.c2 -> hierarchy.Half;

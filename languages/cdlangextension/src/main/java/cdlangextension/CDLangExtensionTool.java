@@ -12,7 +12,8 @@ import cdlangextension._symboltable.adapters.MCQualifiedName2CDTypeResolvingDele
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import de.monticore.cd.cd4analysis.CD4AnalysisMill;
-import de.monticore.cd.cd4analysis._symboltable.*;
+import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisGlobalScope;
+import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import de.monticore.io.paths.ModelPath;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -23,7 +24,6 @@ import java.util.Set;
 
 /**
  * Provides useful methods for handling the CDLangExtension language.
- *
  */
 public class CDLangExtensionTool {
 
@@ -93,7 +93,7 @@ public class CDLangExtensionTool {
   }
 
   /**
-   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   * Creates a GlobalScope from a given model path and adds the given AST to it.
    *
    * @param ast node used to create symboltable
    * @param modelPaths path that contains all models
@@ -108,11 +108,11 @@ public class CDLangExtensionTool {
   }
 
   /**
-   * Creates a GlobalScope that uses CDLangExtension AST and a given model path.
+   * Creates the symbol table for a given AST and adds it to the given global scope.
    *
    * @param ast node used to create symboltable
    * @param globalScope globalScope used for the symbolTable
-   * @return created global scope
+   * @return extended global scope
    */
   public CDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
       CDLangExtensionGlobalScope globalScope) {
@@ -128,6 +128,10 @@ public class CDLangExtensionTool {
     return cdGlobalScope;
   }
 
+  /**
+   * Setter for the global scope that should be used for resolving non native symbols.
+   * @param cdGlobalScope globalScope used for resolving non native symbols
+   */
   public void setCdGlobalScope(CD4AnalysisGlobalScope cdGlobalScope) {
     this.cdGlobalScope = cdGlobalScope;
   }

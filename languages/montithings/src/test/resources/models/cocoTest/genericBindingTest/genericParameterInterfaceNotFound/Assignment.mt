@@ -5,9 +5,9 @@ import cocoTest.genericBindingTest.genericParameterInterfaceNotFound.*;
 import cocoTest.genericBindingTest.genericParameterInterfaceNotFound.sensors.*;
 
 /* Test component Assignment */
-<<deploy>> component Assignment {
+component Assignment {
 
   /* Subcomponents */
-  component Bind<SmokeSensor<int>> binding;
+  Bind<SmokeSensor<int>> binding;
 
 }
