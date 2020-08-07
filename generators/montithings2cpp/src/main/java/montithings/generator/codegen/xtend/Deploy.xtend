@@ -22,9 +22,10 @@ class Deploy {
 
 		int main(int argc, char* argv[])
 		{
-			if (argc == 1) 
+      «IF config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL»
+			if (argc != 4)
 			{
-				std::cerr << "Called with no arguments. Please provide the following arguments:" << std::endl;
+				std::cerr << "Called with wrong number of arguments. Please provide the following arguments:" << std::endl;
 				std::cerr << "1) The component's instance name" << std::endl;
 				std::cerr << "2) Network port for management traffic" << std::endl;
 				std::cerr << "3) Network port for data traffic" << std::endl;
@@ -32,6 +33,18 @@ class Deploy {
 				std::cerr << "Aborting." << std::endl;
 				exit(1);
 			}
+			«ENDIF»
+			«IF config.getSplittingMode() != ConfigParams.SplittingMode.LOCAL»
+      if (argc != 1)
+      {
+        std::cerr << "Called with wrong number of arguments. Please provide the following arguments:" << std::endl;
+        std::cerr << "1) The component's instance name" << std::endl;
+        std::cerr << std::endl;
+        std::cerr << "Aborting." << std::endl;
+        exit(1);
+      }
+      «ENDIF»
+
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname» cmp (argv[1]);
 			«IF config.getSplittingMode() != ConfigParams.SplittingMode.OFF»	
 			«ComponentHelper.printPackageNamespaceForComponent(comp)»«compname»Manager manager (&cmp, argv[2], argv[3]);
