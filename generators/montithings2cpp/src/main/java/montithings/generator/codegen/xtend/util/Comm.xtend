@@ -146,7 +146,6 @@ class Comm {
 		while (!allConnected)
 		{
 			std::cout << "Searching for subcomponents\n";
-			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 			«FOR subcomponent : comp.subComponents»
 			«var subcomponentSymbol = subcomponent.type.loadedSymbol»
 			// «subcomponentSymbol.name» «subcomponent.name»
@@ -209,7 +208,14 @@ class Comm {
 			«ENDFOR»
 
 			// continue if all components are connected
-			allConnected = 1;
+			allConnected = 
+			«FOR subcomponent : comp.subComponents SEPARATOR " && "»
+			comp->get«subcomponent.name.toFirstUpper»IP().length() != 0
+			«ENDFOR»;
+			if (!allConnected) {
+			  // circuit breaker
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			}
 			std::cout << "Found all subcomponents." << std::endl;
 		}
 		'''
