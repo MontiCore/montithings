@@ -8,6 +8,8 @@ import arcbasis._ast.ASTPortDeclaration;
 import arcbasis._symboltable.*;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
+import cdlangextension._symboltable.CDLangExtensionScope;
+import cdlangextension._symboltable.DepLanguageSymbol;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
@@ -136,13 +138,17 @@ public class ComponentHelper {
     Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(portSymbol, config);
     if (cdeImportStatementOpt.isPresent()) {
       String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
-      return printPackageNamespaceFromString(
-        cdeImportStatementOpt.get().getImportClass().toString(), componentNamespace);
+      String cdNamespace = "montithings::";
+      if(cdeImportStatementOpt.get().isPresentPackage()){
+        cdNamespace += (cdeImportStatementOpt.get().getPackage()+".").replaceAll("\\.","::");
+      }
+      cdNamespace += cdeImportStatementOpt.get().getName();
+      return printPackageNamespaceFromString(cdNamespace, componentNamespace);
     }
     return printPackageNamespace(componentSymbol, cdTypeSymbol);
   }
 
-  protected static String printPackageNamespaceFromString(String fullNamespaceSubcomponent,
+  public static String printPackageNamespaceFromString(String fullNamespaceSubcomponent,
     String fullNamespaceEnclosingComponent) {
     if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
       fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
@@ -829,5 +835,14 @@ public class ComponentHelper {
     List<PortSymbol> result = component.getAllPorts();
     result.removeAll(getPortsInBatchStatement(component));
     return result;
+  }
+
+  public static List<ASTCDEImportStatement> getImportStatements(String name, ConfigParams config){
+    CDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
+    Optional<DepLanguageSymbol> cdLangExtensionUnit = cdLangScope.resolveDepLanguage(name+".Cpp");
+    if(!cdLangExtensionUnit.isPresent()){
+      return new ArrayList<>();
+    }
+    return  cdLangExtensionUnit.get().getAstNode().getCDEImportStatementList();
   }
 }

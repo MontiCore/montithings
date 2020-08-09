@@ -87,4 +87,9 @@ class MTGenerator {
 		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
 		subPackagesPath, config), ".txt")
   }
+
+    def static void generateAdapter(File targetPath, String compname, ConfigParams config) {
+      toFile(targetPath, compname + "AdapterTOP", Adapter.generateHeader(compname, config), ".h");
+      toFile(targetPath, compname + "AdapterTOP", Adapter.generateCpp(compname, config), ".cpp");
+    }
 }

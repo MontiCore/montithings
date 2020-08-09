@@ -9,7 +9,10 @@ SourceResult SourceImpl::getInitialValues(){
 }
 
 SourceResult SourceImpl::compute(SourceInput input){
-	return {static_cast<Colors::Color>(rand() % 3)};
+	arma::vec vector = { static_cast<double>(rand() % 3) };
+	SourceResult result;
+	result.setValue(vector);
+	return result;
 }
 
 }}

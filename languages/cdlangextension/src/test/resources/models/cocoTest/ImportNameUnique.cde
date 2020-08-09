@@ -1,9 +1,11 @@
 /* (c) https://github.com/MontiCore/monticore */
 package cocoTest;
+ImportNameUnique {
 Cpp {
   from <arma> import armadillo::vector as cocoTest.ImportValid.Vector;
   from java.util.list import List as cocoTest.ImportValid.Vector;
 }
 Java {
   from java.util.list import List as cocoTest.ImportValid.Vector;
+}
 }

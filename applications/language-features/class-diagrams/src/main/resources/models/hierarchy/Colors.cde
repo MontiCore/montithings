@@ -1,0 +1,10 @@
+/* (c) https://github.com/MontiCore/monticore */
+package hierarchy;
+Colors {
+    Cpp {
+     from <armadillo> import arma::vec as hierarchy.Colors.Color;
+    }
+    Java {
+      from java.util.list import List as hierarchy.Colors.Color;
+    }
+}

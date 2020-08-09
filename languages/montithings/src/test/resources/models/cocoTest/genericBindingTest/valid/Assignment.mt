@@ -9,5 +9,4 @@ component Assignment {
 
   /* Subcomponents */
   Bind<SmokeSensor<int>,Intermediate<SmokeSensor<int>>> binding;
-  //Bind binding;
 }

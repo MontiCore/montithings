@@ -1,5 +1,7 @@
 /* (c) https://github.com/MontiCore/monticore */
 package cocoTest;
+ImportNameExists {
 Java {
   from java.util.list import List as Vector;
+}
 }

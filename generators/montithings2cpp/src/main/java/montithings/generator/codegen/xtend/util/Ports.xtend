@@ -7,22 +7,24 @@ import arcbasis._symboltable.PortSymbol
 import montithings.generator.helper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Utils
+import montithings.generator.codegen.xtend.Adapter
 import montithings.generator.codegen.ConfigParams
+import cdlangextension._ast.ASTCDEImportStatement
 
 class Ports {
 
   def static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {
-  	var HashSet<String> portIncludes = new HashSet<String>()
+  var HashSet<String> portIncludes = new HashSet<String>()
+  	var HashSet<ASTCDEImportStatement> includeStatements = new HashSet<ASTCDEImportStatement>()
     for (port : comp.ports) {
     	if (ComponentHelper.portUsesCdType(port)) {
     	    var cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config);
             if(cdeImportStatementOpt.isPresent()) {
-              var portPackage = cdeImportStatementOpt.get().getImportSource().toString();
-              portIncludes.add('''#include «portPackage»''');
+              includeStatements.add(cdeImportStatementOpt.get());
             }
-            else {
-    		var portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
-      		portIncludes.add('''#include "«portNamespace.replace("::", "/")».h"''')
+            else{
+    		    var portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
+      		    portIncludes.add('''#include "«portNamespace.replace("::", "/")».h"''')
       		}
       	}
       }
@@ -30,6 +32,7 @@ class Ports {
 	«FOR include : portIncludes»
 	«include»
 	«ENDFOR»
+	«Adapter.printIncludes(includeStatements.toList)»
 	'''
   }
 	

@@ -43,15 +43,39 @@ tl::optional<«helper.getRealPortCppTypeString(port, config)»>
 {
   return «port.name»;
 }
-«ENDFOR»
- 
-«FOR port : comp.outgoingPorts»
+
 «Utils.printTemplateArguments(comp)»
 void 
 «compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»)
 {
   this->«port.name» = «port.name»; 
 }
+«IF ComponentHelper.portUsesCdType(port) »
+«var cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)»
+«IF cdeImportStatementOpt.isPresent()»
+ «var fullImportStatemantName = cdeImportStatementOpt.get.getSymbol.getFullName.split("\\.")»
+ «var adapterName = fullImportStatemantName.get(0)+"Adapter"»
+
+tl::optional<«cdeImportStatementOpt.get.getImportClass().toString()»>
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::get«port.name.toFirstUpper»Adap() const
+{
+  if (!get«port.name.toFirstUpper»().has_value()) {
+          return {};
+      }
+
+      «adapterName.toFirstUpper» «adapterName.toFirstLower»;
+      return «adapterName.toFirstLower».convert(*get«port.name.toFirstUpper»());
+}
+
+void
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«cdeImportStatementOpt.get.getImportClass().toString()» element)
+{
+  «adapterName.toFirstUpper» «adapterName.toFirstLower»;
+      this->«port.name» = «adapterName.toFirstLower».convert(element);
+}
+
+«ENDIF»
+«ENDIF»
 «ENDFOR»
 '''
 	}
@@ -91,10 +115,15 @@ public:
 	«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port, config)» «port.name» «ENDFOR»);
 	«ENDIF»
 	«FOR port : comp.outgoingPorts»
-	 tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»() const;
-	«ENDFOR»
-	«FOR port : comp.outgoingPorts»
-	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»);
+    tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»() const;
+	void set«port.name.toFirstUpper»(tl::optional<«helper.getRealPortCppTypeString(port, config)»>);
+	«IF ComponentHelper.portUsesCdType(port) »
+    «var cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)»
+    «IF cdeImportStatementOpt.isPresent()»
+    tl::optional<«cdeImportStatementOpt.get.getImportClass().toString()»> get«port.name.toFirstUpper»Adap() const;
+    void set«port.name.toFirstUpper»(«cdeImportStatementOpt.get.getImportClass().toString()»);
+    «ENDIF»
+    «ENDIF»
 	«ENDFOR»
 };
 
