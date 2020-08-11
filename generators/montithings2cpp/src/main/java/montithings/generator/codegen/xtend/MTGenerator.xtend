@@ -99,7 +99,7 @@ class MTGenerator {
   def static private makeExecutable(File targetPath, String name, String fileExtension) {
     var permissions = PosixFilePermissions.fromString("rwxr-xr-x")
     var path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
-    Files.setPosixFilePermissions(path, permissions)
+    path.toFile().setExecutable(true);
   }
 
   def static generateBuildScript(File targetPath) {
