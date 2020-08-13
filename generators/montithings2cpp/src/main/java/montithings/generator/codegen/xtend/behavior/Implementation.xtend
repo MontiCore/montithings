@@ -7,7 +7,7 @@ import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper
 
 class Implementation {
-	def static generateImplementationHeader(ComponentTypeSymbol comp, String compname, boolean existsHWC) {
+  def static generateImplementationHeader(ComponentTypeSymbol comp, String compname, boolean existsHWC) {
     var String generics = Utils.printFormalTypeParameters(comp);
     return '''
 #pragma once
@@ -19,7 +19,7 @@ class Implementation {
 
 «Utils.printTemplateArguments(comp)»
 class «compname»Impl«IF existsHWC»TOP«ENDIF» : public IComputable<«compname»Input«generics»,«compname»Result«generics»>{
-	
+
 protected:  
     «Utils.printVariables(comp)»
     ««« Currently useless. MontiArc 6's getFields() returns both variables and parameters
@@ -29,8 +29,8 @@ public:
   «printConstructor(comp, existsHWC)»
 
   «IF ComponentHelper.hasBehavior(comp)»
-	«compname»Result«generics» getInitialValues() override;
-	«compname»Result«generics» compute(«compname»Input«generics» input) override;
+  «compname»Result«generics» getInitialValues() override;
+  «compname»Result«generics» compute(«compname»Input«generics» input) override;
   «ELSE»
   «compname»Result«generics» getInitialValues() = 0;
   «compname»Result«generics» compute(«compname»Input«generics» input) = 0;
@@ -38,36 +38,36 @@ public:
 };
 
 «IF comp.hasTypeParameter»
-	«generateImplementationBody(comp, compname, existsHWC)»
+  «generateImplementationBody(comp, compname, existsHWC)»
 «ENDIF»
 «Utils.printNamespaceEnd(comp)»
 '''
   }
   
   def static String generateImplementationFile(ComponentTypeSymbol comp, String compname, boolean existsHWC) {
-	  return '''
-	#include "«compname»Impl«IF existsHWC»TOP«ENDIF».h"
-	«Utils.printNamespaceStart(comp)»
-	«IF !comp.hasTypeParameter»
-	«generateImplementationBody(comp, compname, existsHWC)»
-	«ENDIF»
-	«Utils.printNamespaceEnd(comp)»
-	'''
+    return '''
+  #include "«compname»Impl«IF existsHWC»TOP«ENDIF».h"
+  «Utils.printNamespaceStart(comp)»
+  «IF !comp.hasTypeParameter»
+  «generateImplementationBody(comp, compname, existsHWC)»
+  «ENDIF»
+  «Utils.printNamespaceEnd(comp)»
+  '''
   }
   
-  	def static generateImplementationBody(ComponentTypeSymbol comp, String compname, boolean isTOP) {
+    def static generateImplementationBody(ComponentTypeSymbol comp, String compname, boolean isTOP) {
     var String generics = Utils.printFormalTypeParameters(comp);
     return '''
 «IF ComponentHelper.hasBehavior(comp)»
 «Utils.printTemplateArguments(comp)»
 «compname»Result«generics» «compname»Impl«IF isTOP»TOP«ENDIF»«generics»::getInitialValues(){
-	return {};
+  return {};
 }
 
 «Utils.printTemplateArguments(comp)»
 «compname»Result«generics» «compname»Impl«IF isTOP»TOP«ENDIF»«generics»::compute(«compname»Input«generics» «Identifier.inputName»){
   «compname»Result«generics» result;
-	«ComponentHelper.printStatementBehavior(comp)»
+  «ComponentHelper.printStatementBehavior(comp)»
   return result;
 }
 «ENDIF»
@@ -90,5 +90,5 @@ public:
 '''
 
   }
-	
+  
 }

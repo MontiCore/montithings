@@ -5,15 +5,10 @@ import arcbasis._symboltable.ComponentTypeSymbol
 import arcbasis._symboltable.ComponentInstanceSymbol
 import de.monticore.io.FileReaderWriter
 import java.io.File
-import java.nio.file.Files;
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList
 import java.util.Comparator
 import java.util.List
-import java.util.Map
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.behavior.Implementation
 import montithings.generator.codegen.xtend.util.ArduinoReadme
@@ -48,21 +43,21 @@ class MTGenerator {
     
     if (comp.isAtomic) {
       var boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.packageName + "." + compname);
-		  generateBehaviorImplementation(comp, targetPath, compname, existsHWC)
+      generateBehaviorImplementation(comp, targetPath, compname, existsHWC)
     }
     
-	// Generate inner components
+    // Generate inner components
     for(innerComp : comp.innerComponents) {
-    	//TODO Fix hwc path for inner components
-    	
-    	generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config, false);
+      //TODO Fix hwc path for inner components
+      
+      generateAll(targetPath.toPath.resolve(compname + "-Inner").toFile, hwc, innerComp, innerComp.name, config, false);
     }
     
-	// Generate deploy class
+    // Generate deploy class
     if (ComponentHelper.isApplication(comp) || (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy)) {
       if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
-      	var sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
-      	sketchDirectory.mkdir();
+        var sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
+        sketchDirectory.mkdir();
         toFile(sketchDirectory, "Deploy" + compname, Deploy.generateDeployArduino(comp, compname),".ino");
         toFile(targetPath.getParentFile(), "README", ArduinoReadme.printArduinoReadme(targetPath.name, compname),".txt");
       } else {
@@ -97,7 +92,6 @@ class MTGenerator {
   }
 
   def static private makeExecutable(File targetPath, String name, String fileExtension) {
-    var permissions = PosixFilePermissions.fromString("rwxr-xr-x")
     var path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
     path.toFile().setExecutable(true);
   }
@@ -106,13 +100,13 @@ class MTGenerator {
     toFile(targetPath, "build", Scripts.printBuildScript(), ".sh")
     makeExecutable(targetPath, "build", ".sh")
   }
-	
+  
   def static generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
-	toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
-		comp,
-		targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
-		targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
-		subPackagesPath, config), ".txt")
+  toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
+    comp,
+    targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
+    targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
+    subPackagesPath, config), ".txt")
   }
 
   def static generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
@@ -144,7 +138,7 @@ class MTGenerator {
     }
   }
 
-  def static generatePortJson(File targetPath, ComponentInstanceSymbol comp, ConfigParams config, String prefix) {
+  def static void generatePortJson(File targetPath, ComponentInstanceSymbol comp, ConfigParams config, String prefix) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
       var path = Paths.get(targetPath.absolutePath + File.separator + "ports")
       toFile(path.toFile, prefix + "." + comp.name, Comm.printPortJson(comp.type.loadedSymbol, config, prefix + "." + comp.name), ".json");
