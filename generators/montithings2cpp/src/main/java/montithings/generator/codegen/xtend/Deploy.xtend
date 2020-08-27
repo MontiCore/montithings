@@ -31,7 +31,7 @@ class Deploy {
       }
       «ENDIF»
       «IF config.getSplittingMode() != ConfigParams.SplittingMode.LOCAL»
-      if (argc != 1)
+      if (argc != 2)
       {
         std::cerr << "Called with wrong number of arguments. Please provide the following arguments:" << std::endl;
         std::cerr << "1) The component's instance name" << std::endl;
