@@ -121,7 +121,7 @@ class CMake {
     ${«subdir.name.toUpperCase()»_SOURCES}
     «ENDFOR»)
     «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
-    «printDsaLinkLibraries(comp.name)»
+    «printDsaLinkLibraries(comp.fullName)»
     «ELSE»
     target_link_libraries(«comp.fullName» nng::nng)
     «ENDIF»

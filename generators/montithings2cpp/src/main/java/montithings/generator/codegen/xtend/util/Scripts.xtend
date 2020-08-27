@@ -25,7 +25,7 @@ class Scripts {
     '''
   }
 
-    def static printBuildScript() {
+    def static printBuildScript(ConfigParams config) {
         return '''
     if [ "$#" -ne 1 ] 
     then
@@ -37,14 +37,19 @@ class Scripts {
         echo "There is no component whose fully qualified name matches the first argument. Aborting."
         exit 1
     fi
+    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
+    dev-docker.sh l06 build
+    cd build_dev-l06_*
+    «ELSE»
     mkdir build
     cd build
     cmake -G Ninja ..
     ninja
-        echo Copy Scripts for "$1"
+    «ENDIF»
+    echo Copy Scripts for "$1"
     cd bin
     cp ../../"$1"/*.sh .
-        cp -r ../../"$1"/ports .
+    cp -r ../../"$1"/ports .
     chmod +x *.sh
     cd ../..
     '''

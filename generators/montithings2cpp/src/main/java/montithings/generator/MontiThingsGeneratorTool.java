@@ -132,7 +132,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     generateCD(modelPath, target);
-    MTGenerator.generateBuildScript(target);
+    MTGenerator.generateBuildScript(target, config);
   }
 
   /* ============================================================ */
@@ -320,7 +320,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Log.info("Generate CMake file", "MontiThingsGeneratorTool");
         MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
           subPackagesPath, config);
-        MTGenerator.generateScripts(target, comp, config, models.getMontithings());
+        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+          MTGenerator.generateScripts(target, comp, config, models.getMontithings());
+        }
       }
     }
   }

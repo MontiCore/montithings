@@ -96,8 +96,8 @@ class MTGenerator {
     path.toFile().setExecutable(true);
   }
 
-  def static generateBuildScript(File targetPath) {
-    toFile(targetPath, "build", Scripts.printBuildScript(), ".sh")
+  def static generateBuildScript(File targetPath, ConfigParams config) {
+    toFile(targetPath, "build", Scripts.printBuildScript(config), ".sh")
     makeExecutable(targetPath, "build", ".sh")
   }
   
