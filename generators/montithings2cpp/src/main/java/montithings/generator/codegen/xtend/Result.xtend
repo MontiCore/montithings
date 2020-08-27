@@ -21,17 +21,17 @@ class Result {
   }
 
 
-	def static generateResultBody(ComponentTypeSymbol comp, String compname, ConfigParams config){
-		var ComponentHelper helper = new ComponentHelper(comp)
-	    return '''
+  def static generateResultBody(ComponentTypeSymbol comp, String compname, ConfigParams config){
+    var ComponentHelper helper = new ComponentHelper(comp)
+      return '''
 «IF !comp.allOutgoingPorts.empty»
 «Utils.printTemplateArguments(comp)»
 «compname»Result«Utils.printFormalTypeParameters(comp, false)»::«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port, config)» «port.name» «ENDFOR»){
-	«IF comp.presentParentComponent»
-	super(«FOR port : comp.parent.loadedSymbol.allOutgoingPorts» «port.name» «ENDFOR»);
+  «IF comp.presentParentComponent»
+  super(«FOR port : comp.parent.loadedSymbol.allOutgoingPorts» «port.name» «ENDFOR»);
 «ENDIF»
 «FOR port : comp.outgoingPorts»
-	  this->«port.name» = «port.name»; 
+    this->«port.name» = «port.name»; 
 «ENDFOR»
 }
 «ENDIF»
@@ -54,10 +54,10 @@ void
 }
 «ENDFOR»
 '''
-	}
-	
-	def static generateResultHeader(ComponentTypeSymbol comp, String compname, ConfigParams config){
-	    var ComponentHelper helper = new ComponentHelper(comp)
+  }
+  
+  def static generateResultHeader(ComponentTypeSymbol comp, String compname, ConfigParams config){
+      var ComponentHelper helper = new ComponentHelper(comp)
 return '''
 #pragma once
 #include <string>
@@ -82,20 +82,20 @@ class «compname»Result
     «ENDIF»
 {
 private:
-	«FOR port : comp.outgoingPorts»
-	tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name»;
-	«ENDFOR»
+  «FOR port : comp.outgoingPorts»
+  tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name»;
+  «ENDFOR»
 public:	
-	«compname»Result() = default;
-	«IF !comp.allOutgoingPorts.empty»
-	«compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port, config)» «port.name» «ENDFOR»);
-	«ENDIF»
-	«FOR port : comp.outgoingPorts»
-	 tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»() const;
-	«ENDFOR»
-	«FOR port : comp.outgoingPorts»
-	 void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»);
-	«ENDFOR»
+  «compname»Result() = default;
+  «IF !comp.allOutgoingPorts.empty»
+  «compname»Result(«FOR port : comp.allOutgoingPorts SEPARATOR ','» «helper.getRealPortCppTypeString(port, config)» «port.name» «ENDFOR»);
+  «ENDIF»
+  «FOR port : comp.outgoingPorts»
+   tl::optional<«helper.getRealPortCppTypeString(port, config)»> get«port.name.toFirstUpper»() const;
+  «ENDFOR»
+  «FOR port : comp.outgoingPorts»
+   void set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»);
+  «ENDFOR»
 };
 
 «IF comp.hasTypeParameter()»
@@ -103,6 +103,6 @@ public:
 «ENDIF»
 «Utils.printNamespaceEnd(comp)»
 '''
-		
-	}
+    
+  }
 }

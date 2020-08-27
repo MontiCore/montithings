@@ -13,7 +13,11 @@ template<class T>
 class Port : public MessageAcceptor<T>, public MessageProvider<T>, public UniqueElement
 {
   protected:
+  /// The port that this port gets its incoming data from
   Port<T> *dataProvider = nullptr;
+
+  /// Indicates whether an connection has already been established
+  bool connectionEstablished = false;
 
   public:
   /**
@@ -28,7 +32,7 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
    * Send the given message to external message acceptors, e.g. using web sockets or CAN bus
    * \param nextVal the value to be sent. May be empty
    */
-  virtual void sendToExternal(tl::optional<T> nextVal)
+  virtual void sendToExternal (tl::optional<T> nextVal)
   {
   }
 
@@ -51,16 +55,22 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
       }
   }
 
-  public:
   void setNextValue (T nextVal) override
   {
     if (!this->queueMap.size ())
       {
-        this->sendToExternal(nextVal);
+        this->sendToExternal (nextVal);
       }
     for (auto &x : this->queueMap)
       {
-        x.second.push (nextVal);
+        x.second.second.lock ();
+        while (!x.second.first.try_push (nextVal))
+          {
+            // if no more messages can be added, remove the oldest message
+            // to make room for new messages
+            x.second.first.pop ();
+          }
+        x.second.second.unlock ();
       }
   }
 
@@ -72,7 +82,16 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
       }
   }
 
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
   Port ()
   {
+  }
+
+  bool isConnectionEstablished () const
+  {
+    return connectionEstablished;
   }
 };

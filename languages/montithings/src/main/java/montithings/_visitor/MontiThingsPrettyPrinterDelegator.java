@@ -17,6 +17,7 @@ import de.monticore.prettyprint.MCBasicsPrettyPrinter;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
+import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCSimpleGenericTypesPrettyPrinter;
@@ -119,6 +120,12 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
   }
 
   public String prettyprint(ASTMCJavaBlock a) {
+    getPrinter().clearBuffer();
+    a.accept(getRealThis());
+    return getPrinter().getContent();
+  }
+
+  public String prettyprint(ASTMCType a) {
     getPrinter().clearBuffer();
     a.accept(getRealThis());
     return getPrinter().getContent();

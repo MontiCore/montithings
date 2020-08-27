@@ -112,74 +112,74 @@ class Utils {
    * to avoid name clashes between the generated packages and the outermost component.
    */
   def static String printPackage(ComponentTypeSymbol comp) {
-  	return '''
-  	«IF comp.isInnerComponent»
-  	package «printPackageWithoutKeyWordAndSemicolon(comp.outerComponent.get) + "." + comp.outerComponent.get.name + "gen"»;
-	«ELSE»
-  	package «comp.packageName»;
-	«ENDIF»
-  	'''
+    return '''
+    «IF comp.isInnerComponent»
+    package «printPackageWithoutKeyWordAndSemicolon(comp.outerComponent.get) + "." + comp.outerComponent.get.name + "gen"»;
+  «ELSE»
+    package «comp.packageName»;
+  «ENDIF»
+    '''
   }
   
   /**
    * Helper function used to determine package names.
    */
   def static String printPackageWithoutKeyWordAndSemicolon(arcbasis._symboltable.ComponentTypeSymbol comp){
-  	return '''
-  	«IF comp.isInnerComponent»
-  	«printPackageWithoutKeyWordAndSemicolon(comp.outerComponent.get) + "." + comp.outerComponent.get.name + "gen"»
-	«ELSE»
-  	«comp.packageName»
-	«ENDIF»
-  	'''
+    return '''
+    «IF comp.isInnerComponent»
+    «printPackageWithoutKeyWordAndSemicolon(comp.outerComponent.get) + "." + comp.outerComponent.get.name + "gen"»
+  «ELSE»
+    «comp.packageName»
+  «ENDIF»
+    '''
   }
   
   def static String printSuperClassFQ(ComponentTypeSymbol comp){
-  	var String packageName = printPackageWithoutKeyWordAndSemicolon(comp.parentInfo);
-  	if(packageName.equals("")){
-  		return '''«comp.parent.name»'''
-  	} else {
-  		return '''«packageName».«comp.parent.name»'''
-  	}
+    var String packageName = printPackageWithoutKeyWordAndSemicolon(comp.parentInfo);
+    if(packageName.equals("")){
+      return '''«comp.parent.name»'''
+    } else {
+      return '''«packageName».«comp.parent.name»'''
+    }
   }
   
   def static String printNamespaceStart(ComponentTypeSymbol comp) {
-  	var packages = ComponentHelper.getPackages(comp);
-  	return '''
-  	namespace montithings {
-  	«FOR i : 0..<packages.size»
-  	namespace «packages.get(i)» {
-  	«ENDFOR»
-  	'''
+    var packages = ComponentHelper.getPackages(comp);
+    return '''
+    namespace montithings {
+    «FOR i : 0..<packages.size»
+    namespace «packages.get(i)» {
+    «ENDFOR»
+    '''
   }
   
   def static String printNamespaceEnd(ComponentTypeSymbol comp) {
-  	var packages = ComponentHelper.getPackages(comp);
-  	return '''
-	«FOR i : 0..<packages.size»
-	} // namespace «packages.get(packages.size - (i+1))»
-	«ENDFOR»
-	} // namespace montithings
-  	'''
+    var packages = ComponentHelper.getPackages(comp);
+    return '''
+  «FOR i : 0..<packages.size»
+  } // namespace «packages.get(packages.size - (i+1))»
+  «ENDFOR»
+  } // namespace montithings
+    '''
   }
 
   def static printGetPort(ASTPortAccess access) {
-		return '''
-		«IF access.isPresentComponent»
-			«access.component».
-		«ELSE»
-			this->
-		«ENDIF»
-		getPort«access.port.toFirstUpper» ()
-		'''.toString().replace("\n", "")
-	}
+    return '''
+    «IF access.isPresentComponent»
+      «access.component».
+    «ELSE»
+      this->
+    «ENDIF»
+    getPort«access.port.toFirstUpper» ()
+    '''.toString().replace("\n", "")
+  }
 
-	def static String printExpression(ASTExpression expr, boolean isAssignment) {
-    	return CppPrettyPrinter.print(expr);
-  	}
+  def static String printExpression(ASTExpression expr, boolean isAssignment) {
+      return CppPrettyPrinter.print(expr);
+    }
 
-	def static String printExpression(ASTExpression expr) {
-    	return printExpression(expr, true);
-	}
+  def static String printExpression(ASTExpression expr) {
+      return printExpression(expr, true);
+  }
 
 }

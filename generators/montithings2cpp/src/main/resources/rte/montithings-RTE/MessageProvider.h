@@ -6,6 +6,7 @@
 #include "sole/sole.hpp"
 #include "rigtorp/SPSCQueue.h"
 #include <map>
+#include <mutex>
 #include "UniqueElement.h"
 #include "string"
 
@@ -18,7 +19,7 @@ class MessageProvider
   };
 
   protected:
-  typedef std::map<sole::uuid, rigtorp::SPSCQueue<T> > map_type;
+  typedef std::map<sole::uuid, std::pair<rigtorp::SPSCQueue<T>, std::mutex> > map_type;
   map_type queueMap;
 
   public:
@@ -52,10 +53,18 @@ class MessageProvider
    */
   virtual bool hasValue (sole::uuid requester)
   {
-    if (this->queueMap[requester].front ())
-      { return true; }
+    this->queueMap[requester].second.lock ();
+    if (this->queueMap[requester].first.front ())
+      {
+        this->queueMap[requester].second.unlock ();
+        return true;
+      }
+    this->queueMap[requester].second.unlock ();
     updateMessageSource ();
-    return this->queueMap[requester].front ();
+    this->queueMap[requester].second.lock ();
+    bool result = this->queueMap[requester].first.front ();
+    this->queueMap[requester].second.unlock ();
+    return result;
   }
 
   /**
@@ -65,18 +74,25 @@ class MessageProvider
    */
   virtual tl::optional<T> getCurrentValue (sole::uuid requester)
   {
-    T queueElement;
-    if (hasValue (requester))
+    updateMessageSource ();
+
+    this->queueMap[requester].second.lock ();
+    T *frontElement = this->queueMap[requester].first.front ();
+    if (frontElement == nullptr)
       {
-        queueElement = *(this->queueMap[requester].front ());
-        this->queueMap[requester].pop ();
-        tl::optional<T> currentValue = queueElement;
-        return currentValue;
-      }
-    else
-      {
+        // no element available :(
+        this->queueMap[requester].second.unlock ();
         return tl::nullopt;
       }
+
+    // we found something :)
+    tl::optional<T> currentValue = *(frontElement);
+
+    // remove the element we just pulled from the queue
+    this->queueMap[requester].first.pop ();
+    this->queueMap[requester].second.unlock ();
+
+    return currentValue;
   }
 };
 
