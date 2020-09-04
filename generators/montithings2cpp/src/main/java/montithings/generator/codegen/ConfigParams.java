@@ -6,10 +6,9 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
+import montithings.generator.data.PortMap;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Bundle of parameters for montithings2cpp generator.
@@ -46,6 +45,12 @@ public class ConfigParams {
   private Set<ASTBindingRule> componentBindings = new HashSet<>();
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
+
+  private final PortMap componentPortMap = new PortMap();
+
+  public PortMap getComponentPortMap() {
+    return componentPortMap;
+  }
 
   public TargetPlatform getTargetPlatform() {
     return targetPlatform;

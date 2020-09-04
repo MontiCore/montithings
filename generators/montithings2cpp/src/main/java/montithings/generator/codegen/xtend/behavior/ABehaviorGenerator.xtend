@@ -30,7 +30,7 @@ abstract class ABehaviorGenerator {
    * 
    */
   def String generateHeader(ComponentTypeSymbol comp, String compname) {
-  	var String generics = Utils.printFormalTypeParameters(comp, false)
+    var String generics = Utils.printFormalTypeParameters(comp, false)
     return '''
 #pragma once
 #include "«compname»Input.h"
@@ -44,36 +44,36 @@ class «compname»Impl : public IComputable<«compname»Input«generics»,«comp
 private:  
     «Utils.printVariables(comp)»
     «Utils.printConfigParameters(comp)»
-	
+  
     
 public:
-  	«hook(comp, compname)»
-	«printConstructor(comp, compname)»
-	virtual «compname»Result«generics» getInitialValues() override;
-	virtual «compname»Result«generics» compute(«compname»Input«generics» input) override;
+    «hook(comp, compname)»
+  «printConstructor(comp, compname)»
+  virtual «compname»Result«generics» getInitialValues() override;
+  virtual «compname»Result«generics» compute(«compname»Input«generics» input) override;
 
     };
     
     «IF comp.hasTypeParameter()»
-    	«generateBody(comp, compname)»
-	«ENDIF»
+      «generateBody(comp, compname)»
+  «ENDIF»
 «Utils.printNamespaceEnd(comp)»
     '''
   }
   
   def String generateImplementationFile(ComponentTypeSymbol comp, String compname) {
-	  return '''
-	#include "«compname»Impl.h"
-	«Utils.printNamespaceStart(comp)»
-	«IF !comp.hasTypeParameter()»
-	«generateBody(comp, compname)»
-	«ENDIF»
-	«Utils.printNamespaceEnd(comp)»
-	'''
+    return '''
+  #include "«compname»Impl.h"
+  «Utils.printNamespaceStart(comp)»
+  «IF !comp.hasTypeParameter()»
+  «generateBody(comp, compname)»
+  «ENDIF»
+  «Utils.printNamespaceEnd(comp)»
+  '''
   }
   
   def String generateBody(ComponentTypeSymbol comp, String compname){
-  	return'''
+    return'''
 «printGetInitialValues(comp, compname)»
 
 «printCompute(comp, compname)»

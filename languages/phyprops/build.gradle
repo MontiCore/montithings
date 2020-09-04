@@ -34,10 +34,18 @@ configurations { grammar }
 
 dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
-  grammar "montithings.languages:montithings:$montithings_version:$grammars_classifier"
+  grammar "montiarc.languages:montiarc-fe:$montiarc_version:$grammars_classifier"
+  grammar "montiarc.languages:arc-fe:$montiarc_version:$grammars_classifier"
+  grammar files(project(":languages:monticore-extensions").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:montiarc-extensions").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:error-handling").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:montithings").projectDir.toPath().resolve("src/main/grammars"))
 
-  implementation "montithings.languages:montithings:$montithings_version"
-  implementation "montithings.languages:bindings:$montithings_version"
+  implementation project(":languages:montithings")
+  implementation project(":languages:montiarc-extensions")
+  implementation project(":languages:monticore-extensions")
+  implementation project(":languages:error-handling")
+  implementation project(":languages:bindings")
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
