@@ -27,7 +27,7 @@ Validate Maven:
   image: maven:3-jdk-8
   stage: build
   script:
-    - mvn $MAVEN_CLI_OPTS compile package -Dmaven.test.skip=true
+    - mvn $MAVEN_CLI_OPTS compile package -Dmaven.test.skip=true -X
   artifacts:
     paths:
       - generators/montithings2cpp/target/

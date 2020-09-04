@@ -89,6 +89,7 @@ class MTGenerator {
   }
 
     def static void generateAdapter(File targetPath, String compname, ConfigParams config) {
+      println("Generate Adapter Files.");
       toFile(targetPath, compname + "AdapterTOP", Adapter.generateHeader(compname, config), ".h");
       toFile(targetPath, compname + "AdapterTOP", Adapter.generateCpp(compname, config), ".cpp");
     }
