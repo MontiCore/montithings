@@ -6,7 +6,6 @@ import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
-import de.se_rwth.commons.logging.Log
 
 class Input {
 
