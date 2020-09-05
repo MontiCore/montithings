@@ -891,11 +891,12 @@ public class ComponentHelper {
 
   public static List<ASTCDEImportStatement> getImportStatements(String name, ConfigParams config){
     CDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
-    Optional<DepLanguageSymbol> cdLangExtensionUnit = cdLangScope.resolveDepLanguage(name+".Cpp");
-    if(!cdLangExtensionUnit.isPresent()){
-      return new ArrayList<>();
+    List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name+".Cpp");
+    List<ASTCDEImportStatement> importStatements = new ArrayList<>();
+    for(DepLanguageSymbol depLanguageSymbol : depLanguageSymbols){
+      importStatements.addAll(depLanguageSymbol.getAstNode().getCDEImportStatementList());
     }
-    return  cdLangExtensionUnit.get().getAstNode().getCDEImportStatementList();
+    return  importStatements;
   }
 
   public static List<Pair<ComponentTypeSymbol, String>>

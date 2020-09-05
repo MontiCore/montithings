@@ -6,7 +6,6 @@ import java.util.HashSet
 import java.util.List
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.helper.ComponentHelper
-import java.util.ArrayList
 
 class Adapter {
 
@@ -14,8 +13,10 @@ class Adapter {
     return '''
     #include "«compname»AdapterTOP.h"
     //TODO use correct package specification
+    «IF ComponentHelper.getImportStatements(compname,config).isEmpty()»
     «printNamespaceStart(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
     «printNamespaceEnd(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
+    «ENDIF»
     '''
   }
 	
@@ -32,7 +33,9 @@ class Adapter {
 #include "tl/optional.hpp"
 «printIncludes(ComponentHelper.getImportStatements(compname,config))»
 
+«IF !ComponentHelper.getImportStatements(compname,config).isEmpty()»
 «printNamespaceStart(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
+«ENDIF»
 
 class «compname»AdapterTOP
 {
@@ -44,7 +47,9 @@ public:
 	virtual «importStatement.importClass» convert(«printCDType(importStatement)» element) = 0;
 	«ENDFOR»
 };
+«IF !ComponentHelper.getImportStatements(compname,config).isEmpty()»
 «printNamespaceEnd(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
+«ENDIF»
 '''
 	}
 	
