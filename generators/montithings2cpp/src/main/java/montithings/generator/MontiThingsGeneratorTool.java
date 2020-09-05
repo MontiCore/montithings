@@ -15,6 +15,8 @@ import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCos;
 import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension._symboltable.CDLangExtensionGlobalScope;
+import cdlangextension._symboltable.CDLangExtensionUnitSymbol;
+import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd.CD4ACoCos;
 import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
 import de.monticore.cd.cd4analysis._parser.CD4AnalysisParser;
@@ -130,7 +132,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
     }
-
+    generateCDEAdapter(target, config);
     generateCD(modelPath, target);
     MTGenerator.generateBuildScript(target, config);
   }
@@ -337,6 +339,19 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
       new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model,
         Names.getQualifiedName(packageName, simpleName)).generate();
+    }
+  }
+
+  protected void generateCDEAdapter(File targetFilepath, ConfigParams config) {
+    if(config.getCdLangExtensionScope() != null) {
+      for(ICDLangExtensionScope subScope:config.getCdLangExtensionScope().getSubScopes()) {
+        for (CDLangExtensionUnitSymbol unit : subScope.getCDLangExtensionUnitSymbols().values()) {
+          String simpleName = unit.getAstNode().getName();
+          String packageName = Names.getQualifiedName(unit.getAstNode().getPackageList());
+
+          MTGenerator.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(), Names.getPathFromPackage(packageName)).toFile(), simpleName, config);
+        }
+      }
     }
   }
 

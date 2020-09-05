@@ -1,13 +1,15 @@
 #pragma once
 #include "SinkInput.h"
 #include "SinkResult.h"
+#include "SinkImplTOP.h"
 #include "IComputable.h"
 #include <stdexcept>
+#include "Colors/Color.h"
 
 namespace montithings {
 namespace hierarchy {
 
-class SinkImpl : IComputable<SinkInput,SinkResult>{
+class SinkImpl : SinkImplTOP {
 	
 private:  
     

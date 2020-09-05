@@ -12,7 +12,7 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.li
    * @attribute package  The package declaration of this extension
    * @attribute DepLanguage List of programming languages.
   */
-  CDLangExtensionUnit = ("package" package:(Name& || ".")+ ";")?  DepLanguage*;
+  scope symbol CDLangExtensionUnit = ("package" package:(Name& || ".")+ ";")?  Name "{" DepLanguage* "}";
 
   /**
    * DepLanguage represents different programming languages like java or cpp.
