@@ -19,7 +19,7 @@ import java.util.Optional;
 public class CppGenerator {
 
   private static final String[] primitiveTypes = { "boolean", "byte", "char", "double", "float",
-      "int", "long", "short", "String" };
+    "int", "long", "short", "String" };
 
   private Path outputDir;
 
@@ -42,10 +42,10 @@ public class CppGenerator {
   }
 
   private CppGenerator(
-      Path outputDir,
-      Path modelPath,
-      String modelName,
-      Optional<String> targetPackage) {
+    Path outputDir,
+    Path modelPath,
+    String modelName,
+    Optional<String> targetPackage) {
     this.outputDir = outputDir;
 
     CD4AnalysisLanguage lang = new CD4AnalysisLanguage();
@@ -79,7 +79,7 @@ public class CppGenerator {
     types.forEach(a -> imports.add(a.getName()));
     Path filePath = Paths.get(Names.getPathFromPackage(_package));
     filePath = Paths
-        .get(filePath.toString().replace("::", File.separator) + File.separator + "Package.h");
+      .get(filePath.toString().replace("::", File.separator) + File.separator + "Package.h");
     ge.generateNoA("templates.package.ftl", filePath, imports);
   }
 
@@ -136,7 +136,8 @@ public class CppGenerator {
     }
 
     ge.generate("templates.type.ftl", filePath, type.getAstNode(),
-        "montithings::" + _package.replace(".", "::"), kind,
-        type, _super, typeHelper, imports);
+      _package.chars().filter(ch -> ch == '.').count() + 2,
+      "montithings\n{\nnamespace " + _package.replace(".", "\n{\nnamespace "), kind,
+      type, _super, typeHelper, imports);
   }
 }

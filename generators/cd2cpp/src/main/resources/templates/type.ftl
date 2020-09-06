@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 // (c) https://github.com/MontiCore/monticore
-${tc.signature("package", "kind", "type", "super", "typeHelper", "imports")}
+${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper", "imports")}
 #pragma once
 
 <#function java2cppTypeString type>
@@ -26,7 +26,8 @@ ${tc.signature("package", "kind", "type", "super", "typeHelper", "imports")}
 #include "${import}"
 </#list>
 
-namespace ${package} {
+namespace ${package}
+{
 
 ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
 
@@ -125,4 +126,7 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
   </#if><#-- /class -->
 };
 
+<#-- close namespaces -->
+<#list 1..namespaceCount as i>
 }
+</#list>
