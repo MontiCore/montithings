@@ -889,8 +889,8 @@ public class ComponentHelper {
     return result;
   }
 
-  public static List<ASTCDEImportStatement> getImportStatements(java.lang.String name,
-    montithings.generator.codegen.ConfigParams config) {
+  public static List<cdlangextension._ast.ASTCDEImportStatement> getImportStatements(
+    java.lang.String name, montithings.generator.codegen.ConfigParams config) {
     CDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
     List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name + ".h");
     List<ASTCDEImportStatement> importStatements = new ArrayList<>();
