@@ -46,7 +46,7 @@ tl::optional<«helper.getRealPortCppTypeString(port, config)»>
 
 «Utils.printTemplateArguments(comp)»
 void 
-«compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(«helper.getRealPortCppTypeString(port, config)» «port.name»)
+«compname»Result«Utils.printFormalTypeParameters(comp, false)»::set«port.name.toFirstUpper»(tl::optional<«helper.getRealPortCppTypeString(port, config)»> «port.name»)
 {
   this->«port.name» = «port.name»; 
 }

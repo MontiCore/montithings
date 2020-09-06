@@ -143,8 +143,8 @@ public class ComponentHelper {
     if (cdeImportStatementOpt.isPresent()) {
       String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
       String cdNamespace = "montithings::";
-      if(cdeImportStatementOpt.get().isPresentPackage()){
-        cdNamespace += (cdeImportStatementOpt.get().getPackage()+".").replaceAll("\\.","::");
+      if (cdeImportStatementOpt.get().isPresentPackage()) {
+        cdNamespace += (cdeImportStatementOpt.get().getPackage() + ".").replaceAll("\\.", "::");
       }
       cdNamespace += cdeImportStatementOpt.get().getName();
       return printPackageNamespaceFromString(cdNamespace, componentNamespace);
@@ -889,14 +889,15 @@ public class ComponentHelper {
     return result;
   }
 
-  public static List<ASTCDEImportStatement> getImportStatements(java.lang.String name, montithings.generator.codegen.ConfigParams config){
+  public static List<ASTCDEImportStatement> getImportStatements(java.lang.String name,
+    montithings.generator.codegen.ConfigParams config) {
     CDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
-    List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name+".Cpp");
+    List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name + ".h");
     List<ASTCDEImportStatement> importStatements = new ArrayList<>();
-    for(DepLanguageSymbol depLanguageSymbol : depLanguageSymbols){
+    for (DepLanguageSymbol depLanguageSymbol : depLanguageSymbols) {
       importStatements.addAll(depLanguageSymbol.getAstNode().getCDEImportStatementList());
     }
-    return  importStatements;
+    return importStatements;
   }
 
   public static List<Pair<ComponentTypeSymbol, String>>
