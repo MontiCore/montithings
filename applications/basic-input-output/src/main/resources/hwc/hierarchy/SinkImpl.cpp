@@ -15,10 +15,10 @@ SinkImpl::compute (SinkInput input)
 {
   if (input.getValue ())
     {
-      std::cout << input.getValue ().value () << std::endl;
+      std::cout << "Sink: " << input.getValue ().value () << std::endl;
     }
   else
-    { std::cout << "No data." << std::endl; }
+    { std::cout << "Sink: " << "No data." << std::endl; }
   return {};
 }
 
