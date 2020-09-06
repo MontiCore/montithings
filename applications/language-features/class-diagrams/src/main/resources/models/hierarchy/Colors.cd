@@ -2,5 +2,5 @@
 package hierarchy;
 
 classdiagram Colors {
-  class Color;
+  enum Color { RED, GREEN, BLUE, YELLOW; }
 }

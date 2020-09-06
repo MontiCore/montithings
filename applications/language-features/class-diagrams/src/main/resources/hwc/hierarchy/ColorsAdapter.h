@@ -1,26 +1,19 @@
 #pragma once
-#include <string>
-#include "Port.h"
-#include <string>
-#include <map>
-#include <vector>
-#include <list>
-#include <set>
-#include <armadillo>
 #include "ColorsAdapterTOP.h"
 
+namespace montithings
+{
+namespace hierarchy
+{
 
-namespace montithings {
-	namespace hierarchy {
+class ColorsAdapter : public ColorsAdapterTOP
+{
+  private:
+  public:
+  ColorsAdapter () = default;
+  Colors::Color convert (uint8_t element) override;
+  uint8_t convert (Colors::Color element) override;
+};
 
-		class ColorsAdapter : ColorsAdapterTOP
-		{
-		private:
-		public:
-			ColorsAdapter() = default;
-			Colors::Color convert(arma::vec element) override;
-			arma::vec convert(Colors::Color element) override;
-		};
-
-	} // namespace hierarchy
+} // namespace hierarchy
 } // namespace montithings

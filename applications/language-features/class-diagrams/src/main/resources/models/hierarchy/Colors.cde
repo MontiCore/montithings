@@ -2,9 +2,9 @@
 package hierarchy;
 Colors {
     Cpp {
-     from <armadillo> import arma::vec as hierarchy.Colors.Color;
+     from <inttypes.h> import uint8_t as hierarchy.Colors.Color;
     }
     Java {
-      from java.util.list import List as hierarchy.Colors.Color;
+      from java.lang.String import String as hierarchy.Colors.Color;
     }
 }

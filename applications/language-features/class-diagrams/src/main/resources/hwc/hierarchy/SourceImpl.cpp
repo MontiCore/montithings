@@ -1,18 +1,25 @@
 #include <iostream>
 #include "SourceImpl.h"
 
-namespace montithings {
-namespace hierarchy {
+namespace montithings
+{
+namespace hierarchy
+{
 
-SourceResult SourceImpl::getInitialValues(){
-	return {};
+SourceResult
+SourceImpl::getInitialValues ()
+{
+  return {};
 }
 
-SourceResult SourceImpl::compute(SourceInput input){
-	arma::vec vector = { static_cast<double>(rand() % 3) };
-	SourceResult result;
-	result.setValue(vector);
-	return result;
+SourceResult
+SourceImpl::compute (SourceInput input)
+{
+  uint8_t vector = {static_cast<uint8_t>(rand () % 3)};
+  SourceResult result;
+  result.setValue (vector);
+  return result;
 }
 
-}}
+}
+}
