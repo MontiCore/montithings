@@ -2,7 +2,7 @@
 package hierarchy;
 Colors {
     Cpp {
-     from <inttypes.h> import uint8_t as hierarchy.Colors.Color;
+     from <cinttypes> import uint8_t as hierarchy.Colors.Color;
     }
     Java {
       from java.lang.String import String as hierarchy.Colors.Color;
