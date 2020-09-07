@@ -21,6 +21,11 @@ class Ports {
           var cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config);
             if(cdeImportStatementOpt.isPresent()) {
               includeStatements.add(cdeImportStatementOpt.get());
+              var portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
+              var adapterName = portNamespace.split("::");
+                 if(adapterName.length>=2) {
+                    portIncludes.add('''#include "«adapterName.get(adapterName.length-2)»Adapter.h"''')
+                 }
             }
             else{
     		    var portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)

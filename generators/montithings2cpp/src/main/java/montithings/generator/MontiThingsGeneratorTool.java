@@ -347,9 +347,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       for(ICDLangExtensionScope subScope:config.getCdLangExtensionScope().getSubScopes()) {
         for (CDLangExtensionUnitSymbol unit : subScope.getCDLangExtensionUnitSymbols().values()) {
           String simpleName = unit.getAstNode().getName();
-          String packageName = Names.getQualifiedName(unit.getAstNode().getPackageList());
+          List<String> packageName = unit.getAstNode().getPackageList();
 
-          MTGenerator.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(), Names.getPathFromPackage(packageName)).toFile(), simpleName, config);
+          MTGenerator.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(), Names.getPathFromPackage(Names.getQualifiedName(packageName))).toFile(), packageName, simpleName, config);
         }
       }
     }

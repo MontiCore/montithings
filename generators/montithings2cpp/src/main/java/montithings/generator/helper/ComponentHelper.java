@@ -892,7 +892,7 @@ public class ComponentHelper {
   public static List<cdlangextension._ast.ASTCDEImportStatement> getImportStatements(
     java.lang.String name, montithings.generator.codegen.ConfigParams config) {
     CDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
-    List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name + ".h");
+    List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name + ".Cpp");
     List<ASTCDEImportStatement> importStatements = new ArrayList<>();
     for (DepLanguageSymbol depLanguageSymbol : depLanguageSymbols) {
       importStatements.addAll(depLanguageSymbol.getAstNode().getCDEImportStatementList());

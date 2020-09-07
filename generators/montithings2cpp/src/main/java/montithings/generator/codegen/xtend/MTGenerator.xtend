@@ -148,9 +148,8 @@ class MTGenerator {
     }
   }
 
-    def static void generateAdapter(File targetPath, String compname, ConfigParams config) {
-      println("Generate Adapter Files.");
-      toFile(targetPath, compname + "AdapterTOP", Adapter.generateHeader(compname, config), ".h");
-      toFile(targetPath, compname + "AdapterTOP", Adapter.generateCpp(compname, config), ".cpp");
+    def static void generateAdapter(File targetPath, List<String> packageName, String simpleName, ConfigParams config) {
+      toFile(targetPath, simpleName + "AdapterTOP", Adapter.generateHeader(packageName, simpleName, config), ".h");
+      toFile(targetPath, simpleName + "AdapterTOP", Adapter.generateCpp(packageName, simpleName, config), ".cpp");
     }
 }

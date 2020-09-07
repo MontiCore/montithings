@@ -9,18 +9,15 @@ import montithings.generator.helper.ComponentHelper
 
 class Adapter {
 
-	def static generateCpp(String compname, ConfigParams config) {
+	def static generateCpp(List<String> packageName, String compname, ConfigParams config) {
     return '''
     #include "«compname»AdapterTOP.h"
-    //TODO use correct package specification
-    «IF ComponentHelper.getImportStatements(compname,config).isEmpty()»
-    «printNamespaceStart(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
-    «printNamespaceEnd(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
-    «ENDIF»
+    «printNamespaceStart(packageName)»
+    «printNamespaceEnd(packageName)»
     '''
   }
 	
-	def static generateHeader(String compname, ConfigParams config) {
+	def static generateHeader(List<String> packageName, String compname, ConfigParams config) {
 		return '''
 #pragma once
 #include <string>
@@ -33,9 +30,7 @@ class Adapter {
 #include "tl/optional.hpp"
 «printIncludes(ComponentHelper.getImportStatements(compname,config))»
 
-«IF !ComponentHelper.getImportStatements(compname,config).isEmpty()»
-«printNamespaceStart(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
-«ENDIF»
+«printNamespaceStart(packageName)»
 
 class «compname»AdapterTOP
 {
@@ -47,9 +42,7 @@ public:
 	virtual «importStatement.importClass» convert(«printCDType(importStatement)» element) = 0;
 	«ENDFOR»
 };
-«IF !ComponentHelper.getImportStatements(compname,config).isEmpty()»
-«printNamespaceEnd(ComponentHelper.getImportStatements(compname,config).get(0).getPackage().getPartList())»
-«ENDIF»
+«printNamespaceEnd(packageName)»
 '''
 	}
 	
