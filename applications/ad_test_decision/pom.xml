@@ -1,0 +1,346 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>input</artifactId>
+        <groupId>montithings.input</groupId>
+        <version>5.0.2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ad_test_decision</artifactId>
+
+    <!-- == PROJECT DEPENDENCIES ============================================= -->
+
+    <dependencies>
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montithings</artifactId>
+            <version>5.0.2-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>bindings</artifactId>
+            <version>5.0.2-SNAPSHOT</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>montiarc.libraries</groupId>
+            <artifactId>simulator-rte</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.libraries</groupId>
+            <artifactId>maa-rte</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.se_rwth.commons</groupId>
+            <artifactId>se-commons-groovy</artifactId>
+        </dependency>
+
+        <!-- MontiCore Dependencies -->
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-runtime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.libraries</groupId>
+            <artifactId>maJavaLib</artifactId>
+            <classifier>${majavalib.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-grammar</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>javaDSL</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.generators</groupId>
+            <artifactId>cd2cpp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-generator</artifactId>
+            <version>${monticore.version}</version>
+        </dependency>
+
+        <!-- .. Test Libraries ............................................... -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-runtime</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- .. Needed to clone GoogleTestLib.................................. -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>4.8.0.201706111038-r</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- DEPENDENCY PLUGIN -->
+            <!-- Reason: Unpack sources files of dependencies with classifier 'models'
+                to output directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeClassifiers>${librarymodels.classifier}, models</includeClassifiers>
+                            <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!-- montithings2cpp -->
+                    <execution>
+                        <id>unpack</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montiarc.libraries</groupId>
+                                    <artifactId>maJavaLib</artifactId>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-maa-rte</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeClassifiers>montithings-rte</includeClassifiers>
+                            <outputDirectory>${basedir}/target/generated-sources/backendController/${montithings-rte.classifier}/</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-rte</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>montithings-rte</classifier>
+                                    <version>5.0.2-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-libs</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-libs.classifier}</classifier>
+                                    <version>5.0.2-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-sources/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-headers</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-headers.classifier}</classifier>
+                                    <version>5.0.2-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-sources/header</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-tests</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-tests.classifier}</classifier>
+                                    <version>6.0.0-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-test-sources/test</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>de.se_rwth.maven</groupId>
+                <artifactId>se-groovy-maven-plugin</artifactId>
+                <version>${se-groovy.maven.version}</version>
+                <executions>
+                    <execution>
+                        <id>mt_ad2mt_generator</id>
+                        <configuration>
+                            <baseClass>mt_ad2mt.generator.codegen.MontiThingsADGeneratorScript</baseClass>
+                            <arguments>
+                                <out>${basedir}/mt2cpp_input/main/resources</out>
+                                <modelPath>${basedir}/src/main/resources/models</modelPath>
+                                <handwrittenCodeCP>${basedir}/src/main/resources/hwc</handwrittenCodeCP>
+                            </arguments>
+                            <script>mt_ad2mt/generator/maagenerator.groovy</script>
+                        </configuration>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>mt2cpp_generator</id>
+                        <configuration>
+                            <baseClass>montithings.generator.codegen.MontiThingsGeneratorScript</baseClass>
+                            <arguments>
+                                <out>${basedir}/target/generated-sources</out>
+                                <modelPath>${basedir}/mt2cpp_input/main/resources/models</modelPath>
+                                <handwrittenCode>${basedir}/mt2cpp_input/main/resources/hwc</handwrittenCode>
+                            </arguments>
+                            <script>montithings/generator/mtgenerator.groovy</script>
+                        </configuration>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>montithings.generators</groupId>
+                        <artifactId>mt-ad2mt</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>montithings.generators</groupId>
+                        <artifactId>montithings2cpp</artifactId>
+                        <version>5.0.2-SNAPSHOT</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>de.se_rwth.commons</groupId>
+                        <artifactId>se-commons-utilities</artifactId>
+                        <version>${se-commons.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>mt2cpp_input/main/resources/models</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>
+                                        ${basedir}/src/main/resources/models
+                                    </directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>**/*.cd</include>
+                                        <include>**/*.gui</include>
+                                        <include>**/*.ocl</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/mt2cpp_input/</source>
+                                <source>${basedir}/target/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.7.1</version>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

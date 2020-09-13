@@ -32,6 +32,28 @@ class CMake {
     '''
   }
 
+  def static printGoogleTestParameters(ComponentTypeSymbol comp) {
+    return '''
+    project(Google_tests)
+
+    enable_testing()
+
+    add_subdirectory(lib)
+    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
+    macro(package_add_test TESTNAME)
+        add_executable(${TESTNAME} ${ARGN})
+        target_link_libraries(${TESTNAME} gtest gmock gtest_main)
+        target_link_libraries(${TESTNAME} «comp.fullName»Lib)
+        add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
+        set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
+    endmacro()
+
+    package_add_test(«comp.fullName»TestSuite «comp.fullName»Test.cpp)
+    include_directories("/usr/local/include")
+  '''
+  }
+
   def static printCMakeForSubdirectories(List<String> subdirectories) {
     return '''
     cmake_minimum_required (VERSION 3.8)
@@ -128,6 +150,21 @@ class CMake {
     set_target_properties(«comp.fullName» PROPERTIES LINKER_LANGUAGE CXX)
     '''
   }
+
+    def static printLinkTestLibraries(ComponentTypeSymbol comp, File[] subPackagesPath) {
+      return '''
+
+      add_library(«comp.fullName»Lib ${SOURCES} ${HWC_SOURCES}
+      «FOR subdir : subPackagesPath»
+      ${«subdir.name.toUpperCase()»_SOURCES}
+      «ENDFOR»)
+      target_link_libraries(«comp.fullName»Lib nng::nng)
+      set_target_properties(«comp.fullName»Lib PROPERTIES LINKER_LANGUAGE CXX)
+      install(TARGETS «comp.fullName»Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+
+      add_subdirectory(test/Google_tests)
+      '''
+    }
     
   def static printIPCServerCMake(/*ResourcePortSymbol port,*/ String libraryPath, String ipcPath, Boolean existsHWC, ConfigParams config){
     return 

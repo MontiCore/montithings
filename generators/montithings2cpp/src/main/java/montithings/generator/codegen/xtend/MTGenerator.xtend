@@ -117,6 +117,16 @@ class MTGenerator {
     toFile(targetPath, "CMakeLists", CMake.printCMakeForSubdirectories(sortedDirs), ".txt")
   }
 
+  def static generateTestMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
+    toFile(Paths.get(targetPath.toString(),"test","Google_tests").toFile(),
+      "CMakeLists", CMake.printGoogleTestParameters(comp), ".txt")
+    toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
+      comp,
+      targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
+      targetPath.toPath.toAbsolutePath.relativize(libraryPath.toPath.toAbsolutePath).toString,
+      subPackagesPath, config)+CMake.printLinkTestLibraries(comp, subPackagesPath), ".txt")
+  }
+
   def static generateScripts(File targetPath, ComponentTypeSymbol comp, ConfigParams config, List<String> subdirectories) {
     var sortedDirs = new ArrayList<String>
     sortedDirs.addAll(subdirectories)

@@ -201,6 +201,18 @@
 						</classesDirectory>
 					</configuration>
 				</execution>
+				<execution>
+					<id>tests</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+					<configuration>
+						<classifier>${montithings-tests.classifier}</classifier>
+						<classesDirectory>
+							${basedir}/src/main/resources/test
+						</classesDirectory>
+					</configuration>
+				</execution>
 			</executions>
 		</plugin>
 
