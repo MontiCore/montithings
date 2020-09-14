@@ -13,17 +13,21 @@ sourceSets {
 }
 
 configurations {
-  librarymodels
   mt_rte
   mt_libs
   mt_headers
 }
 
 dependencies {
-  librarymodels "montiarc.libraries:maJavaLib:$majavalib_version"
-  mt_rte "montithings.generators:montithings2cpp:$version:$montithings_rte_classifier"
-  mt_libs "montithings.generators:montithings2cpp:$version:$montithings_libs_classifier"
-  mt_headers "montithings.generators:montithings2cpp:$version:$montithings_headers_classifier"
+  mt_rte("montithings.generators:montithings2cpp:$version:$montithings_rte_classifier") {
+    transitive = false
+  }
+  mt_libs("montithings.generators:montithings2cpp:$version:$montithings_libs_classifier") {
+    transitive = false
+  }
+  mt_headers("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+    transitive = false
+  }
 
   implementation project(":generators:montithings2cpp")
   implementation project(":generators:cd2cpp")
@@ -41,48 +45,39 @@ dependencies {
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
-/*
-task unpack_librarymodels(type:Sync) {
-    dependsOn configurations.librarymodels
-
-    from {
-      configurations.librarymodels.collect {zipTree(it)}
-    }
-  into "$buildDir/$librarymodels_classifier"
-}
-*/
-
-task unpack_mt2cppGenerators(type:Sync) {
+task unpack_mt2cppGenerators(type: Sync) {
   def mt2cpp = "montithings.generators:montithings2cpp:$version"
   def genSrcDir = "$buildDir/generated-sources"
 
+  exclude 'META-INF', 'META-INF/**'
+
   dependsOn configurations.mt_rte
   from {
-    configurations.mt_rte.collect {zipTree(it)}
+    configurations.mt_rte.collect { zipTree(it) }
   }
   into genSrcDir
 
   dependsOn configurations.mt_libs
   from {
-    configurations.mt_libs.collect {zipTree(it)}
+    configurations.mt_libs.collect { zipTree(it) }
   }
   into "$genSrcDir/lib"
 
   dependsOn configurations.mt_headers
   from {
-    configurations.mt_headers.collect {zipTree(it)}
+    configurations.mt_headers.collect { zipTree(it) }
   }
   into "$genSrcDir/header"
 }
 
-task groovyTask(type:GroovyTask) {
+task groovyTask(type: GroovyTask) {
   baseClass = "montithings.generator.codegen.MontiThingsGeneratorScript"
   outputDir = file "$buildDir/generated-sources"
   modelPath(
-    file("$projectDir/src/main/resources/models")
+      file("$projectDir/src/main/resources/models")
   )
   handcodedPath(
-    file("$projectDir/src/main/resources/hwc")
+      file("$projectDir/src/main/resources/hwc")
   )
-  script = "montithings/generator/maagenerator.groovy"
+  script = "montithings/generator/mtgenerator.groovy"
 }
