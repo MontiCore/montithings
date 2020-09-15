@@ -69,6 +69,11 @@ task montithings_libs_Jar(type: Jar) {
   archiveClassifier = "$montithings_libs_classifier"
 }
 
+task montithings_tests_Jar(type: Jar) {
+  from "$projectDir/src/main/resources/test"
+  archiveClassifier = "$montithings_tests_classifier"
+}
+
 java {
   //withJavadocJar()
   withSourcesJar()
@@ -82,6 +87,7 @@ publishing {
       artifact montithings_rte_Jar
       artifact montithings_headers_Jar
       artifact montithings_libs_Jar
+      artifact montithings_tests_Jar
     }
   }
   repositories.maven {
