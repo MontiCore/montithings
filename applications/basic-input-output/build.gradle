@@ -76,7 +76,7 @@ task groovyTask(type: GroovyTask) {
   handcodedPath(
     file("$projectDir/src/main/resources/hwc")
   )
-  script = "nontithings/generator/mtgenerator.groovy"
+  script = "montithings/generator/mtgenerator.groovy"
 }
 
 unpackHeaders.mustRunAfter unpackRte
