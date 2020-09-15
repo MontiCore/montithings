@@ -21,8 +21,9 @@ import java.util.*;
 public class ConfigParams {
   public enum TargetPlatform {
     GENERIC,
-    DSA_VCG,
-    ARDUINO
+    DSA_VCG, // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
+    ARDUINO,
+    DSA_LAB // connected cars lab, based on docker.dsa-ac.de:20001/dev-l06-customer
   }
 
   /**

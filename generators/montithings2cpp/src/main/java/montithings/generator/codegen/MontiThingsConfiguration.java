@@ -265,6 +265,9 @@ public class MontiThingsConfiguration implements Configuration {
         case "DSA":
         case "VCG":
           return ConfigParams.TargetPlatform.DSA_VCG;
+        case "DSA_LAB":
+        case "LAB":
+          return ConfigParams.TargetPlatform.DSA_LAB;
         case "ARDUINO":
         case "ESP32":
           return ConfigParams.TargetPlatform.ARDUINO;
