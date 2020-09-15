@@ -56,13 +56,23 @@ public class FileHelper {
 
   public static void copyTestToTarget(File testPath, File target) {
     try {
-        Path targetDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources");
         Path targetTestDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources","test");
-        FileUtils.copyDirectory(Paths.get(target.getAbsolutePath()).toFile(), targetDir.toFile());
-
         Path testDir = Paths.get(testPath.getAbsolutePath(),"resources");
       if(testDir.toFile().isDirectory()) {
         FileUtils.copyDirectory(testDir.toFile(), targetTestDir.toFile());
+      }
+    }
+    catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  public static void copyGeneratedToTarget(File target) {
+    try {
+      Path targetDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources");
+      if(!targetDir.toString().equals(target.toString())) {
+        FileUtils.copyDirectory(Paths.get(target.getAbsolutePath()).toFile(), targetDir.toFile());
       }
     }
     catch (IOException e) {

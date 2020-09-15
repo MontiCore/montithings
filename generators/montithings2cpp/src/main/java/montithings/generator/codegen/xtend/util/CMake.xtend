@@ -34,7 +34,7 @@ class CMake {
 
   def static printGoogleTestParameters(ComponentTypeSymbol comp) {
     return '''
-    project(Google_tests)
+    project(gtests)
 
     enable_testing()
 
@@ -44,12 +44,12 @@ class CMake {
     macro(package_add_test TESTNAME)
         add_executable(${TESTNAME} ${ARGN})
         target_link_libraries(${TESTNAME} gtest gmock gtest_main)
-        target_link_libraries(${TESTNAME} «comp.fullName»Lib)
+        target_link_libraries(${TESTNAME} «comp.fullName.replaceAll("\\.","_")»Lib)
         add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
         set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
     endmacro()
 
-    package_add_test(«comp.fullName»TestSuite «comp.fullName»Test.cpp)
+    package_add_test(«comp.fullName.replaceAll("\\.","_")»TestSuite «comp.fullName.replaceAll("\\.","_")»Test.cpp)
     include_directories("/usr/local/include")
   '''
   }
@@ -154,15 +154,15 @@ class CMake {
     def static printLinkTestLibraries(ComponentTypeSymbol comp, File[] subPackagesPath) {
       return '''
 
-      add_library(«comp.fullName»Lib ${SOURCES} ${HWC_SOURCES}
+      add_library(«comp.fullName.replaceAll("\\.","_")»Lib ${SOURCES} ${HWC_SOURCES}
       «FOR subdir : subPackagesPath»
       ${«subdir.name.toUpperCase()»_SOURCES}
       «ENDFOR»)
-      target_link_libraries(«comp.fullName»Lib nng::nng)
-      set_target_properties(«comp.fullName»Lib PROPERTIES LINKER_LANGUAGE CXX)
-      install(TARGETS «comp.fullName»Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+      target_link_libraries(«comp.fullName.replaceAll("\\.","_")»Lib nng::nng)
+      set_target_properties(«comp.fullName.replaceAll("\\.","_")»Lib PROPERTIES LINKER_LANGUAGE CXX)
+      install(TARGETS «comp.fullName.replaceAll("\\.","_")»Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
 
-      add_subdirectory(test/Google_tests)
+      add_subdirectory(test/gtests)
       '''
     }
     

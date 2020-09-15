@@ -6,7 +6,7 @@
 
 enum Direction
 {
-  IN, OUT
+  INCOMING, OUTGOING
 };
 
 template<class T>

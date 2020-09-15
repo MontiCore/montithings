@@ -134,10 +134,17 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MTGenerator.generateBuildScript(target, config);
 
     if(testPath!=null&&!testPath.toString().equals("")) {
-      for (String model : models.getMontithings()) {
-        ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-        if (ComponentHelper.isApplication(comp)) {
-          generateTests(modelPath, testPath, target, hwcPath, comp, config);
+      if(config.getSplittingMode()!= ConfigParams.SplittingMode.OFF){
+        config.setSplittingMode(ConfigParams.SplittingMode.OFF);
+        generate(modelPath, Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources").toFile()
+            , hwcPath, testPath, config);
+      }
+      else {
+        for (String model : models.getMontithings()) {
+          ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+          if (ComponentHelper.isApplication(comp)) {
+            generateTests(modelPath, testPath, target, hwcPath, comp, config);
+          }
         }
       }
     }
@@ -366,6 +373,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       /* ============================================================ */
       /* ====== Copy generated-sources to generated-test-sources ==== */
       /* ============================================================ */
+      copyGeneratedToTarget(targetFilepath);
       copyTestToTarget(testFilepath, targetFilepath);
       if (ComponentHelper.isApplication(comp)) {
         Path target = Paths.get(Paths.get(targetFilepath.getAbsolutePath()).getParent().toString(),"generated-test-sources");

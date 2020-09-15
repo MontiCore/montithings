@@ -79,5 +79,5 @@ task groovyTask(type: GroovyTask) {
   handcodedPath(
     file("$projectDir/src/main/resources/hwc")
   )
-  script = "montithings/generator/maagenerator.groovy"
+  script = "montithings/generator/mtgenerator.groovy"
 }

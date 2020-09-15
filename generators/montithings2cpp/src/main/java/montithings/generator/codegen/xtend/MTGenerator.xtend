@@ -118,7 +118,7 @@ class MTGenerator {
   }
 
   def static generateTestMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
-    toFile(Paths.get(targetPath.toString(),"test","Google_tests").toFile(),
+    toFile(Paths.get(targetPath.toString(),"test","gtests").toFile(),
       "CMakeLists", CMake.printGoogleTestParameters(comp), ".txt")
     toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
       comp,

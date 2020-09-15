@@ -32,7 +32,7 @@ class WSPort : public Port<T>
     this->uri = cstr;
 
     killSwitch = false;
-    if (direction == IN)
+    if (direction == INCOMING)
       {
         inSocket = nng::sub::open ();
         nng_setopt (inSocket.get (), NNG_OPT_SUB_SUBSCRIBE, "", 0);
