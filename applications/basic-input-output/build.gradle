@@ -13,7 +13,6 @@ sourceSets {
 }
 
 configurations {
-  librarymodels
   mt_rte
   mt_libs
   mt_headers
@@ -24,58 +23,64 @@ configurations {
 }
 
 dependencies {
-  librarymodels "montiarc.libraries:maJavaLib:$majavalib_version"
-  mt_rte "montithings.generators:montithings2cpp:$version:$montithings_rte_classifier"
-  mt_libs "montithings.generators:montithings2cpp:$version:$montithings_libs_classifier"
-  mt_headers "montithings.generators:montithings2cpp:$version:$montithings_headers_classifier"
-  mt_rte_tests "montithings.generators:montithings2cpp:$version:$montithings_rte_classifier"
-  mt_libs_tests "montithings.generators:montithings2cpp:$version:$montithings_libs_classifier"
-  mt_headers_tests "montithings.generators:montithings2cpp:$version:$montithings_headers_classifier"
-  mt_tests "montithings.generators:montithings2cpp:$version:$montithings_tests_classifier"
+  mt_rte ("montithings.generators:montithings2cpp:$version:$montithings_rte_classifier") {
+    transitive = false
+  }
+  mt_libs ("montithings.generators:montithings2cpp:$version:$montithings_libs_classifier") {
+    transitive = false
+  }
+  mt_headers ("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+    transitive = false
+  }
+  mt_rte_tests ("montithings.generators:montithings2cpp:$version:$montithings_rte_classifier") {
+    transitive = false
+  }
+  mt_libs_tests ("montithings.generators:montithings2cpp:$version:$montithings_libs_classifier") {
+    transitive = false
+  }
+  mt_headers_tests ("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+    transitive = false
+  }
+  mt_tests ("montithings.generators:montithings2cpp:$version:montithings_tests_classifier") {
+    transitive = false
+  }
 
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:javaDSL:$javadsl_version"
-  implementation project(":generators:cd2cpp")
   implementation "de.monticore:monticore-generator:$monticore_version"
+  implementation project(":generators:cd2cpp")
+  implementation project(":generators:montithings2cpp")
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "junit:junit:$junit_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
-/*
-task unpack_librarymodels(type:Sync) {
-    dependsOn configurations.librarymodels
-
-    from {
-      configurations.librarymodels.collect {zipTree(it)}
-    }
-  into "$buildDir/$librarymodels_classifier"
-}
-*/
-
-task unpack_mt2cppGenerators(type: Sync) {
-  def mt2cpp = "montithings.generators:montithings2cpp:$version"
+task unpackRte(type: Sync) {
   def genSrcDir = "$buildDir/generated-sources"
-  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_rte
-  from {
-    configurations.mt_rte.collect { zipTree(it) }
-  }
-  into genSrcDir
+  from configurations.mt_rte.collect { zipTree(it) }
+  into "$genSrcDir"
+}
+
+task unpackLibs(type: Sync) {
+  def genSrcDir = "$buildDir/generated-sources"
+  exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_libs
-  from {
-    configurations.mt_libs.collect { zipTree(it) }
-  }
+  from configurations.mt_libs.collect { zipTree(it) }
   into "$genSrcDir/lib"
+}
+
+task unpackHeaders(type: Sync) {
+  def genSrcDir = "$buildDir/generated-sources"
+  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_headers
-  from {
-    configurations.mt_headers.collect { zipTree(it) }
-  }
+  from configurations.mt_headers.collect { zipTree(it) }
   into "$genSrcDir/header"
 
   dependsOn configurations.mt_rte_tests
@@ -114,3 +119,7 @@ task groovyTask(type: GroovyTask) {
   )
   script = "montithings/generator/mtgenerator.groovy"
 }
+
+unpackHeaders.mustRunAfter unpackRte
+unpackLibs.mustRunAfter unpackRte
+build.dependsOn unpackRte, unpackHeaders, unpackLibs, groovyTask

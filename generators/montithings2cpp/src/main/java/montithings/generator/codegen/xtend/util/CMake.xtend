@@ -8,15 +8,29 @@ import montithings.generator.codegen.ConfigParams
 
 class CMake {
   
-  def static printDsaParameters() {
+  def static printDsaParameters(ConfigParams config) {
     return '''
     # Cross compile
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_VERSION 1)
+    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB»
     set(CMAKE_C_COMPILER   /usr/bin/powerpc-linux-gnu-gcc)
     set(CMAKE_CXX_COMPILER /usr/bin/powerpc-linux-gnu-g++)
+    «ENDIF» 
     
+    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
     find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9")
+    «ELSE»
+    find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9.2")
+    «ENDIF»
+
+    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
+    add_library(nng STATIC IMPORTED) 
+    set_target_properties(nng PROPERTIES
+      IMPORTED_LOCATION "/usr/powerpc-linux-gnu/lib/libnng.a"
+      INTERFACE_INCLUDE_DIRECTORIES "/usr/powerpc-linux-gnu/include/nng"
+    )
+    «ENDIF»
     
     file(GLOB_RECURSE INCLUDE_SOURCES "include/*.cpp" "include/*.h")
     HEADER_DIRECTORIES("inc" dir_list)
@@ -92,11 +106,13 @@ class CMake {
     ENDMACRO()
     SET(dir_list "")
     
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
-    «printDsaParameters()»
+    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
+     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
+    «printDsaParameters(config)»
     «ENDIF»
 
-    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG»
+    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG 
+     && config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB»
     find_package(nng 1.1.1 CONFIG REQUIRED)
     «ENDIF»
     
@@ -142,7 +158,8 @@ class CMake {
     «FOR subdir : subPackagesPath»
     ${«subdir.name.toUpperCase()»_SOURCES}
     «ENDFOR»)
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
+    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
+     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
     «printDsaLinkLibraries(comp.fullName)»
     «ELSE»
     target_link_libraries(«comp.fullName» nng::nng)
@@ -174,11 +191,13 @@ class CMake {
     
     set(CMAKE_CXX_STANDARD 11)
 
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
-    «printDsaParameters()»
+    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
+     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
+    «printDsaParameters(config)»
     «ENDIF»
     
-    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG»
+    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG 
+     && config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB»
     find_package(nng 1.1.1 CONFIG REQUIRED)
     «ENDIF»
     

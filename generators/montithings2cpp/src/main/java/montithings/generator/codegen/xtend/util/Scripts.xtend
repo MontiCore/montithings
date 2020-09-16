@@ -27,6 +27,7 @@ class Scripts {
 
     def static printBuildScript(ConfigParams config) {
         return '''
+    set -e # Stop on first error
     if [ "$#" -ne 1 ] 
     then
       echo "Please provide the component you want to run as first argument. Aborting."
@@ -41,9 +42,13 @@ class Scripts {
     dev-docker.sh l06 build
     cd build_dev-l06_*
     «ELSE»
-    mkdir build
+    mkdir -p build
     cd build
+    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
+    $CMAKE -G Ninja ..
+    «ELSE»
     cmake -G Ninja ..
+    «ENDIF»
     ninja
     «ENDIF»
     echo Copy Scripts for "$1"
