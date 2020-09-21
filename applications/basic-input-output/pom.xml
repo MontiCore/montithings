@@ -108,24 +108,6 @@
                             <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
                         </configuration>
                     </execution>
-                    <!--
-                    <execution>
-                        <id>unpack</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>montiarc.libraries</groupId>
-                                    <artifactId>maJavaLib</artifactId>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${basedir}/target/${librarymodels.classifier}/</outputDirectory>
-                        </configuration>
-                    </execution>
-                        -->
                     <execution>
                         <id>unpack-mt-rte</id>
                         <phase>validate</phase>
@@ -178,6 +160,81 @@
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${basedir}/target/generated-sources/header</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-rte-test</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>montithings-rte</classifier>
+                                    <version>${project.version}</version>
+                                    <overWrite>true</overWrite>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-test-sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-libs-test</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-libs.classifier}</classifier>
+                                    <version>${project.version}</version>
+                                    <overWrite>true</overWrite>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-test-sources/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-headers-test</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-headers.classifier}</classifier>
+                                    <version>${project.version}</version>
+                                    <overWrite>true</overWrite>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-test-sources/header</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-mt-tests</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>montithings.generators</groupId>
+                                    <artifactId>montithings2cpp</artifactId>
+                                    <classifier>${montithings-tests.classifier}</classifier>
+                                    <version>6.0.0-SNAPSHOT</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${basedir}/target/generated-test-sources/test</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

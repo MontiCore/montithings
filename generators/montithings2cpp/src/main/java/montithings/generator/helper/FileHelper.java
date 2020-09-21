@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,6 +51,33 @@ public class FileHelper {
         System.err.println(e.getMessage());
         e.printStackTrace();
       }
+    }
+  }
+
+  public static void copyTestToTarget(File testPath, File target) {
+    try {
+        Path targetTestDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources","test");
+        Path testDir = Paths.get(testPath.getAbsolutePath(),"resources");
+      if(testDir.toFile().isDirectory()) {
+        FileUtils.copyDirectory(testDir.toFile(), targetTestDir.toFile());
+      }
+    }
+    catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  public static void copyGeneratedToTarget(File target) {
+    try {
+      Path targetDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources");
+      if(!targetDir.toString().equals(target.toString())) {
+        FileUtils.copyDirectory(Paths.get(target.getAbsolutePath()).toFile(), targetDir.toFile());
+      }
+    }
+    catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 

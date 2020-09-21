@@ -16,6 +16,10 @@ configurations {
   mt_rte
   mt_libs
   mt_headers
+  mt_rte_tests
+  mt_libs_tests
+  mt_headers_tests
+  mt_tests
 }
 
 dependencies {
@@ -26,6 +30,18 @@ dependencies {
     transitive = false
   }
   mt_headers ("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+    transitive = false
+  }
+  mt_rte_tests ("montithings.generators:montithings2cpp:$version:$montithings_rte_classifier") {
+    transitive = false
+  }
+  mt_libs_tests ("montithings.generators:montithings2cpp:$version:$montithings_libs_classifier") {
+    transitive = false
+  }
+  mt_headers_tests ("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+    transitive = false
+  }
+  mt_tests ("montithings.generators:montithings2cpp:$version:montithings_tests_classifier") {
     transitive = false
   }
 
@@ -60,11 +76,36 @@ task unpackLibs(type: Sync) {
 
 task unpackHeaders(type: Sync) {
   def genSrcDir = "$buildDir/generated-sources"
+  def genTestDir = "$buildDir/generated-test-sources"
   exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_headers
   from configurations.mt_headers.collect { zipTree(it) }
   into "$genSrcDir/header"
+
+  dependsOn configurations.mt_rte_tests
+  from {
+    configurations.mt_rte_tests.collect { zipTree(it) }
+  }
+  into genTestDir
+
+  dependsOn configurations.mt_libs_tests
+  from {
+    configurations.mt_libs_tests.collect { zipTree(it) }
+  }
+  into "$genTestDir/lib"
+
+  dependsOn configurations.mt_headers_tests
+  from {
+    configurations.mt_headers_tests.collect { zipTree(it) }
+  }
+  into "$genTestDir/header"
+
+  dependsOn configurations.mt_tests
+  from {
+    configurations.mt_tests.collect { zipTree(it) }
+  }
+  into "$genTestDir/test"
 }
 
 task groovyTask(type: GroovyTask) {

@@ -87,7 +87,7 @@ ManagementCommunication::init (std::string managementPort)
 
   // communication in_port
   managementInUri = "ws://" + ourIp + ":" + managementPort;
-  managementIn = new WSPort<std::string> (IN, managementInUri, false);
+  managementIn = new WSPort<std::string> (INCOMING, managementInUri, false);
 
   futReceiveMessage = std::async (std::launch::async, &ManagementCommunication::receiveMessage, this);
 }
@@ -129,7 +129,7 @@ ManagementCommunication::sendManagementMessage (std::string receiverIp, std::str
 {
   // tell subcomponent where to connect to
   std::string uri = "ws://" + receiverIp + ":" + receiverPort;
-  WSPort<std::string> *managementOut = new WSPort<std::string> (OUT, uri, false);
+  WSPort<std::string> *managementOut = new WSPort<std::string> (OUTGOING, uri, false);
   std::this_thread::sleep_for (std::chrono::milliseconds (1000));
   managementOut->setNextValue (message);
 

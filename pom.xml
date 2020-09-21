@@ -65,6 +65,7 @@
 		<montithings-rte.classifier>montithings-rte</montithings-rte.classifier>
 		<montithings-headers.classifier>montithings-headers</montithings-headers.classifier>
 		<montithings-libs.classifier>montithings-libs</montithings-libs.classifier>
+		<montithings-tests.classifier>montithings-tests</montithings-tests.classifier>
 
 		<!-- .. Misc .......................................................... -->
 		<java.version>1.8</java.version>

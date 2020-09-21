@@ -43,7 +43,7 @@ class IPCPort : public Port<T>
   IPCPort (Direction direction, const char *uri) : direction (direction), uri (uri)
   {
     this->uri = uri;
-    if (direction == IN)
+    if (direction == INCOMING)
       //Open Socket in Request mode
       { socket = nng::req::open (); }
     else

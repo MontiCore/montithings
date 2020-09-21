@@ -1,8 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
-import arcbasis._ast.ASTConnector;
-import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
@@ -36,7 +34,6 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.xtend.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
-import org.eclipse.xtext.xbase.lib.Pair;
 import phyprops.PhypropsTool;
 import phyprops._ast.ASTPhypropsUnit;
 import phyprops._cocos.PhypropsCoCos;
@@ -49,11 +46,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static montithings.generator.helper.FileHelper.copyHwcToTarget;
-import static montithings.generator.helper.FileHelper.getSubPackagesPath;
+import static montithings.generator.helper.FileHelper.*;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
@@ -61,7 +58,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected static final String TOOL_NAME = "MontiThingsGeneratorTool";
 
-  public void generate(File modelPath, File target, File hwcPath, ConfigParams config) {
+  public void generate(File modelPath, File target, File hwcPath, File testPath, ConfigParams config) {
 
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
@@ -135,6 +132,22 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     generateCDEAdapter(target, config);
     generateCD(modelPath, target);
     MTGenerator.generateBuildScript(target, config);
+
+    if(testPath!=null&&!testPath.toString().equals("")) {
+      if(config.getSplittingMode()!= ConfigParams.SplittingMode.OFF){
+        config.setSplittingMode(ConfigParams.SplittingMode.OFF);
+        generate(modelPath, Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources").toFile()
+            , hwcPath, testPath, config);
+      }
+      else {
+        for (String model : models.getMontithings()) {
+          ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+          if (ComponentHelper.isApplication(comp)) {
+            generateTests(modelPath, testPath, target, hwcPath, comp, config);
+          }
+        }
+      }
+    }
   }
 
   /* ============================================================ */
@@ -350,6 +363,29 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           List<String> packageName = unit.getAstNode().getPackageList();
 
           MTGenerator.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(), Names.getPathFromPackage(Names.getQualifiedName(packageName))).toFile(), packageName, simpleName, config);
+        }
+      }
+    }
+  }
+
+  protected void generateTests(File modelPath, File testFilepath, File targetFilepath, File hwcPath, ComponentTypeSymbol comp, ConfigParams config) {
+    if(testFilepath!=null&&targetFilepath!=null&&comp!=null) {
+      /* ============================================================ */
+      /* ====== Copy generated-sources to generated-test-sources ==== */
+      /* ============================================================ */
+      copyGeneratedToTarget(targetFilepath);
+      copyTestToTarget(testFilepath, targetFilepath);
+      if (ComponentHelper.isApplication(comp)) {
+        Path target = Paths.get(Paths.get(targetFilepath.getAbsolutePath()).getParent().toString(),"generated-test-sources");
+        File libraryPath = Paths.get(target.toString(),"montithings-RTE").toFile();
+        // Check for Subpackages
+        File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
+
+        // 6 generate make file
+        if (config.getTargetPlatform()
+            != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
+          MTGenerator.generateTestMakeFile(target.toFile(), comp, hwcPath, libraryPath,
+              subPackagesPath, config);
         }
       }
     }

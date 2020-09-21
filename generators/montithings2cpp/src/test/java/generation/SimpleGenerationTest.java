@@ -39,7 +39,7 @@ public class SimpleGenerationTest {
     System.out.println(MODELPATH.toAbsolutePath().toString());
     ConfigParams params = new ConfigParams();
     params.setTargetPlatform(ConfigParams.TargetPlatform.GENERIC);
-    script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(),
+    script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(), null,
         params);
   }
 }

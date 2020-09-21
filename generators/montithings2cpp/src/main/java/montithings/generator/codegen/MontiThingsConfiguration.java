@@ -32,7 +32,7 @@ public class MontiThingsConfiguration implements Configuration {
    */
   public enum Options {
 
-    MODELPATH("modelPath"), MODELPATH_SHORT("mp"), HANDWRITTENCODEPATH("handwrittenCode"),
+    MODELPATH("modelPath"), MODELPATH_SHORT("mp"),TESTPATH("testPath"), HANDWRITTENCODEPATH("handwrittenCode"),
     HANDWRITTENCODEPATH_SHORT("hwc"), OUT("out"), OUT_SHORT("o"), PLATFORM("platform"),
     SPLITTING("splitting");
 
@@ -219,6 +219,27 @@ public class MontiThingsConfiguration implements Configuration {
       return mp.toFile();
     }
     return null;
+  }
+
+  public File getTestPath() {
+    Optional<String> testPath = getAsString(Options.TESTPATH);
+    if (testPath.isPresent()) {
+      Path mp = Paths.get(testPath.get());
+      return mp.toFile();
+    }
+    else if(getModelPath()!=null) {
+      Path defaultTestPath = getModelPath().toPath();
+      for (int i = 0; i < 3; i++) {
+        defaultTestPath = defaultTestPath.getParent();
+        if(defaultTestPath==null){
+          return null;
+        }
+      }
+      if(Paths.get(defaultTestPath.toString(),"test").toFile().isDirectory()) {
+        return Paths.get(defaultTestPath.toString(), "test").toFile();
+      }
+    }
+    return new File("");
   }
 
   public File getHWCPath() {
