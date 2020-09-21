@@ -110,7 +110,7 @@ class Comm {
     «FOR PortSymbol p: comp.ports»
     «var type = ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»
     std::string «p.name»_uri = "ws://" + comm->getOurIp() + ":" + communicationPort + "/" + comp->getInstanceName () + "/out/«p.name»";
-    comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUT, «p.name»_uri));
+    comp->addOutPort«p.name.toFirstUpper()»(new WSPort<«type»>(OUTGOING, «p.name»_uri));
     «ENDFOR»
     '''
   }
@@ -126,7 +126,7 @@ class Comm {
       // connection information for port «p.name» was received
       std::string «p.name»_uri = "ws://" + message.getIpAndPort() + message.getRemotePort();
       std::cout << "Received connection: " << «p.name»_uri << std::endl;
-      comp->addInPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «p.name»_uri));
+      comp->addInPort«p.name.toFirstUpper()»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(INCOMING, «p.name»_uri));
     }
     «ENDIF»
     «ENDFOR»
@@ -170,7 +170,7 @@ class Comm {
             std::string «subcomponent.name»_uri = "ws://" + «subcomponent.name»_ip + ":" + communicationPort + "/" + comp->getInstanceName () + ".«subcomponent.name»/out/«p.name»";
             
             // implements "«connector.source.getQName» -> «target.getQName»"
-            comp->addInPort«target.port.toFirstUpper»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(IN, «subcomponent.name»_uri));
+            comp->addInPort«target.port.toFirstUpper»(new WSPort<«ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)»>(INCOMING, «subcomponent.name»_uri));
             
             «ENDIF»
             «ENDFOR»
