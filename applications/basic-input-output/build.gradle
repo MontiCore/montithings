@@ -41,7 +41,7 @@ dependencies {
   mt_headers_tests ("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
     transitive = false
   }
-  mt_tests ("montithings.generators:montithings2cpp:$version:montithings_tests_classifier") {
+  mt_tests ("montithings.generators:montithings2cpp:$version:$montithings_tests_classifier") {
     transitive = false
   }
 
