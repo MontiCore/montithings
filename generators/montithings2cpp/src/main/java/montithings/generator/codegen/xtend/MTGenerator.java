@@ -1,38 +1,45 @@
-// (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen.xtend
+# (c) https://github.com/MontiCore/monticore
+package montithings.generator.codegen.xtend;
 
-import arcbasis._symboltable.ComponentTypeSymbol
-import arcbasis._symboltable.ComponentInstanceSymbol
-import de.monticore.io.FileReaderWriter
-import java.io.File
-import java.nio.file.Paths
-import java.util.ArrayList
-import java.util.Comparator
-import java.util.List
-import montithings.generator.codegen.ConfigParams
-import montithings.generator.codegen.xtend.behavior.Implementation
+import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.ComponentInstanceSymbol;
+import de.monticore.io.FileReaderWriter;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import jline.internal.Log;
+import montithings.generator.codegen.ConfigParams;
+/*import montithings.generator.codegen.xtend.behavior.Implementation
 import montithings.generator.codegen.xtend.util.ArduinoReadme
 import montithings.generator.codegen.xtend.util.CMake
 import montithings.generator.codegen.xtend.util.Comm
 import montithings.generator.codegen.xtend.util.Identifier
-import montithings.generator.codegen.xtend.util.Scripts
-import montithings.generator.helper.ComponentHelper
-import montithings.generator.helper.FileHelper
+import montithings.generator.codegen.xtend.util.Scripts*/
+import montithings.generator.codegen.xtend.util.Identifier;
+import montithings.generator.helper.ComponentHelper;
+import montithings.generator.helper.FileHelper;
+import de.monticore.generating.GeneratorEngine;
+import de.monticore.generating.GeneratorSetup;
 
 /**
- * Main entry point for generator. From this all target artifacts are generated for a component. 
- * It uses dispatching for calling the right implementation generator.
- * 
- * @author  Pfeiffer
- * @version $Revision$,
- *          $Date$
- */
+
+  Main entry point for generator. From this all target artifacts are generated for a component.
+  It uses dispatching for calling the right implementation generator.
+
+  @author  Pfeiffer
+  @version $Revision$,
+           $Date$
+ **/
 class MTGenerator {
 
-  def static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config, boolean generateDeploy) {
-    Identifier.createInstance(comp)
+  static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp, String compname, ConfigParams config, boolean generateDeploy) {
+    Identifier.createInstance(comp);
 
-    var useWsPorts = (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy);
+    boolean useWsPorts = (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy);
 
     toFile(targetPath, compname + "Input", Input.generateInputHeader(comp, compname, config), ".h");
     toFile(targetPath, compname + "Input", Input.generateImplementationFile(comp, compname, config), ".cpp");
@@ -42,7 +49,7 @@ class MTGenerator {
     toFile(targetPath, compname, ComponentGenerator.generateImplementationFile(comp, compname, config, useWsPorts), ".cpp");
     
     if (comp.isAtomic) {
-      var boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.packageName + "." + compname);
+      <#assign boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.packageName + "." + compname);>
       generateBehaviorImplementation(comp, targetPath, compname, existsHWC)
     }
     
@@ -56,7 +63,7 @@ class MTGenerator {
     // Generate deploy class
     if (ComponentHelper.isApplication(comp) || (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy)) {
       if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
-        var sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
+        <#assign sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);>
         sketchDirectory.mkdir();
         toFile(sketchDirectory, "Deploy" + compname, Deploy.generateDeployArduino(comp, compname),".ino");
         toFile(targetPath.getParentFile(), "README", ArduinoReadme.printArduinoReadme(targetPath.name, compname),".txt");
@@ -71,7 +78,7 @@ class MTGenerator {
 
   }
 
-  def static generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath, String compname, boolean existsHWC) {
+  static void generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath, String compname, boolean existsHWC) {
     if (!existsHWC) {
       toFile(targetPath, compname + "Impl",
         Implementation.generateImplementationHeader(comp, compname, existsHWC),".h")
@@ -85,23 +92,29 @@ class MTGenerator {
     }
   }
 
-  def static private toFile(File targetPath, String name, String content, String fileExtension) {
-    var path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
-    println("Writing to file " + path + ".")
-    FileReaderWriter.storeInFile(path, content)
+  static private void toFile(File targetPath, String name, String template, String fileExtension) {
+    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
+    Log.info("Writing to file " + path + ".");
+    //FileReaderWriter.storeInFile(path, content);
+    GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
+
+    GeneratorEngine engine = new GeneratorEngine(setup);
+
+    engine.generateNoA(template, path);
   }
 
-  def static private makeExecutable(File targetPath, String name, String fileExtension) {
-    var path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)
+  static void private makeExecutable(File targetPath, String name, String fileExtension) {
+    <#assign path = Paths.get(targetPath.absolutePath + File.separator + name + fileExtension)>
     path.toFile().setExecutable(true);
   }
 
-  def static generateBuildScript(File targetPath, ConfigParams config) {
+  static void generateBuildScript(File targetPath, ConfigParams config) {
     toFile(targetPath, "build", Scripts.printBuildScript(config), ".sh")
     makeExecutable(targetPath, "build", ".sh")
   }
-  
-  def static generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
+
+  static void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
   toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
     comp,
     targetPath.toPath.toAbsolutePath.relativize(hwcPath.toPath.toAbsolutePath).toString,
@@ -109,15 +122,15 @@ class MTGenerator {
     subPackagesPath, config), ".txt")
   }
 
-  def static generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
-    var sortedDirs = new ArrayList<String>
+  static void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
+    <#assign sortedDirs = new ArrayList<String>>
     sortedDirs.addAll(subdirectories)
     sortedDirs.sort(Comparator.naturalOrder())
 
     toFile(targetPath, "CMakeLists", CMake.printCMakeForSubdirectories(sortedDirs), ".txt")
   }
 
-  def static generateTestMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
+  static void generateTestMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
     toFile(Paths.get(targetPath.toString(),"test","gtests").toFile(),
       "CMakeLists", CMake.printGoogleTestParameters(comp), ".txt")
     toFile(targetPath, "CMakeLists", CMake.printTopLevelCMake(targetPath.listFiles(),
@@ -127,8 +140,8 @@ class MTGenerator {
       subPackagesPath, config)+CMake.printLinkTestLibraries(comp, subPackagesPath), ".txt")
   }
 
-  def static generateScripts(File targetPath, ComponentTypeSymbol comp, ConfigParams config, List<String> subdirectories) {
-    var sortedDirs = new ArrayList<String>
+  static void generateScripts(File targetPath, ComponentTypeSymbol comp, ConfigParams config, List<String> subdirectories) {
+    <#assign sortedDirs = new ArrayList<String>>
     sortedDirs.addAll(subdirectories)
     sortedDirs.sort(Comparator.naturalOrder())
 
@@ -138,9 +151,9 @@ class MTGenerator {
     makeExecutable(targetPath, "kill", ".sh")
   }
 
-  def static generatePortJson(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
+  static void generatePortJson(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
-      var path = Paths.get(targetPath.absolutePath + File.separator + "ports")
+      <#assign path = Paths.get(targetPath.absolutePath + File.separator + "ports")>
       toFile(path.toFile, comp.fullName, Comm.printPortJson(comp, config), ".json");
       for (subcomp : comp.subComponents) {
         generatePortJson(targetPath, subcomp, config, comp.fullName)
@@ -148,9 +161,9 @@ class MTGenerator {
     }
   }
 
-  def static void generatePortJson(File targetPath, ComponentInstanceSymbol comp, ConfigParams config, String prefix) {
+  static void generatePortJson(File targetPath, ComponentInstanceSymbol comp, ConfigParams config, String prefix) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
-      var path = Paths.get(targetPath.absolutePath + File.separator + "ports")
+      <#assign path = Paths.get(targetPath.absolutePath + File.separator + "ports")>
       toFile(path.toFile, prefix + "." + comp.name, Comm.printPortJson(comp.type.loadedSymbol, config, prefix + "." + comp.name), ".json");
       for (subcomp : comp.type.loadedSymbol.subComponents) {
         generatePortJson(targetPath, subcomp, config, prefix + "." + comp.name)
@@ -158,7 +171,7 @@ class MTGenerator {
     }
   }
 
-    def static void generateAdapter(File targetPath, List<String> packageName, String simpleName, ConfigParams config) {
+    static void generateAdapter(File targetPath, List<String> packageName, String simpleName, ConfigParams config) {
       toFile(targetPath, simpleName + "AdapterTOP", Adapter.generateHeader(packageName, simpleName, config), ".h");
       toFile(targetPath, simpleName + "AdapterTOP", Adapter.generateCpp(packageName, simpleName, config), ".cpp");
     }

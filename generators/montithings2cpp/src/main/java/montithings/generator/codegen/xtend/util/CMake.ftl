@@ -1,10 +1,10 @@
-// (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen.xtend.util
+# (c) https://github.com/MontiCore/monticore
+<#--package montithings.generator.codegen.xtend.util
 
 import java.io.File
 import java.util.List
 import arcbasis._symboltable.ComponentTypeSymbol
-import montithings.generator.codegen.ConfigParams
+import montithings.generator.codegen.ConfigParams-->
 
 class CMake {
   
@@ -13,24 +13,24 @@ class CMake {
     # Cross compile
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_VERSION 1)
-    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB»
+    <#if config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB>
     set(CMAKE_C_COMPILER   /usr/bin/powerpc-linux-gnu-gcc)
     set(CMAKE_CXX_COMPILER /usr/bin/powerpc-linux-gnu-g++)
-    «ENDIF» 
+    </#if>
     
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
-    find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9")
-    «ELSE»
-    find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9.2")
-    «ENDIF»
+    <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG>
+ find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9")
+ <#else>
+ find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9.2")
+  </#if>
 
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
+    <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>
     add_library(nng STATIC IMPORTED) 
     set_target_properties(nng PROPERTIES
       IMPORTED_LOCATION "/usr/powerpc-linux-gnu/lib/libnng.a"
       INTERFACE_INCLUDE_DIRECTORIES "/usr/powerpc-linux-gnu/include/nng"
     )
-    «ENDIF»
+    </#if>
     
     file(GLOB_RECURSE INCLUDE_SOURCES "include/*.cpp" "include/*.h")
     HEADER_DIRECTORIES("inc" dir_list)
@@ -42,7 +42,7 @@ class CMake {
   
   def static printDsaLinkLibraries(String targetName) {
     return '''
-    target_link_libraries(«targetName» nng pthread curl ${ATOMIC_LIBRARY})
+    target_link_libraries(${targetName} nng pthread curl ${ATOMIC_LIBRARY})
     '''
   }
 
@@ -58,12 +58,12 @@ class CMake {
     macro(package_add_test TESTNAME)
         add_executable(${TESTNAME} ${ARGN})
         target_link_libraries(${TESTNAME} gtest gmock gtest_main)
-        target_link_libraries(${TESTNAME} «comp.fullName.replaceAll("\\.","_")»Lib)
+        target_link_libraries(${TESTNAME} ${comp.fullName.replaceAll("\\.","_")}Lib)
         add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
         set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
     endmacro()
 
-    package_add_test(«comp.fullName.replaceAll("\\.","_")»TestSuite «comp.fullName.replaceAll("\\.","_")»Test.cpp)
+    package_add_test(${comp.fullName.replaceAll("\\.","_")}TestSuite ${comp.fullName.replaceAll("\\.","_")}Test.cpp)
     include_directories("/usr/local/include")
   '''
   }
@@ -72,20 +72,20 @@ class CMake {
     return '''
     cmake_minimum_required (VERSION 3.8)
     project ("MontiThings Application")
-    «FOR subdir : subdirectories»
-    add_subdirectory ("«subdir»")
-    «ENDFOR»
+    <#list subdirectories as subdir >
+ add_subdirectory ("${subdir}")
+ </#list>
     '''
   }
   
   def static printTopLevelCMake(File[] files, ComponentTypeSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, ConfigParams config) {
-    var commonCodePrefix = ""
+    <#assign commonCodePrefix = "">
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       commonCodePrefix = "../"
     }
     return '''
     cmake_minimum_required(VERSION 3.8)
-    project("«comp.fullName»")
+    project("${comp.fullName}")
     set(CMAKE_CXX_STANDARD 11)
 
     # Enable (more comfortable) debugging
@@ -106,15 +106,15 @@ class CMake {
     ENDMACRO()
     SET(dir_list "")
     
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
-     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
-    «printDsaParameters(config)»
-    «ENDIF»
+    <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
+     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>
+    ${printDsaParameters(config)}
+    </#if>
 
-    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG 
-     && config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB»
+    <#if config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG
+     && config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB>
     find_package(nng 1.1.1 CONFIG REQUIRED)
-    «ENDIF»
+    </#if>
     
     # for MSVC
     if (MSVC)
@@ -136,14 +136,13 @@ class CMake {
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     
-«««		include_directories("«hwcPath.replace("\\","/")»/«comp.name.toFirstLower»")
-    include_directories("«commonCodePrefix»«libraryPath.replace("\\","/")»")
+<#-- include_directories("${hwcPath.replace("\\","/")}/${comp.name.toFirstLower}") -->include_directories("${commonCodePrefix}${libraryPath.replace("\\","/")}")
     
     # Include packages
-    «FOR subdir : subPackagesPath»
-    file(GLOB_RECURSE «subdir.name.toUpperCase()»_SOURCES "«subdir.name»/*.cpp" "«subdir.name»/*.h")
-    include_directories("«subdir.name»")
-    «ENDFOR»
+    <#list subPackagesPath as subdir>
+    file(GLOB_RECURSE ${subdir.name.toUpperCase()}_SOURCES "${subdir.name}/*.cpp" "${subdir.name}/*.h")
+    include_directories("${subdir.name}")
+    </#list>
     
     # Include HWC
     file(GLOB_RECURSE HWC_SOURCES "hwc/*.cpp" "hwc/*.h")
@@ -151,33 +150,33 @@ class CMake {
     include_directories("hwc" ${dir_list})
     
     # Include RTE
-    file(GLOB SOURCES "«commonCodePrefix»montithings-RTE/*.cpp" "«commonCodePrefix»montithings-RTE/*.h")
+    file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix}montithings-RTE/*.h")
 
 
-    add_executable(«comp.fullName» ${SOURCES} ${HWC_SOURCES} 
-    «FOR subdir : subPackagesPath»
-    ${«subdir.name.toUpperCase()»_SOURCES}
-    «ENDFOR»)
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
-     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
-    «printDsaLinkLibraries(comp.fullName)»
-    «ELSE»
-    target_link_libraries(«comp.fullName» nng::nng)
-    «ENDIF»
-    set_target_properties(«comp.fullName» PROPERTIES LINKER_LANGUAGE CXX)
+    add_executable(${comp.fullName} ${SOURCES} ${HWC_SOURCES}
+    <#list subPackagesPath as subdir >
+ ${${subdir.name.toUpperCase()}_SOURCES}
+ </#list>)
+    <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
+     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>
+    ${printDsaLinkLibraries(comp.fullName)}
+    ${ELSE}
+    target_link_libraries(${comp.fullName} nng::nng)
+    </#if>
+    set_target_properties(${comp.fullName} PROPERTIES LINKER_LANGUAGE CXX)
     '''
   }
 
     def static printLinkTestLibraries(ComponentTypeSymbol comp, File[] subPackagesPath) {
       return '''
 
-      add_library(«comp.fullName.replaceAll("\\.","_")»Lib ${SOURCES} ${HWC_SOURCES}
-      «FOR subdir : subPackagesPath»
-      ${«subdir.name.toUpperCase()»_SOURCES}
-      «ENDFOR»)
-      target_link_libraries(«comp.fullName.replaceAll("\\.","_")»Lib nng::nng)
-      set_target_properties(«comp.fullName.replaceAll("\\.","_")»Lib PROPERTIES LINKER_LANGUAGE CXX)
-      install(TARGETS «comp.fullName.replaceAll("\\.","_")»Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+      add_library(${comp.fullName.replaceAll("\\.","_")}Lib ${SOURCES} ${HWC_SOURCES}
+      <#list subPackagesPath as subdir >
+ ${${subdir.name.toUpperCase()}_SOURCES}
+ </#list>)
+      target_link_libraries(${comp.fullName.replaceAll("\\.","_")}Lib nng::nng)
+      set_target_properties(${comp.fullName.replaceAll("\\.","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
+      install(TARGETS ${comp.fullName.replaceAll("\\.","_")}Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
 
       add_subdirectory(test/gtests)
       '''
@@ -187,34 +186,31 @@ class CMake {
     return 
     '''
     cmake_minimum_required(VERSION 3.8)
-«««		project(«port.name.toFirstUpper»Server) TODO
-    
-    set(CMAKE_CXX_STANDARD 11)
+<#-- project(${port.name.toFirstUpper}Server) TODO -->set(CMAKE_CXX_STANDARD 11)
 
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
-     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
-    «printDsaParameters(config)»
-    «ENDIF»
+    <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
+     || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>
+    ${printDsaParameters(config)}
+    </#if>
     
-    «IF config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG 
-     && config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB»
+    <#if config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_VCG
+     && config.getTargetPlatform() != ConfigParams.TargetPlatform.DSA_LAB>
     find_package(nng 1.1.1 CONFIG REQUIRED)
-    «ENDIF»
+    </#if>
     
-    include_directories("«libraryPath.replace("\\","/")»")
+    include_directories("${libraryPath.replace("\\","/")}")
     include_directories(.)
     file(GLOB SOURCES 
     "./*.cpp"
     "./*.h"
-    "«libraryPath.replace("\\","/")»/*.cpp"
-    "«libraryPath.replace("\\","/")»/*.h")
+    "${libraryPath.replace("\\","/")}/*.cpp"
+    "${libraryPath.replace("\\","/")}/*.h")
     
-«««		add_executable(«port.name.toFirstUpper»Server ${SOURCES}) TODO
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
-«««		«printDsaLinkLibraries(port.name.toFirstUpper+"Server")» TODO
-    «ELSE»
-«««		target_link_libraries(«port.name.toFirstUpper»Server nng::nng) TODO
-    «ENDIF»
+<#-- add_executable(${port.name.toFirstUpper}Server ${SOURCES}) TODO --><#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG>
+ <#-- ${printDsaLinkLibraries(port.name.toFirstUpper+"Server")} TODO -->
+ <#else>
+ <#-- target_link_libraries(${port.name.toFirstUpper}Server nng::nng) TODO -->
+  </#if>
     '''
   }
   

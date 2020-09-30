@@ -1,5 +1,5 @@
-// (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen.xtend.util
+# (c) https://github.com/MontiCore/monticore
+<#--package montithings.generator.codegen.xtend.util
 
 import montithings.generator.helper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
@@ -9,7 +9,7 @@ import montithings._ast.ASTPort
 import montithings._ast.ASTMTValueList
 import montithings._ast.ASTMTValueRange
 import montithings._ast.ASTMTValueFormat
-import montiarc._symboltable.PortSymbol
+import montiarc._symboltable.PortSymbol-->
 
 class ValueCheck {
 
@@ -24,68 +24,68 @@ class ValueCheck {
 	          "printPortValuecheck")
 	      return ""
 	    }
-	    var mtPort = port.getAstNode().get() as ASTPort
+	    <#assign mtPort = port.getAstNode().get() as ASTPort>
 	    if (!mtPort.isPresentAllowedValues()) {
 	      return ""
 	    }
-	    var valueContainer = ""
+	    <#assign valueContainer = "">
 	    if (port.isIncoming) { valueContainer = "input" }
 	    else { valueContainer = "result" }
 
 		return '''
 		{
-		«FOR decl : mtPort.getMTPortDeclarationList»
-			«var portValue = valueContainer + ".get" + decl.name.toFirstUpper + " ().value ()"»
-			«IF !component.isBatchPort(port)»
-				«formatCheckPreparation(portValue)»
-				if («valueContainer».get«decl.name.toFirstUpper» () && !(
-			«ELSE»
-				«var helper = new ComponentHelper(component)»
-				std::vector<«helper.getRealPortCppTypeString(port)»> copy«decl.name.toFirstUpper» = input.get«decl.name.toFirstUpper» ();
-				for_each(copy«decl.name.toFirstUpper».begin (), copy«decl.name.toFirstUpper».end (), [](«helper.getRealPortCppTypeString(port)»& v)
+		<#list mtPort.getMTPortDeclarationList as decl>
+			<#assign portValue = valueContainer + ".get" + decl.name.toFirstUpper + " ().value ()">
+			<#if !component.isBatchPort(port)>
+				${formatCheckPreparation(portValue)}
+				if (${valueContainer}.get${decl.name.toFirstUpper} () && !(
+			${ELSE}
+				<#assign helper = new ComponentHelper(component)>
+				std::vector<${helper.getRealPortCppTypeString(port)}> copy${decl.name.toFirstUpper} = input.get${decl.name.toFirstUpper} ();
+				for_each(copy${decl.name.toFirstUpper}.begin (), copy${decl.name.toFirstUpper}.end (), [](${helper.getRealPortCppTypeString(port)}& v)
 				{
-					«formatCheckPreparation(portValue = 'v')»
+					${formatCheckPreparation(portValue = 'v')}
 					if  (!(
-			«ENDIF»
-			«IF mtPort.allowedValues instanceof ASTMTValueList»
-				«var list = mtPort.allowedValues as ASTMTValueList»
-				«valueListToString(portValue, list, valueContainer)»
-			«ELSEIF mtPort.allowedValues instanceof ASTMTValueRange»
-				«var range = mtPort.allowedValues as ASTMTValueRange»
-				«valueRangeToString(portValue, range, valueContainer)»
-			«ELSEIF mtPort.allowedValues instanceof ASTMTValueFormat»
-				«var format = mtPort.allowedValues as ASTMTValueFormat»
-				«IF component.isBatchPort(port)»
-					«formatCheckToString("allowedValuesCheck.str ()", format)»
-				«ELSE»
-					«formatCheckToString(portValue, format)»
-				«ENDIF»
-			«ENDIF»
+			</#if>
+			<#if mtPort.allowedValues instanceof ASTMTValueList>
+				<#assign list = mtPort.allowedValues as ASTMTValueList>
+				${valueListToString(portValue, list, valueContainer)}
+			${ELSEIF mtPort.allowedValues instanceof ASTMTValueRange}
+				<#assign range = mtPort.allowedValues as ASTMTValueRange>
+				${valueRangeToString(portValue, range, valueContainer)}
+			${ELSEIF mtPort.allowedValues instanceof ASTMTValueFormat}
+				<#assign format = mtPort.allowedValues as ASTMTValueFormat>
+				<#if component.isBatchPort(port)>
+ ${formatCheckToString("allowedValuesCheck.str ()", format)}
+ <#else>
+ ${formatCheckToString(portValue, format)}
+  </#if>
+			</#if>
 			)) {
-			«IF decl.isPresentDefault»
-				«IF component.isBatchPort(port)»
-					v = «valuationToString(decl.getDefault())»;
-				«ELSEIF valueContainer.equals("result")»
-					«valueContainer».set«decl.name.toFirstUpper»(«valuationToString(decl.getDefault())»);
-				«ELSEIF valueContainer.equals("input")»
-					«valueContainer».add«decl.name.toFirstUpper»Element(«valuationToString(decl.getDefault())»);
-				«ENDIF»
-			«ELSE»
+			<#if decl.isPresentDefault>
+				<#if component.isBatchPort(port)>
+					v = ${valuationToString(decl.getDefault())};
+				${ELSEIF valueContainer.equals("result")}
+					${valueContainer}.set${decl.name.toFirstUpper}(${valuationToString(decl.getDefault())});
+				${ELSEIF valueContainer.equals("input")}
+					${valueContainer}.add${decl.name.toFirstUpper}Element(${valuationToString(decl.getDefault())});
+				</#if>
+			${ELSE}
 				std::ostringstream error;
-				error << "Violated allowed values for port \"«decl.name»\". Actual value: ";
-				«IF component.isBatchPort(port)»
-				error << v;
-				«ELSE»
-				error << «valueContainer».get«decl.name.toFirstUpper» ().value ();
-				«ENDIF»
+				error << "Violated allowed values for port \"${decl.name}\". Actual value: ";
+				<#if component.isBatchPort(port)>
+ error << v;
+ <#else>
+ error << ${valueContainer}.get${decl.name.toFirstUpper} ().value ();
+  </#if>
 				throw std::runtime_error(error.str ());
-			«ENDIF»
+			</#if>
 			}
-			«IF component.isBatchPort(port)»
+			<#if component.isBatchPort(port)>
 			});
-			input.set«decl.name.toFirstUpper»(copy«decl.name.toFirstUpper»);
-			«ENDIF»
-		«ENDFOR»
+			input.set${decl.name.toFirstUpper}(copy${decl.name.toFirstUpper});
+			</#if>
+		</#list>
 		}
 		'''
 	}
@@ -93,37 +93,39 @@ class ValueCheck {
 	def private static String formatCheckPreparation(String port) {
     	return '''
     	std::ostringstream allowedValuesCheck;
-    	allowedValuesCheck << «port»;'''
+    	allowedValuesCheck << ${port};'''
   	}
 
 	def private static String formatCheckToString(String port, ASTMTValueFormat format) {
-    	return '''std::regex_match(allowedValuesCheck.str(), std::regex("«format.format»"))'''
+    	return '''std::regex_match(allowedValuesCheck.str(), std::regex("${format.format}"))'''
 	}
 
 	def private static String valueRangeToString(String port, ASTMTValueRange range, String valueContainer) {
-	    var lowerBound = valuationToString(range.getLowerBound());
-	    var upperBound = valuationToString(range.getUpperBound());
+	    <#assign lowerBound = valuationToString(range.getLowerBound());>
+	    <#assign upperBound = valuationToString(range.getUpperBound());>
 
 		return '''
-		«port» >= «lowerBound» &&
-		«IF range.isPresentStepsize»
-		((«port» - «lowerBound») % «valuationToString(range.stepsize)» == 0) &&
-		«ENDIF»
-		«port» <= «upperBound»
+		${port} >= ${lowerBound} &&
+		<#if range.isPresentStepsize>
+ ((${port} - ${lowerBound}) % ${valuationToString(range.stepsize)} == 0) &&
+ </#if>
+		${port} <= ${upperBound}
 		'''
   	}
 
   	def private static String valueListToString(String port, ASTMTValueList list, String valueContainer) {
-		var ranges = list.getMTValueRangeList();
-		var valuations = list.getValuationList();
+		<#assign ranges = list.getMTValueRangeList();>
+		<#assign valuations = list.getValuationList();>
 		return '''
-		«FOR v : valuations SEPARATOR ' || '»
-			«port» == «valuationToString(v)»
-		«ENDFOR»
-		«IF !valuations.isEmpty && !ranges.isEmpty» || «ENDIF»
-		«FOR r : ranges SEPARATOR ' || '»
-			(«valueRangeToString(port, r, valueContainer)»)
-		«ENDFOR»
+		<#list valuations as v >
+ port} == ${valuationToString(v)<#sep>||</#sep>
+ </#list>
+		<#if !valuations.isEmpty && !ranges.isEmpty>
+ ||
+ </#if>
+		<#list ranges as r >
+ (${valueRangeToString(port, r, valueContainer)})<#sep>||</#sep>
+ </#list>
 		'''
 	}
 

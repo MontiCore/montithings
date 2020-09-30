@@ -1,20 +1,20 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen.xtend.util
+package montithings.generator.codegen.xtend.util;
 
-import de.monticore.types.typesymbols._symboltable.FieldSymbol
-import arcbasis._symboltable.ComponentInstanceSymbol
-import arcbasis._symboltable.ComponentTypeSymbol
-import arcbasis._symboltable.PortSymbol
-import de.monticore.types.typesymbols._symboltable.TypeVarSymbol
+import de.monticore.types.typesymbols._symboltable.FieldSymbol;
+import arcbasis._symboltable.ComponentInstanceSymbol;
+import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
+import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 
 
 class Identifier {
 
   static Identifier instance;
 
-  def static createInstance(ComponentTypeSymbol comp) {
-    instance = new Identifier()
-    instance.checkIdentifiers(comp)
+  static void createInstance(ComponentTypeSymbol comp) {
+    instance = new Identifier();
+    instance.checkIdentifiers(comp);
   }
 
   String resultName = "result";
@@ -33,7 +33,7 @@ class Identifier {
    * @return True, iff. there is at least one identifier that is equal to the
    * given identifier
    */
-  def boolean containsIdentifier(String identifier, ComponentTypeSymbol component) {
+  boolean containsIdentifier(String identifier, ComponentTypeSymbol component) {
 
     for (PortSymbol portSymbol : component.getPorts()) {
       if (portSymbol.getName().equals(identifier)) {
@@ -41,14 +41,14 @@ class Identifier {
       }
     }
 
-    for (FieldSymbol FieldSymbol : component.parameters) {
-      if (FieldSymbol.getName().equals(identifier)) {
+    for (FieldSymbol fieldSymbol : component.getParameters()) {
+      if (fieldSymbol.getName().equals(identifier)) {
         return true;
       }
     }
 
-    for (TypeVarSymbol TypeVarSymbol : component.typeParameters) {
-      if (TypeVarSymbol.getName().equals(identifier)) {
+    for (TypeVarSymbol typeVarSymbol : component.getTypeParameters()) {
+      if (typeVarSymbol.getName().equals(identifier)) {
         return true;
       }
     }
@@ -62,7 +62,7 @@ class Identifier {
     return false;
   }
 
-  def private void checkIdentifiers(ComponentTypeSymbol comp) {
+  private void checkIdentifiers(ComponentTypeSymbol comp) {
     if (containsIdentifier("result", comp)) {
       resultName = "r__result";
     }
@@ -81,28 +81,28 @@ class Identifier {
   /**
    * @return behaviorImplName
    */
-  def static String getBehaviorImplName() {
+  static String getBehaviorImplName() {
     return instance.behaviorImplName;
   }
 
   /**
    * @return resultName
    */
-  def static String getResultName() {
+  static String getResultName() {
     return instance.resultName;
   }
 
   /**
    * @return inputName
    */
-  def static String getInputName() {
+  static String getInputName() {
     return instance.inputName;
   }
 
   /**
    * @return currentStateName
    */
-  def static String getCurrentStateName() {
+  static String getCurrentStateName() {
     return instance.currentStateName;
   }
 }

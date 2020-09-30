@@ -1,27 +1,27 @@
-// (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen.xtend.util
+# (c) https://github.com/MontiCore/monticore
+<#--package montithings.generator.codegen.xtend.util
 
 import java.util.List
 import montithings.generator.helper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
-import montithings.generator.codegen.ConfigParams
+import montithings.generator.codegen.ConfigParams-->
 
 class Scripts {
   
   def static printRunScript(ComponentTypeSymbol comp, ConfigParams config) {
-        var instances = ComponentHelper.getInstances(comp);
+        <#assign instances = ComponentHelper.getInstances(comp);>
     return '''
-    «FOR pair : instances»
-    ./«pair.getKey().fullName» «pair.getValue()» «config.componentPortMap.getManagementPort(pair.getValue())» «config.componentPortMap.getCommunicationPort(pair.getValue())» > «pair.getValue()».log 2>&1 &
-    «ENDFOR»
+    <#list instances as pair >
+ ./${pair.getKey().fullName} ${pair.getValue()} ${config.componentPortMap.getManagementPort(pair.getValue())} ${config.componentPortMap.getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
+ </#list>
     '''
   }
 
     def static printKillScript(List<String> components) {
     return '''
-    «FOR comp : components»
-    killall «comp»
-    «ENDFOR»
+    <#list components as comp >
+ killall ${comp}
+ </#list>
     '''
   }
 
@@ -38,19 +38,19 @@ class Scripts {
         echo "There is no component whose fully qualified name matches the first argument. Aborting."
         exit 1
     fi
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG»
+    <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG>
     dev-docker.sh l06 build
     cd build_dev-l06_*
-    «ELSE»
+    ${ELSE}
     mkdir -p build
     cd build
-    «IF config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB»
-    $CMAKE -G Ninja ..
-    «ELSE»
-    cmake -G Ninja ..
-    «ENDIF»
+    <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>
+ $CMAKE -G Ninja ..
+ <#else>
+ cmake -G Ninja ..
+  </#if>
     ninja
-    «ENDIF»
+    </#if>
     echo Copy Scripts for "$1"
     cd bin
     cp ../../"$1"/*.sh .
