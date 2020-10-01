@@ -31,7 +31,7 @@ import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.codegen.ConfigParams;
-import montithings.generator.codegen.xtend.MTGenerator;
+import montithings.generator.codegen.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import phyprops.PhypropsTool;

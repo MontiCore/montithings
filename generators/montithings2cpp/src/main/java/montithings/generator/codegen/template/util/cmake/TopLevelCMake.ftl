@@ -45,38 +45,6 @@ class CMake {
     target_link_libraries(${targetName} nng pthread curl ${ATOMIC_LIBRARY})
     '''
   }
-
-  def static printGoogleTestParameters(ComponentTypeSymbol comp) {
-    return '''
-    project(gtests)
-
-    enable_testing()
-
-    add_subdirectory(lib)
-    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
-    macro(package_add_test TESTNAME)
-        add_executable(${TESTNAME} ${ARGN})
-        target_link_libraries(${TESTNAME} gtest gmock gtest_main)
-        target_link_libraries(${TESTNAME} ${comp.fullName.replaceAll("\\.","_")}Lib)
-        add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
-        set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
-    endmacro()
-
-    package_add_test(${comp.fullName.replaceAll("\\.","_")}TestSuite ${comp.fullName.replaceAll("\\.","_")}Test.cpp)
-    include_directories("/usr/local/include")
-  '''
-  }
-
-  def static printCMakeForSubdirectories(List<String> subdirectories) {
-    return '''
-    cmake_minimum_required (VERSION 3.8)
-    project ("MontiThings Application")
-    <#list subdirectories as subdir >
- add_subdirectory ("${subdir}")
- </#list>
-    '''
-  }
   
   def static printTopLevelCMake(File[] files, ComponentTypeSymbol comp, String hwcPath, String libraryPath, File[] subPackagesPath, ConfigParams config) {
     <#assign commonCodePrefix = "">
@@ -166,21 +134,6 @@ class CMake {
     set_target_properties(${comp.fullName} PROPERTIES LINKER_LANGUAGE CXX)
     '''
   }
-
-    def static printLinkTestLibraries(ComponentTypeSymbol comp, File[] subPackagesPath) {
-      return '''
-
-      add_library(${comp.fullName.replaceAll("\\.","_")}Lib ${SOURCES} ${HWC_SOURCES}
-      <#list subPackagesPath as subdir >
- ${${subdir.name.toUpperCase()}_SOURCES}
- </#list>)
-      target_link_libraries(${comp.fullName.replaceAll("\\.","_")}Lib nng::nng)
-      set_target_properties(${comp.fullName.replaceAll("\\.","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
-      install(TARGETS ${comp.fullName.replaceAll("\\.","_")}Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
-
-      add_subdirectory(test/gtests)
-      '''
-    }
     
   def static printIPCServerCMake(/*ResourcePortSymbol port,*/ String libraryPath, String ipcPath, Boolean existsHWC, ConfigParams config){
     return 

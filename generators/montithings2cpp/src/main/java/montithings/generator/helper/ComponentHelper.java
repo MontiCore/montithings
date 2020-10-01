@@ -32,7 +32,7 @@ import montithings._ast.ASTMTComponentType;
 import montithings._ast.ASTMTCondition;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
-import montithings.generator.codegen.xtend.util.Utils;
+import montithings.generator.codegen.util.Utils;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import org.eclipse.xtext.xbase.lib.Pair;

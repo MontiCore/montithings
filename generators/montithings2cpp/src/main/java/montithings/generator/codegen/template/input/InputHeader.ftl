@@ -9,7 +9,7 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper-->
 
   def static generateInputHeader(ComponentTypeSymbol comp, String compname, ConfigParams config) {
-  <#assign ComponentHelper helper = new ComponentHelper(comp)>
+  <#assign helper = ComponentHelper(comp)>
   <#assign isBatch = ComponentHelper.usesBatchMode(comp);>
 
 #pragma once

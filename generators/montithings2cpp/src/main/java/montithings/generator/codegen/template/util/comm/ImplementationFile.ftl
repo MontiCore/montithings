@@ -11,53 +11,6 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.ConfigParams-->
 
-class Comm {
-
-  def static String generateHeader (ComponentTypeSymbol comp, ConfigParams config) {
-    return '''
-    #pragma once
-    #include "${comp.name}.h"
-    #include "ManagementCommunication.h"
-    #include "ManagementMessageProcessor.h"
-
-    ${Utils.printNamespaceStart(comp)}
-
-    class ${comp.name}Manager : public ManagementMessageProcessor
-    {
-    protected:
-    montithings::hierarchy::${comp.name}* comp;
-    ManagementCommunication* comm;
-    std::string managementPort;
-    std::string communicationPort;
-    <#if config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL>
- std::string portConfigFilePath;
- </#if>
-
-    public:
-    ${comp.name}Manager (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} *comp, std::string managementPort, std::string communicationPort);
-
-    /* 
-     * Process management instructions from the enclosing component
-     * Those are mostly connectors to other components
-     */
-    void process (std::string msg) override;
-
-    /*
-     * Initially create ports of this component
-     */
-    void initializePorts ();
-
-    /*
-     * Search for subcomponents
-     * Tell subcomponents to which ports of other components they should connect
-     */
-    void searchSubcomponents ();
-    };
-
-    ${Utils.printNamespaceEnd(comp)}
-    '''
-  }
-
   def static String generateImplementationFile (ComponentTypeSymbol comp, ConfigParams config) {
     return '''
     #include "${comp.name}Manager.h"
@@ -258,22 +211,3 @@ class Comm {
     std::string comm_out_uri;
     '''
   }
-
-  def static printPortJson(ComponentTypeSymbol comp, ConfigParams config) {
-    printPortJson(comp, config, comp.fullName)
-  }
-
-  def static printPortJson(ComponentTypeSymbol comp, ConfigParams config, String prefix) {
-    return '''
-    {
-    ${FOR subcomp : comp.subComponents SEPARATOR ","}
-      "${subcomp.name}": {
-        "management": "${config.componentPortMap.getManagementPort(prefix + "." + subcomp.name)}",
-        "communication": "${config.componentPortMap.getCommunicationPort(prefix + "." + subcomp.name)}"
-      }
-    </#list>
-    }
-    '''
-  }
-
-}

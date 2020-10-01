@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen.xtend.util;
+package montithings.generator.codegen.util;
 
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import arcbasis._symboltable.ComponentInstanceSymbol;
@@ -8,11 +8,11 @@ import arcbasis._symboltable.PortSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 
 
-class Identifier {
+public class Identifier {
 
   static Identifier instance;
 
-  static void createInstance(ComponentTypeSymbol comp) {
+  public static void createInstance(ComponentTypeSymbol comp) {
     instance = new Identifier();
     instance.checkIdentifiers(comp);
   }

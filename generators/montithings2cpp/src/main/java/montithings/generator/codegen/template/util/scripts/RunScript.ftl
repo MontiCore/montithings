@@ -17,14 +17,6 @@ class Scripts {
     '''
   }
 
-    def static printKillScript(List<String> components) {
-    return '''
-    <#list components as comp >
- killall ${comp}
- </#list>
-    '''
-  }
-
     def static printBuildScript(ConfigParams config) {
         return '''
     set -e # Stop on first error

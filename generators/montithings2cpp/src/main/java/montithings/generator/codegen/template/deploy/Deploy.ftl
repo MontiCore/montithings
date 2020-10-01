@@ -4,8 +4,6 @@
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.ConfigParams-->
-
-class Deploy {
   
   def static generateDeploy(ComponentTypeSymbol comp, String compname, ConfigParams config) {
     return '''
@@ -82,39 +80,3 @@ class Deploy {
       }
     '''
   }
-
-  
-  def static generateDeployArduino(ComponentTypeSymbol comp, String compname) {
-    return '''
-    #include "${compname}.h"
-    
-    ${ComponentHelper.printPackageNamespaceForComponent(comp)}${compname} cmp;
-    const long interval = ${ComponentHelper.getExecutionIntervalInMillis(comp)};
-    unsigned long previousMillis = 0;
-    
-    void setup() {
-      Serial.begin(9600);
-      cmp.setUp(<#if ComponentHelper.isTimesync(comp)>
- TIMESYNC
- <#else>
- EVENTBASED
-  </#if>);
-      cmp.init();
-      <#if !ComponentHelper.isTimesync(comp)>
- cmp.start();
- </#if>
-    }
-    
-    void loop() {
-      <#if ComponentHelper.isTimesync(comp)>
-      unsigned long currentMillis = millis();
-
-      if (currentMillis >= previousMillis + interval) {
-        previousMillis = currentMillis;
-        cmp.compute();
-      }
-      </#if>
-    }
-    '''
-  }
-}
