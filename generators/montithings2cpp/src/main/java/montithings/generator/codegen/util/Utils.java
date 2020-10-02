@@ -3,17 +3,20 @@ package montithings.generator.codegen.util;
 
 import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import cdlangextension._ast.ASTCDEImportStatement;
 import com.google.common.base.Strings;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
+import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class Utils {
@@ -202,6 +205,61 @@ public class Utils {
 
   public static String printExpression(ASTExpression expr) {
     return printExpression(expr, true);
+  }
+
+  public static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {
+    StringBuilder s = new StringBuilder();
+    HashSet<String> portIncludes = new HashSet<String>();
+    HashSet<ASTCDEImportStatement> includeStatements = new HashSet<ASTCDEImportStatement>();
+    for (port : comp.getPorts()) {
+      if (ComponentHelper.portUsesCdType(port)) {
+        cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config);
+        if(cdeImportStatementOpt.isPresent()) {
+          includeStatements.add(cdeImportStatementOpt.get());
+          portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
+          adapterName = portNamespace.split("::");
+          if(adapterName.length>=2) {
+            portIncludes.add('''#include "«adapterName.get(adapterName.length-2)»Adapter.h"''')
+          }
+        }
+        else{
+          portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
+          portIncludes.add('''#include "«portNamespace.replace("::", "/")».h"''')
+        }
+      }
+    }
+    for(include : portIncludes){
+      s.append(include+"\n");
+    }
+    s.append(Adapter.printIncludes(includeStatements.toList));
+    return s;
+  }
+
+  def static String printIncludes(List<ASTCDEImportStatement> imports) {
+    var HashSet<String> portIncludes = new HashSet<String>()
+    for (importStatement : imports) {
+      var portPackage = importStatement.getImportSource().toString();
+      portIncludes.add('''#include «portPackage»''');
+      portIncludes.add('''#include "«printCDType(importStatement).replace("::", "/")».h"''')
+    }
+    return '''
+	«FOR include : portIncludes»
+	«include»
+	«ENDFOR»
+    '''
+  }
+
+  def static String printCDType(ASTCDEImportStatement importStatement) {
+    var namespace = new StringBuilder("montithings::");
+    if(importStatement.isPresentPackage()){
+      var packages = importStatement.getPackage().getPartList();
+
+      for (String packageName : packages) {
+        namespace.append(packageName).append("::");
+      }
+      return ComponentHelper.printPackageNamespaceFromString(packages.get(packages.size-1)+"::"+importStatement.getName().toString(), namespace.toString());
+    }
+    return importStatement.getName().toString();
   }
 
 }

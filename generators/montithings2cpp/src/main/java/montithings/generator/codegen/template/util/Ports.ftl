@@ -14,26 +14,7 @@ import cdlangextension._ast.ASTCDEImportStatement-->
 
   <#macro printIncludes comp config>
   <#import "/template/adapter/Header.ftl" as Adapter>
-  <#assign portIncludes = []>
-  <#assign includeStatements = []>
-  <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-    <#list comp.ports as port >
-      <#if ComponentHelper.portUsesCdType(port)>
-          <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
-            <#if cdeImportStatementOpt.isPresent() >
-              includeStatements.add(cdeImportStatementOpt.get());
-              <#assign portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)>
-              <#assign adapterName = portNamespace.split("::")>
-                 <#if adapterName.length() gte 2 >
-                    portIncludes.add("#include \"${adapterName.get(adapterName.length-2)}Adapter.h\"")
-                 </#if>
-            <#else>
-    		    <#assign portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)>
-      		    portIncludes.add("#include \"${portNamespace.replace("::", "/")}.h\"")
-      		</#if>
-      </#if>
-      </#list>
-	<#list portIncludes as include >
+      <#list portIncludes as include >
  include
  </#list>
     <#assign isList = includeStatements.toList()>
