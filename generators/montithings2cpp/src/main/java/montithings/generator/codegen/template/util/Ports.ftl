@@ -1,4 +1,5 @@
 # (c) https://github.com/MontiCore/monticore
+<#import "/template/adapter/Header.ftl" as Adapter>
 <#--package montithings.generator.codegen.xtend.util
 
 import java.util.Collection
@@ -11,38 +12,35 @@ import montithings.generator.codegen.xtend.Adapter
 import montithings.generator.codegen.ConfigParams
 import cdlangextension._ast.ASTCDEImportStatement-->
 
-class Ports {
-
-  def static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {
-  <#assign HashSet<String> portIncludes = new HashSet<String>()>
-  	<#assign HashSet<ASTCDEImportStatement> includeStatements = new HashSet<ASTCDEImportStatement>()>
-    for (port : comp.ports) {
-      if (ComponentHelper.portUsesCdType(port)) {
-          <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config);>
-            if(cdeImportStatementOpt.isPresent()) {
+  <#macro printIncludes comp config>
+  <#import "/template/adapter/Header.ftl" as Adapter>
+  <#assign portIncludes = []>
+  <#assign includeStatements = []>
+  <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+    <#list comp.ports as port >
+      <#if ComponentHelper.portUsesCdType(port)>
+          <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
+            <#if cdeImportStatementOpt.isPresent() >
               includeStatements.add(cdeImportStatementOpt.get());
               <#assign portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)>
-              <#assign adapterName = portNamespace.split("::");>
-                 if(adapterName.length>=2) {
-                    portIncludes.add('''#include "${adapterName.get(adapterName.length-2)}Adapter.h"''')
-                 }
-            }
-            else{
+              <#assign adapterName = portNamespace.split("::")>
+                 <#if adapterName.length() gte 2 >
+                    portIncludes.add("#include \"${adapterName.get(adapterName.length-2)}Adapter.h\"")
+                 </#if>
+            <#else>
     		    <#assign portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)>
-      		    portIncludes.add('''#include "${portNamespace.replace("::", "/")}.h"''')
-      		}
-      	}
-      }
-	return '''
+      		    portIncludes.add("#include \"${portNamespace.replace("::", "/")}.h\"")
+      		</#if>
+      </#if>
+      </#list>
 	<#list portIncludes as include >
  include
  </#list>
-	${Adapter.printIncludes(includeStatements.toList)}
-	'''
-  }
+    <#assign isList = includeStatements.toList()>
+	<@Adapter.printIncludes isList/>
+  </#macro>
 
-  def static printVars(ComponentTypeSymbol comp, Collection<PortSymbol> ports, ConfigParams config) {
-  return	'''
+  <#macro printVars comp, ports, config>
     // Ports
     <#list ports as port>
     <#assign type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)>
@@ -57,11 +55,9 @@ class Ports {
     sole::uuid portMonitorUuid${name.toFirstUpper} = sole::uuid4 ();
     </#list>
     </#if>
-    '''
-  }
+</#macro>
 
-  def static printMethodHeaders(Collection<PortSymbol> ports, ConfigParams config){
-  return	'''
+<#macro printMethodHeaders ports, config>
     <#list ports as port>
     <#assign type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)>
     <#assign name = port.name>
@@ -71,11 +67,9 @@ class Ports {
     void addOutPort${name.toFirstUpper}(Port<${type}>* ${name});
     void removeOutPort${name.toFirstUpper}(Port<${type}>* ${name});
     </#list>
-    '''
-  }
+</#macro>
 
-  def static printMethodBodies(Collection<PortSymbol> ports, ComponentTypeSymbol comp, String compname, ConfigParams config){
-  return	'''
+<#macro printMethodBodies ports, comp, compname, config>
     <#list ports as port>
     <#assign type = ComponentHelper.getRealPortCppTypeString(port.component.get, port, config)>
     <#assign name = port.name>
@@ -104,6 +98,4 @@ class Ports {
       ${name}->getOutport ()->removeManagedPort (port);
     }
     </#list>
-    '''
-    }
-}
+</#macro>

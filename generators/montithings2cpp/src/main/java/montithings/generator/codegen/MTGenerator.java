@@ -7,11 +7,11 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.TemplateModel;
+import freemarker.template.Version;
 import jline.internal.Log;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
@@ -95,6 +95,13 @@ public class MTGenerator {
     setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
 
     GeneratorEngine engine = new GeneratorEngine(setup);
+
+    /*BeansWrapper wrapper = new BeansWrapper(new Version(2,3,27));
+    TemplateModel statics = wrapper.getStaticModels();
+    Map<String, Object> map = new HashMap();
+    map.put("statics", statics);*/
+
+    //ComponentHelper helper = new ComponentHelper();
 
     engine.generateNoA(template, path, templateArguments);
   }

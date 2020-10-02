@@ -1,16 +1,17 @@
 # (c) https://github.com/MontiCore/monticore
-
+${tc.signature("comp", "compname", "config")}
+<#import "/template/util/Ports.ftl" as Ports>
 <#--package montithings.generator.codegen.xtend
 
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.codegen.xtend.util.Utils
-import montithings.generator.helper.ComponentHelper-->
+import montithings.generator.helper.ComponentHelper
 
-  def static generateInputHeader(ComponentTypeSymbol comp, String compname, ConfigParams config) {
-  <#assign helper = ComponentHelper(comp)>
-  <#assign isBatch = ComponentHelper.usesBatchMode(comp);>
+  <#assign ComponentHelper = statics['montithings.generator.helper.ComponentHelper']>-->
+  <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+  <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 
 #pragma once
 #include <string>
@@ -22,7 +23,7 @@ import montithings.generator.helper.ComponentHelper-->
 #include <set>
 #include <utility>
 #include "tl/optional.hpp"
-${Ports.printIncludes(comp, config)}
+<@Ports.printIncludes comp config/>
 
 ${Utils.printNamespaceStart(comp)}
 
@@ -31,29 +32,29 @@ class ${compname}Input
 <#if comp.presentParentComponent> :
   ${Utils.printSuperClassFQ(comp)}Input
 <#if comp.parent.loadedSymbol.hasTypeParameter><
-<#list helper.superCompActualTypeArguments as scTypeParams >
+<#list ComponentHelper.superCompActualTypeArguments as scTypeParams >
  scTypeParams<#sep>,
  </#list>></#if>
 </#if>
 {
 private:
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port >
- tl::optional<${helper.getRealPortCppTypeString(port, config)}> ${port.name};
+ tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}> ${port.name};
  </#list>
 <#list ComponentHelper.getPortsInBatchStatement(comp) as port >
- std::vector<${helper.getRealPortCppTypeString(port, config)}> ${port.name} = {};
+ std::vector<${ComponentHelper.getRealPortCppTypeString(port, config)}> ${port.name} = {};
  </#list>
 public:
   ${compname}Input() = default;
   <#if !comp.allIncomingPorts.empty && !isBatch>
-  explicit ${compname}Input(<#list optional<${helper.getRealPortCppTypeString(port, config)}> ${port.name as port : comp.allIncomingPorts SEPARATOR ','} tl:>
-
- </#list>);
+  explicit ${compname}Input(<#list comp.allIncomingPorts as port> tl:optional<${ComponentHelper.getRealPortCppTypeString(port, config)}> ${port.name}
+      <#sep>,
+  </#list>);
     </#if>
   <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port>
   <#if port.isIncoming>
-  tl::optional<${helper.getRealPortCppTypeString(port, config)}> get${port.name.toFirstUpper}() const;
-  void set${port.name.toFirstUpper}(tl::optional<${helper.getRealPortCppTypeString(port, config)}>);
+  tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}> get${port.name.toFirstUpper}() const;
+  void set${port.name.toFirstUpper}(tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}>);
   <#if ComponentHelper.portUsesCdType(port)>
   <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
   <#if cdeImportStatementOpt.isPresent()>
@@ -65,9 +66,9 @@ public:
   </#list>
   <#list ComponentHelper.getPortsInBatchStatement(comp) as port>
   <#if port.isIncoming>
-  std::vector<${helper.getRealPortCppTypeString(port, config)}> get${port.name.toFirstUpper}() const;
-  void add${port.name.toFirstUpper}Element(tl::optional<${helper.getRealPortCppTypeString(port, config)}>);
-  void set${port.name.toFirstUpper}(std::vector<${helper.getRealPortCppTypeString(port, config)}> vector);
+  std::vector<${ComponentHelper.getRealPortCppTypeString(port, config)}> get${port.name.toFirstUpper}() const;
+  void add${port.name.toFirstUpper}Element(tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}>);
+  void set${port.name.toFirstUpper}(std::vector<${ComponentHelper.getRealPortCppTypeString(port, config)}> vector);
   </#if>
   </#list>
 };

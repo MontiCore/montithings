@@ -53,19 +53,6 @@ import java.util.stream.Collectors;
  * composed components.
  */
 public class ComponentHelper {
-  private final ComponentTypeSymbol component;
-
-  protected final ASTComponentType componentNode;
-
-  public ComponentHelper(ComponentTypeSymbol component) {
-    this.component = component;
-    if (component.isPresentAstNode()) {
-      componentNode = component.getAstNode();
-    }
-    else {
-      componentNode = null;
-    }
-  }
 
   public static List<de.monticore.symboltable.ImportStatement> getImports(
     arcbasis._symboltable.ComponentTypeSymbol symbol) {
@@ -84,7 +71,7 @@ public class ComponentHelper {
    * @return A list of String representations of the actual type arguments
    * assigned to the super component
    */
-  public List<String> getSuperCompActualTypeArguments() {
+  public static List<String> getSuperCompActualTypeArguments(ComponentTypeSymbol component) {
     // TODO: Write me
     final List<String> paramList = new ArrayList<>();
     if (component.isPresentParentComponent()) {
@@ -188,17 +175,6 @@ public class ComponentHelper {
   }
 
   /**
-   * Prints the type of the given port respecting inherited ports and the actual
-   * type values
-   *
-   * @param port Symbol of the port of which to determine the type
-   * @return The string representation of the type
-   */
-  public String getRealPortTypeString(arcbasis._symboltable.PortSymbol port) {
-    return getRealPortTypeString(this.component, port);
-  }
-
-  /**
    * Determines the name of the type of the port represented by its symbol. This
    * takes in to account whether the port is inherited and possible required
    * renamings due to generic type parameters and their actual arguments.
@@ -299,7 +275,7 @@ public class ComponentHelper {
    *              should be calculated.
    * @return The parameters.
    */
-  public Collection<String> getParamValues(arcbasis._symboltable.ComponentInstanceSymbol param) {
+  public static Collection<String> getParamValues(arcbasis._symboltable.ComponentInstanceSymbol param) {
     List<ASTExpression> configArguments = param.getArguments();
     MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
 
@@ -472,11 +448,6 @@ public class ComponentHelper {
     type = type.replaceAll("Float", "float");
 
     return type;
-  }
-
-  public String getRealPortCppTypeString(arcbasis._symboltable.PortSymbol port,
-    ConfigParams config) {
-    return java2cppTypeString(getRealPortCppTypeString(this.component, port, config));
   }
 
   public static String getRealPortCppTypeString(arcbasis._symboltable.ComponentTypeSymbol comp,
