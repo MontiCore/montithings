@@ -20,10 +20,24 @@ import java.util.*;
  */
 public class ConfigParams {
   public enum TargetPlatform {
-    GENERIC,
-    DSA_VCG, // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
-    ARDUINO,
-    DSA_LAB // connected cars lab, based on docker.dsa-ac.de:20001/dev-l06-customer
+    GENERIC("GENERIC"),
+    DSA_VCG("DSA_VCG"), // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
+    ARDUINO("ARDUINO"),
+    DSA_LAB("DSA_LAB"); // connected cars lab, based on docker.dsa-ac.de:20001/dev-l06-customer
+
+    String name;
+
+    TargetPlatform(String name) {
+      this.name = name;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.name;
+    }
   }
 
   /**

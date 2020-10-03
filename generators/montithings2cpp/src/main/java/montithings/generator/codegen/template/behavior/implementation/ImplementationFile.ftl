@@ -2,6 +2,7 @@
 ${tc.signature("comp", "compname", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#--package montithings.generator.codegen.xtend.behavior
 
 import arcbasis._symboltable.ComponentTypeSymbol
@@ -31,7 +32,7 @@ ${compname}Result${generics} ${compname}Impl<#if isTOP>
 ${Utils.printTemplateArguments(comp)}
 ${compname}Result${generics} ${compname}Impl<#if isTOP>
  TOP
- </#if>${generics}::compute(${compname}Input${generics} ${Identifier.inputName}){
+ </#if>${generics}::compute(${compname}Input${generics} input<#-- TODO ${Identifier.getInputName()}-->){
   ${compname}Result${generics} result;
   ${ComponentHelper.printStatementBehavior(comp)}
   return result;

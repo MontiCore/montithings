@@ -33,7 +33,7 @@ ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::${compname}Inpu
  port.getName()
  </#list>);
 </#if>
-<#list comp.incomingPorts() as port >
+<#list comp.getIncomingPorts() as port >
  this->${port.getName()} = std::move(${port.getName()});
  </#list>
 }

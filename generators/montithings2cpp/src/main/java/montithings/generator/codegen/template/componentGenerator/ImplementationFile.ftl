@@ -24,10 +24,10 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
  </#if>
 
     <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)>
- ${printRun(comp, compname)}
+        <@printRun comp compname/>
  </#if>
-    ${printComputeDecomposed(comp, compname, config)}
-    ${printStartDecomposed(comp, compname, config)}
+    <@printComputeDecomposed comp compname config/>
+    <@printStartDecomposed comp compname config/>
     <#else>
     <@printComputeAtomic comp compname/>
         <@printStartAtomic comp compname/>
@@ -61,7 +61,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
 
 
 <#macro printConstructor comp compname config>
-    <#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode() == ConfigParams.SplittingMode.OFF)>
+    <#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF")>
     ${Utils.printTemplateArguments(comp)}
     ${compname}${Utils.printFormalTypeParameters(comp)}::${compname}(std::string instanceName<#if comp.getParameters()?has_content>
  ,
@@ -76,7 +76,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
  ,
  </#if>
     <#if shouldPrintSubcomponents>
- ${Subcomponents.printInitializerList(comp, config)}
+ <@Subcomponents.printInitializerList comp config/>
  </#if>
     <#if comp.getParameters()?has_content && shouldPrintSubcomponents>,</#if>
  <#if comp.isAtomic() && !comp.getParameters()?has_content && shouldPrintSubcomponents>,
@@ -290,23 +290,23 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
     void ${compname}${Utils.printFormalTypeParameters(comp)}::compute(){
       if (shouldCompute()) {
       
-      ${printComputeInputs(comp, compname)}
+      <@printComputeInputs comp compname/>
       <#list comp.incomingPorts as port>
  <#-- ${ValueCheck.printPortValuecheck(comp, port)} -->
  </#list>
-      ${printPreconditionsCheck(comp, compname)}
+      <@printPreconditionsCheck comp compname/>
       
-      <#if config.getSplittingMode() == ConfigParams.SplittingMode.OFF>
+      <#if config.getSplittingMode().toString() == "OFF">
       <#list comp.subComponents as subcomponent >
  this->${subcomponent.getName()}.compute();
  </#list>
       </#if>
 
-    ${printComputeResults(comp, compname, true)}
-    <#list comp.getOutgoingPorts as port>
+    <@printComputeResults comp compname true/>
+    <#list comp.getOutgoingPorts() as port>
  <#-- ${ValueCheck.printPortValuecheck(comp, port)} -->
  </#list>
-    ${printPostconditionsCheck(comp, compname)}
+    <@printPostconditionsCheck comp compname/>
       }
     }
 </#macro>
@@ -334,7 +334,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
       <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)>
       threads.push_back(std::thread{&${compname}${Utils.printFormalTypeParameters(comp)}::run, this});
       <#else>
-      <#if config.getSplittingMode() == ConfigParams.SplittingMode.OFF>
+      <#if config.getSplittingMode().toString() == "OFF">
       <#list comp.subComponents as subcomponent >
  this->${subcomponent.getName()}.start();
  </#list>

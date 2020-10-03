@@ -46,7 +46,7 @@ import montithings.generator.helper.ComponentHelper-->
       <#list comp.subComponents as subcomponent>
         ${subcomponent.getName()}( "${subcomponent.getName()}"
           <#if config.getSplittingMode().toString() == "OFF">
-          <#list helper.getParamValues(subcomponent) as param >
+          <#list ComponentHelper.getParamValues(subcomponent) as param >
 <#sep>,
 param
  </#list>

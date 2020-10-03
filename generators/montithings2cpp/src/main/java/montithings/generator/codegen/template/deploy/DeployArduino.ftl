@@ -1,12 +1,11 @@
 # (c) https://github.com/MontiCore/monticore
+${tc.signature("comp", "compname")}
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#--package montithings.generator.codegen.xtend
 
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.ConfigParams-->
-  
-  def static generateDeployArduino(ComponentTypeSymbol comp, String compname) {
-    return '''
     #include "${compname}.h"
     
     ${ComponentHelper.printPackageNamespaceForComponent(comp)}${compname} cmp;
@@ -36,5 +35,3 @@ import montithings.generator.codegen.ConfigParams-->
       }
       </#if>
     }
-    '''
-  }

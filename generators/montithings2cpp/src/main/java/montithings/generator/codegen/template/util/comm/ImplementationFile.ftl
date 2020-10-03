@@ -15,14 +15,14 @@ import montithings.generator.codegen.ConfigParams-->
     return '''
     #include "${comp.getName()}Manager.h"
     #include "messages/PortToSocket.h"
-    <#if config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL>
+    <#if config.getSplittingMode().toString() == "LOCAL">
     #include "json/json.hpp"
     #include <fstream>
     </#if>
 
     ${Utils.printNamespaceStart(comp)}
 
-    <#if config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL>
+    <#if config.getSplittingMode().toString() == "LOCAL">
  using json = nlohmann::json;
  </#if>
 
@@ -100,7 +100,7 @@ import montithings.generator.codegen.ConfigParams-->
       // ${subcomponentSymbol.getName()} ${subcomponent.getName()}
       ${printSCDetailsHelper(comp, subcomponent)}
 
-        <#if config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL>
+        <#if config.getSplittingMode().toString() == "LOCAL">
         std::ifstream i (this->portConfigFilePath);
         json j;
         i >> j;

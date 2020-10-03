@@ -26,7 +26,7 @@ import montithings.generator.codegen.ConfigParams-->
     ManagementCommunication* comm;
     std::string managementPort;
     std::string communicationPort;
-    <#if config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL>
+    <#if config.getSplittingMode().toString() == "LOCAL">
  std::string portConfigFilePath;
  </#if>
 
