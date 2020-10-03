@@ -18,12 +18,12 @@ import montithings.generator.codegen.ConfigParams-->
     macro(package_add_test TESTNAME)
         add_executable(${TESTNAME} ${ARGN})
         target_link_libraries(${TESTNAME} gtest gmock gtest_main)
-        target_link_libraries(${TESTNAME} ${comp.fullName.replaceAll("\\.","_")}Lib)
+        target_link_libraries(${TESTNAME} ${comp.fullName().replaceAll("\\.","_")}Lib)
         add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
         set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
     endmacro()
 
-    package_add_test(${comp.fullName.replaceAll("\\.","_")}TestSuite ${comp.fullName.replaceAll("\\.","_")}Test.cpp)
+    package_add_test(${comp.fullName().replaceAll("\\.","_")}TestSuite ${comp.fullName().replaceAll("\\.","_")}Test.cpp)
     include_directories("/usr/local/include")
   '''
   }

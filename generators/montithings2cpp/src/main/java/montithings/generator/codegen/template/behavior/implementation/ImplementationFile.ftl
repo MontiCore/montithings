@@ -1,27 +1,25 @@
 # (c) https://github.com/MontiCore/monticore
+${tc.signature("comp", "compname", "existsHWC")}
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#--package montithings.generator.codegen.xtend.behavior
 
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper-->
-  
-  def static String generateImplementationFile(ComponentTypeSymbol comp, String compname, boolean existsHWC) {
-    return '''
+
   #include "${compname}Impl<#if existsHWC>
  TOP
  </#if>.h"
   ${Utils.printNamespaceStart(comp)}
-  <#if !comp.hasTypeParameter>
- ${generateImplementationBody(comp, compname, existsHWC)}
+  <#if !comp.hasTypeParameter()>
+ <@generateImplementationBody comp compname existsHWC/>
  </#if>
   ${Utils.printNamespaceEnd(comp)}
-  '''
-  }
   
-    def static generateImplementationBody(ComponentTypeSymbol comp, String compname, boolean isTOP) {
-    <#assign String generics = Utils.printFormalTypeParameters(comp);>
-    return '''
+    <#macro generateImplementationBody comp compname isTOP>
+    <#assign generics = Utils.printFormalTypeParameters(comp)>
 <#if ComponentHelper.hasBehavior(comp)>
 ${Utils.printTemplateArguments(comp)}
 ${compname}Result${generics} ${compname}Impl<#if isTOP>
@@ -39,24 +37,20 @@ ${compname}Result${generics} ${compname}Impl<#if isTOP>
   return result;
 }
 </#if>
-'''
-  }
+</#macro>
   
-    def static String printConstructor(ComponentTypeSymbol comp, boolean isTOP) {
-    return '''
-${comp.name}Impl<#if isTOP>
+    <#macro printConstructor comp isTOP>
+${comp.getName()}Impl<#if isTOP>
  TOP
  </#if>(${Utils.printConfigurationParametersAsList(comp)})
-<#if !comp.parameters.isEmpty>
+<#if comp.getParameters()?has_content>
 :
-<#list comp.parameters as param >
- ${param.name} (${param.name})<#sep>,
+<#list comp.getParameters() as param >
+ ${param.getName()} (${param.getName()})<#sep>,
  </#list>
 {
 }
-${ELSE}
+<#else>
 = default;
 </#if>
-'''
-
-  }
+    </#macro>

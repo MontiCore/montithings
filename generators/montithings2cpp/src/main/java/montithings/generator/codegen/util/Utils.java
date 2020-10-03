@@ -2,7 +2,9 @@
 package montithings.generator.codegen.util;
 
 import arcbasis._ast.ASTPortAccess;
+import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import cdlangextension._ast.ASTCDEImportStatement;
 import com.google.common.base.Strings;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
@@ -13,11 +15,10 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.util.Lists;
 import org.codehaus.groovy.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class Utils {
 
@@ -211,55 +212,86 @@ public class Utils {
     StringBuilder s = new StringBuilder();
     HashSet<String> portIncludes = new HashSet<String>();
     HashSet<ASTCDEImportStatement> includeStatements = new HashSet<ASTCDEImportStatement>();
-    for (port : comp.getPorts()) {
+    for (PortSymbol port : comp.getPorts()) {
       if (ComponentHelper.portUsesCdType(port)) {
-        cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config);
+        Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config);
         if(cdeImportStatementOpt.isPresent()) {
           includeStatements.add(cdeImportStatementOpt.get());
-          portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
-          adapterName = portNamespace.split("::");
+          String portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config);
+          String[] adapterName = portNamespace.split("::");
           if(adapterName.length>=2) {
-            portIncludes.add('''#include "«adapterName.get(adapterName.length-2)»Adapter.h"''')
+            portIncludes.add("#include \""+adapterName[adapterName.length-2]+"Adapter.h\"");
           }
         }
         else{
-          portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config)
-          portIncludes.add('''#include "«portNamespace.replace("::", "/")».h"''')
+          String portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config);
+          portIncludes.add("#include \""+portNamespace.replace("::", "/")+".h\"");
         }
       }
     }
-    for(include : portIncludes){
+    for(String include : portIncludes){
       s.append(include+"\n");
     }
-    s.append(Adapter.printIncludes(includeStatements.toList));
-    return s;
+    s.append(printIncludes(Lists.newArrayList(includeStatements)));
+    return s.toString();
   }
 
-  def static String printIncludes(List<ASTCDEImportStatement> imports) {
-    var HashSet<String> portIncludes = new HashSet<String>()
-    for (importStatement : imports) {
-      var portPackage = importStatement.getImportSource().toString();
-      portIncludes.add('''#include «portPackage»''');
-      portIncludes.add('''#include "«printCDType(importStatement).replace("::", "/")».h"''')
+  public static String printIncludes(ComponentTypeSymbol comp, String compname, ConfigParams config) {
+    Set<String> compIncludes = new HashSet<String>();
+    for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
+      boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
+      compIncludes.add("#include \""+ComponentHelper.getPackagePath(comp, subcomponent)+(isInner?(comp.getName()+"-Inner/"):"")+ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)+".h\"");
+      Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent);
+      for (String genericInclude : genericIncludes) {
+        compIncludes.add("#include \""+genericInclude+".h\"");
+      }
     }
-    return '''
-	«FOR include : portIncludes»
-	«include»
-	«ENDFOR»
-    '''
+    StringBuilder s = new StringBuilder();
+  for(String include : compIncludes) {
+  s.append(include);
+  }
+  s.append("#include \""+compname+"Input.h\"");
+    s.append("#include \""+compname+"Result.h\"");
+    return s.toString();
   }
 
-  def static String printCDType(ASTCDEImportStatement importStatement) {
-    var namespace = new StringBuilder("montithings::");
+  public static String printIncludes(List<ASTCDEImportStatement> imports) {
+    HashSet<String> portIncludes = new HashSet<String>();
+    for (ASTCDEImportStatement importStatement : imports) {
+      String portPackage = importStatement.getImportSource().toString();
+      portIncludes.add("#include "+portPackage);
+      portIncludes.add("#include \""+printCDType(importStatement).replace("::", "/")+".h\"");
+    }
+    StringBuilder s = new StringBuilder();
+    for(String include : portIncludes){
+      s.append(include+"\n");
+    }
+    return s.toString();
+  }
+
+  public static String printCDType(ASTCDEImportStatement importStatement) {
+    StringBuilder namespace = new StringBuilder("montithings::");
     if(importStatement.isPresentPackage()){
-      var packages = importStatement.getPackage().getPartList();
+      List<String> packages = importStatement.getPackage().getPartList();
 
       for (String packageName : packages) {
         namespace.append(packageName).append("::");
       }
-      return ComponentHelper.printPackageNamespaceFromString(packages.get(packages.size-1)+"::"+importStatement.getName().toString(), namespace.toString());
+      return ComponentHelper.printPackageNamespaceFromString(packages.get(packages.size()-1)+"::"+importStatement.getName(), namespace.toString());
     }
-    return importStatement.getName().toString();
+    return importStatement.getName();
+  }
+
+  public static String printPackageNamespace(ComponentTypeSymbol comp, ComponentInstanceSymbol subcomp) {
+    ComponentTypeSymbol subcomponentType = subcomp.getTypeInfo();
+    String fullNamespaceSubcomponent = ComponentHelper.printPackageNamespaceForComponent(subcomponentType);
+    String fullNamespaceEnclosingComponent = ComponentHelper.printPackageNamespaceForComponent(comp);
+    if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
+        fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
+      return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent)[1];
+    } else {
+      return fullNamespaceSubcomponent;
+    }
   }
 
 }

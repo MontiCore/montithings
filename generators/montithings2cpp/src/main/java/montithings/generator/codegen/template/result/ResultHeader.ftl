@@ -1,15 +1,16 @@
 # (c) https://github.com/MontiCore/monticore
+${tc.signature("comp", "compname", "config")}
 <#--package montithings.generator.codegen.xtend
 
 import montithings.generator.codegen.xtend.util.Utils
-import montithings.generator.helper.ComponentHelper
+import montithings.generator.ComponentHelper.ComponentHelper
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.codegen.ConfigParams-->
 
-  def static generateResultHeader(ComponentTypeSymbol comp, String compname, ConfigParams config){
-      <#assign ComponentHelper helper = new ComponentHelper(comp)>
-return '''
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+
 #pragma once
 #include <string>
 #include "Port.h"
@@ -18,39 +19,39 @@ return '''
 #include <vector>
 #include <list>
 #include <set>
-${Ports.printIncludes(comp, config)}
+${Utils.printIncludes(comp, config)}
 
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
 class ${compname}Result
-  <#if comp.presentParentComponent> :
+  <#if comp.isPresentParentComponent()> :
     ${Utils.printSuperClassFQ(comp)}Result
-    <#if comp.parent.loadedSymbol.hasTypeParameter()><
-    <#list helper.superCompActualTypeArguments as scTypeParams >
+    <#if comp.parent().loadedSymbol.hasTypeParameter()><
+    <#list ComponentHelper.superCompActualTypeArguments as scTypeParams >
  scTypeParams<#sep>,
  </#list> > </#if>
     </#if>
 {
 private:
-  <#list comp.outgoingPorts as port >
- tl::optional<${helper.getRealPortCppTypeString(port, config)}> ${port.name};
+  <#list comp.getOutgoingPorts() as port >
+ tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()};
  </#list>
 public:	
   ${compname}Result() = default;
-  <#if !comp.allOutgoingPorts.empty>
-  ${compname}Result(<#list comp.allOutgoingPorts} ${helper.getRealPortCppTypeString(port, config) as port >
- port.name<#sep>,
+  <#if !comp.getAllOutgoingPorts()?has_content>
+  ${compname}Result(<#list comp.getAllOutgoingPorts() as port > ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
+ ${port.getName()}<#sep>,
  </#list>);
   </#if>
-  <#list comp.outgoingPorts as port>
-  tl::optional<${helper.getRealPortCppTypeString(port, config)}> get${port.name.toFirstUpper}() const;
-  void set${port.name.toFirstUpper}(tl::optional<${helper.getRealPortCppTypeString(port, config)}>);
+  <#list comp.getOutgoingPorts() as port>
+  tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> get${port.getName()?cap_first}() const;
+  void set${port.getName()?cap_first}(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>);
   <#if ComponentHelper.portUsesCdType(port)>
     <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
     <#if cdeImportStatementOpt.isPresent()>
-    tl::optional<${cdeImportStatementOpt.get.getImportClass().toString()}> get${port.name.toFirstUpper}Adap() const;
-    void set${port.name.toFirstUpper}(${cdeImportStatementOpt.get.getImportClass().toString()});
+    tl::optional<${cdeImportStatementOpt.get.getImportClass().toString()}> get${port.getName()?cap_first}Adap() const;
+    void set${port.getName()?cap_first}(${cdeImportStatementOpt.get.getImportClass().toString()});
   </#if>
   </#if>
   </#list>
@@ -60,6 +61,3 @@ public:
  ${generateResultBody(comp, compname, config)}
  </#if>
 ${Utils.printNamespaceEnd(comp)}
-'''
-
-  }

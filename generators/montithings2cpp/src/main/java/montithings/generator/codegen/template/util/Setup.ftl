@@ -1,4 +1,7 @@
 # (c) https://github.com/MontiCore/monticore
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign ConfigParams = tc.instantiate("montithings.generator.codegen.ConfigParams")>
 <#--package montithings.generator.codegen.xtend.util
 
 import arcbasis._ast.ASTConnector
@@ -10,48 +13,42 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.ConfigParams-->
 
 
-class Setup {
-  
-  def static print(ComponentTypeSymbol comp, String compname, ConfigParams config) {
-    if (comp.isAtomic) {
-      return printSetupAtomic(comp, compname)
-    } else {
-      return printSetupComposed(comp, compname, config)
-    }
+<#macro print comp compname config>
+<#if (comp.isAtomic()) >
+<@printSetupAtomic comp compname/>
+<else>
+    <@printSetupComposed comp compname config/>
+    </#if>
+</#macro>
 
-  }
-  
-  def static printSetupAtomic(ComponentTypeSymbol comp, String compname) {
-    return '''
+<#macro printSetupAtomic comp compname>
     ${Utils.printTemplateArguments(comp)}
     void ${compname}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
       if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
-      <#if comp.presentParentComponent>
+      <#if comp.isPresentParentComponent()>
  super.setUp(enclosingComponentTiming);
  </#if>
       initialize();
     }
-    '''
-  }
-  
-  def static printSetupComposed(ComponentTypeSymbol comp, String compname, ConfigParams config) {
-    return '''
+</#macro>
+
+<#macro printSetupComposed comp compname config>
     ${Utils.printTemplateArguments(comp)}
     void ${compname}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
       if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
-      <#if comp.presentParentComponent>
+      <#if comp.isPresentParentComponent()>
  super.setUp(enclosingComponentTiming);
  </#if>
 
 
-    <#if config.getSplittingMode() == ConfigParams.SplittingMode.OFF>
-      <#list comp.subComponents as subcomponent >
- ${subcomponent.name}.setUp(enclosingComponentTiming);
+    <#if config.getSplittingMode().toString() == "OFF">
+      <#list comp.getSubComponents() as subcomponent >
+ ${subcomponent.getName()}.setUp(enclosingComponentTiming);
  </#list>
       
-      ${FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()}
-        ${FOR ASTPortAccess target : connector.targetList}
-        ${IF !ComponentHelper.isIncomingPort(comp, target)}
+      <#list comp.getAstNode().getConnectors() as connector>
+      <#list connector.getTargetList as target>
+        <#if !ComponentHelper.isIncomingPort(comp, target)>
         // implements "${connector.source.getQName} -> ${target.getQName}"
         ${Utils.printGetPort(target)}->setDataProvidingPort (${Utils.printGetPort(connector.source)});
         </#if>
@@ -59,6 +56,4 @@ class Setup {
       </#list>
     </#if>
     }
-    '''
-  }
-}
+</#macro>

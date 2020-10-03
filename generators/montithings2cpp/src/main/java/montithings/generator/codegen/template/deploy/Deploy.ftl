@@ -43,7 +43,7 @@ import montithings.generator.codegen.ConfigParams-->
       <#if config.getSplittingMode() != ConfigParams.SplittingMode.OFF>
       ${ComponentHelper.printPackageNamespaceForComponent(comp)}${compname}Manager manager (&cmp, argv[2], argv[3]);
       manager.initializePorts ();
-      <#if comp.isDecomposed>
+      <#if comp.isDecomposed()>
  manager.searchSubcomponents ();
  </#if>
       </#if>

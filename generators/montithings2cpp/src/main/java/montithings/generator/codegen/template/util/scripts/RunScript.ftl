@@ -33,7 +33,7 @@ class Scripts {
     <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG>
     dev-docker.sh l06 build
     cd build_dev-l06_*
-    ${ELSE}
+    <#else>
     mkdir -p build
     cd build
     <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>

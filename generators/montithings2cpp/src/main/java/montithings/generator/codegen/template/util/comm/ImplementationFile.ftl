@@ -13,7 +13,7 @@ import montithings.generator.codegen.ConfigParams-->
 
   def static String generateImplementationFile (ComponentTypeSymbol comp, ConfigParams config) {
     return '''
-    #include "${comp.name}Manager.h"
+    #include "${comp.getName()}Manager.h"
     #include "messages/PortToSocket.h"
     <#if config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL>
     #include "json/json.hpp"
@@ -26,7 +26,7 @@ import montithings.generator.codegen.ConfigParams-->
  using json = nlohmann::json;
  </#if>
 
-    ${comp.name}Manager::${comp.name}Manager (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} *comp, std::string managementPort, std::string communicationPort)
+    ${comp.getName()}Manager::${comp.getName()}Manager (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, std::string managementPort, std::string communicationPort)
       : comp (comp), managementPort (managementPort), communicationPort (communicationPort)
     {
       comm = new ManagementCommunication ();
@@ -36,19 +36,19 @@ import montithings.generator.codegen.ConfigParams-->
     }
 
     void
-    ${comp.name}Manager::process (std::string msg)
+    ${comp.getName()}Manager::process (std::string msg)
     {
       ${printCheckForManagementInstructions(comp, config)}
     }
 
     void
-    ${comp.name}Manager::initializePorts ()
+    ${comp.getName()}Manager::initializePorts ()
     {
       ${printInitializePorts(comp, config)}
     }
 
     void
-    ${comp.name}Manager::searchSubcomponents ()
+    ${comp.getName()}Manager::searchSubcomponents ()
     {
       ${printSearchForSubComps(comp, config)}
     }
@@ -60,10 +60,10 @@ import montithings.generator.codegen.ConfigParams-->
   def static String printInitializePorts(ComponentTypeSymbol comp, ConfigParams config){
     return '''
     // initialize ports
-    ${FOR PortSymbol p: comp.ports}
+    ${FOR PortSymbol p: comp.getPorts()}
     <#assign type = ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)>
-    std::string ${p.name}_uri = "ws://" + comm->getOurIp() + ":" + communicationPort + "/" + comp->getInstanceName () + "/out/${p.name}";
-    comp->addOutPort${p.name.toFirstUpper()}(new WSPort<${type}>(OUTGOING, ${p.name}_uri));
+    std::string ${p.getName()}_uri = "ws://" + comm->getOurIp() + ":" + communicationPort + "/" + comp->getInstanceName () + "/out/${p.getName()}";
+    comp->addOutPort${p.getName()?cap_first()}(new WSPort<${type}>(OUTGOING, ${p.getName()}_uri));
     </#list>
     '''
   }
@@ -72,14 +72,14 @@ import montithings.generator.codegen.ConfigParams-->
     return '''
     PortToSocket message(msg);
 
-    ${FOR PortSymbol p: comp.ports}
+    ${FOR PortSymbol p: comp.getPorts()}
     <#if !p.isOutgoing()>
-    if (message.getLocalPort() == "${p.name}")
+    if (message.getLocalPort() == "${p.getName()}")
     {
-      // connection information for port ${p.name} was received
-      std::string ${p.name}_uri = "ws://" + message.getIpAndPort() + message.getRemotePort();
-      std::cout << "Received connection: " << ${p.name}_uri << std::endl;
-      comp->addInPort${p.name.toFirstUpper()}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)}>(INCOMING, ${p.name}_uri));
+      // connection information for port ${p.getName()} was received
+      std::string ${p.getName()}_uri = "ws://" + message.getIpAndPort() + message.getRemotePort();
+      std::cout << "Received connection: " << ${p.getName()}_uri << std::endl;
+      comp->addInPort${p.getName()?cap_first()}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)}>(INCOMING, ${p.getName()}_uri));
     }
     </#if>
     </#list>
@@ -87,7 +87,7 @@ import montithings.generator.codegen.ConfigParams-->
   }
 
   def static String printSearchForSubComps(ComponentTypeSymbol comp, ConfigParams config){
-    if (comp.subComponents.isEmpty) {
+    if (comp.getSubComponents().isEmpty) {
       return '// component has no subcomponents - nothing to do'
     } else {
     return '''
@@ -97,58 +97,58 @@ import montithings.generator.codegen.ConfigParams-->
       std::cout << "Searching for subcomponents\n";
       <#list comp.subComponents as subcomponent>
       <#assign subcomponentSymbol = subcomponent.type.loadedSymbol>
-      // ${subcomponentSymbol.name} ${subcomponent.name}
+      // ${subcomponentSymbol.getName()} ${subcomponent.getName()}
       ${printSCDetailsHelper(comp, subcomponent)}
 
         <#if config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL>
         std::ifstream i (this->portConfigFilePath);
         json j;
         i >> j;
-        std::string ${subcomponent.name}_port = j["${subcomponent.name}"]["management"].get<std::string> ();
-        ${ELSE}
-        std::string ${subcomponent.name}_port = "1337";
+        std::string ${subcomponent.getName()}_port = j["${subcomponent.getName()}"]["management"].get<std::string> ();
+        <#else>
+        std::string ${subcomponent.getName()}_port = "1337";
         </#if>
 
-        std::string ${subcomponent.name}_ip = comm->getIpOfComponent ("${subcomponent.name}");
+        std::string ${subcomponent.getName()}_ip = comm->getIpOfComponent ("${subcomponent.getName()}");
         
 
         // tell subcomponent where to connect to
         ${FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()}
         ${FOR ASTPortAccess target : connector.targetList}
-          <#if !target.isPresentComponent && subcomponent.name == connector.source.component>
+          <#if !target.isPresentComponent && subcomponent.getName() == connector.source.component>
             ${FOR PortSymbol p: subcomponentSymbol.ports}
-            <#if p.name == connector.source.port>
+            <#if p.getName() == connector.source.port>
             // set receiver
-            std::string communicationPort = j["${subcomponent.name}"]["communication"].get<std::string> ();
-            std::string ${subcomponent.name}_uri = "ws://" + ${subcomponent.name}_ip + ":" + communicationPort + "/" + comp->getInstanceName () + ".${subcomponent.name}/out/${p.name}";
+            std::string communicationPort = j["${subcomponent.getName()}"]["communication"].get<std::string> ();
+            std::string ${subcomponent.getName()}_uri = "ws://" + ${subcomponent.getName()}_ip + ":" + communicationPort + "/" + comp->getInstanceName () + ".${subcomponent.getName()}/out/${p.getName()}";
             
             // implements "${connector.source.getQName} -> ${target.getQName}"
-            comp->addInPort${target.port.toFirstUpper}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)}>(INCOMING, ${subcomponent.name}_uri));
+            comp->addInPort${target.port?cap_first}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)}>(INCOMING, ${subcomponent.getName()}_uri));
             
             </#if>
             </#list>
           </#if>
-          <#-- TODO: What happens if !target.isPresentComponent --><#if target.isPresentComponent && subcomponent.name == target.component>
+          <#-- TODO: What happens if !target.isPresentComponent --><#if target.isPresentComponent && subcomponent.getName() == target.component>
           {
             <#if !connector.source.isPresentComponent>
               PortToSocket message ("${target.port}", comm->getOurIp() + ":" + communicationPort, "/" + comp->getInstanceName () + "/out/${connector.source.port}");
-            ${ELSE}
+            <#else>
               <#list comp.subComponents as sourceSubcomp>
-              <#if sourceSubcomp.name == connector.source.component>
+              <#if sourceSubcomp.getName() == connector.source.component>
               std::string communicationPort = j["${connector.source.component}"]["communication"].get<std::string> ();
-              PortToSocket message ("${target.port}", comp->get${connector.source.component.toFirstUpper}IP() + ":" + communicationPort, "/${sourceSubcomp.fullName}/out/${connector.source.port}");
+              PortToSocket message ("${target.port}", comp->get${connector.source.component?cap_first}IP() + ":" + communicationPort, "/${sourceSubcomp.fullName}/out/${connector.source.port}");
               </#if>
               </#list>
             </#if>
             
-            comm->sendManagementMessage (${subcomponent.name}_ip, ${subcomponent.name}_port, &message);
+            comm->sendManagementMessage (${subcomponent.getName()}_ip, ${subcomponent.getName()}_port, &message);
           }
           </#if>
         </#list>
         </#list>
 
-        comp->set${subcomponent.name.toFirstUpper}IP(${subcomponent.name}_ip);
-        std::cout << "Found ${subcomponentSymbol.name} ${subcomponent.name}\n";
+        comp->set${subcomponent.getName()?cap_first}IP(${subcomponent.getName()}_ip);
+        std::cout << "Found ${subcomponentSymbol.getName()} ${subcomponent.getName()}\n";
 
         continue;
       }
@@ -157,7 +157,7 @@ import montithings.generator.codegen.ConfigParams-->
       // continue if all components are connected
       allConnected = 
       <#list comp.subComponents as subcomponent >
- comp->get${subcomponent.name.toFirstUpper}IP().length() != 0<#sep>&&</#sep>
+ comp->get${subcomponent.getName()?cap_first}IP().length() != 0<#sep>&&</#sep>
  </#list>;
       if (!allConnected) {
         // circuit breaker
@@ -170,13 +170,13 @@ import montithings.generator.codegen.ConfigParams-->
   }
 
   def static String printSCDetailsHelper(ComponentTypeSymbol comp, ComponentInstanceSymbol subcomponent){
-    <#assign s = "if (comp->get" + subcomponent.name.toFirstUpper + "IP().length() == 0">
+    <#assign s = "if (comp->get" + subcomponent.getName()?cap_first + "IP().length() == 0">
     for (ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()){
     for (ASTPortAccess target : connector.targetList){
       // TODO: What happens when !target.isPresentComponent
-      if (target.isPresentComponent && subcomponent.name == target.component){
+      if (target.isPresentComponent && subcomponent.getName() == target.component){
       if (connector.source.isPresentComponent){
-        s += " && comp->get" + connector.source.component.toFirstUpper + "IP().length() != 0"
+        s += " && comp->get" + connector.source.component?cap_first + "IP().length() != 0"
       }
       }
     }
@@ -188,19 +188,19 @@ import montithings.generator.codegen.ConfigParams-->
   def static String printInitURIs(ComponentTypeSymbol comp){
     return '''
     <#list comp.ports as PortSymbol p >
- std::string ${p.name}_uri;
+ std::string ${p.getName()}_uri;
  </#list>
     <#list comp.subComponents as subcomponent >
- std::string ${subcomponent.name}_uri;
+ std::string ${subcomponent.getName()}_uri;
  </#list>
     ${FOR ASTConnector connector : (comp.getAstNode() as ASTMTComponentType).getConnectors()}
     ${FOR ASTPortAccess target : connector.targetList}
     <#list comp.subComponents as subcomponent>
       <#assign subcomponentSymbol = subcomponent.type.loadedSymbol>
-      <#if !connector.source.isPresentComponent && subcomponent.name == target.component>
+      <#if !connector.source.isPresentComponent && subcomponent.getName() == target.component>
       ${FOR PortSymbol p : subcomponentSymbol.ports}
-      <#if p.name == target.port>
- std::string to${subcomponent.name.toFirstUpper}_${p.name}_uri;
+      <#if p.getName() == target.port>
+ std::string to${subcomponent.getName()?cap_first}_${p.getName()}_uri;
  </#if>
       </#list>
       </#if>

@@ -1,16 +1,8 @@
 # (c) https://github.com/MontiCore/monticore
 ${tc.signature("comp", "compname", "config")}
-<#import "/template/util/Ports.ftl" as Ports>
-<#--package montithings.generator.codegen.xtend
 
-import arcbasis._symboltable.ComponentTypeSymbol
-import montithings.generator.codegen.ConfigParams
-import montithings.generator.codegen.xtend.util.Ports
-import montithings.generator.codegen.xtend.util.Utils
-import montithings.generator.helper.ComponentHelper
-
-  <#assign ComponentHelper = statics['montithings.generator.helper.ComponentHelper']>-->
   <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+  <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
   <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 
 #pragma once
@@ -23,15 +15,15 @@ import montithings.generator.helper.ComponentHelper
 #include <set>
 #include <utility>
 #include "tl/optional.hpp"
-<@Ports.printIncludes comp config/>
+${Utils.printIncludes(comp,config)}
 
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
 class ${compname}Input
-<#if comp.presentParentComponent> :
+<#if comp.isPresentParentComponent()> :
   ${Utils.printSuperClassFQ(comp)}Input
-<#if comp.parent.loadedSymbol.hasTypeParameter><
+<#if comp.parent().loadedSymbol.hasTypeParameter><
 <#list ComponentHelper.superCompActualTypeArguments as scTypeParams >
  scTypeParams<#sep>,
  </#list>></#if>
@@ -39,41 +31,41 @@ class ${compname}Input
 {
 private:
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port >
- tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}> ${port.name};
+ tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()};
  </#list>
 <#list ComponentHelper.getPortsInBatchStatement(comp) as port >
- std::vector<${ComponentHelper.getRealPortCppTypeString(port, config)}> ${port.name} = {};
+ std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()} = {};
  </#list>
 public:
   ${compname}Input() = default;
-  <#if !comp.allIncomingPorts.empty && !isBatch>
-  explicit ${compname}Input(<#list comp.allIncomingPorts as port> tl:optional<${ComponentHelper.getRealPortCppTypeString(port, config)}> ${port.name}
+  <#if comp.getAllIncomingPorts()?has_content && !isBatch>
+  explicit ${compname}Input(<#list comp.getAllIncomingPorts() as port> tl:optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
       <#sep>,
   </#list>);
     </#if>
   <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port>
-  <#if port.isIncoming>
-  tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}> get${port.name.toFirstUpper}() const;
-  void set${port.name.toFirstUpper}(tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}>);
+  <#if port.isIncoming()>
+  tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> get${port.getName()?cap_first}() const;
+  void set${port.getName()?cap_first}(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>);
   <#if ComponentHelper.portUsesCdType(port)>
   <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
   <#if cdeImportStatementOpt.isPresent()>
-  tl::optional<${cdeImportStatementOpt.get.getImportClass().toString()}> get${port.name.toFirstUpper}Adap() const;
-  void set${port.name.toFirstUpper}(${cdeImportStatementOpt.get.getImportClass().toString()});
+  tl::optional<${cdeImportStatementOpt.get.getImportClass().toString()}> get${port.getName()?cap_first}Adap() const;
+  void set${port.getName()?cap_first}(${cdeImportStatementOpt.get.getImportClass().toString()});
   </#if>
   </#if>
   </#if>
   </#list>
   <#list ComponentHelper.getPortsInBatchStatement(comp) as port>
-  <#if port.isIncoming>
-  std::vector<${ComponentHelper.getRealPortCppTypeString(port, config)}> get${port.name.toFirstUpper}() const;
-  void add${port.name.toFirstUpper}Element(tl::optional<${ComponentHelper.getRealPortCppTypeString(port, config)}>);
-  void set${port.name.toFirstUpper}(std::vector<${ComponentHelper.getRealPortCppTypeString(port, config)}> vector);
+  <#if port.isIncoming()>
+  std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> get${port.getName()?cap_first}() const;
+  void add${port.getName()?cap_first}Element(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>);
+  void set${port.getName()?cap_first}(std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> vector);
   </#if>
   </#list>
 };
 
-<#if comp.hasTypeParameter>
+<#if comp.hasTypeParameter()>
  ${generateInputBody(comp, compname, config)}
  </#if>
 ${Utils.printNamespaceEnd(comp)}

@@ -37,7 +37,7 @@ public class MTGenerator {
 
     toFile(targetPath, compname + "Input", "template/input/InputHeader.ftl", ".h", comp, compname, config);
     toFile(targetPath, compname + "Input", "template/input/ImplementationFile.ftl", ".cpp", comp, compname, config);
-    toFile(targetPath, compname + "Result", "template/result/ResultHeader.ftl", ".h");
+    toFile(targetPath, compname + "Result", "template/result/ResultHeader.ftl", ".h", comp, compname, config);
     toFile(targetPath, compname + "Result", "template/result/ImplementationFile.ftl", ".cpp",comp, compname, config);
     toFile(targetPath, compname, "template/componentGenerator/Header.ftl", ".h", comp, compname, config, useWsPorts);
     toFile(targetPath, compname, "template/componentGenerator/ImplementationFile.ftl", ".cpp", comp, compname, config, useWsPorts);

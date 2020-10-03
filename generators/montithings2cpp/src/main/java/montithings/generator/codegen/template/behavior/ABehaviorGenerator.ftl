@@ -82,11 +82,11 @@ ${printCompute(comp, compname)}
 
   <#macro printConstructor comp compname>
 ${compname}Impl(${Utils.printConfigurationParametersAsList(comp)})
-<#if !comp.parameters.isEmpty>
+<#if !comp.getParameters().isEmpty>
  :
  </#if>
-<#list comp.parameters as param >
- ${param.name} (${param.name})<#sep>,
+<#list comp.getParameters() as param >
+ ${param.getName()} (${param.getName()})<#sep>,
  </#list>
 {
 }

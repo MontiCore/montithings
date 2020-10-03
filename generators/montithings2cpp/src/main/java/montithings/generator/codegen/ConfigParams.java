@@ -33,9 +33,23 @@ public class ConfigParams {
    * DISTRIBUTED = Deploy on multiple machines
    */
   public enum SplittingMode {
-    OFF,
-    LOCAL,
-    DISTRIBUTED
+    OFF("OFF"),
+    LOCAL("LOCAL"),
+    DISTRIBUTED("DISTRIBUTED");
+
+    String name;
+
+    SplittingMode(String name) {
+      this.name = name;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.name;
+    }
   }
 
   /** property for target platform */

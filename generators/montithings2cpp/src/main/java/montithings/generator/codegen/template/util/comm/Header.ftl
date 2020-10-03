@@ -13,16 +13,16 @@ import montithings.generator.codegen.ConfigParams-->
   def static String generateHeader (ComponentTypeSymbol comp, ConfigParams config) {
     return '''
     #pragma once
-    #include "${comp.name}.h"
+    #include "${comp.getName()}.h"
     #include "ManagementCommunication.h"
     #include "ManagementMessageProcessor.h"
 
     ${Utils.printNamespaceStart(comp)}
 
-    class ${comp.name}Manager : public ManagementMessageProcessor
+    class ${comp.getName()}Manager : public ManagementMessageProcessor
     {
     protected:
-    montithings::hierarchy::${comp.name}* comp;
+    montithings::hierarchy::${comp.getName()}* comp;
     ManagementCommunication* comm;
     std::string managementPort;
     std::string communicationPort;
@@ -31,7 +31,7 @@ import montithings.generator.codegen.ConfigParams-->
  </#if>
 
     public:
-    ${comp.name}Manager (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} *comp, std::string managementPort, std::string communicationPort);
+    ${comp.getName()}Manager (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, std::string managementPort, std::string communicationPort);
 
     /* 
      * Process management instructions from the enclosing component

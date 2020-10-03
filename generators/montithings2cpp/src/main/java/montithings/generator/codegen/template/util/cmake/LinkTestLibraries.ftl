@@ -11,13 +11,13 @@ import montithings.generator.codegen.ConfigParams-->
     def static printLinkTestLibraries(ComponentTypeSymbol comp, File[] subPackagesPath) {
       return '''
 
-      add_library(${comp.fullName.replaceAll("\\.","_")}Lib ${SOURCES} ${HWC_SOURCES}
+      add_library(${comp.fullName().replaceAll("\\.","_")}Lib ${SOURCES} ${HWC_SOURCES}
       <#list subPackagesPath as subdir >
- ${${subdir.name.toUpperCase()}_SOURCES}
+ ${${subdir.getName().toUpperCase()}_SOURCES}
  </#list>)
-      target_link_libraries(${comp.fullName.replaceAll("\\.","_")}Lib nng::nng)
-      set_target_properties(${comp.fullName.replaceAll("\\.","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
-      install(TARGETS ${comp.fullName.replaceAll("\\.","_")}Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+      target_link_libraries(${comp.fullName().replaceAll("\\.","_")}Lib nng::nng)
+      set_target_properties(${comp.fullName().replaceAll("\\.","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
+      install(TARGETS ${comp.fullName().replaceAll("\\.","_")}Lib DESTINATION ${PROJECT_SOURCE_DIR}/lib)
 
       add_subdirectory(test/gtests)
       '''

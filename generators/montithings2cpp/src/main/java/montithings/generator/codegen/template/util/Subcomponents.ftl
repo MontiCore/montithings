@@ -1,4 +1,6 @@
 # (c) https://github.com/MontiCore/monticore
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#--package montithings.generator.codegen.xtend.util
 
 import arcbasis._symboltable.ComponentInstanceSymbol
@@ -8,89 +10,47 @@ import java.util.Set
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.helper.ComponentHelper-->
 
-class Subcomponents {
-  
-  def static String printIncludes(ComponentTypeSymbol comp, String compname, ConfigParams config) {
-    <#assign Set<String> compIncludes = new HashSet<String>()>
-    for (subcomponent : comp.subComponents) {
-      <#assign isInner = subcomponent.type.loadedSymbol.isInnerComponent>
-      compIncludes.add('''#include "${ComponentHelper.getPackagePath(comp, subcomponent)}<#if isInner}${comp.name>
- -Inner/
- </#if>${ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)}.h"''')
-    <#assign Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent)>
-    for (String genericInclude : genericIncludes) {
-      compIncludes.add('''#include "${genericInclude}.h"''')
-    }
-  }
-  return '''
-  <#list compIncludes as include >
- include
- </#list>
-  #include "${compname}Input.h"
-  #include "${compname}Result.h"
-  '''
-  }
 
-  def static String printVars(ComponentTypeSymbol comp, ConfigParams config) {
-    return '''
-    <#if config.getSplittingMode() == ConfigParams.SplittingMode.OFF>
-      <#list comp.subComponents as subcomponent>
+  <#macro printVars comp config>
+    <#if config.getSplittingMode().toString() == "OFF">
+      <#list comp.getSubComponents() as subcomponent>
         <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>
-        ${printPackageNamespace(comp, subcomponent)}${type} ${subcomponent.name};
+        ${Utils.printPackageNamespace(comp, subcomponent)}${type} ${subcomponent.getName()};
       </#list>
-    ${ELSE}
-      <#list comp.subComponents as subcomponent >
- std::string subcomp${subcomponent.name.toFirstUpper}IP;
+    <#else>
+      <#list comp.getSubComponents() as subcomponent >
+ std::string subcomp${subcomponent.getName()?cap_first}IP;
  </#list>
     </#if>
-    '''
-  }
+</#macro>
 
-  def static String printMethodDeclarations(ComponentTypeSymbol comp, ConfigParams config) {
-    return '''
-    <#list comp.subComponents as subcomponent>
-          std::string get${subcomponent.name.toFirstUpper}IP();
-          void set${subcomponent.name.toFirstUpper}IP(std::string ${subcomponent.name}IP);
+  <#macro printMethodDeclarations comp config>
+    <#list comp.getSubComponents() as subcomponent>
+          std::string get${subcomponent.getName()?cap_first}IP();
+          void set${subcomponent.getName()?cap_first}IP(std::string ${subcomponent.getName()}IP);
     </#list>
-    '''
-  }
+</#macro>
 
-  def static String printMethodDefinitions(ComponentTypeSymbol comp, ConfigParams config) {
-    return '''
-    <#list comp.subComponents as subcomponent>
-        std::string ${comp.name}::get${subcomponent.name.toFirstUpper}IP(){
-          return subcomp${subcomponent.name.toFirstUpper}IP;
+  <#macro printMethodDefinitions comp config>
+    <#list comp.getSubComponents() as subcomponent>
+        std::string ${comp.getName()}::get${subcomponent.getName()?cap_first}IP(){
+          return subcomp${subcomponent.getName()?cap_first}IP;
         }
-        void ${comp.name}::set${subcomponent.name.toFirstUpper}IP(std::string ${subcomponent.name}IP){
-          subcomp${subcomponent.name.toFirstUpper}IP = ${subcomponent.name}IP;
+        void ${comp.getName()}::set${subcomponent.getName()?cap_first}IP(std::string ${subcomponent.getName()}IP){
+          subcomp${subcomponent.getName()?cap_first}IP = ${subcomponent.getName()}IP;
         }
     </#list>
-    '''
-  }
+</#macro>
 
-  def static String printInitializerList(ComponentTypeSymbol comp, ConfigParams config) {
-    <#assign helper = new ComponentHelper(comp)>
-    return '''
+  <#macro printInitializerList comp config>
       <#list comp.subComponents as subcomponent>
-        ${subcomponent.name}( "${subcomponent.name}"
-          <#if config.getSplittingMode() == ConfigParams.SplittingMode.OFF>
-          <#list helper.getParamValues(subcomponent) BEFORE ',' as param >
- param
+        ${subcomponent.getName()}( "${subcomponent.getName()}"
+          <#if config.getSplittingMode().toString() == "OFF">
+          <#list helper.getParamValues(subcomponent) as param >
+<#sep>,
+param
  </#list>
           </#if>)<#sep>,
       </#list>
-    '''
-  }
-  
-  def static String printPackageNamespace(ComponentTypeSymbol comp, ComponentInstanceSymbol subcomp) {
-    <#assign subcomponentType = subcomp.typeInfo>
-    <#assign fullNamespaceSubcomponent = ComponentHelper.printPackageNamespaceForComponent(subcomponentType)>
-    <#assign fullNamespaceEnclosingComponent = ComponentHelper.printPackageNamespaceForComponent(comp)>
-    if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) && 
-      fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
-      return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent).get(1)
-    } else {
-      return fullNamespaceSubcomponent
-    }
-  }
-}
+</#macro>
+

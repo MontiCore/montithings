@@ -18,8 +18,8 @@ class Utils {
  -->
   def static printConfigurationParametersAsList(ComponentTypeSymbol comp) {
     return '''
-      <#list comp.parameters as param >
- param.type.print} ${param.name<#sep>,
+      <#list comp.getParameters() as param >
+ param.type.print} ${param.getName()<#sep>,
  </#list>
     '''.toString().replace("\n", "")
   }
@@ -35,8 +35,8 @@ class Utils {
  .*
  </#if>;
  </#list>
-      <#list comp.innerComponents as inner >
- import ${printPackageWithoutKeyWordAndSemicolon(inner) + "." + inner.name};
+      <#list comp.innerComponents() as inner >
+ import ${printPackageWithoutKeyWordAndSemicolon(inner) + "." + inner.getName()};
  </#list>
     '''
   }
@@ -57,8 +57,8 @@ class Utils {
  -->
   def static printConfigParameters(ComponentTypeSymbol comp) {
     return '''
-      <#list comp.parameters as param >
- printMember(ComponentHelper.printCPPTypeName(param.type), param.name)
+      <#list comp.getParameters() as param >
+ printMember(ComponentHelper.printCPPTypeName(param.type), param.getName())
  </#list>
     '''.toString().replace("\n", "")
   }
@@ -70,7 +70,7 @@ class Utils {
   def static printVariables(ComponentTypeSymbol comp) {
     return '''
       <#list ComponentHelper.getFields(comp) as variable >
- printMember(ComponentHelper.printCPPTypeName(variable.type), variable.name)
+ printMember(ComponentHelper.printCPPTypeName(variable.type), variable.getName())
  </#list>
     '''
   }
@@ -84,7 +84,7 @@ class Utils {
   }
   def static printFormalTypeParameters(ComponentTypeSymbol comp, Boolean withClassPrefix) {
     return '''
-      <#if comp.hasTypeParameter>
+      <#if comp.hasTypeParameter()>
         <
           <#list getGenericParameters(comp) as generic >
  IF withClassPrefix}class </#if>${generic<#sep>,
@@ -96,7 +96,7 @@ class Utils {
 
   def static String printTemplateArguments(ComponentTypeSymbol comp) {
     return '''
-    <#if comp.hasTypeParameter>
+    <#if comp.hasTypeParameter()>
  template${Utils.printFormalTypeParameters(comp, true)}
  </#if>
     '''.toString().replace("\n", "")
@@ -122,10 +122,10 @@ class Utils {
  -->
   def static String printPackage(ComponentTypeSymbol comp) {
     return '''
-    <#if comp.isInnerComponent>
- package ${printPackageWithoutKeyWordAndSemicolon(comp.outerComponent.get) + "." + comp.outerComponent.get.name + "gen"};
+    <#if comp.isInnerComponent()>
+ package ${printPackageWithoutKeyWordAndSemicolon(comp.outerComponent().get) + "." + comp.outerComponent().get.getName() + "gen"};
  <#else>
- package ${comp.packageName};
+ package ${comp.packageName()};
   </#if>
     '''
   }
@@ -137,7 +137,7 @@ class Utils {
   def static String printPackageWithoutKeyWordAndSemicolon(arcbasis._symboltable.ComponentTypeSymbol comp){
     return '''
     <#if comp.isInnerComponent>
- ${printPackageWithoutKeyWordAndSemicolon(comp.outerComponent.get) + "." + comp.outerComponent.get.name + "gen"}
+ ${printPackageWithoutKeyWordAndSemicolon(comp.outerComponent.get) + "." + comp.outerComponent.get.getName() + "gen"}
  <#else>
  ${comp.packageName}
   </#if>
@@ -147,9 +147,9 @@ class Utils {
   def static String printSuperClassFQ(ComponentTypeSymbol comp){
     <#assign String packageName = printPackageWithoutKeyWordAndSemicolon(comp.parentInfo);>
     if(packageName.equals("")){
-      return '''${comp.parent.name}'''
+      return '''${comp.parent.getName()}'''
     } else {
-      return '''${packageName}.${comp.parent.name}'''
+      return '''${packageName}.${comp.parent.getName()}'''
     }
   }
   
@@ -180,7 +180,7 @@ class Utils {
  <#else>
  this->
   </#if>
-    getPort${access.port.toFirstUpper} ()
+    getPort${access.port?cap_first} ()
     '''.toString().replace("\n", "")
   }
 

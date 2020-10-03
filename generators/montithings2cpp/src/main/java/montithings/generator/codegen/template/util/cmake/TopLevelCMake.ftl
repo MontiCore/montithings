@@ -53,7 +53,7 @@ class CMake {
     }
     return '''
     cmake_minimum_required(VERSION 3.8)
-    project("${comp.fullName}")
+    project("${comp.fullName()}")
     set(CMAKE_CXX_STANDARD 11)
 
     # Enable (more comfortable) debugging
@@ -104,12 +104,12 @@ class CMake {
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     
-<#-- include_directories("${hwcPath.replace("\\","/")}/${comp.name.toFirstLower}") -->include_directories("${commonCodePrefix}${libraryPath.replace("\\","/")}")
+<#-- include_directories("${hwcPath.replace("\\","/")}/${comp.getName()?uncap_first}") -->include_directories("${commonCodePrefix}${libraryPath.replace("\\","/")}")
     
     # Include packages
     <#list subPackagesPath as subdir>
-    file(GLOB_RECURSE ${subdir.name.toUpperCase()}_SOURCES "${subdir.name}/*.cpp" "${subdir.name}/*.h")
-    include_directories("${subdir.name}")
+    file(GLOB_RECURSE ${subdir.getName().toUpperCase()}_SOURCES "${subdir.getName()}/*.cpp" "${subdir.getName()}/*.h")
+    include_directories("${subdir.getName()}")
     </#list>
     
     # Include HWC
@@ -121,17 +121,17 @@ class CMake {
     file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix}montithings-RTE/*.h")
 
 
-    add_executable(${comp.fullName} ${SOURCES} ${HWC_SOURCES}
+    add_executable(${comp.fullName()} ${SOURCES} ${HWC_SOURCES}
     <#list subPackagesPath as subdir >
- ${${subdir.name.toUpperCase()}_SOURCES}
+ ${${subdir.getName().toUpperCase()}_SOURCES}
  </#list>)
     <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
      || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>
-    ${printDsaLinkLibraries(comp.fullName)}
-    ${ELSE}
-    target_link_libraries(${comp.fullName} nng::nng)
+    ${printDsaLinkLibraries(comp.fullName())}
+    <#else>
+    target_link_libraries(${comp.fullName()} nng::nng)
     </#if>
-    set_target_properties(${comp.fullName} PROPERTIES LINKER_LANGUAGE CXX)
+    set_target_properties(${comp.fullName()} PROPERTIES LINKER_LANGUAGE CXX)
     '''
   }
     
@@ -139,7 +139,7 @@ class CMake {
     return 
     '''
     cmake_minimum_required(VERSION 3.8)
-<#-- project(${port.name.toFirstUpper}Server) TODO -->set(CMAKE_CXX_STANDARD 11)
+<#-- project(${port.getName()?cap_first}Server) TODO -->set(CMAKE_CXX_STANDARD 11)
 
     <#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG
      || config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_LAB>
@@ -159,10 +159,10 @@ class CMake {
     "${libraryPath.replace("\\","/")}/*.cpp"
     "${libraryPath.replace("\\","/")}/*.h")
     
-<#-- add_executable(${port.name.toFirstUpper}Server ${SOURCES}) TODO --><#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG>
- <#-- ${printDsaLinkLibraries(port.name.toFirstUpper+"Server")} TODO -->
+<#-- add_executable(${port.getName()?cap_first}Server ${SOURCES}) TODO --><#if config.getTargetPlatform() == ConfigParams.TargetPlatform.DSA_VCG>
+ <#-- ${printDsaLinkLibraries(port.getName()?cap_first+"Server")} TODO -->
  <#else>
- <#-- target_link_libraries(${port.name.toFirstUpper}Server nng::nng) TODO -->
+ <#-- target_link_libraries(${port.getName()?cap_first}Server nng::nng) TODO -->
   </#if>
     '''
   }

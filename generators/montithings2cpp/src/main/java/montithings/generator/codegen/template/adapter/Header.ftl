@@ -34,32 +34,6 @@ public:
 };
 ${printNamespaceEnd(packageName)}
 </#macro>
-	
-	<#macro  printIncludes imports >
-	<#assign portIncludes = tc.instantiate("java.util.HashSet")>
-	<#list imports as importStatement >
-    	<#assign portPackage = importStatement.getImportSource().toString()>
-    	portIncludes.add("#include ${portPackage}");
-      	portIncludes.add("#include \"${printCDType(importStatement).replace("::", "/")}.h\"")
-	</#list>
-	<#list portIncludes as include >
- include
- </#list>
-</#macro>
-
-<#macro printCDType importStatement>
-		<#assign StringBuilder = tc.instantiate("java.util.StringBuilder")>
-  		<#assign namespace = StringBuilder("montithings::")>
-    	if(importStatement.isPresentPackage()){
-    	<#assign packages = importStatement.getPackage().getPartList()>
-    	
-    	for (String packageName : packages) {
-      	namespace.append(packageName).append("::");
-    	}
-    	return ComponentHelper.printPackageNamespaceFromString(packages.get(packages.size-1)+"::"+importStatement.getName().toString(), namespace.toString());
-    	}
-        return importStatement.getName().toString();
-</#macro>
 
 <#macro printNamespaceStart packages >
       	namespace montithings {

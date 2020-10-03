@@ -35,14 +35,14 @@ class ValueCheck {
 		return '''
 		{
 		<#list mtPort.getMTPortDeclarationList as decl>
-			<#assign portValue = valueContainer + ".get" + decl.name.toFirstUpper + " ().value ()">
+			<#assign portValue = valueContainer + ".get" + decl.getName()?cap_first + " ().value ()">
 			<#if !component.isBatchPort(port)>
 				${formatCheckPreparation(portValue)}
-				if (${valueContainer}.get${decl.name.toFirstUpper} () && !(
-			${ELSE}
+				if (${valueContainer}.get${decl.getName()?cap_first} () && !(
+			<#else>
 				<#assign helper = new ComponentHelper(component)>
-				std::vector<${helper.getRealPortCppTypeString(port)}> copy${decl.name.toFirstUpper} = input.get${decl.name.toFirstUpper} ();
-				for_each(copy${decl.name.toFirstUpper}.begin (), copy${decl.name.toFirstUpper}.end (), [](${helper.getRealPortCppTypeString(port)}& v)
+				std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port)}> copy${decl.getName()?cap_first} = input.get${decl.getName()?cap_first} ();
+				for_each(copy${decl.getName()?cap_first}.begin (), copy${decl.getName()?cap_first}.end (), [](${ComponentHelper.getRealPortCppTypeString(comp, port)}& v)
 				{
 					${formatCheckPreparation(portValue = 'v')}
 					if  (!(
@@ -66,24 +66,24 @@ class ValueCheck {
 				<#if component.isBatchPort(port)>
 					v = ${valuationToString(decl.getDefault())};
 				${ELSEIF valueContainer.equals("result")}
-					${valueContainer}.set${decl.name.toFirstUpper}(${valuationToString(decl.getDefault())});
+					${valueContainer}.set${decl.getName()?cap_first}(${valuationToString(decl.getDefault())});
 				${ELSEIF valueContainer.equals("input")}
-					${valueContainer}.add${decl.name.toFirstUpper}Element(${valuationToString(decl.getDefault())});
+					${valueContainer}.add${decl.getName()?cap_first}Element(${valuationToString(decl.getDefault())});
 				</#if>
-			${ELSE}
+			<#else>
 				std::ostringstream error;
-				error << "Violated allowed values for port \"${decl.name}\". Actual value: ";
+				error << "Violated allowed values for port \"${decl.getName()}\". Actual value: ";
 				<#if component.isBatchPort(port)>
  error << v;
  <#else>
- error << ${valueContainer}.get${decl.name.toFirstUpper} ().value ();
+ error << ${valueContainer}.get${decl.getName()?cap_first} ().value ();
   </#if>
 				throw std::runtime_error(error.str ());
 			</#if>
 			}
 			<#if component.isBatchPort(port)>
 			});
-			input.set${decl.name.toFirstUpper}(copy${decl.name.toFirstUpper});
+			input.set${decl.getName()?cap_first}(copy${decl.getName()?cap_first});
 			</#if>
 		</#list>
 		}
@@ -120,7 +120,7 @@ class ValueCheck {
 		<#list valuations as v >
  port} == ${valuationToString(v)<#sep>||</#sep>
  </#list>
-		<#if !valuations.isEmpty && !ranges.isEmpty>
+		<#if valuations?has_content && ranges?has_content>
  ||
  </#if>
 		<#list ranges as r >

@@ -1,84 +1,86 @@
 # (c) https://github.com/MontiCore/monticore
 ${tc.signature("comp", "compname", "config")}
+
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#--package montithings.generator.codegen.xtend
 
 import arcbasis._symboltable.ComponentTypeSymbol
 import montithings.generator.codegen.ConfigParams
 import montithings.generator.codegen.xtend.util.Ports
 import montithings.generator.codegen.xtend.util.Utils
-import montithings.generator.helper.ComponentHelper-->
+import montithings.generator.ComponentHelper.ComponentHelper-->
 
     #include "${compname}Input.h"
     ${Utils.printNamespaceStart(comp)}
-    <#if !comp.hasTypeParameter>
- ${generateInputBody(comp, compname, config)}
+    <#if !comp.hasTypeParameter()>
+ <@generateInputBody comp compname config/>
  </#if>
     ${Utils.printNamespaceEnd(comp)}
 
     <#macro  generateInputBody comp, compname, config>
-    <#assign helper = new ComponentHelper(comp)>
-    <#assign isBatch = ComponentHelper.usesBatchMode(comp);>
+    <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 
 <#if !isBatch>
 
-<#if !comp.allIncomingPorts.empty>
+<#if !comp.getAllIncomingPorts()?has_content>
 ${Utils.printTemplateArguments(comp)}
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::${compname}Input(<#list optional<${helper.getRealPortCppTypeString(port, config)}> ${port.name as port : comp.allIncomingPorts SEPARATOR ','} tl:>
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::${compname}Input(<#list comp.getAllIncomingPorts() as port> tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()} <#sep>,
 
  </#list>){
-<#if comp.presentParentComponent>
-  super(<#list comp.parent.loadedSymbol.allIncomingPorts as port >
- port.name
+<#if comp.isPresentParentComponent()>
+  super(<#list comp.parent().loadedSymbol.allIncomingPorts as port >
+ port.getName()
  </#list>);
 </#if>
-<#list comp.incomingPorts as port >
- this->${port.name} = std::move(${port.name});
+<#list comp.incomingPorts() as port >
+ this->${port.getName()} = std::move(${port.getName()});
  </#list>
 }
 </#if>
 </#if>
 <#list ComponentHelper.getPortsInBatchStatement(comp) as port>
-<#if port.isIncoming>
+<#if port.isIncoming()>
 ${Utils.printTemplateArguments(comp)}
-std::vector<${helper.getRealPortCppTypeString(port, config)}>
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.name.toFirstUpper}() const
+std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}() const
 {
-  return ${port.name};
+  return ${port.getName()};
 }
 
 ${Utils.printTemplateArguments(comp)}
 void 
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::add${port.name.toFirstUpper}Element(tl::optional<${helper.getRealPortCppTypeString(port, config)}> element)
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::add${port.getName()?cap_first}Element(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> element)
 {
   if (element)
     {
-    ${port.name}.push_back(element.value());
+    ${port.getName()}.push_back(element.value());
      }
 }
 
 ${Utils.printTemplateArguments(comp)}
 void 
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.name.toFirstUpper}(std::vector<${helper.getRealPortCppTypeString(port, config)}> vector)
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> vector)
 {
-  this->${port.name} = std::move(vector);
+  this->${port.getName()} = std::move(vector);
 }
 </#if>
 </#list>
 
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port>
-<#if port.isIncoming>
+<#if port.isIncoming()>
 ${Utils.printTemplateArguments(comp)}
-tl::optional<${helper.getRealPortCppTypeString(port, config)}>
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.name.toFirstUpper}() const
+tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}() const
 {
-  return ${port.name};
+  return ${port.getName()};
 }
 
 ${Utils.printTemplateArguments(comp)}
 void 
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.name.toFirstUpper}(tl::optional<${helper.getRealPortCppTypeString(port, config)}> element)
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> element)
 {
-  this->${port.name} = std::move(element);
+  this->${port.getName()} = std::move(element);
 }
 
 <#if ComponentHelper.portUsesCdType(port)>
@@ -88,21 +90,21 @@ ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.name.
  <#assign adapterName = fullImportStatemantName.get(0)+"Adapter">
 
 tl::optional<${cdeImportStatementOpt.get.getImportClass().toString()}>
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.name.toFirstUpper}Adap() const
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Adap() const
 {
-  if (!get${port.name.toFirstUpper}().has_value()) {
+  if (!get${port.getName()?cap_first}().has_value()) {
           return {};
       }
 
-      ${adapterName.toFirstUpper} ${adapterName.toFirstLower};
-      return ${adapterName.toFirstLower}.convert(*get${port.name.toFirstUpper}());
+      ${adapterName?cap_first} ${adapterName?uncap_first};
+      return ${adapterName?uncap_first}.convert(*get${port.getName()?cap_first}());
 }
 
 void
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.name.toFirstUpper}(${cdeImportStatementOpt.get.getImportClass().toString()} element)
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get.getImportClass().toString()} element)
 {
-  ${adapterName.toFirstUpper} ${adapterName.toFirstLower};
-      this->${port.name} = ${adapterName.toFirstLower}.convert(element);
+  ${adapterName?cap_first} ${adapterName?uncap_first};
+      this->${port.getName()} = ${adapterName?uncap_first}.convert(element);
 }
 
 </#if>
