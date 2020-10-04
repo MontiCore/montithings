@@ -104,14 +104,6 @@
         </dependency>
 
         <dependency>
-            <groupId>montiarc</groupId>
-            <artifactId>util</artifactId>
-            <version>${montiarc.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-runtime</artifactId>
             <type>test-jar</type>

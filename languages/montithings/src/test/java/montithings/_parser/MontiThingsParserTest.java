@@ -1,9 +1,9 @@
 package montithings._parser;
 
 import de.se_rwth.commons.logging.Log;
-import montiarc.AbstractTest;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc.util.MontiArcError;
+import montithings.AbstractTest;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
