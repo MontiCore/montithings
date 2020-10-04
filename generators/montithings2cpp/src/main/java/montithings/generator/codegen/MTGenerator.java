@@ -69,7 +69,6 @@ public class MTGenerator {
         }
       }
     }
-
   }
 
   public static void generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath, String compname, boolean existsHWC) {
@@ -156,7 +155,7 @@ public class MTGenerator {
   public static void generatePortJson(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
       Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + "ports");
-      toFile(path.toFile(), comp.getFullName(), "template/util/comm/PortJson.ftl", ".json",comp, config);
+      toFile(path.toFile(), comp.getFullName(), "template/util/comm/PortJson.ftl", ".json",comp, config, comp.getFullName());
       for (ComponentInstanceSymbol subcomp : comp.getSubComponents()) {
         generatePortJson(targetPath, subcomp, config, comp.getFullName());
       }

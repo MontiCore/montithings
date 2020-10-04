@@ -1,5 +1,5 @@
 # (c) https://github.com/MontiCore/monticore
-${tc.signature("comp", "config", "prefix"=comp.getFullName())}
+${tc.signature("comp", "config", "prefix")}
 
 <#list comp.getSubComponents() as subcomp>
   "${subcomp.getName()}": {
