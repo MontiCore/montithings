@@ -19,7 +19,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
   <@Ports.printMethodBodies comp.getPorts() comp compname config/>
 
     <#if comp.isDecomposed()>
-    <#if config.getSplittingMode().toString() == "OFF">
+    <#if config.getSplittingMode().toString() != "OFF">
 <@Subcomponents.printMethodDefinitions comp config/>
  </#if>
 

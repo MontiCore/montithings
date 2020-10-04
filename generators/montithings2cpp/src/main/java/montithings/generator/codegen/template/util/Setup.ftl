@@ -16,7 +16,7 @@ import montithings.generator.codegen.ConfigParams-->
 <#macro print comp compname config>
 <#if (comp.isAtomic()) >
 <@printSetupAtomic comp compname/>
-<else>
+<#else>
     <@printSetupComposed comp compname config/>
     </#if>
 </#macro>
@@ -47,9 +47,9 @@ import montithings.generator.codegen.ConfigParams-->
  </#list>
       
       <#list comp.getAstNode().getConnectors() as connector>
-      <#list connector.getTargetList as target>
+      <#list connector.getTargetList() as target>
         <#if !ComponentHelper.isIncomingPort(comp, target)>
-        // implements "${connector.getSource()..getQName()} -> ${target..getQName()}"
+        // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
         ${Utils.printGetPort(target)}->setDataProvidingPort (${Utils.printGetPort(connector.getSource())});
         </#if>
         </#list>

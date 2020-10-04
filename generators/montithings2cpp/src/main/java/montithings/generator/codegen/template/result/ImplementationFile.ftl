@@ -21,7 +21,7 @@ import montithings.generator.codegen.ConfigParams-->
 
 
 <#macro  generateResultBody comp, compname, config>
-<#if !comp.getAllOutgoingPorts()?has_content>
+<#if !(comp.getAllOutgoingPorts()?size == 0)>
 ${Utils.printTemplateArguments(comp)}
 ${compname}Result${Utils.printFormalTypeParameters(comp, false)}::${compname}Result(<#list comp.getAllOutgoingPorts() as port> ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
  ${port.getName()} <#sep>,

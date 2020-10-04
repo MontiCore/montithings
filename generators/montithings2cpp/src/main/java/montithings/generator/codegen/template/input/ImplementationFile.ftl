@@ -23,7 +23,7 @@ import montithings.generator.ComponentHelper.ComponentHelper-->
 
 <#if !isBatch>
 
-<#if !comp.getAllIncomingPorts()?has_content>
+<#if !(comp.getAllIncomingPorts()?size == 0)>
 ${Utils.printTemplateArguments(comp)}
 ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::${compname}Input(<#list comp.getAllIncomingPorts() as port> tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()} <#sep>,
 

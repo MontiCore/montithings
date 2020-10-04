@@ -20,7 +20,7 @@ ${Identifier.createInstance(comp)}
     #include "sole/sole.hpp"
     #include <iostream>
     ${Utils.printIncludes(comp, config)}
-    
+
     <#if comp.isDecomposed()>
     ${Utils.printIncludes(comp, compname, config)}
     <#else>
@@ -28,7 +28,7 @@ ${Identifier.createInstance(comp)}
     #include "${compname}Input.h"
     #include "${compname}Result.h"
     </#if>
-    
+
     ${Utils.printNamespaceStart(comp)}
 
     ${Utils.printTemplateArguments(comp)}
@@ -41,7 +41,7 @@ ${Identifier.createInstance(comp)}
     private:
       <@Ports.printVars comp comp.getPorts() config/>
       ${Utils.printVariables(comp)}
-      
+
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters --><#-- Utils.printConfigParameters(comp) -->
       std::vector< std::thread > threads;
       TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
@@ -62,7 +62,7 @@ ${Identifier.createInstance(comp)}
       void setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result);
       void run();
       </#if>
-      
+
     public:
       <@Ports.printMethodHeaders comp.getPorts() config/>
       ${compname}(std::string instanceName<#if comp.getParameters()?has_content>
@@ -70,18 +70,18 @@ ${Identifier.createInstance(comp)}
  </#if>${ComponentHelper.printConstructorArguments(comp)});
 
       <#if comp.isDecomposed()>
-      <#if config.getSplittingMode().toString() == "OFF">
+      <#if config.getSplittingMode().toString() != "OFF">
  <@Subcomponents.printMethodDeclarations comp config/>
  </#if>
       </#if>
-      
+
       void setUp(TimeMode enclosingComponentTiming) override;
       void init() override;
       void compute() override;
       bool shouldCompute();
       void start() override;
     };
-                
+
     <#if comp.hasTypeParameter()>
  ${generateBody(comp, compname, config)}
  </#if>

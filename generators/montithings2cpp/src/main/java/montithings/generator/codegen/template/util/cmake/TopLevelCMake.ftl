@@ -54,7 +54,7 @@ CMAKE_CXX_FLAGS_MINSIZEREL
 )
 foreach (variable ${r"${variables}"})
 if (${r"${variable}"} MATCHES "/MD")
-string(REGEX REPLACE "/MD" "/MT" ${r"${variable}"} ${r"${${variable}}"})
+string(REGEX REPLACE "/MD" "/MT" ${r"${variable}"} "${"$"}{${"$"}{variable}}")
 endif ()
 endforeach ()
 endif ()
@@ -68,7 +68,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${r"${CMAKE_BINARY_DIR}"}/bin)
 
 # Include packages
 <#list subPackagesPath as subdir>
-  file(GLOB_RECURSE ${subdir.getName()?capitalize}_SOURCES "${subdir.getName()}/*.cpp" "${subdir.getName()}/*.h")
+  file(GLOB_RECURSE ${subdir.getName()?upper_case}_SOURCES "${subdir.getName()}/*.cpp" "${subdir.getName()}/*.h")
   include_directories("${subdir.getName()}")
 </#list>
 

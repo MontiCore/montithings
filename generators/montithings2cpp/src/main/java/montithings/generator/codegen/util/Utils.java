@@ -259,10 +259,10 @@ public class Utils {
     }
     StringBuilder s = new StringBuilder();
     for (String include : compIncludes) {
-      s.append(include);
+      s.append(include + "\n");
     }
-    s.append("#include \"" + compname + "Input.h\"");
-    s.append("#include \"" + compname + "Result.h\"");
+    s.append("#include \"" + compname + "Input.h\"\n");
+    s.append("#include \"" + compname + "Result.h\"\n");
     return s.toString();
   }
 
