@@ -39,7 +39,7 @@ private:
  </#list>
 public:	
   ${compname}Result() = default;
-  <#if !comp.getAllOutgoingPorts()?has_content>
+  <#if !(comp.getAllOutgoingPorts()?size == 0)>
   ${compname}Result(<#list comp.getAllOutgoingPorts() as port > ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
  ${port.getName()}<#sep>,
  </#list>);

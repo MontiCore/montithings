@@ -39,7 +39,7 @@ private:
 public:
   ${compname}Input() = default;
   <#if comp.getAllIncomingPorts()?has_content && !isBatch>
-  explicit ${compname}Input(<#list comp.getAllIncomingPorts() as port> tl:optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
+  explicit ${compname}Input(<#list comp.getAllIncomingPorts() as port> tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
       <#sep>,
   </#list>);
     </#if>

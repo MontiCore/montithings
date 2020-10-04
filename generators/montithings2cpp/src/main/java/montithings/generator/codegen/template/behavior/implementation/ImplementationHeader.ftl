@@ -19,9 +19,8 @@ import montithings.generator.helper.ComponentHelper-->
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
-class ${compname}Impl<#if existsHWC>
- TOP
- </#if> : public IComputable<${compname}Input${generics},${compname}Result${generics}>{
+class ${compname}Impl<#if existsHWC>TOP</#if>
+  : public IComputable<${compname}Input${generics},${compname}Result${generics}>{
 
 protected:  
     ${Utils.printVariables(comp)}

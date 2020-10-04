@@ -10,9 +10,7 @@ import montithings.generator.codegen.xtend.util.Utils
 import montithings.generator.codegen.xtend.util.Identifier
 import montithings.generator.helper.ComponentHelper-->
 
-  #include "${compname}Impl<#if existsHWC>
- TOP
- </#if>.h"
+  #include "${compname}Impl<#if existsHWC>TOP</#if>.h"
   ${Utils.printNamespaceStart(comp)}
   <#if !comp.hasTypeParameter()>
  <@generateImplementationBody comp compname existsHWC/>
@@ -23,16 +21,13 @@ import montithings.generator.helper.ComponentHelper-->
     <#assign generics = Utils.printFormalTypeParameters(comp)>
 <#if ComponentHelper.hasBehavior(comp)>
 ${Utils.printTemplateArguments(comp)}
-${compname}Result${generics} ${compname}Impl<#if isTOP>
- TOP
- </#if>${generics}::getInitialValues(){
+${compname}Result${generics} ${compname}Impl<#if isTOP>TOP</#if>${generics}::getInitialValues(){
   return {};
 }
 
 ${Utils.printTemplateArguments(comp)}
-${compname}Result${generics} ${compname}Impl<#if isTOP>
- TOP
- </#if>${generics}::compute(${compname}Input${generics} input<#-- TODO ${Identifier.getInputName()}-->){
+${compname}Result${generics} ${compname}Impl<#if isTOP>TOP</#if>${generics}::compute(${compname}Input${generics} input
+<#-- TODO ${Identifier.getInputName()}-->){
   ${compname}Result${generics} result;
   ${ComponentHelper.printStatementBehavior(comp)}
   return result;
@@ -41,9 +36,7 @@ ${compname}Result${generics} ${compname}Impl<#if isTOP>
 </#macro>
   
     <#macro printConstructor comp isTOP>
-${comp.getName()}Impl<#if isTOP>
- TOP
- </#if>(${Utils.printConfigurationParametersAsList(comp)})
+${comp.getName()}Impl<#if isTOP>TOP</#if>(${Utils.printConfigurationParametersAsList(comp)})
 <#if comp.getParameters()?has_content>
 :
 <#list comp.getParameters() as param >
