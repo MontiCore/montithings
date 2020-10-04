@@ -36,7 +36,7 @@ SET(dir_list "")
 
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
-    ${printDsaParameters(config)}
+    <@dsaParameters config />
 </#if>
 
 <#if config.getTargetPlatform().toString() != "DSA_VCG"
@@ -87,13 +87,13 @@ ${r"${"}${subdir.getName()?capitalize}${r"}"}_SOURCES}
 </#list>)
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
-    ${printDsaLinkLibraries(comp.getFullName())}
+    <@dsaLinkLibraries comp.getFullName() />
 <#else>
     target_link_libraries(${comp.getFullName()} nng::nng)
 </#if>
 set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
 
-  def static printDsaParameters(ConfigParams config) {
+<#macro dsaParameters config>
     # Cross compile
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_VERSION 1)
@@ -121,19 +121,19 @@ set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
     include_directories("inc" ${r"${dir_list}"})
 
     link_directories(./lib/dsa-vcg)
-  }
-  
-  def static printDsaLinkLibraries(String targetName) {
+</#macro>
+
+<#macro dsaLinkLibraries targetName>
     target_link_libraries(${r"${targetName}"} nng pthread curl ${r"${ATOMIC_LIBRARY}"})
-  }
-    
-  def static printIPCServerCMake(/*ResourcePortSymbol port,*/ String libraryPath, String ipcPath, Boolean existsHWC, ConfigParams config){
+</#macro>
+
+<#macro ipcServerCMake libraryPath ipcPath existsHWC config>
     cmake_minimum_required(VERSION 3.8)
 <#-- project(${port.getName()?cap_first}Server) TODO -->set(CMAKE_CXX_STANDARD 11)
 
     <#if config.getTargetPlatform().toString() == "DSA_VCG"
      || config.getTargetPlatform().toString() == "DSA_LAB">
-    ${printDsaParameters(config)}
+    <@dsaParameters config />
     </#if>
     
     <#if config.getTargetPlatform().toString() != "DSA_VCG"
@@ -154,4 +154,4 @@ set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
  <#else>
  <#-- target_link_libraries(${port.getName()?cap_first}Server nng::nng) TODO -->
   </#if>
-  }
+</#macro>

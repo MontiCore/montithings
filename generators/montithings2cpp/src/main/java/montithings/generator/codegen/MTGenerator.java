@@ -60,12 +60,12 @@ public class MTGenerator {
         File sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
         sketchDirectory.mkdir();
         toFile(sketchDirectory, "Deploy" + compname, "template/deploy/DeployArduino.ftl",".ino",comp, compname);
-        toFile(targetPath.getParentFile(), "README", "template/util/ArduinoReadme.ftl",".txt",targetPath.getName(), compname);
+        toFile(targetPath.getParentFile(), "README", "template/util/ArduinoReadme.ftl",".txt", targetPath.getName(), compname);
       } else {
         toFile(targetPath, "Deploy" + compname, "template/deploy/Deploy.ftl",".cpp",comp, compname, config);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          toFile(targetPath, compname + "Manager", "template/comm/Header.ftl", ".h", comp, config);
-          toFile(targetPath, compname + "Manager", "template/comm/ImplementationFile.ftl", ".cpp", comp, config);
+          toFile(targetPath, compname + "Manager", "template/util/comm/Header.ftl", ".h", comp, config);
+          toFile(targetPath, compname + "Manager", "template/util/comm/ImplementationFile.ftl", ".cpp", comp, config);
         }
       }
     }
@@ -146,8 +146,8 @@ public class MTGenerator {
     sortedDirs.addAll(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
-    toFile(targetPath, "run", "template/util/scrpts/RunScript.ftl", ".sh", comp, config);
-    toFile(targetPath, "kill", "template/util/scrpts/KillScript.ftl", ".sh",sortedDirs);
+    toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);
+    toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs);
     makeExecutable(targetPath, "run", ".sh");
     makeExecutable(targetPath, "kill", ".sh");
   }

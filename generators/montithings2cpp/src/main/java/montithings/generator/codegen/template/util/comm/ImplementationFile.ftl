@@ -1,4 +1,7 @@
 # (c) https://github.com/MontiCore/monticore
+${tc.signature("comp", "config")}
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
 #include "${comp.getName()}Manager.h"
 #include "messages/PortToSocket.h"
@@ -25,19 +28,19 @@ ${comp.getName()}Manager::${comp.getName()}Manager (${ComponentHelper.printPacka
     void
     ${comp.getName()}Manager::process (std::string msg)
     {
-      <@ checkForManagementInstructions comp config/>
+      <@checkForManagementInstructions comp config/>
     }
 
     void
     ${comp.getName()}Manager::initializePorts ()
     {
-      <@ initializePorts comp config />
+      <@initializePorts comp config />
     }
 
     void
     ${comp.getName()}Manager::searchSubcomponents ()
     {
-      <@ searchForSubComps comp config />
+      <@searchForSubComps comp config />
     }
 
     ${Utils.printNamespaceEnd(comp)}
@@ -47,9 +50,9 @@ ${comp.getName()}Manager::${comp.getName()}Manager (${ComponentHelper.printPacka
 
 // initialize ports
 <#list comp.getPorts() as p>
-<#assign type = ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)>
+<#assign type = ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)>
 std::string ${p.getName()}_uri = "ws://" + comm->getOurIp() + ":" + communicationPort + "/" + comp->getInstanceName () + "/out/${p.getName()}";
-comp->addOutPort${p.getName()?cap_first()}(new WSPort<${type}>(OUTGOING, ${p.getName()}_uri));
+comp->addOutPort${p.getName()?cap_first}(new WSPort<${type}>(OUTGOING, ${p.getName()}_uri));
 </#list>
 </#macro>
 
@@ -63,18 +66,16 @@ comp->addOutPort${p.getName()?cap_first()}(new WSPort<${type}>(OUTGOING, ${p.get
       // connection information for port ${p.getName()} was received
       std::string ${p.getName()}_uri = "ws://" + message.getIpAndPort() + message.getRemotePort();
       std::cout << "Received connection: " << ${p.getName()}_uri << std::endl;
-      comp->addInPort${p.getName()?cap_first()}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)}>(INCOMING, ${p.getName()}_uri));
+      comp->addInPort${p.getName()?cap_first}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(INCOMING, ${p.getName()}_uri));
     }
     </#if>
     </#list>
 </#macro>
 
 <#macro searchForSubComps comp config>
-  def static String printSearchForSubComps(ComponentTypeSymbol comp, ConfigParams config){
-    <#if comp.getSubComponents().isEmpty>
+    <#if comp.getSubComponents()?size == 0>
       // component has no subcomponents - nothing to do
     <#else>
-
 
     bool allConnected = 0;
     while (!allConnected)
@@ -83,13 +84,13 @@ comp->addOutPort${p.getName()?cap_first()}(new WSPort<${type}>(OUTGOING, ${p.get
       <#list comp.subComponents as subcomponent>
       <#assign subcomponentSymbol = subcomponent.type.loadedSymbol>
       // ${subcomponentSymbol.getName()} ${subcomponent.getName()}
-      ${printSCDetailsHelper(comp, subcomponent)}
+      <@SCDetailsHelper comp subcomponent/>
 
         <#if config.getSplittingMode().toString() == "LOCAL">
         std::ifstream i (this->portConfigFilePath);
         json j;
         i >> j;
-        std::string ${subcomponent.getName()}_port = j["${subcomponent.getName()}"]["management"].get<std::string> ();
+        std::string ${subcomponent.getName()}_port = j["${subcomponent.getName()}"]["management"].get${"<std::string>"} ();
         <#else>
         std::string ${subcomponent.getName()}_port = "1337";
         </#if>
@@ -98,30 +99,30 @@ comp->addOutPort${p.getName()?cap_first()}(new WSPort<${type}>(OUTGOING, ${p.get
 
 
         // tell subcomponent where to connect to
-        <#list ((ASTMTComponentType)comp.getAstNode()).getConnectors() as connector>
+        <#list comp.getAstNode().getConnectors() as connector>
         <#list connector.targetList as target>
-          <#if !target.isPresentComponent && subcomponent.getName() == connector.source.component>
+          <#if !target.isPresentComponent() && subcomponent.getName() == connector.getSource().getComponent()>
             <#list subcomponentSymbol.ports as p>
-            <#if p.getName() == connector.source.port>
+            <#if p.getName() == connector.getSource().port>
             // set receiver
             std::string communicationPort = j["${subcomponent.getName()}"]["communication"].get${"<std::string>"} ();
             std::string ${subcomponent.getName()}_uri = "ws://" + ${subcomponent.getName()}_ip + ":" + communicationPort + "/" + comp->getInstanceName () + ".${subcomponent.getName()}/out/${p.getName()}";
 
-            // implements "${connector.source.getQName} -> ${target.getQName}"
-            comp->addInPort${target.port?cap_first}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.component.get, p, config)}>(INCOMING, ${subcomponent.getName()}_uri));
+            // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
+            comp->addInPort${target.port?cap_first}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(INCOMING, ${subcomponent.getName()}_uri));
 
             </#if>
             </#list>
           </#if>
-          <#-- TODO: What happens if !target.isPresentComponent --><#if target.isPresentComponent && subcomponent.getName() == target.component>
+          <#-- TODO: What happens if !target.isPresentComponent() --><#if target.isPresentComponent() && subcomponent.getName() == target.getComponent()>
           {
-            <#if !connector.source.isPresentComponent>
-              PortToSocket message ("${target.port}", comm->getOurIp() + ":" + communicationPort, "/" + comp->getInstanceName () + "/out/${connector.source.port}");
+            <#if !connector.getSource().isPresentComponent()>
+              PortToSocket message ("${target.port}", comm->getOurIp() + ":" + communicationPort, "/" + comp->getInstanceName () + "/out/${connector.getSource().port}");
             <#else>
               <#list comp.subComponents as sourceSubcomp>
-              <#if sourceSubcomp.getName() == connector.source.component>
-              std::string communicationPort = j["${connector.source.component}"]["communication"].get${"<std::string>"} ();
-              PortToSocket message ("${target.port}", comp->get${connector.source.component?cap_first}IP() + ":" + communicationPort, "/${sourceSubcomp.fullName}/out/${connector.source.port}");
+              <#if sourceSubcomp.getName() == connector.getSource().getComponent()>
+              std::string communicationPort = j["${connector.getSource().getComponent()}"]["communication"].get${"<std::string>"} ();
+              PortToSocket message ("${target.port}", comp->get${connector.getSource().getComponent()?cap_first}IP() + ":" + communicationPort, "/${sourceSubcomp.fullName}/out/${connector.getSource().port}");
               </#if>
               </#list>
             </#if>
@@ -155,12 +156,12 @@ comp->addOutPort${p.getName()?cap_first()}(new WSPort<${type}>(OUTGOING, ${p.get
 
   <#macro SCDetailsHelper comp subcomponent>
     if (comp->get${subcomponent.getName()?cap_first}IP().length() == 0
-    <#list  ((ASTMTComponentType)comp.getAstNode()).getConnectors() as connector>
+    <#list  comp.getAstNode().getConnectors() as connector>
     <#list connector.targetList as target>
-      <#-- TODO: What happens when !target.isPresentComponent -->
-      <#if target.isPresentComponent && subcomponent.getName() == target.component>
-      <#if connector.source.isPresentComponent>
-        && comp->get${connector.source.component?cap_first}IP().length() != 0
+      <#-- TODO: What happens when !target.isPresentComponent() -->
+      <#if target.isPresentComponent() && subcomponent.getName() == target.getComponent()>
+      <#if connector.getSource().isPresentComponent()>
+        && comp->get${connector.getSource().getComponent()?cap_first}IP().length() != 0
       </#if>
       </#if>
     </#list>
@@ -175,11 +176,11 @@ comp->addOutPort${p.getName()?cap_first()}(new WSPort<${type}>(OUTGOING, ${p.get
     <#list comp.subComponents as subcomponent >
  std::string ${subcomponent.getName()}_uri;
  </#list>
-    <#list ((ASTMTComponentType)comp.getAstNode()).getConnectors() as connector>
+    <#list comp.getAstNode().getConnectors() as connector>
     <#list connector.targetList as target>
     <#list comp.subComponents as subcomponent>
       <#assign subcomponentSymbol = subcomponent.type.loadedSymbol>
-      <#if !connector.source.isPresentComponent && subcomponent.getName() == target.component>
+      <#if !connector.getSource().isPresentComponent() && subcomponent.getName() == target.getComponent()>
       <#list subcomponentSymbol.ports as p>
       <#if p.getName() == target.port>
  std::string to${subcomponent.getName()?cap_first}_${p.getName()}_uri;
