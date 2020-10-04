@@ -108,6 +108,10 @@ public class MTGenerator {
   public static void generateBuildScript(File targetPath, ConfigParams config) {
     toFile(targetPath, "build", "template/util/scripts/BuildScript.ftl", ".sh",config);
     makeExecutable(targetPath, "build", ".sh");
+
+    toFile(targetPath, "reformatCode", "template/util/scripts/ReformatScript.ftl", ".sh");
+    toFile(targetPath, "", "template/util/scripts/ClangFormat.ftl", ".clang-format");
+    makeExecutable(targetPath, "reformatCode", ".sh");
   }
 
   public static void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
