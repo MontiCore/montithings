@@ -8,7 +8,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
     #include "${compname}.h"
-    #include <regex>
+    #include ${"<regex>"}
     ${Utils.printNamespaceStart(comp)}
     <#if !comp.hasTypeParameter()>
  <@generateBody comp compname config/>
