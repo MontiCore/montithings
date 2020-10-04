@@ -8,7 +8,7 @@ import montithings.generator.helper.ComponentHelper
 import montithings.generator.codegen.ConfigParams-->
 
     #include "${compname}.h"
-    <#if config.getSplittingMode().toString() == "OFF">
+    <#if config.getSplittingMode().toString() != "OFF">
  #include "${compname}Manager.h"
  </#if>
     #include <chrono>
@@ -28,7 +28,7 @@ import montithings.generator.codegen.ConfigParams-->
         exit(1);
       }
       </#if>
-      <#if config.getSplittingMode().toString() == "LOCAL">
+      <#if config.getSplittingMode().toString() != "LOCAL">
       if (argc != 2)
       {
         std::cerr << "Called with wrong number of arguments. Please provide the following arguments:" << std::endl;
@@ -40,7 +40,7 @@ import montithings.generator.codegen.ConfigParams-->
       </#if>
 
       ${ComponentHelper.printPackageNamespaceForComponent(comp)}${compname} cmp (argv[1]);
-      <#if config.getSplittingMode().toString() == "OFF">
+      <#if config.getSplittingMode().toString() != "OFF">
       ${ComponentHelper.printPackageNamespaceForComponent(comp)}${compname}Manager manager (&cmp, argv[2], argv[3]);
       manager.initializePorts ();
       <#if comp.isDecomposed()>
