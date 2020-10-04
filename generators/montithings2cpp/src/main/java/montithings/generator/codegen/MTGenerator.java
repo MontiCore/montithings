@@ -20,13 +20,8 @@ import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 
 /**
-
   Main entry point for generator. From this all target artifacts are generated for a component.
   It uses dispatching for calling the right implementation generator.
-
-  @author  Pfeiffer
-  @version $Revision$,
-           $Date$
  **/
 public class MTGenerator {
 
@@ -91,7 +86,7 @@ public class MTGenerator {
     //FileReaderWriter.storeInFile(path, content);
     GeneratorSetup setup = new GeneratorSetup();
     setup.setTracing(false);
-    setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
+    //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
 
     GeneratorEngine engine = new GeneratorEngine(setup);
 

@@ -13,11 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * TODO
- *
- * @author (last commit) JFuerste
- */
 public class MontiThingsConfiguration implements Configuration {
   public static final String CONFIGURATION_PROPERTY = "_configuration";
 

@@ -14,8 +14,6 @@ import java.util.*;
  * Bundle of parameters for montithings2cpp generator.
  *
  * @author Julian Krebber
- * @version 5.0.2
- * @revision (see commit history)
  * @since 5.0.2
  */
 public class ConfigParams {

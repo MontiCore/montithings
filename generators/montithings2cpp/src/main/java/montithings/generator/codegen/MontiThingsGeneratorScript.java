@@ -11,12 +11,6 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 import java.io.File;
 
-/**
- * TODO
- *
- * @author (last commit) JFuerste
- */
-
 public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
 
   protected static final String[] DEFAULT_IMPORTS = {};
