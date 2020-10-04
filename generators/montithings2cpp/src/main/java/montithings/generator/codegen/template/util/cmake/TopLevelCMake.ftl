@@ -1,4 +1,4 @@
-# (c) https://github.com/MontiCore/monticore
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config")}
 <#--package montithings.generator.codegen.xtend.util
 

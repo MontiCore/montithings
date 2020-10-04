@@ -1,4 +1,4 @@
-# (c) https://github.com/MontiCore/monticore
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#include "TopLevelCMake.ftl">
 
 add_library(${comp.getFullName()?replace(".","_")}Lib ${"$"}{SOURCES} ${"$"}{HWC_SOURCES}

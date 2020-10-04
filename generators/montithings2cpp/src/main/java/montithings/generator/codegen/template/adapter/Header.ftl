@@ -1,4 +1,4 @@
-# (c) https://github.com/MontiCore/monticore
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#--package montithings.generator.codegen.xtend
 

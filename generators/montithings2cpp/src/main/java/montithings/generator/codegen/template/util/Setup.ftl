@@ -1,4 +1,4 @@
-# (c) https://github.com/MontiCore/monticore
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign ConfigParams = tc.instantiate("montithings.generator.codegen.ConfigParams")>

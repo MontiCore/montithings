@@ -1,4 +1,4 @@
-# (c) https://github.com/MontiCore/monticore
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "compname", "config")}
 
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>

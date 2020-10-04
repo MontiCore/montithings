@@ -1,4 +1,4 @@
-# (c) https://github.com/MontiCore/monticore
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#--package montithings.generator.codegen.xtend.behavior
 
 import arcbasis._symboltable.ComponentTypeSymbol

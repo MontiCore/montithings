@@ -1,4 +1,4 @@
-# (c) https://github.com/MontiCore/monticore
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "compname", "config", "useWsPorts")}
 <#import "/template/util/Ports.ftl" as Ports>
 <#import "/template/util/Subcomponents.ftl" as Subcomponents>
