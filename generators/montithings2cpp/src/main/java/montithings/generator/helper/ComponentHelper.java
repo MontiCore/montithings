@@ -35,7 +35,7 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
-import org.eclipse.xtext.xbase.lib.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
 import portextensions._ast.ASTSyncStatement;
@@ -879,7 +879,7 @@ public class ComponentHelper {
   protected static List<Pair<ComponentTypeSymbol, String>> getInstances(
     ComponentTypeSymbol component, String packageName) {
     List<Pair<ComponentTypeSymbol, String>> instances = new ArrayList<>();
-    instances.add(new Pair<>(component, packageName));
+    instances.add(Pair.of(component, packageName));
 
     for (ComponentInstanceSymbol subcomp : component.getSubComponents()) {
       instances.addAll(

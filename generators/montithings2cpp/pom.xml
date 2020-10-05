@@ -112,12 +112,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- .. xtend ............................................... -->
-		<dependency>
-			<groupId>org.eclipse.xtend</groupId>
-			<artifactId>org.eclipse.xtend.lib</artifactId>
-		</dependency>
-
 		<!-- .. Test Libraries ............................................... -->
 		<dependency>
 			<groupId>junit</groupId>
