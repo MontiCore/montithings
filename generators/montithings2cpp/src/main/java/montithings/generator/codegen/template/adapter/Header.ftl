@@ -1,14 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+${tc.signature("packageName", "compname", "config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#--package montithings.generator.codegen.xtend
-
-import cdlangextension._ast.ASTCDEImportStatement
-import java.util.HashSet
-import java.util.List
-import montithings.generator.codegen.ConfigParams
-import montithings.generator.helper.ComponentHelper-->
-	
-	<#macro generateHeader packageName compname config >
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 #pragma once
 #include <string>
 #include "Port.h"
@@ -18,33 +11,32 @@ import montithings.generator.helper.ComponentHelper-->
 #include <set>
 #include <utility>
 #include "tl/optional.hpp"
-<@printIncludes(ComponentHelper.getImportStatements(compname,config))/>
+${Utils.printIncludes(ComponentHelper.getImportStatements(compname,config))}
 
-${printNamespaceStart(packageName)}
+<@printNamespaceStart packageName />
 
 class ${compname}AdapterTOP
 {
 private:
 public:
-	${compname}AdapterTOP() = default;
-	<#list ComponentHelper.getImportStatements(compname,config) as importStatement >
-	virtual ${printCDType(importStatement)} convert(${importStatement.importClass} element) = 0;
-	virtual ${importStatement.importClass} convert(${printCDType(importStatement)} element) = 0;
-	</#list>
+  ${compname}AdapterTOP() = default;
+  <#list ComponentHelper.getImportStatements(compname,config) as importStatement >
+    virtual ${Utils.printCDType(importStatement)} convert(${importStatement.getImportClass()} element) = 0;
+    virtual ${importStatement.getImportClass()} convert(${Utils.printCDType(importStatement)} element) = 0;
+  </#list>
 };
-${printNamespaceEnd(packageName)}
-</#macro>
+<@printNamespaceEnd packageName />
 
 <#macro printNamespaceStart packages >
-      	namespace montithings {
-      	<#list 0..<packages.size as i >
- namespace ${packages.get(i)} {
- </#list>
+  namespace montithings {
+    <#list packageName as package>
+      namespace ${package} {
+    </#list>
 </#macro>
 
 <#macro printNamespaceEnd packages >
-    	<#list 0..<packages.size as i >
- } // namespace ${packages.get(packages.size - (i+1))}
- </#list>
-    	} // namespace montithings
+    <#list packageName as package>
+      } // namespace ${package}
+    </#list>
+  } // namespace montithings
 </#macro>

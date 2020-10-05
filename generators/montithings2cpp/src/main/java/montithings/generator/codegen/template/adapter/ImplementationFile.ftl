@@ -1,16 +1,17 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-<#--package montithings.generator.codegen.xtend
+${tc.signature("packageName", "compname", "config")}
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
-import cdlangextension._ast.ASTCDEImportStatement
-import java.util.HashSet
-import java.util.List
-import montithings.generator.codegen.ConfigParams
-import montithings.generator.helper.ComponentHelper-->
+#include "${compname}AdapterTOP.h"
 
-	def static generateCpp(List<String> packageName, String compname, ConfigParams config) {
-    return '''
-    #include "${compname}AdapterTOP.h"
-    ${printNamespaceStart(packageName)}
-    ${printNamespaceEnd(packageName)}
-    '''
-  }
+namespace montithings {
+<#list packageName as package>
+namespace ${package} {
+</#list>
+
+
+
+<#list packageName as package>
+} // namespace ${package}
+</#list>
+} // namespace montithings

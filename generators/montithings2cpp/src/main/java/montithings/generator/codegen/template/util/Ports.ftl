@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-<#import "/template/adapter/Header.ftl" as Adapter>
+<#-- <#import "/template/adapter/Header.ftl" as Adapter> -->
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#--package montithings.generator.codegen.xtend.util

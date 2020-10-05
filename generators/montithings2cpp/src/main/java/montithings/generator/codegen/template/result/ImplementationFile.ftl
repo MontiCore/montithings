@@ -54,8 +54,8 @@ ${compname}Result${Utils.printFormalTypeParameters(comp, false)}::set${port.getN
 <#if ComponentHelper.portUsesCdType(port)>
 <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
 <#if cdeImportStatementOpt.isPresent()>
- <#assign fullImportStatemantName = cdeImportStatementOpt.get().getSymbol().getFullName().split("\\.")>
- <#assign adapterName = fullImportStatemantName.get(0)+"Adapter">
+ <#assign fullImportStatemantName = cdeImportStatementOpt.get().getSymbol().getFullName()?split(".")>
+ <#assign adapterName = fullImportStatemantName[0]+"Adapter">
 
 tl::optional<${cdeImportStatementOpt.get().getImportClass().toString()}>
 ${compname}Result${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Adap() const
