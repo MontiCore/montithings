@@ -50,8 +50,8 @@ public:
   <#if ComponentHelper.portUsesCdType(port)>
     <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
     <#if cdeImportStatementOpt.isPresent()>
-    tl::optional<${cdeImportStatementOpt.get.getImportClass().toString()}> get${port.getName()?cap_first}Adap() const;
-    void set${port.getName()?cap_first}(${cdeImportStatementOpt.get.getImportClass().toString()});
+    tl::optional<${cdeImportStatementOpt.get().getImportClass().toString()}> get${port.getName()?cap_first}Adap() const;
+    void set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()});
   </#if>
   </#if>
   </#list>

@@ -86,10 +86,10 @@ ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getNa
 <#if ComponentHelper.portUsesCdType(port)>
 <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
 <#if cdeImportStatementOpt.isPresent()>
- <#assign fullImportStatemantName = cdeImportStatementOpt.get.getSymbol.getFullName.split("\\.")>
+ <#assign fullImportStatemantName = cdeImportStatementOpt.get().getSymbol().getFullName().split("\\.")>
  <#assign adapterName = fullImportStatemantName.get(0)+"Adapter">
 
-tl::optional<${cdeImportStatementOpt.get.getImportClass().toString()}>
+tl::optional<${cdeImportStatementOpt.get().getImportClass().toString()}>
 ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Adap() const
 {
   if (!get${port.getName()?cap_first}().has_value()) {
@@ -101,7 +101,7 @@ ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getNa
 }
 
 void
-${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get.getImportClass().toString()} element)
+${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()} element)
 {
   ${adapterName?cap_first} ${adapterName?uncap_first};
       this->${port.getName()} = ${adapterName?uncap_first}.convert(element);
