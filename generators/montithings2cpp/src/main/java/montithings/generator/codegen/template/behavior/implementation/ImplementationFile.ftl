@@ -21,8 +21,8 @@ ${Utils.printNamespaceEnd(comp)}
         }
 
         ${Utils.printTemplateArguments(comp)}
-        ${compname}Result${generics} ${compname}Impl<#if isTOP>TOP</#if>${generics}::compute(${compname}Input${generics} input
-        <#-- TODO ${Identifier.getInputName()}-->){
+        ${compname}Result${generics} ${compname}Impl<#if isTOP>TOP</#if>${generics}::compute(${compname}Input${generics}
+        ${Identifier.getInputName()}){
         ${compname}Result${generics} result;
         ${ComponentHelper.printStatementBehavior(comp)}
         return result;

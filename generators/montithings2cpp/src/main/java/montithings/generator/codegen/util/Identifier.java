@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.util;
 
-import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
+import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 
 
@@ -81,28 +81,28 @@ public class Identifier {
   /**
    * @return behaviorImplName
    */
-  static String getBehaviorImplName() {
+  public static String getBehaviorImplName() {
     return instance.behaviorImplName;
   }
 
   /**
    * @return resultName
    */
-  static String getResultName() {
+  public static String getResultName() {
     return instance.resultName;
   }
 
   /**
    * @return inputName
    */
-  static String getInputName() {
+  public static String getInputName() {
     return instance.inputName;
   }
 
   /**
    * @return currentStateName
    */
-  static String getCurrentStateName() {
+  public static String getCurrentStateName() {
     return instance.currentStateName;
   }
 }

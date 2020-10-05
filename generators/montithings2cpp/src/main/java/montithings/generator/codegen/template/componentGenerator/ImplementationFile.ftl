@@ -5,6 +5,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
 <#import "/template/util/Init.ftl" as Init>
 <#import "/template/util/Subcomponents.ftl" as Subcomponents>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
 #include "${compname}.h"
@@ -38,7 +39,7 @@ ${Utils.printNamespaceEnd(comp)}
         <#list comp.incomingPorts as port >
           getPort${port.getName()?cap_first} ()->registerListeningPort (this->getUuid ());
         </#list>
-        ${compname}Result${Utils.printFormalTypeParameters(comp)} result = behaviorImpl<#-- TODO ${Identifier.getBehaviorImplName()}-->.getInitialValues();
+        ${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();
         setResult(result);
         }
 
@@ -95,7 +96,7 @@ ${Utils.printNamespaceEnd(comp)}
 </#macro>
 
 <#macro printBehaviorInitializerListEntry comp compname>
-  behaviorImpl<#-- TODO ${Identifier.getBehaviorImplName()}-->(${compname}Impl${Utils.printFormalTypeParameters(comp, false)}(
+  ${Identifier.getBehaviorImplName()}(${compname}Impl${Utils.printFormalTypeParameters(comp, false)}(
     <#if comp.hasParameters()>
         <#list comp.getParameters() as param >
           param.getName()<#sep>,
@@ -115,7 +116,7 @@ ${Utils.printNamespaceEnd(comp)}
     <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
     </#list>
     <@printPreconditionsCheck comp compname/>
-  result = behaviorImpl<#-- TODO ${Identifier.getBehaviorImplName()}-->.compute(input);
+  result = ${Identifier.getBehaviorImplName()}.compute(input);
     <#list comp.getOutgoingPorts() as port>
     <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
     </#list>

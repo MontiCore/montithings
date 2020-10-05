@@ -56,7 +56,7 @@ TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
     <@Subcomponents.printVars comp config/>
 <#else>
 
-    ${compname}Impl${Utils.printFormalTypeParameters(comp)} behaviorImpl<#-- TODO ${Identifier.getBehaviorImplName()}-->;
+    ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
   void initialize();
   void setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result);
