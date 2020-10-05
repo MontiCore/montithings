@@ -6,12 +6,12 @@ ${tc.signature("packageName", "compname", "config")}
 
 namespace montithings {
 <#list packageName as package>
-namespace ${package} {
+  namespace ${package} {
 </#list>
 
 
 
 <#list packageName as package>
-} // namespace ${package}
+  } // namespace ${package}
 </#list>
 } // namespace montithings

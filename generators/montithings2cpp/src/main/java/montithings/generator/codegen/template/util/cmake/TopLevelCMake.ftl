@@ -1,11 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config")}
-<#--package montithings.generator.codegen.xtend.util
-
-import java.io.File
-import java.util.List
-import arcbasis._symboltable.ComponentTypeSymbol
-import montithings.generator.codegen.ConfigParams-->
 
 <#assign commonCodePrefix = "">
 <#if config.getSplittingMode().toString() != "OFF">
@@ -83,7 +77,7 @@ file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix
 
 add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
-${r"${"}${subdir.getName()?upper_case}_SOURCES}
+    ${r"${"}${subdir.getName()?upper_case}_SOURCES}
 </#list>)
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
