@@ -196,7 +196,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
   </#if>
 <#sep>&&</#sep>
     </#list>
-    <#if ComponentHelper.getPortsInGuardExpression(statement.guard).isEmpty>
+    <#if ComponentHelper.getPortsInGuardExpression(statement.guard)?size == 0>
  true // presence of value on ports not checked as they are not used in precondition
  </#if>
      && 
@@ -245,7 +245,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
       </#if>
 <#sep>&&</#sep>
     </#list>
-    <#if ComponentHelper.getPortsInGuardExpression(statement.guard).isEmpty>
+    <#if ComponentHelper.getPortsInGuardExpression(statement.guard)?size == 0>
  true // presence of value on ports not checked as they are not used in precondition
  </#if>
     && 
