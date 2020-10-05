@@ -55,7 +55,7 @@
 		<jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
 		<surefire.plugin>3.0.0-M4</surefire.plugin>
 		<failsafe.plugin>3.0.0-M4</failsafe.plugin>
-		<xtend.version>2.20.0</xtend.version>
+		<failsafe.plugin>3.0.0-M4</failsafe.plugin>
 
 		<!-- Classifiers -->
 		<grammars.classifier>grammars</grammars.classifier>
@@ -146,13 +146,6 @@
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
 				<version>${antlr.version}</version>
-			</dependency>
-
-			<!-- .. xtend ............................................... -->
-			<dependency>
-				<groupId>org.eclipse.xtend</groupId>
-				<artifactId>org.eclipse.xtend.lib</artifactId>
-				<version>${xtend.version}</version>
 			</dependency>
 
 			<!-- MontiCore Dependencies -->
