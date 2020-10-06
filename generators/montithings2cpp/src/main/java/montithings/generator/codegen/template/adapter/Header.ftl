@@ -26,17 +26,3 @@ ${compname}AdapterTOP() = default;
 </#list>
 };
 ${tc.includeArgs("template.adapter.printNamespaceEnd", [packageName])}
-
-printNamespaceStart${tc.signature("packages")}
-  namespace montithings {
-    <#list packageName as package>
-      namespace ${package} {
-    </#list>
-</#macro>
-
-printNamespaceEnd${tc.signature("packages")}
-    <#list packageName as package>
-      } // namespace ${package}
-    </#list>
-  } // namespace montithings
-</#macro>

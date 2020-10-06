@@ -9,8 +9,6 @@ namespace montithings {
   namespace ${package} {
 </#list>
 
-
-
 <#list packageName as package>
   } // namespace ${package}
 </#list>
