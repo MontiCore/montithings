@@ -30,7 +30,7 @@ SET(dir_list "")
 
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
-    <@dsaParameters config />
+    ${tc.includeArgs("template.util.cmake.dsaParameters", [config])}
 </#if>
 
 <#if config.getTargetPlatform().toString() != "DSA_VCG"
@@ -81,71 +81,8 @@ add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 </#list>)
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
-    <@dsaLinkLibraries comp.getFullName() />
+    ${tc.includeArgs("template.util.cmake.dsaLinkLibraries", [comp.getFullName()])}
 <#else>
   target_link_libraries(${comp.getFullName()} nng::nng)
 </#if>
 set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
-
-<#macro dsaParameters config>
-  # Cross compile
-  set(CMAKE_SYSTEM_NAME Linux)
-  set(CMAKE_SYSTEM_VERSION 1)
-    <#if config.getTargetPlatform().toString() != "DSA_LAB">
-      set(CMAKE_C_COMPILER   /usr/bin/powerpc-linux-gnu-gcc)
-      set(CMAKE_CXX_COMPILER /usr/bin/powerpc-linux-gnu-g++)
-    </#if>
-
-    <#if config.getTargetPlatform().toString() == "DSA_VCG">
-      find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9")
-    <#else>
-      find_library(ATOMIC_LIBRARY NAMES libatomic.a PATHS "/usr/lib/gcc/powerpc-linux-gnu/4.9.2")
-    </#if>
-
-    <#if config.getTargetPlatform().toString() == "DSA_LAB">
-      add_library(nng STATIC IMPORTED)
-      set_target_properties(nng PROPERTIES
-      IMPORTED_LOCATION "/usr/powerpc-linux-gnu/lib/libnng.a"
-      INTERFACE_INCLUDE_DIRECTORIES "/usr/powerpc-linux-gnu/include/nng"
-      )
-    </#if>
-
-  file(GLOB_RECURSE INCLUDE_SOURCES "include/*.cpp" "include/*.h")
-  HEADER_DIRECTORIES("inc" dir_list)
-  include_directories("inc" ${r"${dir_list}"})
-
-  link_directories(./lib/dsa-vcg)
-</#macro>
-
-<#macro dsaLinkLibraries targetName>
-  target_link_libraries(${r"${targetName}"} nng pthread curl ${r"${ATOMIC_LIBRARY}"})
-</#macro>
-
-<#macro ipcServerCMake libraryPath ipcPath existsHWC config>
-  cmake_minimum_required(VERSION 3.8)
-<#-- project(${port.getName()?cap_first}Server) TODO -->set(CMAKE_CXX_STANDARD 11)
-
-    <#if config.getTargetPlatform().toString() == "DSA_VCG"
-    || config.getTargetPlatform().toString() == "DSA_LAB">
-        <@dsaParameters config />
-    </#if>
-
-    <#if config.getTargetPlatform().toString() != "DSA_VCG"
-    && config.getTargetPlatform().toString() != "DSA_LAB">
-      find_package(nng 1.1.1 CONFIG REQUIRED)
-    </#if>
-
-  include_directories("${libraryPath?replace("\\","/")}")
-  include_directories(.)
-  file(GLOB SOURCES
-  "./*.cpp"
-  "./*.h"
-  "${libraryPath?replace("\\","/")}/*.cpp"
-  "${libraryPath?replace("\\","/")}/*.h")
-
-<#-- add_executable(${port.getName()?cap_first}Server ${r"${SOURCES}"}) TODO --><#if config.getTargetPlatform().toString() == "DSA_VCG">
-<#-- ${printDsaLinkLibraries(port.getName()?cap_first+"Server")} TODO -->
-<#else>
-<#-- target_link_libraries(${port.getName()?cap_first}Server nng::nng) TODO -->
-</#if>
-</#macro>

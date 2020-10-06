@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "compname", "config")}
-
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>

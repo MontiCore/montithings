@@ -1,5 +1,4 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-
 ${tc.signature("subdirectories")}
 
 cmake_minimum_required (VERSION 3.8)

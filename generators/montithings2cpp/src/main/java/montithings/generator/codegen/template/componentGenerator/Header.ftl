@@ -1,7 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "compname", "config", "useWsPorts")}
-<#import "/template/util/Ports.ftl" as Ports>
-<#import "/template/util/Subcomponents.ftl" as Subcomponents>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
@@ -39,7 +37,7 @@ class ${compname} : public IComponent <#if comp.isPresentParentComponent()> , ${
     </#if></#if>
 {
 private:
-<@Ports.printVars comp comp.getPorts() config/>
+${tc.includeArgs("template.util.printVars", [comp, comp.getPorts(), config])}
 ${Utils.printVariables(comp)}
 
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters --><#-- Utils.printConfigParameters(comp) -->
@@ -53,7 +51,7 @@ TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
     <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)>
       void run();
     </#if>
-    <@Subcomponents.printVars comp config/>
+    ${tc.includeArgs("template.util.Subcomponents", [comp, config])}
 <#else>
 
     ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
@@ -64,14 +62,14 @@ TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
 </#if>
 
 public:
-<@Ports.printMethodHeaders comp.getPorts() config/>
+${tc.includeArgs("template.util.printMethodHeaders", [comp.getPorts(), config])}
 ${compname}(std::string instanceName<#if comp.getParameters()?has_content>
   ,
 </#if>${ComponentHelper.printConstructorArguments(comp)});
 
 <#if comp.isDecomposed()>
     <#if config.getSplittingMode().toString() != "OFF">
-        <@Subcomponents.printMethodDeclarations comp config/>
+        ${tc.includeArgs("template.util.printMethodDeclarations", [comp, config])}
     </#if>
 </#if>
 

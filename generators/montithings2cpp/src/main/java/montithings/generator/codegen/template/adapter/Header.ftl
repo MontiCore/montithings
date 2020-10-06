@@ -13,7 +13,7 @@ ${tc.signature("packageName", "compname", "config")}
 #include "tl/optional.hpp"
 ${Utils.printIncludes(ComponentHelper.getImportStatements(compname,config))}
 
-<@printNamespaceStart packageName />
+${tc.includeArgs("template.adapter.printNamespaceStart", [packageName])}
 
 class ${compname}AdapterTOP
 {
@@ -25,16 +25,16 @@ ${compname}AdapterTOP() = default;
   virtual ${importStatement.getImportClass()} convert(${Utils.printCDType(importStatement)} element) = 0;
 </#list>
 };
-<@printNamespaceEnd packageName />
+${tc.includeArgs("template.adapter.printNamespaceEnd", [packageName])}
 
-<#macro printNamespaceStart packages >
+printNamespaceStart${tc.signature("packages")}
   namespace montithings {
     <#list packageName as package>
       namespace ${package} {
     </#list>
 </#macro>
 
-<#macro printNamespaceEnd packages >
+printNamespaceEnd${tc.signature("packages")}
     <#list packageName as package>
       } // namespace ${package}
     </#list>
