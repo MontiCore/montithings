@@ -21,13 +21,13 @@ ${compname}${Utils.printFormalTypeParameters(comp)}::${compname}(std::string ins
 <#if comp.isAtomic() && !comp.getParameters()?has_content && shouldPrintSubcomponents>,
 </#if>
 <#list comp.getParameters() as param >
-    ${param.getName()} (${param.getName()})<#sep>,
+    ${param.getName()} (${param.getName()})<#sep>,</#sep>
 </#list>
 {
 this->instanceName = instanceName;
 <#if comp.isPresentParentComponent()>
     super(<#list getInheritedParams(comp) as inhParam >
-    inhParam<#sep>,
+    inhParam<#sep>,</#sep>
 </#list>);
 </#if>
 }

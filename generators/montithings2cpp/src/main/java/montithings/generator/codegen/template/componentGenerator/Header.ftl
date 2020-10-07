@@ -32,7 +32,7 @@ ${Utils.printNamespaceStart(comp)}
 ${Utils.printTemplateArguments(comp)}
 class ${compname} : public IComponent <#if comp.isPresentParentComponent()> , ${Utils.printSuperClassFQ(comp)}
     <#if comp.parent().loadedSymbol.hasTypeParameter><<#list helper.superCompActualTypeArguments as scTypeParams >
-      scTypeParams<#sep>,
+      scTypeParams<#sep>,</#sep>
     </#list>>
     </#if></#if>
 {

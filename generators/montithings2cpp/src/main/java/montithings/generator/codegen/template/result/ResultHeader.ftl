@@ -22,7 +22,7 @@ class ${compname}Result
     ${Utils.printSuperClassFQ(comp)}Result
     <#if comp.parent().loadedSymbol.hasTypeParameter()><
         <#list ComponentHelper.superCompActualTypeArguments as scTypeParams >
-          scTypeParams<#sep>,
+          scTypeParams<#sep>,</#sep>
         </#list> >
     </#if>
 </#if>
@@ -35,7 +35,7 @@ public:
 ${compname}Result() = default;
 <#if !(comp.getAllOutgoingPorts()?size == 0)>
     ${compname}Result(<#list comp.getAllOutgoingPorts() as port > ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
-    ${port.getName()}<#sep>,
+    ${port.getName()}<#sep>,</#sep>
 </#list>);
 </#if>
 <#list comp.getOutgoingPorts() as port>

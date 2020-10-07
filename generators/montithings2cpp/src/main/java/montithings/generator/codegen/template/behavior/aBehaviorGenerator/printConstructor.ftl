@@ -4,7 +4,7 @@ ${compname}Impl(${Utils.printConfigurationParametersAsList(comp)})
     :
 </#if>
 <#list comp.getParameters() as param >
-    ${param.getName()} (${param.getName()})<#sep>,
+    ${param.getName()} (${param.getName()})<#sep>,</#sep>
 </#list>
 {
 }

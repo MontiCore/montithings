@@ -4,7 +4,7 @@ ${comp.getName()}Impl<#if isTOP>TOP</#if>(${Utils.printConfigurationParametersAs
 <#if comp.getParameters()?has_content>
     :
     <#list comp.getParameters() as param >
-        ${param.getName()} (${param.getName()})<#sep>,
+        ${param.getName()} (${param.getName()})<#sep>,</#sep>
     </#list>
     {
     }

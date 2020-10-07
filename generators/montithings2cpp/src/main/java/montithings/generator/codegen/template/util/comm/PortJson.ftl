@@ -6,6 +6,6 @@ ${tc.signature("comp", "config", "prefix")}
   "management": "${config.getComponentPortMap().getManagementPort(prefix + "." + subcomp.getName())}",
   "communication": "${config.getComponentPortMap().getCommunicationPort(prefix + "." + subcomp.getName())}"
   }
-  <#sep>,
+  <#sep>,</#sep>
 </#list>
 }

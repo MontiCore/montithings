@@ -4,7 +4,7 @@ ${tc.signature("comp", "compname", "config")}
 <#if !(comp.getAllOutgoingPorts()?size == 0)>
     ${Utils.printTemplateArguments(comp)}
     ${compname}Result${Utils.printFormalTypeParameters(comp, false)}::${compname}Result(<#list comp.getAllOutgoingPorts() as port> ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
-    ${port.getName()} <#sep>,
+    ${port.getName()} <#sep>,</#sep>
 </#list>){
     <#if comp.isPresentParentComponent()>
         super(<#list comp.parent().loadedSymbol.getAllOutgoingPorts() as port >

@@ -9,7 +9,7 @@ ${tc.signature("comp", "compname", "config")}
         ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::${compname}Input(
         <#list comp.getAllIncomingPorts() as port>
             tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
-            <#sep>,
+            <#sep>,</#sep>
         </#list>){
         <#if comp.isPresentParentComponent()>
             super(

@@ -24,7 +24,7 @@ class ${compname}Input
     ${Utils.printSuperClassFQ(comp)}Input
     <#if comp.parent().loadedSymbol.hasTypeParameter><
         <#list ComponentHelper.superCompActualTypeArguments as scTypeParams >
-          scTypeParams<#sep>,
+          scTypeParams<#sep>,</#sep>
         </#list>>
     </#if>
 </#if>
@@ -44,7 +44,7 @@ ${compname}Input() = default;
   explicit ${compname}Input(
     <#list comp.getAllIncomingPorts() as port>
       tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
-      <#sep>,
+      <#sep>,</#sep>
     </#list>);
 </#if>
 
