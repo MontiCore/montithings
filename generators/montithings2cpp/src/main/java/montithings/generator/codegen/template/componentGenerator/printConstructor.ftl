@@ -15,7 +15,7 @@ ${compname}${Utils.printFormalTypeParameters(comp)}::${compname}(std::string ins
     ,
 </#if>
 <#if shouldPrintSubcomponents>
-    ${tc.includeArgs("template.util.printInitializerList", [comp, config])}
+    ${tc.includeArgs("template.util.subcomponents.printInitializerList", [comp, config])}
 </#if>
 <#if comp.getParameters()?has_content && shouldPrintSubcomponents>,</#if>
 <#if comp.isAtomic() && !comp.getParameters()?has_content && shouldPrintSubcomponents>,

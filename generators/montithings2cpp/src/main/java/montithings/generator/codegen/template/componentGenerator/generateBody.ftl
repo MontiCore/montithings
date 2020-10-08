@@ -3,11 +3,11 @@ ${tc.signature("comp","compname","config")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 
-${tc.includeArgs("template.util.printMethodBodies", [comp.getPorts(), comp, compname, config])}
+${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp, compname, config])}
 
 <#if comp.isDecomposed()>
     <#if config.getSplittingMode().toString() != "OFF">
-        ${tc.includeArgs("template.util.printMethodDefinitions", [comp, config])}
+        ${tc.includeArgs("template.util.subcomponents.printMethodDefinitions", [comp, config])}
     </#if>
 
     <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)>
@@ -39,8 +39,8 @@ ${tc.includeArgs("template.util.printMethodBodies", [comp.getPorts(), comp, comp
 
 ${tc.includeArgs("template.componentGenerator.printShouldComputeCheck", [comp, compname])}
 
-${tc.includeArgs("template.util.Setup", [comp, compname, config])}
+${tc.includeArgs("template.util.setup.Setup", [comp, compname, config])}
 
-${tc.includeArgs("template.util.Init", [comp, compname, config])}
+${tc.includeArgs("template.util.init.Init", [comp, compname, config])}
 
 ${tc.includeArgs("template.componentGenerator.printConstructor", [comp, compname, config])}

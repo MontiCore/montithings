@@ -37,7 +37,7 @@ class ${compname} : public IComponent <#if comp.isPresentParentComponent()> , ${
     </#if></#if>
 {
 private:
-${tc.includeArgs("template.util.printVars", [comp, comp.getPorts(), config])}
+${tc.includeArgs("template.util.subcomponents.printVars", [comp, comp.getPorts(), config])}
 ${Utils.printVariables(comp)}
 
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters --><#-- Utils.printConfigParameters(comp) -->
@@ -51,7 +51,7 @@ TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
     <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)>
       void run();
     </#if>
-    ${tc.includeArgs("template.util.Subcomponents", [comp, config])}
+    ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}
 <#else>
 
     ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
@@ -62,14 +62,14 @@ TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
 </#if>
 
 public:
-${tc.includeArgs("template.util.printMethodHeaders", [comp.getPorts(), config])}
+${tc.includeArgs("template.util.ports.printMethodHeaders", [comp.getPorts(), config])}
 ${compname}(std::string instanceName<#if comp.getParameters()?has_content>
   ,
 </#if>${ComponentHelper.printConstructorArguments(comp)});
 
 <#if comp.isDecomposed()>
     <#if config.getSplittingMode().toString() != "OFF">
-        ${tc.includeArgs("template.util.printMethodDeclarations", [comp, config])}
+        ${tc.includeArgs("template.util.subcomponents.printMethodDeclarations", [comp, config])}
     </#if>
 </#if>
 

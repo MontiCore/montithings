@@ -9,9 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.TemplateModel;
-import freemarker.template.Version;
 import jline.internal.Log;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
@@ -55,7 +52,7 @@ public class MTGenerator {
         File sketchDirectory = new File(targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
         sketchDirectory.mkdir();
         toFile(sketchDirectory, "Deploy" + compname, "template/deploy/DeployArduino.ftl",".ino",comp, compname);
-        toFile(targetPath.getParentFile(), "README", "template/util/ArduinoReadme.ftl",".txt", targetPath.getName(), compname);
+        toFile(targetPath.getParentFile(), "README", "template/util/arduinoReadme/ArduinoReadme.ftl",".txt", targetPath.getName(), compname);
       } else {
         toFile(targetPath, "Deploy" + compname, "template/deploy/Deploy.ftl",".cpp",comp, compname, config);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
@@ -83,19 +80,11 @@ public class MTGenerator {
   static private void toFile(File targetPath, String name, String template, String fileExtension, Object... templateArguments) {
     Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
     Log.info("Writing to file " + path + ".");
-    //FileReaderWriter.storeInFile(path, content);
     GeneratorSetup setup = new GeneratorSetup();
     setup.setTracing(false);
     //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
 
     GeneratorEngine engine = new GeneratorEngine(setup);
-
-    /*BeansWrapper wrapper = new BeansWrapper(new Version(2,3,27));
-    TemplateModel statics = wrapper.getStaticModels();
-    Map<String, Object> map = new HashMap();
-    map.put("statics", statics);*/
-
-    //ComponentHelper helper = new ComponentHelper();
 
     engine.generateNoA(template, path, templateArguments);
   }
