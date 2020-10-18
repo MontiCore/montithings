@@ -374,7 +374,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       /* ====== Copy generated-sources to generated-test-sources ==== */
       /* ============================================================ */
       copyGeneratedToTarget(targetFilepath);
-      copyTestToTarget(testFilepath, targetFilepath);
+      copyTestToTarget(testFilepath, targetFilepath, comp);
       if (ComponentHelper.isApplication(comp)) {
         Path target = Paths.get(Paths.get(targetFilepath.getAbsolutePath()).getParent().toString(),"generated-test-sources");
         File libraryPath = Paths.get(target.toString(),"montithings-RTE").toFile();

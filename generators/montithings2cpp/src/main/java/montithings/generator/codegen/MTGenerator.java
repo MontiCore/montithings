@@ -1,20 +1,21 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen;
 
-import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.ComponentInstanceSymbol;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
+import arcbasis._symboltable.ComponentTypeSymbol;
+import de.monticore.generating.GeneratorEngine;
+import de.monticore.generating.GeneratorSetup;
 import jline.internal.Log;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
-import de.monticore.generating.GeneratorEngine;
-import de.monticore.generating.GeneratorSetup;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
   Main entry point for generator. From this all target artifacts are generated for a component.
@@ -97,6 +98,8 @@ public class MTGenerator {
   public static void generateBuildScript(File targetPath, ConfigParams config) {
     toFile(targetPath, "build", "template/util/scripts/BuildScript.ftl", ".sh",config);
     makeExecutable(targetPath, "build", ".sh");
+    toFile(targetPath, "build", "template/util/scripts/WinBuildScript.ftl", ".bat",config);
+    makeExecutable(targetPath, "build", ".bat");
 
     toFile(targetPath, "reformatCode", "template/util/scripts/ReformatScript.ftl", ".sh");
     toFile(targetPath, "", "template/util/scripts/ClangFormat.ftl", ".clang-format");
@@ -108,7 +111,7 @@ public class MTGenerator {
       comp,
       targetPath.toPath().toAbsolutePath().relativize(hwcPath.toPath().toAbsolutePath()).toString(),
       targetPath.toPath().toAbsolutePath().relativize(libraryPath.toPath().toAbsolutePath()).toString(),
-      subPackagesPath, config);
+      subPackagesPath, config, false);
   }
 
   public static void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
@@ -126,7 +129,7 @@ public class MTGenerator {
         comp,
         targetPath.toPath().toAbsolutePath().relativize(hwcPath.toPath().toAbsolutePath()).toString(),
         targetPath.toPath().toAbsolutePath().relativize(libraryPath.toPath().toAbsolutePath()).toString(),
-        subPackagesPath, config);
+        subPackagesPath, config, true);
   }
 
   public static void generateScripts(File targetPath, ComponentTypeSymbol comp, ConfigParams config, List<String> subdirectories) {

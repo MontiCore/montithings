@@ -226,6 +226,43 @@
 				</execution>
 			</executions>
 		</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>checkGeneratedCode</id>
+						<phase>post-integration-test</phase>
+						<configuration>
+							<target>
+								<!--<exec executable="scons" dir="${basedir}/target/generated-test-sources/build.sh" failonerror="true"
+									  os="Ubuntu 11.1">
+								<arg value="-j4" />
+							</exec>-->
+							<exec executable="cmd" dir="${basedir}/target/generated-test-sources/basicInputOutputTest/generated-test-sources/" failonerror="true"
+								  os="Windows 10">
+								<arg value="/c"/>
+								<arg value="build.bat"/>
+						</exec>
+								<exec executable="cmd" dir="${basedir}/target/generated-test-sources/classDiagramsTest/generated-test-sources/" failonerror="true"
+									  os="Windows 10">
+									<arg value="/c"/>
+									<arg value="build.bat"/>
+								</exec>
+								<exec executable="cmd" dir="${basedir}/target/generated-test-sources/behaviorTest/generated-test-sources/" failonerror="true"
+									  os="Windows 10">
+									<arg value="/c"/>
+									<arg value="build.bat"/>
+								</exec>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
