@@ -4,8 +4,8 @@ ${tc.signature("comp","config")}
     ${subcomponent.getName()}( "${subcomponent.getName()}"
     <#if config.getSplittingMode().toString() == "OFF">
         <#list ComponentHelper.getParamValues(subcomponent) as param >
-            <#sep>,</#sep>
-                param
+            <#if param?index==0>,</#if>
+            ${param}<#sep>,</#sep>
         </#list>
     </#if>)<#sep>,</#sep>
 </#list>

@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
+import arcbasis._symboltable.ComponentTypeSymbol;
 import montithings.generator.codegen.ConfigParams;
 import org.apache.commons.io.FileUtils;
 
@@ -54,12 +55,13 @@ public class FileHelper {
     }
   }
 
-  public static void copyTestToTarget(File testPath, File target) {
+  public static void copyTestToTarget(File testPath, File target, ComponentTypeSymbol comp) {
+    String fileName = comp.getFullName().replace('.','_') + "Test.cpp";
     try {
-        Path targetTestDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources","test");
-        Path testDir = Paths.get(testPath.getAbsolutePath(),"resources");
-      if(testDir.toFile().isDirectory()) {
-        FileUtils.copyDirectory(testDir.toFile(), targetTestDir.toFile());
+        Path targetTestDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources","test","gtests");
+        Path testFile = Paths.get(testPath.getAbsolutePath(),fileName);
+      if(testFile.toFile().isFile()) {
+        FileUtils.copyFileToDirectory(testFile.toFile(), targetTestDir.toFile());
       }
     }
     catch (IOException e) {
@@ -71,7 +73,7 @@ public class FileHelper {
   public static void copyGeneratedToTarget(File target) {
     try {
       Path targetDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources");
-      if(!targetDir.toString().equals(target.toString())) {
+      if(!targetDir.toAbsolutePath().toString().equals(target.getAbsolutePath().toString())) {
         FileUtils.copyDirectory(Paths.get(target.getAbsolutePath()).toFile(), targetDir.toFile());
       }
     }

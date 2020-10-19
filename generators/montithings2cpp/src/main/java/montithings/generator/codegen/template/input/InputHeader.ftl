@@ -29,7 +29,7 @@ class ${compname}Input
     </#if>
 </#if>
 {
-private:
+protected:
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port >
   tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()};
 </#list>

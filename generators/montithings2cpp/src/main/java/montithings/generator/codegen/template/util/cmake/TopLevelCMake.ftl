@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config")}
+${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test")}
 
 <#assign commonCodePrefix = "">
 <#if config.getSplittingMode().toString() != "OFF">
@@ -74,7 +74,7 @@ include_directories("hwc" ${r"${dir_list}"})
 # Include RTE
 file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix}montithings-RTE/*.h")
 
-
+<#if !test>
 add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
     ${r"${"}${subdir.getName()?upper_case}_SOURCES}
@@ -86,3 +86,4 @@ add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
   target_link_libraries(${comp.getFullName()} nng::nng)
 </#if>
 set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
+</#if>

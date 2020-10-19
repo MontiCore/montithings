@@ -37,7 +37,7 @@
 
 
 		<guava.version>18.0</guava.version>
-		<junit.version>4.13.1</junit.version>
+		<junit.version>4.12</junit.version>
 		<logback.version>1.1.2</logback.version>
 		<javalib.version>4.3.10-SNAPSHOT</javalib.version>
 		<junit.jupiter.version>5.5.2</junit.jupiter.version>

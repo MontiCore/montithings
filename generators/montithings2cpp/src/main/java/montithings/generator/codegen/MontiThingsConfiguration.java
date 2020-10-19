@@ -230,8 +230,8 @@ public class MontiThingsConfiguration implements Configuration {
           return null;
         }
       }
-      if(Paths.get(defaultTestPath.toString(),"test").toFile().isDirectory()) {
-        return Paths.get(defaultTestPath.toString(), "test").toFile();
+      if(Paths.get(defaultTestPath.toString(),"test","resources","gtests").toFile().isDirectory()) {
+        return Paths.get(defaultTestPath.toString(), "test","resources","gtests").toFile();
       }
     }
     return new File("");

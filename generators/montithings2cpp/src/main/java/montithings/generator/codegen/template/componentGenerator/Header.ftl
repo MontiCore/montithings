@@ -36,7 +36,7 @@ class ${compname} : public IComponent <#if comp.isPresentParentComponent()> , ${
     </#list>>
     </#if></#if>
 {
-private:
+protected:
 ${tc.includeArgs("template.util.subcomponents.printVars", [comp, comp.getPorts(), config])}
 ${Utils.printVariables(comp)}
 

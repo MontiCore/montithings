@@ -23,7 +23,7 @@ public class SimpleGenerationTest {
 
   private static final Path HWCPATH = Paths.get("src/test/resources/hwc/hierarchy/");
 
-  private static final Path TARGETPATH = Paths.get("target/generated-test-sources/");
+  private static final Path TARGETPATH = Paths.get("target/generated-test-sources/SimpleGenerationTest");
 
   private static final Path RTEPATH = Paths.get("src/main/resources/rte/montithings-RTE");
 

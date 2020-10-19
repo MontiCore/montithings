@@ -17,7 +17,7 @@ ${tc.includeArgs("template.adapter.printNamespaceStart", [packageName])}
 
 class ${compname}AdapterTOP
 {
-private:
+protected:
 public:
 ${compname}AdapterTOP() = default;
 <#list ComponentHelper.getImportStatements(compname,config) as importStatement >
