@@ -269,20 +269,20 @@
 									<arg value="/c"/>
 									<arg value="build.bat"/>
 								</exec>
-								<exec executable="cmd"
+								<!--<exec executable="cmd"
 									  dir="${basedir}/target/generated-test-sources/interfaceComponentsTest/generated-test-sources/"
 									  failonerror="true"
 									  os="Windows 10">
 									<arg value="/c"/>
 									<arg value="build.bat"/>
-								</exec>
-								<exec executable="cmd"
+								</exec>-->
+								<!--<exec executable="cmd"
 									  dir="${basedir}/target/generated-test-sources/interfaceComponentsBindingTest/generated-test-sources/"
 									  failonerror="true"
 									  os="Windows 10">
 									<arg value="/c"/>
 									<arg value="build.bat"/>
-								</exec>
+								</exec>-->
 							</target>
 						</configuration>
 						<goals>

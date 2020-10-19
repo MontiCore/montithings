@@ -4,7 +4,7 @@ ${tc.signature("comp","compname")}
 ${Identifier.getBehaviorImplName()}(${compname}Impl${Utils.printFormalTypeParameters(comp, false)}(
 <#if comp.hasParameters()>
     <#list comp.getParameters() as param >
-        param.getName()<#sep>,</#sep>
+        ${param.getName()}<#sep>,</#sep>
     </#list>
 </#if>
 ))
