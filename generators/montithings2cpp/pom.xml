@@ -237,20 +237,48 @@
 						<configuration>
 							<target>
 								<!--<exec executable="scons" dir="${basedir}/target/generated-test-sources/build.sh" failonerror="true"
-									  os="Ubuntu 11.1">
+									  os="unix">
 								<arg value="-j4" />
+								<arg value="build.sh"/>
 							</exec>-->
-							<exec executable="cmd" dir="${basedir}/target/generated-test-sources/basicInputOutputTest/generated-test-sources/" failonerror="true"
-								  os="Windows 10">
-								<arg value="/c"/>
-								<arg value="build.bat"/>
-						</exec>
-								<exec executable="cmd" dir="${basedir}/target/generated-test-sources/classDiagramsTest/generated-test-sources/" failonerror="true"
+								<exec executable="cmd"
+									  dir="${basedir}/target/generated-test-sources/basicInputOutputTest/generated-test-sources/"
+									  failonerror="true"
 									  os="Windows 10">
 									<arg value="/c"/>
 									<arg value="build.bat"/>
 								</exec>
-								<exec executable="cmd" dir="${basedir}/target/generated-test-sources/behaviorTest/generated-test-sources/" failonerror="true"
+								<exec executable="cmd"
+									  dir="${basedir}/target/generated-test-sources/classDiagramsTest/generated-test-sources/"
+									  failonerror="true"
+									  os="Windows 10">
+									<arg value="/c"/>
+									<arg value="build.bat"/>
+								</exec>
+								<exec executable="cmd"
+									  dir="${basedir}/target/generated-test-sources/behaviorTest/generated-test-sources/"
+									  failonerror="true"
+									  os="Windows 10">
+									<arg value="/c"/>
+									<arg value="build.bat"/>
+								</exec>
+								<exec executable="cmd"
+									  dir="${basedir}/target/generated-test-sources/prePostConditionsTest/generated-test-sources/"
+									  failonerror="true"
+									  os="Windows 10">
+									<arg value="/c"/>
+									<arg value="build.bat"/>
+								</exec>
+								<exec executable="cmd"
+									  dir="${basedir}/target/generated-test-sources/interfaceComponentsTest/generated-test-sources/"
+									  failonerror="true"
+									  os="Windows 10">
+									<arg value="/c"/>
+									<arg value="build.bat"/>
+								</exec>
+								<exec executable="cmd"
+									  dir="${basedir}/target/generated-test-sources/interfaceComponentsBindingTest/generated-test-sources/"
+									  failonerror="true"
 									  os="Windows 10">
 									<arg value="/c"/>
 									<arg value="build.bat"/>
