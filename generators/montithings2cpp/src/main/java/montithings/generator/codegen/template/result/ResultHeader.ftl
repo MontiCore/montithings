@@ -27,7 +27,7 @@ class ${compname}Result
     </#if>
 </#if>
 {
-private:
+protected:
 <#list comp.getOutgoingPorts() as port >
   tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()};
 </#list>
