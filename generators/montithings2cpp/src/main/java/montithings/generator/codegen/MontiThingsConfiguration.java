@@ -13,11 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * TODO
- *
- * @author (last commit) JFuerste
- */
 public class MontiThingsConfiguration implements Configuration {
   public static final String CONFIGURATION_PROPERTY = "_configuration";
 
@@ -235,8 +230,8 @@ public class MontiThingsConfiguration implements Configuration {
           return null;
         }
       }
-      if(Paths.get(defaultTestPath.toString(),"test").toFile().isDirectory()) {
-        return Paths.get(defaultTestPath.toString(), "test").toFile();
+      if(Paths.get(defaultTestPath.toString(),"test","resources","gtests").toFile().isDirectory()) {
+        return Paths.get(defaultTestPath.toString(), "test","resources","gtests").toFile();
       }
     }
     return new File("");

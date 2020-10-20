@@ -1,12 +1,13 @@
-package cocoTest;/* (c) https://github.com/MontiCore/monticore */
+/* (c) https://github.com/MontiCore/monticore */
+package cocoTest;
 
+import cdlangextension.util.Error;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import cdlangextension.util.Error;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractTest {
 
   protected static final String RELATIVE_MODEL_PATH = "src/test/resources";
+
   private Pattern errorCodePattern;
 
   @BeforeAll

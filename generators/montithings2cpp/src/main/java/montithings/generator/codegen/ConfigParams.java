@@ -14,16 +14,28 @@ import java.util.*;
  * Bundle of parameters for montithings2cpp generator.
  *
  * @author Julian Krebber
- * @version 5.0.2
- * @revision (see commit history)
  * @since 5.0.2
  */
 public class ConfigParams {
   public enum TargetPlatform {
-    GENERIC,
-    DSA_VCG, // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
-    ARDUINO,
-    DSA_LAB // connected cars lab, based on docker.dsa-ac.de:20001/dev-l06-customer
+    GENERIC("GENERIC"),
+    DSA_VCG("DSA_VCG"), // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
+    ARDUINO("ARDUINO"),
+    DSA_LAB("DSA_LAB"); // connected cars lab, based on docker.dsa-ac.de:20001/dev-l06-customer
+
+    String name;
+
+    TargetPlatform(String name) {
+      this.name = name;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.name;
+    }
   }
 
   /**
@@ -33,9 +45,23 @@ public class ConfigParams {
    * DISTRIBUTED = Deploy on multiple machines
    */
   public enum SplittingMode {
-    OFF,
-    LOCAL,
-    DISTRIBUTED
+    OFF("OFF"),
+    LOCAL("LOCAL"),
+    DISTRIBUTED("DISTRIBUTED");
+
+    String name;
+
+    SplittingMode(String name) {
+      this.name = name;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.name;
+    }
   }
 
   /** property for target platform */

@@ -31,7 +31,7 @@ import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.codegen.ConfigParams;
-import montithings.generator.codegen.xtend.MTGenerator;
+import montithings.generator.codegen.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import phyprops.PhypropsTool;
@@ -374,7 +374,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       /* ====== Copy generated-sources to generated-test-sources ==== */
       /* ============================================================ */
       copyGeneratedToTarget(targetFilepath);
-      copyTestToTarget(testFilepath, targetFilepath);
+      copyTestToTarget(testFilepath, targetFilepath, comp);
       if (ComponentHelper.isApplication(comp)) {
         Path target = Paths.get(Paths.get(targetFilepath.getAbsolutePath()).getParent().toString(),"generated-test-sources");
         File libraryPath = Paths.get(target.toString(),"montithings-RTE").toFile();
