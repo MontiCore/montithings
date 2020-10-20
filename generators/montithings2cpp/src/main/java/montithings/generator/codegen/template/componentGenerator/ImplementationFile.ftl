@@ -7,7 +7,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
 #include "${compname}.h"
 #include ${"<regex>"}
 ${Utils.printNamespaceStart(comp)}
-<#if !comp.hasTypeParameter()>
+<#if !Utils.hasTypeParameter(comp)>
     ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

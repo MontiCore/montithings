@@ -20,7 +20,8 @@ ${Utils.printTemplateArguments(comp)}
 class ${compname}Result
 <#if comp.isPresentParentComponent()> :
     ${Utils.printSuperClassFQ(comp)}Result
-    <#if comp.parent().loadedSymbol.hasTypeParameter()><
+<#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
+    <#if Utils.hasTypeParameter(comp.parent().loadedSymbol)><
         <#list ComponentHelper.superCompActualTypeArguments as scTypeParams >
           scTypeParams<#sep>,</#sep>
         </#list> >
@@ -51,7 +52,7 @@ ${compname}Result() = default;
 </#list>
 };
 
-<#if comp.hasTypeParameter()>
-    ${generateResultBody(comp, compname, config)}
+<#if Utils.hasTypeParameter(comp)>
+    ${tc.includeArgs("template.result.generateResultBody", [comp, compname, config])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

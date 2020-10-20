@@ -9,7 +9,8 @@ import cdlangextension._ast.ASTCDEImportStatement;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
-import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
+import genericarc._ast.ASTArcTypeParameter;
+import genericarc._ast.ASTGenericComponentHead;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
@@ -94,7 +95,7 @@ public class Utils {
     Boolean withClassPrefix) {
     StringBuilder s = new StringBuilder();
     int i = 1;
-    if (comp.hasTypeParameter()) {
+    if (hasTypeParameter(comp)) {
       s.append('<');
       for (String generic : getGenericParameters(comp)) {
         if (withClassPrefix) {
@@ -112,7 +113,7 @@ public class Utils {
   }
 
   public static String printTemplateArguments(ComponentTypeSymbol comp) {
-    if (comp.hasTypeParameter()) {
+    if (hasTypeParameter(comp)) {
       return "template" + printFormalTypeParameters(comp, true);
     }
     return "";
@@ -120,13 +121,42 @@ public class Utils {
 
   private static List<String> getGenericParameters(ComponentTypeSymbol comp) {
     List<String> output = new ArrayList<>();
-    if (comp.hasTypeParameter()) {
+    /*TODO Check why not all typeParameters exist in ComponentTypeSymbols
+      if (comp.hasTypeParameter()) {
       List<TypeVarSymbol> parameterList = comp.getTypeParameters();
       for (TypeVarSymbol typeParameter : parameterList) {
         output.add(typeParameter.getName());
       }
+    }*/
+    if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
+        !((ASTGenericComponentHead)comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
+      List<ASTArcTypeParameter> parameterList = ((ASTGenericComponentHead) comp.getAstNode().getHead()).getArcTypeParameterList();
+      for (ASTArcTypeParameter typeParameter : parameterList) {
+        output.add(typeParameter.getName());
+      }
     }
     return output;
+  }
+
+  /*TODO Check why not all typeParameters exist in ComponentTypeSymbols,
+   * then this redundant method can be replaced with comp.hasTypeParameter().
+   */
+  public static boolean hasTypeParameter(ComponentTypeSymbol comp) {
+    if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
+        !((ASTGenericComponentHead)comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
+      return true;
+    }
+    return false;
+  }
+
+  /*TODO Check why not all typeParameters exist in ComponentTypeSymbols,
+   * then this redundant method can be replaced with comp.getTypeParameter().
+   */
+  public static List<ASTArcTypeParameter> getTypeParameters(ComponentTypeSymbol comp) {
+    if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead) {
+      return ((ASTGenericComponentHead)comp.getAstNode().getHead()).getArcTypeParameterList();
+    }
+    return new LinkedList<>();
   }
 
   /**
@@ -246,12 +276,12 @@ public class Utils {
     ConfigParams config) {
     Set<String> compIncludes = new HashSet<String>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
-      boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
-      compIncludes.add(
-        "#include \"" + ComponentHelper.getPackagePath(comp, subcomponent) + (isInner ?
-          (comp.getName() + "-Inner/") :
-          "") + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
-          + ".h\"");
+      if(!getGenericParameters(comp).contains(subcomponent.getType().getName())){
+        boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
+        compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
+            + (isInner ? (comp.getName() + "-Inner/") : "")
+            + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false) + ".h\"");
+      }
       Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent);
       for (String genericInclude : genericIncludes) {
         compIncludes.add("#include \"" + genericInclude + ".h\"");
@@ -309,6 +339,5 @@ public class Utils {
       return fullNamespaceSubcomponent;
     }
   }
-
 }
 

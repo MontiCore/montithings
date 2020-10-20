@@ -31,6 +31,7 @@ ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
 class ${compname} : public IComponent <#if comp.isPresentParentComponent()> , ${Utils.printSuperClassFQ(comp)}
+    <#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
     <#if comp.parent().loadedSymbol.hasTypeParameter><<#list helper.superCompActualTypeArguments as scTypeParams >
       scTypeParams<#sep>,</#sep>
     </#list>>
@@ -80,8 +81,8 @@ bool shouldCompute();
 void start() override;
 };
 
-<#if comp.hasTypeParameter()>
-    ${generateBody(comp, compname, config)}
+<#if Utils.hasTypeParameter(comp)>
+    ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config])}
 </#if>
 
 ${Utils.printNamespaceEnd(comp)}

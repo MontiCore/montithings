@@ -32,7 +32,7 @@ ${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, exi
 </#if>
 };
 
-<#if comp.hasTypeParameter()>
-    ${generateImplementationBody(comp, compname, existsHWC)}
+<#if Utils.hasTypeParameter(comp)>
+    ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, existsHWC])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

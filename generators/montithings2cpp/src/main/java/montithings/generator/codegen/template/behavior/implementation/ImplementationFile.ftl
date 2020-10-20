@@ -6,7 +6,7 @@ ${tc.signature("comp", "compname", "existsHWC")}
 
 #include "${compname}Impl<#if existsHWC>TOP</#if>.h"
 ${Utils.printNamespaceStart(comp)}
-<#if !comp.hasTypeParameter()>
+<#if !Utils.hasTypeParameter(comp)>
     ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, existsHWC])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}
