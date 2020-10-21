@@ -1,10 +1,12 @@
 #pragma once
-#include <DoubleImplTOP.h>
+#include <DoubleInput.h>
+#include <DoubleResult.h>
+#include <IComputable.h>
 
 namespace montithings {
 namespace hierarchy {
 
-class DoubleImpl : public DoubleImplTOP {
+class DoubleImpl : public IComputable<DoubleInput,DoubleResult>{
 
 private:
 public:

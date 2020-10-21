@@ -27,6 +27,7 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsTool;
+import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.generator.cd2cpp.CppGenerator;
@@ -281,10 +282,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Log.info("Generate model: " + comp.getFullName(), TOOL_NAME);
 
     // check if component is implementation
-    //if (config.isIn(comp)) {
+    if (comp.getAstNode() instanceof ASTMTComponentType &&
+        ((ASTMTComponentType)comp.getAstNode()).getMTComponentModifier().isInterface()) {
       // Dont generate files for implementation. They are generated when interface is there
-      //return;
-    //}
+      return;
+    }
+
+
 
     String compname = comp.getName();
 

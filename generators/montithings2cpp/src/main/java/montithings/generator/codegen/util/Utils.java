@@ -276,9 +276,7 @@ public class Utils {
     ConfigParams config) {
     Set<String> compIncludes = new HashSet<String>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
-      if(!getGenericParameters(comp).contains(subcomponent.getType().getName())/*&&
-          ((subcomponent.getTypeInfo().getAstNode() instanceof ASTMTComponentType)?
-              !(((ASTMTComponentType)subcomponent.getTypeInfo().getAstNode()).getMTComponentModifier().isInterface()):true)*/){
+      if(!getGenericParameters(comp).contains(subcomponent.getType().getName())){
         boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
         compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
             + (isInner ? (comp.getName() + "-Inner/") : "")
