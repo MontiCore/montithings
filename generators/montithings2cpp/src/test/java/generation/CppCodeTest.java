@@ -42,7 +42,7 @@ public class CppCodeTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"interfaceComponentsTest","interfaceComponentsBindingTest","basicInputOutputTest", "behaviorTest", "classDiagramsTest", "prePostConditionsTest", "interfaceComponentsTest","interfaceComponentsBindingTest"})
+  @ValueSource(strings = {"basicInputOutputTest", "behaviorTest", "classDiagramsTest", "prePostConditionsTest", "interfaceComponentsTest","interfaceComponentsBindingTest"})
   public void CPPTests(String testName) {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
     script.generate(Paths.get(MODELPATH.toString(),testName).toFile(), Paths.get(TARGETPATH.toString(),testName,"generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(),testName).toFile(), Paths.get(TESTPATH.toString(),testName).toFile(), setup(testName));

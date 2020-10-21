@@ -119,7 +119,7 @@ public class Utils {
     return "";
   }
 
-  private static List<String> getGenericParameters(ComponentTypeSymbol comp) {
+  public static List<String> getGenericParameters(ComponentTypeSymbol comp) {
     List<String> output = new ArrayList<>();
     /*TODO Check why not all typeParameters exist in ComponentTypeSymbols
       if (comp.hasTypeParameter()) {
@@ -276,7 +276,9 @@ public class Utils {
     ConfigParams config) {
     Set<String> compIncludes = new HashSet<String>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
-      if(!getGenericParameters(comp).contains(subcomponent.getType().getName())){
+      if(!getGenericParameters(comp).contains(subcomponent.getType().getName())/*&&
+          ((subcomponent.getTypeInfo().getAstNode() instanceof ASTMTComponentType)?
+              !(((ASTMTComponentType)subcomponent.getTypeInfo().getAstNode()).getMTComponentModifier().isInterface()):true)*/){
         boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
         compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
             + (isInner ? (comp.getName() + "-Inner/") : "")

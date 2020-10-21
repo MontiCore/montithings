@@ -281,10 +281,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Log.info("Generate model: " + comp.getFullName(), TOOL_NAME);
 
     // check if component is implementation
-    if (config.isImplementation(comp)) {
+    //if (config.isIn(comp)) {
       // Dont generate files for implementation. They are generated when interface is there
-      return;
-    }
+      //return;
+    //}
 
     String compname = comp.getName();
 

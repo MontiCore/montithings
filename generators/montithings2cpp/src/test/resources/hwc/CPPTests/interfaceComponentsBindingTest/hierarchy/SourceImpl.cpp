@@ -10,7 +10,7 @@ SourceResult SourceImpl::getInitialValues(){
 }
 
 SourceResult SourceImpl::compute(SourceInput input){
-	return {lastValue++};
+	return {++lastValue};
 }
 
 }}
