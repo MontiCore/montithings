@@ -1,5 +1,7 @@
 # MontiThings Core Project
 
+© https://github.com/MontiCore/monticore
+
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
 
@@ -15,9 +17,36 @@ While MontiArc generates code for simulations, MontiThings generates code to be 
 
 Contact: @christian.kirchhof
 
-[se-rwth]: http://www.se-rwth.de
-[montiarc]: https://git.rwth-aachen.de/monticore/montiarc/core
+# Prerequisites 
+- Git (for checking out the project)
+- Maven (for building the project); Gradle is still under development, use Maven!
+- Java 8 or 11 or 14 (other versions are not checked by the CI pipeline)
+- [NNG (for networking)][nng] 
+- GCC and CMake (For compiling the generated C++ code)
 
-# Copyright
+# Getting Started
+
+```
+git clone git@git.rwth-aachen.de:monticore/montithings/core.git
+cd core
+mvn clean install
+```
+
+Now the project should start building. This can take a while (10-15 minutes are normal). 
+
+Once the project is built, you can look at the generated source code. The `application` folder contains some example applications. Each of them should now contain a `target/generated-sources` subdirectory. If you want, you can reformat the generated sources for better readability using the `reformatCode.sh` script (requires clang-format). Within that directory you can find the generated source. Within one of these folders, you can compile them by running 
+```
+mkdir build; cd build
+cmake -G Ninja ..; ninja
+```
+You should then be able to find the binaries in the `bin` folder. 
+
+# License
 
 © https://github.com/MontiCore/monticore
+
+This repository is currently non-public. 
+
+[se-rwth]: http://www.se-rwth.de
+[montiarc]: https://git.rwth-aachen.de/monticore/montiarc/core
+[nng]: https://github.com/nanomsg/nng#quick-start 
