@@ -3,7 +3,7 @@
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
 
-<img src="docs/Overview.png" alt="drawing" height="400px"/>
+<img src="docs/MontiThingsOverview.png" alt="drawing" height="400px"/>
 
 In MontiArc, architectures are described as component and connector systems in which autonomously acting components perform 
 computations. Communication between components is regulated by connectors between the components’ interfaces, which are stable 
