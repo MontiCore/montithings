@@ -1,6 +1,6 @@
 # Hierarchy
 
-<img src="docs/HierarchyExample.png" alt="drawing" height="400px"/>
+<img src="docs/HierarchyExample.png" alt="drawing" height="200px"/>
 
 The purpose of this example is to combine multiple of the features shown in the
 other examples and thereby provide a starting point for trying out the features
@@ -14,4 +14,4 @@ components can be hierarchically composed. In this example the `Double`
 component used by the `Example` component is itself composed of subcomponents,
 i.e., a `Sum` component which takes the input of `Double` and adds it to itself.
 
-<img src="docs/HierarchyDouble.png" alt="drawing" height="400px"/>
+<img src="docs/HierarchyDouble.png" alt="drawing" height="200px"/>

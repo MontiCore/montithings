@@ -1,6 +1,6 @@
 # Hierarchy
 
-<img src="docs/BehaviorExample.png" alt="drawing" height="400px"/>
+<img src="docs/BehaviorExample.png" alt="drawing" height="200px"/>
 
 This example demonstrates how to the define behavior of atomic components in 
 MontiThings. In constrast to composed components, which define their behavior
@@ -12,7 +12,7 @@ Behavior defined using the statement language can be added directly wihtin the
 model in the behavior block. This is most useful for "simple" behavior that does
 not require much logic. 
 
-<img src="docs/BehaviorLpf.png" alt="drawing" height="400px"/>
+<img src="docs/BehaviorLpf.png" alt="drawing" height="200px"/>
 
 More complex behavior can be implemented using implementation classes. For each
 atomic component, a behavior class called like the component + `Impl` can be 
@@ -26,4 +26,4 @@ first compute cycle and should provide the components initial inputs.
 `compute()` is used to define the behavior of the component. For the `Sink` 
 component it just writes the current input value to the standard output.
 
-<img src="docs/BehaviorSink.png" alt="drawing" height="400px"/>
+<img src="docs/BehaviorSink.png" alt="drawing" height="300px"/>
