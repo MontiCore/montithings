@@ -1,6 +1,6 @@
 # MontiThings Core Project
 
-© https://github.com/MontiCore/monticore
+© https://github.com/MontiCore/monticore; Contact: @christian.kirchhof
 
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
@@ -14,8 +14,6 @@ yield behavior descriptions in the form of embedded time-synchronous port automa
 For composed components the behavior emerges from the behavior of their subcomponents. 
 
 While MontiArc generates code for simulations, MontiThings generates code to be executed on real devices.
-
-Contact: @christian.kirchhof
 
 # Prerequisites 
 - Git (for checking out the project)
