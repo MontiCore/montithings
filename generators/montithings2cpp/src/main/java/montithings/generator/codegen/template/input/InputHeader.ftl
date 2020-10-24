@@ -22,6 +22,7 @@ ${Utils.printTemplateArguments(comp)}
 class ${compname}Input
 <#if comp.isPresentParentComponent()> :
     ${Utils.printSuperClassFQ(comp)}Input
+<#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
     <#if comp.parent().loadedSymbol.hasTypeParameter><
         <#list ComponentHelper.superCompActualTypeArguments as scTypeParams >
           scTypeParams<#sep>,</#sep>
@@ -71,7 +72,7 @@ ${compname}Input() = default;
 </#list>
 };
 
-<#if comp.hasTypeParameter()>
-    ${generateInputBody(comp, compname, config)}
+<#if Utils.hasTypeParameter(comp)>
+    ${tc.includeArgs("template.input.generateInputBody", [comp, compname, config])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

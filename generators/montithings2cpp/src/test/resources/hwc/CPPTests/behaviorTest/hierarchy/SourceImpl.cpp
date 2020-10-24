@@ -10,6 +10,7 @@ SourceResult SourceImpl::getInitialValues(){
 }
 
 SourceResult SourceImpl::compute(SourceInput input){
+  std::cout << "Source: " << lastValue << std::endl;
 	return {++lastValue};
 }
 

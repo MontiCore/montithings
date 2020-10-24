@@ -1,4 +1,5 @@
 ${tc.signature("comp","compname")}
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign generics = Utils.printFormalTypeParameters(comp, false)>
 #pragma once
 #include "${compname}Input.h"
@@ -23,7 +24,7 @@ virtual ${compname}Result${generics} compute(${compname}Input${generics} input) 
 
 };
 
-<#if comp.hasTypeParameter()>
-    ${generateBody(comp, compname)}
+<#if Utils.hasTypeParameter(comp)>
+    ${tc.includeArgs("template.behavior.aBehaviorGenerator.generateBody", [comp, compname])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

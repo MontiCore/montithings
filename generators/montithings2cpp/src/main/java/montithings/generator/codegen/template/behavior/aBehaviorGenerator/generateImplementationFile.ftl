@@ -27,9 +27,10 @@ Entry point for generating a component's implementation.
 -->
 
 ${tc.signature("comp","compname")}
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 #include "${compname}Impl.h"
 ${Utils.printNamespaceStart(comp)}
-<#if !comp.hasTypeParameter()>
-    ${generateBody(comp, compname)}
+<#if !Utils.hasTypeParameter(comp)>
+    ${tc.includeArgs("template.behavior.aBehaviorGenerator.generateBody", [comp, compname])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

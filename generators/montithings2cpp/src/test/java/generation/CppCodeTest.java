@@ -5,8 +5,8 @@ import de.se_rwth.commons.logging.Log;
 import montithings.generator.MontiThingsGeneratorTool;
 import montithings.generator.codegen.ConfigParams;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,11 +26,11 @@ public class CppCodeTest {
 
   private static final Path TESTPATH = Paths.get("src/test/resources/gtests/");
 
-  public ConfigParams setup(TestInfo testInfo) {
+  public ConfigParams setup(String packageName) {
     Log.enableFailQuick(false);
     try {
-      FileUtils.copyDirectoryToDirectory(RTEPATH.toFile(), Paths.get("target/generated-test-sources/",testInfo.getTestMethod().get().getName(),"generated-test-sources/").toFile());
-      FileUtils.copyDirectoryToDirectory(TESTLIBPATH.toFile(), Paths.get("target/generated-test-sources/",testInfo.getTestMethod().get().getName(),"generated-test-sources/").toFile());
+      FileUtils.copyDirectoryToDirectory(RTEPATH.toFile(), Paths.get("target/generated-test-sources/",packageName,"generated-test-sources/").toFile());
+      FileUtils.copyDirectoryToDirectory(TESTLIBPATH.toFile(), Paths.get("target/generated-test-sources/",packageName,"generated-test-sources/").toFile());
     }
     catch (IOException e) {
       e.printStackTrace();
@@ -41,47 +41,11 @@ public class CppCodeTest {
     return params;
   }
 
-  @Test
-  public void basicInputOutputTest(TestInfo testInfo) throws IOException {
-    String packageName = "basicInputOutputTest";
+  @ParameterizedTest
+  @ValueSource(strings = {"basicInputOutputTest", "behaviorTest", "classDiagramsTest", "prePostConditionsTest", "interfaceComponentsTest","interfaceComponentsBindingTest"})
+  public void CPPTests(String testName) {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(Paths.get(MODELPATH.toString(),packageName).toFile(), Paths.get(TARGETPATH.toString(),testInfo.getTestMethod().get().getName(),"generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(),packageName).toFile(), Paths.get(TESTPATH.toString(),packageName).toFile(), setup(testInfo));
-  }
-
-  @Test
-  public void behaviorTest(TestInfo testInfo) throws IOException {
-    String packageName = "behaviorTest";
-    String reuseFiles = "basicInputOutputTest";
-    MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(Paths.get(MODELPATH.toString(),packageName).toFile(), Paths.get(TARGETPATH.toString(),testInfo.getTestMethod().get().getName(),"generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(),reuseFiles).toFile(), Paths.get(TESTPATH.toString(),reuseFiles).toFile(), setup(testInfo));
-  }
-
-  @Test
-  public void classDiagramsTest(TestInfo testInfo) throws IOException {
-    String packageName = "classDiagramsTest";
-    MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(Paths.get(MODELPATH.toString(), packageName).toFile(), Paths.get(TARGETPATH.toString(), testInfo.getTestMethod().get().getName(), "generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(), packageName).toFile(), Paths.get(TESTPATH.toString(), packageName).toFile(), setup(testInfo));
-  }
-
-  @Test
-  public void prePostConditionsTest(TestInfo testInfo) throws IOException {
-    String packageName = "prePostConditionsTest";
-    MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(Paths.get(MODELPATH.toString(), packageName).toFile(), Paths.get(TARGETPATH.toString(), testInfo.getTestMethod().get().getName(), "generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(), packageName).toFile(), Paths.get(TESTPATH.toString(), packageName).toFile(), setup(testInfo));
-  }
-
-  @Test
-  public void interfaceComponentsTest(TestInfo testInfo) throws IOException {
-    String packageName = "interfaceComponentsTest";
-    MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(Paths.get(MODELPATH.toString(), packageName).toFile(), Paths.get(TARGETPATH.toString(), testInfo.getTestMethod().get().getName(), "generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(), packageName).toFile(), Paths.get(TESTPATH.toString(), packageName).toFile(), setup(testInfo));
-  }
-
-  @Test
-  public void interfaceComponentsBindingTest(TestInfo testInfo) throws IOException {
-    String packageName = "interfaceComponentsBindingTest";
-    MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(Paths.get(MODELPATH.toString(), packageName).toFile(), Paths.get(TARGETPATH.toString(), testInfo.getTestMethod().get().getName(), "generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(), packageName).toFile(), Paths.get(TESTPATH.toString(), packageName).toFile(), setup(testInfo));
+    script.generate(Paths.get(MODELPATH.toString(),testName).toFile(), Paths.get(TARGETPATH.toString(),testName,"generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(),testName).toFile(), Paths.get(TESTPATH.toString(),testName).toFile(), setup(testName));
   }
 
 }

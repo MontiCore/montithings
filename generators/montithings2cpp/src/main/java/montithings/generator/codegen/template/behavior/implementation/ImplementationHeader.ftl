@@ -21,7 +21,7 @@ ${Utils.printVariables(comp)}
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters -->
 <#-- ${Utils.printConfigParameters(comp)} -->
 public:
-${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, existsHWC])}
+${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, compname, existsHWC])}
 
 <#if ComponentHelper.hasBehavior(comp)>
     ${compname}Result${generics} getInitialValues() override;
@@ -32,7 +32,7 @@ ${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, exi
 </#if>
 };
 
-<#if comp.hasTypeParameter()>
-    ${generateImplementationBody(comp, compname, existsHWC)}
+<#if Utils.hasTypeParameter(comp)>
+    ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, existsHWC])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

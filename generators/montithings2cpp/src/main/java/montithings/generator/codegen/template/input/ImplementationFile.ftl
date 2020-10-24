@@ -5,7 +5,7 @@ ${tc.signature("comp", "compname", "config")}
 
 #include "${compname}Input.h"
 ${Utils.printNamespaceStart(comp)}
-<#if !comp.hasTypeParameter()>
+<#if !Utils.hasTypeParameter(comp)>
     ${tc.includeArgs("template.input.generateInputBody", [comp, compname, config])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

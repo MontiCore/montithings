@@ -1,10 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
-import arcbasis._ast.ASTArcParameter;
-import arcbasis._ast.ASTComponentType;
-import arcbasis._ast.ASTPort;
-import arcbasis._ast.ASTPortDeclaration;
+import arcbasis._ast.*;
 import arcbasis._symboltable.*;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
@@ -15,13 +12,21 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import conditionbasis._ast.ASTCondition;
 import conditioncatch._ast.ASTConditionCatch;
+import de.monticore.ast.ASTNode;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
+import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
+import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
+import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
+import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 import de.se_rwth.commons.StringTransformations;
+import de.se_rwth.commons.logging.Log;
+import genericarc._ast.ASTArcTypeParameter;
 import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
 import montiarc._symboltable.MontiArcArtifactScope;
@@ -30,11 +35,13 @@ import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTCatch;
 import montithings._ast.ASTMTComponentType;
 import montithings._ast.ASTMTCondition;
+import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.util.GenericBindingUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
@@ -101,15 +108,28 @@ public class ComponentHelper {
    */
   public static Set<String> includeGenericComponent(arcbasis._symboltable.ComponentTypeSymbol comp,
     ComponentInstanceSymbol instance) {
-    /*
-    final ComponentSymbolReference componentTypeReference = instance.getComponentType();
-    if (componentTypeReference.hasActualTypeArguments()) {
-      List<ActualTypeArgument> types = new ArrayList<>(
-          componentTypeReference.getActualTypeArguments());
-      return includeGenericComponentIterate(comp, instance, types);
+    ASTComponentInstantiation instantiation = getInstantiation(instance);
+    if(instantiation.getMCType() instanceof ASTMCBasicGenericType) {
+      List<ASTMCTypeArgument> types = new ArrayList<>(((ASTMCBasicGenericType)instantiation.getMCType()).getMCTypeArgumentList());
+      return includeGenericComponentIterate(comp,instance,types);
     }
-    */
     return new HashSet<>();
+  }
+
+  public static Set<String> includeGenericComponentIterate(arcbasis._symboltable.ComponentTypeSymbol comp, ComponentInstanceSymbol instance, List<ASTMCTypeArgument> types){
+    HashSet<String> result = new HashSet<>();
+    for(int i =0; i<types.size();i++) {
+      String typeName = printTypeArgument(types.get(i));
+      ComponentTypeSymbol boundComponent = GenericBindingUtil.getComponentFromString(
+          GenericBindingUtil.getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) comp.getEnclosingScope()), typeName);
+      if (boundComponent!= null) {
+        result.add(getPackagePath(comp,boundComponent)+typeName);
+        if(types.get(i) instanceof ASTMCBasicGenericType) {
+          result.addAll(includeGenericComponentIterate(comp, instance, ((ASTMCBasicGenericType)types.get(i)).getMCTypeArgumentList()));
+        }
+      }
+    }
+    return result;
   }
 
   public static boolean portUsesCdType(arcbasis._symboltable.PortSymbol portSymbol) {
@@ -333,12 +353,65 @@ public class ComponentHelper {
 
   public static String printTypeArguments(
     List<de.monticore.types.typesymbols._symboltable.TypeVarSymbol> types) {
-    String result = "";
     List<String> typeNames = new ArrayList<>();
     for (TypeVarSymbol type : types) {
       typeNames.add(type.getName());
     }
     return String.join(", ", typeNames);
+  }
+
+  public static String printASTTypeArguments(
+      List<genericarc._ast.ASTArcTypeParameter> types) {
+    List<String> typeNames = new ArrayList<>();
+    for (ASTArcTypeParameter type : types) {
+      typeNames.add(type.getName());
+    }
+    return String.join(", ", typeNames);
+  }
+
+  /**
+   * Prints a list of actual type arguments.
+   *
+   * @param typeArguments The actual type arguments to print
+   * @return The printed actual type arguments
+   */
+  public static String printActualTypeArguments(List<ASTMCTypeArgument> typeArguments) {
+    if (typeArguments.size() > 0) {
+      String result = "<" +
+          typeArguments.stream().map(ComponentHelper::printTypeArgumentIterate)
+              .collect(Collectors.joining(", ")) +
+          ">";
+      return result;
+    }
+    return "";
+  }
+
+  /**
+   * Prints an actual type argument with sub arguments.
+   *
+   * @param arg The actual type argument to print
+   * @return The printed actual type argument
+   */
+  public static String printTypeArgumentIterate(ASTMCTypeArgument arg) {
+    if(arg instanceof ASTMCBasicGenericType) {
+      return printTypeArgument(arg)+printActualTypeArguments(((ASTMCBasicGenericType)arg).getMCTypeArgumentList());
+    }
+    else{
+      return printTypeArgument(arg);
+    }
+  }
+
+  /**
+   * Prints an actual type argument.
+   *
+   * @param arg The actual type argument to print
+   * @return The printed actual type argument
+   */
+  public static String printTypeArgument(ASTMCTypeArgument arg) {
+    if (arg instanceof ASTMCGenericType){
+      return ((ASTMCGenericType)arg).printWithoutTypeArguments();
+    }
+    return arg.printType(new MCCollectionTypesPrettyPrinter(new IndentPrinter()));
   }
 
   /**
@@ -358,8 +431,8 @@ public class ComponentHelper {
       result = packageName + ".";
     }
     result += componentTypeReference.getName();
-    if (componentTypeReference.getLoadedSymbol().hasTypeParameter()) {
-      result += printTypeArguments(componentTypeReference.getLoadedSymbol().getTypeParameters());
+    if (Utils.hasTypeParameter(componentTypeReference.getLoadedSymbol())) {
+      result += printASTTypeArguments(Utils.getTypeParameters(componentTypeReference.getLoadedSymbol()));
     }
     return result;
   }
@@ -390,13 +463,15 @@ public class ComponentHelper {
       }
     }
 
-    if (componentTypeReference.getLoadedSymbol().hasTypeParameter() && printTypeParameters) {
+    if (Utils.hasTypeParameter(componentTypeReference.getLoadedSymbol()) && printTypeParameters) {
       // format simple component type name to full component type name
-      List<TypeVarSymbol> types = new ArrayList<>(
-        componentTypeReference.getLoadedSymbol().getTypeParameters());
-      //TODO: we probably still need the following call?
-      //types = addTypeParameterComponentPackage(instance, types);
-      result += printTypeArguments(types);
+      ASTComponentInstantiation instantiation = getInstantiation(instance);
+      if(instantiation.getMCType() instanceof ASTMCBasicGenericType) {
+        List<ASTMCTypeArgument> types = new ArrayList<>(((ASTMCBasicGenericType)instantiation.getMCType()).getMCTypeArgumentList());
+        //TODO: we still need the following call
+        //types = addTypeParameterComponentPackage(instance, types);
+        result += printActualTypeArguments(types);
+      }
     }
     return result;
   }
@@ -887,5 +962,18 @@ public class ComponentHelper {
     }
 
     return instances;
+  }
+
+  public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance){
+    ASTNode node = instance.getEnclosingScope().getSpanningSymbol().getAstNode();
+    if(!(node instanceof ASTComponentType)){
+      Log.error("0xMT0789 instance is not spanned by ASTComponentType.");
+    }
+    Optional<ASTComponentInstantiation> result =  ((ASTComponentType)node).getSubComponentInstantiations()
+        .stream().filter(i -> i.getComponentInstanceList().contains(instance.getAstNode())).findFirst();
+    if(!result.isPresent()){
+      Log.error("0xMT0790 instance not found.");
+    }
+    return result.get();
   }
 }
