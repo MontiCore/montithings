@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package montithings._visitor;
 
 import arcbasis._ast.ASTArcBasisNode;

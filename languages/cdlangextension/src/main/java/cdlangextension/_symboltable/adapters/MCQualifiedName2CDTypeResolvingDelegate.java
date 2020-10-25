@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package cdlangextension._symboltable.adapters;
 
 import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisGlobalScope;

@@ -1,4 +1,4 @@
-package montithings._cocos;/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;

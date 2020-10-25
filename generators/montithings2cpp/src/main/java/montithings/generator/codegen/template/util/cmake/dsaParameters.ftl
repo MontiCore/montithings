@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config")}
 # Cross compile
 set(CMAKE_SYSTEM_NAME Linux)

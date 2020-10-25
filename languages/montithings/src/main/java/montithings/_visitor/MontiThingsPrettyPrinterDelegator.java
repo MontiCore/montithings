@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings._visitor;
 
 import arcbasis._visitor.ArcBasisPrettyPrinter;

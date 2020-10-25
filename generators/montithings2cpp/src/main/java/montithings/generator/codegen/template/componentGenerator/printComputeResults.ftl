@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","isMonitor")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${compname}Result${Utils.printFormalTypeParameters(comp)} result;

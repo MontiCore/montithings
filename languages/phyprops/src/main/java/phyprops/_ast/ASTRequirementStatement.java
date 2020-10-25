@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package phyprops._ast;
 
 public class ASTRequirementStatement extends ASTRequirementStatementTOP {

@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","isTOP")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${compname}Impl<#if isTOP>TOP</#if>(${Utils.printConfigurationParametersAsList(comp)})

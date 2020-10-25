@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp")}
 <#list comp.ports as p >
     std::string ${p.getName()}_uri;

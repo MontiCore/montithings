@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package phyprops.printer;
 
 import de.monticore.prettyprint.IndentPrinter;

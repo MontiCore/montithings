@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","config")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${Utils.printTemplateArguments(comp)}
