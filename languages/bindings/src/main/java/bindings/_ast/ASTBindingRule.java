@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package bindings._ast;
 
 import arcbasis._ast.ASTComponentInstance;

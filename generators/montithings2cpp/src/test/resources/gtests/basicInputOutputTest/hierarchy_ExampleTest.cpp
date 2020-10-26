@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #include "gtest/gtest.h"
 #include "Source.h"
 #include "Sink.h"

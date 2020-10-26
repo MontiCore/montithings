@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
 // You can import single elements from class diagrams

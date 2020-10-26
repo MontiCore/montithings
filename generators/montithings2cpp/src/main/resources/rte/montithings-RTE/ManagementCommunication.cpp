@@ -1,5 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 #include "ManagementCommunication.h"
 #include "json/json.hpp"
 #include "cpp-httplib/httplib.h"

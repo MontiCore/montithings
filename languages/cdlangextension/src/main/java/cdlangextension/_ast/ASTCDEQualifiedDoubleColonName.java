@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package cdlangextension._ast;
 
 import com.google.common.base.Joiner;

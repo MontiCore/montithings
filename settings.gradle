@@ -24,7 +24,6 @@ include(':languages')
 include(':generators:montithings2cpp')
 include(':generators:cd2cpp')
 include(':generators')
-//include(':libraries')
 
 include(':applications:basic-input-output')
 include(':applications:fireAlarm')

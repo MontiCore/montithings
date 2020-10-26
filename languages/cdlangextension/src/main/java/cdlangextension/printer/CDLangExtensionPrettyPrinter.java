@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package cdlangextension.printer;
 
 import cdlangextension._ast.ASTCDEImportStatement;

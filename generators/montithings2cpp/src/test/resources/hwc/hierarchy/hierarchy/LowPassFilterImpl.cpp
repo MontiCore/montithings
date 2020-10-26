@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #include "LowPassFilterImpl.h"
 
 namespace montithings {

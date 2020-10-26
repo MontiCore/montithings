@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen;
 
 import arcbasis._ast.ASTComponentInstance;

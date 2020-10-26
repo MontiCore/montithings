@@ -1,4 +1,5 @@
-package cocoTest;/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
+package cocoTest;
 
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingsCompilationUnit;

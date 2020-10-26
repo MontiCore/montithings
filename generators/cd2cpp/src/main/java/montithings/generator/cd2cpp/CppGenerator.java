@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2cpp;
 
 import de.monticore.cd.cd4analysis._symboltable.*;

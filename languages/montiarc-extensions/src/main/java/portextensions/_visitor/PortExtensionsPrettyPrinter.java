@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package portextensions._visitor;
 
 import arcbasis._ast.ASTArcBasisNode;
