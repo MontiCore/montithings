@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package setdefinitions._visitor;
 
 import com.google.common.base.Preconditions;

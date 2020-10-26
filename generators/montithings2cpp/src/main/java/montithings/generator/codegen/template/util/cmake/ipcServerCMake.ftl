@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("libraryPath","ipcPath","existsHWC","config")}
 cmake_minimum_required(VERSION 3.8)
 <#-- project(${port.getName()?cap_first}Server) TODO -->set(CMAKE_CXX_STANDARD 11)

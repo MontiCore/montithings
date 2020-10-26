@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package bindings._symboltable.adapters;
 
 import arcbasis._symboltable.ComponentTypeSymbol;

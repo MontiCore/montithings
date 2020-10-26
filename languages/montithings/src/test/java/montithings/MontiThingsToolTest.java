@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
