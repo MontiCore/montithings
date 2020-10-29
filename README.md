@@ -25,8 +25,8 @@ While MontiArc generates code for simulations, MontiThings generates code to be 
 # Getting Started
 
 ```
-git clone git@git.rwth-aachen.de:se-student/ws2021/labs/connectedcars/montithings.git
-cd montithings
+git clone git@git.rwth-aachen.de:monticore/montithings/core.git
+cd core
 mvn clean install
 ```
 
