@@ -19,7 +19,7 @@ While MontiArc generates code for simulations, MontiThings generates code to be 
 - Git (for checking out the project)
 - Maven (for building the project); Gradle is still under development, use Maven!
 - Java 8 or 11 or 14 (other versions are not checked by the CI pipeline)
-- [NNG (for networking)][nng] (Please use [version 1.3.0][nng-1.3]])
+- [NNG (for networking)][nng] (Please use [version 1.3.0][nng-1.3])
 - GCC and CMake (For compiling the generated C++ code)
 
 # Getting Started
