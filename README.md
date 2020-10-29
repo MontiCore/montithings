@@ -48,4 +48,4 @@ This repository is currently non-public.
 [se-rwth]: http://www.se-rwth.de
 [montiarc]: https://git.rwth-aachen.de/monticore/montiarc/core
 [nng]: https://github.com/nanomsg/nng#quick-start 
-[nng-1.3]: https://github.com/nanomsg/nng/tree/v1.3.0
+[nng-1.3]: https://github.com/nanomsg/nng/archive/v1.3.0.zip
