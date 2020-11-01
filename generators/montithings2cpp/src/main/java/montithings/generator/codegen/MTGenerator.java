@@ -143,6 +143,11 @@ public class MTGenerator {
     makeExecutable(targetPath, "kill", ".sh");
   }
 
+  public static void generateTestScript(File targetPath, ConfigParams config) {
+    toFile(targetPath, "runTests", "template/util/scripts/RunTests.ftl", ".sh", config);
+    makeExecutable(targetPath, "runTests", ".sh");
+  }
+
   public static void generatePortJson(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
       Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + "ports");

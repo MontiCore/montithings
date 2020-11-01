@@ -172,122 +172,84 @@
 	<build>
 		<plugins>
 			<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-jar-plugin</artifactId>
-			<version>2.3.2</version>
-			<executions>
-				<execution>
-					<id>montithings-rte</id>
-					<goals>
-						<goal>jar</goal>
-					</goals>
-					<configuration>
-						<classifier>${montithings-rte.classifier}</classifier>
-						<classesDirectory>
-							${basedir}/src/main/resources/rte
-						</classesDirectory>
-					</configuration>
-				</execution>
-				<execution>
-					<id>headers</id>
-					<goals>
-						<goal>jar</goal>
-					</goals>
-					<configuration>
-						<classifier>${montithings-headers.classifier}</classifier>
-						<classesDirectory>
-							${basedir}/src/main/resources/header
-						</classesDirectory>
-					</configuration>
-				</execution>
-				<execution>
-					<id>libraries</id>
-					<goals>
-						<goal>jar</goal>
-					</goals>
-					<configuration>
-						<classifier>${montithings-libs.classifier}</classifier>
-						<classesDirectory>
-							${basedir}/src/main/resources/lib
-						</classesDirectory>
-					</configuration>
-				</execution>
-				<execution>
-					<id>tests</id>
-					<goals>
-						<goal>jar</goal>
-					</goals>
-					<configuration>
-						<classifier>${montithings-tests.classifier}</classifier>
-						<classesDirectory>
-							${basedir}/src/main/resources/test
-						</classesDirectory>
-					</configuration>
-				</execution>
-			</executions>
-		</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
 				<executions>
 					<execution>
-						<id>checkGeneratedCode</id>
-						<phase>post-integration-test</phase>
-						<configuration>
-							<target>
-								<!--<exec executable="scons" dir="${basedir}/target/generated-test-sources/build.sh" failonerror="true"
-									  os="unix">
-								<arg value="-j4" />
-								<arg value="build.sh"/>
-							</exec>-->
-								<exec executable="cmd"
-									  dir="${basedir}/target/generated-test-sources/basicInputOutputTest/generated-test-sources/"
-									  failonerror="true"
-									  os="Windows 10">
-									<arg value="/c"/>
-									<arg value="build.bat"/>
-								</exec>
-								<exec executable="cmd"
-									  dir="${basedir}/target/generated-test-sources/classDiagramsTest/generated-test-sources/"
-									  failonerror="true"
-									  os="Windows 10">
-									<arg value="/c"/>
-									<arg value="build.bat"/>
-								</exec>
-								<exec executable="cmd"
-									  dir="${basedir}/target/generated-test-sources/behaviorTest/generated-test-sources/"
-									  failonerror="true"
-									  os="Windows 10">
-									<arg value="/c"/>
-									<arg value="build.bat"/>
-								</exec>
-								<exec executable="cmd"
-									  dir="${basedir}/target/generated-test-sources/prePostConditionsTest/generated-test-sources/"
-									  failonerror="true"
-									  os="Windows 10">
-									<arg value="/c"/>
-									<arg value="build.bat"/>
-								</exec>
-								<exec executable="cmd"
-									  dir="${basedir}/target/generated-test-sources/interfaceComponentsTest/generated-test-sources/"
-									  failonerror="true"
-									  os="Windows 10">
-									<arg value="/c"/>
-									<arg value="build.bat"/>
-								</exec>
-								<exec executable="cmd"
-									  dir="${basedir}/target/generated-test-sources/interfaceComponentsBindingTest/generated-test-sources/"
-									  failonerror="true"
-									  os="Windows 10">
-									<arg value="/c"/>
-									<arg value="build.bat"/>
-								</exec>
-							</target>
-						</configuration>
+						<id>montithings-rte</id>
 						<goals>
-							<goal>run</goal>
+							<goal>jar</goal>
 						</goals>
+						<configuration>
+							<classifier>${montithings-rte.classifier}</classifier>
+							<classesDirectory>
+								${basedir}/src/main/resources/rte
+							</classesDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>headers</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>${montithings-headers.classifier}</classifier>
+							<classesDirectory>
+								${basedir}/src/main/resources/header
+							</classesDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>libraries</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>${montithings-libs.classifier}</classifier>
+							<classesDirectory>
+								${basedir}/src/main/resources/lib
+							</classesDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>tests</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>${montithings-tests.classifier}</classifier>
+							<classesDirectory>
+								${basedir}/src/main/resources/test
+							</classesDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>exec-generated-test-sources</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>docker</executable>
+							<arguments>
+								<argument>run</argument>
+								<argument>--rm</argument>
+								<argument>-v</argument>
+								<argument>${basedir}/target/generated-test-sources/:/root/test/</argument>
+								<argument>-w</argument>
+								<argument>/root/test/</argument>
+								<argument>registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake</argument>
+								<argument>./runTests.sh</argument>
+							</arguments>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
