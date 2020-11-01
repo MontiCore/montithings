@@ -144,4 +144,4 @@ Docker:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/mtcmake 
     - docker build -t $CI_REGISTRY_IMAGE/mtcmake .
-    - docker push $CI_REGISTRY_IMAGE
+    - docker push $CI_REGISTRY_IMAGE/mtcmake
