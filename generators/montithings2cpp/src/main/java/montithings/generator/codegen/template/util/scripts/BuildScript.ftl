@@ -29,9 +29,12 @@ fi
     </#if>
   ninja
 </#if>
+
+<#if config.getSplittingMode().toString() != "OFF">
 echo Copy Scripts for "$1"
 cd bin
 cp ../../"$1"/*.sh .
 cp -r ../../"$1"/ports .
 chmod +x *.sh
 cd ../..
+</#if>
