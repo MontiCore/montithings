@@ -141,6 +141,11 @@ you your username (something like `@christian.kirchhof`). If you haven't set a d
 your password is most likely the password you use everywhere else to login with you TIM id (TIM id has the 
 form `xy123456`). 
 
+**Q:** "I cant execute the binary. It says something like 'cannot execute binary file' (or something similar)"<br>
+**A:** You most likely compiled the binary using Docker and are now trying to execute it outside of the container. 
+As the different operating systems use different formats for their binaries, this doesn't work. If you have some
+time to waste, you can read more about the different file formats on Wikipedia: 
+[ELF][elf] (Linux), [Mach-O][mach-o] (macOS), [Portable Executable][portable-executable] (Windows).
 
 # License
 
@@ -154,3 +159,6 @@ This repository is currently non-public.
 [nng-1.3]: https://github.com/nanomsg/nng/archive/v1.3.0.zip
 [docker]: https://www.docker.com/products/docker-desktop
 [visualstudio]: https://visualstudio.microsoft.com/vs/community/
+[elf]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
+[mach-o]: https://en.wikipedia.org/wiki/Mach-O
+[portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
