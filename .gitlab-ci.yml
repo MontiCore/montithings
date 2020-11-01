@@ -131,3 +131,20 @@ Code Quality:
   artifacts:
     reports:
       codequality: codeclimate.json
+
+Docker:
+  stage: post-test
+  variables:
+    DOCKER_DRIVER: overlay2
+  cache: {}
+  tags:
+    - shell
+    - docker
+  only:
+    changes:
+      - "docker"
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - cd docker/mtcmake 
+    - docker build -t $CI_REGISTRY_IMAGE/mtcmake .
+    - docker push $CI_REGISTRY_IMAGE
