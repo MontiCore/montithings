@@ -10,6 +10,7 @@ cache:
 stages:
   - build
   - test
+  - generator-test
   - post-test
 
 variables:
@@ -116,7 +117,7 @@ Unit Test Amazon Corretto JDK 8:
   <<: *unit_test_definition
 
 Generator Test:
-  stage: test
+  stage: generator-test
   variables:
     DOCKER_DRIVER: overlay2
   cache: {}
