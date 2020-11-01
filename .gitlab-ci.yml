@@ -140,6 +140,8 @@ Docker:
   tags:
     - shell
     - docker
+  only:
+    - develop
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/mtcmake 
