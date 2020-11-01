@@ -5,7 +5,7 @@ RUN apk add --update-cache \
 	g++ \
 	ninja \
 	cmake \
-	make
+	make 
 
 # Switch into our working directory for building nng
 WORKDIR /usr/src/app
