@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+#!/bin/sh
 ${tc.signature("comp", "config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign instances = ComponentHelper.getInstances(comp)>

@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+#!/bin/sh
 ${tc.signature("config")}
 
 set -e # Stop on first error

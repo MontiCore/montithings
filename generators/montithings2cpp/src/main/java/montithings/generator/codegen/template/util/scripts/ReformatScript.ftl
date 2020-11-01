@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+#!/bin/sh
 
 # Check if clang-format is installed
 which clang-format > /dev/null
