@@ -133,7 +133,7 @@ Code Quality:
       codequality: codeclimate.json
 
 Docker:
-  stage: post-test
+  stage: build
   variables:
     DOCKER_DRIVER: overlay2
   cache: {}
