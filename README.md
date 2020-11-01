@@ -85,18 +85,35 @@ docker login registry.git.rwth-aachen.de
 ```
 
 Now you can build the project using this folder:
+
+Linux/macOS:
 ```
 docker run --rm -v $PWD:$PWD -v /Users/kirchhof/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn clean install
                                 ^--------------^
                        replace this with your own home folder
 ```
 
+Windows:
+```
+docker run --rm -v %CD%:/root/montithings -v C:\Users\Kirchhof\.m2:/root/.m2 -w /root/montithings maven:3-jdk-11 mvn clean install
+                                             ^----------------^
+                                      replace this with your own home folder
+```
+
 Now all the application folders should contain folders called `target/generated-sources` that contain the 
 generated C++ code an some scripts.
 Within the `target/generated-sources` folder you can try out the generated code by using this command:
+
+Linux/macOS:
 ```
 docker run -it --rm -v $PWD:$PWD -w $PWD registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
 ```
+
+Windows:
+```
+docker run -it --rm -v %CD%:/root/generated-sources -w /root/generated-sources registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+```
+
 This command will bring you into a new shell where you can build the project. 
 There you can build the project (for example called `hierarchy`) using 
 ```
