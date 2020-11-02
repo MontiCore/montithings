@@ -150,6 +150,9 @@ As the different operating systems use different formats for their binaries, thi
 time to waste, you can read more about the different file formats on Wikipedia: 
 [ELF][elf] (Linux), [Mach-O][mach-o] (macOS), [Portable Executable][portable-executable] (Windows).
 
+**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
+**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
+
 # License
 
 © https://github.com/MontiCore/monticore
