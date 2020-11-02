@@ -10,6 +10,7 @@ cache:
 stages:
   - build
   - test
+  - generator-test
   - post-test
 
 variables:
@@ -19,6 +20,21 @@ variables:
   # `installAtEnd` and `deployAtEnd`are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "-s settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true"
 
+Docker:
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay2
+  cache: {}
+  tags:
+    - shell
+    - docker
+  only:
+    - develop
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - cd docker/mtcmake 
+    - docker build -t $CI_REGISTRY_IMAGE/mtcmake .
+    - docker push $CI_REGISTRY_IMAGE/mtcmake
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -75,6 +91,8 @@ Unit Test Gradle:
       junit:
       - ./generators/montithings2cpp/target/surefire-reports/TEST-*.xml
       - ./languages/montithings/target/surefire-reports/TEST-*.xml
+    paths:
+      - generators/montithings2cpp/target/
 
 Unit Test JDK 8:
   image: maven:3-jdk-8
@@ -85,7 +103,6 @@ Unit Test JDK 11:
   # We do not require JDK 11 support yet. We appreciate it though.
   allow_failure: true 
   <<: *unit_test_definition
-
 
 Unit Test JDK 14:
   image: maven:3-jdk-14
@@ -98,6 +115,15 @@ Unit Test Amazon Corretto JDK 8:
   # We do not require Amazon Corretto JDK support. We appreciate it though.
   allow_failure: true 
   <<: *unit_test_definition
+
+Generator Test:
+  stage: generator-test
+  image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+  dependencies: 
+    - Unit Test JDK 11 #download generated-test-sources
+  script:
+    - cd generators/montithings2cpp/target/generated-test-sources
+    - ./runTests.sh
 
 Code Quality:
   stage: post-test
@@ -131,19 +157,3 @@ Code Quality:
   artifacts:
     reports:
       codequality: codeclimate.json
-
-Docker:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
-  only:
-    - develop
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - cd docker/mtcmake 
-    - docker build -t $CI_REGISTRY_IMAGE/mtcmake .
-    - docker push $CI_REGISTRY_IMAGE/mtcmake
