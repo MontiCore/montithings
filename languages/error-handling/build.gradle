@@ -51,7 +51,6 @@ dependencies {
   testImplementation "de.monticore:monticore-runtime:$monticore_version:tests"
 
   implementation "de.monticore.lang:cd4analysis:$cd4a_version"
-  implementation "de.monticore:javaDSL:$javadsl_version"
   testImplementation "montiarc:util:$montiarc_version"
 
   implementation "com.google.code.findbugs:jsr305:$jsr305_version"

@@ -33,7 +33,6 @@ dependencies {
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:javaDSL:$javadsl_version"
   implementation project(":generators:cd2cpp")
   implementation "de.monticore:monticore-generator:$monticore_version"
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"

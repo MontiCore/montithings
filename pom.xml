@@ -23,7 +23,6 @@
 	<properties>
 
 		<!-- DSLs -->
-		<javadsl.version>4.3.11.1</javadsl.version> 
 		<cd4a.version>1.7.0</cd4a.version>
 		<montiarc.version>6.0.0-SNAPSHOT</montiarc.version>
 
@@ -167,19 +166,6 @@
 				<version>${monticore.version}</version>
 				<classifier>${grammars.classifier}</classifier>
 				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>de.monticore</groupId>
-				<artifactId>javaDSL</artifactId>
-				<version>${javadsl.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>de.monticore</groupId>
-				<artifactId>de.monticore.java</artifactId>
-				<version>${javadsl.version}</version>
-				<classifier>${grammars.classifier}</classifier>
 			</dependency>
 
 			<dependency>

@@ -51,7 +51,6 @@ dependencies {
   implementation "org.antlr:antlr4-runtime:$antlr_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:javaDSL:$javadsl_version"
   implementation "org.apache.commons:commons-lang3:3.9"
   implementation "org.codehaus.janino:janino:$janino_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
