@@ -59,7 +59,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected static final String TOOL_NAME = "MontiThingsGeneratorTool";
 
-  public void generate(File modelPath, File target, File hwcPath, File testPath, ConfigParams config) {
+  public void generate(File modelPath, File target, File hwcPath, File testPath,
+    ConfigParams config) {
 
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
@@ -134,11 +135,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     generateCD(modelPath, target);
     MTGenerator.generateBuildScript(target, config);
 
-    if(testPath!=null&&!testPath.toString().equals("")) {
-      if(config.getSplittingMode()!= ConfigParams.SplittingMode.OFF){
+    if (testPath != null && !testPath.toString().equals("")) {
+      if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
         config.setSplittingMode(ConfigParams.SplittingMode.OFF);
-        generate(modelPath, Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources").toFile()
-            , hwcPath, testPath, config);
+        generate(modelPath, Paths
+          .get(Paths.get(target.getAbsolutePath()).getParent().toString(), "generated-test-sources")
+          .toFile(), hwcPath, testPath, config);
       }
       else {
         for (String model : models.getMontithings()) {
@@ -283,12 +285,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     // check if component is implementation
     if (comp.getAstNode() instanceof ASTMTComponentType &&
-        ((ASTMTComponentType)comp.getAstNode()).getMTComponentModifier().isInterface()) {
+      ((ASTMTComponentType) comp.getAstNode()).getMTComponentModifier().isInterface()) {
       // Dont generate files for implementation. They are generated when interface is there
       return;
     }
-
-
 
     String compname = comp.getName();
 
@@ -360,36 +360,40 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void generateCDEAdapter(File targetFilepath, ConfigParams config) {
-    if(config.getCdLangExtensionScope() != null) {
-      for(ICDLangExtensionScope subScope:config.getCdLangExtensionScope().getSubScopes()) {
+    if (config.getCdLangExtensionScope() != null) {
+      for (ICDLangExtensionScope subScope : config.getCdLangExtensionScope().getSubScopes()) {
         for (CDLangExtensionUnitSymbol unit : subScope.getCDLangExtensionUnitSymbols().values()) {
           String simpleName = unit.getAstNode().getName();
           List<String> packageName = unit.getAstNode().getPackageList();
 
-          MTGenerator.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(), Names.getPathFromPackage(Names.getQualifiedName(packageName))).toFile(), packageName, simpleName, config);
+          MTGenerator.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(),
+            Names.getPathFromPackage(Names.getQualifiedName(packageName))).toFile(), packageName,
+            simpleName, config);
         }
       }
     }
   }
 
-  protected void generateTests(File modelPath, File testFilepath, File targetFilepath, File hwcPath, ComponentTypeSymbol comp, ConfigParams config) {
-    if(testFilepath!=null&&targetFilepath!=null&&comp!=null) {
+  protected void generateTests(File modelPath, File testFilepath, File targetFilepath, File hwcPath,
+    ComponentTypeSymbol comp, ConfigParams config) {
+    if (testFilepath != null && targetFilepath != null && comp != null) {
       /* ============================================================ */
       /* ====== Copy generated-sources to generated-test-sources ==== */
       /* ============================================================ */
       copyGeneratedToTarget(targetFilepath);
       copyTestToTarget(testFilepath, targetFilepath, comp);
       if (ComponentHelper.isApplication(comp)) {
-        Path target = Paths.get(Paths.get(targetFilepath.getAbsolutePath()).getParent().toString(),"generated-test-sources");
-        File libraryPath = Paths.get(target.toString(),"montithings-RTE").toFile();
+        Path target = Paths.get(Paths.get(targetFilepath.getAbsolutePath()).getParent().toString(),
+          "generated-test-sources");
+        File libraryPath = Paths.get(target.toString(), "montithings-RTE").toFile();
         // Check for Subpackages
         File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
 
         // 6 generate make file
         if (config.getTargetPlatform()
-            != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
+          != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
           MTGenerator.generateTestMakeFile(target.toFile(), comp, hwcPath, libraryPath,
-              subPackagesPath, config);
+            subPackagesPath, config);
         }
       }
     }

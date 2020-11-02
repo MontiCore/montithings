@@ -3,6 +3,7 @@
 plugins {
   id "monticore"
   id "jacoco"
+  id "de.set.ecj" 
 }
 
 group = "montithings.languages"
@@ -24,6 +25,14 @@ sourceSets {
     }
   }
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.deprecation = false
+    options.warnings = false
+    options.headerOutputDirectory.convention(null)
+}
+
 
 test {
   useJUnitPlatform()

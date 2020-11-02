@@ -48,6 +48,7 @@
 		<monticore.plugin>${monticore.version}</monticore.plugin>
 		<assembly.plugin>3.2.0</assembly.plugin>
 		<compiler.plugin>3.8.1</compiler.plugin>
+		<plexus.plugin>2.8.8</plexus.plugin>
 		<se-groovy.maven.version>1.2.3</se-groovy.maven.version>
 		<source.plugin>3.2.1</source.plugin>
 		<jacoco.plugin>0.8.5</jacoco.plugin>
@@ -265,6 +266,12 @@
 					</executions>
 				</plugin>
 
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+
 				<!-- Other Configuration -->
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -273,7 +280,16 @@
 						<useIncrementalCompilation>true</useIncrementalCompilation>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
+						<compilerId>eclipse</compilerId>
 					</configuration>
+
+					<dependencies>
+	                  <dependency>
+	                    <groupId>org.codehaus.plexus</groupId>
+	                    <artifactId>plexus-compiler-eclipse</artifactId>
+	                    <version>${plexus.plugin}</version>
+	                  </dependency>
+	                </dependencies>
 				</plugin>
 
 				<plugin>

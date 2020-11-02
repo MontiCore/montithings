@@ -4,6 +4,7 @@ package generation;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.MontiThingsGeneratorTool;
 import montithings.generator.codegen.ConfigParams;
+import montithings.generator.codegen.MTGenerator;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -29,8 +30,12 @@ public class CppCodeTest {
   public ConfigParams setup(String packageName) {
     Log.enableFailQuick(false);
     try {
-      FileUtils.copyDirectoryToDirectory(RTEPATH.toFile(), Paths.get("target/generated-test-sources/",packageName,"generated-test-sources/").toFile());
-      FileUtils.copyDirectoryToDirectory(TESTLIBPATH.toFile(), Paths.get("target/generated-test-sources/",packageName,"generated-test-sources/").toFile());
+      FileUtils.copyDirectoryToDirectory(RTEPATH.toFile(),
+        Paths.get("target/generated-test-sources/",
+          packageName, "generated-test-sources/").toFile());
+      FileUtils.copyDirectoryToDirectory(TESTLIBPATH.toFile(),
+        Paths.get("target/generated-test-sources/",
+          packageName, "generated-test-sources/").toFile());
     }
     catch (IOException e) {
       e.printStackTrace();
@@ -42,10 +47,21 @@ public class CppCodeTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"basicInputOutputTest", "behaviorTest", "classDiagramsTest", "prePostConditionsTest", "interfaceComponentsTest","interfaceComponentsBindingTest"})
+  @ValueSource(strings = { "basicInputOutputTest",
+    "behaviorTest",
+    "classDiagramsTest",
+    "prePostConditionsTest",
+    "interfaceComponentsTest",
+    "interfaceComponentsBindingTest" })
   public void CPPTests(String testName) {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(Paths.get(MODELPATH.toString(),testName).toFile(), Paths.get(TARGETPATH.toString(),testName,"generated-test-sources/").toFile(), Paths.get(HWCPATH.toString(),testName).toFile(), Paths.get(TESTPATH.toString(),testName).toFile(), setup(testName));
+    script.generate(
+      Paths.get(MODELPATH.toString(), testName).toFile(),
+      Paths.get(TARGETPATH.toString(), testName, "generated-test-sources/").toFile(),
+      Paths.get(HWCPATH.toString(), testName).toFile(),
+      Paths.get(TESTPATH.toString(), testName).toFile(),
+      setup(testName));
+    MTGenerator.generateTestScript(Paths.get(TARGETPATH.toString()).toFile(), setup(testName));
   }
 
 }
