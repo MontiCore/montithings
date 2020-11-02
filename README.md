@@ -1,3 +1,5 @@
+<img src="docs/Banner.png" width="700px"/>
+
 # MontiThings Core Project
 
 © https://github.com/MontiCore/monticore; Contact: @christian.kirchhof
