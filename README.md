@@ -142,7 +142,8 @@ use to log into this GitLab.
 **A:** "You can find your username by clicking on your icon in the top right corner. The dropdown should tell 
 you your username (something like `@christian.kirchhof`). If you haven't set a differnet password for GitLab
 your password is most likely the password you use everywhere else to login with you TIM id (TIM id has the 
-form `xy123456`). 
+form `xy123456`). In case you have never logged in using a manually set password, you maybe need to first
+[set a password][password].
 
 **Q:** "I cant execute the binary. It says something like 'cannot execute binary file' (or something similar)"<br>
 **A:** You most likely compiled the binary using Docker and are now trying to execute it outside of the container. 
@@ -168,3 +169,4 @@ This repository is currently non-public.
 [elf]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 [mach-o]: https://en.wikipedia.org/wiki/Mach-O
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
+[password]: https://git.rwth-aachen.de/profile/password/edit
