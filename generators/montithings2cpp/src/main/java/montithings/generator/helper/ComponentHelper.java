@@ -71,7 +71,7 @@ public class ComponentHelper {
   }
 
   public static String printCPPTypeName(SymTypeExpression expression) {
-    return expression.print();
+    return java2cppTypeString(expression.print());
   }
 
   /**
@@ -109,23 +109,29 @@ public class ComponentHelper {
   public static Set<String> includeGenericComponent(arcbasis._symboltable.ComponentTypeSymbol comp,
     ComponentInstanceSymbol instance) {
     ASTComponentInstantiation instantiation = getInstantiation(instance);
-    if(instantiation.getMCType() instanceof ASTMCBasicGenericType) {
-      List<ASTMCTypeArgument> types = new ArrayList<>(((ASTMCBasicGenericType)instantiation.getMCType()).getMCTypeArgumentList());
-      return includeGenericComponentIterate(comp,instance,types);
+    if (instantiation.getMCType() instanceof ASTMCBasicGenericType) {
+      List<ASTMCTypeArgument> types = new ArrayList<>(
+        ((ASTMCBasicGenericType) instantiation.getMCType()).getMCTypeArgumentList());
+      return includeGenericComponentIterate(comp, instance, types);
     }
     return new HashSet<>();
   }
 
-  public static Set<String> includeGenericComponentIterate(arcbasis._symboltable.ComponentTypeSymbol comp, ComponentInstanceSymbol instance, List<ASTMCTypeArgument> types){
+  public static Set<String> includeGenericComponentIterate(
+    arcbasis._symboltable.ComponentTypeSymbol comp, ComponentInstanceSymbol instance,
+    List<ASTMCTypeArgument> types) {
     HashSet<String> result = new HashSet<>();
-    for(int i =0; i<types.size();i++) {
+    for (int i = 0; i < types.size(); i++) {
       String typeName = printTypeArgument(types.get(i));
       ComponentTypeSymbol boundComponent = GenericBindingUtil.getComponentFromString(
-          GenericBindingUtil.getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) comp.getEnclosingScope()), typeName);
-      if (boundComponent!= null) {
-        result.add(getPackagePath(comp,boundComponent)+typeName);
-        if(types.get(i) instanceof ASTMCBasicGenericType) {
-          result.addAll(includeGenericComponentIterate(comp, instance, ((ASTMCBasicGenericType)types.get(i)).getMCTypeArgumentList()));
+        GenericBindingUtil
+          .getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) comp.getEnclosingScope()),
+        typeName);
+      if (boundComponent != null) {
+        result.add(getPackagePath(comp, boundComponent) + typeName);
+        if (types.get(i) instanceof ASTMCBasicGenericType) {
+          result.addAll(includeGenericComponentIterate(comp, instance,
+            ((ASTMCBasicGenericType) types.get(i)).getMCTypeArgumentList()));
         }
       }
     }
@@ -133,6 +139,9 @@ public class ComponentHelper {
   }
 
   public static boolean portUsesCdType(arcbasis._symboltable.PortSymbol portSymbol) {
+    if (!portSymbol.getType().isTypeInfoLoadable()) {
+      return false;
+    }
     return portSymbol.getType().getTypeInfo() instanceof CDType2TypeAdapter;
   }
 
@@ -295,7 +304,8 @@ public class ComponentHelper {
    *              should be calculated.
    * @return The parameters.
    */
-  public static Collection<String> getParamValues(arcbasis._symboltable.ComponentInstanceSymbol param) {
+  public static Collection<String> getParamValues(
+    arcbasis._symboltable.ComponentInstanceSymbol param) {
     List<ASTExpression> configArguments = param.getArguments();
     MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
 
@@ -335,7 +345,7 @@ public class ComponentHelper {
 
     for (int i = 0; i < parameters.size(); i++) {
       ASTArcParameter param = parameters.get(i);
-      result += printer.prettyprint(param.getMCType());
+      result += java2cppTypeString(printer.prettyprint(param.getMCType()));
       ;
       result += " ";
       result += param.getName();
@@ -361,7 +371,7 @@ public class ComponentHelper {
   }
 
   public static String printASTTypeArguments(
-      List<genericarc._ast.ASTArcTypeParameter> types) {
+    List<genericarc._ast.ASTArcTypeParameter> types) {
     List<String> typeNames = new ArrayList<>();
     for (ASTArcTypeParameter type : types) {
       typeNames.add(type.getName());
@@ -378,9 +388,9 @@ public class ComponentHelper {
   public static String printActualTypeArguments(List<ASTMCTypeArgument> typeArguments) {
     if (typeArguments.size() > 0) {
       String result = "<" +
-          typeArguments.stream().map(ComponentHelper::printTypeArgumentIterate)
-              .collect(Collectors.joining(", ")) +
-          ">";
+        typeArguments.stream().map(ComponentHelper::printTypeArgumentIterate)
+          .collect(Collectors.joining(", ")) +
+        ">";
       return result;
     }
     return "";
@@ -393,10 +403,11 @@ public class ComponentHelper {
    * @return The printed actual type argument
    */
   public static String printTypeArgumentIterate(ASTMCTypeArgument arg) {
-    if(arg instanceof ASTMCBasicGenericType) {
-      return printTypeArgument(arg)+printActualTypeArguments(((ASTMCBasicGenericType)arg).getMCTypeArgumentList());
+    if (arg instanceof ASTMCBasicGenericType) {
+      return printTypeArgument(arg) + printActualTypeArguments(
+        ((ASTMCBasicGenericType) arg).getMCTypeArgumentList());
     }
-    else{
+    else {
       return printTypeArgument(arg);
     }
   }
@@ -408,10 +419,11 @@ public class ComponentHelper {
    * @return The printed actual type argument
    */
   public static String printTypeArgument(ASTMCTypeArgument arg) {
-    if (arg instanceof ASTMCGenericType){
-      return ((ASTMCGenericType)arg).printWithoutTypeArguments();
+    if (arg instanceof ASTMCGenericType) {
+      return ((ASTMCGenericType) arg).printWithoutTypeArguments();
     }
-    return arg.printType(new MCCollectionTypesPrettyPrinter(new IndentPrinter()));
+    return java2cppTypeString(
+      arg.printType(new MCCollectionTypesPrettyPrinter(new IndentPrinter())));
   }
 
   /**
@@ -432,7 +444,8 @@ public class ComponentHelper {
     }
     result += componentTypeReference.getName();
     if (Utils.hasTypeParameter(componentTypeReference.getLoadedSymbol())) {
-      result += printASTTypeArguments(Utils.getTypeParameters(componentTypeReference.getLoadedSymbol()));
+      result += printASTTypeArguments(
+        Utils.getTypeParameters(componentTypeReference.getLoadedSymbol()));
     }
     return result;
   }
@@ -466,8 +479,9 @@ public class ComponentHelper {
     if (Utils.hasTypeParameter(componentTypeReference.getLoadedSymbol()) && printTypeParameters) {
       // format simple component type name to full component type name
       ASTComponentInstantiation instantiation = getInstantiation(instance);
-      if(instantiation.getMCType() instanceof ASTMCBasicGenericType) {
-        List<ASTMCTypeArgument> types = new ArrayList<>(((ASTMCBasicGenericType)instantiation.getMCType()).getMCTypeArgumentList());
+      if (instantiation.getMCType() instanceof ASTMCBasicGenericType) {
+        List<ASTMCTypeArgument> types = new ArrayList<>(
+          ((ASTMCBasicGenericType) instantiation.getMCType()).getMCTypeArgumentList());
         //TODO: we still need the following call
         //types = addTypeParameterComponentPackage(instance, types);
         result += printActualTypeArguments(types);
@@ -507,21 +521,32 @@ public class ComponentHelper {
    * @return Corresponding CPP types from input java types
    */
   public static String java2cppTypeString(String type) {
+    return java2cppTypeString(type, false);
+  }
+
+  public static String java2cppTypeString(String type, boolean preventRecursion) {
     String replacedArray = type.replaceAll("([^<]*)\\[]", "std::vector<$1>");
     while (!type.equals(replacedArray)) {
       type = replacedArray;
       replacedArray = type.replaceAll("([^<]*)\\[]", "std::vector<$1>");
     }
-    type = type.replaceAll("String", "std::string");
-    type = type.replaceAll("Integer", "int");
-    type = type.replaceAll("Map", "std::map");
-    type = type.replaceAll("Set", "std::set");
-    type = type.replaceAll("List", "std::list");
-    type = type.replaceAll("Boolean", "bool");
-    type = type.replaceAll("Character", "char");
-    type = type.replaceAll("Double", "double");
-    type = type.replaceAll("Float", "float");
+    type = type.replaceAll("(\\W|^)String(\\W|$)", "$1std::string$2");
+    type = type.replaceAll("(\\W|^)Integer(\\W|$)", "$1int$2");
+    type = type.replaceAll("(\\W|^)Map(\\W|$)", "$1std::map$2");
+    type = type.replaceAll("(\\W|^)Set(\\W|$)", "$1std::set$2");
+    type = type.replaceAll("(\\W|^)List(\\W|$)", "$1std::list$2");
+    type = type.replaceAll("(\\W|^)Boolean(\\W|$)", "$1bool$2");
+    type = type.replaceAll("(\\W|^)Character(\\W|$)", "$1char$2");
+    type = type.replaceAll("(\\W|^)Double(\\W|$)", "$1double$2");
+    type = type.replaceAll("(\\W|^)Float(\\W|$)", "$1float$2");
 
+    if (preventRecursion) {
+      return type;
+    }
+
+    while (!java2cppTypeString(type, true).equals(type)) {
+      type = java2cppTypeString(type);
+    }
     return type;
   }
 
@@ -964,14 +989,16 @@ public class ComponentHelper {
     return instances;
   }
 
-  public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance){
+  public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance) {
     ASTNode node = instance.getEnclosingScope().getSpanningSymbol().getAstNode();
-    if(!(node instanceof ASTComponentType)){
+    if (!(node instanceof ASTComponentType)) {
       Log.error("0xMT0789 instance is not spanned by ASTComponentType.");
     }
-    Optional<ASTComponentInstantiation> result =  ((ASTComponentType)node).getSubComponentInstantiations()
-        .stream().filter(i -> i.getComponentInstanceList().contains(instance.getAstNode())).findFirst();
-    if(!result.isPresent()){
+    Optional<ASTComponentInstantiation> result = ((ASTComponentType) node)
+      .getSubComponentInstantiations()
+      .stream().filter(i -> i.getComponentInstanceList().contains(instance.getAstNode()))
+      .findFirst();
+    if (!result.isPresent()) {
       Log.error("0xMT0790 instance not found.");
     }
     return result.get();

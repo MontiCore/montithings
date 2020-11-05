@@ -7,6 +7,7 @@ ${tc.signature("comp","compname")}
 #include "${compname}Result.h"
 #include "IComputable.h"
 #include ${"<stdexcept>"}
+#include ${"<string>"}
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}

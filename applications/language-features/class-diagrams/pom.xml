@@ -48,10 +48,6 @@
             <artifactId>monticore-grammar</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>de.monticore</groupId>
-            <artifactId>javaDSL</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>montithings.generators</groupId>

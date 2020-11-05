@@ -1,3 +1,5 @@
+<img src="docs/Banner.png" width="700px"/>
+
 # MontiThings Core Project
 
 © https://github.com/MontiCore/monticore; Contact: @christian.kirchhof
@@ -5,7 +7,7 @@
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
 
-<img src="docs/MontiThingsOverview.png" alt="drawing" height="400px"/>
+<img src="docs/MontiThingsOverview.png" alt="drawing" width="700px"/>
 
 In MontiArc, architectures are described as component and connector systems in which autonomously acting components perform 
 computations. Communication between components is regulated by connectors between the components’ interfaces, which are stable 
@@ -140,13 +142,17 @@ use to log into this GitLab.
 **A:** "You can find your username by clicking on your icon in the top right corner. The dropdown should tell 
 you your username (something like `@christian.kirchhof`). If you haven't set a differnet password for GitLab
 your password is most likely the password you use everywhere else to login with you TIM id (TIM id has the 
-form `xy123456`). 
+form `xy123456`). In case you have never logged in using a manually set password, you maybe need to first
+[set a password][password].
 
 **Q:** "I cant execute the binary. It says something like 'cannot execute binary file' (or something similar)"<br>
 **A:** You most likely compiled the binary using Docker and are now trying to execute it outside of the container. 
 As the different operating systems use different formats for their binaries, this doesn't work. If you have some
 time to waste, you can read more about the different file formats on Wikipedia: 
 [ELF][elf] (Linux), [Mach-O][mach-o] (macOS), [Portable Executable][portable-executable] (Windows).
+
+**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
+**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
 
 # License
 
@@ -163,3 +169,4 @@ This repository is currently non-public.
 [elf]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 [mach-o]: https://en.wikipedia.org/wiki/Mach-O
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
+[password]: https://git.rwth-aachen.de/profile/password/edit

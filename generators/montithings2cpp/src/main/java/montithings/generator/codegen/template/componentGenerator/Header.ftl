@@ -43,7 +43,8 @@ ${Utils.printVariables(comp)}
 
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters --><#-- Utils.printConfigParameters(comp) -->
 std::vector< std::thread > threads;
-TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
+TimeMode timeMode = 
+<#if ComponentHelper.isTimesync(comp)>
   TIMESYNC
 <#else>
   EVENTBASED
@@ -55,7 +56,7 @@ TimeMode timeMode = <#if ComponentHelper.isTimesync(comp)>
     ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}
 <#else>
 
-    ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
+  ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
   void initialize();
   void setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result);
