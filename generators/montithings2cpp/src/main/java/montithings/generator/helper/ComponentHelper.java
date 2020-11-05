@@ -133,6 +133,9 @@ public class ComponentHelper {
   }
 
   public static boolean portUsesCdType(arcbasis._symboltable.PortSymbol portSymbol) {
+    if(!portSymbol.getType().isTypeInfoLoadable()){
+      return false;
+    }
     return portSymbol.getType().getTypeInfo() instanceof CDType2TypeAdapter;
   }
 
