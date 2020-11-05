@@ -19,7 +19,9 @@ subprojects {
   apply plugin: 'maven-publish'
 
   repositories {
-    mavenLocal()
+    if(("true").equals(getProperty('useLocalRepo'))) {
+      mavenLocal()
+    }
 
     maven {
       credentials.username mavenUser
