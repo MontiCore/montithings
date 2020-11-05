@@ -5,7 +5,7 @@ application Example {
   Source source, source2;
   MathExpression c,c2;
   Sink sink, sink2;
-  GenericBinding<Double> genericBinding;
+  GenericBinding<Doubler> genericBinding;
 
   source.value -> c.x;
   c.y -> sink.value;

@@ -1,15 +1,15 @@
 // (c) https://github.com/MontiCore/monticore
 #include <iostream>
-#include "DoubleImpl.h"
+#include "DoublerImpl.h"
 
 namespace montithings {
 namespace hierarchy {
 
-DoubleResult DoubleImpl::getInitialValues(){
+DoublerResult DoublerImpl::getInitialValues(){
 	return {};
 }
 
-DoubleResult DoubleImpl::compute(DoubleInput input){
+DoublerResult DoublerImpl::compute(DoublerInput input){
 	return {};
 }
 

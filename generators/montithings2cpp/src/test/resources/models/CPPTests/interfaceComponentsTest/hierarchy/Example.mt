@@ -3,7 +3,7 @@ package hierarchy;
 
 application Example {
   Source source;
-  Calc<Double> c;
+  Calc<Doubler> c;
   Sink sink;
 
   source.value -> c.x;

@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-component Double {
+component Doubler {
   port in int x;
   port out int y;
 
