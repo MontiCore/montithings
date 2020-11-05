@@ -6,7 +6,7 @@ application Example {
   Sink sink;
   LowPassFilter lpf (5);
   Converter c;
-  Double d;
+  Doubler d;
 
   source.value -> lpf.inport;
   lpf.outport -> c.inport;
