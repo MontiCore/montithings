@@ -19,6 +19,7 @@ variables:
   MAVEN_OPTS: "-Xmx4096m -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   # `installAtEnd` and `deployAtEnd`are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "-s settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true"
+  GRADLE_OPTS: "-PmavenPassword=$cibuild -PmavenUser=cibuild"
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -69,7 +70,7 @@ Validate Gradle:
       - languages/montithings/target/
       - languages/phyprops/target/
   script:
-    - gradle clean assemble
+    - gradle $GRADLE_OPTS clean assemble
     
 Unit Test Gradle:
   image: gradle:6.5.1-jdk8
@@ -78,7 +79,7 @@ Unit Test Gradle:
   dependencies: 
     - Validate Gradle #download artifacts from build
   script:
-    - gradle test
+    - gradle $GRADLE_OPTS test
 
 # Run Unit Tests after build
 .unit_test_template: &unit_test_definition
