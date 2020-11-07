@@ -1,9 +1,4 @@
 /* (c) https://github.com/MontiCore/monticore */
-buildscript {
-  dependencies {
-    classpath "montithings.generators:montithings2cpp:$version"
-  }
-}
 
 plugins {
   id "monticore"
