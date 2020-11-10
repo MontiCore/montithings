@@ -143,27 +143,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>${assembly.plugin}</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <formats>
-                                <format>jar</format>
-                            </formats>
-                            <descriptor>src/main/assemblies/example-assembly.xml</descriptor>
-                        </configuration>
-                        <id>json-example-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 
     </build>
