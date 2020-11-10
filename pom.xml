@@ -214,6 +214,19 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>json</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>grammars</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>json</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- .. Test Libraries ............................................... -->
         <dependency>
             <groupId>junit</groupId>
