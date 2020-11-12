@@ -5,15 +5,18 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
-import jline.internal.Log;
+import de.se_rwth.commons.logging.Log;
+import montithings.generator.codegen.util.DeadLog;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -80,14 +83,19 @@ public class MTGenerator {
 
   static private void toFile(File targetPath, String name, String template, String fileExtension, Object... templateArguments) {
     Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
-    Log.info("Writing to file " + path + ".");
-    GeneratorSetup setup = new GeneratorSetup();
-    setup.setTracing(false);
-    //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
+      Log.debug("Writing to file " + path + ".","MTGenerator");
+      GeneratorSetup setup = new GeneratorSetup();
+      setup.setTracing(false);
+      //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
 
-    GeneratorEngine engine = new GeneratorEngine(setup);
+      GeneratorEngine engine = new GeneratorEngine(setup);
+      //Disable info output
+      DeadLog log = new DeadLog();
+      /*if(!Log.isDebugEnabled("")) {*/
+        log.deactivateOutput();
 
-    engine.generateNoA(template, path, templateArguments);
+      engine.generateNoA(template, path, templateArguments);
+        log.activateOutput();
   }
 
   static private void makeExecutable(File targetPath, String name, String fileExtension) {
@@ -172,4 +180,18 @@ public class MTGenerator {
       toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/Header.ftl", ".h",packageName, simpleName, config);
       toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/ImplementationFile.ftl", ".cpp",packageName, simpleName, config);
     }
+
+  public static void generateAdditionalPort(File modelPath, File targetPath, String simpleName, String srcPath) {
+    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + StringUtils.capitalize(simpleName) + ".h");
+    if(!path.toFile().exists()||!path.toFile().isFile()) {
+      Log.debug("Writing to file " + path + ".","");
+      GeneratorSetup setup = new GeneratorSetup();
+      setup.setTracing(false);
+      setup.setAdditionalTemplatePaths(Collections.singletonList(modelPath.getAbsoluteFile()));
+
+      GeneratorEngine engine = new GeneratorEngine(setup);
+
+      engine.generateNoA("template/util/ports/portTemplate.ftl", path, srcPath, simpleName);
+    }
+ }
 }

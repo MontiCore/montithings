@@ -5,11 +5,16 @@ import arcbasis._ast.ASTComponentInstance;
 import arcbasis._ast.ASTComponentType;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
+import de.monticore.utils.Names;
 import montithings.generator.data.PortMap;
 
-import java.util.*;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Bundle of parameters for montithings2cpp generator.
@@ -178,6 +183,19 @@ public class ConfigParams {
       }
     }
     return false;
+  }
+
+  public String temporaryVar;
+  //How many additional ports can there be?
+  //Implement method correctly when tagging is available
+  public Optional<String> getAdditionalPort(PortSymbol port){
+    File exists = new File(temporaryVar+File.separator+ Names.getPathFromPackage(port.getFullName())+"PortBody.ftl");
+    if(exists.exists()&&exists.isFile()){
+      return Optional.of(port.getName()+"Port");
+    }
+    else{
+      return Optional.empty();
+    }
   }
 
   public CDLangExtensionScope getCdLangExtensionScope() {

@@ -2,6 +2,7 @@
 package montithings.generator;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
 import bindings._ast.ASTBindingsCompilationUnit;
@@ -113,6 +114,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ====================== Generate Code ======================= */
     /* ============================================================ */
 
+    //Set<String> additionalPorts = new HashSet<>();
     for (String model : models.getMontithings()) {
       File compTarget = target;
 
@@ -127,6 +129,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           MTGenerator.generatePortJson(compTarget, comp, config);
         }
       }
+
+      //temporary Code
+      config.temporaryVar = modelPath.getAbsolutePath();
+      ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+      for(PortSymbol port : comp.getPorts()) {
+        Optional<String> s = config.getAdditionalPort(port);
+        if (s.isPresent()){
+          String templateLocation = Names.getQualifier(port.getFullName());
+          MTGenerator.generateAdditionalPort(modelPath,new File(target+File.separator+"hierarchy"),s.get(),templateLocation);
+        }
+      }
+
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);

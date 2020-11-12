@@ -9,6 +9,12 @@ ${Identifier.createInstance(comp)}
 #include "IComponent.h"
 #include "Port.h"
 #include "InOutPort.h"
+<#list comp.getPorts() as port>
+    <#assign addPort = config.getAdditionalPort(port)>
+    <#if addPort!="Optional.empty">
+        #include "${addPort.get()?cap_first}.h"
+    </#if>
+</#list>
 #include ${"<string>"}
 #include ${"<map>"}
 #include ${"<vector>"}

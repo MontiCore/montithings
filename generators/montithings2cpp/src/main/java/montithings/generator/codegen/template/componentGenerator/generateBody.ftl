@@ -25,6 +25,18 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
     void ${compname}${Utils.printFormalTypeParameters(comp)}::initialize(){
     <#list comp.incomingPorts as port >
         getPort${port.getName()?cap_first} ()->registerListeningPort (this->getUuid ());
+        <#assign additionalPort = config.getAdditionalPort(port)>
+        <#if additionalPort!="Optional.empty">
+            <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+            addInPort${port.getName()?cap_first}(new ${additionalPort.get()?cap_first}<${type}>());
+        </#if>
+    </#list>
+    <#list comp.outgoingPorts as port >
+        <#assign additionalPort = config.getAdditionalPort(port)>
+        <#if additionalPort!="Optional.empty">
+            <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+            addOutPort${port.getName()?cap_first}(new ${additionalPort.get()?cap_first}<${type}>());
+        </#if>
     </#list>
     ${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();
     setResult(result);
