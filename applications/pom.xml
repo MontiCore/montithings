@@ -20,6 +20,7 @@
     <module>fireAlarm</module>
     <module>hierarchy</module>
     <module>language-features</module>
+    <module>mqtt-ports</module>
   </modules>
 
 </project>
