@@ -5,7 +5,7 @@ ${tc.signature("comp","compname","config")}
 <#assign ConfigParams = tc.instantiate("montithings.generator.codegen.ConfigParams")>
 
     <#if (comp.isAtomic()) >
-        ${tc.includeArgs("template.util.setup.printSetupAtomic", [comp, compname])}
+        ${tc.includeArgs("template.util.setup.printSetupAtomic", [comp, compname, config])}
     <#else>
         ${tc.includeArgs("template.util.setup.printSetupComposed", [comp, compname, config])}
     </#if>

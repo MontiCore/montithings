@@ -17,6 +17,11 @@ ${Identifier.createInstance(comp)}
 #include ${"<thread>"}
 #include "sole/sole.hpp"
 #include ${"<iostream>"}
+<#if config.getMessageBroker().toString() == "MQTT">
+  #include "MqttClient.h"
+  #include "MqttPort.h"
+  #include "Utils.h"
+</#if>
 ${Utils.printIncludes(comp, config)}
 
 <#if comp.isDecomposed()>
