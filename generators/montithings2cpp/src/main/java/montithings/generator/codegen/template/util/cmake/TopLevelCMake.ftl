@@ -78,6 +78,10 @@ file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix
 <#if config.getMessageBroker().toString() == "MQTT">
   # Include Mosquitto Library
   LINK_DIRECTORIES(/usr/local/Cellar/mosquitto/1.6.10/lib)
+<#else>
+  # exclude MQTT related part of the RTE to not require Mosquitto for compiling
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.cpp")
 </#if>
 
 
