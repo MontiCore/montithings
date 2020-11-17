@@ -6,6 +6,7 @@ ${Utils.printTemplateArguments(comp)}
 void ${compname}${Utils.printFormalTypeParameters(comp)}::compute() {
 if (shouldCompute())
 {
+${Identifier.getBehaviorImplName()}.restoreState();
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} result;
 <#list comp.incomingPorts as port>
@@ -18,5 +19,6 @@ result = ${Identifier.getBehaviorImplName()}.compute(input);
 </#list>
 ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, compname])}
 setResult(result);
+${Identifier.getBehaviorImplName()}.storeState();
 }
 }

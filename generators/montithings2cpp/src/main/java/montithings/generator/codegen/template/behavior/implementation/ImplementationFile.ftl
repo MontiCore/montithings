@@ -5,6 +5,7 @@ ${tc.signature("comp", "compname", "existsHWC")}
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 
 #include "${compname}Impl<#if existsHWC>TOP</#if>.h"
+
 ${Utils.printNamespaceStart(comp)}
 <#if !Utils.hasTypeParameter(comp)>
     ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, existsHWC])}
