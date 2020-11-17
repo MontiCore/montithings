@@ -70,10 +70,16 @@ class MqttClient
    * Register a user to receive messages from this MQTT client
    * \param user the user to send the messages received by this client to
    */
-  void addPort (MqttUser *user)
+  void addUser (MqttUser *user)
   {
     users.emplace (user);
   }
+
+  /**
+   * Tells whether we are currently connected to a broker
+   * \return true if connected to broker
+   */
+  bool isConnected () const;
 
   /**
    * Publish the given message on the given port

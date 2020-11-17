@@ -9,6 +9,8 @@ ${tc.signature("comp", "config")}
   std::cerr << "WARNING: No MQTT hostname and port provided as argument. Defaulting to localhost:1883." << std::endl;
   MqttClient::instance();
   }
+  // Wait for initial connection
+  while(!MqttClient::instance()->isConnected());
 </#if>
 
 ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (argv[1]);

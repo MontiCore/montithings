@@ -5,11 +5,15 @@ ${Utils.printTemplateArguments(comp)}
 void ${compname}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
 if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 <#if comp.isPresentParentComponent()>
-    super.setUp(enclosingComponentTiming);
+  super.setUp(enclosingComponentTiming);
 </#if>
 
 <#if config.getMessageBroker().toString() == "MQTT">
-${tc.includeArgs("template.util.ports.printAddMqttPorts", [comp, config])}
+  ${tc.includeArgs("template.util.ports.printAddMqttPorts", [comp, config])}
+
+  MqttClient::instance ()->addUser (this);
+  MqttClient::instance ()->publish (replaceDotsBySlashes ("/components"),
+  replaceDotsBySlashes (instanceName));
 </#if>
 
 initialize();

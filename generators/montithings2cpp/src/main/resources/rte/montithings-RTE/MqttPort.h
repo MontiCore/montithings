@@ -63,7 +63,7 @@ class MqttPort : public Port<T>, public MqttUser
 template<typename T>
 MqttPort<T>::MqttPort (std::string name) : fullyQualifiedName (std::move (name))
 {
-  MqttClient::instance ()->addPort (this);
+  MqttClient::instance ()->addUser (this);
 
   std::string topic = "/connectors/" + replaceDotsBySlashes (fullyQualifiedName);
   MqttClient::instance ()->subscribe (topic);

@@ -26,15 +26,12 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 <#if config.getMessageBroker().toString() == "MQTT">
-
   ${tc.includeArgs("template.util.ports.printAddMqttPorts", [comp, config])}
+  this->publishConnectors();
 
-  <#list comp.getAstNode().getConnectors() as connector>
-    <#list connector.getTargetList() as target>
-      // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
-      MqttClient::instance()->publish(replaceDotsBySlashes("/connectors/" + instanceName + "/${target.getQName()}"), replaceDotsBySlashes(instanceName + "/${connector.getSource().getQName()}"));
-    </#list>
-  </#list>
+  MqttClient::instance ()->addUser (this);
+  MqttClient::instance ()->publish (replaceDotsBySlashes ("/components"),
+  replaceDotsBySlashes (instanceName));
 </#if>
 
 }
