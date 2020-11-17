@@ -28,7 +28,7 @@ public class Utils {
     StringBuilder s = new StringBuilder();
     int i = 1;
     for (FieldSymbol param : comp.getParameters()) {
-      s.append(param.getType().print() + " " + param.getName());
+      s.append(ComponentHelper.java2cppTypeString(param.getType().print()) + " " + param.getName());
       if (i != comp.getParameters().size()) {
         s.append(',');
       }

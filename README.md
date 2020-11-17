@@ -33,6 +33,7 @@ you'll most likely want the native installation - it will save you time in the l
 - GCC and CMake (For compiling the generated C++ code)
 - [Visual Studio Community][visualstudio] (only necessary for Windows!)
 - [Docker][docker] (for executing generator tests)
+- [Mosquitto][mosquitto] (only for MQTT message broker)
 - A `settings.xml` file from the SE chair (for accessing the dependencies of this project)
 
 ## Installation
@@ -166,6 +167,7 @@ This repository is currently non-public.
 [nng-1.3]: https://github.com/nanomsg/nng/archive/v1.3.0.zip
 [docker]: https://www.docker.com/products/docker-desktop
 [visualstudio]: https://visualstudio.microsoft.com/vs/community/
+[mosquitto]: https://mosquitto.org/download/
 [elf]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 [mach-o]: https://en.wikipedia.org/wiki/Mach-O
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable

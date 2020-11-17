@@ -37,3 +37,12 @@ jsonToData (char *json)
 {
   return jsonToData<T>((std::string(json)));
 }
+
+/**
+ * Replaces dots in the string with slashes
+ * This is useful when fully qualified names should be used in MQTT topics
+ *
+ * \param input the string whose dots should be replaced
+ * \return the input string with each dot "." being replaced by a slash "/"
+ */
+std::string replaceDotsBySlashes (std::string input);

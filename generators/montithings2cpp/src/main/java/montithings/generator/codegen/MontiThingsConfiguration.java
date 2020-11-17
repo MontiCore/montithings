@@ -23,13 +23,20 @@ public class MontiThingsConfiguration implements Configuration {
   public static final ConfigParams configParams = new ConfigParams();
 
   /**
-   * The names of the specific MontiArc options used in this configuration.
+   * The names of the specific MontiThings options used in this configuration.
    */
   public enum Options {
 
-    MODELPATH("modelPath"), MODELPATH_SHORT("mp"),TESTPATH("testPath"), HANDWRITTENCODEPATH("handwrittenCode"),
-    HANDWRITTENCODEPATH_SHORT("hwc"), OUT("out"), OUT_SHORT("o"), PLATFORM("platform"),
-    SPLITTING("splitting");
+    MODELPATH("modelPath"),
+    MODELPATH_SHORT("mp"),
+    TESTPATH("testPath"),
+    HANDWRITTENCODEPATH("handwrittenCode"),
+    HANDWRITTENCODEPATH_SHORT("hwc"),
+    OUT("out"),
+    OUT_SHORT("o"),
+    PLATFORM("platform"),
+    SPLITTING("splitting"),
+    MESSAGEBROKER("messageBroker");
 
     String name;
 
@@ -61,10 +68,11 @@ public class MontiThingsConfiguration implements Configuration {
    */
   private MontiThingsConfiguration(Configuration internal) {
     this.configuration = ConfigurationContributorChainBuilder.newChain()
-        .add(DelegatingConfigurationContributor.with(internal)).build();
+      .add(DelegatingConfigurationContributor.with(internal)).build();
     configParams.setTargetPlatform(getPlatform());
     configParams.setSplittingMode(getSplittingMode());
     configParams.hwcTemplatePath = Paths.get(getHWCPath().getAbsolutePath());
+    configParams.setMessageBroker(getMessageBroker());
   }
 
   /**
@@ -223,16 +231,17 @@ public class MontiThingsConfiguration implements Configuration {
       Path mp = Paths.get(testPath.get());
       return mp.toFile();
     }
-    else if(getModelPath()!=null) {
+    else if (getModelPath() != null) {
       Path defaultTestPath = getModelPath().toPath();
       for (int i = 0; i < 3; i++) {
         defaultTestPath = defaultTestPath.getParent();
-        if(defaultTestPath==null){
+        if (defaultTestPath == null) {
           return null;
         }
       }
-      if(Paths.get(defaultTestPath.toString(),"test","resources","gtests").toFile().isDirectory()) {
-        return Paths.get(defaultTestPath.toString(), "test","resources","gtests").toFile();
+      if (Paths.get(defaultTestPath.toString(), "test", "resources", "gtests").toFile()
+        .isDirectory()) {
+        return Paths.get(defaultTestPath.toString(), "test", "resources", "gtests").toFile();
       }
     }
     return new File("");
@@ -289,7 +298,8 @@ public class MontiThingsConfiguration implements Configuration {
         case "ESP32":
           return ConfigParams.TargetPlatform.ARDUINO;
         default:
-          throw new IllegalArgumentException("0xMT300 Platform " + platform + " in pom.xml is unknown");
+          throw new IllegalArgumentException(
+            "0xMT300 Platform " + platform + " in pom.xml is unknown");
       }
     }
     // fallback default is "generic"
@@ -297,9 +307,9 @@ public class MontiThingsConfiguration implements Configuration {
   }
 
   public ConfigParams.SplittingMode getSplittingMode() {
-    Optional<String> platform = getAsString(Options.SPLITTING);
-    if (platform.isPresent()) {
-      switch (platform.get()) {
+    Optional<String> splittingMode = getAsString(Options.SPLITTING);
+    if (splittingMode.isPresent()) {
+      switch (splittingMode.get()) {
         case "OFF":
           return ConfigParams.SplittingMode.OFF;
         case "LOCAL":
@@ -307,11 +317,29 @@ public class MontiThingsConfiguration implements Configuration {
         case "DISTRIBUTED":
           return ConfigParams.SplittingMode.DISTRIBUTED;
         default:
-          throw new IllegalArgumentException("0xMT300 Platform " + platform + " in pom.xml is unknown");
+          throw new IllegalArgumentException(
+            "0xMT301 Splitting mode " + splittingMode + " in pom.xml is unknown");
       }
     }
-    // fallback default is "generic"
+    // fallback default is "off"
     return ConfigParams.SplittingMode.OFF;
+  }
+
+  public ConfigParams.MessageBroker getMessageBroker() {
+    Optional<String> messageBroker = getAsString(Options.MESSAGEBROKER);
+    if (messageBroker.isPresent()) {
+      switch (messageBroker.get()) {
+        case "OFF":
+          return ConfigParams.MessageBroker.OFF;
+        case "MQTT":
+          return ConfigParams.MessageBroker.MQTT;
+        default:
+          throw new IllegalArgumentException(
+            "0xMT302 Message broker " + messageBroker + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "off"
+    return ConfigParams.MessageBroker.OFF;
   }
 
   /**

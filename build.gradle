@@ -19,8 +19,6 @@ subprojects {
   apply plugin: 'maven-publish'
 
   repositories {
-    mavenLocal()
-
     maven {
       credentials.username mavenUser
       credentials.password mavenPassword

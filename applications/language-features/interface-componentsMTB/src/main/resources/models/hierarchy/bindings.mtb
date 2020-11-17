@@ -1,2 +1,2 @@
-hierarchy.MathExpression -> hierarchy.Double;
+hierarchy.MathExpression -> hierarchy.Doubler;
 instance hierarchy.Example.c2 -> hierarchy.Half;

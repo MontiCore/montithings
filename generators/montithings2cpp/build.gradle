@@ -1,22 +1,23 @@
 /* (c) https://github.com/MontiCore/monticore */
 
-plugins {
-  id "org.xtext.xtend" version "2.0.8"
-}
-
-apply plugin: 'org.xtext.xtend'
-
 group = "montithings.generators"
 
-test { useJUnit() }
+def templateDir = "$projectDir/src/main/java/montithings/generator/codegen"
+
+sourceSets {
+  main {
+    resources {
+      srcDirs += templateDir
+    }
+  }
+}
+
+test { useJUnitPlatform() }
 
 dependencies {
-  implementation "org.eclipse.xtend:org.eclipse.xtend.lib:$xtend_version" //needed for the xtend plugin?
-
   implementation project(":languages:error-handling")
   implementation project(":languages:montiarc-extensions")
   implementation project(":languages:montithings")
-  //implementation project(":languages:bindings")
   implementation project(":generators:cd2cpp")
 
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
@@ -27,13 +28,14 @@ dependencies {
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "de.monticore:monticore-generator:$monticore_version"
   implementation project(":languages:bindings")
-  implementation project(":languages:montithings")
   implementation project(":languages:monticore-extensions")
   implementation project(":languages:cdlangextension")
   implementation project(":languages:phyprops")
-  //implementation project(":languages:bindings")
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "junit:junit:$junit_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
   testImplementation "org.eclipse.emf:org.eclipse.emf.compare:$emf_version"
   testImplementation "org.eclipse.emf:org.eclipse.emf.compare.match:$emf_version"
@@ -44,13 +46,6 @@ dependencies {
       prefer "23.0"
       because "Guava's CharMatcher breaks parts of se-commons if ver > 23 (e.g. Names.getQualifiedName)"
     }
-  }
-}
-
-xtend {
-  sourceSets {
-    main.xtendOutputDir = "$projectDir/target/generated-sources"
-    //test.xtendOutputDir = "$projectDir/target/generated-test-sources"
   }
 }
 
