@@ -26,7 +26,7 @@ storeFile.close ();
 
 
 ${Utils.printTemplateArguments(comp)}
-void ${comp.name}Impl<#if isTOP>TOP</#if>${generics}::restoreState ()
+bool ${comp.name}Impl<#if isTOP>TOP</#if>${generics}::restoreState ()
 {
 try
 {
@@ -39,10 +39,13 @@ storeFile >> state;
 <#list ComponentHelper.getFields(comp) as variable>
   ${variable.getName()} = jsonToData${"<"}${ComponentHelper.printCPPTypeName(variable.getType())}${">"}(state["${variable.getName()}"]);
 </#list>
+
+return true;
 }
 catch (nlohmann::detail::parse_error &error)
 {
 std::cout << "Could not restore state." << std::endl;
+return false;
 }
 
 
