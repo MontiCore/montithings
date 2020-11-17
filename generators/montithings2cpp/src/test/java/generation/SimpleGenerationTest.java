@@ -53,16 +53,24 @@ public class SimpleGenerationTest {
     ConfigParams.SplittingMode.DISTRIBUTED
   };
 
+  @DataPoints("messageBroker")
+  public static ConfigParams.MessageBroker[] messageBrokers = {
+    ConfigParams.MessageBroker.OFF,
+    ConfigParams.MessageBroker.MQTT
+  };
+
   @Theory
   public void generatorDoesNotCrash(
     @FromDataPoints("targetPlatforms") ConfigParams.TargetPlatform targetPlatform,
-    @FromDataPoints("splittingModes") ConfigParams.SplittingMode splittingMode
+    @FromDataPoints("splittingModes") ConfigParams.SplittingMode splittingMode,
+    @FromDataPoints("messageBroker") ConfigParams.MessageBroker messageBroker
   ) throws IOException {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
     System.out.println(MODELPATH.toAbsolutePath().toString());
     ConfigParams params = new ConfigParams();
     params.setTargetPlatform(targetPlatform);
     params.setSplittingMode(splittingMode);
+    params.setMessageBroker(messageBroker);
     script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(), null, params);
   }
 

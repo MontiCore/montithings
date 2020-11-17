@@ -17,6 +17,11 @@ ${Identifier.createInstance(comp)}
 #include ${"<thread>"}
 #include "sole/sole.hpp"
 #include ${"<iostream>"}
+<#if config.getMessageBroker().toString() == "MQTT">
+  #include "MqttClient.h"
+  #include "MqttPort.h"
+  #include "Utils.h"
+</#if>
 ${Utils.printIncludes(comp, config)}
 
 <#if comp.isDecomposed()>
@@ -30,12 +35,19 @@ ${Utils.printIncludes(comp, config)}
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
-class ${compname} : public IComponent <#if comp.isPresentParentComponent()> , ${Utils.printSuperClassFQ(comp)}
-    <#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
-    <#if comp.parent().loadedSymbol.hasTypeParameter><<#list helper.superCompActualTypeArguments as scTypeParams >
-      scTypeParams<#sep>,</#sep>
-    </#list>>
-    </#if></#if>
+class ${compname} : public IComponent
+<#if config.getMessageBroker().toString() == "MQTT">
+    , public MqttUser
+</#if>
+<#if comp.isPresentParentComponent()>
+  , ${Utils.printSuperClassFQ(comp)}
+  <#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
+  <#if comp.parent().loadedSymbol.hasTypeParameter><<#list helper.superCompActualTypeArguments as scTypeParams >
+    scTypeParams<#sep>,</#sep>
+  </#list>>
+  </#if>
+
+</#if>
 {
 protected:
 ${tc.includeArgs("template.util.subcomponents.printVars", [comp, comp.getPorts(), config])}
@@ -68,6 +80,11 @@ ${tc.includeArgs("template.util.ports.printMethodHeaders", [comp.getPorts(), con
 ${compname}(std::string instanceName<#if comp.getParameters()?has_content>
   ,
 </#if>${ComponentHelper.printConstructorArguments(comp)});
+
+<#if config.getMessageBroker().toString() == "MQTT">
+  void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
+  void publishConnectors();
+</#if>
 
 <#if comp.isDecomposed()>
     <#if config.getSplittingMode().toString() != "OFF">
