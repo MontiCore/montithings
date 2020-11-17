@@ -327,7 +327,7 @@ public class MontiThingsConfiguration implements Configuration {
   public ConfigParams.MessageBroker getMessageBroker() {
     Optional<String> messageBroker = getAsString(Options.MESSAGEBROKER);
     if (messageBroker.isPresent()) {
-      switch (platform.get()) {
+      switch (messageBroker.get()) {
         case "OFF":
           return ConfigParams.MessageBroker.OFF;
         case "MQTT":
