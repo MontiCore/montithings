@@ -32,8 +32,8 @@ ${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, com
 
 void setInstanceName (const std::string &instanceName);
 
-void storeState ();
-void restoreState ();
+virtual void storeState ();
+virtual void restoreState ();
 
 <#if ComponentHelper.hasBehavior(comp)>
     ${compname}Result${generics} getInitialValues() override;
