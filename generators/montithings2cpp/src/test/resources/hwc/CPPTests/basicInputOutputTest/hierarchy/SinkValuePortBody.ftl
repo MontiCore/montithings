@@ -28,7 +28,7 @@ return true;
 }
 
 public:
-ValuePort (Direction direction, const char *uri) : direction (direction), uri (uri)
+SinkValuePort (Direction direction, const char *uri) : direction (direction), uri (uri)
 {
 this->uri = uri;
 if (direction == INCOMING)

@@ -63,6 +63,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   public void generate(File modelPath, File target, File hwcPath, File testPath,
     ConfigParams config) {
 
+    //Log.initWARN();
+
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
@@ -114,7 +116,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ====================== Generate Code ======================= */
     /* ============================================================ */
 
-    //Set<String> additionalPorts = new HashSet<>();
     for (String model : models.getMontithings()) {
       File compTarget = target;
 
@@ -129,18 +130,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           MTGenerator.generatePortJson(compTarget, comp, config);
         }
       }
-
-      //temporary Code
-      config.temporaryVar = modelPath.getAbsolutePath();
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-      for(PortSymbol port : comp.getPorts()) {
-        Optional<String> s = config.getAdditionalPort(port);
-        if (s.isPresent()){
-          String templateLocation = Names.getQualifier(port.getFullName());
-          MTGenerator.generateAdditionalPort(modelPath,new File(target+File.separator+"hierarchy"),s.get(),templateLocation);
-        }
-      }
-
+      generateHwcPort(target, config, comp);
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
@@ -409,6 +400,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           MTGenerator.generateTestMakeFile(target.toFile(), comp, hwcPath, libraryPath,
             subPackagesPath, config);
         }
+      }
+    }
+  }
+
+  public void generateHwcPort(File target, ConfigParams config, ComponentTypeSymbol comp) {
+    for(PortSymbol port : comp.getPorts()) {
+      Optional<String> portType = config.getAdditionalPort(port);
+      if (portType.isPresent()){
+        MTGenerator.generateAdditionalPort(config.hwcTemplatePath,new File(target +File.separator+ "hwc"+File.separator+Names.getPathFromPackage(Names.getQualifier(portType.get()))),portType.get());
       }
     }
   }

@@ -5,8 +5,8 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
+import de.monticore.utils.Names;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.codegen.util.DeadLog;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
@@ -89,13 +89,8 @@ public class MTGenerator {
       //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
 
       GeneratorEngine engine = new GeneratorEngine(setup);
-      //Disable info output
-      DeadLog log = new DeadLog();
-      /*if(!Log.isDebugEnabled("")) {*/
-        log.deactivateOutput();
 
       engine.generateNoA(template, path, templateArguments);
-        log.activateOutput();
   }
 
   static private void makeExecutable(File targetPath, String name, String fileExtension) {
@@ -181,17 +176,17 @@ public class MTGenerator {
       toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/ImplementationFile.ftl", ".cpp",packageName, simpleName, config);
     }
 
-  public static void generateAdditionalPort(File modelPath, File targetPath, String simpleName, String srcPath) {
-    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + StringUtils.capitalize(simpleName) + ".h");
+  public static void generateAdditionalPort(Path templatePath, File targetPath, String portName) {
+    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + StringUtils.capitalize(Names.getSimpleName(portName) + ".h"));
     if(!path.toFile().exists()||!path.toFile().isFile()) {
       Log.debug("Writing to file " + path + ".","");
       GeneratorSetup setup = new GeneratorSetup();
       setup.setTracing(false);
-      setup.setAdditionalTemplatePaths(Collections.singletonList(modelPath.getAbsoluteFile()));
+      setup.setAdditionalTemplatePaths(Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
 
       GeneratorEngine engine = new GeneratorEngine(setup);
 
-      engine.generateNoA("template/util/ports/portTemplate.ftl", path, srcPath, simpleName);
+      engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, portName);
     }
  }
 }

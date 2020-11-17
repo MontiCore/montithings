@@ -3,6 +3,7 @@ ${tc.signature("comp","compname","config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 
 ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp, compname, config])}
 
@@ -28,14 +29,14 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
         <#assign additionalPort = config.getAdditionalPort(port)>
         <#if additionalPort!="Optional.empty">
             <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-            addInPort${port.getName()?cap_first}(new ${additionalPort.get()?cap_first}<${type}>());
+            addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
         </#if>
     </#list>
     <#list comp.outgoingPorts as port >
         <#assign additionalPort = config.getAdditionalPort(port)>
         <#if additionalPort!="Optional.empty">
             <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-            addOutPort${port.getName()?cap_first}(new ${additionalPort.get()?cap_first}<${type}>());
+            addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
         </#if>
     </#list>
     ${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();

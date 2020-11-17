@@ -43,6 +43,7 @@ public class CppCodeTest {
     ConfigParams params = new ConfigParams();
     params.setTargetPlatform(ConfigParams.TargetPlatform.GENERIC);
     params.setSplittingMode(ConfigParams.SplittingMode.OFF);
+    params.hwcTemplatePath = Paths.get(HWCPATH.toString(),packageName);
     return params;
   }
 

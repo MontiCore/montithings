@@ -3,6 +3,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 ${Identifier.createInstance(comp)}
 
 #pragma once
@@ -12,7 +13,7 @@ ${Identifier.createInstance(comp)}
 <#list comp.getPorts() as port>
     <#assign addPort = config.getAdditionalPort(port)>
     <#if addPort!="Optional.empty">
-        #include "${addPort.get()?cap_first}.h"
+        #include "${Names.getSimpleName(addPort.get())?cap_first}.h"
     </#if>
 </#list>
 #include ${"<string>"}

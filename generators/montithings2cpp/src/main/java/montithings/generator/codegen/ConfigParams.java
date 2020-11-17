@@ -10,8 +10,10 @@ import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 import de.monticore.utils.Names;
 import montithings.generator.data.PortMap;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -80,6 +82,9 @@ public class ConfigParams {
   private CDLangExtensionScope cdLangExtensionScope;
 
   private final PortMap componentPortMap = new PortMap();
+
+  /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
+  public Path hwcTemplatePath;
 
   public PortMap getComponentPortMap() {
     return componentPortMap;
@@ -185,13 +190,18 @@ public class ConfigParams {
     return false;
   }
 
-  public String temporaryVar;
-  //How many additional ports can there be?
-  //Implement method correctly when tagging is available
+  /**
+   * Gets the qualified name of the handwritten port implementation if it is present.
+   * @param port The port for which to check for a handwritten implementation.
+   * @return The qualified type name of the port that is defined by given templates for the given port.
+   * If no fitting templates are present Optional.empty is returned.
+   */
   public Optional<String> getAdditionalPort(PortSymbol port){
-    File exists = new File(temporaryVar+File.separator+ Names.getPathFromPackage(port.getFullName())+"PortBody.ftl");
+    String packageName = Names.getQualifier(Names.getQualifier(port.getFullName()));
+    String componentName = StringUtils.capitalize(Names.getSimpleName(Names.getQualifier(port.getFullName())));
+    File exists = new File(hwcTemplatePath +File.separator+ Names.getPathFromPackage(packageName)+File.separator+componentName+ StringUtils.capitalize(port.getName())+"PortBody.ftl");
     if(exists.exists()&&exists.isFile()){
-      return Optional.of(port.getName()+"Port");
+      return Optional.of(packageName+"."+componentName+StringUtils.capitalize(port.getName())+"Port");
     }
     else{
       return Optional.empty();
