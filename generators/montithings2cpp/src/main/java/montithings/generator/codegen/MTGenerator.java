@@ -34,19 +34,19 @@ public class MTGenerator {
     toFile(targetPath, compname + "Result", "template/result/ImplementationFile.ftl", ".cpp",comp, compname, config);
     toFile(targetPath, compname, "template/componentGenerator/Header.ftl", ".h", comp, compname, config, useWsPorts);
     toFile(targetPath, compname, "template/componentGenerator/ImplementationFile.ftl", ".cpp", comp, compname, config, useWsPorts);
-    
+
     if (comp.isAtomic()) {
       boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.getPackageName() + "." + compname);
       generateBehaviorImplementation(comp, targetPath, compname, existsHWC);
     }
-    
+
     // Generate inner components
     for(ComponentTypeSymbol innerComp : comp.getInnerComponents()) {
       //TODO Fix hwc path for inner components
-      
+
       generateAll(targetPath.toPath().resolve(compname + "-Inner").toFile(), hwc, innerComp, innerComp.getName(), config, false);
     }
-    
+
     // Generate deploy class
     if (ComponentHelper.isApplication(comp) || (config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy)) {
       if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
@@ -56,7 +56,8 @@ public class MTGenerator {
         toFile(targetPath.getParentFile(), "README", "template/util/arduinoReadme/ArduinoReadme.ftl",".txt", targetPath.getName(), compname);
       } else {
         toFile(targetPath, "Deploy" + compname, "template/deploy/Deploy.ftl",".cpp",comp, compname, config);
-        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF
+          && config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
           toFile(targetPath, compname + "Manager", "template/util/comm/Header.ftl", ".h", comp, config);
           toFile(targetPath, compname + "Manager", "template/util/comm/ImplementationFile.ftl", ".cpp", comp, config);
         }

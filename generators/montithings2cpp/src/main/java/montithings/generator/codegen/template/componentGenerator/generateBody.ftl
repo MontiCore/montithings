@@ -44,4 +44,10 @@ ${tc.includeArgs("template.util.setup.Setup", [comp, compname, config])}
 
 ${tc.includeArgs("template.util.init.Init", [comp, compname, config])}
 
+<#if config.getMessageBroker().toString() == "MQTT">
+  ${tc.includeArgs("template.componentGenerator.printPublishConnectors", [comp, config])}
+
+  ${tc.includeArgs("template.componentGenerator.printOnMessage", [comp, config])}
+</#if>
+
 ${tc.includeArgs("template.componentGenerator.printConstructor", [comp, compname, config])}

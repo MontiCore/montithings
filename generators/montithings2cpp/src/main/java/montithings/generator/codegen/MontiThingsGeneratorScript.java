@@ -42,6 +42,7 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
     builder.addVariable(MontiThingsConfiguration.Options.OUT.toString(), config.getOut());
     builder.addVariable(MontiThingsConfiguration.Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
     builder.addVariable(MontiThingsConfiguration.Options.PLATFORM.toString(), config.getPlatform());
+    builder.addVariable(MontiThingsConfiguration.Options.MESSAGEBROKER.toString(), config.getMessageBroker());
 
     GroovyInterpreter g = builder.build();
     g.evaluate(script);

@@ -65,6 +65,37 @@ public class ConfigParams {
     }
   }
 
+  /** property for message brokers */
+
+  private MessageBroker messageBroker = MessageBroker.OFF;
+
+  public MessageBroker getMessageBroker() {
+    return messageBroker;
+  }
+
+  public void setMessageBroker(MessageBroker messageBroker) {
+    this.messageBroker = messageBroker;
+  }
+
+  public enum MessageBroker {
+    OFF("OFF"),
+    MQTT("MQTT");
+
+    String name;
+
+    MessageBroker(String name) {
+      this.name = name;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.name;
+    }
+  }
+
   /** property for target platform */
   private TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 

@@ -90,6 +90,8 @@ class Port : public MessageAcceptor<T>, public MessageProvider<T>, public Unique
   {
   }
 
+  virtual ~Port() = default;
+
   bool isConnectionEstablished () const
   {
     return connectionEstablished;

@@ -74,6 +74,17 @@ include_directories("hwc" ${r"${dir_list}"})
 # Include RTE
 file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix}montithings-RTE/*.h")
 
+
+<#if config.getMessageBroker().toString() == "MQTT">
+  # Include Mosquitto Library
+  LINK_DIRECTORIES(/usr/local/Cellar/mosquitto/1.6.10/lib)
+<#else>
+  # exclude MQTT related part of the RTE to not require Mosquitto for compiling
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.cpp")
+</#if>
+
+
 <#if !test>
 add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
@@ -83,6 +94,9 @@ add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 || config.getTargetPlatform().toString() == "DSA_LAB">
     ${tc.includeArgs("template.util.cmake.dsaLinkLibraries", [comp.getFullName()])}
 <#else>
+  <#if config.getMessageBroker().toString() == "MQTT">
+    target_link_libraries(${comp.getFullName()} mosquitto)
+  </#if>
   target_link_libraries(${comp.getFullName()} nng::nng)
 </#if>
 set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)

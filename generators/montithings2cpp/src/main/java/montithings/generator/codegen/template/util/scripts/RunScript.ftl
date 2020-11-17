@@ -5,5 +5,9 @@ ${tc.signature("comp", "config")}
 <#assign instances = ComponentHelper.getInstances(comp)>
 
 <#list instances as pair >
+  <#if config.getMessageBroker().toString() == "MQTT">
+  ./${pair.getKey().fullName} ${pair.getValue()} localhost 1883 > ${pair.getValue()}.log 2>&1 &
+  <#else>
   ./${pair.getKey().fullName} ${pair.getValue()} ${config.getComponentPortMap().getManagementPort(pair.getValue())} ${config.getComponentPortMap().getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
+  </#if>
 </#list>

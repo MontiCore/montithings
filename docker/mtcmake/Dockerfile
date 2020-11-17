@@ -5,7 +5,9 @@ RUN apk add --update-cache \
 	g++ \
 	ninja \
 	cmake \
-	make 
+	make \
+	mosquitto \
+	mosquitto-dev
 
 # Switch into our working directory for building nng
 WORKDIR /usr/src/app

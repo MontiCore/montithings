@@ -33,6 +33,7 @@ include(':applications:language-features:error-handling')
 include(':applications:language-features:interface-components')
 include(':applications:language-features:pre-postconditions')
 include(':applications:language-features')
+include(':applications:mqtt-ports')
 include(':applications')
 
 project(':languages:montithings').projectDir = file('languages/montithings')
