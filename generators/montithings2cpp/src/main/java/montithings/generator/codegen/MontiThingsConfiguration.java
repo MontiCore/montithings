@@ -306,9 +306,9 @@ public class MontiThingsConfiguration implements Configuration {
   }
 
   public ConfigParams.SplittingMode getSplittingMode() {
-    Optional<String> platform = getAsString(Options.SPLITTING);
-    if (platform.isPresent()) {
-      switch (platform.get()) {
+    Optional<String> splittingMode = getAsString(Options.SPLITTING);
+    if (splittingMode.isPresent()) {
+      switch (splittingMode.get()) {
         case "OFF":
           return ConfigParams.SplittingMode.OFF;
         case "LOCAL":
@@ -317,16 +317,16 @@ public class MontiThingsConfiguration implements Configuration {
           return ConfigParams.SplittingMode.DISTRIBUTED;
         default:
           throw new IllegalArgumentException(
-            "0xMT300 Platform " + platform + " in pom.xml is unknown");
+            "0xMT301 Splitting mode " + splittingMode + " in pom.xml is unknown");
       }
     }
-    // fallback default is "generic"
+    // fallback default is "off"
     return ConfigParams.SplittingMode.OFF;
   }
 
   public ConfigParams.MessageBroker getMessageBroker() {
-    Optional<String> platform = getAsString(Options.MESSAGEBROKER);
-    if (platform.isPresent()) {
+    Optional<String> messageBroker = getAsString(Options.MESSAGEBROKER);
+    if (messageBroker.isPresent()) {
       switch (platform.get()) {
         case "OFF":
           return ConfigParams.MessageBroker.OFF;
@@ -334,7 +334,7 @@ public class MontiThingsConfiguration implements Configuration {
           return ConfigParams.MessageBroker.MQTT;
         default:
           throw new IllegalArgumentException(
-            "0xMT301 Message broker " + platform + " in pom.xml is unknown");
+            "0xMT302 Message broker " + messageBroker + " in pom.xml is unknown");
       }
     }
     // fallback default is "off"
