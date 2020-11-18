@@ -7,7 +7,7 @@ namespace montithings
 namespace hierarchy
 {
 
-class SourceImpl : SourceImplTOP
+class SourceImpl : public SourceImplTOP
 {
 
   private:
@@ -17,7 +17,6 @@ class SourceImpl : SourceImplTOP
   {
   }
 
-  int lastValue;
   SourceResult getInitialValues () override;
   SourceResult compute (SourceInput input) override;
 };

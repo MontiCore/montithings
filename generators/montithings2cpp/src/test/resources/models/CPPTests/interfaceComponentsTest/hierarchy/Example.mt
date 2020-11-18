@@ -9,6 +9,5 @@ application Example {
   source.value -> c.x;
   c.y -> sink.value;
 
-  update interval 1sec;
   timing sync;
 }

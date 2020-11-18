@@ -12,6 +12,5 @@ application Example {
   source2.value -> c2.x;
   c2.y -> sink2.value;
 
-  update interval 1sec;
   timing sync;
 }

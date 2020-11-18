@@ -7,8 +7,6 @@ namespace hierarchy {
 
 class SourceImpl : public SourceImplTOP {
 
-private:
-  int lastValue;
 public:
   SourceImpl() = default;
   SourceResult getInitialValues() override;

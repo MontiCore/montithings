@@ -9,15 +9,22 @@
 
 template<typename T>
 std::string
-dataToJson (tl::optional<T> dataOpt)
+dataToJson (T data)
 {
-  T data = dataOpt.value ();
   std::ostringstream stream;
   {
     cereal::JSONOutputArchive outputArchive (stream);
     outputArchive (data);
   }
   return stream.str ();
+}
+
+template<typename T>
+std::string
+dataToJson (tl::optional<T> dataOpt)
+{
+  T data = dataOpt.value ();
+  return dataToJson(data);
 }
 
 template<typename T>

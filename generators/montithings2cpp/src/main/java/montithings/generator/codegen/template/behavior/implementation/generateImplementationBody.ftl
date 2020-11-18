@@ -18,3 +18,11 @@ ${tc.signature("comp","compname","isTOP")}
     return result;
     }
 </#if>
+
+${Utils.printTemplateArguments(comp)}
+void ${compname}Impl<#if isTOP>TOP</#if>${generics}::setInstanceName (const std::string &instanceName)
+{
+this->instanceName = instanceName;
+}
+
+${tc.includeArgs("template.behavior.implementation.printStateMethods", [comp, isTOP])}
