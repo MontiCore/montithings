@@ -130,8 +130,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           MTGenerator.generatePortJson(compTarget, comp, config);
         }
       }
-      ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-      generateHwcPort(target, config, comp);
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
@@ -307,6 +305,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MTGenerator.generateAll(
       Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
         .toFile(), hwcPath, comp, compname, config, generateDeploy);
+
+    generateHwcPort(target, config, comp);
 
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       copyHwcToTarget(target, hwcPath, model, config);

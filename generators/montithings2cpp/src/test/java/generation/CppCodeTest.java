@@ -48,7 +48,9 @@ public class CppCodeTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = { "basicInputOutputTest",
+  @ValueSource(strings = {
+    "basicInputOutputTest",
+    "additionalPortTest",
     "behaviorTest",
     "classDiagramsTest",
     "prePostConditionsTest",
