@@ -7,6 +7,5 @@ application Example {
 
   source.value -> sink.value;
 
-  update interval 1sec;
   timing sync;
 }

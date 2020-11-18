@@ -26,8 +26,13 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
     <#list comp.incomingPorts as port >
         getPort${port.getName()?cap_first} ()->registerListeningPort (this->getUuid ());
     </#list>
+    <#if ComponentHelper.retainState(comp)>
+      if (!${Identifier.getBehaviorImplName()}.restoreState ())
+    </#if>
+    {
     ${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();
     setResult(result);
+    }
     }
 
     ${Utils.printTemplateArguments(comp)}

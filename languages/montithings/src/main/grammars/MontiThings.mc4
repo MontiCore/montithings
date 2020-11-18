@@ -34,6 +34,13 @@ grammar MontiThings extends MontiArc,
     MTCondition implements ArcElement = Condition;
     MTCatch implements ArcElement = ConditionCatch;
 
+    /**
+     * Store and restore component states in case of failure
+     * Priority higher than 100 to prevent MontiCore from trying to
+     * interpret "retain" as a component type's name.
+     */
+    MTRetainState implements ArcElement <110> = key("retain") key("state") ";";
+
 
     /* ============================================================ */
     /* ========================= Behavior ========================= */
