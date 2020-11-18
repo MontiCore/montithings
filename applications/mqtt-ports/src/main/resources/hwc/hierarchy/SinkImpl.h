@@ -1,14 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 #pragma once
-#include "SinkInput.h"
-#include "SinkResult.h"
-#include "IComputable.h"
-#include <stdexcept>
+#include "SinkImplTOP.h"
 
 namespace montithings {
 namespace hierarchy {
 
-class SinkImpl : IComputable<SinkInput,SinkResult>{
+class SinkImpl : public SinkImplTOP {
 	
 private:  
     
