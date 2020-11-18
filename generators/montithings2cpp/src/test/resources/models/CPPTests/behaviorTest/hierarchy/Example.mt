@@ -9,6 +9,5 @@ application Example {
   source.value -> lpf.givenValue;
   lpf.filteredValue -> sink.value;
 
-  update interval 1sec;
   timing sync;
 }

@@ -3,6 +3,8 @@ package hierarchy;
 
 component Source {
 
+  int lastValue = 0;
+
   port out int value;
 
   // Check if a value is within a certain range.

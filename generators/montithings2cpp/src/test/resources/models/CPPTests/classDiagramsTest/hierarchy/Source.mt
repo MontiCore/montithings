@@ -6,4 +6,5 @@ import hierarchy.Colors.*;
 
 component Source {
   port out Color value;
+  int lastValue = 0;
 }
