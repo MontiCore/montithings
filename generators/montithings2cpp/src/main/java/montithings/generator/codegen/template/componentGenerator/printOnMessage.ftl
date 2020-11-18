@@ -13,7 +13,7 @@ if (topic.find ("/components") != std::string::npos)
 {
 // check if its about one of our subcomponents
 // (whose fully qualified name starts with our instance name)
-if (payload.find (instanceName) != std::string::npos)
+if (payload.find (replaceDotsBySlashes(instanceName)) != std::string::npos)
 {
 // inform the new component about the connectors
 publishConnectors();
