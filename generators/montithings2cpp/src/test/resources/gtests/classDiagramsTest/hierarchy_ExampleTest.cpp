@@ -32,7 +32,7 @@ TEST_F(ExampleTest, MainTEST) {
 
     for (int i = 0;i<2;i++)
       {
-        auto end = std::chrono::high_resolution_clock::now () + std::chrono::seconds (1);
+        auto end = std::chrono::high_resolution_clock::now () + std::chrono::milliseconds (50);
         cmp->compute ();
         do
           {

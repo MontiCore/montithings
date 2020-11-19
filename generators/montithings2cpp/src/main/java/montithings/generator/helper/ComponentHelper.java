@@ -31,10 +31,7 @@ import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
 import montiarc._symboltable.MontiArcArtifactScope;
 import montiarc._symboltable.adapters.CDType2TypeAdapter;
-import montithings._ast.ASTBehavior;
-import montithings._ast.ASTMTCatch;
-import montithings._ast.ASTMTComponentType;
-import montithings._ast.ASTMTCondition;
+import montithings._ast.*;
 import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
@@ -848,6 +845,10 @@ public class ComponentHelper {
   public static List<montithings._ast.ASTMTCatch> getCatchedConditions(
     arcbasis._symboltable.ComponentTypeSymbol component) {
     return elementsOf(component).filter(ASTMTCatch.class).toList();
+  }
+
+  public static boolean retainState(ComponentTypeSymbol component) {
+    return !elementsOf(component).filter(ASTMTRetainState.class).isEmpty();
   }
 
   public static List<montiarc._ast.ASTArcTiming> getTiming(

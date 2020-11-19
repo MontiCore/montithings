@@ -39,8 +39,13 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
             addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
         </#if>
     </#list>
+    <#if ComponentHelper.retainState(comp)>
+      if (!${Identifier.getBehaviorImplName()}.restoreState ())
+    </#if>
+    {
     ${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();
     setResult(result);
+    }
     }
 
     ${Utils.printTemplateArguments(comp)}
