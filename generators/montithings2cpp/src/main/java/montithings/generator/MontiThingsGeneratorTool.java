@@ -36,6 +36,7 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
+import montithings.generator.helper.PortConnection;
 import phyprops.PhypropsTool;
 import phyprops._ast.ASTPhypropsUnit;
 import phyprops._cocos.PhypropsCoCos;
@@ -107,7 +108,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Log.info("Checking models", TOOL_NAME);
 
     checkCds(models.getClassdiagrams(), cdSymTab);
-    checkMtModels(models.getMontithings(), symTab);
+    checkMtModels(models.getMontithings(), symTab, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
     checkPhyprops(models.getPhyprops(), phypropsTool.initSymbolTable(modelPath));
@@ -160,7 +161,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /* ====================== Check Models ======================== */
   /* ============================================================ */
 
-  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab) {
+  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab, ConfigParams config) {
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
 
@@ -171,6 +172,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // check cocos
       Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
       checkCoCos(comp.getAstNode());
+      new PortConnection().check(comp.getAstNode(),config);
     }
   }
 
@@ -406,9 +408,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   public void generateHwcPort(File target, ConfigParams config, ComponentTypeSymbol comp) {
     for(PortSymbol port : comp.getPorts()) {
-      Optional<String> portType = config.getAdditionalPort(port);
-      if (portType.isPresent()){
-        MTGenerator.generateAdditionalPort(config.hwcTemplatePath,new File(target +File.separator+ "hwc"+File.separator+Names.getPathFromPackage(Names.getQualifier(portType.get()))),portType.get());
+      if(config.getOverridePorts().contains(port)) {
+        Optional<String> portType = config.getAdditionalPort(port);
+        if (portType.isPresent()) {
+          MTGenerator.generateAdditionalPort(config.hwcTemplatePath, new File(target + File.separator + "hwc" + File.separator + Names.getPathFromPackage(Names.getQualifier(portType.get()))), portType.get());
+        }
       }
     }
   }

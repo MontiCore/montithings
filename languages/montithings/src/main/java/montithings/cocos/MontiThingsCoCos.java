@@ -2,8 +2,10 @@
 package montithings.cocos;
 
 import arcbasis._cocos.*;
-import portextensions.cocos.*;
 import montithings._cocos.MontiThingsCoCoChecker;
+import portextensions.cocos.PortsInBatchStatementAreIncoming;
+import portextensions.cocos.PortsInSyncGroupAreIncoming;
+import portextensions.cocos.SyncGroupIsNoSubset;
 
 /**
  * Context Conditions for MontiThings language
@@ -14,7 +16,6 @@ public class MontiThingsCoCos {
     return checker
         // ARCBASIS
         .addCoCo(new PortUsage())
-        .addCoCo(new SubComponentsConnected())
         .addCoCo(new NamesCorrectlyCapitalized())
         .addCoCo(new CircularInheritance())
         .addCoCo(new NamesCorrectlyCapitalized())

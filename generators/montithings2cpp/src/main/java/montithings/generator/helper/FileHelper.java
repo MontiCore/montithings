@@ -119,6 +119,26 @@ public class FileHelper {
     return result;
   }
 
+  public static Set<File> getPortImplementation(File hwcPath, String fqComponentName) {
+    Set<File> result = new HashSet<>();
+    Set<String> fileEndings = new HashSet<>();
+    fileEndings.add("Include.ftl");
+    fileEndings.add("Body.ftl");
+    fileEndings.add("GetExternalMessages.ftl");
+    fileEndings.add("SendToExternal.ftl");
+
+    for (String ending : fileEndings) {
+      File hwcFile = Paths.get(hwcPath.toString() + File.separator
+          + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+          + ending)
+          .toFile();
+      if (hwcFile.isFile()) {
+        result.add(hwcFile);
+      }
+    }
+    return result;
+  }
+
   /**
    * Returns list of all subpackages paths
    *

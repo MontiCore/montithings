@@ -15,10 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
   Main entry point for generator. From this all target artifacts are generated for a component.
@@ -184,6 +181,22 @@ public class MTGenerator {
       GeneratorSetup setup = new GeneratorSetup();
       setup.setTracing(false);
       setup.setAdditionalTemplatePaths(Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
+
+      Set<File> templates = FileHelper.getPortImplementation(Paths.get(templatePath.toFile().getAbsolutePath(),Names.getPathFromPackage(Names.getQualifier(portName))).toFile(),Names.getSimpleName(portName));
+      for (File template:templates) {
+        if(template.getName().endsWith(Names.getSimpleName(portName)+"Include.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:include", portName+"Include");
+        }
+        else if(template.getName().endsWith(Names.getSimpleName(portName)+"Body.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:body", portName+"Body");
+        }
+        else if(template.getName().endsWith(Names.getSimpleName(portName)+"GetExternalMessages.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:getExternalMessages", portName+"GetExternalMessages");
+        }
+        else if(template.getName().endsWith(Names.getSimpleName(portName)+"SendToExternal.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:sendToExternal", portName+"SendToExternal");
+        }
+      }
 
       GeneratorEngine engine = new GeneratorEngine(setup);
 

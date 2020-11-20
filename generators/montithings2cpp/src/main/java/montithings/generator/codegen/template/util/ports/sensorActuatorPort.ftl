@@ -1,10 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("portTemeplateName")}
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
-${glex.bindTemplateHookPoint("<CppBlock>?portTemplate:include", portTemeplateName+"Include")}
-${glex.bindTemplateHookPoint("<CppBlock>?portTemplate:body", portTemeplateName+"Body")}
-${glex.bindTemplateHookPoint("<CppBlock>?portTemplate:getExternalMessages", portTemeplateName+"GetExternalMessages")}
-${glex.bindTemplateHookPoint("<CppBlock>?portTemplate:sendToExternal", portTemeplateName+"SendToExternal")}
 #pragma once
 #include "tl/optional.hpp"
 #include "Port.h"

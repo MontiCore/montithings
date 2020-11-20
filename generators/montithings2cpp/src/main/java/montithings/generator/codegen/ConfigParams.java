@@ -10,6 +10,7 @@ import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 import de.monticore.utils.Names;
 import montithings.generator.data.PortMap;
+import montithings.generator.helper.FileHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -25,6 +26,7 @@ import java.util.Set;
  * @since 5.0.2
  */
 public class ConfigParams {
+
   public enum TargetPlatform {
     GENERIC("GENERIC"),
     DSA_VCG("DSA_VCG"), // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
@@ -109,6 +111,8 @@ public class ConfigParams {
   private SplittingMode splittingMode = SplittingMode.OFF;
   /** Rules that bind a interface component/componentInstance to another non interface component */
   private Set<ASTBindingRule> componentBindings = new HashSet<>();
+  /** Ports that need to be implemented.*/
+  private Set<PortSymbol> overridePorts = new HashSet<>();
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
@@ -136,6 +140,10 @@ public class ConfigParams {
   public void setComponentBindings(Set<ASTBindingRule> componentBindings) {
     this.componentBindings = componentBindings;
   }
+
+  public Set<PortSymbol> getOverridePorts() {return overridePorts;}
+
+  public void setOverridePorts(Set<PortSymbol> overridePorts) {this.overridePorts = overridePorts;}
 
   /**
    * Gets the implementing component of given interface component, if the component is bound by componentBindings.
@@ -230,8 +238,8 @@ public class ConfigParams {
   public Optional<String> getAdditionalPort(PortSymbol port){
     String packageName = Names.getQualifier(Names.getQualifier(port.getFullName()));
     String componentName = StringUtils.capitalize(Names.getSimpleName(Names.getQualifier(port.getFullName())));
-    File exists = new File(hwcTemplatePath +File.separator+ Names.getPathFromPackage(packageName)+File.separator+componentName+ StringUtils.capitalize(port.getName())+"PortBody.ftl");
-    if(exists.exists()&&exists.isFile()){
+    Set<File> files = FileHelper.getPortImplementation(new File(hwcTemplatePath +File.separator+ Names.getPathFromPackage(packageName)),componentName+ StringUtils.capitalize(port.getName())+"Port");
+    if(!files.isEmpty()){
       return Optional.of(packageName+"."+componentName+StringUtils.capitalize(port.getName())+"Port");
     }
     else{
