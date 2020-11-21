@@ -6,6 +6,7 @@ import montithings.generator.codegen.ConfigParams;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,11 +24,20 @@ public class FileHelper {
 
   public static void copyHwcToTarget(File target, File hwcPath, ConfigParams config) {
     try {
+      FileFilter filefilter = new FileFilter(){
+        public boolean accept(File pathname) {
+          if (pathname.getName().endsWith(".ftl")) {
+            return false;
+          } else {
+            return true;
+          }
+        }
+      };
       if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
-        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile());
+        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile(), (FileFilter) filefilter);
       }
       else {
-        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath(), "hwc").toFile());
+        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath(), "hwc").toFile(), filefilter);
       }
     }
     catch (IOException e) {
@@ -102,6 +112,26 @@ public class FileHelper {
         + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + "Impl"
         + ending)
         .toFile();
+      if (hwcFile.isFile()) {
+        result.add(hwcFile);
+      }
+    }
+    return result;
+  }
+
+  public static Set<File> getPortImplementation(File hwcPath, String fqComponentName) {
+    Set<File> result = new HashSet<>();
+    Set<String> fileEndings = new HashSet<>();
+    fileEndings.add("Include.ftl");
+    fileEndings.add("Body.ftl");
+    fileEndings.add("GetExternalMessages.ftl");
+    fileEndings.add("SendToExternal.ftl");
+
+    for (String ending : fileEndings) {
+      File hwcFile = Paths.get(hwcPath.toString() + File.separator
+          + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+          + ending)
+          .toFile();
       if (hwcFile.isFile()) {
         result.add(hwcFile);
       }

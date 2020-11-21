@@ -22,6 +22,7 @@
     <module>language-features</module>
     <module>mqtt-ports</module>
     <module>retain-state</module>
+    <module>sensor-actuator-access</module>
   </modules>
 
 </project>

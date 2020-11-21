@@ -1,14 +1,22 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "compname", "config", "useWsPorts")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign GeneratorHelper = tc.instantiate("montithings.generator.helper.GeneratorHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 ${Identifier.createInstance(comp)}
 
 #pragma once
 #include "IComponent.h"
 #include "Port.h"
 #include "InOutPort.h"
+<#list comp.getPorts() as port>
+    <#assign addPort = GeneratorHelper.getPortHwcTemplateName(port, config.getHwcTemplatePath())>
+    <#if config.getTemplatedPorts()?seq_contains(port) && addPort!="Optional.empty">
+        #include "${Names.getSimpleName(addPort.get())?cap_first}.h"
+    </#if>
+</#list>
 #include ${"<string>"}
 #include ${"<map>"}
 #include ${"<vector>"}

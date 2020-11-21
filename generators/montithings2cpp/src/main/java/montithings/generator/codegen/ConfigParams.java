@@ -5,11 +5,15 @@ import arcbasis._ast.ASTComponentInstance;
 import arcbasis._ast.ASTComponentType;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 import montithings.generator.data.PortMap;
 
-import java.util.*;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Bundle of parameters for montithings2cpp generator.
@@ -18,6 +22,7 @@ import java.util.*;
  * @since 5.0.2
  */
 public class ConfigParams {
+
   public enum TargetPlatform {
     GENERIC("GENERIC"),
     DSA_VCG("DSA_VCG"), // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
@@ -100,12 +105,20 @@ public class ConfigParams {
   private TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 
   private SplittingMode splittingMode = SplittingMode.OFF;
+
   /** Rules that bind a interface component/componentInstance to another non interface component */
   private Set<ASTBindingRule> componentBindings = new HashSet<>();
+
+  /** Unconnected ports that have hand-written templates available.*/
+  private Set<PortSymbol> templatedPorts = new HashSet<>();
+
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
   private final PortMap componentPortMap = new PortMap();
+
+  /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
+  protected Path hwcTemplatePath;
 
   public PortMap getComponentPortMap() {
     return componentPortMap;
@@ -125,6 +138,18 @@ public class ConfigParams {
 
   public void setComponentBindings(Set<ASTBindingRule> componentBindings) {
     this.componentBindings = componentBindings;
+  }
+
+  public Set<PortSymbol> getTemplatedPorts() {return templatedPorts;}
+
+  public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {this.templatedPorts = templatedPorts;}
+
+  public Path getHwcTemplatePath() {
+    return hwcTemplatePath;
+  }
+
+  public void setHwcTemplatePath(Path hwcTemplatePath) {
+    this.hwcTemplatePath = hwcTemplatePath;
   }
 
   /**
