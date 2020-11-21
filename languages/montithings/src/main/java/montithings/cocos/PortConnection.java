@@ -1,8 +1,8 @@
 /* (c) https://github.com/MontiCore/monticore */
-package montithings.generator.helper;
+package montithings.cocos;
 
 import arcbasis._ast.ASTComponentType;
-import arcbasis._ast.ASTConnector;
+import arcbasis._cocos.SubComponentsConnected;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
@@ -10,18 +10,24 @@ import arcbasis.util.ArcError;
 import com.google.common.base.Preconditions;
 import de.se_rwth.commons.SourcePosition;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.codegen.ConfigParams;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * All ports of subcomponents should be used in at least one connector or be handled by templates.
  */
-public class PortConnection {
+public class PortConnection extends SubComponentsConnected {
 
-  public void check(ASTComponentType node, ConfigParams config) {
+  /**
+   * Ports with templates that should be ignored when checking for unconnected ports
+   */
+  Set<PortSymbol> portsToIgnore;
+
+  @Override
+  public void check(ASTComponentType node) {
     Preconditions.checkArgument(node != null);
     Preconditions.checkArgument(node.isPresentSymbol(), "ASTComponent node '%s' has no symbol. "
         + "Did you forget to run the SymbolTableCreator before checking cocos?", node.getName());
@@ -45,15 +51,12 @@ public class PortConnection {
                     subSymbol.getFullName(), compSymbol.getFullName()), sourcePosition);
           } else {
             Optional<PortSymbol> portSymbol = subSymbol.getType().loadSymbol().get().getPort(port.split("\\.")[1]);
-            if(portSymbol.isPresent()&&config.getAdditionalPort(portSymbol.get()).isPresent()){
-              config.getOverridePorts().add(portSymbol.get());
-            }
-            else {
+            if (portSymbol.isPresent() && !portsToIgnore.contains(portSymbol.get())) {
               Log.error(String.format(ArcError.INCOMING_PORT_NOT_CONNECTED.toString(), port, subSymbol.getFullName(), compSymbol.getFullName()), sourcePosition);
             }
           }
         }
-        // --------- INCOMING PORTS ----------
+        // --------- OUTGOING PORTS ----------
         Collection<String> subOutputPorts
             = this.getNames(subSymbol.getTypeInfo().getAllOutgoingPorts());
         subOutputPorts = subOutputPorts.stream()
@@ -68,11 +71,8 @@ public class PortConnection {
                     subSymbol.getFullName(), compSymbol.getFullName()), sourcePosition);
           } else {
             Optional<PortSymbol> portSymbol = subSymbol.getType().loadSymbol().get().getPort(port.split("\\.")[1]);
-            if(portSymbol.isPresent()&&config.getAdditionalPort(portSymbol.get()).isPresent()){
-              config.getOverridePorts().add(portSymbol.get());
-            }
-            else {
-              Log.error(String.format(ArcError.OUTGOING_PORT_NOT_CONNECTED.toString(), port, subSymbol.getFullName(), compSymbol.getFullName()), sourcePosition);
+            if (portSymbol.isPresent() && !portsToIgnore.contains(portSymbol.get())) {
+               Log.error(String.format(ArcError.OUTGOING_PORT_NOT_CONNECTED.toString(), port, subSymbol.getFullName(), compSymbol.getFullName()), sourcePosition);
             }
           }
         }
@@ -84,23 +84,7 @@ public class PortConnection {
     }
   }
 
-  protected Collection<String> getNames(Collection<PortSymbol> ports) {
-    return ports.stream().map(PortSymbol::getName).collect(Collectors.toList());
-  }
-
-  protected Collection<String> getSourceNames(ASTComponentType node) {
-    return node.getConnectors().stream().map(ASTConnector::getSourceName)
-        .collect(Collectors.toList());
-  }
-
-  protected Collection<String> getTargetNames(ASTComponentType node) {
-    return node.getConnectors().stream().map(ASTConnector::getTargetsNames)
-        .flatMap(Collection::stream).collect(Collectors.toList());
-  }
-
-  protected SourcePosition getSourcePosition(ComponentTypeSymbol symbol,
-      ASTComponentType node, String port) {
-    return symbol.getPort(port.split("\\.")[1]).map(p -> p.getAstNode().get_SourcePositionStart())
-        .orElse(node.get_SourcePositionEnd());
+  public PortConnection(Set<PortSymbol> portsToIgnore) {
+    this.portsToIgnore = portsToIgnore;
   }
 }

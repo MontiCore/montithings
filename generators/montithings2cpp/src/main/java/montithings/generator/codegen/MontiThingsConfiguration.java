@@ -71,7 +71,7 @@ public class MontiThingsConfiguration implements Configuration {
       .add(DelegatingConfigurationContributor.with(internal)).build();
     configParams.setTargetPlatform(getPlatform());
     configParams.setSplittingMode(getSplittingMode());
-    configParams.hwcTemplatePath = Paths.get(getHWCPath().getAbsolutePath());
+    configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker());
   }
 

@@ -8,12 +8,8 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
-import de.monticore.utils.Names;
 import montithings.generator.data.PortMap;
-import montithings.generator.helper.FileHelper;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Optional;
@@ -109,17 +105,20 @@ public class ConfigParams {
   private TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 
   private SplittingMode splittingMode = SplittingMode.OFF;
+
   /** Rules that bind a interface component/componentInstance to another non interface component */
   private Set<ASTBindingRule> componentBindings = new HashSet<>();
-  /** Ports that need to be implemented.*/
-  private Set<PortSymbol> overridePorts = new HashSet<>();
+
+  /** Unconnected ports that have hand-written templates available.*/
+  private Set<PortSymbol> templatedPorts = new HashSet<>();
+
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
   private final PortMap componentPortMap = new PortMap();
 
   /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
-  public Path hwcTemplatePath;
+  protected Path hwcTemplatePath;
 
   public PortMap getComponentPortMap() {
     return componentPortMap;
@@ -141,9 +140,17 @@ public class ConfigParams {
     this.componentBindings = componentBindings;
   }
 
-  public Set<PortSymbol> getOverridePorts() {return overridePorts;}
+  public Set<PortSymbol> getTemplatedPorts() {return templatedPorts;}
 
-  public void setOverridePorts(Set<PortSymbol> overridePorts) {this.overridePorts = overridePorts;}
+  public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {this.templatedPorts = templatedPorts;}
+
+  public Path getHwcTemplatePath() {
+    return hwcTemplatePath;
+  }
+
+  public void setHwcTemplatePath(Path hwcTemplatePath) {
+    this.hwcTemplatePath = hwcTemplatePath;
+  }
 
   /**
    * Gets the implementing component of given interface component, if the component is bound by componentBindings.
@@ -227,24 +234,6 @@ public class ConfigParams {
       }
     }
     return false;
-  }
-
-  /**
-   * Gets the qualified name of the handwritten port implementation if it is present.
-   * @param port The port for which to check for a handwritten implementation.
-   * @return The qualified type name of the port that is defined by given templates for the given port.
-   * If no fitting templates are present Optional.empty is returned.
-   */
-  public Optional<String> getAdditionalPort(PortSymbol port){
-    String packageName = Names.getQualifier(Names.getQualifier(port.getFullName()));
-    String componentName = StringUtils.capitalize(Names.getSimpleName(Names.getQualifier(port.getFullName())));
-    Set<File> files = FileHelper.getPortImplementation(new File(hwcTemplatePath +File.separator+ Names.getPathFromPackage(packageName)),componentName+ StringUtils.capitalize(port.getName())+"Port");
-    if(!files.isEmpty()){
-      return Optional.of(packageName+"."+componentName+StringUtils.capitalize(port.getName())+"Port");
-    }
-    else{
-      return Optional.empty();
-    }
   }
 
   public CDLangExtensionScope getCdLangExtensionScope() {
