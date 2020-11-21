@@ -6,6 +6,6 @@ component Sink {
   port out Integer actuator;
 
   behavior {
-    actuator = value;
+    actuator = value?;
   }
 }

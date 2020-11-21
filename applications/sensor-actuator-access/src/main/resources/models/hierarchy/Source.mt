@@ -6,6 +6,6 @@ component Source {
   port out Integer value;
 
   behavior {
-    value = sensor;
+    value = sensor?;
   }
 }

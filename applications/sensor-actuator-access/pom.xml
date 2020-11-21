@@ -246,7 +246,6 @@
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
-                        <splitting>OFF</splitting>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>
                 </configuration>
