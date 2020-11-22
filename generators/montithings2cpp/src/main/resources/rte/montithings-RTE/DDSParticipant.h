@@ -30,9 +30,4 @@ public:
     DDS::Publisher_var getPublisher() { return publisher; }
     DDS::Subscriber_var getSubscriber() { return subscriber; }
     CORBA::String_var getMessageTypeName(){ return type_name; }
-
-    /*
-    * Initially create ports of this component
-    */
-    virtual void initializePorts() = 0;
 };
