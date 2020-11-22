@@ -34,6 +34,7 @@ you'll most likely want the native installation - it will save you time in the l
 - [Visual Studio Community][visualstudio] (only necessary for Windows!)
 - [Docker][docker] (for executing generator tests)
 - [Mosquitto][mosquitto] (only for MQTT message broker)
+- [OpenDDS][opendds] (only for DDS communication)
 - A `settings.xml` file from the SE chair (for accessing the dependencies of this project)
 
 ## Installation
@@ -168,6 +169,7 @@ This repository is currently non-public.
 [docker]: https://www.docker.com/products/docker-desktop
 [visualstudio]: https://visualstudio.microsoft.com/vs/community/
 [mosquitto]: https://mosquitto.org/download/
+[opendds]: https://opendds.org
 [elf]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 [mach-o]: https://en.wikipedia.org/wiki/Mach-O
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
