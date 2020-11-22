@@ -10,6 +10,22 @@ cmake_minimum_required(VERSION 3.8)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
 
+<#if config.getTargetPlatform().toString() != "DSA_VCG"
+&& config.getTargetPlatform().toString() != "DSA_LAB"
+&& config.getMessageBroker().toString() == "DDS">
+  # DDS specific
+  project(OpenDDS_DevGuide_Messenger CXX)
+  cmake_minimum_required(VERSION 3.8.2)
+
+  find_package(OpenDDS REQUIRED)
+
+  set(CMAKE_CXX_COMPILER "${r"${OPENDDS_COMPILER}"}")
+  set(opendds_libs
+    OpenDDS::Dcps # Core OpenDDS Library
+    OpenDDS::InfoRepoDiscovery OpenDDS::Tcp
+  )
+</#if>
+
 # Enable (more comfortable) debugging
 set(CMAKE_CXX_FLAGS_DEBUG "${r"${CMAKE_CXX_FLAGS_DEBUG}"} -gdwarf-3")
 set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
@@ -96,6 +112,9 @@ add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#else>
   <#if config.getMessageBroker().toString() == "MQTT">
     target_link_libraries(${comp.getFullName()} mosquitto)
+  <#elseif config.getMessageBroker().toString() == "DDS">
+    OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
+    target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
   </#if>
   target_link_libraries(${comp.getFullName()} nng::nng)
 </#if>

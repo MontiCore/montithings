@@ -34,6 +34,7 @@ fi
 echo Copy Scripts for "$1"
 cd bin
 cp ../../"$1"/*.sh .
+cp ../../"$1"/*.ini .
 cp -r ../../"$1"/ports .
 chmod +x *.sh
 cd ../..

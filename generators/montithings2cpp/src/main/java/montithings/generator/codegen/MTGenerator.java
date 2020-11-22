@@ -56,10 +56,14 @@ public class MTGenerator {
         toFile(targetPath.getParentFile(), "README", "template/util/arduinoReadme/ArduinoReadme.ftl",".txt", targetPath.getName(), compname);
       } else {
         toFile(targetPath, "Deploy" + compname, "template/deploy/Deploy.ftl",".cpp",comp, compname, config);
-        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF
-          && config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
-          toFile(targetPath, compname + "Manager", "template/util/comm/Header.ftl", ".h", comp, config);
-          toFile(targetPath, compname + "Manager", "template/util/comm/ImplementationFile.ftl", ".cpp", comp, config);
+        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+          if (config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
+            toFile(targetPath, compname + "Manager", "template/util/comm/Header.ftl", ".h", comp, config);
+            toFile(targetPath, compname + "Manager", "template/util/comm/ImplementationFile.ftl", ".cpp", comp, config);
+          } else if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
+            toFile(targetPath, compname + "DDSParticipant", "template/util/dds/participant/Header.ftl", ".h", comp, config);
+            toFile(targetPath, compname + "DDSParticipant", "template/util/dds/participant/ImplementationFile.ftl", ".cpp", comp, config);
+          }
         }
       }
     }
@@ -138,8 +142,13 @@ public class MTGenerator {
     sortedDirs.addAll(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
+    if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
+      toFile(targetPath, "dcpsconfig", "template/util/dds/DCPSConfig.ftl", ".ini");
+    }
+
     toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);
     toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs);
+
     makeExecutable(targetPath, "run", ".sh");
     makeExecutable(targetPath, "kill", ".sh");
   }
