@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
 
-  private MontiThingsVisitor realThis = this;
+  protected MontiThingsVisitor realThis = this;
   protected IndentPrinter printer;
 
   public MontiThingsPrettyPrinter() {
