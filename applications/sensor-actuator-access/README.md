@@ -15,11 +15,11 @@ MontiThings uses the templates to inject code in the ports.
 To enable MontiThings to find the templates, you have to give them specific 
 names and replace `<ComponentName>` and `<PortName>` with the names of the 
 component and port you want to inject your code into: 
-- To add import statements, use `<ComponentName><PortName>PortInclude.ftl
+- To add import statements, use `<ComponentName><PortName>PortInclude.ftl`
 - To provide values to the component (i.e. implement an incoming port), 
 use `<ComponentName><PortName>PortGetExternalMessages.ftl`
 - To process values from the component (i.e. implement an outgoing port), 
-use `<ComponentName><PortName>PortSendToExternal.ftl
+use `<ComponentName><PortName>PortSendToExternal.ftl`
 
 For example, here the `SourceSensorPortGetExternalMessages.ftl` template 
 implements the incoming port (called `sensor`) of the `Source` component. 
