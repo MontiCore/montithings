@@ -8,6 +8,8 @@ ${tc.signature("comp", "config")}
 #include ${"<iostream>"}
 #include ${"<string>"}
 #include ${"<vector>"}
+#include ${"<chrono>"}
+#include ${"<thread>"}
 
 #include ${"<dds/DdsDcpsInfrastructureC.h>"}
 #include ${"<dds/DdsDcpsPublicationC.h>"}
@@ -39,7 +41,8 @@ public:
    * Initially create ports of this component
   */
   void initializePorts();
-  
+
+  bool tryInitializeDDS(int argc, char *argv[]);
   void publishConnectors();
   void onNewConnectors(std::string payload);
 };
