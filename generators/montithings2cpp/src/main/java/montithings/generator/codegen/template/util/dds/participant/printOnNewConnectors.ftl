@@ -12,7 +12,7 @@ std::cout << "onNewConnectors: " << payload << std::endl;
     {
       std::string topic = payload.substr(0, payload.find("->"));
       std::cout << "New connection! Creating INCOMING PORT: " << topic << std::endl;
-      comp->addInPortValue(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic));
+      comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic));
 
       <#if !comp.isAtomic()>
       // additional outgoing port for port incoming port ${p.getName()}
