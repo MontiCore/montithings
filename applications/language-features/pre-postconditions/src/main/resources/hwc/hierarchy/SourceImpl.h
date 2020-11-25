@@ -1,14 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 #pragma once
-#include "SourceInput.h"
-#include "SourceResult.h"
-#include "IComputable.h"
-#include <stdexcept>
+#include "SourceImplTOP.h"
 
 namespace montithings {
 namespace hierarchy {
 
-class SourceImpl : IComputable<SourceInput,SourceResult>{
+class SourceImpl : public SourceImplTOP {
 	
 private:  
     
