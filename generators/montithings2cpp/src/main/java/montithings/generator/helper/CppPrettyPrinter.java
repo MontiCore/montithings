@@ -7,7 +7,7 @@ import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.visitor.CppAssignmentPrettyPrinter;
 import montithings.generator.visitor.CppCommonExpressionsPrettyPrinter;
 import montithings.generator.visitor.CppExpressionPrettyPrinter;
-import montithings.generator.visitor.CppSetExpressionsPrettyPrinter;
+import montithings.generator.visitor.CppMontiThingsPrettyPrinter;
 
 public class CppPrettyPrinter {
 
@@ -24,7 +24,7 @@ public class CppPrettyPrinter {
     printer.setExpressionsBasisVisitor(new CppExpressionPrettyPrinter(printer.getPrinter()));
     printer.setCommonExpressionsVisitor(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
     printer.setAssignmentExpressionsVisitor(new CppAssignmentPrettyPrinter(printer.getPrinter()));
-    CppSetExpressionsPrettyPrinter setPrinter = new CppSetExpressionsPrettyPrinter(printer.getPrinter());
+    CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
     printer.setSetDefinitionsVisitor(setPrinter);
     printer.setSetExpressionsVisitor(setPrinter);
     printer.setMontiThingsVisitor(setPrinter);

@@ -5,17 +5,17 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
-import jline.internal.Log;
+import de.monticore.utils.Names;
+import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
   Main entry point for generator. From this all target artifacts are generated for a component.
@@ -85,14 +85,14 @@ public class MTGenerator {
 
   static private void toFile(File targetPath, String name, String template, String fileExtension, Object... templateArguments) {
     Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
-    Log.info("Writing to file " + path + ".");
-    GeneratorSetup setup = new GeneratorSetup();
-    setup.setTracing(false);
-    //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
+      Log.debug("Writing to file " + path + ".","MTGenerator");
+      GeneratorSetup setup = new GeneratorSetup();
+      setup.setTracing(false);
+      //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
 
-    GeneratorEngine engine = new GeneratorEngine(setup);
+      GeneratorEngine engine = new GeneratorEngine(setup);
 
-    engine.generateNoA(template, path, templateArguments);
+      engine.generateNoA(template, path, templateArguments);
   }
 
   static private void makeExecutable(File targetPath, String name, String fileExtension) {
@@ -182,4 +182,34 @@ public class MTGenerator {
       toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/Header.ftl", ".h",packageName, simpleName, config);
       toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/ImplementationFile.ftl", ".cpp",packageName, simpleName, config);
     }
+
+  public static void generateAdditionalPort(Path templatePath, File targetPath, String portName) {
+    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + StringUtils.capitalize(Names.getSimpleName(portName) + ".h"));
+    if(!path.toFile().exists()||!path.toFile().isFile()) {
+      Log.debug("Writing to file " + path + ".","");
+      GeneratorSetup setup = new GeneratorSetup();
+      setup.setTracing(false);
+      setup.setAdditionalTemplatePaths(Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
+
+      Set<File> templates = FileHelper.getPortImplementation(Paths.get(templatePath.toFile().getAbsolutePath(),Names.getPathFromPackage(Names.getQualifier(portName))).toFile(),Names.getSimpleName(portName));
+      for (File template:templates) {
+        if(template.getName().endsWith(Names.getSimpleName(portName)+"Include.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:include", portName+"Include");
+        }
+        else if(template.getName().endsWith(Names.getSimpleName(portName)+"Body.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:body", portName+"Body");
+        }
+        else if(template.getName().endsWith(Names.getSimpleName(portName)+"GetExternalMessages.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:getExternalMessages", portName+"GetExternalMessages");
+        }
+        else if(template.getName().endsWith(Names.getSimpleName(portName)+"SendToExternal.ftl")){
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:sendToExternal", portName+"SendToExternal");
+        }
+      }
+
+      GeneratorEngine engine = new GeneratorEngine(setup);
+
+      engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, portName);
+    }
+ }
 }

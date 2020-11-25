@@ -2,6 +2,7 @@
 package montithings.generator;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
 import bindings._ast.ASTBindingsCompilationUnit;
@@ -30,11 +31,14 @@ import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsGlobalScope;
+import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
+import montithings.generator.helper.GeneratorHelper;
+import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import phyprops.PhypropsTool;
 import phyprops._ast.ASTPhypropsUnit;
 import phyprops._cocos.PhypropsCoCos;
@@ -61,6 +65,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   public void generate(File modelPath, File target, File hwcPath, File testPath,
     ConfigParams config) {
+
+    //Log.initWARN();
 
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
@@ -97,6 +103,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     PhypropsTool phypropsTool = new PhypropsTool();
     phypropsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
 
+    for (String model : models.getMontithings()) {
+      // Parse model
+      String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
+      Log.info("Parsing model: " + qualifiedModelName, TOOL_NAME);
+      ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
+
+      // Find ports with templates
+      FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config.getHwcTemplatePath());
+      comp.getAstNode().accept(vistor);
+      config.getTemplatedPorts().addAll(vistor.getTemplatedPorts());
+    }
+
 
     /* ============================================================ */
     /* ====================== Check Models ======================== */
@@ -104,7 +122,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Log.info("Checking models", TOOL_NAME);
 
     checkCds(models.getClassdiagrams(), cdSymTab);
-    checkMtModels(models.getMontithings(), symTab);
+    checkMtModels(models.getMontithings(), symTab, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
     checkPhyprops(models.getPhyprops(), phypropsTool.initSymbolTable(modelPath));
@@ -157,16 +175,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /* ====================== Check Models ======================== */
   /* ============================================================ */
 
-  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab) {
+  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab, ConfigParams config) {
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
 
       // parse + resolve model
-      Log.info("Parsing model:" + qualifiedModelName, TOOL_NAME);
       ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
       // check cocos
       Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
+      checker.addCoCo(new PortConnection(config.getTemplatedPorts()));
       checkCoCos(comp.getAstNode());
     }
   }
@@ -303,6 +321,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
         .toFile(), hwcPath, comp, compname, config, generateDeploy);
 
+    generateHwcPort(target, config, comp);
+
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       copyHwcToTarget(target, hwcPath, model, config);
     }
@@ -394,6 +414,17 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
           MTGenerator.generateTestMakeFile(target.toFile(), comp, hwcPath, libraryPath,
             subPackagesPath, config);
+        }
+      }
+    }
+  }
+
+  public void generateHwcPort(File target, ConfigParams config, ComponentTypeSymbol comp) {
+    for(PortSymbol port : comp.getPorts()) {
+      if(config.getTemplatedPorts().contains(port)) {
+        Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config.getHwcTemplatePath());
+        if (portType.isPresent()) {
+          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), new File(target + File.separator + "hwc" + File.separator + Names.getPathFromPackage(Names.getQualifier(portType.get()))), portType.get());
         }
       }
     }

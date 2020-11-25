@@ -47,4 +47,16 @@ grammar MontiThings extends MontiArc,
     /* ============================================================ */
 
     Behavior implements ArcElement = "behavior" MCJavaBlock;
+
+    /**
+     * ASTIsPresentExpression can be used use a port regardless of whether it
+     * has a value or to check if it has a value.
+     * Hint: Directly accessing a port is allowed but means the value is
+     * definitely accessed; if it doesn't exist, it will cause a run-time error
+     *
+     * Example: if (sensor?) actuator = sensor;
+     * Example: actuator = sensor?;
+     */
+    IsPresentExpression implements Expression <400>
+        = NameExpression "?";
 }

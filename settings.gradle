@@ -34,6 +34,8 @@ include(':applications:language-features:interface-components')
 include(':applications:language-features:pre-postconditions')
 include(':applications:language-features')
 include(':applications:mqtt-ports')
+include(':applications:retain-state')
+include(':applications:sensor-actuator-ports')
 include(':applications')
 
 project(':languages:montithings').projectDir = file('languages/montithings')

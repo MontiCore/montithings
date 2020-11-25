@@ -1,8 +1,10 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign GeneratorHelper = tc.instantiate("montithings.generator.helper.GeneratorHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 
 ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp, compname, config])}
 
@@ -25,6 +27,18 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
     void ${compname}${Utils.printFormalTypeParameters(comp)}::initialize(){
     <#list comp.incomingPorts as port >
         getPort${port.getName()?cap_first} ()->registerListeningPort (this->getUuid ());
+        <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config.getHwcTemplatePath())>
+        <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
+            <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+            addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
+        </#if>
+    </#list>
+    <#list comp.outgoingPorts as port >
+        <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config.getHwcTemplatePath())>
+        <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
+            <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+            addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
+        </#if>
     </#list>
     <#if ComponentHelper.retainState(comp)>
       if (!${Identifier.getBehaviorImplName()}.restoreState ())

@@ -4,10 +4,7 @@ package montithings._visitor;
 import arcbasis._ast.ASTArcBasisNode;
 import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
-import montithings._ast.ASTBehavior;
-import montithings._ast.ASTMTComponentModifier;
-import montithings._ast.ASTMTComponentType;
-import montithings._ast.ASTSetInExpression;
+import montithings._ast.*;
 import net.sourceforge.plantuml.Log;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -16,7 +13,7 @@ import java.util.List;
 
 public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
 
-  private MontiThingsVisitor realThis = this;
+  protected MontiThingsVisitor realThis = this;
   protected IndentPrinter printer;
 
   public MontiThingsPrettyPrinter() {
@@ -92,5 +89,11 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
   public void handle(@NotNull ASTBehavior node) {
     this.getPrinter().print("behavior ");
     node.getMCJavaBlock().accept(this.getRealThis());
+  }
+
+  @Override
+  public void handle(@NotNull ASTIsPresentExpression node) {
+    node.getNameExpression().accept(this.getRealThis());
+    this.getPrinter().print("?");
   }
 }
