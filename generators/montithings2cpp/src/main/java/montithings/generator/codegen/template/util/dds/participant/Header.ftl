@@ -27,7 +27,7 @@ ${Utils.printNamespaceStart(comp)}
 class ${comp.getName()}DDSParticipant : public DDSParticipant
 {
 protected:
-  montithings::hierarchy::${comp.getName()}* comp;
+  ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}* comp;
 
   // Port which handles the connectors 
   std::unique_ptr${"<DDSPort<std::string>>"} connectorPortOut;
