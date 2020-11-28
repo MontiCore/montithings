@@ -143,7 +143,7 @@ public class MTGenerator {
     sortedDirs.sort(Comparator.naturalOrder());
 
     if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
-      toFile(targetPath, "dcpsconfig", "template/util/dds/DCPSConfig.ftl", ".ini");
+      toFile(targetPath, "dcpsconfig", "template/util/dds/DCPSConfig.ftl", ".ini", config);
     }
 
     toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);

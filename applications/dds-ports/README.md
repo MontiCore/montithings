@@ -47,11 +47,13 @@ This means, that they have to find each other first.
 
 OpenDDS offers a centralized discovery mechanism, a peer-to-peer discovery mechanism (DDSI-RTPS),
 and a static discovery mechanism. 
-As multicast might fail in a distributed environment, the default configuration leverages a discovery service which is shipped with OpenDDS.
+As multicast might fail in a distributed environment, if the splitting mode is set to "DISTRIBUTED", then the default configuration leverages a discovery service which is shipped with OpenDDS.
 
-In order to use the service, start the corresponding docker container and adjust the `-DCPSInfoRepo` argument of each component within `run.sh`.
+In order to use the service, start the corresponding docker container and adjust the `-DCPSInfoRepo` argument of each component within `run.sh` in case the port is changed.
 
-//TODO!
+`docker run -p 12345:12345 registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds run_dcpsinforepo.sh`
+
+In case of splitting mode "LOCAL", multicast is leveraged. Thus, the components will find each other on their own. 
 
 ## Installation and running the Example
 

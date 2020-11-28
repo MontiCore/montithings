@@ -169,7 +169,7 @@ This repository is currently non-public.
 [docker]: https://www.docker.com/products/docker-desktop
 [visualstudio]: https://visualstudio.microsoft.com/vs/community/
 [mosquitto]: https://mosquitto.org/download/
-[opendds]: https://opendds.org
+[opendds]: https://opendds.org/downloads.html
 [elf]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 [mach-o]: https://en.wikipedia.org/wiki/Mach-O
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
