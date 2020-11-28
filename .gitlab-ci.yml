@@ -23,7 +23,7 @@ variables:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-Docker:
+Docker Alpine:
   stage: build
   variables:
     DOCKER_DRIVER: overlay2
@@ -38,6 +38,20 @@ Docker:
     - cd docker/mtcmake 
     - docker build -t $CI_REGISTRY_IMAGE/mtcmake .
     - docker push $CI_REGISTRY_IMAGE/mtcmake
+
+Docker DDS:
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay2
+  cache: {}
+  tags:
+    - shell
+    - docker
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - cd docker/mtcmakedds
+    - docker build -t $CI_REGISTRY_IMAGE/mtcmakedds .
+    - docker push $CI_REGISTRY_IMAGE/mtcmakedds
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -119,7 +133,7 @@ Unit Test Amazon Corretto JDK 8:
   allow_failure: true 
   <<: *unit_test_definition
 
-Generator Test:
+.generator_test_definition: &generator_test_definition
   stage: generator-test
   image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
   dependencies: 
@@ -127,6 +141,14 @@ Generator Test:
   script:
     - cd generators/montithings2cpp/target/generated-test-sources
     - ./runTests.sh
+
+Generator Test Alpine:
+  image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+  <<: *generator_test_definition
+
+Generator Test DDS:
+  image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds
+  <<: *generator_test_definition
 
 Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
