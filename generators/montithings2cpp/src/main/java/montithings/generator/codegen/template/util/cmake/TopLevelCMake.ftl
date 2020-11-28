@@ -24,6 +24,10 @@ set(CMAKE_CXX_STANDARD 11)
     OpenDDS::Dcps # Core OpenDDS Library
     OpenDDS::InfoRepoDiscovery OpenDDS::Tcp
   )
+<#else>
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
 </#if>
 
 # Enable (more comfortable) debugging
