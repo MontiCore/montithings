@@ -38,7 +38,7 @@ ${comp.getName()}DDSParticipant::tryInitializeDDS (int argc, char *argv[])
 
   if (!participant)
     {
-      //std::cerr << "DDS creation of the participant instance failed." << std::endl;
+      std::cerr << "DDS creation of the participant instance failed." << std::endl;
       return false;
     }
 
@@ -47,7 +47,7 @@ ${comp.getName()}DDSParticipant::tryInitializeDDS (int argc, char *argv[])
 
   if (ts->register_type (participant, "") != DDS::RETCODE_OK)
     {
-      //std::cerr << "DDS creation of the message type support failed." << std::endl;
+      std::cerr << "DDS creation of the message type support failed." << std::endl;
       return false;
     }
 
@@ -58,7 +58,7 @@ ${comp.getName()}DDSParticipant::tryInitializeDDS (int argc, char *argv[])
     }
   if (!publisher)
     {
-      //std::cerr << "DDS creation of the publisher instance failed." << std::endl;
+      std::cerr << "DDS creation of the publisher instance failed." << std::endl;
       return false;
     }
   if (!subscriber)
@@ -68,7 +68,7 @@ ${comp.getName()}DDSParticipant::tryInitializeDDS (int argc, char *argv[])
     }
   if (!subscriber)
     {
-      //std::cerr << "DDS creation of the subsciber instance failed." << std::endl;
+      std::cerr << "DDS creation of the subsciber instance failed." << std::endl;
       return false;
     }
 

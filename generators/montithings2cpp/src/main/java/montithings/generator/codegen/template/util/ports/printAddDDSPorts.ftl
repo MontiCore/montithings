@@ -9,8 +9,7 @@ connectorPortOut = std::make_unique${"<DDSPort<std::string>>"}(*this, OUTGOING, 
 // Adds port which subscribes to connectors
 connectorPortIn = std::make_unique${"<DDSPort<std::string>>"}(*this, INCOMING, topicConnections, true);
 
-using namespace std::placeholders; 
-connectorPortIn->addOnDataAvailableCallbackHandler(std::bind(&${comp.getName()}DDSParticipant::onNewConnectors, this, _1));
+connectorPortIn->addOnDataAvailableCallbackHandler(std::bind(&${comp.getName()}DDSParticipant::onNewConnectors, this, std::placeholders::_1));
 
 <#list comp.getPorts() as p>
     <#if p.isOutgoing()>

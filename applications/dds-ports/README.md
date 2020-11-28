@@ -62,4 +62,4 @@ In order to use the service, start the corresponding docker container and adjust
 4. Run `run.sh`
 
 [dds]: https://www.dds-foundation.org/
-[opendds]: https://opendds.org/
+[opendds]: https://opendds.org/downloads.html

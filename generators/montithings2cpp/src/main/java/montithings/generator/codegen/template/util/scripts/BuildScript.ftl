@@ -34,7 +34,9 @@ fi
 echo Copy Scripts for "$1"
 cd bin
 cp ../../"$1"/*.sh .
+<#if config.getMessageBroker().toString() == "DDS">
 cp ../../"$1"/*.ini .
+</#if>
 cp -r ../../"$1"/ports .
 chmod +x *.sh
 cd ../..

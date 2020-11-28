@@ -47,6 +47,7 @@ RUN cd /usr/src/app/opendds \
 && . /usr/src/app/opendds/setenv.sh
 
 ADD run_dcpsinforepo.sh /usr/src/app/
+RUN chmod +x /usr/src/app/run_dcpsinforepo.sh
 
 ENV ACE_ROOT=/usr/src/app/opendds/ACE_wrappers \
     TAO_ROOT=/usr/src/app/opendds/ACE_wrappers/TAO \

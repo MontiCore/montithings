@@ -8,6 +8,8 @@ ${tc.signature("comp", "config")}
   if (argc != 2)
 <#elseif config.getMessageBroker().toString() == "DDS">
   if (argc != 6)
+<#else>
+  if (argc != 4)
 </#if>
 {
 std::cerr << "Called with wrong number of arguments. Please provide the following arguments:" << std::endl;

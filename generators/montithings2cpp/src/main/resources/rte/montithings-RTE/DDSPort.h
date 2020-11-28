@@ -27,7 +27,8 @@ private:
   DDSMessage::MessageDataReader_var messageReader;
   bool setQoSTransientDurability;
 
-  // The DDS message type is keyed
+  // The DDS message type is keyed by a message id
+  // After each message write the messageId is incremented so that each message can be identified uniquely  
   int messageId = 1;
 
   // Allow setting a callback function which is triggered whenever new data
@@ -189,10 +190,7 @@ public:
       DDS::ReturnCode_t error = messageWriter->write(message, DDS::HANDLE_NIL);
 
       if (error != DDS::RETCODE_OK) {
-        ACE_ERROR((LM_ERROR,
-                   ACE_TEXT("ERROR: %N:%l: main() -")
-                       ACE_TEXT(" write returned %d!\n"),
-                   error));
+        std::cerr << "write returned " << error << std::endl;
       }
 
       ++messageId;
@@ -223,9 +221,8 @@ public:
         DDSMessage::MessageDataReader::_narrow(reader);
 
     if (!reader_i) {
-      ACE_ERROR((LM_ERROR, ACE_TEXT("ERROR: %N:%l: on_data_available() -")
-                               ACE_TEXT(" _narrow failed!\n")));
-      ACE_OS::exit(1);
+      std::cerr << "ERROR: on_data_available() - _narrow failed!" << std::endl;
+      return;
     }
 
     DDSMessage::Message message;
@@ -243,8 +240,8 @@ public:
         onDataAvailableCallback(result);
       }
     } else {
-      ACE_ERROR((LM_ERROR, ACE_TEXT("ERROR: %N:%l: on_data_available() -")
-                               ACE_TEXT(" take_next_sample failed!\n")));
+      std::cerr << "ERROR: on_data_available() - _ake_next_sample failed!" << std::endl;
+      return;
     }
   }
 
