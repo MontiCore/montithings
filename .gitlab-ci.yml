@@ -143,11 +143,11 @@ Unit Test Amazon Corretto JDK 8:
     - ./runTests.sh
 
 Generator Test Alpine:
-  image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+  image: $CI_REGISTRY_IMAGE/mtcmake
   <<: *generator_test_definition
 
 Generator Test DDS:
-  image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds
+  image: $CI_REGISTRY_IMAGE/mtcmakedds
   <<: *generator_test_definition
 
 Deploy Nexus:
