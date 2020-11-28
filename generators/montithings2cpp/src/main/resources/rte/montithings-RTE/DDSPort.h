@@ -200,20 +200,6 @@ public:
   /*
    * DataReaderListener implementations
    */
-  void on_requested_deadline_missed(
-      DDS::DataReader_ptr /*reader*/,
-      const DDS::RequestedDeadlineMissedStatus & /*status*/) {}
-
-  void on_requested_incompatible_qos(
-      DDS::DataReader_ptr /*reader*/,
-      const DDS::RequestedIncompatibleQosStatus & /*status*/) {}
-
-  void on_sample_rejected(DDS::DataReader_ptr /*reader*/,
-                          const DDS::SampleRejectedStatus & /*status*/) {}
-
-  void on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
-                             const DDS::LivelinessChangedStatus & /*status*/) {}
-
   void on_data_available(DDS::DataReader_ptr reader) {
     // narrows the generic data reader passed into the listener to the
     // type-specific MessageDataReader interface
@@ -245,10 +231,44 @@ public:
     }
   }
 
+  // Mandatory interface implementations which are left empty as we do not make use of them
+  // Event triggers are logged nonetheless for potential inspection purposes
+
+  void on_requested_deadline_missed(DDS::DataReader_ptr /*reader*/,
+      const DDS::RequestedDeadlineMissedStatus & /*status*/) 
+  {
+    std::cout << "DDSPort::on_requested_deadline_missed" << std::endl;
+  }
+
+  void on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
+                             const DDS::LivelinessChangedStatus & /*status*/) 
+  {
+    std::cout << "DDSPort::on_liveliness_changed" << std::endl;
+  }
+
+  void on_requested_incompatible_qos(
+      DDS::DataReader_ptr /*reader*/,
+      const DDS::RequestedIncompatibleQosStatus & /*status*/) 
+  {
+    std::cout << "DDSPort::on_requested_incompatible_qos" << std::endl;
+  }
+
+  void on_sample_rejected(DDS::DataReader_ptr /*reader*/,
+                          const DDS::SampleRejectedStatus & /*status*/)
+  {
+    std::cout << "DDSPort::on_sample_rejected" << std::endl;
+  }
+
   void
   on_subscription_matched(DDS::DataReader_ptr /*reader*/,
-                          const DDS::SubscriptionMatchedStatus & /*status*/) {}
+                          const DDS::SubscriptionMatchedStatus & /*status*/) 
+  {
+    std::cout << "DDSPort::on_subscription_matched" << std::endl;
+  }
 
   void on_sample_lost(DDS::DataReader_ptr /*reader*/,
-                      const DDS::SampleLostStatus & /*status*/) {}
+                      const DDS::SampleLostStatus & /*status*/)
+  {
+    std::cout << "DDSPort::on_sample_lost" << std::endl;
+  }
 };
