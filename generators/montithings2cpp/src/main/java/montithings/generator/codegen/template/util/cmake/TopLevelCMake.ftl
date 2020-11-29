@@ -6,17 +6,14 @@ ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "co
     <#assign commonCodePrefix = "../">
 </#if>
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
 
 <#if config.getTargetPlatform().toString() != "DSA_VCG"
 && config.getTargetPlatform().toString() != "DSA_LAB"
 && config.getMessageBroker().toString() == "DDS">
-  # DDS specific
-  project(OpenDDS_DevGuide_Messenger CXX)
-  cmake_minimum_required(VERSION 3.8.2)
-
+  # DDS specificcd
   find_package(OpenDDS REQUIRED)
 
   set(CMAKE_CXX_COMPILER "${r"${OPENDDS_COMPILER}"}")
