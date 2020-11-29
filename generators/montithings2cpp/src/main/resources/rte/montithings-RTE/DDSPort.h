@@ -51,14 +51,19 @@ class DDSPort
     // independently of the port direction, a topic instance is required
     topic = createTopic ();
 
-    if (direction == INCOMING)
+    if (!topic)
+    {
+      std::cerr << "ERROR: DDSPort() - OpenDDS topic creation failed." << std::endl;
+    } else {
+      if (direction == INCOMING)
       {
         messageReader = initReader ();
       }
-    else
+      else
       {
         messageWriter = initWriter ();
       }
+    }
   }
 
   ~DDSPort ()
@@ -88,13 +93,6 @@ class DDSPort
         // changes are communicated to the
         // application
         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-
-    if (!topic)
-      {
-        std::cerr << "OpenDDS topic creation failed." << std::endl;
-        exit (1);
-      }
-
     return topic;
   }
 
@@ -132,10 +130,10 @@ class DDSPort
             OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!reader)
-      {
-        std::cerr << "OpenDDS data reader creation failed." << std::endl;
-        exit (1);
-      }
+    {
+      std::cerr << "ERROR: initReader() - OpenDDS data reader creation failed." << std::endl;
+      return 0;
+    }
 
     // narrows the generic data reader passed into the listener to the
     // type-specific MessageDataReader interface
@@ -143,10 +141,9 @@ class DDSPort
         DDSMessage::MessageDataReader::_narrow (reader);
 
     if (!messageReader)
-      {
-        std::cerr << "OpenDDS message reader narrowing failed." << std::endl;
-        exit (1);
-      }
+    {
+      std::cerr << "ERROR: initReader() - OpenDDS message reader narrowing failed." << std::endl;
+    }
     return messageReader;
   }
 
@@ -174,20 +171,19 @@ class DDSPort
         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!writer)
-      {
-        std::cerr << "OpenDDS Data Writer creation failed." << std::endl;
-        exit (1);
-      }
+    {
+      std::cerr << "ERROR: initWriter() - OpenDDS Data Writer creation failed." << std::endl;
+      return 0;
+    }
 
     // narrows the generic DataWriter to the type-specific DataWriter
     DDSMessage::MessageDataWriter_var messageWriter =
         DDSMessage::MessageDataWriter::_narrow (writer);
 
     if (!messageWriter)
-      {
-        std::cerr << "OpenDDS Data Writer narrowing failed. " << std::endl;
-        exit (1);
-      }
+    {
+      std::cerr << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. " << std::endl;
+    }
 
     return messageWriter;
   }
@@ -202,6 +198,12 @@ class DDSPort
   {
     if (nextVal && direction == Direction::OUTGOING)
       {
+        if (!messageWriter) 
+        {
+          std::cerr << "ERROR: sendToExternal() - writer not initialized " << std::endl;
+          return;
+        }
+
         auto dataString = dataToJson (nextVal);
 
         DDSMessage::Message message;
@@ -214,7 +216,7 @@ class DDSPort
 
         if (error != DDS::RETCODE_OK)
           {
-            std::cerr << "write returned " << error << std::endl;
+            std::cerr << "ERROR: sendToExternal() - write returned " << error << std::endl;
           }
 
         ++messageId;
