@@ -4,10 +4,11 @@ ${tc.signature("comp","config")}
 
 // Adds port which publishes connectors
 std::string topicConnections = "/connectors";
-connectorPortOut = std::make_unique${"<DDSPort<std::string>>"}(*this, OUTGOING, topicConnections, true);
+connectorPortOut = std::unique_ptr${"<DDSPort<std::string>>"}(new DDSPort${"<std::string>"}(*this, OUTGOING, topicConnections, true));
+
 
 // Adds port which subscribes to connectors
-connectorPortIn = std::make_unique${"<DDSPort<std::string>>"}(*this, INCOMING, topicConnections, true);
+connectorPortIn = std::unique_ptr${"<DDSPort<std::string>>"}(new DDSPort${"<std::string>"}(*this, INCOMING, topicConnections, true));
 
 connectorPortIn->addOnDataAvailableCallbackHandler(std::bind(&${comp.getName()}DDSParticipant::onNewConnectors, this, std::placeholders::_1));
 
