@@ -11,7 +11,11 @@ ${comp.getName()}DDSParticipant::${comp.getName()}DDSParticipant
 (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, int argc, char *argv[]) : comp (comp)
 {
   while (!this->tryInitializeDDS (argc, argv)) {
-    std::cout << "Creating dds instances failed. Is the DCPSInfoRepo service running?" << std::endl;
+    <#if config.getSplittingMode().toString() == "LOCAL">
+      std::cout << "Creating dds instances failed. Is multicast enabled/allowed?" << std::endl;
+    <#else>
+      std::cout << "Creating dds instances failed. Is the DCPSInfoRepo service running?" << std::endl;
+    </#if>
     std::cout << "Trying again..." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }

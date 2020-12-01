@@ -147,7 +147,7 @@ public class MTGenerator {
     }
 
     toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);
-    toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs);
+    toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs, config);
 
     makeExecutable(targetPath, "run", ".sh");
     makeExecutable(targetPath, "kill", ".sh");

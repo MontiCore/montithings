@@ -1,7 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("components")}
+${tc.signature("components", "config")}
 
 <#list components as comp >
   killall ${comp}
 </#list>
+
+<#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
+  docker stop dcpsinforepo
+</#if>
