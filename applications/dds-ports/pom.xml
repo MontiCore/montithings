@@ -227,7 +227,7 @@
                                     <groupId>montithings.generators</groupId>
                                     <artifactId>montithings2cpp</artifactId>
                                     <classifier>${montithings-tests.classifier}</classifier>
-                                    <version>6.0.0-SNAPSHOT</version>
+                                    <version>6.2.0-SNAPSHOT</version>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${basedir}/target/generated-test-sources/test</outputDirectory>
