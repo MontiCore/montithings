@@ -19,7 +19,11 @@ set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_COMPILER "${r"${OPENDDS_COMPILER}"}")
   set(opendds_libs
     OpenDDS::Dcps # Core OpenDDS Library
-    OpenDDS::InfoRepoDiscovery OpenDDS::Tcp
+    OpenDDS::InfoRepoDiscovery 
+    OpenDDS::Tcp
+    OpenDDS::Rtps #RTPS Discovery
+    OpenDDS::Udp
+    OpenDDS::Rtps_Udp
   )
 <#else>
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
