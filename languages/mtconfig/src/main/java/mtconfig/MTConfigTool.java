@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package phyprops;
+package mtconfig;
 
 import bindings._symboltable.adapters.MCQualifiedName2ComponentTypeResolvingDelegate;
 import com.google.common.base.Preconditions;
@@ -8,14 +8,14 @@ import de.monticore.io.paths.ModelPath;
 import montithings.MontiThingsMill;
 import montithings._symboltable.MontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsLanguage;
+import mtconfig._ast.ASTMTConfigUnit;
+import mtconfig._cocos.MTConfigCoCoChecker;
+import mtconfig._cocos.MTConfigCoCos;
+import mtconfig._symboltable.MTConfigArtifactScope;
+import mtconfig._symboltable.MTConfigGlobalScope;
+import mtconfig._symboltable.MTConfigLanguage;
+import mtconfig._symboltable.MTConfigSymbolTableCreatorDelegator;
 import org.codehaus.commons.nullanalysis.NotNull;
-import phyprops._ast.ASTPhypropsUnit;
-import phyprops._cocos.PhypropsCoCoChecker;
-import phyprops._cocos.PhypropsCoCos;
-import phyprops._symboltable.PhypropsArtifactScope;
-import phyprops._symboltable.PhypropsGlobalScope;
-import phyprops._symboltable.PhypropsLanguage;
-import phyprops._symboltable.PhypropsSymbolTableCreatorDelegator;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -23,25 +23,25 @@ import java.nio.file.Paths;
 import java.util.Set;
 
 /**
- * Provides useful methods for handling the Phyprops language.
+ * Provides useful methods for handling the MTConfig language.
  */
-public class PhypropsTool {
+public class MTConfigTool {
 
-  protected PhypropsLanguage language;
+  protected MTConfigLanguage language;
 
-  private PhypropsArtifactScope artifactScope;
+  private MTConfigArtifactScope artifactScope;
 
-  protected PhypropsCoCoChecker checker;
+  protected MTConfigCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
 
   private MontiThingsGlobalScope mtGlobalScope;
 
-  public PhypropsTool() {
-    this(PhypropsCoCos.createChecker() ,new PhypropsLanguage());
+  public MTConfigTool() {
+    this(MTConfigCoCos.createChecker() ,new MTConfigLanguage());
   }
 
-  public PhypropsTool(@NotNull PhypropsCoCoChecker checker, @NotNull PhypropsLanguage language) {
+  public MTConfigTool(@NotNull MTConfigCoCoChecker checker, @NotNull MTConfigLanguage language) {
     Preconditions.checkArgument(checker != null);
     Preconditions.checkArgument(language != null);
     this.checker = checker;
@@ -49,7 +49,7 @@ public class PhypropsTool {
     this.isSymTabInitialized = false;
   }
 
-  public PhypropsArtifactScope getArtifactScope() {
+  public MTConfigArtifactScope getArtifactScope() {
     return artifactScope;
   }
 
@@ -63,7 +63,7 @@ public class PhypropsTool {
    * @param modelPaths paths of all folders containing models
    * @return The initialized symbol table
    */
-  public PhypropsGlobalScope initSymbolTable(File... modelPaths) {
+  public MTConfigGlobalScope initSymbolTable(File... modelPaths) {
     Set<Path> p = Sets.newHashSet();
     for (File mP : modelPaths) {
       p.add(Paths.get(mP.getAbsolutePath()));
@@ -85,11 +85,11 @@ public class PhypropsTool {
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
     }
 
-    PhypropsGlobalScope phypropsGlobalScope = new PhypropsGlobalScope(mp, language);
-    phypropsGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
+    MTConfigGlobalScope mtConfigGlobalScope = new MTConfigGlobalScope(mp, language);
+    mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
 
     isSymTabInitialized = true;
-    return phypropsGlobalScope;
+    return mtConfigGlobalScope;
   }
 
   /**
@@ -99,10 +99,10 @@ public class PhypropsTool {
    * @param modelPaths path that contains all models
    * @return created global scope
    */
-  public PhypropsGlobalScope createSymboltable(ASTPhypropsUnit ast,
+  public MTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
       File... modelPaths) {
 
-    PhypropsGlobalScope globalScope = initSymbolTable(modelPaths);
+    MTConfigGlobalScope globalScope = initSymbolTable(modelPaths);
 
     return createSymboltable(ast,globalScope);
   }
@@ -114,10 +114,10 @@ public class PhypropsTool {
    * @param globalScope globalScope used for the symbolTable
    * @return extended global scope
    */
-  public PhypropsGlobalScope createSymboltable(ASTPhypropsUnit ast,
-      PhypropsGlobalScope globalScope) {
+  public MTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
+      MTConfigGlobalScope globalScope) {
 
-    PhypropsSymbolTableCreatorDelegator stc = language
+    MTConfigSymbolTableCreatorDelegator stc = language
         .getSymbolTableCreator(globalScope);
     artifactScope = stc.createFromAST(ast);
 

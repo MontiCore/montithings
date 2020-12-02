@@ -1,12 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package cocoTest;
 
-import phyprops.util.PhypropsError;
+import mtconfig.util.MTConfigError;
 
 import java.util.regex.Pattern;
 
 /**
- * Tests CoCos of Phyprops.
+ * Tests CoCos of MTConfig.
  *
  * @author Julian Krebber
  */
@@ -17,7 +17,7 @@ public class CoCoTest extends AbstractTest {
 
   @Override
   protected Pattern supplyErrorCodePattern() {
-    return PhypropsError.ERROR_CODE_PATTERN;
+    return MTConfigError.ERROR_CODE_PATTERN;
   }
 }
 

@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
-package phyprops.util;
+package mtconfig.util;
 
 import java.util.regex.Pattern;
 
 /**
- * This is the mixin interface for all phyprops errors. This interface serves as an extension
+ * This is the mixin interface for all mtConfig errors. This interface serves as an extension
  * point to add new error codes in submodules of the MontiArc framework.
  */
 public interface Error {

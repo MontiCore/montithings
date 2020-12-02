@@ -67,7 +67,7 @@ Validate Gradle:
       - languages/montiarc-extensions/target/
       - languages/monticore-extensions/target/
       - languages/montithings/target/
-      - languages/phyprops/target/
+      - languages/mtConfig/target/
   script:
     - gradle clean assemble
     

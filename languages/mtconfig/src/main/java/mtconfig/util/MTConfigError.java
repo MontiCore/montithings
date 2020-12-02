@@ -1,17 +1,17 @@
 // (c) https://github.com/MontiCore/monticore
-package phyprops.util;
+package mtconfig.util;
 
 /**
- * The enum of all Phyprops errors. Extends the mixing interface {@link phyprops.util.Error}
+ * The enum of all MTConfig errors. Extends the mixing interface {@link mtconfig.util.Error}
  */
-public enum PhypropsError implements phyprops.util.Error {
+public enum MTConfigError implements mtconfig.util.Error {
   MISSING_REQUIREMENT_NAME("0xPHY1030", "ASTRequirementStatement '%s' at <%d,%d> has no corresponding ComponentTypeSymbols."),
 ;
 
   private final String errorCode;
   private final String errorMessage;
 
-  PhypropsError(String errorCode, String errorMessage) {
+  MTConfigError(String errorCode, String errorMessage) {
     assert (errorCode != null);
     assert (errorMessage != null);
     assert (ERROR_CODE_PATTERN.matcher(errorCode).matches());

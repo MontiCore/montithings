@@ -70,11 +70,11 @@ dependencies {
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
 }
 
-task generateGrammarPhyprops(type: MCTask) {
-  grammar = file "$grammarDir/Phyprops.mc4"
+task generateGrammarMTConfig(type: MCTask) {
+  grammar = file "$grammarDir/MTConfig.mc4"
   outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
   handcodedPath = [file("$projectDir/src/main/java")]
-  def upToDate = incCheck("Phyprops.mc4")
+  def upToDate = incCheck("MTConfig.mc4")
   outputs.upToDateWhen { upToDate }
 }
 

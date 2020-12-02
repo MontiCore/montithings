@@ -1,0 +1,47 @@
+// (c) https://github.com/MontiCore/monticore
+
+/**
+ * MTConfig provides deployment language dependent import MTCFGTags.
+ */
+grammar MTConfig extends MontiThings  {
+
+  start MTConfigUnit;
+
+  /* ============================================================ */
+  /* ================ Requirements & Capabilities =============== */
+  /* ============================================================ */
+
+  /**
+   * MTConfigUnit represents the complete requirements & capabilities
+   * @attribute package  The package declaration of the elements.
+   * @attribute DepLanguage List of elements.
+  */
+  scope MTConfigUnit = ("package" package:(Name& || ".")+ ";")?  Element*;
+
+  interface Element;
+
+  interface MTCFGTag;
+
+  scope symbol CompConfig implements Element = "config" Name@ComponentType "for" platform:Name /*TODO set appropriate reference when possible */
+  "{"
+    MTCFGTag*
+  "}";
+
+  scope symbol PortTemplateStatement implements MTCFGTag = Name@Port Arguments? "{"
+        Hookpoint+
+  "}";
+
+  symbol Hookpoint = Name "=" template:String Arguments? ";";
+
+  /**
+   *  RequirementMTCFGTags contain information about what physical requirements
+   *  a component has. E.g Sensors/Actuators etc.
+   */
+  scope symbol RequirementStatement implements MTCFGTag =
+    (package:MCQualifiedName ".")? component:Name@ComponentType "requires" (propertiess:Property | "{" propertiess:Property+ "}");
+
+  symbol Property = Name& ":"
+    (
+      stringValue:StringLiteral | numericValue:SignedNumericLiteral
+    ) ";";
+}

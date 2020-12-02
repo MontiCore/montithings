@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package phyprops._ast;
+package mtconfig._ast;
 
 public class ASTRequirementStatement extends ASTRequirementStatementTOP {
   @Override

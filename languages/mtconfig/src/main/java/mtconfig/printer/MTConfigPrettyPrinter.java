@@ -1,31 +1,31 @@
 // (c) https://github.com/MontiCore/monticore
-package phyprops.printer;
+package mtconfig.printer;
 
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
+import mtconfig._ast.ASTMTConfigUnit;
+import mtconfig._ast.ASTProperty;
+import mtconfig._ast.ASTRequirementStatement;
+import mtconfig._visitor.MTConfigVisitor;
 import org.apache.commons.lang3.StringUtils;
-import phyprops._ast.ASTPhypropsUnit;
-import phyprops._ast.ASTProperty;
-import phyprops._ast.ASTRequirementStatement;
-import phyprops._visitor.PhypropsVisitor;
 
 import java.util.Iterator;
 
 /**
- * PrettyPrinter for the Phyprops Language.
+ * PrettyPrinter for the MTConfig Language.
  *
  * @author Julian Krebber
  */
-public class PhypropsPrettyPrinter extends MCBasicTypesPrettyPrinter implements PhypropsVisitor {
+public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements MTConfigVisitor {
 
-  private PhypropsVisitor realThis = this;
+  private MTConfigVisitor realThis = this;
 
   /**
    * Constructor.
    *
    * @param printer the printer to write to.
    */
-  public PhypropsPrettyPrinter(IndentPrinter printer) {
+  public MTConfigPrettyPrinter(IndentPrinter printer) {
     super(printer);
   }
 
@@ -33,7 +33,7 @@ public class PhypropsPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
    * @see de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor#setRealThis(de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor)
    */
   @Override
-  public void setRealThis(PhypropsVisitor realThis) {
+  public void setRealThis(MTConfigVisitor realThis) {
     this.realThis = realThis;
   }
 
@@ -41,12 +41,12 @@ public class PhypropsPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
    * @see de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor#getRealThis()
    */
   @Override
-  public PhypropsVisitor getRealThis() {
+  public MTConfigVisitor getRealThis() {
     return realThis;
   }
 
   @Override
-  public void visit(ASTPhypropsUnit a){
+  public void visit(ASTMTConfigUnit a){
     if(!a.isEmptyPackages()) {
       this.getPrinter().print("package ");
       StringUtils.join(a.getPackageList(),".");
