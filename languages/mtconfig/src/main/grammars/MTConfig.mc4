@@ -16,7 +16,7 @@ grammar MTConfig extends MontiThings  {
    * @attribute package  The package declaration of the elements.
    * @attribute DepLanguage List of elements.
   */
-  scope MTConfigUnit = ("package" package:(Name& || ".")+ ";")?  Element*;
+  scope MTConfigUnit = ("package" package:MCQualifiedName ";")?  Element*;
 
   interface Element;
 
@@ -27,7 +27,7 @@ grammar MTConfig extends MontiThings  {
     MTCFGTag*
   "}";
 
-  scope symbol PortTemplateStatement implements MTCFGTag = Name@Port Arguments? "{"
+  scope symbol PortTemplateTag implements MTCFGTag = Name@Port Arguments? "{"
         Hookpoint+
   "}";
 

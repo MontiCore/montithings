@@ -1,0 +1,15 @@
+package cocoTest.valid;
+
+config SpeedLimiter for DSA {
+    inPort {
+      include  = "template1.ftl";
+      init     = "template2.ftl";
+    }
+}
+
+config SpeedLimiter for Ford {
+  inPort {
+        include  = "template3.ftl";
+        init     = "template4.ftl";
+      }
+}

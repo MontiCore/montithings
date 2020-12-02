@@ -15,6 +15,7 @@ import mtconfig._symboltable.MTConfigArtifactScope;
 import mtconfig._symboltable.MTConfigGlobalScope;
 import mtconfig._symboltable.MTConfigLanguage;
 import mtconfig._symboltable.MTConfigSymbolTableCreatorDelegator;
+import mtconfig._symboltable.adapters.MCQualifiedName2PortResolvingDelegate;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
@@ -73,6 +74,7 @@ public class MTConfigTool {
 
 
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
+    MCQualifiedName2PortResolvingDelegate portResolvingDelegate;
     if(this.mtGlobalScope ==null) {
       MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
       MontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
@@ -80,13 +82,16 @@ public class MTConfigTool {
           .setMontiThingsLanguage(mtLang)
           .build();
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
+      portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(newMtGlobalScope);
     }
     else{
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
+      portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
     }
 
     MTConfigGlobalScope mtConfigGlobalScope = new MTConfigGlobalScope(mp, language);
     mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
+    mtConfigGlobalScope.addAdaptedPortSymbolResolvingDelegate(portResolvingDelegate);
 
     isSymTabInitialized = true;
     return mtConfigGlobalScope;

@@ -8,7 +8,7 @@ package mtconfig._symboltable;
  */
 public class MTConfigLanguage extends MTConfigLanguageTOP {
 
-  public static final String FILE_ENDING = "phyProp";
+  public static final String FILE_ENDING = "mtcfg";
 
   public MTConfigLanguage() {
     super("Physical Properties and Capabilities Language", FILE_ENDING);

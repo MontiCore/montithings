@@ -7,7 +7,6 @@ import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._ast.ASTProperty;
 import mtconfig._ast.ASTRequirementStatement;
 import mtconfig._visitor.MTConfigVisitor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Iterator;
 
@@ -47,9 +46,9 @@ public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
 
   @Override
   public void visit(ASTMTConfigUnit a){
-    if(!a.isEmptyPackages()) {
+    if(a.isPresentPackage()) {
       this.getPrinter().print("package ");
-      StringUtils.join(a.getPackageList(),".");
+      this.getPrinter().print(a.getPackage().getQName());
       this.getPrinter().println(";");
     }
   }
