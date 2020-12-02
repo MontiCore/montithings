@@ -39,13 +39,13 @@ import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
-import phyprops.PhypropsTool;
-import phyprops._ast.ASTPhypropsUnit;
-import phyprops._cocos.PhypropsCoCos;
-import phyprops._parser.PhypropsParser;
-import phyprops._symboltable.PhypropsGlobalScope;
-import phyprops._symboltable.PhypropsLanguage;
-import phyprops._symboltable.PhypropsModelLoader;
+import mtconfig.MTConfigTool;
+import mtconfig._ast.ASTMTConfigUnit;
+import mtconfig._cocos.MTConfigCoCos;
+import mtconfig._parser.MTConfigParser;
+import mtconfig._symboltable.MTConfigGlobalScope;
+import mtconfig._symboltable.MTConfigLanguage;
+import mtconfig._symboltable.MTConfigModelLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,8 +100,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     bindingsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
     BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
-    PhypropsTool phypropsTool = new PhypropsTool();
-    phypropsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
+    MTConfigTool mtConfigTool = new MTConfigTool();
+    mtConfigTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
 
     for (String model : models.getMontithings()) {
       // Parse model
@@ -125,7 +125,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkMtModels(models.getMontithings(), symTab, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkPhyprops(models.getPhyprops(), phypropsTool.initSymbolTable(modelPath));
+    checkMTConfig(models.getMTConfig(), mtConfigTool.initSymbolTable(modelPath));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -265,25 +265,25 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
-  protected void checkPhyprops(List<String> foundModels, PhypropsGlobalScope symTab) {
+  protected void checkMTConfig(List<String> foundModels, MTConfigGlobalScope symTab) {
     for (String model : foundModels) {
-      ASTPhypropsUnit ast = null;
+      ASTMTConfigUnit ast = null;
       try {
-        ast = new PhypropsParser().parsePhypropsUnit(model)
+        ast = new MTConfigParser().parseMTConfigUnit(model)
           .orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: " + model));
       }
       catch (IOException e) {
-        Log.error("File '" + model + "' Phyprops artifact was not found");
+        Log.error("File '" + model + "' MTConfig artifact was not found");
       }
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      new PhypropsModelLoader(new PhypropsLanguage())
+      new MTConfigModelLoader(new MTConfigLanguage())
         .createSymbolTableFromAST(ast, model, symTab);
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
-      new PhypropsCoCos().createChecker().checkAll(ast);
+      new MTConfigCoCos().createChecker().checkAll(ast);
     }
   }
 

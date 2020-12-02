@@ -20,7 +20,7 @@ public class MontiThingsConfiguration implements Configuration {
 
   public static final String DEFAULT_HWC_DIRECTORY = "src";
 
-  public static final ConfigParams configParams = new ConfigParams();
+  public ConfigParams configParams = new ConfigParams();
 
   /**
    * The names of the specific MontiThings options used in this configuration.

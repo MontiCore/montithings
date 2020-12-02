@@ -6,7 +6,7 @@ import cdlangextension._symboltable.CDLangExtensionLanguage;
 import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import montiarc.util.Modelfinder;
 import montithings._symboltable.MontiThingsLanguage;
-import phyprops._symboltable.PhypropsLanguage;
+import mtconfig._symboltable.MTConfigLanguage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class Models {
   /**
    * Physical requirements
    */
-  private List<String> phyprops = new ArrayList<>();
+  private List<String> mtConfig = new ArrayList<>();
 
   /**
    * CD Lang Extension models
@@ -54,7 +54,7 @@ public class Models {
       .map(File::toString).collect(Collectors.toList());
     cdextensions = Modelfinder.getModelFiles(CDLangExtensionLanguage.FILE_ENDING, modelPath).stream()
       .map(File::toString).collect(Collectors.toList());
-    phyprops = Modelfinder.getModelFiles(PhypropsLanguage.FILE_ENDING, modelPath).stream()
+    mtConfig = Modelfinder.getModelFiles(MTConfigLanguage.FILE_ENDING, modelPath).stream()
         .map(File::toString).collect(Collectors.toList());
   }
 
@@ -63,12 +63,12 @@ public class Models {
   /* ============================================================ */
 
   public Models(List<String> montithings, List<String> bindings,
-    List<String> classdiagrams, List<String> cdextensions,List<String> phyprops) {
+    List<String> classdiagrams, List<String> cdextensions,List<String> mtConfig) {
     this.montithings = montithings;
     this.bindings = bindings;
     this.classdiagrams = classdiagrams;
     this.cdextensions = cdextensions;
-    this.phyprops = phyprops;
+    this.mtConfig = mtConfig;
   }
 
   public List<String> getMontithings() {
@@ -103,11 +103,11 @@ public class Models {
     this.cdextensions = cdextensions;
   }
 
-  public List<String> getPhyprops() {
-    return phyprops;
+  public List<String> getMTConfig() {
+    return mtConfig;
   }
 
-  public void setPhyprops(List<String> phyprops) {
-    this.phyprops = phyprops;
+  public void setMTConfig(List<String> mtConfig) {
+    this.mtConfig = mtConfig;
   }
 }
