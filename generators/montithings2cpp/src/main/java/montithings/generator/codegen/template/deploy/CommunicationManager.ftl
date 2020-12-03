@@ -17,7 +17,7 @@ ${tc.signature("comp", "config")}
 
 ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (argv[1]);
 
-<#if config.getMessageBroker().toString() == "DDS">
+<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(&cmp, argc, argv);
   ddsParticipant.initializePorts();
   ddsParticipant.publishConnectors();
