@@ -6,7 +6,7 @@ ${tc.signature("comp", "config")}
 
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
 echo "Starting DCPSInfoRepo..."
-docker run --name dcpsinforepo -d -p 12345:12345 registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds run_dcpsinforepo.sh
+docker run --name dcpsinforepo -d -p 12345:12345 registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo
 echo "Waiting 5 seconds..."
 sleep 5
 echo "Starting components..."
