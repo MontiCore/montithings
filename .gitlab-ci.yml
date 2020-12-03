@@ -53,6 +53,20 @@ Docker DDS:
     - docker build -t $CI_REGISTRY_IMAGE/mtcmakedds .
     - docker push $CI_REGISTRY_IMAGE/mtcmakedds
 
+Docker OpenDDSDCPSInfoRepo:
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay2
+  cache: {}
+  tags:
+    - shell
+    - docker
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - cd docker/openddsdcpsinforepo
+    - docker build -t $CI_REGISTRY_IMAGE/openddsdcpsinforepo .
+    - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
+
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
@@ -147,6 +161,10 @@ Generator Test Alpine:
 
 Generator Test DDS:
   image: $CI_REGISTRY_IMAGE/mtcmakedds
+  <<: *generator_test_definition
+
+Generator Test OpenDDSDCPSInfoRepo:
+  image: $CI_REGISTRY_IMAGE/openddsdcpsinforepo
   <<: *generator_test_definition
 
 Deploy Nexus:

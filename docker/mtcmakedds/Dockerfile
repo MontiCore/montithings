@@ -1,5 +1,4 @@
-ARG BASIS=ubuntu:groovy
-FROM $BASIS
+FROM ubuntu:groovy
 
 RUN apt-get update && apt-get install -y \
 	git \
@@ -15,7 +14,6 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     perl-base \
     perl-modules
-
 
 # Switch into our working directory for building nng
 WORKDIR /usr/src/app
@@ -45,9 +43,6 @@ RUN cd /usr/src/app/opendds \
 && make \
 && ldconfig \
 && . /usr/src/app/opendds/setenv.sh
-
-ADD run_dcpsinforepo.sh /usr/src/app/
-RUN chmod +x /usr/src/app/run_dcpsinforepo.sh
 
 ENV ACE_ROOT=/usr/src/app/opendds/ACE_wrappers \
     TAO_ROOT=/usr/src/app/opendds/ACE_wrappers/TAO \
