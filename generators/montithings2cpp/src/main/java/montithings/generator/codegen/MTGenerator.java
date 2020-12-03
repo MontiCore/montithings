@@ -3,6 +3,7 @@ package montithings.generator.codegen;
 
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.utils.Names;
@@ -10,6 +11,7 @@ import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
+import mtconfig._symboltable.HookpointSymbol;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -174,7 +176,7 @@ public class MTGenerator {
       toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/ImplementationFile.ftl", ".cpp",packageName, simpleName, config);
     }
 
-  public static void generateAdditionalPort(Path templatePath, File targetPath, String portName) {
+  public static void generateAdditionalPort(Path templatePath, File targetPath, String portName, ConfigParams config, PortSymbol portSymbol) {
     Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + StringUtils.capitalize(Names.getSimpleName(portName) + ".h"));
     if(!path.toFile().exists()||!path.toFile().isFile()) {
       Log.debug("Writing to file " + path + ".","");
@@ -183,24 +185,40 @@ public class MTGenerator {
       setup.setAdditionalTemplatePaths(Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
 
       Set<File> templates = FileHelper.getPortImplementation(Paths.get(templatePath.toFile().getAbsolutePath(),Names.getPathFromPackage(Names.getQualifier(portName))).toFile(),Names.getSimpleName(portName));
-      for (File template:templates) {
-        if(template.getName().endsWith(Names.getSimpleName(portName)+"Include.ftl")){
-          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:include", portName+"Include");
-        }
-        else if(template.getName().endsWith(Names.getSimpleName(portName)+"Body.ftl")){
-          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:body", portName+"Body");
-        }
-        else if(template.getName().endsWith(Names.getSimpleName(portName)+"GetExternalMessages.ftl")){
-          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:getExternalMessages", portName+"GetExternalMessages");
-        }
-        else if(template.getName().endsWith(Names.getSimpleName(portName)+"SendToExternal.ftl")){
-          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:sendToExternal", portName+"SendToExternal");
-        }
-      }
+
+      bindSAPortTemplate(portName, setup, templates, "include", config, portSymbol);
+      bindSAPortTemplate(portName, setup, templates, "body", config, portSymbol);
+      bindSAPortTemplate(portName, setup, templates, "getExternalMessages", config, portSymbol);
+      bindSAPortTemplate(portName, setup, templates, "sendToExternal", config, portSymbol);
+
 
       GeneratorEngine engine = new GeneratorEngine(setup);
 
       engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, portName);
     }
  }
+
+  private static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates, String method, ConfigParams config, PortSymbol portSymbol) {
+    method = StringUtils.capitalize(method);
+    Optional<HookpointSymbol> hookpointSymbol = Optional.empty();
+    if(!(config.getMtConfigScope()==null)){
+      hookpointSymbol = config.getMtConfigScope().resolveHookpoint(config.getTargetPlatform().name(),portSymbol,StringUtils.uncapitalize(method));
+    }
+    if(hookpointSymbol.isPresent()){
+      String templateName = Names.getQualifier(portName)+"."+hookpointSymbol.get().getAstNode().getTemplate();
+      templateName = templateName.substring(0,templateName.lastIndexOf(".ftl"));
+      setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:" + StringUtils.uncapitalize(method), templateName);
+      if(hookpointSymbol.get().getAstNode().isPresentArguments()){
+        setup.getGlex().defineGlobalVar("globalVar"+method,hookpointSymbol.get().getAstNode().getArguments());
+      }
+    }
+    else {
+      for (File template : templates) {
+        if (template.getName().endsWith(Names.getSimpleName(portName) + method + ".ftl")) {
+          setup.getGlex().bindTemplateHookPoint("<CppBlock>?portTemplate:" + StringUtils.uncapitalize(method), portName + method);
+          break;
+        }
+      }
+    }
+  }
 }

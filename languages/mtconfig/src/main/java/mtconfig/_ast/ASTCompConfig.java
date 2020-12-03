@@ -6,12 +6,13 @@ public class ASTCompConfig extends ASTCompConfigTOP {
   @Override
   protected void updateNameSymbolLoader() {
     super.updateNameSymbolLoader();
+    String name = this.getSymbol().getFullName();
     if (nameSymbolLoader == null) {
-        nameSymbolLoader = new arcbasis._symboltable.ComponentTypeSymbolLoader(this.getSymbol().getFullName(), this.getEnclosingScope());
+        nameSymbolLoader = new arcbasis._symboltable.ComponentTypeSymbolLoader(name, this.getEnclosingScope());
     }
     else {
-      if (!(this.getSymbol().getFullName()).equals(nameSymbolLoader.getName())) {
-        nameSymbolLoader.setName(this.getSymbol().getFullName());
+      if (!(name.equals(nameSymbolLoader.getName()))) {
+        nameSymbolLoader.setName(name);
       }
     }
   }

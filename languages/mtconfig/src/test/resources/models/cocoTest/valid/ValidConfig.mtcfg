@@ -7,9 +7,9 @@ config SpeedLimiter for DSA {
     }
 }
 
-config SpeedLimiter for Ford {
+config SpeedLimiter for GENERIC {
   inPort {
-        include  = "template3.ftl";
+        include  = "template3.ftl" (testArg);
         init     = "template4.ftl";
       }
 }

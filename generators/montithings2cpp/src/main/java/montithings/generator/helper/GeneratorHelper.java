@@ -3,10 +3,11 @@ package montithings.generator.helper;
 
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.utils.Names;
+import montithings.generator.codegen.ConfigParams;
+import mtconfig._symboltable.PortTemplateTagSymbol;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,8 +24,8 @@ public class GeneratorHelper {
    * @return The qualified type name of the port that is defined by given templates for the given port.
    * If no fitting templates are present Optional.empty is returned.
    */
-  public static Optional<String> getPortHwcTemplateName(PortSymbol port, Path hwcTemplatePath) {
-    if (portHasHwcTemplate(port, hwcTemplatePath)) {
+  public static Optional<String> getPortHwcTemplateName(PortSymbol port, ConfigParams config) {
+    if (portHasHwcTemplate(port, config)) {
       String packageName = Names.getQualifier(Names.getQualifier(port.getFullName()));
       String componentName = StringUtils.capitalize(Names.getSimpleName(Names.getQualifier(port.getFullName())));
       return Optional.of(packageName + "." + componentName + StringUtils.capitalize(port.getName()) + "Port");
@@ -40,12 +41,24 @@ public class GeneratorHelper {
    * @param port port for which to search for code templates
    * @return true if templates exist, false otherwise
    */
-  public static boolean portHasHwcTemplate(PortSymbol port, Path hwcTemplatePath) {
+  public static boolean portHasHwcTemplate(PortSymbol port, ConfigParams config) {
     String packageName = Names.getQualifier(Names.getQualifier(port.getFullName()));
     String componentName = StringUtils.capitalize(Names.getSimpleName(Names.getQualifier(port.getFullName())));
     Set<File> files = FileHelper.getPortImplementation(
-      new File(hwcTemplatePath + File.separator + Names.getPathFromPackage(packageName)),
+        new File(config.getHwcTemplatePath() + File.separator + Names.getPathFromPackage(packageName)),
       componentName + StringUtils.capitalize(port.getName()) + "Port");
-    return !files.isEmpty();
+    if(!files.isEmpty()){
+      return true;
+    }
+
+    Optional<PortTemplateTagSymbol> portTemplateTagSymbol = Optional.empty();
+    if(!(config.getMtConfigScope()==null)) {
+      portTemplateTagSymbol = config.getMtConfigScope().resolvePortTemplateTag(config.getTargetPlatform().name(), port);
+    }
+    if(portTemplateTagSymbol.isPresent()&&portTemplateTagSymbol.get().isPresentAstNode()&&!portTemplateTagSymbol.get().getAstNode().isEmptyHookpoints()){
+      return true;
+    }
+
+    return false;
   }
 }

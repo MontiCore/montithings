@@ -44,8 +44,6 @@ import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.MTConfigGlobalScope;
-import mtconfig._symboltable.MTConfigLanguage;
-import mtconfig._symboltable.MTConfigModelLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +108,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
       // Find ports with templates
-      FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config.getHwcTemplatePath());
+      FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config);
       comp.getAstNode().accept(vistor);
       config.getTemplatedPorts().addAll(vistor.getTemplatedPorts());
     }
@@ -125,7 +123,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkMtModels(models.getMontithings(), symTab, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkMTConfig(models.getMTConfig(), mtConfigTool.initSymbolTable(modelPath));
+    checkMTConfig(models.getMTConfig(), config, mtConfigTool,mtConfigTool.initSymbolTable(modelPath));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -265,7 +263,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
-  protected void checkMTConfig(List<String> foundModels, MTConfigGlobalScope symTab) {
+  protected void checkMTConfig(List<String> foundModels, ConfigParams config, MTConfigTool mtConfigTool, MTConfigGlobalScope symTab) {
     for (String model : foundModels) {
       ASTMTConfigUnit ast = null;
       try {
@@ -278,12 +276,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      new MTConfigModelLoader(new MTConfigLanguage())
-        .createSymbolTableFromAST(ast, model, symTab);
+      if (config.getMtConfigScope() == null) {
+        config
+            .setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
+      }
+      else {
+        mtConfigTool.createSymboltable(ast,
+            (MTConfigGlobalScope) config.getMtConfigScope());
+      }
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
-      new MTConfigCoCos().createChecker().checkAll(ast);
+      MTConfigCoCos.createChecker().checkAll(ast);
     }
   }
 
@@ -422,9 +426,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   public void generateHwcPort(File target, ConfigParams config, ComponentTypeSymbol comp) {
     for(PortSymbol port : comp.getPorts()) {
       if(config.getTemplatedPorts().contains(port)) {
-        Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config.getHwcTemplatePath());
+        Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config);
         if (portType.isPresent()) {
-          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), new File(target + File.separator + "hwc" + File.separator + Names.getPathFromPackage(Names.getQualifier(portType.get()))), portType.get());
+          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), new File(target + File.separator + "hwc" + File.separator + Names.getPathFromPackage(Names.getQualifier(portType.get()))), portType.get(), config, port);
         }
       }
     }
