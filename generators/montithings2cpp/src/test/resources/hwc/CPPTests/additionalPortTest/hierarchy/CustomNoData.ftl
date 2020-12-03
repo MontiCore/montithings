@@ -4,5 +4,5 @@ if (nextVal)
   }
 else
   { 
-  	std::cout << "Sink: " << "${glex.getGlobalVar("globalVarSendToExternal")!}" << std::endl;
+  	std::cout << "Sink: " << "${glex.getGlobalVar("globalVarSendToExternal").getExpression(0).getLiteral().getValue()!}" << std::endl;
   }

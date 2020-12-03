@@ -2,7 +2,7 @@ package hierarchy;
 
 config Sink for GENERIC {
   actuator {
-        sendToExternal  = "CustomNoData.ftl";
+        sendToExternal  = "CustomNoData.ftl" ("where is the data");
       }
 }
 
