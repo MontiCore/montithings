@@ -153,6 +153,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     generateCD(modelPath, target);
     MTGenerator.generateBuildScript(target, config);
 
+    for (String model : models.getMontithings()) {
+      ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+      if (ComponentHelper.isApplication(comp)) {
+        MTGenerator.generateDockerfileScript(target, comp, config);
+      }
+    }
+
     if (testPath != null && !testPath.toString().equals("")) {
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
         config.setSplittingMode(ConfigParams.SplittingMode.OFF);

@@ -111,6 +111,11 @@ public class MTGenerator {
     makeExecutable(targetPath, "reformatCode", ".sh");
   }
 
+  public static void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
+    toFile(targetPath, "Dockerfile", "template/util/scripts/DockerfileScript.ftl", "", comp, config);
+  }
+  
+
   public static void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
   toFile(targetPath, "CMakeLists", "template/util/cmake/TopLevelCMake.ftl", ".txt",targetPath.listFiles(),
       comp,
@@ -148,7 +153,7 @@ public class MTGenerator {
 
     toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);
     toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs, config);
-
+    
     makeExecutable(targetPath, "run", ".sh");
     makeExecutable(targetPath, "kill", ".sh");
   }
