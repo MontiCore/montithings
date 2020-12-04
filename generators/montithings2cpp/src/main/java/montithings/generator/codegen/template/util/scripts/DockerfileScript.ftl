@@ -45,17 +45,9 @@ RUN ./build.sh ${comp.getFullName()}
 
     COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
 
-    <#if config.getMessageBroker().toString() == "DDS">
-    COPY --from=build /usr/src/app/build/bin/dcpsconfig.ini /usr/src/app/build/bin/
-    </#if>
-
     WORKDIR /usr/src/app/build/bin
 
-    <#if config.getMessageBroker().toString() == "DDS">
-    RUN echo './${pair.getKey().fullName} -DCPSConfigFile dcpsconfig.ini "$@"' > entrypoint.sh
-    <#else>
     RUN echo './${pair.getKey().fullName} "$@"' > entrypoint.sh
-    </#if>
 
     # Run our binary on container startup
     ENTRYPOINT [ "sh", "entrypoint.sh" ]
