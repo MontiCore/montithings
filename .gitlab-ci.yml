@@ -163,10 +163,6 @@ Generator Test DDS:
   image: $CI_REGISTRY_IMAGE/mtcmakedds
   <<: *generator_test_definition
 
-Generator Test OpenDDSDCPSInfoRepo:
-  image: $CI_REGISTRY_IMAGE/openddsdcpsinforepo
-  <<: *generator_test_definition
-
 Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
   stage: post-test
