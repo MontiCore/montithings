@@ -1,5 +1,8 @@
 ${tc.signature("comp", "config")}
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign instances = ComponentHelper.getInstances(comp)>
 
+# Build Image -----------------------------
 <#if config.getMessageBroker().toString() == "DDS">
     FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
 <#else>
@@ -22,41 +25,38 @@ RUN ./build.sh ${comp.getPackageName()}
 <#else>
 RUN ./build.sh ${comp.getFullName()}
 </#if>
+# -----------------------------------------
 
-<#-- the dds build image is based on ubuntu, thus we have to distinguish -->
-<#if config.getMessageBroker().toString() == "DDS">
-FROM ubuntu:groovy
-<#else>
-FROM alpine
+<#list instances as pair >
+    # COMPONENT: ${pair.getKey().fullName}
+    <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
+    <#if config.getMessageBroker().toString() == "DDS">
+    FROM ubuntu:groovy AS ${pair.getKey().fullName}
+    <#else>
+    FROM alpine AS ${pair.getKey().fullName}
 
-RUN apk add --update-cache g++ 
-</#if>
+    RUN apk add --update-cache g++ 
+    </#if>
 
-<#if config.getMessageBroker().toString() == "MQTT">
-RUN apk add --update-cache mosquitto
-</#if>
-
-<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
-RUN apt update && apt install multitail
-<#elseif config.getSplittingMode().toString() != "OFF">
-RUN apk add --update-cache multitail
-</#if>
-
-COPY --from=build /usr/src/app/build/bin /usr/src/app/build/bin 
-
-WORKDIR /usr/src/app/build/bin
-
-<#if config.getSplittingMode().toString() == "OFF">
-<#if config.getMessageBroker().toString() == "DDS">
-RUN echo './${comp.getFullName()} -DCPSConfigFile dcpsconfig.ini "$@"' > entrypoint.sh
-<#else>
-RUN echo './${comp.getFullName()} "$@"' > entrypoint.sh
-</#if>
-<#else>
-RUN echo "./run.sh" > entrypoint.sh
-RUN echo "multitail  ${comp.getFullName()}.*" >> entrypoint.sh
-</#if>
+    <#if config.getMessageBroker().toString() == "MQTT">
+    RUN apk add --update-cache mosquitto
+    </#if>
 
 
-# Run our binary on container startup
-ENTRYPOINT [ "sh", "entrypoint.sh" ]
+    COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
+
+    <#if config.getMessageBroker().toString() == "DDS">
+    COPY --from=build /usr/src/app/build/bin/dcpsconfig.ini /usr/src/app/build/bin/
+    </#if>
+
+    WORKDIR /usr/src/app/build/bin
+
+    <#if config.getMessageBroker().toString() == "DDS">
+    RUN echo './${pair.getKey().fullName} -DCPSConfigFile dcpsconfig.ini "$@"' > entrypoint.sh
+    <#else>
+    RUN echo './${pair.getKey().fullName} "$@"' > entrypoint.sh
+    </#if>
+
+    # Run our binary on container startup
+    ENTRYPOINT [ "sh", "entrypoint.sh" ]
+</#list>
