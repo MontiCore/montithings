@@ -145,7 +145,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           MTGenerator.generatePortJson(compTarget, comp, config);
         }
       }
-
+      if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
+        MTGenerator.generateDDSDCPSConfig(compTarget, config);
+      }
+      
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
     }

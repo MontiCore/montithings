@@ -147,15 +147,15 @@ public class MTGenerator {
     sortedDirs.addAll(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
-    if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
-      toFile(targetPath, "dcpsconfig", "template/util/dds/DCPSConfig.ftl", ".ini", config);
-    }
-
     toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);
     toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs, config);
     
     makeExecutable(targetPath, "run", ".sh");
     makeExecutable(targetPath, "kill", ".sh");
+  }
+
+  public static void generateDDSDCPSConfig(File targetPath, ConfigParams config) {
+    toFile(targetPath, "dcpsconfig", "template/util/dds/DCPSConfig.ftl", ".ini", config);
   }
 
   public static void generateTestScript(File targetPath, ConfigParams config) {
