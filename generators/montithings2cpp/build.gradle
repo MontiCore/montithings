@@ -30,7 +30,7 @@ dependencies {
   implementation project(":languages:bindings")
   implementation project(":languages:monticore-extensions")
   implementation project(":languages:cdlangextension")
-  implementation project(":languages:mtConfig")
+  implementation project(":languages:mtconfig")
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "junit:junit:$junit_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
