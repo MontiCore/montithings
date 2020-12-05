@@ -26,10 +26,6 @@ set(CMAKE_CXX_STANDARD 11)
     OpenDDS::Udp
     OpenDDS::Rtps_Udp
   )
-<#else>
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
 </#if>
 
 # Enable (more comfortable) debugging
@@ -106,6 +102,11 @@ file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.cpp")
 </#if>
 
+<#if config.getMessageBroker().toString() != "DDS">
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
+</#if>
 
 <#if !test>
 add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
