@@ -37,7 +37,9 @@ cp ../../"$1"/*.sh .
 <#if config.getMessageBroker().toString() == "DDS">
 cp ../../"$1"/*.ini .
 </#if>
+<#if config.getSplittingMode().toString() == "LOCAL">
 cp -r ../../"$1"/ports .
+</#if>
 chmod +x *.sh
 cd ../..
 </#if>
