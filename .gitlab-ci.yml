@@ -32,7 +32,8 @@ Docker Alpine:
     - shell
     - docker
   only:
-    - develop, feature/docker-cross-build-pipeline
+    - develop
+    - feature/docker-cross-build-pipeline
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/mtcmake 
