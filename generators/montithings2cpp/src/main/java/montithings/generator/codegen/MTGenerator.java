@@ -113,6 +113,10 @@ public class MTGenerator {
 
   public static void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
     toFile(targetPath, "Dockerfile", "template/util/scripts/DockerfileScript.ftl", "", comp, config);
+    toFile(targetPath, "dockerBuild", "template/util/scripts/DockerBuild.ftl", ".sh", comp, config);
+    makeExecutable(targetPath, "dockerBuild", ".sh");
+    toFile(targetPath, "dockerRun", "template/util/scripts/DockerRun.ftl", ".sh", comp, config);
+    makeExecutable(targetPath, "dockerRun", ".sh");
   }
   
 

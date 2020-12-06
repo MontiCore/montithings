@@ -10,7 +10,7 @@ echo "Please provide the component you want to run as first argument. Aborting."
 exit 1
 fi
 
-if [[ ! -d "$1" ]]
+if [ ! -d "$1" ]
 then
 echo "There is no component whose fully qualified name matches the first argument. Aborting."
 exit 1

@@ -103,10 +103,18 @@ file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix
 </#if>
 
 <#if config.getMessageBroker().toString() != "DDS">
+  # Exclude DDS files
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
 </#if>
+
+<#if config.getSplittingMode().toString() == "OFF">
+  # Exclude management communication because splitting is disabled
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.cpp")
+</#if>
+
 
 <#if !test>
 add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
