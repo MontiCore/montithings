@@ -1,13 +1,15 @@
-FROM alpine
+FROM debian:buster
 
-RUN apk add --update-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	git \
 	g++ \
-	ninja \
+	ninja-build \
 	cmake \
 	make \
 	mosquitto \
 	mosquitto-dev
+
+RUN apt-get install --reinstall ca-certificates
 
 # Switch into our working directory for building nng
 WORKDIR /usr/src/app

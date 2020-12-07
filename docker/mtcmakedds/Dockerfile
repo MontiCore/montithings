@@ -1,4 +1,4 @@
-FROM ubuntu:groovy
+FROM debian:buster
 
 RUN apt-get update && apt-get install -y \
 	git \
@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     perl-base \
     perl-modules
+
+RUN apt-get install --reinstall ca-certificates
 
 # Switch into our working directory for building nng
 WORKDIR /usr/src/app
