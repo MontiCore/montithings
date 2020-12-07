@@ -109,6 +109,8 @@ public class MTGenerator {
     toFile(targetPath, "reformatCode", "template/util/scripts/ReformatScript.ftl", ".sh");
     toFile(targetPath, "", "template/util/scripts/ClangFormat.ftl", ".clang-format");
     makeExecutable(targetPath, "reformatCode", ".sh");
+
+    generateDDSDCPSConfig(targetPath, config);
   }
 
   public static void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
