@@ -17,7 +17,7 @@ ${tc.signature("comp", "config")}
 #include ${"<dds/DCPS/Service_Participant.h>"}
 #include ${"<dds/DCPS/StaticIncludes.h>"}
 
-<!-- Load libraries for rtps_udp transport communication -->
+<#-- Load libraries for rtps_udp transport communication -->
 <#if config.getSplittingMode().toString() != "DISTRIBUTED">
 #include ${"<dds/DCPS/RTPS/RtpsDiscovery.h>"}
 #include ${"<dds/DCPS/transport/rtps_udp/RtpsUdp.h>"}

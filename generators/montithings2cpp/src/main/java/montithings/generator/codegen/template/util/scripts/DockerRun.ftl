@@ -12,7 +12,7 @@ ${tc.signature("comp", "config")}
 
 rm -f dockerStop.sh
 <#list instances as pair >
-  CONTAINER=$(docker run -d --rm --net=host  -v ${PWD}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini  --name ${pair.getValue()} ${pair.getKey().fullName?lower_case}:latest ${pair.getValue()} ${lineBreak}
+  CONTAINER=$(docker run -d --rm --net=host  -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini  --name ${pair.getValue()} ${pair.getKey().fullName?lower_case}:latest ${pair.getValue()} ${lineBreak}
   <#if config.getMessageBroker().toString() == "MQTT">
     host.docker.internal 1883)
   </#if>
