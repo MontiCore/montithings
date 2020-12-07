@@ -33,9 +33,9 @@ RUN ./build.sh ${comp.getFullName()}
     # COMPONENT: ${comp.getFullName()}
     <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
     <#if config.getMessageBroker().toString() == "DDS">
-    FROM ubuntu:groovy
+    FROM ubuntu:groovy AS ${comp.getFullName()?lower_case}
     <#else>
-    FROM alpine
+    FROM alpine AS ${comp.getFullName()?lower_case}
 
     RUN apk add --update-cache g++ 
     </#if>
