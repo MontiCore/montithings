@@ -2,12 +2,12 @@ package hierarchy;
 
 config Sink for GENERIC {
   actuator {
-        sendToExternal  = "CustomNoData.ftl" ("where is the data");
-      }
+    sendToExternal  = "CustomNoData.ftl" ("where is the data");
+  }
 }
 
 config Sink for DSA {
   actuator {
-        sendToExternal  = "invalid.ftl";
-      }
+    sendToExternal  = "invalid.ftl";
+  }
 }
