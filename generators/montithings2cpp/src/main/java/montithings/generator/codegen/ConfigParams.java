@@ -116,7 +116,7 @@ public class ConfigParams {
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
-  /** Scope of the cdLangExtension language*/
+  /** Scope of the MTConfig language*/
   private MTConfigScope mtConfigScope;
 
   private final PortMap componentPortMap = new PortMap();

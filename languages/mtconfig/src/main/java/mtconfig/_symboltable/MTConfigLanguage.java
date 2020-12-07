@@ -2,7 +2,7 @@
 package mtconfig._symboltable;
 
 /**
- * MTConfig language that contains file_ending information and adds resolving information.
+ * MTConfig language that contains file_ending information.
  *
  * @author (last commit) Julian Krebber
  */

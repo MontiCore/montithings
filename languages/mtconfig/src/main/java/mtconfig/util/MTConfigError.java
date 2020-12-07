@@ -5,7 +5,9 @@ package mtconfig.util;
  * The enum of all MTConfig errors. Extends the mixing interface {@link mtconfig.util.Error}
  */
 public enum MTConfigError implements mtconfig.util.Error {
-  MISSING_REQUIREMENT_NAME("0xPHY1030", "ASTRequirementStatement '%s' at <%d,%d> has no corresponding ComponentTypeSymbols."),
+  MISSING_REQUIREMENT_NAME("0xMTCFG1030", "ASTRequirementStatement '%s' at <%d,%d> has no corresponding ComponentTypeSymbol."),
+  MISSING_COMPONENT_NAME("0xMTCFG1031", "ASTCompConfig '%s' at <%d,%d> has no corresponding ComponentTypeSymbol."),
+  MISSING_PORT_NAME("0xMTCFG1032", "ASTPortTemplateTag '%s' at <%d,%d> has no corresponding PortSymbol.")
 ;
 
   private final String errorCode;

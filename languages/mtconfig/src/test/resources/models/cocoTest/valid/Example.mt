@@ -6,5 +6,5 @@ component Example {
     Sink sink;
 
     limiter.outPort -> sink.inPort;
-    limiter.outPort -> sink.inPort;
+    sink.outPort -> limiter.inPort;
 }

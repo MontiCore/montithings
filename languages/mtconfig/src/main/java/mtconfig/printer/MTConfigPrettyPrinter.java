@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 /**
  * PrettyPrinter for the MTConfig Language.
+ * TODO write test for the prettyPrinter and update it since the grammar changed.
  *
  * @author Julian Krebber
  */

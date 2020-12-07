@@ -20,6 +20,9 @@ public class MontiThingsConfiguration implements Configuration {
 
   public static final String DEFAULT_HWC_DIRECTORY = "src";
 
+  /**
+   * Object that is should be used by the Generator to retrieve its configuration.
+   */
   public ConfigParams configParams = new ConfigParams();
 
   /**

@@ -3,6 +3,9 @@ package mtconfig._ast;
 
 public class ASTPortTemplateTag extends ASTPortTemplateTagTOP {
 
+  /**
+   * Adapted method to use the qualified port name for unique port identification.
+   */
   @Override
   protected void updateNameSymbolLoader() {
     super.updateNameSymbolLoader();

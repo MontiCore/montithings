@@ -8,6 +8,12 @@ public class CompConfigSymbol extends CompConfigSymbolTOP {
     super(name);
   }
 
+  /**
+   * Gives the qualified name of the symbol.
+   * The qualified symbol name does not contain platform information.
+   * E.g. this.name = component_platform => this.fullname = package.component.
+   * @return Qualified name without platform information.
+   */
   @Override
   public  String getFullName ()  {
     if (fullName == null) {

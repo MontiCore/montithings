@@ -423,6 +423,14 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
+  /**
+   * Initializes generation for a C++ port,
+   * if appropriate C++ code templates are provided,
+   *
+   * @param target target directory for all artifacts.
+   * @param config Generator configuration
+   * @param comp Component containing the ports for which C++ code should be generated.
+   */
   public void generateHwcPort(File target, ConfigParams config, ComponentTypeSymbol comp) {
     for(PortSymbol port : comp.getPorts()) {
       if(config.getTemplatedPorts().contains(port)) {

@@ -3,6 +3,9 @@ package mtconfig._ast;
 
 public class ASTCompConfig extends ASTCompConfigTOP {
 
+  /**
+   * Adapted method to use the qualified component name for unique component identification.
+   */
   @Override
   protected void updateNameSymbolLoader() {
     super.updateNameSymbolLoader();

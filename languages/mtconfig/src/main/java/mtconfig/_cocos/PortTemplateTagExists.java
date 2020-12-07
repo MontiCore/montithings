@@ -6,7 +6,7 @@ import mtconfig._ast.ASTPortTemplateTag;
 import mtconfig.util.MTConfigError;
 
 /**
- * Checks if import names refer to ComponentTypeSymbols.
+ * Checks if port names refer to PortSymbols.
  *
  * @author Julian Krebber
  */
@@ -15,7 +15,7 @@ public class PortTemplateTagExists implements MTConfigASTPortTemplateTagCoCo {
   public void check(ASTPortTemplateTag node) {
     if(!node.isPresentNameDefinition()){
       Log.error(
-          String.format(MTConfigError.MISSING_REQUIREMENT_NAME.toString(),
+          String.format(MTConfigError.MISSING_PORT_NAME.toString(),
               node.getName(),node.get_SourcePositionEnd().getLine(),node.get_SourcePositionEnd().getColumn()-node.getName().length()-1));
     }
   }

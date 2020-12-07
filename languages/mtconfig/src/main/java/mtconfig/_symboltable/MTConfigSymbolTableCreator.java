@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 
 /**
- * Symbol table creator. Does pretty much nothing right now. Only forwards calls to MontiArc
- * that MontiCore is not advanced enough to forward automatically.
+ * Symbol table creator.
  */
 public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
 
@@ -24,6 +23,13 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
     super(scopeStack);
   }
 
+  /**
+   * Creates MTConfigArtifactScope from ast,
+   * if not another scope with equaö content already exists in the global scope.
+   * The package is set in the ArtifactScope.
+   * @param rootNode AST root used for creation.
+   * @return scope created from given AST.
+   */
   @Override
   public MTConfigArtifactScope createFromAST(@NotNull ASTMTConfigUnit rootNode) {
     Preconditions.checkArgument(rootNode != null);
@@ -45,6 +51,10 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
     return artifactScope;
   }
 
+  /**
+   * Adds node elements as directly accessible symbols to the artifact scope.
+   * @param node astNode for the corresponding scope.
+   */
   @Override
   public void visit(ASTMTConfigUnit node) {
     if (getCurrentScope().isPresent()) {
@@ -64,6 +74,11 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
   public void endVisit(ASTMTConfigUnit node) {
   }
 
+  /**
+   * Creates CompConfigSymbol with component_platform as name to prevent ambiguity.
+   * @param ast AST containing name and platform used for symbol creation.
+   * @return symbol with component_platform as name.
+   */
   protected  mtconfig._symboltable.CompConfigSymbol create_CompConfig (mtconfig._ast.ASTCompConfig ast)  {
     return mtconfig.MTConfigMill.compConfigSymbolBuilder().setName(ast.getName()+"_"+ast.getPlatform()).build();
   }

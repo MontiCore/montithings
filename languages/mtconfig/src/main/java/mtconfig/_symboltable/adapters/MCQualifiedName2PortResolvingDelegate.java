@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * ResolvingDelegate that makes resolving of ComponentInstanceSymbols from MontiThings by a qualified name possible.
+ * ResolvingDelegate that makes resolving of PortSymbols from MontiThings by a qualified name possible.
  *
  * @author Julian Krebber
  */

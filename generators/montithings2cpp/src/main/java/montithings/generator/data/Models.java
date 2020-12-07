@@ -33,7 +33,7 @@ public class Models {
   private List<String> classdiagrams = new ArrayList<>();
 
   /**
-   * Physical requirements
+   * MontiThings Configuration models
    */
   private List<String> mtConfig = new ArrayList<>();
 

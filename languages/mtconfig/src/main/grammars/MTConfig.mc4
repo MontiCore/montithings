@@ -1,40 +1,62 @@
 // (c) https://github.com/MontiCore/monticore
 
 /**
- * MTConfig provides deployment language dependent import MTCFGTags.
+ * MTConfig provides additional properties for MontiThings language elements.
  */
 grammar MTConfig extends MontiThings  {
 
   start MTConfigUnit;
 
   /* ============================================================ */
-  /* ================ Requirements & Capabilities =============== */
+  /* ============ Requirement & Hookpointspecification ========== */
   /* ============================================================ */
 
   /**
-   * MTConfigUnit represents the complete requirements & capabilities
+   * MTConfigUnit represents the complete properties for MontiThings configuration.
    * @attribute package  The package declaration of the elements.
-   * @attribute DepLanguage List of elements.
-  */
+   * @attribute Element List of elements.
+   */
   scope MTConfigUnit = ("package" package:MCQualifiedName ";")?  Element*;
 
+  /**
+   * Element is an extension point that is used for the main parts making up the MTConfig language.
+   */
   interface Element;
 
+  /**
+   * MTCFGTag is an extension point that is used
+   * for providing component and platform dependent configuration properties.
+   */
   interface MTCFGTag;
 
+  /**
+   * CompConfig represents the configuration of a MontiThings Component for a specific platform.
+   * @attribute Name Name of the MontiThings component.
+   * @attribute platform Deployment platform. E.g. GENERIC, Windows, Arduino etc.
+   */
   scope symbol CompConfig implements Element = "config" Name@ComponentType "for" platform:Name /*TODO set appropriate reference when possible */
   "{"
     MTCFGTag*
   "}";
 
-  scope symbol PortTemplateTag implements MTCFGTag = Name@Port Arguments? "{"
+  /**
+   * PortTemplateTag specifies the templates that are used for processing of the specified port.
+   * @attribute Name Name of the MontiThings port.
+   */
+  scope symbol PortTemplateTag implements MTCFGTag = Name@Port "{"
         Hookpoint+
   "}";
 
+  /**
+   * Hookpoint specifies the template and the arguments that should be supplied to the template.
+   * @attribute Name Identification of the Hookpoint.
+   * @attribute template Unqualified name of the template.
+   * @attribute Arguments Attributes required by the template.
+   */
   symbol Hookpoint = Name "=" template:String Arguments? ";";
 
   /**
-   *  RequirementMTCFGTags contain information about what physical requirements
+   *  RequirementStatement contain information about what physical requirements
    *  a component has. E.g Sensors/Actuators etc.
    */
   scope symbol RequirementStatement implements MTCFGTag =
