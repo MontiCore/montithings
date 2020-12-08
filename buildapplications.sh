@@ -1,7 +1,9 @@
 #! /bin/bash
 
-# Builds all targets into docker containers
-# All subdirectories containing . are considered a component
+# First generate MontiThings
+docker run --rm -v $PWD:$PWD -v $PWD/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn clean install
+
+# Then iterate over all applications, generate and build them
 dirs=$(find applications -mindepth 1 -maxdepth 1 -type d);
 for d in $dirs; do
     # ignore hidden directories like .settings
@@ -25,7 +27,6 @@ for d in $dirs; do
     echo "Full image ref: ${imageref}"
 
     docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=$imageref -t $imageref:latest target/generated-sources --push .
-
 
     cd -
 done
