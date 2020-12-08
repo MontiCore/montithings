@@ -12,6 +12,7 @@ stages:
   - test
   - generator-test
   - post-test
+  - build-applications
 
 variables:
   # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -212,7 +213,7 @@ Code Quality:
       codequality: codeclimate.json
 
 Docker Applications:
-  stage: build
+  stage: build-applications
   dependencies: 
     - Validate Maven #download artifacts from build
   variables:
