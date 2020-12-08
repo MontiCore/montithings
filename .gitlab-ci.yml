@@ -76,6 +76,8 @@ Docker OpenDDSDCPSInfoRepo:
 
 Docker Applications:
   stage: build
+  dependencies: 
+    - Validate Maven #download artifacts from build
   variables:
     DOCKER_DRIVER: overlay2
   cache: {}

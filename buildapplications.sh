@@ -1,9 +1,8 @@
 #! /bin/bash
+# Stop on first error
+set -e
 
-# First generate MontiThings
-docker run --rm -v $PWD:$PWD -v $CI_PROJECT_DIR/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn clean install
-
-# Then iterate over all applications, generate and build them
+# Iterate over all applications, generate and build them
 dirs=$(find applications -mindepth 1 -maxdepth 1 -type d);
 for d in $dirs; do
     # ignore hidden directories like .settings
