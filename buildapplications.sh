@@ -2,6 +2,10 @@
 # Stop on first error
 set -e
 
+echo "Env CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
+ls -al $CI_PROJECT_DIR/.m2
+echo "Env MAVEN_CLI_OPTS: ${MAVEN_CLI_OPTS}"
+
 # Iterate over all applications, generate and build them
 dirs=$(find applications -mindepth 1 -maxdepth 1 -type d);
 for d in $dirs; do
@@ -13,7 +17,7 @@ for d in $dirs; do
     echo "Generating ${d}..."
 
     cd $d
-    docker run --rm -v $PWD:$PWD -v $CI_PROJECT_DIR/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn clean install
+    docker run --rm -v $PWD:$PWD -v $CI_PROJECT_DIR/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn -U $MAVEN_CLI_OPTS clean install
     
     echo "Building ${d}..."
 
