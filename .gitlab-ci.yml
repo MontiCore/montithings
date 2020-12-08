@@ -47,31 +47,11 @@ Docker Alpine:
 
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest -t $CI_REGISTRY_IMAGE/mtcmake:$CI_COMMIT_SHORT_SHA --push .
 
-Docker DDS:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - cd docker/mtcmakedds
+    - cd ../mtcmakedds
     - docker build -t $CI_REGISTRY_IMAGE/mtcmakedds .
     - docker push $CI_REGISTRY_IMAGE/mtcmakedds
-
-Docker OpenDDSDCPSInfoRepo:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - cd docker/openddsdcpsinforepo
+    
+    - cd ../openddsdcpsinforepo
     - docker build -t $CI_REGISTRY_IMAGE/openddsdcpsinforepo .
     - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
 
