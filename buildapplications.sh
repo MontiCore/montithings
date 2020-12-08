@@ -12,7 +12,7 @@ for d in $dirs; do
     echo "Generating ${d}..."
 
     cd $d
-    docker run --rm -v $PWD:$PWD -v .m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn clean install
+    docker run --rm -v $PWD:$PWD -v $PWD/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn clean install
     
     echo "Building ${d}..."
 
