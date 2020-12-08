@@ -17,7 +17,7 @@ for d in $dirs; do
     echo "Generating ${d}..."
 
     cd $d
-    docker run --rm -v $PWD:$PWD -v $CI_PROJECT_DIR/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn -U $MAVEN_CLI_OPTS clean install
+    docker run --rm -v $PWD:$PWD -v $CI_PROJECT_DIR/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn -s ../../settings.xml clean install
     
     echo "Building ${d}..."
 
