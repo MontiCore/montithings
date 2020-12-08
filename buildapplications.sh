@@ -3,7 +3,7 @@
 set -e
 
 echo "Env CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
-ls -al $CI_PROJECT_DIR/.m2
+ls -al $CI_PROJECT_DIR
 echo "Env MAVEN_CLI_OPTS: ${MAVEN_CLI_OPTS}"
 
 # Iterate over all applications, generate and build them
