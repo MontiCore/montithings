@@ -18,7 +18,6 @@ public class MontiThingsCoCos {
       .addCoCo(new PortUsage())
       .addCoCo(new NamesCorrectlyCapitalized())
       .addCoCo(new CircularInheritance())
-      .addCoCo(new NamesCorrectlyCapitalized())
       .addCoCo(new ConnectorSourceAndTargetComponentDiffer())
       .addCoCo(new ConnectorSourceAndTargetExistAndFit())
       .addCoCo(new ConfigurationParametersCorrectlyInherited())
@@ -26,7 +25,6 @@ public class MontiThingsCoCos {
       .addCoCo(new ComponentInstanceTypeExists())
       .addCoCo(new FieldTypeExists())
       .addCoCo(new InheritedComponentTypeExists())
-      .addCoCo(new InnerComponentNotExtendsDefiningComponent())
       .addCoCo(new ParameterTypeExists())
       .addCoCo(new PortUniqueSender())
       // we do not import the SubComponentsConnected CoCo from ArcBasis here.
