@@ -16,7 +16,7 @@ grammar MTConfig extends MontiThings  {
    * @attribute package  The package declaration of the elements.
    * @attribute Element List of elements.
    */
-  scope MTConfigUnit = ("package" package:MCQualifiedName ";")?  Element*;
+  scope MTConfigUnit = ("package" package:MCQualifiedName ";")?  Element+;
 
   /**
    * Element is an extension point that is used for the main parts making up the MTConfig language.
