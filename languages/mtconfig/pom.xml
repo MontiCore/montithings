@@ -65,20 +65,20 @@
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-runtime</artifactId>
-            <version>6.1.0.1</version>
+            <version>${monticore.version}</version>
         </dependency>
 
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-grammar</artifactId>
-            <version>6.1.0.1</version>
+            <version>${monticore.version}</version>
         </dependency>
 
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-grammar</artifactId>
             <classifier>${grammars.classifier}</classifier>
-            <version>6.1.0.1</version>
+            <version>${monticore.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -131,7 +131,7 @@
             <plugin>
                 <groupId>de.monticore.mojo</groupId>
                 <artifactId>monticore-maven-plugin</artifactId>
-                <version>6.1.0.1</version>
+                <version>${monticore.version}</version>
                 <executions>
                     <execution>
                         <goals>
