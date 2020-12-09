@@ -17,11 +17,11 @@ names and replace `<ComponentName>` and `<PortName>` with the names of the
 component and port you want to inject your code into: 
 - To add import statements, use `<ComponentName><PortName>PortInclude.ftl`
 - To provide values to the component (i.e. implement an incoming port), 
-use `<ComponentName><PortName>PortGetExternalMessages.ftl`
+use `<ComponentName><PortName>PortProvide.ftl`
 - To process values from the component (i.e. implement an outgoing port), 
-use `<ComponentName><PortName>PortSendToExternal.ftl`
+use `<ComponentName><PortName>PortConsume.ftl`
 
-For example, here the `SourceSensorPortGetExternalMessages.ftl` template 
+For example, here the `SourceSensorPortProvide.ftl` template 
 implements the incoming port (called `sensor`) of the `Source` component. 
 Templates for incoming ports need to call the `setNextValue()` method to provide
 values to the architecture. 
@@ -36,7 +36,7 @@ Similarly, we can implement using the outgoing port of the `Sink` component
 which is called `Actuator`. 
 For the purpose of not requiring any hardware to run this example, we just print
 the values to the console.
-This is done by `SinkActuatorPortSendToExternal.ftl`:
+This is done by `SinkActuatorPortConsume.ftl`:
 ```
 if (nextVal)
   {
