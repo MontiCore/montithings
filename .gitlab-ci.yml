@@ -36,7 +36,7 @@ Docker Alpine:
     - develop
     - feature/docker-cross-build-pipeline
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmake 
 
     - export DOCKER_CLI_EXPERIMENTAL=enabled
@@ -45,7 +45,7 @@ Docker Alpine:
     - docker buildx create --name builder --driver docker-container --use
     - docker buildx inspect --bootstrap
 
-    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest -t $CI_REGISTRY_IMAGE/mtcmake:$CI_COMMIT_SHORT_SHA --push .
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest --push .
 
 Docker DDS:
   stage: build
@@ -59,7 +59,7 @@ Docker DDS:
     - develop
     - feature/docker-cross-build-pipeline
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmakedds
 
     - export DOCKER_CLI_EXPERIMENTAL=enabled
@@ -68,7 +68,7 @@ Docker DDS:
     - docker buildx create --name builder --driver docker-container --use
     - docker buildx inspect --bootstrap
 
-    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest -t $CI_REGISTRY_IMAGE/mtcmakedds:$CI_COMMIT_SHORT_SHA --push .
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
 
 Docker OpenDDSDCPSInfoRepo:
   stage: build
@@ -236,7 +236,7 @@ Docker Applications:
     - develop
     - feature/docker-cross-build-pipeline
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker login -u sebot -p $sebot $CI_REGISTRY
     - export DOCKER_CLI_EXPERIMENTAL=enabled
     - docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
     - docker buildx rm builder
