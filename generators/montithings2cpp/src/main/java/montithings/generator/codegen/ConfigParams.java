@@ -9,6 +9,7 @@ import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 import montithings.generator.data.PortMap;
+import mtconfig._symboltable.MTConfigScope;
 
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -114,6 +115,9 @@ public class ConfigParams {
 
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
+
+  /** Scope of the MTConfig language*/
+  private MTConfigScope mtConfigScope;
 
   private final PortMap componentPortMap = new PortMap();
 
@@ -242,6 +246,14 @@ public class ConfigParams {
 
   public void setCdLangExtensionScope(CDLangExtensionScope cdLangExtensionScope) {
     this.cdLangExtensionScope = cdLangExtensionScope;
+  }
+
+  public MTConfigScope getMtConfigScope() {
+    return mtConfigScope;
+  }
+
+  public void setMtConfigScope(MTConfigScope mtConfigScope) {
+    this.mtConfigScope = mtConfigScope;
   }
 
   public SplittingMode getSplittingMode() {

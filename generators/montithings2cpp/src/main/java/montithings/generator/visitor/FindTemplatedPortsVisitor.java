@@ -6,9 +6,9 @@ import arcbasis._symboltable.PortSymbol;
 import com.google.common.base.Preconditions;
 import montithings._ast.ASTMTComponentType;
 import montithings._visitor.MontiThingsVisitor;
+import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.GeneratorHelper;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,15 +19,15 @@ public class FindTemplatedPortsVisitor implements MontiThingsVisitor {
 
   protected Set<PortSymbol> templatedPorts = new HashSet<>();
 
-  protected Path hwcTemplatePath;
+  protected ConfigParams config;
 
-  protected Set<PortSymbol> findTemplatedPorts(ComponentTypeSymbol compSymbol, Path hwcTemplatePath) {
+  protected Set<PortSymbol> findTemplatedPorts(ComponentTypeSymbol compSymbol, ConfigParams config) {
     Set<PortSymbol> templatedPorts = new HashSet<>();
 
     // Go through all ports ...
     for (PortSymbol portSymbol : compSymbol.getAllPorts()) {
       // ... and check if they have template code
-      if (GeneratorHelper.portHasHwcTemplate(portSymbol, hwcTemplatePath)) {
+      if (GeneratorHelper.portHasHwcTemplate(portSymbol, config)) {
         templatedPorts.add(portSymbol);
       }
     }
@@ -41,15 +41,15 @@ public class FindTemplatedPortsVisitor implements MontiThingsVisitor {
       "ASTComponent node '%s' has no symbol. "
         + "Did you forget to run the SymbolTableCreator?", node.getName());
     final ComponentTypeSymbol compSymbol = node.getSymbol();
-    templatedPorts.addAll(findTemplatedPorts(compSymbol, hwcTemplatePath));
+    templatedPorts.addAll(findTemplatedPorts(compSymbol, config));
   }
 
   /* ============================================================ */
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
 
-  public FindTemplatedPortsVisitor(Path hwcTemplatePath) {
-    this.hwcTemplatePath = hwcTemplatePath;
+  public FindTemplatedPortsVisitor(ConfigParams config) {
+    this.config = config;
   }
 
   public Set<PortSymbol> getTemplatedPorts() {
@@ -60,11 +60,7 @@ public class FindTemplatedPortsVisitor implements MontiThingsVisitor {
     this.templatedPorts = templatedPorts;
   }
 
-  public Path getHwcTemplatePath() {
-    return hwcTemplatePath;
-  }
+  public ConfigParams getConfig() {return config;}
 
-  public void setHwcTemplatePath(Path hwcTemplatePath) {
-    this.hwcTemplatePath = hwcTemplatePath;
-  }
+  public void setConfig(ConfigParams config) {this.config = config;}
 }

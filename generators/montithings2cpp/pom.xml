@@ -81,7 +81,7 @@
 
 		<dependency>
 			<groupId>montithings.languages</groupId>
-			<artifactId>phyprops</artifactId>
+			<artifactId>mtconfig</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
