@@ -14,12 +14,9 @@ for d in $dirs; do
         echo "${d} is a hidden folder, ignoring..."
         continue
     fi
-    echo "Generating ${d}..."
 
-    cd $d
-    docker run --rm -v $PWD:$PWD -v $CI_PROJECT_DIR/.m2:/root/.m2 -w $PWD maven:3-jdk-11 mvn -s ../../settings.xml clean install
-    
     echo "Building ${d}..."
+    cd $d/target/generated-sources/
 
     registry=$CI_REGISTRY_IMAGE
     imagename=$(basename $d)
@@ -29,7 +26,7 @@ for d in $dirs; do
     echo "Image name: ${imagename}"
     echo "Full image ref: ${imageref}"
 
-    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=$imageref -t $imageref:latest target/generated-sources --push .
+    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=$imageref -t $imageref:latest --push .
 
     cd -
 done
