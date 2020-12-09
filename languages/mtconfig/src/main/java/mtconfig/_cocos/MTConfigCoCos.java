@@ -8,10 +8,11 @@ package mtconfig._cocos;
  */
 public class MTConfigCoCos {
   public static MTConfigCoCoChecker createChecker() {
-    final MTConfigCoCoChecker checker = new MTConfigCoCoChecker()
-        .addCoCo(new RequirementNameExists())
-        .addCoCo(new CompConfigExists())
-        .addCoCo(new PortTemplateTagExists());
-    return checker;
+    final MTConfigCoCoChecker mtConfigCoCoChecker = new MTConfigCoCoChecker()
+      .addCoCo(new AllConfigsReferToTheSameComponent())
+      .addCoCo(new RequirementNameExists())
+      .addCoCo(new CompConfigExists())
+      .addCoCo(new PortTemplateTagExists());
+    return mtConfigCoCoChecker;
   }
 }

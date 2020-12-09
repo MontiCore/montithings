@@ -33,7 +33,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void valid() {
     MTConfigCoCoChecker checker = MTConfigCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/valid/ValidConfig.mtcfg"));
+    checker.checkAll(getAST("cocoTest/valid/SpeedLimiter.mtcfg"));
     Assertions.assertEquals(0, Log.getErrorCount());
   }
 

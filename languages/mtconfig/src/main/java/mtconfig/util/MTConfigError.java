@@ -7,7 +7,10 @@ package mtconfig.util;
 public enum MTConfigError implements mtconfig.util.Error {
   MISSING_REQUIREMENT_NAME("0xMTCFG1030", "ASTRequirementStatement '%s' at <%d,%d> has no corresponding ComponentTypeSymbol."),
   MISSING_COMPONENT_NAME("0xMTCFG1031", "ASTCompConfig '%s' at <%d,%d> has no corresponding ComponentTypeSymbol."),
-  MISSING_PORT_NAME("0xMTCFG1032", "ASTPortTemplateTag '%s' at <%d,%d> has no corresponding PortSymbol.")
+  MISSING_PORT_NAME("0xMTCFG1032", "ASTPortTemplateTag '%s' at <%d,%d> has no corresponding PortSymbol."),
+  MULTIPLE_COMPONENTS("0xMTCFG1033", "Config references multiple component types: %s"),
+  FILENAME_MATCHES_CONFIG("0xMTCFG1034", "Config '%s' does not match its filename"),
+  PACKAGENAME_MATCHES_CONFIG("0xMTCFG1035", "Package '%s' does not match its relative filepath '%s'")
 ;
 
   private final String errorCode;
