@@ -24,8 +24,7 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
   }
 
   /**
-   * Creates MTConfigArtifactScope from ast,
-   * if not another scope with equal content already exists in the global scope.
+   * Creates MTConfigArtifactScope from ast.
    * The package is set in the ArtifactScope.
    * @param rootNode AST root used for creation.
    * @return scope created from given AST.
@@ -33,15 +32,7 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
   @Override
   public MTConfigArtifactScope createFromAST(@NotNull ASTMTConfigUnit rootNode) {
     Preconditions.checkArgument(rootNode != null);
-    if(getCurrentScope().isPresent()){
-      for (IMTConfigScope scope: getCurrentScope().get().getSubScopes()) {
-        for (int i = 0; i < scope.getLocalCompConfigSymbols().size(); i++) {
-          if (scope.getLocalCompConfigSymbols().get(i).getAstNode().deepEquals(rootNode.getElement(i))){
-            return (MTConfigArtifactScope) scope;
-          }
-        }
-      }
-    }
+
     MTConfigArtifactScope artifactScope = mtconfig.MTConfigMill.mTConfigArtifactScopeBuilder()
         .setPackageName(rootNode.getPackage().getQName())
         .setImportList(new ArrayList<>())
@@ -49,8 +40,6 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
     putOnStack(artifactScope);
     rootNode.accept(getRealThis());
 
-    //TODO set symbol names in cache, to prevent duplicate scope creation.
-    //((MTConfigGlobalScope)getFirstCreatedScope()).cache(artifactScope.getPackageName()+"."+//getName as parameter);
     return artifactScope;
   }
 
