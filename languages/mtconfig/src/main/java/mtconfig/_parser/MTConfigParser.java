@@ -13,12 +13,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
-
-/**
- * TODO
- *
- * @since 09.12.20
- */
 public class MTConfigParser extends MTConfigParserTOP {
 
   @Override

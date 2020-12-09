@@ -1,9 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package mtconfig._cocos;
 
+import de.se_rwth.commons.logging.Log;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig.util.MTConfigError;
-import net.sourceforge.plantuml.Log;
+
 
 import java.util.Set;
 

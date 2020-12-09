@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package cocoTest;
 
+import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests CoCos of MTConfig.
@@ -34,7 +37,10 @@ public class CoCoTest extends AbstractTest {
   public void valid() {
     MTConfigCoCoChecker checker = MTConfigCoCos.createChecker();
     checker.checkAll(getAST("cocoTest/valid/SpeedLimiter.mtcfg"));
-    Assertions.assertEquals(0, Log.getErrorCount());
+    if (Log.getErrorCount() != 0) {
+      Log.getFindings().stream().filter(Finding::isError).forEach(f -> System.err.println(f.getMsg()));
+    }
+    assertThat(Log.getErrorCount()).isEqualTo(0);
   }
 
   public ASTMTConfigUnit getAST(String fileName) {

@@ -11,7 +11,7 @@ public class ASTCompConfig extends ASTCompConfigTOP {
     super.updateNameSymbolLoader();
     String name = this.getSymbol().getFullName();
     if (nameSymbolLoader == null) {
-        nameSymbolLoader = new arcbasis._symboltable.ComponentTypeSymbolLoader(name, this.getEnclosingScope());
+      nameSymbolLoader = new arcbasis._symboltable.ComponentTypeSymbolLoader(name, this.getEnclosingScope());
     }
     else {
       if (!(name.equals(nameSymbolLoader.getName()))) {

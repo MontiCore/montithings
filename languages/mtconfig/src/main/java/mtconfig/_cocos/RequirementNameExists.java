@@ -13,10 +13,10 @@ import mtconfig.util.MTConfigError;
 public class RequirementNameExists implements MTConfigASTRequirementStatementCoCo {
   @Override
   public void check(ASTRequirementStatement node) {
-    if(!node.isPresentComponentDefinition()){
-      Log.error(
-          String.format(MTConfigError.MISSING_REQUIREMENT_NAME.toString(),
-              node.getName(),node.get_SourcePositionEnd().getLine(),node.get_SourcePositionEnd().getColumn()-node.getName().length()-1));
+    if (!node.isPresentComponentDefinition()) {
+      Log.error(String.format(MTConfigError.MISSING_REQUIREMENT_NAME.toString(),
+        node.getName(), node.get_SourcePositionEnd().getLine(),
+        node.get_SourcePositionEnd().getColumn() - node.getName().length() - 1));
     }
   }
 }

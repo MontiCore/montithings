@@ -10,7 +10,8 @@ public enum MTConfigError implements mtconfig.util.Error {
   MISSING_PORT_NAME("0xMTCFG1032", "ASTPortTemplateTag '%s' at <%d,%d> has no corresponding PortSymbol."),
   MULTIPLE_COMPONENTS("0xMTCFG1033", "Config references multiple component types: %s"),
   FILENAME_MATCHES_CONFIG("0xMTCFG1034", "Config '%s' does not match its filename"),
-  PACKAGENAME_MATCHES_CONFIG("0xMTCFG1035", "Package '%s' does not match its relative filepath '%s'")
+  PACKAGENAME_MATCHES_CONFIG("0xMTCFG1035", "Package '%s' does not match its relative filepath '%s'"),
+  HOOKPOINT_EXISTS("0xMTCFG1036", "Hookpoint '%s' does not exist (use one of these: %s)")
 ;
 
   private final String errorCode;

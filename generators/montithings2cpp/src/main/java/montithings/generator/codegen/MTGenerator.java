@@ -196,14 +196,14 @@ public class MTGenerator {
       setup.setAdditionalTemplatePaths(Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
 
       // Set of templates that follow a defined naming scheme that will be used if no specific template for a port is given.
-      // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|GetExternalMessages|SendToExternal"].ftl,
+      // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume"].ftl,
       // if the portName equals a.b.c.ComponentnamePortnamePort.
       Set<File> templates = FileHelper.getPortImplementation(Paths.get(templatePath.toFile().getAbsolutePath(),Names.getPathFromPackage(Names.getQualifier(portName))).toFile(),Names.getSimpleName(portName));
       // Bind hookpoints to templates when possible, that will be used by the generator engine.
       bindSAPortTemplate(portName, setup, templates, "include", config, portSymbol);
       bindSAPortTemplate(portName, setup, templates, "body", config, portSymbol);
-      bindSAPortTemplate(portName, setup, templates, "getExternalMessages", config, portSymbol);
-      bindSAPortTemplate(portName, setup, templates, "sendToExternal", config, portSymbol);
+      bindSAPortTemplate(portName, setup, templates, "provide", config, portSymbol);
+      bindSAPortTemplate(portName, setup, templates, "consume", config, portSymbol);
 
       // Port generation.
       GeneratorEngine engine = new GeneratorEngine(setup);

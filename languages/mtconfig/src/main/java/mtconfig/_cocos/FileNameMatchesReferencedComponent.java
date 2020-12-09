@@ -2,9 +2,9 @@
 package mtconfig._cocos;
 
 import com.google.common.io.Files;
+import de.se_rwth.commons.logging.Log;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig.util.MTConfigError;
-import net.sourceforge.plantuml.Log;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.Set;

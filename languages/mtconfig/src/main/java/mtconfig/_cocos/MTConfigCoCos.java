@@ -10,9 +10,10 @@ public class MTConfigCoCos {
   public static MTConfigCoCoChecker createChecker() {
     final MTConfigCoCoChecker mtConfigCoCoChecker = new MTConfigCoCoChecker()
       .addCoCo(new AllConfigsReferToTheSameComponent())
-      .addCoCo(new RequirementNameExists())
+      .addCoCo(new HookpointExists())
       .addCoCo(new CompConfigExists())
-      .addCoCo(new PortTemplateTagExists());
+      .addCoCo(new PortTemplateTagExists())
+      .addCoCo(new RequirementNameExists());
     return mtConfigCoCoChecker;
   }
 }
