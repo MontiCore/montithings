@@ -87,6 +87,7 @@ Validate Maven:
     paths:
       - generators/montithings2cpp/target/
       - languages/montithings/target/
+      - applications
     expire_in: 1 week
     
 Validate Gradle:
