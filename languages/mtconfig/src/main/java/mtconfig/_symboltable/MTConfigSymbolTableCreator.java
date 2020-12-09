@@ -25,7 +25,7 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
 
   /**
    * Creates MTConfigArtifactScope from ast,
-   * if not another scope with equaö content already exists in the global scope.
+   * if not another scope with equal content already exists in the global scope.
    * The package is set in the ArtifactScope.
    * @param rootNode AST root used for creation.
    * @return scope created from given AST.
@@ -48,6 +48,9 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
         .build();
     putOnStack(artifactScope);
     rootNode.accept(getRealThis());
+
+    //TODO set symbol names in cache, to prevent duplicate scope creation.
+    //((MTConfigGlobalScope)getFirstCreatedScope()).cache(artifactScope.getPackageName()+"."+//getName as parameter);
     return artifactScope;
   }
 
