@@ -245,8 +245,8 @@ public class Utils {
 
   public static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
-    HashSet<String> portIncludes = new HashSet<String>();
-    HashSet<ASTCDEImportStatement> includeStatements = new HashSet<ASTCDEImportStatement>();
+    HashSet<String> portIncludes = new HashSet<>();
+    HashSet<ASTCDEImportStatement> includeStatements = new HashSet<>();
     for (PortSymbol port : comp.getPorts()) {
       if (ComponentHelper.portUsesCdType(port)) {
         Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper

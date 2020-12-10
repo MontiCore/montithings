@@ -29,7 +29,7 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 namespace ${package}
 {
 
-${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
+${kind} <#if type.isIsEnum()>class</#if> ${type.getName()} <#if super != "">: ${super} </#if>{
 
   <#if type.isIsEnum()>
     <#-- enum -->
