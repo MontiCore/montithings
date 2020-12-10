@@ -33,8 +33,7 @@ Docker Alpine:
     - shell
     - docker
   only:
-    - develop
-    - feature/docker-cross-build-pipeline
+    - never # never execute this job
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmake 
@@ -56,8 +55,7 @@ Docker DDS:
     - shell
     - docker
   only:
-    - develop
-    - feature/docker-cross-build-pipeline
+    - never # never execute this job
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmakedds
@@ -75,9 +73,8 @@ Docker OpenDDSDCPSInfoRepo:
   variables:
     DOCKER_DRIVER: overlay2
   cache: {}
-  tags:
-    - shell
-    - docker
+  only:
+    - never # never execute this job
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/openddsdcpsinforepo
