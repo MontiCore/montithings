@@ -58,7 +58,7 @@ RUN ./build.sh ${comp.getFullName()}
         # COMPONENT: ${pair.getKey().fullName}
         <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
         <#if config.getMessageBroker().toString() == "DDS">
-        FROM ubuntu:groovy AS ${pair.getKey().fullName}
+        FROM debian:buster AS ${pair.getKey().fullName}
         <#else>
         FROM alpine AS ${pair.getKey().fullName}
 
