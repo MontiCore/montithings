@@ -58,8 +58,8 @@ class ${compname} : public IComponent
 </#if>
 {
 protected:
-${tc.includeArgs("template.util.subcomponents.printVars", [comp, comp.getPorts(), config])}
-${Utils.printVariables(comp)}
+${tc.includeArgs("template.util.ports.printVars", [comp, comp.getPorts(), config])}
+${Utils.printVariables(comp, config)}
 
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters --><#-- Utils.printConfigParameters(comp) -->
 std::vector< std::thread > threads;

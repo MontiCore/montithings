@@ -71,6 +71,13 @@ public class ComponentHelper {
     return java2cppTypeString(expression.print());
   }
 
+  public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp, ConfigParams config) {
+    if (expression.getTypeInfo() instanceof CDType2TypeAdapter) {
+      return printCdPackageNamespace(comp, expression.getTypeInfo(), config);
+    }
+    return java2cppTypeString(expression.print());
+  }
+
   /**
    * @return A list of String representations of the actual type arguments
    * assigned to the super component
@@ -142,16 +149,20 @@ public class ComponentHelper {
     return portSymbol.getType().getTypeInfo() instanceof CDType2TypeAdapter;
   }
 
-  public static String printCdPortPackageNamespace(
-    arcbasis._symboltable.ComponentTypeSymbol componentSymbol,
-    arcbasis._symboltable.PortSymbol portSymbol, ConfigParams config) {
+  public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
+    PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       throw new IllegalArgumentException(
         "Can't print namespace of non-CD type " + portSymbol.getType().getTypeInfo().getFullName());
     }
     TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
 
-    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(portSymbol,
+    return printCdPackageNamespace(componentSymbol, cdTypeSymbol, config);
+  }
+
+  public static String printCdPackageNamespace(ComponentTypeSymbol componentSymbol,
+    TypeSymbol typeSymbol, ConfigParams config) {
+    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(typeSymbol,
       config);
     if (cdeImportStatementOpt.isPresent()) {
       String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
@@ -162,7 +173,7 @@ public class ComponentHelper {
       cdNamespace += cdeImportStatementOpt.get().getName();
       return printPackageNamespaceFromString(cdNamespace, componentNamespace);
     }
-    return printPackageNamespace(componentSymbol, cdTypeSymbol);
+    return printPackageNamespace(componentSymbol, typeSymbol);
   }
 
   public static String printPackageNamespaceFromString(String fullNamespaceSubcomponent,
@@ -183,12 +194,17 @@ public class ComponentHelper {
    * @param config     config containing a cdlangextension, that is used to search for import statements.
    * @return c++ import statement of the port type if specified in the cde model. Otherwise empty.
    */
-  public static Optional<cdlangextension._ast.ASTCDEImportStatement> getCppImportExtension(
-    arcbasis._symboltable.PortSymbol portSymbol, ConfigParams config) {
+  public static Optional<ASTCDEImportStatement> getCppImportExtension(PortSymbol portSymbol,
+    ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       return Optional.empty();
     }
     TypeSymbol typeSymbol = portSymbol.getTypeInfo();
+    return getCppImportExtension(typeSymbol, config);
+  }
+
+  public static Optional<ASTCDEImportStatement> getCppImportExtension(TypeSymbol typeSymbol,
+    ConfigParams config) {
     if (config.getCdLangExtensionScope() != null && typeSymbol instanceof CDType2TypeAdapter) {
       Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = config.getCdLangExtensionScope()
         .resolveASTCDEImportStatement("Cpp", ((CDType2TypeAdapter) typeSymbol).getAdaptee());

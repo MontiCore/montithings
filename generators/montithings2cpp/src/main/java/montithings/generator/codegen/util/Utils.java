@@ -1,6 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.util;
 
+import arcbasis._ast.ASTArcField;
+import arcbasis._ast.ASTArcParameter;
 import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
@@ -57,6 +59,9 @@ public class Utils {
   /**
    * Prints a member of given visibility name and type
    */
+  public static String printMember(String type, String name, String initialValue) {
+    return type + " " + name + "=" + initialValue + ";";
+  }
   public static String printMember(String type, String name) {
     return type + " " + name + ";";
   }
@@ -64,10 +69,15 @@ public class Utils {
   /**
    * Prints members for configuration parameters.
    */
-  public static String printConfigParameters(ComponentTypeSymbol comp) {
+  public static String printConfigParameters(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
     for (FieldSymbol param : comp.getParameters()) {
-      s.append(printMember(ComponentHelper.printCPPTypeName(param.getType()), param.getName()));
+      if (param.getAstNode() instanceof ASTArcParameter) {
+        ASTArcParameter parameter = (ASTArcParameter) param.getAstNode();
+        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config), param.getName(), printExpression(parameter.getDefault())));
+      } else {
+        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config), param.getName()));
+      }
     }
     return s.toString();
   }
@@ -75,11 +85,17 @@ public class Utils {
   /**
    * Prints members for variables
    */
-  public static String printVariables(ComponentTypeSymbol comp) {
+  public static String printVariables(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
     for (FieldSymbol variable : ComponentHelper.getFields(comp)) {
-      s.append(
-        printMember(ComponentHelper.printCPPTypeName(variable.getType()), variable.getName()));
+      if (variable.getAstNode() instanceof ASTArcField) {
+        ASTArcField field = (ASTArcField) variable.getAstNode();
+        s.append(
+          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config), variable.getName(), printExpression(field.getInitial())));
+      } else {
+        s.append(
+          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config), variable.getName()));
+      }
     }
     return s.toString();
   }
@@ -129,8 +145,9 @@ public class Utils {
       }
     }*/
     if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
-        !((ASTGenericComponentHead)comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
-      List<ASTArcTypeParameter> parameterList = ((ASTGenericComponentHead) comp.getAstNode().getHead()).getArcTypeParameterList();
+      !((ASTGenericComponentHead) comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
+      List<ASTArcTypeParameter> parameterList = ((ASTGenericComponentHead) comp.getAstNode()
+        .getHead()).getArcTypeParameterList();
       for (ASTArcTypeParameter typeParameter : parameterList) {
         output.add(typeParameter.getName());
       }
@@ -143,7 +160,7 @@ public class Utils {
    */
   public static boolean hasTypeParameter(ComponentTypeSymbol comp) {
     if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
-        !((ASTGenericComponentHead)comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
+      !((ASTGenericComponentHead) comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
       return true;
     }
     return false;
@@ -154,7 +171,7 @@ public class Utils {
    */
   public static List<ASTArcTypeParameter> getTypeParameters(ComponentTypeSymbol comp) {
     if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead) {
-      return ((ASTGenericComponentHead)comp.getAstNode().getHead()).getArcTypeParameterList();
+      return ((ASTGenericComponentHead) comp.getAstNode().getHead()).getArcTypeParameterList();
     }
     return new LinkedList<>();
   }
@@ -276,11 +293,12 @@ public class Utils {
     ConfigParams config) {
     Set<String> compIncludes = new HashSet<String>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
-      if(!getGenericParameters(comp).contains(subcomponent.getType().getName())){
+      if (!getGenericParameters(comp).contains(subcomponent.getType().getName())) {
         boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
         compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
-            + (isInner ? (comp.getName() + "-Inner/") : "")
-            + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false) + ".h\"");
+          + (isInner ? (comp.getName() + "-Inner/") : "")
+          + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
+          + ".h\"");
       }
       Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent);
       for (String genericInclude : genericIncludes) {
