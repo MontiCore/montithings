@@ -124,7 +124,7 @@ Generator Test:
   image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
   dependencies: 
     - Unit Test JDK 11 #download generated-test-sources
-  needs: [] # can run immediately 
+  needs: ["Unit Test JDK 11"] # can run immediately 
   script:
     - cd generators/montithings2cpp/target/generated-test-sources
     - ./runTests.sh
@@ -143,6 +143,7 @@ Code Quality:
     DOCKER_DRIVER: overlay2
   allow_failure: true
   cache: {}
+  needs: [] # can run immediately 
   retry: 2
   tags:
     - shell
