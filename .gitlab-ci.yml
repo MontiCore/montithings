@@ -124,6 +124,7 @@ Generator Test:
   image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
   dependencies: 
     - Unit Test JDK 11 #download generated-test-sources
+  needs: [] # can run immediately 
   script:
     - cd generators/montithings2cpp/target/generated-test-sources
     - ./runTests.sh
@@ -132,7 +133,7 @@ Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
   stage: post-test
   script:
-    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip
+    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip -Dmaven.test.skip=true 
   only:
     - develop
 
