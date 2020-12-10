@@ -124,6 +124,7 @@ Unit Test Amazon Corretto JDK 8:
 
 Generator Test Generation:
   stage: build
+  image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-11
   script:
     - cd generators/montithings2cpp
     - mvn $MAVEN_CLI_OPTS test -Dexec.skip
