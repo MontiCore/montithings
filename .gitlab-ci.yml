@@ -19,6 +19,7 @@ variables:
   MAVEN_OPTS: "-Xmx4096m -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   # `installAtEnd` and `deployAtEnd`are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "-s settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true"
+  DOCKER_DRIVER: overlay2
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -77,6 +78,7 @@ Unit Test Gradle:
   allow_failure: true
   dependencies: 
     - Validate Gradle #download artifacts from build
+  needs: ["Validate Gradle"]
   script:
     - gradle test
 
@@ -89,6 +91,7 @@ Unit Test Gradle:
     - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
   dependencies: 
     - Validate Maven #download artifacts from build
+  needs: ["Validate Maven"]
   artifacts:
     reports:
       junit:
