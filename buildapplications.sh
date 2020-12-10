@@ -2,10 +2,6 @@
 # Stop on first error
 set -e
 
-echo "Env CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
-ls -al $CI_PROJECT_DIR
-echo "Env MAVEN_CLI_OPTS: ${MAVEN_CLI_OPTS}"
-
 # Iterate over all applications, generate and build them
 dirs=$(find applications -mindepth 1 -maxdepth 1 -type d);
 for d in $dirs; do
@@ -26,7 +22,7 @@ for d in $dirs; do
     echo "Image name: ${imagename}"
     echo "Full image ref: ${imageref}"
 
-    docker buildx build --pull --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=$imageref -t $imageref:latest --push .
+    docker buildx build --pull --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 -t $imageref:latest --push .
 
     cd -
 done
