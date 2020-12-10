@@ -127,7 +127,7 @@ Generator Test Generation:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-11
   script:
     - cd generators/montithings2cpp
-    - mvn -s ../../settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=false test -Dexec.skip
+    - mvn -s ../../settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=false -Dtest=CppCodeTest -Dexec.skip test
   needs: []
   artifacts:
     paths:
