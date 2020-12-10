@@ -26,7 +26,7 @@ for d in $dirs; do
     echo "Image name: ${imagename}"
     echo "Full image ref: ${imageref}"
 
-    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=$imageref -t $imageref:latest --push .
+    docker buildx build --pull --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=$imageref -t $imageref:latest --push .
 
     cd -
 done
