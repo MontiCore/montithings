@@ -123,7 +123,7 @@ Unit Test Amazon Corretto JDK 8:
   <<: *unit_test_definition
 
 Generator Test Generation:
-  stage: generator-test
+  stage: build
   script:
     - cd generators/montithings2cpp
     - mvn $MAVEN_CLI_OPTS test -Dexec.skip
