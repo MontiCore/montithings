@@ -105,6 +105,28 @@ ${kind} <#if type.isIsEnum()>class</#if> ${type.getName()} <#if super != "">: ${
       </#if>
     </#list> <#-- /associations -->
 
+    <#-- equality operators -->
+    public:
+    bool
+    operator== (const ${type.getName()} &rhs) const
+    {
+    return
+    <#list type.getFields() as field>
+      ${field.getName()} == rhs.${field.getName()} <#sep>&&</#sep>
+    </#list>
+    <#if type.getFields()?size != 0 && type.getAssociations()?size != 0>&&</#if>
+    <#list type.getAssociations() as assoc>
+      ${assoc.getDerivedName()} == rhs.${assoc.getDerivedName()} <#sep>&&</#sep>
+    </#list>
+    ;
+    }
+    public:
+    bool
+    operator!= (const ${type.getName()} &rhs) const
+    {
+    return !(rhs == *this);
+    }
+
     <#-- constructor -->
     public: ${type.getName()}(
     <#list mandatoryFields as mandatoryField>
