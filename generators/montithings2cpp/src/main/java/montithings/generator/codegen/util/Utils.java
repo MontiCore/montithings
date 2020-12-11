@@ -11,8 +11,10 @@ import cdlangextension._ast.ASTCDEImportStatement;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
+import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
+import montithings._ast.ASTMTComponentType;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
@@ -62,6 +64,7 @@ public class Utils {
   public static String printMember(String type, String name, String initialValue) {
     return type + " " + name + "=" + initialValue + ";";
   }
+
   public static String printMember(String type, String name) {
     return type + " " + name + ";";
   }
@@ -74,9 +77,12 @@ public class Utils {
     for (FieldSymbol param : comp.getParameters()) {
       if (param.getAstNode() instanceof ASTArcParameter) {
         ASTArcParameter parameter = (ASTArcParameter) param.getAstNode();
-        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config), param.getName(), printExpression(parameter.getDefault())));
-      } else {
-        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config), param.getName()));
+        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+          param.getName(), printExpression(parameter.getDefault())));
+      }
+      else {
+        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+          param.getName()));
       }
     }
     return s.toString();
@@ -91,10 +97,13 @@ public class Utils {
       if (variable.getAstNode() instanceof ASTArcField) {
         ASTArcField field = (ASTArcField) variable.getAstNode();
         s.append(
-          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config), variable.getName(), printExpression(field.getInitial())));
-      } else {
+          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
+            variable.getName(), printExpression(field.getInitial())));
+      }
+      else {
         s.append(
-          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config), variable.getName()));
+          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
+            variable.getName()));
       }
     }
     return s.toString();
@@ -264,6 +273,34 @@ public class Utils {
     StringBuilder s = new StringBuilder();
     HashSet<String> portIncludes = new HashSet<>();
     HashSet<ASTCDEImportStatement> includeStatements = new HashSet<>();
+    List<ImportStatement> imports = ComponentHelper.getImports(comp);
+
+    for (ImportStatement imp : imports) {
+      // Skip imports that import enum constants
+      Optional<TypeSymbol> type = comp.getEnclosingScope().resolveType(imp.getStatement());
+      if (type.isPresent() && type.get().isEnum() && imp.isStar()) {
+        continue;
+      }
+
+      // Skip interface components. We dont generate code for them, there's nothing to import here
+      Optional<ComponentTypeSymbol> compType = comp.getEnclosingScope().resolveComponentType(imp.getStatement());
+      if (compType.isPresent() && ((ASTMTComponentType)compType.get().getAstNode()).getMTComponentModifier().isInterface()) {
+        continue;
+      }
+
+      String escape = "";
+      int escapeCount = 1 + StringUtils.countMatches(comp.getPackageName(), '.');
+      for (int i = 0; i < escapeCount; i++) {
+        escape += "../";
+      }
+      String importStatement = "#include \""
+          + escape
+          + imp.getStatement().replaceAll("\\.", "/")
+          + (imp.isStar() ? "/Package.h" : ".h")
+          + "\"";
+      s.append(importStatement + "\n");
+    }
+
     for (PortSymbol port : comp.getPorts()) {
       if (ComponentHelper.portUsesCdType(port)) {
         Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper

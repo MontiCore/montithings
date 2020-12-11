@@ -16,6 +16,7 @@ import de.monticore.ast.ASTNode;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
@@ -29,7 +30,6 @@ import de.se_rwth.commons.logging.Log;
 import genericarc._ast.ASTArcTypeParameter;
 import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
-import montiarc._symboltable.MontiArcArtifactScope;
 import montiarc._symboltable.adapters.CDType2TypeAdapter;
 import montithings._ast.*;
 import montithings._symboltable.MontiThingsArtifactScope;
@@ -58,13 +58,12 @@ import java.util.stream.Collectors;
  */
 public class ComponentHelper {
 
-  public static List<de.monticore.symboltable.ImportStatement> getImports(
-    arcbasis._symboltable.ComponentTypeSymbol symbol) {
+  public static List<ImportStatement> getImports(ComponentTypeSymbol symbol) {
     while (symbol.getOuterComponent().isPresent()) {
       symbol = symbol.getOuterComponent().get();
     }
     ASTComponentType ast = symbol.getAstNode();
-    return ((MontiArcArtifactScope) ast.getEnclosingScope()).getImportList();
+    return ((MontiThingsArtifactScope) ast.getEnclosingScope()).getImportList();
   }
 
   public static String printCPPTypeName(SymTypeExpression expression) {
