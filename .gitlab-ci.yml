@@ -122,23 +122,12 @@ Unit Test Amazon Corretto JDK 8:
   allow_failure: true 
   <<: *unit_test_definition
 
-Generator Test Generation:
-  stage: build
-  image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-11
-  script:
-    - cd generators/montithings2cpp
-    - mvn -s ../../settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=false -Dtest=CppCodeTest -Dexec.skip test
-  needs: []
-  artifacts:
-    paths:
-      - generators/montithings2cpp/target/
-
 Generator Test:
   stage: generator-test
   image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
   dependencies: 
     - Generator Test Generation #download generated-test-sources
-  needs: ["Generator Test Generation"] # can run immediately 
+  needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   script:
     - cd generators/montithings2cpp/target/generated-test-sources
     - ./runTests.sh
