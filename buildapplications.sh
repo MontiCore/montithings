@@ -16,6 +16,8 @@ for d in $dirs; do
 
     registry=$CI_REGISTRY_IMAGE
     imagename=$(basename $d)
+    # to lower case
+    imagename=${imagename,,}
     imageref="${registry}/${imagename}"
     
     echo "Registry: ${registry}"
