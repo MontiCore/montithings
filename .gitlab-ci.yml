@@ -126,7 +126,7 @@ Generator Test:
   stage: generator-test
   image: registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
   dependencies: 
-    - Generator Test Generation #download generated-test-sources
+    - Unit Test JDK 11 #download generated-test-sources
   needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   script:
     - cd generators/montithings2cpp/target/generated-test-sources
