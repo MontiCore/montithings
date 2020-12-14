@@ -30,7 +30,8 @@ public class ComponentHasBehavior implements MontiThingsASTMTComponentTypeCoCo {
     boolean hasHwc = FileHelper.existsHWCClass(hwcPath, compSymbol.getFullName());
     boolean hasBehavior = ComponentHelper.hasBehavior(compSymbol);
     boolean isComposed = compSymbol.isDecomposed();
-    if (!hasHwc && !hasBehavior && !isComposed) {
+    boolean isInterfaceComp = node.getMTComponentModifier().isInterface();
+    if (!hasHwc && !hasBehavior && !isComposed && !isInterfaceComp) {
       Log.error(String.format(MontiThingsError.NO_BEHAVIOR.toString(), compSymbol.getFullName()));
     }
   }
