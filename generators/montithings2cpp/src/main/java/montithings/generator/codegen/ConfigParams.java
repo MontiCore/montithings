@@ -11,6 +11,7 @@ import cdlangextension._symboltable.CDLangExtensionScope;
 import montithings.generator.data.PortMap;
 import mtconfig._symboltable.MTConfigScope;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Optional;
@@ -120,6 +121,17 @@ public class ConfigParams {
   private MTConfigScope mtConfigScope;
 
   private final PortMap componentPortMap = new PortMap();
+
+  /** Directory that contains handwritten code for components.*/
+  protected File hwcPath;
+
+  public File getHwcPath() {
+    return hwcPath;
+  }
+
+  public void setHwcPath(File hwcPath) {
+    this.hwcPath = hwcPath;
+  }
 
   /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
   protected Path hwcTemplatePath;

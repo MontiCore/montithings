@@ -33,6 +33,7 @@ import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
+import montithings.generator.cocos.ComponentHasBehavior;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.MTGenerator;
 import montithings.generator.data.Models;
@@ -183,6 +184,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // check cocos
       Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
       checker.addCoCo(new PortConnection(config.getTemplatedPorts()));
+      checker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
       checkCoCos(comp.getAstNode());
     }
   }

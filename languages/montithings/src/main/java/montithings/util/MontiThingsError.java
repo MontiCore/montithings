@@ -18,7 +18,8 @@ public enum MontiThingsError implements montithings.util.Error {
   GENERIC_PARAMTER_NOT_FITS_INTERFACE("0xMT1470", "Generic %s of SubComponent %s in component %s does not allow the interface component %s line %s."
       + "Is a valid resolve able interface component model available and does the generic extend it?"),
   GENERIC_PARAMETER_NEEDS_INTERFACE("0xMT1480", "Generic %s of SubComponent %s in component %s requires an interface component line %s."
-      + "Does the generic extend an component?");
+      + "Does the generic extend an component?"),
+  NO_BEHAVIOR("0xMT1490", "Component %s has no behavior (neither in model nor hand-written code)");
 
   private final String errorCode;
   private final String errorMessage;
