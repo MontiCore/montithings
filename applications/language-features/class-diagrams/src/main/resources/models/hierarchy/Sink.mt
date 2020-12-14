@@ -2,7 +2,7 @@
 package hierarchy;
 
 // You can import single elements from class diagrams
-import hierarchy.Colors.*;
+import hierarchy.Colors.Color;
 
 component Sink {
   port in Color value;

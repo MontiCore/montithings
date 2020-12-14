@@ -1,6 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.util;
 
+import arcbasis._ast.ASTArcField;
+import arcbasis._ast.ASTArcParameter;
 import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
@@ -9,8 +11,10 @@ import cdlangextension._ast.ASTCDEImportStatement;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.typesymbols._symboltable.FieldSymbol;
+import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
+import montithings._ast.ASTMTComponentType;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
@@ -57,6 +61,10 @@ public class Utils {
   /**
    * Prints a member of given visibility name and type
    */
+  public static String printMember(String type, String name, String initialValue) {
+    return type + " " + name + "=" + initialValue + ";";
+  }
+
   public static String printMember(String type, String name) {
     return type + " " + name + ";";
   }
@@ -64,10 +72,18 @@ public class Utils {
   /**
    * Prints members for configuration parameters.
    */
-  public static String printConfigParameters(ComponentTypeSymbol comp) {
+  public static String printConfigParameters(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
     for (FieldSymbol param : comp.getParameters()) {
-      s.append(printMember(ComponentHelper.printCPPTypeName(param.getType()), param.getName()));
+      if (param.getAstNode() instanceof ASTArcParameter) {
+        ASTArcParameter parameter = (ASTArcParameter) param.getAstNode();
+        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+          param.getName(), printExpression(parameter.getDefault())));
+      }
+      else {
+        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+          param.getName()));
+      }
     }
     return s.toString();
   }
@@ -75,11 +91,20 @@ public class Utils {
   /**
    * Prints members for variables
    */
-  public static String printVariables(ComponentTypeSymbol comp) {
+  public static String printVariables(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
     for (FieldSymbol variable : ComponentHelper.getFields(comp)) {
-      s.append(
-        printMember(ComponentHelper.printCPPTypeName(variable.getType()), variable.getName()));
+      if (variable.getAstNode() instanceof ASTArcField) {
+        ASTArcField field = (ASTArcField) variable.getAstNode();
+        s.append(
+          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
+            variable.getName(), printExpression(field.getInitial())));
+      }
+      else {
+        s.append(
+          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
+            variable.getName()));
+      }
     }
     return s.toString();
   }
@@ -129,8 +154,9 @@ public class Utils {
       }
     }*/
     if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
-        !((ASTGenericComponentHead)comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
-      List<ASTArcTypeParameter> parameterList = ((ASTGenericComponentHead) comp.getAstNode().getHead()).getArcTypeParameterList();
+      !((ASTGenericComponentHead) comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
+      List<ASTArcTypeParameter> parameterList = ((ASTGenericComponentHead) comp.getAstNode()
+        .getHead()).getArcTypeParameterList();
       for (ASTArcTypeParameter typeParameter : parameterList) {
         output.add(typeParameter.getName());
       }
@@ -143,7 +169,7 @@ public class Utils {
    */
   public static boolean hasTypeParameter(ComponentTypeSymbol comp) {
     if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
-        !((ASTGenericComponentHead)comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
+      !((ASTGenericComponentHead) comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
       return true;
     }
     return false;
@@ -154,7 +180,7 @@ public class Utils {
    */
   public static List<ASTArcTypeParameter> getTypeParameters(ComponentTypeSymbol comp) {
     if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead) {
-      return ((ASTGenericComponentHead)comp.getAstNode().getHead()).getArcTypeParameterList();
+      return ((ASTGenericComponentHead) comp.getAstNode().getHead()).getArcTypeParameterList();
     }
     return new LinkedList<>();
   }
@@ -245,8 +271,36 @@ public class Utils {
 
   public static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
-    HashSet<String> portIncludes = new HashSet<String>();
-    HashSet<ASTCDEImportStatement> includeStatements = new HashSet<ASTCDEImportStatement>();
+    HashSet<String> portIncludes = new HashSet<>();
+    HashSet<ASTCDEImportStatement> includeStatements = new HashSet<>();
+    List<ImportStatement> imports = ComponentHelper.getImports(comp);
+
+    for (ImportStatement imp : imports) {
+      // Skip imports that import enum constants
+      Optional<TypeSymbol> type = comp.getEnclosingScope().resolveType(imp.getStatement());
+      if (type.isPresent() && type.get().isEnum() && imp.isStar()) {
+        continue;
+      }
+
+      // Skip interface components. We dont generate code for them, there's nothing to import here
+      Optional<ComponentTypeSymbol> compType = comp.getEnclosingScope().resolveComponentType(imp.getStatement());
+      if (compType.isPresent() && ((ASTMTComponentType)compType.get().getAstNode()).getMTComponentModifier().isInterface()) {
+        continue;
+      }
+
+      String escape = "";
+      int escapeCount = 1 + StringUtils.countMatches(comp.getPackageName(), '.');
+      for (int i = 0; i < escapeCount; i++) {
+        escape += "../";
+      }
+      String importStatement = "#include \""
+          + escape
+          + imp.getStatement().replaceAll("\\.", "/")
+          + (imp.isStar() ? "/Package.h" : ".h")
+          + "\"";
+      s.append(importStatement + "\n");
+    }
+
     for (PortSymbol port : comp.getPorts()) {
       if (ComponentHelper.portUsesCdType(port)) {
         Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper
@@ -276,11 +330,12 @@ public class Utils {
     ConfigParams config) {
     Set<String> compIncludes = new HashSet<String>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
-      if(!getGenericParameters(comp).contains(subcomponent.getType().getName())){
+      if (!getGenericParameters(comp).contains(subcomponent.getType().getName())) {
         boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
         compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
-            + (isInner ? (comp.getName() + "-Inner/") : "")
-            + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false) + ".h\"");
+          + (isInner ? (comp.getName() + "-Inner/") : "")
+          + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
+          + ".h\"");
       }
       Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent);
       for (String genericInclude : genericIncludes) {

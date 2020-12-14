@@ -52,7 +52,7 @@ TEST_F (ExampleTest, SourceTEST)
     {
       result = source->compute (montithings::hierarchy::SourceInput());
       ASSERT_TRUE (result.getValue ().has_value ());
-      bool valueInRange = 0<=result.getValue ().value () && result.getValue ().value ()<4;
+      bool valueInRange = 0<=result.getValueAdap ().value () && result.getValueAdap ().value ()<4;
       EXPECT_EQ (valueInRange, 1);
     }
 }

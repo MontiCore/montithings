@@ -39,7 +39,7 @@ public class MTGenerator {
 
     if (comp.isAtomic()) {
       boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.getPackageName() + "." + compname);
-      generateBehaviorImplementation(comp, targetPath, compname, existsHWC);
+      generateBehaviorImplementation(comp, config, targetPath, compname, existsHWC);
     }
 
     // Generate inner components
@@ -67,17 +67,17 @@ public class MTGenerator {
     }
   }
 
-  public static void generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath, String compname, boolean existsHWC) {
+  public static void generateBehaviorImplementation(ComponentTypeSymbol comp, ConfigParams config, File targetPath, String compname, boolean existsHWC) {
     if (!existsHWC) {
       toFile(targetPath, compname + "Impl","template/behavior/implementation/ImplementationHeader.ftl"
-        ,".h",comp, compname, existsHWC);
+        ,".h",comp, compname, config, existsHWC);
       toFile(targetPath, compname + "Impl",
-          "template/behavior/implementation/ImplementationFile.ftl",".cpp", comp, compname, existsHWC);
+          "template/behavior/implementation/ImplementationFile.ftl",".cpp", comp, compname, config, existsHWC);
     } else {
       toFile(targetPath, compname + "ImplTOP","template/behavior/implementation/ImplementationHeader.ftl"
-          ,".h",comp, compname, existsHWC);
+          ,".h",comp, compname, config, existsHWC);
       toFile(targetPath, compname + "ImplTOP",
-          "template/behavior/implementation/ImplementationFile.ftl",".cpp", comp, compname, existsHWC);
+          "template/behavior/implementation/ImplementationFile.ftl",".cpp", comp, compname, config, existsHWC);
     }
   }
 

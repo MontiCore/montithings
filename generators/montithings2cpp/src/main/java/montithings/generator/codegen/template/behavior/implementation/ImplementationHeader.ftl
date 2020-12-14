@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "existsHWC")}
+${tc.signature("comp", "compname", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#import "/template/behavior/implementation/ImplementationFile.ftl" as ImplementationFile>
@@ -13,6 +13,7 @@ ${tc.signature("comp", "compname", "existsHWC")}
 #include "json/json.hpp"
 #include ${"<Utils.h>"}
 #include ${"<fstream>"}
+${Utils.printIncludes(comp,config)}
 
 using json = nlohmann::json;
 
@@ -24,7 +25,7 @@ class ${compname}Impl<#if existsHWC>TOP</#if>
 
 protected:
 std::string instanceName;
-${Utils.printVariables(comp)}
+${Utils.printVariables(comp, config)}
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters -->
 <#-- ${Utils.printConfigParameters(comp)} -->
 public:
