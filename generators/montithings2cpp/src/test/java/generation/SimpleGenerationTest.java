@@ -58,7 +58,8 @@ public class SimpleGenerationTest {
   @DataPoints("messageBroker")
   public static ConfigParams.MessageBroker[] messageBrokers = {
     ConfigParams.MessageBroker.OFF,
-    ConfigParams.MessageBroker.MQTT
+    ConfigParams.MessageBroker.MQTT,
+    ConfigParams.MessageBroker.DDS
   };
 
   @Theory

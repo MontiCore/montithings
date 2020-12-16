@@ -144,13 +144,23 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           MTGenerator.generatePortJson(compTarget, comp, config);
         }
       }
-
+      if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
+        MTGenerator.generateDDSDCPSConfig(compTarget, config);
+      }
+      
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
     }
     generateCDEAdapter(target, config);
     generateCD(modelPath, target);
     MTGenerator.generateBuildScript(target, config);
+
+    for (String model : models.getMontithings()) {
+      ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+      if (ComponentHelper.isApplication(comp)) {
+        MTGenerator.generateDockerfileScript(target, comp, config);
+      }
+    }
 
     if (testPath != null && !testPath.toString().equals("")) {
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {

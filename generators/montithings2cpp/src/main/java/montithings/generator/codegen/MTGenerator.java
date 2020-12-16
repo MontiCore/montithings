@@ -58,10 +58,14 @@ public class MTGenerator {
         toFile(targetPath.getParentFile(), "README", "template/util/arduinoReadme/ArduinoReadme.ftl",".txt", targetPath.getName(), compname);
       } else {
         toFile(targetPath, "Deploy" + compname, "template/deploy/Deploy.ftl",".cpp",comp, compname, config);
-        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF
-          && config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
-          toFile(targetPath, compname + "Manager", "template/util/comm/Header.ftl", ".h", comp, config);
-          toFile(targetPath, compname + "Manager", "template/util/comm/ImplementationFile.ftl", ".cpp", comp, config);
+        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+          if (config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
+            toFile(targetPath, compname + "Manager", "template/util/comm/Header.ftl", ".h", comp, config);
+            toFile(targetPath, compname + "Manager", "template/util/comm/ImplementationFile.ftl", ".cpp", comp, config);
+          } else if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
+            toFile(targetPath, compname + "DDSParticipant", "template/util/dds/participant/Header.ftl", ".h", comp, config);
+            toFile(targetPath, compname + "DDSParticipant", "template/util/dds/participant/ImplementationFile.ftl", ".cpp", comp, config);
+          }
         }
       }
     }
@@ -107,7 +111,18 @@ public class MTGenerator {
     toFile(targetPath, "reformatCode", "template/util/scripts/ReformatScript.ftl", ".sh");
     toFile(targetPath, "", "template/util/scripts/ClangFormat.ftl", ".clang-format");
     makeExecutable(targetPath, "reformatCode", ".sh");
+
+    generateDDSDCPSConfig(targetPath, config);
   }
+
+  public static void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp, ConfigParams config) {
+    toFile(targetPath, "Dockerfile", "template/util/scripts/DockerfileScript.ftl", "", comp, config);
+    toFile(targetPath, "dockerBuild", "template/util/scripts/DockerBuild.ftl", ".sh", comp, config);
+    makeExecutable(targetPath, "dockerBuild", ".sh");
+    toFile(targetPath, "dockerRun", "template/util/scripts/DockerRun.ftl", ".sh", comp, config);
+    makeExecutable(targetPath, "dockerRun", ".sh");
+  }
+  
 
   public static void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath, File libraryPath, File[] subPackagesPath, ConfigParams config){
   toFile(targetPath, "CMakeLists", "template/util/cmake/TopLevelCMake.ftl", ".txt",targetPath.listFiles(),
@@ -141,9 +156,14 @@ public class MTGenerator {
     sortedDirs.sort(Comparator.naturalOrder());
 
     toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);
-    toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs);
+    toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs, config);
+    
     makeExecutable(targetPath, "run", ".sh");
     makeExecutable(targetPath, "kill", ".sh");
+  }
+
+  public static void generateDDSDCPSConfig(File targetPath, ConfigParams config) {
+    toFile(targetPath, "dcpsconfig", "template/util/dds/DCPSConfig.ftl", ".ini", config);
   }
 
   public static void generateTestScript(File targetPath, ConfigParams config) {

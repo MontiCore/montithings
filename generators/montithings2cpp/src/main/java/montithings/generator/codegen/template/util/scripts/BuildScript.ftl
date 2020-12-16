@@ -10,7 +10,7 @@ echo "Please provide the component you want to run as first argument. Aborting."
 exit 1
 fi
 
-if [[ ! -d "$1" ]]
+if [ ! -d "$1" ]
 then
 echo "There is no component whose fully qualified name matches the first argument. Aborting."
 exit 1
@@ -34,7 +34,12 @@ fi
 echo Copy Scripts for "$1"
 cd bin
 cp ../../"$1"/*.sh .
+<#if config.getMessageBroker().toString() == "DDS">
+cp ../../"$1"/*.ini .
+</#if>
+<#if config.getSplittingMode().toString() == "LOCAL">
 cp -r ../../"$1"/ports .
+</#if>
 chmod +x *.sh
 cd ../..
 </#if>

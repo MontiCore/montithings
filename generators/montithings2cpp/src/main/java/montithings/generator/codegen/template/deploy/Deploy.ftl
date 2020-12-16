@@ -5,6 +5,8 @@ ${tc.signature("comp", "compname", "config")}
 #include "${compname}.h"
 <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
   #include "${compname}Manager.h"
+<#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+  #include "${compname}DDSParticipant.h"
 </#if>
 #include ${"<chrono>"}
 #include ${"<thread>"}

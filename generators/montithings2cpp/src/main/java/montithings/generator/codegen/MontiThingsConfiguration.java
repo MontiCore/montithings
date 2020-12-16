@@ -337,6 +337,8 @@ public class MontiThingsConfiguration implements Configuration {
           return ConfigParams.MessageBroker.OFF;
         case "MQTT":
           return ConfigParams.MessageBroker.MQTT;
+        case "DDS":
+          return ConfigParams.MessageBroker.DDS;
         default:
           throw new IllegalArgumentException(
             "0xMT302 Message broker " + messageBroker + " in pom.xml is unknown");

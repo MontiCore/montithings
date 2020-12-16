@@ -13,7 +13,16 @@ ${tc.signature("comp", "config")}
   while(!MqttClient::instance()->isConnected());
 </#if>
 
+
+
 ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (argv[1]);
+
+<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+  ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(&cmp, argc, argv);
+  ddsParticipant.initializePorts();
+  ddsParticipant.publishConnectors();
+</#if>
+
 <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name}Manager manager (&cmp, argv[2], argv[3]);
   manager.initializePorts ();

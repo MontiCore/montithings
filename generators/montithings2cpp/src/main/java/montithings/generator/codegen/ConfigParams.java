@@ -86,7 +86,8 @@ public class ConfigParams {
 
   public enum MessageBroker {
     OFF("OFF"),
-    MQTT("MQTT");
+    MQTT("MQTT"),
+    DDS("DDS");
 
     String name;
 

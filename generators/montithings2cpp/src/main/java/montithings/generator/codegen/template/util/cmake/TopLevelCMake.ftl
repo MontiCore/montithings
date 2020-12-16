@@ -6,9 +6,27 @@ ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "co
     <#assign commonCodePrefix = "../">
 </#if>
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
+
+<#if config.getSplittingMode().toString() != "OFF"
+  && config.getTargetPlatform().toString() != "DSA_VCG"
+  && config.getTargetPlatform().toString() != "DSA_LAB"
+  && config.getMessageBroker().toString() == "DDS">
+  # DDS specificcd
+  find_package(OpenDDS REQUIRED)
+
+  set(CMAKE_CXX_COMPILER "${r"${OPENDDS_COMPILER}"}")
+  set(opendds_libs
+    OpenDDS::Dcps # Core OpenDDS Library
+    OpenDDS::InfoRepoDiscovery 
+    OpenDDS::Tcp
+    OpenDDS::Rtps #RTPS Discovery
+    OpenDDS::Udp
+    OpenDDS::Rtps_Udp
+  )
+</#if>
 
 # Enable (more comfortable) debugging
 set(CMAKE_CXX_FLAGS_DEBUG "${r"${CMAKE_CXX_FLAGS_DEBUG}"} -gdwarf-3")
@@ -84,6 +102,19 @@ file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.cpp")
 </#if>
 
+<#if config.getMessageBroker().toString() != "DDS">
+  # Exclude DDS files
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
+</#if>
+
+<#if config.getSplittingMode().toString() == "OFF">
+  # Exclude management communication because splitting is disabled
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.cpp")
+</#if>
+
 
 <#if !test>
 add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
@@ -96,6 +127,9 @@ add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#else>
   <#if config.getMessageBroker().toString() == "MQTT">
     target_link_libraries(${comp.getFullName()} mosquitto)
+  <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+    OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
+    target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
   </#if>
   target_link_libraries(${comp.getFullName()} nng::nng)
 </#if>
