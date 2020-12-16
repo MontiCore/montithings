@@ -20,7 +20,7 @@ RUN apt-get install --reinstall ca-certificates
 # Switch into our working directory for building nng
 WORKDIR /usr/src/app
 
-# build nng
+# Build NNG
 RUN git clone https://github.com/nanomsg/nng.git
 RUN cd /usr/src/app/nng \
 && git fetch && git fetch --tags \
