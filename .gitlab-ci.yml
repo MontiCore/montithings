@@ -35,8 +35,8 @@ Docker Alpine:
     - docker
     - node2
   only:
-    refs:
-      - develop
+    #refs:
+    #  - develop
     changes:
       - docker/mtcmake/**/*
   script:
@@ -61,8 +61,8 @@ Docker DDS:
     - docker
     - node2
   only:
-    refs:
-      - develop
+    #refs:
+    #  - develop
     changes:
       - docker/mtcmakedds/**/*
   script:
@@ -86,8 +86,8 @@ Docker OpenDDSDCPSInfoRepo:
     - shell
     - docker
   only:
-    refs:
-      - develop
+    #refs:
+    # - develop
     changes:
       - docker/openddsdcpsinforepo/**/*
   script:
