@@ -12,6 +12,11 @@ for d in $dirs; do
     fi
 
     echo "Building ${d}..."
+    if [[ ! -d "${d}/target/generated-sources/" ]]; then
+        echo "Generated sources not found, skipping..."
+        continue
+    fi
+
     cd $d/target/generated-sources/
 
     registry=$CI_REGISTRY_IMAGE
