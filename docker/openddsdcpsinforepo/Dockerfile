@@ -10,3 +10,4 @@ COPY --from=build /usr/src/app/opendds/bin/DCPSInfoRepo .
 # Run our binary on container startup
 ENTRYPOINT [ "sh", "entrypoint.sh" ]
 CMD [ "/bin/sh" ]
+

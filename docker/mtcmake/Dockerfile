@@ -9,7 +9,7 @@ RUN apk add --update-cache \
 	mosquitto \
 	mosquitto-dev
 
-# Switch into our working directory for building nng
+# Switch into our working directory for building NNG
 WORKDIR /usr/src/app
 
 # Build NNG

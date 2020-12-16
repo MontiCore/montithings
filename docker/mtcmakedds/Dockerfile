@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get install --reinstall ca-certificates
 
-# Switch into our working directory for building nng
+# Switch into our working directory for building NNG
 WORKDIR /usr/src/app
 
 # Build NNG
