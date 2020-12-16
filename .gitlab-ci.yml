@@ -224,24 +224,33 @@ Code Quality:
     reports:
       codequality: codeclimate.json
 
-Docker Applications:
-  stage: build-applications
-  dependencies: 
-    - Validate Maven #download artifacts from build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
-  only:
-    - develop
-    - feature/docker-cross-build-pipeline
-  script:
-    - docker login -u sebot -p $sebot $CI_REGISTRY
-    - export DOCKER_CLI_EXPERIMENTAL=enabled
-    - docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
-    - docker buildx rm builder
-    - docker buildx create --name builder --driver docker-container --use
-    - docker buildx inspect --bootstrap
-    - bash buildapplications.sh
+#Docker Applications:
+#  stage: build-applications
+#  dependencies: 
+#    - Validate Maven #download artifacts from build
+#  variables:
+#    DOCKER_DRIVER: overlay2
+#  cache: {}
+#  tags:
+#    - shell
+#    - docker
+#  only:
+#    - develop
+#    - feature/docker-cross-build-pipeline
+#  script:
+#    - docker login -u sebot -p $sebot $CI_REGISTRY
+#    - export DOCKER_CLI_EXPERIMENTAL=enabled
+#    - docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
+#    - docker buildx rm builder
+#    - docker buildx create --name builder --driver docker-container --use
+#    - docker buildx inspect --bootstrap
+#    - bash buildapplications.sh
+
+trigger-hierarchy:
+  stage: trigger_languages
+  trigger:
+    project: monticore/montithings/applications/hierarchy
+    branch: master
+  #only:
+  #  - develop
+
