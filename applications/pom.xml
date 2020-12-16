@@ -16,7 +16,7 @@
 
   <modules>
     <module>basic-input-output</module>
-    <module>fireAlarm</module>
+    <!--<module>fireAlarm</module>-->
     <module>hierarchy</module>
     <module>language-features</module>
     <module>mqtt-ports</module>

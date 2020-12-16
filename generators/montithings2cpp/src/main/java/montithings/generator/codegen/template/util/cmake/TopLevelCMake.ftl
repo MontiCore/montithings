@@ -26,10 +26,6 @@ set(CMAKE_CXX_STANDARD 11)
     OpenDDS::Udp
     OpenDDS::Rtps_Udp
   )
-<#else>
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
 </#if>
 
 # Enable (more comfortable) debugging
@@ -104,6 +100,19 @@ file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix
   # exclude MQTT related part of the RTE to not require Mosquitto for compiling
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.h")
   list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.cpp")
+</#if>
+
+<#if config.getMessageBroker().toString() != "DDS">
+  # Exclude DDS files
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
+</#if>
+
+<#if config.getSplittingMode().toString() == "OFF">
+  # Exclude management communication because splitting is disabled
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.h")
+  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.cpp")
 </#if>
 
 

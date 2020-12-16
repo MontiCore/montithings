@@ -12,7 +12,7 @@ ${Identifier.createInstance(comp)}
 #include "Port.h"
 #include "InOutPort.h"
 <#list comp.getPorts() as port>
-    <#assign addPort = GeneratorHelper.getPortHwcTemplateName(port, config.getHwcTemplatePath())>
+    <#assign addPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
     <#if config.getTemplatedPorts()?seq_contains(port) && addPort!="Optional.empty">
         #include "${Names.getSimpleName(addPort.get())?cap_first}.h"
     </#if>
@@ -58,8 +58,8 @@ class ${compname} : public IComponent
 </#if>
 {
 protected:
-${tc.includeArgs("template.util.subcomponents.printVars", [comp, comp.getPorts(), config])}
-${Utils.printVariables(comp)}
+${tc.includeArgs("template.util.ports.printVars", [comp, comp.getPorts(), config])}
+${Utils.printVariables(comp, config)}
 
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters --><#-- Utils.printConfigParameters(comp) -->
 std::vector< std::thread > threads;

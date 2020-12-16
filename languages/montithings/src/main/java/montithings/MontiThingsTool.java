@@ -15,7 +15,6 @@ import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._symboltable.IMontiArcScope;
-import montiarc._symboltable.adapters.Field2CDFieldResolvingDelegate;
 import montiarc._symboltable.adapters.Type2CDTypeResolvingDelegate;
 import montiarc.util.Modelfinder;
 import montithings._cocos.MontiThingsCoCoChecker;

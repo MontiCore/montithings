@@ -33,19 +33,18 @@ import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
+import montithings.generator.cocos.ComponentHasBehavior;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
-import phyprops.PhypropsTool;
-import phyprops._ast.ASTPhypropsUnit;
-import phyprops._cocos.PhypropsCoCos;
-import phyprops._parser.PhypropsParser;
-import phyprops._symboltable.PhypropsGlobalScope;
-import phyprops._symboltable.PhypropsLanguage;
-import phyprops._symboltable.PhypropsModelLoader;
+import mtconfig.MTConfigTool;
+import mtconfig._ast.ASTMTConfigUnit;
+import mtconfig._cocos.MTConfigCoCos;
+import mtconfig._parser.MTConfigParser;
+import mtconfig._symboltable.MTConfigGlobalScope;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,8 +99,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     bindingsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
     BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
-    PhypropsTool phypropsTool = new PhypropsTool();
-    phypropsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
+    MTConfigTool mtConfigTool = new MTConfigTool();
+    mtConfigTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
 
     for (String model : models.getMontithings()) {
       // Parse model
@@ -110,7 +109,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
       // Find ports with templates
-      FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config.getHwcTemplatePath());
+      FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config);
       comp.getAstNode().accept(vistor);
       config.getTemplatedPorts().addAll(vistor.getTemplatedPorts());
     }
@@ -125,7 +124,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkMtModels(models.getMontithings(), symTab, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkPhyprops(models.getPhyprops(), phypropsTool.initSymbolTable(modelPath));
+    checkMTConfig(models.getMTConfig(), config, mtConfigTool,mtConfigTool.initSymbolTable(modelPath));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -155,6 +154,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     generateCDEAdapter(target, config);
     generateCD(modelPath, target);
     MTGenerator.generateBuildScript(target, config);
+
+    for (String model : models.getMontithings()) {
+      ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+      if (ComponentHelper.isApplication(comp)) {
+        MTGenerator.generateDockerfileScript(target, comp, config);
+      }
+    }
 
     if (testPath != null && !testPath.toString().equals("")) {
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
@@ -188,6 +194,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // check cocos
       Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
       checker.addCoCo(new PortConnection(config.getTemplatedPorts()));
+      checker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
       checkCoCos(comp.getAstNode());
     }
   }
@@ -268,25 +275,31 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
-  protected void checkPhyprops(List<String> foundModels, PhypropsGlobalScope symTab) {
+  protected void checkMTConfig(List<String> foundModels, ConfigParams config, MTConfigTool mtConfigTool, MTConfigGlobalScope symTab) {
     for (String model : foundModels) {
-      ASTPhypropsUnit ast = null;
+      ASTMTConfigUnit ast = null;
       try {
-        ast = new PhypropsParser().parsePhypropsUnit(model)
+        ast = new MTConfigParser().parseMTConfigUnit(model)
           .orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: " + model));
       }
       catch (IOException e) {
-        Log.error("File '" + model + "' Phyprops artifact was not found");
+        Log.error("File '" + model + "' MTConfig artifact was not found");
       }
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      new PhypropsModelLoader(new PhypropsLanguage())
-        .createSymbolTableFromAST(ast, model, symTab);
+      if (config.getMtConfigScope() == null) {
+        config
+            .setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
+      }
+      else {
+        mtConfigTool.createSymboltable(ast,
+            (MTConfigGlobalScope) config.getMtConfigScope());
+      }
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
-      new PhypropsCoCos().createChecker().checkAll(ast);
+      MTConfigCoCos.createChecker().checkAll(ast);
     }
   }
 
@@ -422,12 +435,20 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
+  /**
+   * Initializes generation for a C++ port,
+   * if appropriate C++ code templates are provided,
+   *
+   * @param target target directory for all artifacts.
+   * @param config Generator configuration
+   * @param comp Component containing the ports for which C++ code should be generated.
+   */
   public void generateHwcPort(File target, ConfigParams config, ComponentTypeSymbol comp) {
     for(PortSymbol port : comp.getPorts()) {
       if(config.getTemplatedPorts().contains(port)) {
-        Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config.getHwcTemplatePath());
+        Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config);
         if (portType.isPresent()) {
-          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), new File(target + File.separator + "hwc" + File.separator + Names.getPathFromPackage(Names.getQualifier(portType.get()))), portType.get());
+          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), new File(target + File.separator + "hwc" + File.separator + Names.getPathFromPackage(Names.getQualifier(portType.get()))), portType.get(), config, port);
         }
       }
     }

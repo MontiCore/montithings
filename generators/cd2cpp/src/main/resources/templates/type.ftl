@@ -29,7 +29,7 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 namespace ${package}
 {
 
-${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
+${kind} <#if type.isIsEnum()>class</#if> ${type.getName()} <#if super != "">: ${super} </#if>{
 
   <#if type.isIsEnum()>
     <#-- enum -->
@@ -104,6 +104,28 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
         }
       </#if>
     </#list> <#-- /associations -->
+
+    <#-- equality operators -->
+    public:
+    bool
+    operator== (const ${type.getName()} &rhs) const
+    {
+    return
+    <#list type.getFields() as field>
+      ${field.getName()} == rhs.${field.getName()} <#sep>&&</#sep>
+    </#list>
+    <#if type.getFields()?size != 0 && type.getAssociations()?size != 0>&&</#if>
+    <#list type.getAssociations() as assoc>
+      ${assoc.getDerivedName()} == rhs.${assoc.getDerivedName()} <#sep>&&</#sep>
+    </#list>
+    ;
+    }
+    public:
+    bool
+    operator!= (const ${type.getName()} &rhs) const
+    {
+    return !(rhs == *this);
+    }
 
     <#-- constructor -->
     public: ${type.getName()}(

@@ -2,11 +2,10 @@
 package hierarchy;
 
 component Source {
+  port in Integer sensor;
   port out Integer value;
 
-  int lastValue = 0;
-
   behavior {
-    value = lastValue++;
+    value = sensor?;
   }
 }

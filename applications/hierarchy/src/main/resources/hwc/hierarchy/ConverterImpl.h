@@ -5,7 +5,7 @@
 namespace montithings {
 namespace hierarchy {
 
-class ConverterImpl : ConverterImplTOP {
+class ConverterImpl : public ConverterImplTOP {
 
 private:
 

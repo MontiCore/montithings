@@ -2,6 +2,7 @@
 package generation;
 
 import de.se_rwth.commons.logging.Log;
+import de.se_rwth.commons.logging.LogStub;
 import montithings.generator.MontiThingsGeneratorTool;
 import montithings.generator.codegen.ConfigParams;
 import org.apache.commons.io.FileUtils;
@@ -29,6 +30,7 @@ public class SimpleGenerationTest {
 
   @Before
   public void setup() {
+    LogStub.init();
     Log.enableFailQuick(false);
     try {
       FileUtils.copyDirectoryToDirectory(RTEPATH.toFile(), Paths.get("target/").toFile());
@@ -72,6 +74,7 @@ public class SimpleGenerationTest {
     params.setTargetPlatform(targetPlatform);
     params.setSplittingMode(splittingMode);
     params.setMessageBroker(messageBroker);
+    params.setHwcPath(HWCPATH.toFile());
     script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(), null, params);
   }
 

@@ -15,7 +15,7 @@ component grammar ConditionCatch extends ConditionBasis,
    */
   ConditionCatch =
     Condition // the catch statement must directly follow a condition
-    key("catch") handler:MCJavaBlock ";"
+    key("catch") handler:MCJavaBlock
   ;
 
 }

@@ -20,7 +20,10 @@ public class MontiThingsConfiguration implements Configuration {
 
   public static final String DEFAULT_HWC_DIRECTORY = "src";
 
-  public static final ConfigParams configParams = new ConfigParams();
+  /**
+   * Object that is should be used by the Generator to retrieve its configuration.
+   */
+  public ConfigParams configParams = new ConfigParams();
 
   /**
    * The names of the specific MontiThings options used in this configuration.
@@ -73,6 +76,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setSplittingMode(getSplittingMode());
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker());
+    configParams.setHwcPath(getHWCPath());
   }
 
   /**

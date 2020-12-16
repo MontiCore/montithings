@@ -124,8 +124,8 @@ public class FileHelper {
     Set<String> fileEndings = new HashSet<>();
     fileEndings.add("Include.ftl");
     fileEndings.add("Body.ftl");
-    fileEndings.add("GetExternalMessages.ftl");
-    fileEndings.add("SendToExternal.ftl");
+    fileEndings.add("Provide.ftl");
+    fileEndings.add("Consume.ftl");
 
     for (String ending : fileEndings) {
       File hwcFile = Paths.get(hwcPath.toString() + File.separator

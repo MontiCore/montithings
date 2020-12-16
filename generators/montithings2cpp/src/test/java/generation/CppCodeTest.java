@@ -44,6 +44,7 @@ public class CppCodeTest {
     params.setTargetPlatform(ConfigParams.TargetPlatform.GENERIC);
     params.setSplittingMode(ConfigParams.SplittingMode.OFF);
     params.setHwcTemplatePath(Paths.get(HWCPATH.toString(),packageName));
+    params.setHwcPath(HWCPATH.toFile());
     return params;
   }
 

@@ -12,6 +12,7 @@ stages:
   - test
   - generator-test
   - post-test
+  - build-applications
 
 variables:
   # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -19,6 +20,7 @@ variables:
   MAVEN_OPTS: "-Xmx4096m -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   # `installAtEnd` and `deployAtEnd`are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "-s settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true"
+  DOCKER_DRIVER: overlay2
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -32,12 +34,18 @@ Docker Alpine:
     - shell
     - docker
   only:
-    - develop
+    - never # never execute this job
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmake 
-    - docker build -t $CI_REGISTRY_IMAGE/mtcmake .
-    - docker push $CI_REGISTRY_IMAGE/mtcmake
+
+    - export DOCKER_CLI_EXPERIMENTAL=enabled
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx rm builder
+    - docker buildx create --name builder --driver docker-container --use
+    - docker buildx inspect --bootstrap
+
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest --push .
 
 Docker DDS:
   stage: build
@@ -47,20 +55,27 @@ Docker DDS:
   tags:
     - shell
     - docker
+  only:
+    - never # never execute this job
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmakedds
-    - docker build -t $CI_REGISTRY_IMAGE/mtcmakedds .
-    - docker push $CI_REGISTRY_IMAGE/mtcmakedds
+
+    - export DOCKER_CLI_EXPERIMENTAL=enabled
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx rm builder
+    - docker buildx create --name builder --driver docker-container --use
+    - docker buildx inspect --bootstrap
+
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
 
 Docker OpenDDSDCPSInfoRepo:
   stage: build
   variables:
     DOCKER_DRIVER: overlay2
   cache: {}
-  tags:
-    - shell
-    - docker
+  only:
+    - never # never execute this job
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/openddsdcpsinforepo
@@ -79,6 +94,7 @@ Validate Maven:
     paths:
       - generators/montithings2cpp/target/
       - languages/montithings/target/
+      - applications
     expire_in: 1 week
     
 Validate Gradle:
@@ -95,7 +111,7 @@ Validate Gradle:
       - languages/montiarc-extensions/target/
       - languages/monticore-extensions/target/
       - languages/montithings/target/
-      - languages/phyprops/target/
+      - languages/mtconfig/target/
   script:
     - gradle clean assemble
     
@@ -105,6 +121,7 @@ Unit Test Gradle:
   allow_failure: true
   dependencies: 
     - Validate Gradle #download artifacts from build
+  needs: ["Validate Gradle"]
   script:
     - gradle test
 
@@ -117,6 +134,7 @@ Unit Test Gradle:
     - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
   dependencies: 
     - Validate Maven #download artifacts from build
+  needs: ["Validate Maven"]
   artifacts:
     reports:
       junit:
@@ -151,6 +169,7 @@ Unit Test Amazon Corretto JDK 8:
   stage: generator-test
   dependencies: 
     - Unit Test JDK 11 #download generated-test-sources
+  needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   script:
     - cd generators/montithings2cpp/target/generated-test-sources
     - ./runTests.sh
@@ -167,7 +186,7 @@ Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
   stage: post-test
   script:
-    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip
+    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip -Dmaven.test.skip=true 
   only:
     - develop
 
@@ -177,6 +196,7 @@ Code Quality:
     DOCKER_DRIVER: overlay2
   allow_failure: true
   cache: {}
+  needs: [] # can run immediately 
   retry: 2
   tags:
     - shell
@@ -203,3 +223,34 @@ Code Quality:
   artifacts:
     reports:
       codequality: codeclimate.json
+
+#Docker Applications:
+#  stage: build-applications
+#  dependencies: 
+#    - Validate Maven #download artifacts from build
+#  variables:
+#    DOCKER_DRIVER: overlay2
+#  cache: {}
+#  tags:
+#    - shell
+#    - docker
+#  only:
+#    - develop
+#    - feature/docker-cross-build-pipeline
+#  script:
+#    - docker login -u sebot -p $sebot $CI_REGISTRY
+#    - export DOCKER_CLI_EXPERIMENTAL=enabled
+#    - docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
+#    - docker buildx rm builder
+#    - docker buildx create --name builder --driver docker-container --use
+#    - docker buildx inspect --bootstrap
+#    - bash buildapplications.sh
+
+trigger-hierarchy:
+  stage: build-applications
+  trigger:
+    project: monticore/montithings/applications/hierarchy
+    branch: master
+  #only:
+  #  - develop
+

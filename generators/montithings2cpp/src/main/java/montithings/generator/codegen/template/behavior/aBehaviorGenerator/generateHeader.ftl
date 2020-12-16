@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname")}
+${tc.signature("comp","compname", "config")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign generics = Utils.printFormalTypeParameters(comp, false)>
 #pragma once
@@ -14,8 +14,8 @@ ${Utils.printTemplateArguments(comp)}
 class ${compname}Impl : public IComputable
 <${compname}Input${generics},${compname}Result${generics}>{ {
 protected:
-${Utils.printVariables(comp)}
-${Utils.printConfigParameters(comp)}
+${Utils.printVariables(comp, config)}
+${Utils.printConfigParameters(comp, config)}
 
 
 public:
