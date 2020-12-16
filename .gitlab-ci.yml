@@ -247,7 +247,7 @@ Code Quality:
 #    - bash buildapplications.sh
 
 trigger-hierarchy:
-  stage: trigger_languages
+  stage: build-applications
   trigger:
     project: monticore/montithings/applications/hierarchy
     branch: master
