@@ -9,7 +9,9 @@ import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
 import montithings.generator.data.PortMap;
+import mtconfig._symboltable.MTConfigScope;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Optional;
@@ -116,7 +118,21 @@ public class ConfigParams {
   /** Scope of the cdLangExtension language*/
   private CDLangExtensionScope cdLangExtensionScope;
 
+  /** Scope of the MTConfig language*/
+  private MTConfigScope mtConfigScope;
+
   private final PortMap componentPortMap = new PortMap();
+
+  /** Directory that contains handwritten code for components.*/
+  protected File hwcPath;
+
+  public File getHwcPath() {
+    return hwcPath;
+  }
+
+  public void setHwcPath(File hwcPath) {
+    this.hwcPath = hwcPath;
+  }
 
   /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
   protected Path hwcTemplatePath;
@@ -243,6 +259,14 @@ public class ConfigParams {
 
   public void setCdLangExtensionScope(CDLangExtensionScope cdLangExtensionScope) {
     this.cdLangExtensionScope = cdLangExtensionScope;
+  }
+
+  public MTConfigScope getMtConfigScope() {
+    return mtConfigScope;
+  }
+
+  public void setMtConfigScope(MTConfigScope mtConfigScope) {
+    this.mtConfigScope = mtConfigScope;
   }
 
   public SplittingMode getSplittingMode() {

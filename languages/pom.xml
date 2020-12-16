@@ -20,7 +20,7 @@
 		<module>monticore-extensions</module>
 		<module>montithings</module>
 		<module>cdlangextension</module>
-		<module>phyprops</module>
+		<module>mtconfig</module>
 		<module>bindings</module>
 	</modules>
 

@@ -8,7 +8,7 @@ then
 echo Could not find clang-format. Trying Docker instead.
 else
 # Reformat files
-find . -type f \( -iname "*.cpp" -or -iname "*.h" \) ! -path "./header/*" ! -path "./montithings-RTE/*" ! -path "./build/*" | xargs clang-format -i --style=file
+find . -type f \( -iname "*.cpp" -or -iname "*.h" \) ! -path "./header/*" ! -path "./montithings-RTE/*" ! -path "./build/*" ! -path "./test/gtests/lib/*" | xargs -n 1 -P 8 clang-format -i --style=file
 exit 0
 fi
 

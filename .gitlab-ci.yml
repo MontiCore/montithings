@@ -20,6 +20,7 @@ variables:
   MAVEN_OPTS: "-Xmx4096m -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   # `installAtEnd` and `deployAtEnd`are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "-s settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true"
+  DOCKER_DRIVER: overlay2
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -110,7 +111,7 @@ Validate Gradle:
       - languages/montiarc-extensions/target/
       - languages/monticore-extensions/target/
       - languages/montithings/target/
-      - languages/phyprops/target/
+      - languages/mtconfig/target/
   script:
     - gradle clean assemble
     
@@ -120,6 +121,7 @@ Unit Test Gradle:
   allow_failure: true
   dependencies: 
     - Validate Gradle #download artifacts from build
+  needs: ["Validate Gradle"]
   script:
     - gradle test
 
@@ -132,6 +134,7 @@ Unit Test Gradle:
     - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
   dependencies: 
     - Validate Maven #download artifacts from build
+  needs: ["Validate Maven"]
   artifacts:
     reports:
       junit:
@@ -166,6 +169,7 @@ Unit Test Amazon Corretto JDK 8:
   stage: generator-test
   dependencies: 
     - Unit Test JDK 11 #download generated-test-sources
+  needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   script:
     - cd generators/montithings2cpp/target/generated-test-sources
     - ./runTests.sh
@@ -182,7 +186,7 @@ Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
   stage: post-test
   script:
-    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip
+    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip -Dmaven.test.skip=true 
   only:
     - develop
 
@@ -192,6 +196,7 @@ Code Quality:
     DOCKER_DRIVER: overlay2
   allow_failure: true
   cache: {}
+  needs: [] # can run immediately 
   retry: 2
   tags:
     - shell

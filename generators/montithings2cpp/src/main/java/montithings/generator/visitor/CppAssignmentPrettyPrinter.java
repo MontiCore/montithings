@@ -6,10 +6,12 @@ import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressi
 import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
+import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
+import montithings.generator.helper.ComponentHelper;
 
 import java.util.Optional;
 
@@ -44,6 +46,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       else {
         prefix = "result";
       }
+
       getPrinter().print(prefix + ".set" + capitalize(nameExpression.getName()) + "( ");
 
       if (node.getOperator() != ASTConstantsAssignmentExpressions.EQUALS) {
