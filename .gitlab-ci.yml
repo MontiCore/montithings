@@ -35,7 +35,10 @@ Docker Alpine:
     - docker
     - node2
   only:
-    - never # never execute this job
+    refs:
+      - develop
+    changes:
+      - docker/mtcmake/**/*
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmake 
@@ -58,7 +61,10 @@ Docker DDS:
     - docker
     - node2
   only:
-    - never # never execute this job
+    refs:
+      - develop
+    changes:
+      - docker/mtcmakedds/**/*
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmakedds
@@ -76,8 +82,14 @@ Docker OpenDDSDCPSInfoRepo:
   variables:
     DOCKER_DRIVER: overlay2
   cache: {}
+  tags:
+    - shell
+    - docker
   only:
-    - never # never execute this job
+    refs:
+     - develop
+    changes:
+      - docker/openddsdcpsinforepo/**/*
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/openddsdcpsinforepo
