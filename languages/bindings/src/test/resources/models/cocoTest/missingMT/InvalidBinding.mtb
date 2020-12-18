@@ -1,2 +1,2 @@
-missingMT.Interface -> cocoTest.implementationPortTest.Implementation;
-instance missingMT.InterfaceInstance.x -> cocoTest.valid.Implementation;
+missingMT.Interface -> implementationPortTest.Implementation;
+instance missingMT.InterfaceInstance.x -> valid.Implementation;

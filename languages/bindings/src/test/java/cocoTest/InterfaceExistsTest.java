@@ -17,11 +17,13 @@ public class InterfaceExistsTest extends AbstractTest {
     return BindingsError.ERROR_CODE_PATTERN;
   }
 
+  protected static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
+
   @Test
   void shouldFailWithInvalidBinding() {
     BindingsCoCoChecker checker = new BindingsCoCoChecker().addCoCo(new InterfaceExists());
-    checker.checkAll(getAST("cocoTest/missingMT/InvalidBinding.mtb"));
-    Assertions.assertEquals(3, Log.getErrorCount());
+    checker.checkAll(getAST(MODEL_PATH, "missingMT/InvalidBinding.mtb"));
+    Assertions.assertEquals(1, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new BindingsError[] { BindingsError.NO_MODEL_INTERFACE });
   }

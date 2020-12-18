@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.interfaceMismatch;
+package interfaceMismatch;
 
 interface component ImplementationWithInterfaceComponent {
   port in String inPort;

@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.valid;
+package valid;
 
-import cocoTest.valid.Interface;
+import valid.Interface;
 
 component InterfaceInstance {
   Interface xy;

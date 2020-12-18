@@ -17,10 +17,12 @@ public class ImplementationHasSamePortsAsInterfaceTest extends AbstractTest {
     return BindingsError.ERROR_CODE_PATTERN;
   }
 
+  protected static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
+
   @Test
   void shouldFailWithNotSamePortsImplemented() {
     BindingsCoCoChecker checker = new BindingsCoCoChecker().addCoCo(new ImplementationHasSamePortsAsInterface());
-    checker.checkAll(getAST("cocoTest/implementationPortTest/WrongPortBinding.mtb"));
+    checker.checkAll(getAST(MODEL_PATH, "implementationPortTest/WrongPortBinding.mtb"));
     Assertions.assertEquals(2, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new BindingsError[] { BindingsError.NOT_SAME_PORTS_IMPLEMENTED });
@@ -29,7 +31,7 @@ public class ImplementationHasSamePortsAsInterfaceTest extends AbstractTest {
   @Test
   void shouldAcceptDifferentPortDeclaration() {
     BindingsCoCoChecker checker = new BindingsCoCoChecker().addCoCo(new ImplementationHasSamePortsAsInterface());
-    checker.checkAll(getAST("cocoTest/implementationPortTest/DifferentPortDeclarationBinding.mtb"));
+    checker.checkAll(getAST(MODEL_PATH,"implementationPortTest/DifferentPortDeclarationBinding.mtb"));
     Assertions.assertEquals(0, Log.getErrorCount());
   }
 }

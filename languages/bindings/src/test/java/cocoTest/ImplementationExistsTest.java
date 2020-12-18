@@ -18,17 +18,19 @@ public class ImplementationExistsTest extends AbstractTest {
     return BindingsError.ERROR_CODE_PATTERN;
   }
 
+  protected static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
+
   @Test
   void shouldAcceptValidBinding() {
     BindingsCoCoChecker checker = BindingsCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/valid/ValidBinding.mtb"));
+    checker.checkAll(getAST(MODEL_PATH, "valid/ValidBinding.mtb"));
     Assertions.assertEquals(0, Log.getErrorCount());
   }
 
   @Test
   void shouldFailWithInvalidBinding() {
     BindingsCoCoChecker checker = new BindingsCoCoChecker().addCoCo(new ImplementationExists());
-    checker.checkAll(getAST("cocoTest/missingMT/InvalidBinding.mtb"));
+    checker.checkAll(getAST(MODEL_PATH, "missingMT/InvalidBinding.mtb"));
     Assertions.assertEquals(1, Log.getErrorCount());
     this.checkExpectedErrorsPresent(Log.getFindings(),
         new BindingsError[] { BindingsError.NO_MODEL_IMPLEMENTATION });

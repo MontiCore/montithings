@@ -26,8 +26,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractTest {
 
-  private static final String MODEL_PATH = "src/test/resources/models/";
-  private Pattern errorCodePattern;
+  protected Pattern errorCodePattern;
 
   @BeforeAll
   public static void cleanUpLog() {
@@ -97,17 +96,17 @@ public abstract class AbstractTest {
     return errorCodes;
   }
 
-  public ASTBindingsCompilationUnit getAST(String fileName) {
+  public ASTBindingsCompilationUnit getAST(String modelPath, String fileName) {
     ASTBindingsCompilationUnit bindingsAST = null;
     try {
-      bindingsAST = new BindingsParser().parseBindingsCompilationUnit(MODEL_PATH + fileName).orElse(null);
+      bindingsAST = new BindingsParser().parseBindingsCompilationUnit(modelPath + fileName).orElse(null);
     }
     catch (IOException e) {
-      Log.error("File '" + MODEL_PATH + fileName + "' Bindings artifact was not found");
+      Log.error("File '" + modelPath + fileName + "' Bindings artifact was not found");
     }
     Assertions.assertNotNull(bindingsAST);
     BindingsTool tool = new BindingsTool();
-    IBindingsGlobalScope sc = tool.createSymboltable(bindingsAST, new File(MODEL_PATH));
+    IBindingsGlobalScope sc = tool.createSymboltable(bindingsAST, new File(modelPath));
     System.out.println(sc);
     return bindingsAST;
   }

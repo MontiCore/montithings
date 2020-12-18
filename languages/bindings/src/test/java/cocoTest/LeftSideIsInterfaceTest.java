@@ -17,10 +17,12 @@ public class LeftSideIsInterfaceTest extends AbstractTest {
     return BindingsError.ERROR_CODE_PATTERN;
   }
 
+  protected static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
+
   @Test
   void shouldFailWithInvalidBinding() {
     BindingsCoCoChecker checker = new BindingsCoCoChecker().addCoCo(new LeftSideIsInterface());
-    checker.checkAll(getAST("cocoTest/interfaceMismatch/WrongModel.mtb"));
+    checker.checkAll(getAST(MODEL_PATH,"interfaceMismatch/WrongModel.mtb"));
     Assertions.assertEquals(2, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new BindingsError[] { BindingsError.LEFT_SIDE_NO_INTERFACE});

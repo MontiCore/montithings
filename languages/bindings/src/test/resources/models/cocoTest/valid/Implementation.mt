@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.valid;
+package valid;
 
 component Implementation {
   port in String inPort;

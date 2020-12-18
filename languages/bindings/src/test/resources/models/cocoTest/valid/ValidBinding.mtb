@@ -1,2 +1,2 @@
-cocoTest.valid.Interface -> cocoTest.valid.Implementation;
-instance cocoTest.valid.InterfaceInstance.xy -> cocoTest.valid.Implementation;
+valid.Interface -> valid.Implementation;
+instance valid.InterfaceInstance.xy -> valid.Implementation;

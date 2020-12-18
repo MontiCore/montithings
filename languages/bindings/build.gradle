@@ -54,7 +54,6 @@ dependencies {
   grammar files(project(":languages:montithings").projectDir.toPath().resolve("src/main/grammars"))
 
   librarymodels "montiarc.libraries:maJavaLib:$majavalib_version"
-  implementation project(":generators:cd2cpp")
   implementation project(":languages:montithings")
   implementation project(":languages:montiarc-extensions")
   implementation project(":languages:monticore-extensions")
