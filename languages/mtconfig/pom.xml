@@ -33,17 +33,28 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- MontiArc's languages -->
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>arc-fe</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>arc-fe</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
-            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
             <classifier>${grammars.classifier}</classifier>
-            <version>${montiarc.version}</version>
         </dependency>
 
         <dependency>

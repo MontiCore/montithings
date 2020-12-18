@@ -8,13 +8,11 @@ import de.monticore.io.paths.ModelPath;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
-import montithings._symboltable.MontiThingsGlobalScope;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCoChecker;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._symboltable.IMTConfigArtifactScope;
-import mtconfig._symboltable.MTConfigArtifactScope;
-import mtconfig._symboltable.MTConfigGlobalScope;
+import mtconfig._symboltable.IMTConfigGlobalScope;
 import mtconfig._symboltable.MTConfigSymbolTableCreatorDelegator;
 import mtconfig._symboltable.adapters.MCQualifiedName2PortResolvingDelegate;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -37,7 +35,7 @@ public class MTConfigTool {
 
   protected boolean isSymTabInitialized;
 
-  private MontiThingsGlobalScope mtGlobalScope;
+  private IMontiThingsGlobalScope mtGlobalScope;
 
   public MTConfigTool() {
     this(MTConfigCoCos.createChecker());
@@ -63,7 +61,7 @@ public class MTConfigTool {
    * @param modelPaths paths of all folders containing models
    * @return The initialized symbol table
    */
-  public MTConfigGlobalScope initSymbolTable(File... modelPaths) {
+  public IMTConfigGlobalScope initSymbolTable(File... modelPaths) {
     Set<Path> p = Sets.newHashSet();
     for (File mP : modelPaths) {
       p.add(Paths.get(mP.getAbsolutePath()));
@@ -74,11 +72,12 @@ public class MTConfigTool {
 
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
     MCQualifiedName2PortResolvingDelegate portResolvingDelegate;
-    if(this.mtGlobalScope ==null) {
+    if(this.mtGlobalScope == null) {
       IMontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
           .setModelPath(mp)
           .setModelFileExtension("mt")
           .build();
+      this.mtGlobalScope = newMtGlobalScope;
       MontiThingsTool tool = new MontiThingsTool();
       tool.processModels(this.mtGlobalScope);
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
@@ -89,7 +88,11 @@ public class MTConfigTool {
       portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
     }
 
-    MTConfigGlobalScope mtConfigGlobalScope = new MTConfigGlobalScope(mp, FILE_ENDING);
+    IMTConfigGlobalScope mtConfigGlobalScope = MTConfigMill
+      .mTConfigGlobalScopeBuilder()
+      .setModelPath(mp)
+      .setModelFileExtension("mtcfg")
+      .build();
     mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
     mtConfigGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
 
@@ -104,10 +107,10 @@ public class MTConfigTool {
    * @param modelPaths path that contains all models
    * @return created global scope
    */
-  public MTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
+  public IMTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
       File... modelPaths) {
 
-    MTConfigGlobalScope globalScope = initSymbolTable(modelPaths);
+    IMTConfigGlobalScope globalScope = initSymbolTable(modelPaths);
 
     return createSymboltable(ast,globalScope);
   }
@@ -119,8 +122,8 @@ public class MTConfigTool {
    * @param globalScope globalScope used for the symbolTable
    * @return extended global scope
    */
-  public MTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
-      MTConfigGlobalScope globalScope) {
+  public IMTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
+      IMTConfigGlobalScope globalScope) {
 
     MTConfigSymbolTableCreatorDelegator stc = new MTConfigSymbolTableCreatorDelegator(globalScope);
     artifactScope = stc.createFromAST(ast);
@@ -128,7 +131,7 @@ public class MTConfigTool {
     return globalScope;
   }
 
-  public MontiThingsGlobalScope getMtGlobalScope() {
+  public IMontiThingsGlobalScope getMtGlobalScope() {
     return mtGlobalScope;
   }
 
@@ -136,7 +139,7 @@ public class MTConfigTool {
    * Setter for the global scope that should be used for resolving non native symbols.
    * @param mtGlobalScope globalScope used for resolving non native symbols
    */
-  public void setMtGlobalScope(MontiThingsGlobalScope mtGlobalScope) {
+  public void setMtGlobalScope(IMontiThingsGlobalScope mtGlobalScope) {
     this.mtGlobalScope = mtGlobalScope;
   }
 }

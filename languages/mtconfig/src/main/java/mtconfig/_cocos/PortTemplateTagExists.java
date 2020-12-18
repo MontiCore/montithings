@@ -13,7 +13,7 @@ import mtconfig.util.MTConfigError;
 public class PortTemplateTagExists implements MTConfigASTPortTemplateTagCoCo {
   @Override
   public void check(ASTPortTemplateTag node) {
-    if (!node.isPresentNameDefinition()) {
+    if (node.getPortSymbol() == null) {
       Log.error(String.format(MTConfigError.MISSING_PORT_NAME.toString(),
         node.getName(), node.get_SourcePositionEnd().getLine(),
         node.get_SourcePositionEnd().getColumn() - node.getName().length() - 1));

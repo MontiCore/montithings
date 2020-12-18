@@ -19,6 +19,18 @@ import java.util.List;
  */
 public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreatorTOP {
 
+  public MontiThingsSymbolTableCreator() {
+  }
+
+  public MontiThingsSymbolTableCreator(IMontiThingsScope enclosingScope) {
+    super(enclosingScope);
+  }
+
+  public MontiThingsSymbolTableCreator(
+    Deque<? extends IMontiThingsScope> scopeStack) {
+    super(scopeStack);
+  }
+
   @Override
   public IMontiThingsArtifactScope createFromAST(@NotNull ASTMACompilationUnit rootNode) {
     Preconditions.checkArgument(rootNode != null);

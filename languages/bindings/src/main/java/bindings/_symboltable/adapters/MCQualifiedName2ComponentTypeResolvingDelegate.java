@@ -5,7 +5,6 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.IComponentTypeSymbolResolver;
 import de.monticore.symboltable.modifiers.AccessModifier;
 import montithings._symboltable.IMontiThingsGlobalScope;
-import montithings._symboltable.MontiThingsGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.List;

@@ -13,7 +13,7 @@ import mtconfig.util.MTConfigError;
 public class CompConfigExists implements MTConfigASTCompConfigCoCo {
   @Override
   public void check(ASTCompConfig node) {
-    if (!node.isPresentNameDefinition()) {
+    if (node.getComponentTypeSymbol() == null) {
       Log.error(String.format(MTConfigError.MISSING_COMPONENT_NAME.toString(),
         node.getName(), node.get_SourcePositionEnd().getLine(),
         node.get_SourcePositionEnd().getColumn() - node.getName().length() - 1));

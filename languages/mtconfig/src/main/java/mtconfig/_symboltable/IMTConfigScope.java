@@ -81,9 +81,8 @@ public  interface IMTConfigScope extends IMTConfigScopeTOP {
     @Override
     public boolean test(CompConfigSymbol compConfigSymbol) {
       if(compConfigSymbol.isPresentAstNode()
-          &&compConfigSymbol.getAstNode().isPresentNameSymbol()
-          &&compConfigSymbol.getAstNode().getPlatform().equals(platform)
-          &&compConfigSymbol.getAstNode().getNameSymbol()==componentTypeSymbol){
+          &&compConfigSymbol.getAstNode().getComponentTypeSymbol() != null
+          &&compConfigSymbol.getAstNode().getPlatform().equals(platform)){
         return true;
       }
       return false;
@@ -104,8 +103,7 @@ public  interface IMTConfigScope extends IMTConfigScopeTOP {
     @Override
     public boolean test(PortTemplateTagSymbol portTemplateTagSymbol) {
       if(portTemplateTagSymbol.isPresentAstNode()
-          &&portTemplateTagSymbol.getAstNode().isPresentNameSymbol()
-          &&portTemplateTagSymbol.getAstNode().getNameSymbol()==portSymbol){
+          &&portTemplateTagSymbol.getAstNode().getPortSymbol() != null){
         return true;
       }
       return false;

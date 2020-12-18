@@ -8,6 +8,9 @@ import java.util.Optional;
 
 public class MTConfigArtifactScope extends MTConfigArtifactScopeTOP{
 
+  public MTConfigArtifactScope() {
+  }
+
   public MTConfigArtifactScope(String packageName, List<ImportStatement> imports) {
     super(packageName, imports);
   }
