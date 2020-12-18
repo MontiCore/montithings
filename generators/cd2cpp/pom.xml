@@ -20,7 +20,8 @@
     <dependency>
       <groupId>de.monticore</groupId>
       <artifactId>monticore-runtime</artifactId>
-      <version>${monticore.version}</version>
+      <!-- TODO: Upgrade generator and switch to ${monticore.version} -->
+      <version>6.1.0.1</version>
     </dependency>
 
     <dependency>
@@ -44,7 +45,8 @@
     <dependency>
       <groupId>de.monticore.lang</groupId>
       <artifactId>cd4analysis</artifactId>
-      <version>${cd4a.version}</version>
+      <!-- TODO: Upgrade generator and switch to ${cd4a.version} -->
+      <version>1.7.0</version>
     </dependency>
 
     <!-- .. Test Libraries ............................................... -->
