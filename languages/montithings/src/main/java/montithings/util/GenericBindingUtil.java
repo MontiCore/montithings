@@ -125,7 +125,13 @@ public class GenericBindingUtil {
       else if (s.isIncoming() != similarS.get().isIncoming()) {
         return false;
       }
-      else if (!s.getType().print().equals(similarS.get().getType().print())){
+      /*
+       * TODO: use the commented out version once it is clear why print() uses
+       * the fully qualified name and why its prefixed with the component's
+       * fully qualified name
+       */
+      //else if (!s.getType().print().equals(similarS.get().getType().print())){
+      else if (!s.getTypeInfo().getName().equals(similarS.get().getTypeInfo().getName())){
         return false;
       }
     }
