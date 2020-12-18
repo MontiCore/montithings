@@ -14,8 +14,10 @@ public class ImplementationExists implements BindingsASTBindingRuleCoCo {
 
   @Override
   public void check(ASTBindingRule node) {
+    /*
   if(!node.isPresentImplementationComponentDefinition()) {
     Log.error(String.format(BindingsError.NO_MODEL_IMPLEMENTATION.toString()));
   }
+     */
   }
 }

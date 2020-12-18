@@ -78,7 +78,7 @@ public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter impl
 
   @Override
   public void visit(ASTCDLangExtensionUnit a){
-    if(!a.isEmptyPackages()) {
+    if(!a.isEmptyPackage()) {
       this.getPrinter().print("package ");
       StringUtils.join(a.getPackageList(),".");
       this.getPrinter().println(";");

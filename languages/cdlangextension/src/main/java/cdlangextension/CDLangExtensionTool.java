@@ -4,17 +4,21 @@ package cdlangextension;
 import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCoChecker;
 import cdlangextension._cocos.CDLangExtensionCoCos;
-import cdlangextension._symboltable.CDLangExtensionArtifactScope;
 import cdlangextension._symboltable.CDLangExtensionGlobalScope;
-import cdlangextension._symboltable.CDLangExtensionLanguage;
 import cdlangextension._symboltable.CDLangExtensionSymbolTableCreatorDelegator;
-import cdlangextension._symboltable.adapters.MCQualifiedName2CDTypeResolvingDelegate;
+import cdlangextension._symboltable.ICDLangExtensionArtifactScope;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import de.monticore.cd.cd4analysis.CD4AnalysisMill;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
+import de.monticore.cd4analysis.CD4AnalysisMill;
+import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
+import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
+import de.monticore.cd4analysis.resolver.CD4AnalysisResolver;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.io.paths.ModelPath;
+import montiarc.MontiArcTool;
+import montithings.MontiThingsTool;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
@@ -27,29 +31,27 @@ import java.util.Set;
  */
 public class CDLangExtensionTool {
 
-  protected CDLangExtensionLanguage language;
+  public static final String FILE_ENDING = "cde";
 
-  private CDLangExtensionArtifactScope artifactScope;
+  private ICDLangExtensionArtifactScope artifactScope;
 
   protected CDLangExtensionCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
 
-  private CD4AnalysisGlobalScope cdGlobalScope;
+  private ICD4CodeGlobalScope cdGlobalScope;
 
   public CDLangExtensionTool() {
-    this(CDLangExtensionCoCos.createChecker() ,new CDLangExtensionLanguage());
+    this(CDLangExtensionCoCos.createChecker());
   }
 
-  public CDLangExtensionTool(@NotNull CDLangExtensionCoCoChecker checker, @NotNull CDLangExtensionLanguage language) {
+  public CDLangExtensionTool(@NotNull CDLangExtensionCoCoChecker checker) {
     Preconditions.checkArgument(checker != null);
-    Preconditions.checkArgument(language != null);
     this.checker = checker;
-    this.language = language;
     this.isSymTabInitialized = false;
   }
 
-  public CDLangExtensionArtifactScope getArtifactScope() {
+  public ICDLangExtensionArtifactScope getArtifactScope() {
     return artifactScope;
   }
 
@@ -72,21 +74,26 @@ public class CDLangExtensionTool {
     final ModelPath mp = new ModelPath(p);
 
 
-    MCQualifiedName2CDTypeResolvingDelegate componentTypeResolvingDelegate;
+    CD4CodeResolver cd4aResolver;
     if(this.cdGlobalScope ==null) {
-      CD4AnalysisLanguage mtLang = CD4AnalysisMill.cD4AnalysisLanguageBuilder().build();
-      CD4AnalysisGlobalScope newMtGlobalScope = CD4AnalysisMill.cD4AnalysisGlobalScopeBuilder()
+      ICD4CodeGlobalScope cd4aGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
           .setModelPath(mp)
-          .setCD4AnalysisLanguage(mtLang)
+          .setModelFileExtension(CD4AnalysisGlobalScope.EXTENSION)
           .build();
-      componentTypeResolvingDelegate = new MCQualifiedName2CDTypeResolvingDelegate(newMtGlobalScope);
+      cd4aResolver = new CD4CodeResolver(cd4aGlobalScope);
+      this.cdGlobalScope = cd4aGlobalScope;
     }
     else{
-      componentTypeResolvingDelegate = new MCQualifiedName2CDTypeResolvingDelegate(this.cdGlobalScope);
+      cd4aResolver = new CD4CodeResolver(this.cdGlobalScope);
     }
 
-    CDLangExtensionGlobalScope cDLangExtensionGlobalScope = new CDLangExtensionGlobalScope(mp, language);
-    cDLangExtensionGlobalScope.addAdaptedCDTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
+    MontiThingsTool tool = new MontiThingsTool();
+    tool.processModels(this.cdGlobalScope);
+
+    CDLangExtensionGlobalScope cDLangExtensionGlobalScope = new CDLangExtensionGlobalScope(mp, FILE_ENDING);
+    cDLangExtensionGlobalScope.addAdaptedFieldSymbolResolver(cd4aResolver);
+    cDLangExtensionGlobalScope.addAdaptedTypeSymbolResolver(cd4aResolver);
+    cDLangExtensionGlobalScope.addAdaptedCDTypeSymbolResolver(cd4aResolver);
 
     isSymTabInitialized = true;
     return cDLangExtensionGlobalScope;
@@ -117,14 +124,13 @@ public class CDLangExtensionTool {
   public CDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
       CDLangExtensionGlobalScope globalScope) {
 
-    CDLangExtensionSymbolTableCreatorDelegator stc = language
-        .getSymbolTableCreator(globalScope);
+    CDLangExtensionSymbolTableCreatorDelegator stc = new CDLangExtensionSymbolTableCreatorDelegator(globalScope);
     artifactScope = stc.createFromAST(ast);
 
     return globalScope;
   }
 
-  public CD4AnalysisGlobalScope getCdGlobalScope() {
+  public ICD4CodeGlobalScope getCdGlobalScope() {
     return cdGlobalScope;
   }
 
@@ -132,7 +138,7 @@ public class CDLangExtensionTool {
    * Setter for the global scope that should be used for resolving non native symbols.
    * @param cdGlobalScope globalScope used for resolving non native symbols
    */
-  public void setCdGlobalScope(CD4AnalysisGlobalScope cdGlobalScope) {
+  public void setCdGlobalScope(ICD4CodeGlobalScope cdGlobalScope) {
     this.cdGlobalScope = cdGlobalScope;
   }
 }

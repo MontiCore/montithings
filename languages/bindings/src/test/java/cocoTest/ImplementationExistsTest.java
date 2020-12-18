@@ -30,7 +30,7 @@ public class ImplementationExistsTest extends AbstractTest {
     BindingsCoCoChecker checker = new BindingsCoCoChecker().addCoCo(new ImplementationExists());
     checker.checkAll(getAST("cocoTest/missingMT/InvalidBinding.mtb"));
     Assertions.assertEquals(1, Log.getErrorCount());
-    this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
+    this.checkExpectedErrorsPresent(Log.getFindings(),
         new BindingsError[] { BindingsError.NO_MODEL_IMPLEMENTATION });
   }
 }

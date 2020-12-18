@@ -4,8 +4,8 @@ package montithings._visitor;
 import arcbasis._ast.ASTArcBasisNode;
 import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
+import de.se_rwth.commons.logging.Log;
 import montithings._ast.*;
-import net.sourceforge.plantuml.Log;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.Iterator;

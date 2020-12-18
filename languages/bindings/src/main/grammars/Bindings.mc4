@@ -14,8 +14,19 @@ grammar Bindings extends de.monticore.types.MCBasicTypes, MontiArc {
     * @attribute interfaceComponent The Qualified name of a MontiThings interface component.
     * @attribute implementationComponent The Qualified name of a MontiThings non-interface component.
     */
+/*
+    BindingRule implements Element =
+    (
+      (["instance"] interfaceInstance:Name@ComponentInstance)
+    | interfaceComponent:Name@ComponentType
+    )
+    "->"
+    implementationComponent:Name@ComponentType";";
+    */
+
   BindingRule implements Element =
     ((["instance"] interfaceInstance:MCQualifiedName)|interfaceComponent:MCQualifiedName)
     "->"
     implementationComponent:MCQualifiedName";";
+
 }

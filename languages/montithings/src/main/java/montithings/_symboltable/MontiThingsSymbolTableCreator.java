@@ -19,29 +19,31 @@ import java.util.List;
  */
 public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreatorTOP {
 
-  public MontiThingsSymbolTableCreator(IMontiThingsScope enclosingScope) {
-    super(enclosingScope);
-  }
-
-  public MontiThingsSymbolTableCreator(
-      Deque<? extends IMontiThingsScope> scopeStack) {
-    super(scopeStack);
-  }
-
   @Override
-  public MontiThingsArtifactScope createFromAST(@NotNull ASTMACompilationUnit rootNode) {
+  public IMontiThingsArtifactScope createFromAST(@NotNull ASTMACompilationUnit rootNode) {
     Preconditions.checkArgument(rootNode != null);
     List<ImportStatement> imports = new ArrayList<>();
     for (ASTMCImportStatement importStatement : rootNode.getImportStatementList()) {
       imports.add(new ImportStatement(importStatement.getQName(), importStatement.isStar()));
     }
-    MontiThingsArtifactScope artifactScope = montithings.MontiThingsMill
-        .montiThingsArtifactScopeBuilder()
-        .setPackageName(rootNode.getPackage().getQName())
-        .setImportList(imports)
-        .build();
+    IMontiThingsArtifactScope artifactScope = montithings.MontiThingsMill
+      .montiThingsArtifactScopeBuilder()
+      .setPackageName(rootNode.getPackage().getQName())
+      .setImportsList(imports)
+      .build();
     putOnStack(artifactScope);
+
+    // for some reason the setLinkBetweenSpannedScopeAndNode doesn't accept
+    // rootNode as an argument of type ASTMTComponentType.
+    // Maybe a MontiCore bug? Maybe MontiCore looks for the first non-terminal
+    // in our grammar instead of the "start" non-terminal? I dont know. Anyway,
+    // that's why the following two lines fake the behavior that should have
+    // been provided by setLinkBetweenSpannedScopeAndNode
+    artifactScope.setAstNode(rootNode);
+    rootNode.setSpannedScope(artifactScope);
+
     rootNode.accept(getRealThis());
+    removeCurrentScope();
     return artifactScope;
   }
 

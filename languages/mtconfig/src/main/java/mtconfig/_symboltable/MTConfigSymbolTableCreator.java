@@ -30,12 +30,12 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
    * @return scope created from given AST.
    */
   @Override
-  public MTConfigArtifactScope createFromAST(@NotNull ASTMTConfigUnit rootNode) {
+  public IMTConfigArtifactScope createFromAST(@NotNull ASTMTConfigUnit rootNode) {
     Preconditions.checkArgument(rootNode != null);
 
-    MTConfigArtifactScope artifactScope = mtconfig.MTConfigMill.mTConfigArtifactScopeBuilder()
+    IMTConfigArtifactScope artifactScope = mtconfig.MTConfigMill.mTConfigArtifactScopeBuilder()
         .setPackageName(rootNode.getPackage().getQName())
-        .setImportList(new ArrayList<>())
+        .setImportsList(new ArrayList<>())
         .build();
     putOnStack(artifactScope);
     rootNode.accept(getRealThis());

@@ -28,6 +28,13 @@
         </dependency>
 
         <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montithings</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>de.se_rwth.commons</groupId>
             <artifactId>se-commons-logging</artifactId>
         </dependency>
@@ -40,7 +47,6 @@
         <dependency>
             <groupId>de.monticore.lang</groupId>
             <artifactId>cd4analysis</artifactId>
-            <version>1.7.0</version>
         </dependency>
 
         <dependency>
@@ -52,20 +58,17 @@
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-runtime</artifactId>
-            <version>6.1.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-grammar</artifactId>
-            <version>6.1.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-grammar</artifactId>
             <classifier>${grammars.classifier}</classifier>
-            <version>6.1.0.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -74,14 +77,12 @@
             <groupId>de.monticore.lang</groupId>
             <artifactId>cd4analysis</artifactId>
             <classifier>grammars</classifier>
-            <version>1.7.0</version>
         </dependency>
 
         <dependency>
             <groupId>de.monticore.lang</groupId>
             <artifactId>cd4analysis</artifactId>
             <classifier>sources</classifier>
-            <version>1.7.0</version>
         </dependency>
 
         <!-- Java -->
@@ -122,7 +123,8 @@
             <scope>test</scope>
         </dependency>
 
-</dependencies>
+
+    </dependencies>
 
 <!-- == PROJECT BUILD SETTINGS =========================================== -->
 
@@ -133,7 +135,6 @@
             <plugin>
                 <groupId>de.monticore.mojo</groupId>
                 <artifactId>monticore-maven-plugin</artifactId>
-                <version>6.1.0.1</version>
                 <executions>
                     <execution>
                         <goals>

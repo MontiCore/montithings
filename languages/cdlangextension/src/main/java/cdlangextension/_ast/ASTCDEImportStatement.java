@@ -1,24 +1,24 @@
 // (c) https://github.com/MontiCore/monticore
 package cdlangextension._ast;
 
+import de.monticore.cdbasis._symboltable.CDTypeSymbol;
+
 /**
  * AST that provides necessary import information for CDTypes.
  */
 public class ASTCDEImportStatement extends ASTCDEImportStatementTOP {
 
-  @Override
-  protected void updateNameSymbolLoader() {
-    super.updateNameSymbolLoader();
-    if (nameSymbolLoader == null) {
-      if (this.isPresentPackage()) {
-        nameSymbolLoader = new de.monticore.cd.cd4analysis._symboltable.CDTypeSymbolLoader(this.getPackage() + "." + this.getName(), this.getEnclosingScope());
-      }
-    }
-    else {
-      if (getName() != null && isPresentPackage() && !(getPackage() + "." + getName()).equals(nameSymbolLoader.getName())) {
-        nameSymbolLoader.setName(getPackage() + "." + getName());
-      }
-    }
+  CDTypeSymbol cdTypeSymbol;
+
+  public CDTypeSymbol getCdTypeSymbol() {
+    return cdTypeSymbol;
   }
 
+  public void setCdTypeSymbol(CDTypeSymbol cdTypeSymbol) {
+    this.cdTypeSymbol = cdTypeSymbol;
+  }
+
+  @Override public String getName() {
+    return getCdType().getPartsList().get(getCdType().getPartsList().size()-1);
+  }
 }

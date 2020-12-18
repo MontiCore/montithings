@@ -115,12 +115,6 @@
         </dependency>
 
         <dependency>
-            <groupId>montithings.generators</groupId>
-            <artifactId>cd2cpp</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>montithings.languages</groupId>
             <artifactId>montithings</artifactId>
             <version>${project.version}</version>
@@ -130,7 +124,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.7.0</version>
+            <version>${assertj.version}</version>
             <scope>compile</scope>
         </dependency>
 

@@ -22,7 +22,7 @@ public  class ASTCDEQualifiedDoubleColonName extends ASTCDEQualifiedDoubleColonN
   @Override
   public  String toString()   {
     return Joiner.on("::").skipNulls().join(
-        transform(transform(this.getPartList(),
+        transform(transform(this.getPartsList(),
             StringTransformations.TRIM_WHITESPACE),
             StringTransformations.TRIM_DOT));
   }

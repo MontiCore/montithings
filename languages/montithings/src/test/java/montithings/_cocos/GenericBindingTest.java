@@ -21,14 +21,14 @@ public class GenericBindingTest extends AbstractTest {
   @Test
   void checkValidGenericBindingTest()  {
     MontiThingsCoCoChecker checker = MontiThingsCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/genericBindingTest/valid/Assignment.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.valid.Assignment").getAstNode());
     Assertions.assertEquals(0, Log.getErrorCount());
   }
 
   @Test
   void notInterface() {
     MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface());
-    checker.checkAll(getAST("cocoTest/genericBindingTest/interfaceNotFound/Bind.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.interfaceNotFound.Bind").getAstNode());
     Assertions.assertEquals(1, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new MontiThingsError[] { MontiThingsError.NOT_INTERFACE });
@@ -37,7 +37,7 @@ public class GenericBindingTest extends AbstractTest {
   @Test
   void implementationMissing() {
     MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface());
-    checker.checkAll(getAST("cocoTest/genericBindingTest/implementationMissing/Assignment.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.implementationMissing.Assignment").getAstNode());
     Assertions.assertEquals(2, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new MontiThingsError[] { MontiThingsError.IMPLEMENTATION_MISSING });
@@ -46,7 +46,7 @@ public class GenericBindingTest extends AbstractTest {
   @Test
   void interfaceImplementsInterface() {
     MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface());
-    checker.checkAll(getAST("cocoTest/genericBindingTest/interfaceImplementsInterface/Assignment.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.interfaceImplementsInterface.Assignment").getAstNode());
     Assertions.assertEquals(2, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new MontiThingsError[] { MontiThingsError.INTERFACE_IMPLEMENTS_INTERFACE });
@@ -55,7 +55,7 @@ public class GenericBindingTest extends AbstractTest {
   @Test
   void notFitsInterface() {
     MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface());
-    checker.checkAll(getAST("cocoTest/genericBindingTest/notFitsInterface/Assignment.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.notFitsInterface.Assignment").getAstNode());
     Assertions.assertEquals(2, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new MontiThingsError[] { MontiThingsError.NOT_FITS_INTERFACE });
@@ -63,7 +63,7 @@ public class GenericBindingTest extends AbstractTest {
 
   void genericParameterInterfaceNotFound() {
     MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface());
-    checker.checkAll(getAST("cocoTest/genericBindingTest/genericParameterInterfaceNotFound/Assignment.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.genericParameterInterfaceNotFound.Assignment").getAstNode());
     Assertions.assertEquals(1, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new MontiThingsError[] { MontiThingsError.GENERIC_PARAMTER_INTERFACE_NOT_FOUND });
@@ -72,7 +72,7 @@ public class GenericBindingTest extends AbstractTest {
   @Test
   void genericParameterNotFitsInterface() {
     MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface());
-    checker.checkAll(getAST("cocoTest/genericBindingTest/genericParameterNotFitsInterface/Bind.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.genericParameterNotFitsInterface.Bind").getAstNode());
     Assertions.assertEquals(2, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new MontiThingsError[] { MontiThingsError.NOT_INTERFACE,MontiThingsError.GENERIC_PARAMTER_NOT_FITS_INTERFACE });
@@ -81,7 +81,7 @@ public class GenericBindingTest extends AbstractTest {
   @Test
   void genericParameterNeedsInterface() {
     MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker().addCoCo(new InterfaceExists()).addCoCo(new ImplementationFitsInterface());
-    checker.checkAll(getAST("cocoTest/genericBindingTest/genericParameterNeedsInterface/Bind.mt"));
+    checker.checkAll(getSymbol("cocoTest.genericBindingTest.genericParameterNeedsInterface.Bind").getAstNode());
     Assertions.assertEquals(1, Log.getErrorCount());
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new MontiThingsError[] {MontiThingsError.GENERIC_PARAMETER_NEEDS_INTERFACE });

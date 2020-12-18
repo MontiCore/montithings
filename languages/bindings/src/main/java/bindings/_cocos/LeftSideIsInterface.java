@@ -16,11 +16,12 @@ public class LeftSideIsInterface implements BindingsASTBindingRuleCoCo {
 
   @Override
   public void check(ASTBindingRule node) {
+    /*
     if ((!node.isInstance() &&!node.isPresentInterfaceComponentDefinition())||(node.isInstance()&&!node.isPresentInterfaceInstanceDefinition())) {
       new InterfaceExists().check(node);
     }
     else {
-      ASTComponentType component = node.isInstance()?node.getInterfaceInstanceSymbol().getTypeInfo().getAstNode():node.getInterfaceComponentDefinition();
+      ASTComponentType component = node.isInstance()?node.getInterfaceInstanceSymbol().getType().getAstNode():node.getInterfaceComponentDefinition();
      if (!(component instanceof ASTMTComponentType)) {
         Log.error(String.format(BindingsError.LEFT_SIDE_NO_INTERFACE.toString()));
       }
@@ -28,5 +29,6 @@ public class LeftSideIsInterface implements BindingsASTBindingRuleCoCo {
         Log.error(String.format(BindingsError.LEFT_SIDE_NO_INTERFACE.toString()));
       }
     }
+     */
   }
 }

@@ -16,6 +16,7 @@ public class RightSideIsImplementation implements BindingsASTBindingRuleCoCo {
   // Input: BindingRule with form "Interface -> Implementation;"
   @Override
   public void check(ASTBindingRule node) {
+    /*
     if (!node.isPresentImplementationComponentDefinition()) {
       new ImplementationExists().check(node);
     }
@@ -25,5 +26,6 @@ public class RightSideIsImplementation implements BindingsASTBindingRuleCoCo {
     else if (((ASTMTComponentType)node.getImplementationComponentDefinition()).getMTComponentModifier().isInterface()){
       Log.error(String.format(BindingsError.RIGHT_SIDE_NO_IMPLEMENTATION.toString()));
     }
+     */
   }
 }

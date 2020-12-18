@@ -15,6 +15,7 @@ public class ImplementationHasSamePortsAsInterface implements BindingsASTBinding
 
   @Override
   public void check(ASTBindingRule node) {
+    /*
     if (!node.isPresentImplementationComponentDefinition()) {
       new ImplementationExists().check(node);
     }
@@ -22,12 +23,13 @@ public class ImplementationHasSamePortsAsInterface implements BindingsASTBinding
       new InterfaceExists().check(node);
     }
     else {
-      if(node.isInstance()&& !GenericBindingUtil.canImplementInterface(node.getInterfaceInstanceSymbol().getTypeInfo(), node.getImplementationComponentSymbol())){
+      if(node.isInstance()&& !GenericBindingUtil.canImplementInterface(node.getInterfaceInstanceSymbol().getType(), node.getImplementationComponentSymbol())){
         Log.error(String.format(BindingsError.NOT_SAME_PORTS_IMPLEMENTED.toString()));
       }
       else if (!node.isInstance()&&!GenericBindingUtil.canImplementInterface(node.getInterfaceComponentSymbol(), node.getImplementationComponentSymbol())) {
         Log.error(String.format(BindingsError.NOT_SAME_PORTS_IMPLEMENTED.toString()));
       }
     }
+     */
   }
 }

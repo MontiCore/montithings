@@ -2,8 +2,9 @@
 package bindings._symboltable.adapters;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
-import arcbasis._symboltable.IComponentTypeSymbolResolvingDelegate;
+import arcbasis._symboltable.IComponentTypeSymbolResolver;
 import de.monticore.symboltable.modifiers.AccessModifier;
+import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -15,11 +16,11 @@ import java.util.function.Predicate;
  *
  * @author Julian Krebber
  */
-public class MCQualifiedName2ComponentTypeResolvingDelegate implements IComponentTypeSymbolResolvingDelegate {
+public class MCQualifiedName2ComponentTypeResolvingDelegate implements IComponentTypeSymbolResolver {
 
-  protected MontiThingsGlobalScope globalScope;
+  protected IMontiThingsGlobalScope globalScope;
 
-  public MCQualifiedName2ComponentTypeResolvingDelegate(@NotNull MontiThingsGlobalScope globalScope) {
+  public MCQualifiedName2ComponentTypeResolvingDelegate(@NotNull IMontiThingsGlobalScope globalScope) {
     this.globalScope = globalScope;
   }
 

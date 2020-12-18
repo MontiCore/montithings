@@ -1,0 +1,7 @@
+/* (c) https://github.com/MontiCore/monticore */
+package ImportNameExists;
+ImportNameExists {
+Java {
+  from java.util.list import List as Vocwojej;
+}
+}

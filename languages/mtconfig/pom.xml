@@ -131,7 +131,6 @@
             <plugin>
                 <groupId>de.monticore.mojo</groupId>
                 <artifactId>monticore-maven-plugin</artifactId>
-                <version>${monticore.version}</version>
                 <executions>
                     <execution>
                         <goals>

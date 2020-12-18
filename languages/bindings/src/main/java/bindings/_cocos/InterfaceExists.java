@@ -14,6 +14,7 @@ public class InterfaceExists implements BindingsASTBindingRuleCoCo {
 
   @Override
   public void check(ASTBindingRule node) {
+    /*
     if(node.isInstance()){
       if(!node.isPresentInterfaceInstanceDefinition()) {
         Log.error(String.format(BindingsError.NO_MODEL_INTERFACE.toString()));
@@ -22,5 +23,6 @@ public class InterfaceExists implements BindingsASTBindingRuleCoCo {
     else if(!node.isPresentInterfaceComponentDefinition()) {
       Log.error(String.format(BindingsError.NO_MODEL_INTERFACE.toString()));
     }
+     */
   }
 }

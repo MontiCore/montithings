@@ -4,6 +4,8 @@ package cocoTest;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._parser.BindingsParser;
+import bindings._symboltable.BindingsGlobalScope;
+import bindings._symboltable.IBindingsGlobalScope;
 import bindings.util.Error;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
@@ -105,7 +107,8 @@ public abstract class AbstractTest {
     }
     Assertions.assertNotNull(bindingsAST);
     BindingsTool tool = new BindingsTool();
-    tool.createSymboltable(bindingsAST, new File(MODEL_PATH));
+    IBindingsGlobalScope sc = tool.createSymboltable(bindingsAST, new File(MODEL_PATH));
+    System.out.println(sc);
     return bindingsAST;
   }
 }

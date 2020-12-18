@@ -6,14 +6,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import de.monticore.io.paths.ModelPath;
 import montithings.MontiThingsMill;
+import montithings.MontiThingsTool;
+import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsGlobalScope;
-import montithings._symboltable.MontiThingsLanguage;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCoChecker;
 import mtconfig._cocos.MTConfigCoCos;
+import mtconfig._symboltable.IMTConfigArtifactScope;
 import mtconfig._symboltable.MTConfigArtifactScope;
 import mtconfig._symboltable.MTConfigGlobalScope;
-import mtconfig._symboltable.MTConfigLanguage;
 import mtconfig._symboltable.MTConfigSymbolTableCreatorDelegator;
 import mtconfig._symboltable.adapters.MCQualifiedName2PortResolvingDelegate;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -28,9 +29,9 @@ import java.util.Set;
  */
 public class MTConfigTool {
 
-  protected MTConfigLanguage language;
+  protected static String FILE_ENDING = "mtcfg";
 
-  private MTConfigArtifactScope artifactScope;
+  private IMTConfigArtifactScope artifactScope;
 
   protected MTConfigCoCoChecker checker;
 
@@ -39,18 +40,16 @@ public class MTConfigTool {
   private MontiThingsGlobalScope mtGlobalScope;
 
   public MTConfigTool() {
-    this(MTConfigCoCos.createChecker() ,new MTConfigLanguage());
+    this(MTConfigCoCos.createChecker());
   }
 
-  public MTConfigTool(@NotNull MTConfigCoCoChecker checker, @NotNull MTConfigLanguage language) {
+  public MTConfigTool(@NotNull MTConfigCoCoChecker checker) {
     Preconditions.checkArgument(checker != null);
-    Preconditions.checkArgument(language != null);
     this.checker = checker;
-    this.language = language;
     this.isSymTabInitialized = false;
   }
 
-  public MTConfigArtifactScope getArtifactScope() {
+  public IMTConfigArtifactScope getArtifactScope() {
     return artifactScope;
   }
 
@@ -76,11 +75,12 @@ public class MTConfigTool {
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
     MCQualifiedName2PortResolvingDelegate portResolvingDelegate;
     if(this.mtGlobalScope ==null) {
-      MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
-      MontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
+      IMontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
           .setModelPath(mp)
-          .setMontiThingsLanguage(mtLang)
+          .setModelFileExtension("mt")
           .build();
+      MontiThingsTool tool = new MontiThingsTool();
+      tool.processModels(this.mtGlobalScope);
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
       portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(newMtGlobalScope);
     }
@@ -89,9 +89,9 @@ public class MTConfigTool {
       portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
     }
 
-    MTConfigGlobalScope mtConfigGlobalScope = new MTConfigGlobalScope(mp, language);
-    mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
-    mtConfigGlobalScope.addAdaptedPortSymbolResolvingDelegate(portResolvingDelegate);
+    MTConfigGlobalScope mtConfigGlobalScope = new MTConfigGlobalScope(mp, FILE_ENDING);
+    mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
+    mtConfigGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
 
     isSymTabInitialized = true;
     return mtConfigGlobalScope;
@@ -122,8 +122,7 @@ public class MTConfigTool {
   public MTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
       MTConfigGlobalScope globalScope) {
 
-    MTConfigSymbolTableCreatorDelegator stc = language
-        .getSymbolTableCreator(globalScope);
+    MTConfigSymbolTableCreatorDelegator stc = new MTConfigSymbolTableCreatorDelegator(globalScope);
     artifactScope = stc.createFromAST(ast);
 
     return globalScope;

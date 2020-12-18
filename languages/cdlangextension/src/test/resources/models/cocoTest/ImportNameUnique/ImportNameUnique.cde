@@ -1,0 +1,11 @@
+/* (c) https://github.com/MontiCore/monticore */
+package ImportNameUnique;
+ImportNameUnique {
+Cpp {
+  from <arma> import armadillo::vector as Vector;
+  from java.util.list import List as Vector;
+}
+Java {
+  from java.util.list import List as Vector;
+}
+}

@@ -7,16 +7,13 @@ import cdlangextension._cocos.CDLangExtensionCoCoChecker;
 import cdlangextension._cocos.CDLangExtensionCoCos;
 import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension.util.CDLangExtensionError;
-import com.google.common.collect.Lists;
-import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
-import de.monticore.cd.cd4analysis._parser.CD4AnalysisParser;
 import de.se_rwth.commons.logging.Log;
-import org.junit.jupiter.api.Test;
+import de.se_rwth.commons.logging.LogStub;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -27,7 +24,7 @@ import java.util.regex.Pattern;
 public class CoCoTest extends AbstractTest {
   private static final String PACKAGE = "cocoTest";
 
-  private static final String MODEL_PATH = "src/test/resources/models/";
+  private static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
 
   @Override
   protected Pattern supplyErrorCodePattern() {
@@ -40,7 +37,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void valid() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/ImportValid.cde"));
+    checker.checkAll(getAST(MODEL_PATH, "ImportValid/ImportValid.cde"));
     Assertions.assertEquals(0, Log.getErrorCount());
   }
 
@@ -50,7 +47,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importNameEmpty() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/ImportNameNotEmpty.cde"));
+    checker.checkAll(getAST(MODEL_PATH, "ImportNameNotEmpty/ImportNameNotEmpty.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.EMPTY_IMPORT_FIELD });
   }
@@ -61,7 +58,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importNameNotUnique() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/ImportNameUnique.cde"));
+    checker.checkAll(getAST(MODEL_PATH, "ImportNameUnique/ImportNameUnique.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_IMPORT_NAME });
   }
@@ -72,7 +69,7 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importLanguageNotUnique() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/ImportLanguageUnique.cde"));
+    checker.checkAll(getAST(MODEL_PATH, "ImportLanguageUnique/ImportLanguageUnique.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_LANGUAGE_NAME });
   }
@@ -83,22 +80,24 @@ public class CoCoTest extends AbstractTest {
   @Test
   public void importNameNotExistsInCD() {
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/ImportNameExists.cde"));
+    checker.checkAll(getAST(MODEL_PATH, "ImportNameExists/ImportNameExists.cde"));
     this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
         new CDLangExtensionError[] { CDLangExtensionError.MISSING_IMPORT_NAME });
   }
 
-  public ASTCDLangExtensionUnit getAST(String fileName) {
+  public ASTCDLangExtensionUnit getAST(String modelPath, String fileName) {
     ASTCDLangExtensionUnit astCDE = null;
     try {
-      astCDE = new CDLangExtensionParser().parseCDLangExtensionUnit(MODEL_PATH + fileName).orElse(null);
+      astCDE = new CDLangExtensionParser().parseCDLangExtensionUnit(modelPath + fileName).orElse(null);
     }
     catch (IOException e) {
-      Log.error("File '" + MODEL_PATH + fileName + "' CDE artifact was not found");
+      Log.error("File '" + modelPath + fileName + "' CDE artifact was not found");
     }
     Assertions.assertNotNull(astCDE);
     CDLangExtensionTool tool = new CDLangExtensionTool();
-    tool.createSymboltable(astCDE, new File(MODEL_PATH));
+    tool.createSymboltable(astCDE, new File(modelPath));
+    Log.init();
+    LogStub.init();
     return astCDE;
   }
 }

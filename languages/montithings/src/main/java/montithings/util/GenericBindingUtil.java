@@ -80,7 +80,7 @@ public class GenericBindingUtil {
     componentTypeSymbol = globalScope.resolveComponentType(compWithIncludes.getPackageName()+ "." + componentToGet);
     if (componentTypeSymbol.isPresent())
       return componentTypeSymbol.get();
-    for (ImportStatement i : compWithIncludes.getImportList()) {
+    for (ImportStatement i : compWithIncludes.getImportsList()) {
       if(i.isStar()) {
         componentTypeSymbol = globalScope.resolveComponentType(i.getStatement() + "." + componentToGet);
       }
