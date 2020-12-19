@@ -32,13 +32,11 @@ import montithings.util.ParserUtil;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class MontiThingsTool {
 
   protected MontiThingsCoCoChecker mtChecker;
@@ -135,19 +133,27 @@ public class MontiThingsTool {
   }
 
   public Collection<ASTMACompilationUnit> parseModels(@NotNull IMontiThingsGlobalScope scope) {
-    Preconditions.checkArgument(scope != null);
-    return scope.getModelPath().getFullPathOfEntries().stream()
-      .flatMap(p -> ParserUtil.parse(p, mtFileExtension, new MontiThingsParser()).stream())
-      .map(ast -> (ASTMACompilationUnit) ast)
-      .collect(Collectors.toSet());
+    return (Collection<ASTMACompilationUnit>) ParserUtil.parseModels(scope, mtFileExtension, new MontiThingsParser());
   }
 
   public Collection<ASTCDCompilationUnit> parseModels(@NotNull ICD4CodeGlobalScope scope) {
-    Preconditions.checkArgument(scope != null);
-    return scope.getModelPath().getFullPathOfEntries().stream()
-      .flatMap(p -> ParserUtil.parse(p, cdFileExtension, new CD4CodeParser()).stream())
-      .map(ast -> (ASTCDCompilationUnit) ast)
-      .collect(Collectors.toSet());
+    return (Collection<ASTCDCompilationUnit>) ParserUtil.parseModels(scope, cdFileExtension, new CD4CodeParser());
+  }
+
+  Optional<ASTMACompilationUnit> parseMT(@NotNull String filename) {
+    return (Optional<ASTMACompilationUnit>) ParserUtil.parse(filename, new MontiThingsParser());
+  }
+
+  Optional<ASTCDCompilationUnit> parseCD(@NotNull String filename) {
+    return (Optional<ASTCDCompilationUnit>) ParserUtil.parse(filename, new CD4CodeParser());
+  }
+
+  Collection<ASTMACompilationUnit> parseMT(@NotNull Path path) {
+    return (Collection<ASTMACompilationUnit>) ParserUtil.parse(path, mtFileExtension, new MontiThingsParser());
+  }
+
+  Collection<ASTCDCompilationUnit> parseCD(@NotNull Path path) {
+    return (Collection<ASTCDCompilationUnit>) ParserUtil.parse(path, cdFileExtension, new CD4CodeParser());
   }
 
   @Deprecated

@@ -4,6 +4,7 @@ package montithings.util;
 import com.google.common.base.Preconditions;
 import de.monticore.antlr4.MCConcreteParser;
 import de.monticore.ast.ASTNode;
+import de.monticore.symboltable.IGlobalScope;
 import de.se_rwth.commons.logging.Log;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -43,5 +44,12 @@ public class ParserUtil {
       Log.error("Could not access " + path.toString() + ", there were I/O exceptions.");
     }
     return new HashSet<>();
+  }
+
+  public static Collection<? extends ASTNode> parseModels(@NotNull IGlobalScope scope, @NotNull String fileEnding, @NotNull MCConcreteParser parser) {
+    Preconditions.checkArgument(scope != null);
+    return scope.getModelPath().getFullPathOfEntries().stream()
+      .flatMap(p -> parse(p, fileEnding, parser).stream())
+      .collect(Collectors.toSet());
   }
 }
