@@ -19,6 +19,9 @@ import java.util.stream.Stream;
 
 public class ParserUtil {
 
+  // Util class - do not instantiate
+  protected ParserUtil() { }
+
   public static Optional<? extends ASTNode> parse(@NotNull String filename,
     @NotNull MCConcreteParser p) {
     Preconditions.checkArgument(filename != null);
