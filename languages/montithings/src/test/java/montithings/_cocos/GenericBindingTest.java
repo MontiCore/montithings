@@ -21,7 +21,7 @@ public class GenericBindingTest extends AbstractTest {
     return MontiThingsError.ERROR_CODE_PATTERN;
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] {0}")
   @MethodSource("validInput")
   void shouldAcceptValidInput(String symbolName) {
     // Accepting means not rejecting when testing against all CoCos
@@ -29,7 +29,7 @@ public class GenericBindingTest extends AbstractTest {
     shouldRejectInvalidInput(checker, symbolName, 0, new MontiThingsError[] {});
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] {1}, {2}")
   @MethodSource("invalidInput")
   public void shouldRejectInvalidInput(
     // Given

@@ -47,14 +47,14 @@ public class CoCoTest extends AbstractTest {
     );
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] {0}")
   @MethodSource("validInput")
   public void shouldAcceptValidInput(String fileName) {
     // Accepting means not finding errors
     shouldRejectInvalidInput(fileName, new CDLangExtensionError[]{});
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "[{index}] {0}")
   @MethodSource("invalidInput")
   public void shouldRejectInvalidInput(String fileName, CDLangExtensionError[] expectedFindings) {
     // Given
