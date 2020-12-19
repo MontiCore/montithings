@@ -7,6 +7,7 @@ import cdlangextension._cocos.CDLangExtensionCoCos;
 import cdlangextension._symboltable.CDLangExtensionGlobalScope;
 import cdlangextension._symboltable.CDLangExtensionSymbolTableCreatorDelegator;
 import cdlangextension._symboltable.ICDLangExtensionArtifactScope;
+import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
@@ -61,7 +62,7 @@ public class CDLangExtensionTool {
    * @param modelPaths paths of all folders containing models
    * @return The initialized symbol table
    */
-  public CDLangExtensionGlobalScope initSymbolTable(File... modelPaths) {
+  public ICDLangExtensionGlobalScope initSymbolTable(File... modelPaths) {
     Set<Path> p = Sets.newHashSet();
     for (File mP : modelPaths) {
       p.add(Paths.get(mP.getAbsolutePath()));
@@ -102,10 +103,10 @@ public class CDLangExtensionTool {
    * @param modelPaths path that contains all models
    * @return created global scope
    */
-  public CDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
+  public ICDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
       File... modelPaths) {
 
-    CDLangExtensionGlobalScope globalScope = initSymbolTable(modelPaths);
+    ICDLangExtensionGlobalScope globalScope = initSymbolTable(modelPaths);
 
     return createSymboltable(ast,globalScope);
   }
@@ -117,8 +118,8 @@ public class CDLangExtensionTool {
    * @param globalScope globalScope used for the symbolTable
    * @return extended global scope
    */
-  public CDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
-      CDLangExtensionGlobalScope globalScope) {
+  public ICDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
+      ICDLangExtensionGlobalScope globalScope) {
 
     CDLangExtensionSymbolTableCreatorDelegator stc = new CDLangExtensionSymbolTableCreatorDelegator(globalScope);
     artifactScope = stc.createFromAST(ast);

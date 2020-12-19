@@ -44,9 +44,9 @@ public class MontiThingsTool {
 
   protected boolean isSymTabInitialized;
 
-  protected static final String MT_FILE_EXTENSION = "mt";
+  public static final String MT_FILE_EXTENSION = "mt";
 
-  protected static final String CD_FILE_EXTENSION = "cd";
+  public static final String CD_FILE_EXTENSION = "cd";
 
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());

@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class MTConfigTool {
 
-  protected static String FILE_ENDING = "mtcfg";
+  public static String FILE_ENDING = "mtcfg";
 
   protected IMTConfigArtifactScope artifactScope;
 
