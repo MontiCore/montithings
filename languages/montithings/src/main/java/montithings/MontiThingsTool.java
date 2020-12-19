@@ -36,7 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-@SuppressWarnings("unchecked")
 public class MontiThingsTool {
 
   protected MontiThingsCoCoChecker mtChecker;
