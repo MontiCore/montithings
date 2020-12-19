@@ -15,10 +15,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ParserUtil {
 
-  public static Optional<? extends ASTNode> parse(@NotNull String filename, @NotNull MCConcreteParser p) {
+  public static Optional<? extends ASTNode> parse(@NotNull String filename,
+    @NotNull MCConcreteParser p) {
     Preconditions.checkArgument(filename != null);
     Optional<? extends ASTNode> cd;
     try {
@@ -26,7 +28,8 @@ public class ParserUtil {
       return cd;
     }
     catch (IOException e) {
-      Log.error("Could not access " + filename + ", there were I/O exceptions.");
+      Log.error("Could not access " + filename
+        + ", there was an I/O exception: " + e.getMessage());
     }
     return Optional.empty();
   }
@@ -34,19 +37,21 @@ public class ParserUtil {
   public static Collection<? extends ASTNode> parse(@NotNull Path path,
     @NotNull String fileEnding, @NotNull MCConcreteParser p) {
     Preconditions.checkArgument(path != null);
-    try {
-      return Files.walk(path).filter(Files::isRegularFile)
+    try (Stream<Path> walk = Files.walk(path)) {
+      return walk.filter(Files::isRegularFile)
         .filter(f -> f.getFileName().toString().endsWith(fileEnding))
         .map(f -> parse(f.toString(), p))
         .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
     catch (IOException e) {
-      Log.error("Could not access " + path.toString() + ", there were I/O exceptions.");
+      Log.error("Could not access " + path.toString()
+        + ", there was an I/O exception: " + e.getMessage());
     }
     return new HashSet<>();
   }
 
-  public static Collection<? extends ASTNode> parseModels(@NotNull IGlobalScope scope, @NotNull String fileEnding, @NotNull MCConcreteParser parser) {
+  public static Collection<? extends ASTNode> parseModels(@NotNull IGlobalScope scope,
+    @NotNull String fileEnding, @NotNull MCConcreteParser parser) {
     Preconditions.checkArgument(scope != null);
     return scope.getModelPath().getFullPathOfEntries().stream()
       .flatMap(p -> parse(p, fileEnding, parser).stream())
