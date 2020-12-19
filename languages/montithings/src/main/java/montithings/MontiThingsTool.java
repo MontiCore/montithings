@@ -139,19 +139,19 @@ public class MontiThingsTool {
     return (Collection<ASTCDCompilationUnit>) ParserUtil.parseModels(scope, CD_FILE_EXTENSION, new CD4CodeParser());
   }
 
-  Optional<ASTMACompilationUnit> parseMT(@NotNull String filename) {
+  public Optional<ASTMACompilationUnit> parseMT(@NotNull String filename) {
     return (Optional<ASTMACompilationUnit>) ParserUtil.parse(filename, new MontiThingsParser());
   }
 
-  Optional<ASTCDCompilationUnit> parseCD(@NotNull String filename) {
+  public Optional<ASTCDCompilationUnit> parseCD(@NotNull String filename) {
     return (Optional<ASTCDCompilationUnit>) ParserUtil.parse(filename, new CD4CodeParser());
   }
 
-  Collection<ASTMACompilationUnit> parseMT(@NotNull Path path) {
+  public Collection<ASTMACompilationUnit> parseMT(@NotNull Path path) {
     return (Collection<ASTMACompilationUnit>) ParserUtil.parse(path, MT_FILE_EXTENSION, new MontiThingsParser());
   }
 
-  Collection<ASTCDCompilationUnit> parseCD(@NotNull Path path) {
+  public Collection<ASTCDCompilationUnit> parseCD(@NotNull Path path) {
     return (Collection<ASTCDCompilationUnit>) ParserUtil.parse(path, CD_FILE_EXTENSION, new CD4CodeParser());
   }
 
