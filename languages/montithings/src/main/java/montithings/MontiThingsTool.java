@@ -44,9 +44,9 @@ public class MontiThingsTool {
 
   protected boolean isSymTabInitialized;
 
-  protected static final String mtFileExtension = "mt";
+  protected static final String MT_FILE_EXTENSION = "mt";
 
-  protected static final String cdFileExtension = "cd";
+  protected static final String CD_FILE_EXTENSION = "cd";
 
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());
@@ -75,11 +75,11 @@ public class MontiThingsTool {
     ModelPath mp = new ModelPath(Arrays.asList(modelPaths));
     ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
       .setModelPath(mp)
-      .setModelFileExtension(cdFileExtension)
+      .setModelFileExtension(CD_FILE_EXTENSION)
       .build();
     IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
       .setModelPath(mp)
-      .setModelFileExtension(mtFileExtension)
+      .setModelFileExtension(MT_FILE_EXTENSION)
       .build();
     resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
     addBasicTypes(montiThingsGlobalScope);
@@ -132,11 +132,11 @@ public class MontiThingsTool {
   }
 
   public Collection<ASTMACompilationUnit> parseModels(@NotNull IMontiThingsGlobalScope scope) {
-    return (Collection<ASTMACompilationUnit>) ParserUtil.parseModels(scope, mtFileExtension, new MontiThingsParser());
+    return (Collection<ASTMACompilationUnit>) ParserUtil.parseModels(scope, MT_FILE_EXTENSION, new MontiThingsParser());
   }
 
   public Collection<ASTCDCompilationUnit> parseModels(@NotNull ICD4CodeGlobalScope scope) {
-    return (Collection<ASTCDCompilationUnit>) ParserUtil.parseModels(scope, cdFileExtension, new CD4CodeParser());
+    return (Collection<ASTCDCompilationUnit>) ParserUtil.parseModels(scope, CD_FILE_EXTENSION, new CD4CodeParser());
   }
 
   Optional<ASTMACompilationUnit> parseMT(@NotNull String filename) {
@@ -148,11 +148,11 @@ public class MontiThingsTool {
   }
 
   Collection<ASTMACompilationUnit> parseMT(@NotNull Path path) {
-    return (Collection<ASTMACompilationUnit>) ParserUtil.parse(path, mtFileExtension, new MontiThingsParser());
+    return (Collection<ASTMACompilationUnit>) ParserUtil.parse(path, MT_FILE_EXTENSION, new MontiThingsParser());
   }
 
   Collection<ASTCDCompilationUnit> parseCD(@NotNull Path path) {
-    return (Collection<ASTCDCompilationUnit>) ParserUtil.parse(path, cdFileExtension, new CD4CodeParser());
+    return (Collection<ASTCDCompilationUnit>) ParserUtil.parse(path, CD_FILE_EXTENSION, new CD4CodeParser());
   }
 
   @Deprecated
@@ -246,9 +246,9 @@ public class MontiThingsTool {
     }
     final ModelPath mp = new ModelPath(p);
     IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
-      .setModelPath(mp).setModelFileExtension(mtFileExtension).build();
+      .setModelPath(mp).setModelFileExtension(MT_FILE_EXTENSION).build();
     ICD4CodeGlobalScope cd4CodeGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
-      .setModelPath(mp).setModelFileExtension(cdFileExtension).build();
+      .setModelPath(mp).setModelFileExtension(CD_FILE_EXTENSION).build();
     this.resolvingDelegates(montiThingsGlobalScope, cd4CodeGlobalScope);
     this.addBasicTypes(montiThingsGlobalScope);
     isSymTabInitialized = true;
