@@ -199,6 +199,11 @@
                 </executions>
                 <dependencies>
                     <dependency>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                        <version>${guava.version}</version>
+                    </dependency>
+                    <dependency>
                         <groupId>montithings.generators</groupId>
                         <artifactId>montithings2cpp</artifactId>
                         <version>${project.version}</version>
