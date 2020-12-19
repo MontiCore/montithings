@@ -18,20 +18,26 @@ public class InterfaceExists implements BindingsASTBindingRuleCoCo {
 
   @Override
   public void check(ASTBindingRule node) {
+    checkInterfaceComponent(node);
+    checkInterfaceInstance(node);
+  }
 
-    if (node.isPresentInterfaceComponent()) {
-      String interCompName = node.getInterfaceComponent().getQName();
-      Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(interCompName);
-      if (!comp.isPresent()) {
-        Log.error(String.format(BindingsError.NO_MODEL_INTERFACE.toString(), interCompName));
-      }
-    }
-
+  protected void checkInterfaceInstance(ASTBindingRule node) {
     if (node.isPresentInterfaceInstance()) {
       String interInstanceName = node.getInterfaceInstance().getQName();
       Optional<ComponentInstanceSymbol> comp = node.getEnclosingScope().resolveComponentInstance(interInstanceName);
       if (!comp.isPresent()) {
         Log.error(String.format(BindingsError.NO_MODEL_INTERFACE.toString(), interInstanceName));
+      }
+    }
+  }
+
+  protected void checkInterfaceComponent(ASTBindingRule node) {
+    if (node.isPresentInterfaceComponent()) {
+      String interCompName = node.getInterfaceComponent().getQName();
+      Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(interCompName);
+      if (!comp.isPresent()) {
+        Log.error(String.format(BindingsError.NO_MODEL_INTERFACE.toString(), interCompName));
       }
     }
   }
