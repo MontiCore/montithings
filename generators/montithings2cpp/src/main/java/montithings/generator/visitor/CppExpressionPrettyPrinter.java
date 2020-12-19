@@ -3,19 +3,15 @@ package montithings.generator.visitor;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
-import de.monticore.cd.cd4analysis._ast.ASTCDEnumConstant;
-import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpression;
-import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
-import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpression;
+import de.monticore.cdinterfaceandenum._ast.ASTCDEnumConstant;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.types.typesymbols._symboltable.FieldSymbol;
+import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
-import montiarc._symboltable.adapters.CDField2FieldAdapter;
-import montithings.generator.helper.ASTNoData;
+import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.helper.ComponentHelper;
 import portextensions._ast.ASTSyncStatement;
 
@@ -47,12 +43,8 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
     Optional<PortSymbol> port = getPortForName(node);
     if (!port.isPresent()) {
       // Check if this is an Enum Constant from CD4a
-      Optional<FieldSymbol> symbol = node.getEnclosingScope().resolveField(node.getName());
-      boolean isEnum = false;
-      if (symbol.isPresent() && symbol.get() instanceof CDField2FieldAdapter) {
-        CDField2FieldAdapter adapter = (CDField2FieldAdapter)symbol.get();
-        isEnum = adapter.getAdaptee().getAstNode() instanceof ASTCDEnumConstant;
-      }
+      Optional<FieldSymbol> symbol = ((IMontiThingsScope) node.getEnclosingScope()).resolveField(node.getName());
+      boolean isEnum = symbol.isPresent() && symbol.get().getAstNode() instanceof ASTCDEnumConstant;
 
       if (symbol.isPresent() && isEnum) {
         String fullName = symbol.get().getFullName();

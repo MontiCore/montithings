@@ -184,8 +184,8 @@ public class MTGenerator {
   public static void generatePortJson(File targetPath, ComponentInstanceSymbol comp, ConfigParams config, String prefix) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
       Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + "ports");
-      toFile(path.toFile(), prefix + "." + comp.getName(), "template/util/comm/PortJson.ftl", ".json",comp.getType().getLoadedSymbol(), config, prefix + "." + comp.getName());
-      for (ComponentInstanceSymbol subcomp : comp.getType().getLoadedSymbol().getSubComponents()) {
+      toFile(path.toFile(), prefix + "." + comp.getName(), "template/util/comm/PortJson.ftl", ".json",comp.getType(), config, prefix + "." + comp.getName());
+      for (ComponentInstanceSymbol subcomp : comp.getType().getSubComponents()) {
         generatePortJson(targetPath, subcomp, config, prefix + "." + comp.getName());
       }
     }

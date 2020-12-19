@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
+import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import bindings.BindingsTool;
@@ -8,29 +9,29 @@ import bindings._ast.ASTBindingRule;
 import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._cocos.BindingsCoCos;
 import bindings._parser.BindingsParser;
-import bindings._symboltable.BindingsGlobalScope;
+import bindings._symboltable.IBindingsGlobalScope;
 import cdlangextension.CDLangExtensionTool;
 import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCos;
 import cdlangextension._parser.CDLangExtensionParser;
-import cdlangextension._symboltable.CDLangExtensionGlobalScope;
 import cdlangextension._symboltable.CDLangExtensionUnitSymbol;
+import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
-import de.monticore.cd.CD4ACoCos;
-import de.monticore.cd.cd4analysis._ast.ASTCDCompilationUnit;
-import de.monticore.cd.cd4analysis._parser.CD4AnalysisParser;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisGlobalScopeBuilder;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisModelLoader;
+import de.monticore.cd4analysis._parser.CD4AnalysisParser;
+import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
+import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code.cocos.CD4CodeCoCos;
+import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
+import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
-import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
@@ -44,7 +45,7 @@ import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
-import mtconfig._symboltable.MTConfigGlobalScope;
+import mtconfig._symboltable.IMTConfigGlobalScope;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,12 +83,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     Log.info("Initializing symboltable", TOOL_NAME);
 
-    CD4AnalysisGlobalScope cdSymTab = new CD4AnalysisGlobalScopeBuilder()
+    ICD4CodeGlobalScope cdSymTab = CD4CodeMill.cD4CodeGlobalScopeBuilder()
       .setModelPath(new ModelPath((Paths.get(modelPath.getAbsolutePath()))))
-      .setCD4AnalysisLanguage(new CD4AnalysisLanguage())
+      .setModelFileExtension(CD4AnalysisGlobalScope.EXTENSION)
       .build();
 
-    this.setCdGlobalScope(cdSymTab);
     IMontiThingsScope symTab = initSymbolTable(modelPath,
       //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
       hwcPath);
@@ -96,11 +96,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     cdExtensionTool.setCdGlobalScope(cdSymTab);
 
     BindingsTool bindingsTool = new BindingsTool();
-    bindingsTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
-    BindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
+    bindingsTool.setMtGlobalScope((IMontiThingsGlobalScope) symTab);
+    IBindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
     MTConfigTool mtConfigTool = new MTConfigTool();
-    mtConfigTool.setMtGlobalScope((MontiThingsGlobalScope) symTab);
+    mtConfigTool.setMtGlobalScope((IMontiThingsGlobalScope) symTab);
 
     for (String model : models.getMontithings()) {
       // Parse model
@@ -124,7 +124,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkMtModels(models.getMontithings(), symTab, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkMTConfig(models.getMTConfig(), config, mtConfigTool,mtConfigTool.initSymbolTable(modelPath));
+    checkMTConfig(models.getMTConfig(), config, mtConfigTool,
+      mtConfigTool.initSymbolTable(modelPath));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -147,7 +148,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
         MTGenerator.generateDDSDCPSConfig(compTarget, config);
       }
-      
+
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
     }
@@ -184,7 +185,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /* ====================== Check Models ======================== */
   /* ============================================================ */
 
-  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab, ConfigParams config) {
+  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab,
+    ConfigParams config) {
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
 
@@ -193,13 +195,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       // check cocos
       Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
-      checker.addCoCo(new PortConnection(config.getTemplatedPorts()));
-      checker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
+      mtChecker.addCoCo(new PortConnection(config.getTemplatedPorts()));
+      mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
       checkCoCos(comp.getAstNode());
     }
   }
 
-  protected void checkCds(List<String> foundModels, CD4AnalysisGlobalScope symTab) {
+  protected void checkCds(List<String> foundModels, ICD4CodeGlobalScope symTab) {
     for (String model : foundModels) {
       ASTCDCompilationUnit cdAST = null;
       try {
@@ -212,12 +214,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      new CD4AnalysisModelLoader(new CD4AnalysisLanguage())
-        .createSymbolTableFromAST(cdAST, model, symTab);
+      parseCD(model);
+      createSymbolTable(symTab);
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
-      new CD4ACoCos().getCheckerForAllCoCos().checkAll(cdAST);
+      new CD4CodeCoCos().createNewChecker().checkAll(cdAST);
     }
   }
 
@@ -241,7 +243,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
       else {
         cdExtensionTool.createSymboltable(cdExtensionAST,
-          (CDLangExtensionGlobalScope) config.getCdLangExtensionScope());
+          (ICDLangExtensionGlobalScope) config.getCdLangExtensionScope());
       }
 
       // check cocos
@@ -251,7 +253,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void checkBindings(List<String> foundBindings, ConfigParams config,
-    BindingsTool bindingsTool, BindingsGlobalScope binTab) {
+    BindingsTool bindingsTool, IBindingsGlobalScope binTab) {
     for (String binding : foundBindings) {
       ASTBindingsCompilationUnit bindingsAST = null;
       try {
@@ -275,7 +277,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
-  protected void checkMTConfig(List<String> foundModels, ConfigParams config, MTConfigTool mtConfigTool, MTConfigGlobalScope symTab) {
+  protected void checkMTConfig(List<String> foundModels, ConfigParams config,
+    MTConfigTool mtConfigTool, IMTConfigGlobalScope symTab) {
     for (String model : foundModels) {
       ASTMTConfigUnit ast = null;
       try {
@@ -289,12 +292,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
       if (config.getMtConfigScope() == null) {
-        config
-            .setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
+        config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
       }
       else {
-        mtConfigTool.createSymboltable(ast,
-            (MTConfigGlobalScope) config.getMtConfigScope());
+        mtConfigTool.createSymboltable(ast, (IMTConfigGlobalScope) config.getMtConfigScope());
       }
 
       // check cocos
@@ -349,7 +350,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // Find subcomponent types
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
     List<ComponentTypeSymbol> subcomponentTypes = comp.getSubComponents().stream()
-      .map(c -> c.getType().getLoadedSymbol()).collect(Collectors.toList());
+      .map(ComponentInstanceSymbol::getType).collect(Collectors.toList());
 
     // Generate code for each subcomponent type
     for (ComponentTypeSymbol subcomp : subcomponentTypes) {
@@ -384,7 +385,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected void generateCD(File modelPath, File targetFilepath) {
     List<String> foundModels = Modelfinder
-      .getModelsInModelPath(modelPath, CD4AnalysisLanguage.FILE_ENDING);
+      .getModelsInModelPath(modelPath, CD4AnalysisGlobalScope.EXTENSION);
     for (String model : foundModels) {
       String simpleName = Names.getSimpleName(model);
       String packageName = Names.getQualifier(model);
@@ -441,14 +442,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
    *
    * @param target target directory for all artifacts.
    * @param config Generator configuration
-   * @param comp Component containing the ports for which C++ code should be generated.
+   * @param comp   Component containing the ports for which C++ code should be generated.
    */
   public void generateHwcPort(File target, ConfigParams config, ComponentTypeSymbol comp) {
-    for(PortSymbol port : comp.getPorts()) {
-      if(config.getTemplatedPorts().contains(port)) {
+    for (PortSymbol port : comp.getPorts()) {
+      if (config.getTemplatedPorts().contains(port)) {
         Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config);
         if (portType.isPresent()) {
-          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), new File(target + File.separator + "hwc" + File.separator + Names.getPathFromPackage(Names.getQualifier(portType.get()))), portType.get(), config, port);
+          File portFile = new File(target + File.separator + "hwc" + File.separator + Names
+            .getPathFromPackage(Names.getQualifier(portType.get())));
+          MTGenerator
+            .generateAdditionalPort(config.getHwcTemplatePath(), portFile, portType.get(), config,
+              port);
         }
       }
     }

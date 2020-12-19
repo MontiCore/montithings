@@ -1,12 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.data;
 
-import bindings._symboltable.BindingsLanguage;
-import cdlangextension._symboltable.CDLangExtensionLanguage;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
+import bindings.BindingsTool;
+import cdlangextension.CDLangExtensionTool;
+import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
+import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import montiarc.util.Modelfinder;
-import montithings._symboltable.MontiThingsLanguage;
-import mtconfig._symboltable.MTConfigLanguage;
+import montithings.MontiThingsTool;
+import mtconfig.MTConfigTool;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,14 +48,14 @@ public class Models {
   }
 
   protected void findModels(File modelPath) {
-    montithings = Modelfinder.getModelsInModelPath(modelPath, MontiThingsLanguage.FILE_ENDING);
-    bindings = Modelfinder.getModelFiles(BindingsLanguage.FILE_ENDING, modelPath).stream()
+    montithings = Modelfinder.getModelsInModelPath(modelPath, MontiThingsTool.MT_FILE_EXTENSION);
+    bindings = Modelfinder.getModelFiles(BindingsTool.FILE_ENDING, modelPath).stream()
       .map(File::toString).collect(Collectors.toList());
-    classdiagrams = Modelfinder.getModelFiles(CD4AnalysisLanguage.FILE_ENDING, modelPath).stream()
+    classdiagrams = Modelfinder.getModelFiles(CD4AnalysisGlobalScope.EXTENSION, modelPath).stream()
       .map(File::toString).collect(Collectors.toList());
-    cdextensions = Modelfinder.getModelFiles(CDLangExtensionLanguage.FILE_ENDING, modelPath).stream()
+    cdextensions = Modelfinder.getModelFiles(CDLangExtensionTool.FILE_ENDING, modelPath).stream()
       .map(File::toString).collect(Collectors.toList());
-    mtConfig = Modelfinder.getModelFiles(MTConfigLanguage.FILE_ENDING, modelPath).stream()
+    mtConfig = Modelfinder.getModelFiles(MTConfigTool.FILE_ENDING, modelPath).stream()
         .map(File::toString).collect(Collectors.toList());
   }
 

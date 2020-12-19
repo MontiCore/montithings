@@ -2,35 +2,40 @@
 package montithings.generator.helper;
 
 import arcbasis._ast.*;
-import arcbasis._symboltable.*;
+import arcbasis._symboltable.ComponentInstanceSymbol;
+import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.IArcBasisScope;
+import arcbasis._symboltable.PortSymbol;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
 import cdlangextension._symboltable.CDLangExtensionScope;
 import cdlangextension._symboltable.DepLanguageSymbol;
+import cdlangextension._symboltable.ICDLangExtensionScope;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import conditionbasis._ast.ASTCondition;
 import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.ast.ASTNode;
+import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
-import de.monticore.types.typesymbols._symboltable.FieldSymbol;
-import de.monticore.types.typesymbols._symboltable.TypeSymbol;
-import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
 import genericarc._ast.ASTArcTypeParameter;
 import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
-import montiarc._symboltable.adapters.CDType2TypeAdapter;
 import montithings._ast.*;
 import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
@@ -52,6 +57,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import static montithings.generator.helper.TypesHelper.java2cppTypeString;
+
 /**
  * Helper class used in the template to generate target code of atomic or
  * composed components.
@@ -63,7 +70,7 @@ public class ComponentHelper {
       symbol = symbol.getOuterComponent().get();
     }
     ASTComponentType ast = symbol.getAstNode();
-    return ((MontiThingsArtifactScope) ast.getEnclosingScope()).getImportList();
+    return ((MontiThingsArtifactScope) ast.getEnclosingScope()).getImportsList();
   }
 
   public static String printCPPTypeName(SymTypeExpression expression) {
@@ -71,7 +78,7 @@ public class ComponentHelper {
   }
 
   public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp, ConfigParams config) {
-    if (expression.getTypeInfo() instanceof CDType2TypeAdapter) {
+    if (expression.getTypeInfo() instanceof CDTypeSymbol) {
       return printCdPackageNamespace(comp, expression.getTypeInfo(), config);
     }
     return java2cppTypeString(expression.print());
@@ -85,7 +92,7 @@ public class ComponentHelper {
     // TODO: Write me
     final List<String> paramList = new ArrayList<>();
     if (component.isPresentParentComponent()) {
-      final ComponentTypeSymbolLoader componentSymbolReference = component.getParent();
+      final ComponentTypeSymbol componentSymbolReference = component.getParent();
 /*      final List<ActualTypeArgument> actualTypeArgs = componentSymbolReference
         .getActualTypeArguments();
       String componentPrefix = this.component.getFullName() + ".";
@@ -141,11 +148,8 @@ public class ComponentHelper {
     return result;
   }
 
-  public static boolean portUsesCdType(arcbasis._symboltable.PortSymbol portSymbol) {
-    if (!portSymbol.getType().isTypeInfoLoadable()) {
-      return false;
-    }
-    return portSymbol.getType().getTypeInfo() instanceof CDType2TypeAdapter;
+  public static boolean portUsesCdType(PortSymbol portSymbol) {
+    return portSymbol.getType().getTypeInfo() instanceof CDTypeSymbol;
   }
 
   public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
@@ -166,10 +170,7 @@ public class ComponentHelper {
     if (cdeImportStatementOpt.isPresent()) {
       String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
       String cdNamespace = "montithings::";
-      if (cdeImportStatementOpt.get().isPresentPackage()) {
-        cdNamespace += (cdeImportStatementOpt.get().getPackage() + ".").replaceAll("\\.", "::");
-      }
-      cdNamespace += cdeImportStatementOpt.get().getName();
+      cdNamespace +=cdeImportStatementOpt.get().getCdType().getQName().replaceAll("\\.", "::");
       return printPackageNamespaceFromString(cdNamespace, componentNamespace);
     }
     return printPackageNamespace(componentSymbol, typeSymbol);
@@ -204,9 +205,9 @@ public class ComponentHelper {
 
   public static Optional<ASTCDEImportStatement> getCppImportExtension(TypeSymbol typeSymbol,
     ConfigParams config) {
-    if (config.getCdLangExtensionScope() != null && typeSymbol instanceof CDType2TypeAdapter) {
+    if (config.getCdLangExtensionScope() != null && typeSymbol instanceof CDTypeSymbol) {
       Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = config.getCdLangExtensionScope()
-        .resolveASTCDEImportStatement("Cpp", ((CDType2TypeAdapter) typeSymbol).getAdaptee());
+        .resolveASTCDEImportStatement("Cpp", (CDTypeSymbol) typeSymbol);
       if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get()
         .isPresentAstNode()) {
         return Optional.of(cdeImportStatementSymbol.get().getAstNode());
@@ -328,14 +329,14 @@ public class ComponentHelper {
     }
 
     // Append the default parameter values for as many as there are left
-    final List<FieldSymbol> configParameters = param.getType().getLoadedSymbol().getParameters();
+    final List<VariableSymbol> configParameters = param.getType().getParameters();
 
     // Calculate the number of missing parameters
     int numberOfMissingParameters = configParameters.size() - configArguments.size();
 
     if (numberOfMissingParameters > 0) {
       // Get the AST node of the component and the list of parameters in the AST
-      final ASTComponentType astNode = param.getType().getLoadedSymbol().getAstNode();
+      final ASTComponentType astNode = param.getType().getAstNode();
       final List<ASTArcParameter> parameters = astNode.getHead().getArcParameterList();
 
       // Retrieve the parameters from the node and add them to the list
@@ -373,8 +374,7 @@ public class ComponentHelper {
     return result;
   }
 
-  public static String printTypeArguments(
-    List<de.monticore.types.typesymbols._symboltable.TypeVarSymbol> types) {
+  public static String printTypeArguments(List<TypeVarSymbol> types) {
     List<String> typeNames = new ArrayList<>();
     for (TypeVarSymbol type : types) {
       typeNames.add(type.getName());
@@ -382,8 +382,7 @@ public class ComponentHelper {
     return String.join(", ", typeNames);
   }
 
-  public static String printASTTypeArguments(
-    List<genericarc._ast.ASTArcTypeParameter> types) {
+  public static String printASTTypeArguments(List<ASTArcTypeParameter> types) {
     List<String> typeNames = new ArrayList<>();
     for (ASTArcTypeParameter type : types) {
       typeNames.add(type.getName());
@@ -447,17 +446,17 @@ public class ComponentHelper {
   public static String getSubComponentTypeName(
     arcbasis._symboltable.ComponentInstanceSymbol instance) {
     String result = "";
-    final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
+    final ComponentTypeSymbol componentType = instance.getType();
 
     String packageName = Utils.printPackageWithoutKeyWordAndSemicolon(
-      componentTypeReference.getLoadedSymbol());
+      componentType);
     if (!packageName.equals("")) {
       result = packageName + ".";
     }
-    result += componentTypeReference.getName();
-    if (Utils.hasTypeParameter(componentTypeReference.getLoadedSymbol())) {
+    result += componentType.getName();
+    if (Utils.hasTypeParameter(componentType)) {
       result += printASTTypeArguments(
-        Utils.getTypeParameters(componentTypeReference.getLoadedSymbol()));
+        Utils.getTypeParameters(componentType));
     }
     return result;
   }
@@ -468,27 +467,26 @@ public class ComponentHelper {
     return getSubComponentTypeNameWithoutPackage(instance, config, true);
   }
 
-  public static String getSubComponentTypeNameWithoutPackage(
-    arcbasis._symboltable.ComponentInstanceSymbol instance,
+  public static String getSubComponentTypeNameWithoutPackage(ComponentInstanceSymbol instance,
     ConfigParams config, boolean printTypeParameters) {
     String result = "";
-    final ComponentTypeSymbolLoader componentTypeReference = instance.getType();
+    final ComponentTypeSymbol componentType = instance.getType();
     //Use the bound name if present.
     Optional<ComponentTypeSymbol> implementation = config.getBinding(instance);
     if (implementation.isPresent()) {
       result += implementation.get().getName();
     }
     else {
-      implementation = config.getBinding(componentTypeReference.getLoadedSymbol());
+      implementation = config.getBinding(componentType);
       if (implementation.isPresent()) {
         result += implementation.get().getName();
       }
       else {
-        result += componentTypeReference.getName();
+        result += componentType.getName();
       }
     }
 
-    if (Utils.hasTypeParameter(componentTypeReference.getLoadedSymbol()) && printTypeParameters) {
+    if (Utils.hasTypeParameter(componentType) && printTypeParameters) {
       // format simple component type name to full component type name
       ASTComponentInstantiation instantiation = getInstantiation(instance);
       if (instantiation.getMCType() instanceof ASTMCBasicGenericType) {
@@ -519,7 +517,7 @@ public class ComponentHelper {
       String subCompName = portAccess.getComponent();
       Optional<ComponentInstanceSymbol> subCompInstance = cmp.getSpannedScope()
         .resolveComponentInstance(subCompName);
-      ComponentTypeSymbol subComp = subCompInstance.get().getType().getLoadedSymbol();
+      ComponentTypeSymbol subComp = subCompInstance.get().getType();
       port = subComp.getSpannedScope().resolvePort(portNameUnqualified);
     }
     else {
@@ -529,39 +527,7 @@ public class ComponentHelper {
     return port.map(PortSymbol::isIncoming).orElse(false);
   }
 
-  /**
-   * @return Corresponding CPP types from input java types
-   */
-  public static String java2cppTypeString(String type) {
-    return java2cppTypeString(type, false);
-  }
 
-  public static String java2cppTypeString(String type, boolean preventRecursion) {
-    String replacedArray = type.replaceAll("([^<]*)\\[]", "std::vector<$1>");
-    while (!type.equals(replacedArray)) {
-      type = replacedArray;
-      replacedArray = type.replaceAll("([^<]*)\\[]", "std::vector<$1>");
-    }
-    type = type.replaceAll("(\\W|^)String(\\W|$)", "$1std::string$2");
-    type = type.replaceAll("(\\W|^)Integer(\\W|$)", "$1int$2");
-    type = type.replaceAll("(\\W|^)Map(\\W|$)", "$1std::map$2");
-    type = type.replaceAll("(\\W|^)Set(\\W|$)", "$1std::set$2");
-    type = type.replaceAll("(\\W|^)List(\\W|$)", "$1std::list$2");
-    type = type.replaceAll("(\\W|^)Boolean(\\W|$)", "$1bool$2");
-    type = type.replaceAll("(\\W|^)boolean(\\W|$)", "$1bool$2");
-    type = type.replaceAll("(\\W|^)Character(\\W|$)", "$1char$2");
-    type = type.replaceAll("(\\W|^)Double(\\W|$)", "$1double$2");
-    type = type.replaceAll("(\\W|^)Float(\\W|$)", "$1float$2");
-
-    if (preventRecursion) {
-      return type;
-    }
-
-    while (!java2cppTypeString(type, true).equals(type)) {
-      type = java2cppTypeString(type);
-    }
-    return type;
-  }
 
   public static String getRealPortCppTypeString(arcbasis._symboltable.ComponentTypeSymbol comp,
     arcbasis._symboltable.PortSymbol port, ConfigParams config) {
@@ -757,7 +723,7 @@ public class ComponentHelper {
 
   public static String getPackagePath(arcbasis._symboltable.ComponentTypeSymbol comp,
     arcbasis._symboltable.ComponentInstanceSymbol subComp) {
-    return getPackagePath(comp, subComp.getType().getLoadedSymbol());
+    return getPackagePath(comp, subComp.getType());
   }
 
   public static String getPackagePath(arcbasis._symboltable.ComponentTypeSymbol comp,
@@ -921,7 +887,7 @@ public class ComponentHelper {
   /**
    * Workaround for the fact that MontiArc returns parameters twice
    */
-  public static Set<de.monticore.types.typesymbols._symboltable.FieldSymbol> getFields(
+  public static Set<VariableSymbol> getFields(
     arcbasis._symboltable.ComponentTypeSymbol component) {
     return component.getFields().stream().collect(Collectors.toSet());
   }
@@ -979,7 +945,7 @@ public class ComponentHelper {
 
   public static List<cdlangextension._ast.ASTCDEImportStatement> getImportStatements(
     java.lang.String name, montithings.generator.codegen.ConfigParams config) {
-    CDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
+    ICDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
     List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name + ".Cpp");
     List<ASTCDEImportStatement> importStatements = new ArrayList<>();
     for (DepLanguageSymbol depLanguageSymbol : depLanguageSymbols) {
@@ -1000,7 +966,7 @@ public class ComponentHelper {
 
     for (ComponentInstanceSymbol subcomp : component.getSubComponents()) {
       instances.addAll(
-        getInstances(subcomp.getType().getLoadedSymbol(), packageName + "." + subcomp.getName()));
+        getInstances(subcomp.getType(), packageName + "." + subcomp.getName()));
     }
 
     return instances;
