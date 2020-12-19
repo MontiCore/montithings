@@ -79,13 +79,12 @@ public class CDLangExtensionTool {
           .build();
       cd4aResolver = new CD4CodeResolver(cd4aGlobalScope);
       this.cdGlobalScope = cd4aGlobalScope;
+      MontiThingsTool tool = new MontiThingsTool();
+      tool.processModels(this.cdGlobalScope);
     }
     else{
       cd4aResolver = new CD4CodeResolver(this.cdGlobalScope);
     }
-
-    MontiThingsTool tool = new MontiThingsTool();
-    tool.processModels(this.cdGlobalScope);
 
     CDLangExtensionGlobalScope cDLangExtensionGlobalScope = new CDLangExtensionGlobalScope(mp, FILE_ENDING);
     cDLangExtensionGlobalScope.addAdaptedFieldSymbolResolver(cd4aResolver);
