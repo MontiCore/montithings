@@ -8,7 +8,6 @@ import arcbasis._symboltable.IArcBasisScope;
 import arcbasis._symboltable.PortSymbol;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
-import cdlangextension._symboltable.CDLangExtensionScope;
 import cdlangextension._symboltable.DepLanguageSymbol;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import clockcontrol._ast.ASTCalculationInterval;
@@ -24,7 +23,6 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
-import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
@@ -892,7 +890,7 @@ public class ComponentHelper {
     return component.getFields().stream().collect(Collectors.toSet());
   }
 
-  public static String printStatementBehavior(arcbasis._symboltable.ComponentTypeSymbol component) {
+  public static String printStatementBehavior(ComponentTypeSymbol component) {
     List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class).toList();
     Preconditions.checkArgument(!behaviors.isEmpty(),
       "0xMT800 Trying to print behavior of component \"" + component.getName()

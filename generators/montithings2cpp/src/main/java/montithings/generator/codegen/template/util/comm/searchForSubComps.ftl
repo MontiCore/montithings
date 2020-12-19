@@ -10,7 +10,7 @@ ${tc.signature("comp","config")}
     {
     std::cout << "Searching for subcomponents\n";
     <#list comp.subComponents as subcomponent>
-        <#assign subcomponentSymbol = subcomponent.type.loadedSymbol>
+        <#assign subcomponentSymbol = subcomponent.type>
         // ${subcomponentSymbol.getName()} ${subcomponent.getName()}
         ${tc.includeArgs("template.util.comm.SCDetailsHelper", [comp, subcomponent])}
 

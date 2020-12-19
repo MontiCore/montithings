@@ -12,6 +12,7 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings._ast.ASTIsPresentExpression;
+import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsPrettyPrinter;
 import montithings._visitor.MontiThingsVisitor;
 import montithings.generator.helper.ComponentHelper;
@@ -119,7 +120,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTSetValueList node){
+  public void handle(ASTSetValueList node) {
     for (int i = 0; i < node.sizeExpressions(); i++) {
       getPrinter().print("(");
       expressions.peek().accept(getRealThis());
@@ -127,21 +128,21 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
       node.getExpression(i).accept(getRealThis());
       getPrinter().print(")");
 
-      if (i < node.sizeExpressions()-1) {
+      if (i < node.sizeExpressions() - 1) {
         getPrinter().print(" || ");
       }
     }
   }
 
   @Override
-  public void handle(ASTSetValueRange node){
+  public void handle(ASTSetValueRange node) {
     getPrinter().print("(");
-		expressions.peek().accept(getRealThis());
+    expressions.peek().accept(getRealThis());
     getPrinter().print(" >= ");
     node.getLowerBound().accept(getRealThis());
     getPrinter().print(" && ");
 
-		if (node.isPresentStepsize()) {
+    if (node.isPresentStepsize()) {
       getPrinter().print("((");
       expressions.peek().accept(getRealThis());
       getPrinter().print(" - ");
@@ -159,7 +160,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void visit(ASTSetValueRegEx node){
+  public void visit(ASTSetValueRegEx node) {
     getPrinter().print("(");
     getPrinter().print("std::regex_match(");
     getPrinter().print("((std::ostringstream&)(std::ostringstream(\"\") << ");
@@ -176,12 +177,12 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTSetDefinition node){
+  public void handle(ASTSetDefinition node) {
     for (int i = 0; i < node.sizeSetAllowedValuess(); i++) {
       getPrinter().print("(");
       node.getSetAllowedValues(i).accept(getRealThis());
       getPrinter().print(")");
-      if (i < node.sizeSetAllowedValuess()-1) {
+      if (i < node.sizeSetAllowedValuess() - 1) {
         getPrinter().print(" || ");
       }
     }
@@ -197,7 +198,13 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
     }
 
     ComponentTypeSymbol comp;
-    IMontiArcScope s = (IMontiArcScope) node.getEnclosingScope();
+    IMontiThingsScope s;
+    if (node.getEnclosingScope().isPresentSpanningSymbol()) {
+      s = node.getEnclosingScope();
+    }
+    else {
+      s = node.getEnclosingScope().getEnclosingScope();
+    }
     if (s.getSpanningSymbol() instanceof ComponentTypeSymbol) {
       comp = (ComponentTypeSymbol) s.getSpanningSymbol();
     }
@@ -207,7 +214,9 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
       // throw useless exception to make compiler happy with accessing "comp" afterwards
       throw new IllegalArgumentException();
     }
+
     List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
+
     List<ASTSyncStatement> syncStatements = ComponentHelper
       .elementsOf(comp).filter(ASTSyncStatement.class).toList();
 
@@ -240,7 +249,9 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
     else {
       getPrinter().print(node.getNameExpression().getName());
     }
-    CommentPrettyPrinter.printPostComments(node, getPrinter());
+    CommentPrettyPrinter.printPostComments(node,
+
+      getPrinter());
   }
 
   protected Optional<PortSymbol> getPortForName(ASTNameExpression node) {

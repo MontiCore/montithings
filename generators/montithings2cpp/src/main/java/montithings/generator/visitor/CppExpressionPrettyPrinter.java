@@ -57,7 +57,13 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
     }
 
     ComponentTypeSymbol comp;
-    IMontiArcScope s = (IMontiArcScope) node.getEnclosingScope();
+    IMontiThingsScope s;
+    if (node.getEnclosingScope().isPresentSpanningSymbol()) {
+      s = (IMontiThingsScope) node.getEnclosingScope();
+    }
+    else {
+      s = (IMontiThingsScope) node.getEnclosingScope().getEnclosingScope();
+    }
     if (s.getSpanningSymbol() instanceof ComponentTypeSymbol) {
       comp = (ComponentTypeSymbol) s.getSpanningSymbol();
     }

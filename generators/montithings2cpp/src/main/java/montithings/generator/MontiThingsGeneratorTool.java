@@ -17,17 +17,14 @@ import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension._symboltable.CDLangExtensionUnitSymbol;
 import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
-import de.monticore.cd4analysis._parser.CD4AnalysisParser;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
-import de.monticore.cd4code.cocos.CD4CodeCoCos;
-import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
+import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsGlobalScope;
@@ -68,6 +65,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     //Log.initWARN();
 
+    ModelPath mp = new ModelPath(modelPath.toPath());
+
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
@@ -83,17 +82,20 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     Log.info("Initializing symboltable", TOOL_NAME);
 
-    ICD4CodeGlobalScope cdSymTab = CD4CodeMill.cD4CodeGlobalScopeBuilder()
-      .setModelPath(new ModelPath((Paths.get(modelPath.getAbsolutePath()))))
-      .setModelFileExtension(CD4AnalysisGlobalScope.EXTENSION)
+    ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
+      .setModelPath(mp)
+      .setModelFileExtension(CD_FILE_EXTENSION)
       .build();
+    IMontiThingsGlobalScope symTab = MontiThingsMill.montiThingsGlobalScopeBuilder()
+      .setModelPath(mp)
+      .setModelFileExtension(MT_FILE_EXTENSION)
+      .build();
+    resolvingDelegates(symTab, cd4CGlobalScope);
+    addBasicTypes(symTab);
 
-    IMontiThingsScope symTab = initSymbolTable(modelPath,
-      //Paths.get(basedir + LIBRARY_MODELS_FOLDER).toFile(),
-      hwcPath);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
-    cdExtensionTool.setCdGlobalScope(cdSymTab);
+    cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);
 
     BindingsTool bindingsTool = new BindingsTool();
     bindingsTool.setMtGlobalScope((IMontiThingsGlobalScope) symTab);
@@ -102,30 +104,36 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MTConfigTool mtConfigTool = new MTConfigTool();
     mtConfigTool.setMtGlobalScope((IMontiThingsGlobalScope) symTab);
 
+    /* ============================================================ */
+    /* ====================== Check Models ======================== */
+    /* ============================================================ */
+    Log.info("Checking models", TOOL_NAME);
+
+    processModels(cd4CGlobalScope, true);
+    processModels(symTab, true);
+    checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
+    checkBindings(models.getBindings(), config, bindingsTool, binTab);
+    checkMTConfig(models.getMTConfig(), config, mtConfigTool,
+      mtConfigTool.initSymbolTable(modelPath));
+
+    /* ============================================================ */
+    /* =================== Find Code Templates ==================== */
+    /* ============================================================ */
+
+    Log.info("Looking for code templates", TOOL_NAME);
+
     for (String model : models.getMontithings()) {
       // Parse model
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-      Log.info("Parsing model: " + qualifiedModelName, TOOL_NAME);
       ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
+
+      Log.info("Searching templates for: " + comp.getFullName(), TOOL_NAME);
 
       // Find ports with templates
       FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config);
       comp.getAstNode().accept(vistor);
       config.getTemplatedPorts().addAll(vistor.getTemplatedPorts());
     }
-
-
-    /* ============================================================ */
-    /* ====================== Check Models ======================== */
-    /* ============================================================ */
-    Log.info("Checking models", TOOL_NAME);
-
-    checkCds(models.getClassdiagrams(), cdSymTab);
-    checkMtModels(models.getMontithings(), symTab, config);
-    checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
-    checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkMTConfig(models.getMTConfig(), config, mtConfigTool,
-      mtConfigTool.initSymbolTable(modelPath));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -187,6 +195,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab,
     ConfigParams config) {
+
     for (String model : foundModels) {
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
 
@@ -199,9 +208,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
       checkCoCos(comp.getAstNode());
     }
+
   }
 
   protected void checkCds(List<String> foundModels, ICD4CodeGlobalScope symTab) {
+    /*
     for (String model : foundModels) {
       ASTCDCompilationUnit cdAST = null;
       try {
@@ -221,6 +232,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
       new CD4CodeCoCos().createNewChecker().checkAll(cdAST);
     }
+     */
   }
 
   protected void checkCdExtensionModels(List<String> foundCDExtensionModels, File modelPath,
