@@ -226,7 +226,8 @@ public class ComponentHelper {
    */
   public static String getRealPortTypeString(arcbasis._symboltable.ComponentTypeSymbol comp,
     arcbasis._symboltable.PortSymbol portSymbol) {
-    return portSymbol.getType().print();
+    // TODO: call portSymbol.getType().print() once MontiArc fixes its types
+    return portSymbol.getType().getTypeInfo().getName();
   }
 
   public static String printPackageNamespace(arcbasis._symboltable.ComponentTypeSymbol comp,
@@ -527,7 +528,7 @@ public class ComponentHelper {
 
 
 
-  public static String getRealPortCppTypeString(arcbasis._symboltable.ComponentTypeSymbol comp,
+  public static String getRealPortCppTypeString(ComponentTypeSymbol comp,
     arcbasis._symboltable.PortSymbol port, ConfigParams config) {
     if (ComponentHelper.portUsesCdType(port)) {
       return printCdPortPackageNamespace(comp, port, config);

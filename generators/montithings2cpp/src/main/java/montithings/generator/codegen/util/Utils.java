@@ -11,7 +11,6 @@ import cdlangextension._ast.ASTCDEImportStatement;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
-import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.symboltable.ImportStatement;
 import genericarc._ast.ASTArcTypeParameter;
@@ -384,6 +383,7 @@ public class Utils {
 
   public static String printPackageNamespace(ComponentTypeSymbol comp,
     ComponentInstanceSymbol subcomp) {
+    // TODO: getTypeInfo statt getType hat früher hier Generics aufgelöst
     ComponentTypeSymbol subcomponentType = subcomp.getType();
     String fullNamespaceSubcomponent = ComponentHelper
       .printPackageNamespaceForComponent(subcomponentType);
