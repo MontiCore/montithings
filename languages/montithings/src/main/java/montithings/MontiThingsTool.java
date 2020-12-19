@@ -28,6 +28,7 @@ import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsSymbolTableCreatorDelegator;
 import montithings.cocos.MontiThingsCoCos;
+import montithings.util.ParserUtil;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
@@ -41,29 +42,26 @@ import java.util.stream.Collectors;
 public class MontiThingsTool {
 
   protected MontiThingsCoCoChecker mtChecker;
+
   protected CD4CodeCoCoChecker cdChecker;
+
   protected boolean isSymTabInitialized;
-  protected String mtFileExtension = "mt";
-  protected String cdFileExtension = "cd";
+
+  protected static final String mtFileExtension = "mt";
+
+  protected static final String cdFileExtension = "cd";
 
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());
   }
 
-  public MontiThingsTool(@NotNull MontiThingsCoCoChecker mtChecker, @NotNull CD4CodeCoCoChecker cdChecker) {
+  public MontiThingsTool(@NotNull MontiThingsCoCoChecker mtChecker,
+    @NotNull CD4CodeCoCoChecker cdChecker) {
     Preconditions.checkArgument(mtChecker != null);
     Preconditions.checkArgument(cdChecker != null);
     this.mtChecker = mtChecker;
     this.cdChecker = cdChecker;
     this.isSymTabInitialized = false;
-  }
-
-  protected String getMTFileExtension() {
-    return this.mtFileExtension;
-  }
-
-  protected String getCDFileExtension() {
-    return this.cdFileExtension;
   }
 
   protected MontiThingsCoCoChecker getMTChecker() {
@@ -80,11 +78,11 @@ public class MontiThingsTool {
     ModelPath mp = new ModelPath(Arrays.asList(modelPaths));
     ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
       .setModelPath(mp)
-      .setModelFileExtension(this.getCDFileExtension())
+      .setModelFileExtension(cdFileExtension)
       .build();
     IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
       .setModelPath(mp)
-      .setModelFileExtension(this.getMTFileExtension())
+      .setModelFileExtension(mtFileExtension)
       .build();
     resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
     addBasicTypes(montiThingsGlobalScope);
@@ -93,7 +91,8 @@ public class MontiThingsTool {
     return montiThingsGlobalScope;
   }
 
-  protected void resolvingDelegates(@NotNull IMontiThingsGlobalScope montiThingsGlobalScope, @NotNull ICD4CodeGlobalScope cd4CGlobalScope) {
+  protected void resolvingDelegates(@NotNull IMontiThingsGlobalScope montiThingsGlobalScope,
+    @NotNull ICD4CodeGlobalScope cd4CGlobalScope) {
     CD4CodeResolver cd4CodeResolver = new ArcCD4CodeResolver(cd4CGlobalScope);
     montiThingsGlobalScope.addAdaptedFieldSymbolResolver(cd4CodeResolver);
     montiThingsGlobalScope.addAdaptedTypeSymbolResolver(cd4CodeResolver);
@@ -101,20 +100,25 @@ public class MontiThingsTool {
 
   public void processModels(@NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    this.createSymbolTable(scope).stream().map(as -> (ASTMACompilationUnit) as.getAstNode()).forEach(a -> a.accept(this.getMTChecker()));
+    this.createSymbolTable(scope).stream().map(as -> (ASTMACompilationUnit) as.getAstNode())
+      .forEach(a -> a.accept(this.getMTChecker()));
   }
 
   public void processModels(@NotNull ICD4CodeGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    this.createSymbolTable(scope).stream().flatMap(a -> a.getSubScopes().stream())
-      .map(as -> (ASTCDPackage) as.getSpanningSymbol().getAstNode()).forEach(a -> a.accept(this.getCdChecker()));
+    this.createSymbolTable(scope).stream()
+      .flatMap(a -> a.getSubScopes().stream())
+      .map(as -> (ASTCDPackage) as.getSpanningSymbol().getAstNode())
+      .forEach(a -> a.accept(this.getCdChecker()));
   }
 
-  public Collection<IMontiThingsArtifactScope> createSymbolTable(@NotNull IMontiThingsGlobalScope scope) {
+  public Collection<IMontiThingsArtifactScope> createSymbolTable(
+    @NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
     Collection<IMontiThingsArtifactScope> result = new HashSet<>();
     for (ASTMACompilationUnit ast : parseModels(scope)) {
-      MontiThingsSymbolTableCreatorDelegator symTab = new MontiThingsSymbolTableCreatorDelegator(scope);
+      MontiThingsSymbolTableCreatorDelegator symTab = new MontiThingsSymbolTableCreatorDelegator(
+        scope);
       result.add(symTab.createFromAST(ast));
     }
     return result;
@@ -132,60 +136,18 @@ public class MontiThingsTool {
 
   public Collection<ASTMACompilationUnit> parseModels(@NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    return scope.getModelPath().getFullPathOfEntries().stream().flatMap(p -> parseMT(p).stream()).collect(Collectors.toSet());
+    return scope.getModelPath().getFullPathOfEntries().stream()
+      .flatMap(p -> ParserUtil.parse(p, mtFileExtension, new MontiThingsParser()).stream())
+      .map(ast -> (ASTMACompilationUnit) ast)
+      .collect(Collectors.toSet());
   }
 
   public Collection<ASTCDCompilationUnit> parseModels(@NotNull ICD4CodeGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    return scope.getModelPath().getFullPathOfEntries().stream().flatMap(p -> parseCD(p).stream()).collect(Collectors.toSet());
-  }
-
-  public Collection<ASTMACompilationUnit> parseMT(@NotNull Path path) {
-    Preconditions.checkArgument(path != null);
-    try {
-      return Files.walk(path).filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(this.getMTFileExtension())).map(f -> parseMT(f.toString()))
-        .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
-    } catch (IOException e) {
-      Log.error("Could not access " + path.toString() + ", there were I/O exceptions.");
-    }
-    return new HashSet<>();
-  }
-
-  public Collection<ASTCDCompilationUnit> parseCD(@NotNull Path path) {
-    Preconditions.checkArgument(path != null);
-    try {
-      return Files.walk(path).filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(this.getCDFileExtension())).map(f -> parseCD(f.toString()))
-        .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
-    } catch (IOException e) {
-      Log.error("Could not access " + path.toString() + ", there were I/O exceptions.");
-    }
-    return new HashSet<>();
-  }
-
-  public Optional<ASTMACompilationUnit> parseMT(@NotNull String filename) {
-    Preconditions.checkArgument(filename != null);
-    MontiThingsParser p = new MontiThingsParser();
-    Optional<ASTMACompilationUnit> compUnit;
-    try {
-      compUnit = p.parse(filename);
-      return compUnit;
-    } catch (IOException e) {
-      Log.error("Could not access " + filename + ", there were I/O exceptions.");
-    }
-    return Optional.empty();
-  }
-
-  public Optional<ASTCDCompilationUnit> parseCD(@NotNull String filename) {
-    Preconditions.checkArgument(filename != null);
-    CD4CodeParser p = new CD4CodeParser();
-    Optional<ASTCDCompilationUnit> cd;
-    try {
-      cd = p.parse(filename);
-      return cd;
-    } catch (IOException e) {
-      Log.error("Could not access " + filename + ", there were I/O exceptions.");
-    }
-    return Optional.empty();
+    return scope.getModelPath().getFullPathOfEntries().stream()
+      .flatMap(p -> ParserUtil.parse(p, cdFileExtension, new CD4CodeParser()).stream())
+      .map(ast -> (ASTCDCompilationUnit) ast)
+      .collect(Collectors.toSet());
   }
 
   @Deprecated
@@ -210,6 +172,7 @@ public class MontiThingsTool {
    * @param componentName Name of the component
    * @param modelPaths    Folders containing the packages with models
    * @return an {@code Optional} of the loaded component type
+   * @deprecated
    */
   @Deprecated
   public Optional<ComponentTypeSymbol> loadComponentSymbolWithoutCocos(String componentName,
@@ -238,6 +201,7 @@ public class MontiThingsTool {
    * @param modelPath The model path containing the package with the model
    * @param model     the fully qualified model name
    * @return the AST node of the model
+   * @deprecated
    */
   @Deprecated
   public Optional<ASTComponentType> getAstNode(String modelPath, String model) {
@@ -267,6 +231,7 @@ public class MontiThingsTool {
    *
    * @param modelPaths paths of all folders containing models
    * @return The initialized symbol table
+   * @deprecated
    */
   @Deprecated
   public IMontiThingsScope initSymbolTable(File... modelPaths) {
@@ -275,8 +240,10 @@ public class MontiThingsTool {
       p.add(Paths.get(mP.getAbsolutePath()));
     }
     final ModelPath mp = new ModelPath(p);
-    IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder().setModelPath(mp).setModelFileExtension(this.getMTFileExtension()).build();
-    ICD4CodeGlobalScope cd4CodeGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder().setModelPath(mp).setModelFileExtension(this.getCDFileExtension()).build();
+    IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
+      .setModelPath(mp).setModelFileExtension(mtFileExtension).build();
+    ICD4CodeGlobalScope cd4CodeGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
+      .setModelPath(mp).setModelFileExtension(cdFileExtension).build();
     this.resolvingDelegates(montiThingsGlobalScope, cd4CodeGlobalScope);
     this.addBasicTypes(montiThingsGlobalScope);
     isSymTabInitialized = true;
@@ -306,6 +273,7 @@ public class MontiThingsTool {
    *
    * @param modelPath The model path for the symbol table
    * @return the initialized symbol table
+   * @deprecated
    */
   @Deprecated
   public IMontiThingsScope initSymbolTable(String modelPath) {
