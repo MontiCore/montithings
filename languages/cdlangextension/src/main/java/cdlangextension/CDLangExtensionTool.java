@@ -29,13 +29,13 @@ public class CDLangExtensionTool {
 
   public static final String FILE_ENDING = "cde";
 
-  private ICDLangExtensionArtifactScope artifactScope;
+  protected ICDLangExtensionArtifactScope artifactScope;
 
   protected CDLangExtensionCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
 
-  private ICD4CodeGlobalScope cdGlobalScope;
+  protected ICD4CodeGlobalScope cdGlobalScope;
 
   public CDLangExtensionTool() {
     this(CDLangExtensionCoCos.createChecker());

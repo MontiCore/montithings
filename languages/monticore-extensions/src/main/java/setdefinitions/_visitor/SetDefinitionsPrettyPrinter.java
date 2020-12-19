@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SetDefinitionsPrettyPrinter implements SetDefinitionsVisitor {
 
-  private SetDefinitionsVisitor realThis = this;
+  protected SetDefinitionsVisitor realThis = this;
   protected IndentPrinter printer;
 
   public SetDefinitionsPrettyPrinter() {

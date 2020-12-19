@@ -14,8 +14,8 @@ public enum MTConfigError implements mtconfig.util.Error {
   HOOKPOINT_EXISTS("0xMTCFG1036", "Hookpoint '%s' does not exist (use one of these: %s)")
 ;
 
-  private final String errorCode;
-  private final String errorMessage;
+  protected final String errorCode;
+  protected final String errorMessage;
 
   MTConfigError(String errorCode, String errorMessage) {
     assert (errorCode != null);

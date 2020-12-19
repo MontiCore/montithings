@@ -24,9 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Julian Krebber
  */
 public class CoCoTest extends AbstractTest {
-  private static final String PACKAGE = "cocoTest";
+  protected static final String PACKAGE = "cocoTest";
 
-  private static final String MODEL_PATH = "src/test/resources/models/";
+  protected static final String MODEL_PATH = "src/test/resources/models/";
 
   @Override
   protected Pattern supplyErrorCodePattern() {

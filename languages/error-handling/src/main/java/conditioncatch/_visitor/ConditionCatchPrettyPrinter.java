@@ -8,7 +8,7 @@ import org.codehaus.commons.nullanalysis.NotNull;
 
 public class ConditionCatchPrettyPrinter implements ConditionCatchVisitor {
 
-  private ConditionCatchVisitor realThis = this;
+  protected ConditionCatchVisitor realThis = this;
   protected IndentPrinter printer;
 
   public ConditionCatchPrettyPrinter() {

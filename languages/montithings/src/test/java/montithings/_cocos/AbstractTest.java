@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractTest {
 
-  private static final String MODEL_PATH = "src/test/resources/models/";
-  private Pattern errorCodePattern;
+  protected static final String MODEL_PATH = "src/test/resources/models/";
+  protected Pattern errorCodePattern;
 
   @BeforeAll
   public static void cleanUpLog() {

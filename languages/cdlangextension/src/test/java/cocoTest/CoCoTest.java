@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  */
 public class CoCoTest extends AbstractTest {
 
-  private static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
+  protected static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
 
   @Override
   protected Pattern supplyErrorCodePattern() {

@@ -9,7 +9,7 @@ import prepostcondition._ast.ASTPrecondition;
 
 public class PrePostConditionPrettyPrinter implements PrePostConditionVisitor {
 
-  private PrePostConditionVisitor realThis = this;
+  protected PrePostConditionVisitor realThis = this;
   protected IndentPrinter printer;
 
   public PrePostConditionPrettyPrinter() {

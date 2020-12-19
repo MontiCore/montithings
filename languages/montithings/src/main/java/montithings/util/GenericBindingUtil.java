@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 public class GenericBindingUtil {
 
-  private GenericBindingUtil(){
+  protected GenericBindingUtil(){
 
   }
 
@@ -57,7 +57,7 @@ public class GenericBindingUtil {
    * @param generic name and upper bounds that will be returned as mapping
    * @return mapping between generic and its upper bounds if upper bounds are present, otherwise an empty mapping
    */
-  private static Map<String, String> linkGenericWithInterface(ASTArcTypeParameter generic) {
+  protected static Map<String, String> linkGenericWithInterface(ASTArcTypeParameter generic) {
     Map<String,String> genericToInterface = new HashMap<>();
     String typeName = generic.getName();
     for (ASTMCType type : generic.getUpperBoundList()) {
@@ -143,7 +143,7 @@ public class GenericBindingUtil {
    * @param s subscope of a GlobalScope.
    * @return GlobalScope if present, or else null.
    */
-  private static MontiThingsGlobalScope getGlobalScope(MontiThingsScope s) {
+  protected static MontiThingsGlobalScope getGlobalScope(MontiThingsScope s) {
     while(!(s instanceof MontiThingsGlobalScope)){
       if(s.getEnclosingScope()==null){
         return null;

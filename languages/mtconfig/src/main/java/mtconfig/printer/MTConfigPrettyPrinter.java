@@ -18,7 +18,7 @@ import java.util.Iterator;
  */
 public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements MTConfigVisitor {
 
-  private MTConfigVisitor realThis = this;
+  protected MTConfigVisitor realThis = this;
 
   /**
    * Constructor.

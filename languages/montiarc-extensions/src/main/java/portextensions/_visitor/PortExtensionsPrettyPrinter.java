@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PortExtensionsPrettyPrinter implements PortExtensionsVisitor {
 
-  private PortExtensionsVisitor realThis = this;
+  protected PortExtensionsVisitor realThis = this;
   protected IndentPrinter printer;
 
   public PortExtensionsPrettyPrinter() {

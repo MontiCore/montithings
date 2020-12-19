@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractTest {
 
   protected static final String RELATIVE_MODEL_PATH = "src/test/resources";
-  private Pattern errorCodePattern;
+  protected Pattern errorCodePattern;
 
   @BeforeAll
   public static void cleanUpLog() {

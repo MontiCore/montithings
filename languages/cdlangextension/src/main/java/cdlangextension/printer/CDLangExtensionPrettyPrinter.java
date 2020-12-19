@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter implements CDLangExtensionVisitor {
 
-  private CDLangExtensionVisitor realThis = this;
+  protected CDLangExtensionVisitor realThis = this;
 
   /**
    * Constructor.

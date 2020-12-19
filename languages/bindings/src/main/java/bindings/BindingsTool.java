@@ -36,7 +36,7 @@ public class BindingsTool {
 
   protected boolean isSymTabInitialized;
 
-  private IMontiThingsGlobalScope mtGlobalScope;
+  protected IMontiThingsGlobalScope mtGlobalScope;
 
   public BindingsTool() {
     this(BindingsCoCos.createChecker());

@@ -29,13 +29,13 @@ public class MTConfigTool {
 
   protected static String FILE_ENDING = "mtcfg";
 
-  private IMTConfigArtifactScope artifactScope;
+  protected IMTConfigArtifactScope artifactScope;
 
   protected MTConfigCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
 
-  private IMontiThingsGlobalScope mtGlobalScope;
+  protected IMontiThingsGlobalScope mtGlobalScope;
 
   public MTConfigTool() {
     this(MTConfigCoCos.createChecker());

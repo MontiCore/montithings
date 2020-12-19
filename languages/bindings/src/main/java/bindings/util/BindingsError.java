@@ -11,8 +11,8 @@ public enum BindingsError implements bindings.util.Error {
   LEFT_SIDE_NO_INTERFACE("0xMTB0040", "Left side '%s' is no interface!"),
   RIGHT_SIDE_NO_IMPLEMENTATION("0xMTB0050", "Right side '%s' is no implementation!");
 
-  private final String errorCode;
-  private final String errorMessage;
+  protected final String errorCode;
+  protected final String errorMessage;
 
   BindingsError(String errorCode, String errorMessage) {
     assert (errorCode != null);
