@@ -1,28 +1,21 @@
 // (c) https://github.com/MontiCore/monticore
 package cocoTest;
 
-import cdlangextension.CDLangExtensionTool;
-import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCoChecker;
 import cdlangextension._cocos.CDLangExtensionCoCos;
-import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension.util.CDLangExtensionError;
 import de.se_rwth.commons.logging.Log;
-import de.se_rwth.commons.logging.LogStub;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Tests CoCos of CDLangExtension.
- *
- * @author Julian Krebber
  */
 public class CoCoTest extends AbstractTest {
-  private static final String PACKAGE = "cocoTest";
 
   private static final String MODEL_PATH = "src/test/resources/models/cocoTest/";
 
@@ -31,74 +24,46 @@ public class CoCoTest extends AbstractTest {
     return CDLangExtensionError.ERROR_CODE_PATTERN;
   }
 
-  /**
-   * Tests CoCos that are cd import related.
-   */
-  @Test
-  public void valid() {
-    CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST(MODEL_PATH, "ImportValid/ImportValid.cde"));
-    Assertions.assertEquals(0, Log.getErrorCount());
+  protected static Stream<Arguments> validInput() {
+    return Stream.of(
+      Arguments.of("ImportValid/ImportValid.cde")
+    );
   }
 
-  /**
-   * Tests CoCos that are cd import related.
-   */
-  @Test
-  public void importNameEmpty() {
-    CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST(MODEL_PATH, "ImportNameNotEmpty/ImportNameNotEmpty.cde"));
-    this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
-        new CDLangExtensionError[] { CDLangExtensionError.EMPTY_IMPORT_FIELD });
+  protected static Stream<Arguments> invalidInput() {
+    return Stream.of(
+      Arguments.of(
+        "ImportNameNotEmpty/ImportNameNotEmpty.cde",
+        new CDLangExtensionError[] { CDLangExtensionError.EMPTY_IMPORT_FIELD }),
+      Arguments.of(
+        "ImportNameUnique/ImportNameUnique.cde",
+        new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_IMPORT_NAME }),
+      Arguments.of(
+        "ImportLanguageUnique/ImportLanguageUnique.cde",
+        new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_LANGUAGE_NAME }),
+      Arguments.of(
+        "ImportNameExists/ImportNameExists.cde",
+        new CDLangExtensionError[] { CDLangExtensionError.MISSING_IMPORT_NAME })
+    );
   }
 
-  /**
-   * Tests CoCos that are cd import related.
-   */
-  @Test
-  public void importNameNotUnique() {
-    CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST(MODEL_PATH, "ImportNameUnique/ImportNameUnique.cde"));
-    this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
-        new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_IMPORT_NAME });
+  @ParameterizedTest
+  @MethodSource("validInput")
+  public void shouldAcceptValidInput(String fileName) {
+    // Accepting means not finding errors
+    shouldRejectInvalidInput(fileName, new CDLangExtensionError[]{});
   }
 
-  /**
-   * Tests CoCos that are cd import related.
-   */
-  @Test
-  public void importLanguageNotUnique() {
+  @ParameterizedTest
+  @MethodSource("invalidInput")
+  public void shouldRejectInvalidInput(String fileName, CDLangExtensionError[] expectedFindings) {
+    // Given
     CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST(MODEL_PATH, "ImportLanguageUnique/ImportLanguageUnique.cde"));
-    this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
-        new CDLangExtensionError[] { CDLangExtensionError.AMBIGUOUS_LANGUAGE_NAME });
-  }
 
-  /**
-   * Tests CoCos that are cd import related.
-   */
-  @Test
-  public void importNameNotExistsInCD() {
-    CDLangExtensionCoCoChecker checker = CDLangExtensionCoCos.createChecker();
-    checker.checkAll(getAST(MODEL_PATH, "ImportNameExists/ImportNameExists.cde"));
-    this.checkOnlyExpectedErrorsPresent(Log.getFindings(),
-        new CDLangExtensionError[] { CDLangExtensionError.MISSING_IMPORT_NAME });
-  }
+    // When
+    checker.checkAll(getAST(MODEL_PATH, fileName));
 
-  public ASTCDLangExtensionUnit getAST(String modelPath, String fileName) {
-    ASTCDLangExtensionUnit astCDE = null;
-    try {
-      astCDE = new CDLangExtensionParser().parseCDLangExtensionUnit(modelPath + fileName).orElse(null);
-    }
-    catch (IOException e) {
-      Log.error("File '" + modelPath + fileName + "' CDE artifact was not found");
-    }
-    Assertions.assertNotNull(astCDE);
-    CDLangExtensionTool tool = new CDLangExtensionTool();
-    tool.createSymboltable(astCDE, new File(modelPath));
-    Log.init();
-    LogStub.init();
-    return astCDE;
+    // Then
+    this.checkOnlyExpectedErrorsPresent(Log.getFindings(), expectedFindings);
   }
 }
-
