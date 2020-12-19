@@ -7,8 +7,6 @@ import bindings.util.BindingsError;
 import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTMTComponentType;
 
-import java.util.Optional;
-
 /**
  * Checks that Right Side of Binding is Implementation
  *

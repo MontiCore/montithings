@@ -9,15 +9,11 @@ import cdlangextension._symboltable.CDLangExtensionSymbolTableCreatorDelegator;
 import cdlangextension._symboltable.ICDLangExtensionArtifactScope;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import de.monticore.cd4analysis.CD4AnalysisMill;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
-import de.monticore.cd4analysis.resolver.CD4AnalysisResolver;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.io.paths.ModelPath;
-import montiarc.MontiArcTool;
 import montithings.MontiThingsTool;
 import org.codehaus.commons.nullanalysis.NotNull;
 

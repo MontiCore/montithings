@@ -3,7 +3,6 @@ package montithings;
 
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
-import montiarc._symboltable.IMontiArcGlobalScope;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsArtifactScope;
 import org.codehaus.commons.nullanalysis.NotNull;

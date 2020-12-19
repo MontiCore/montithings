@@ -5,7 +5,6 @@ import de.se_rwth.commons.logging.Log;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig.util.MTConfigError;
 
-
 import java.util.Set;
 
 import static mtconfig.util.ASTMTConfigUnitUtil.findComponentNamesInConfigUnit;

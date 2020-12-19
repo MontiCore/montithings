@@ -3,7 +3,6 @@ package portextensions.cocos;
 
 import arcbasis._ast.ASTComponentType;
 import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
-import de.se_rwth.commons.logging.Log;
 
 /**
  * Checks that ports in sync statements exist and are incoming

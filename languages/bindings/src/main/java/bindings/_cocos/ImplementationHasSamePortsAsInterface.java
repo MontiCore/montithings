@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package bindings._cocos;
 
-import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
 import bindings.util.BindingsError;

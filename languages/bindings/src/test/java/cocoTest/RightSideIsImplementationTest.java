@@ -5,7 +5,6 @@ import bindings._cocos.BindingsCoCoChecker;
 import bindings._cocos.RightSideIsImplementation;
 import bindings.util.BindingsError;
 import de.se_rwth.commons.logging.Log;
-import org.antlr.v4.codegen.model.ModelElement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -5,7 +5,6 @@ import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._cocos.BindingsCoCoChecker;
 import bindings._cocos.BindingsCoCos;
 import bindings._parser.BindingsParser;
-import bindings._symboltable.BindingsGlobalScope;
 import bindings._symboltable.BindingsSymbolTableCreatorDelegator;
 import bindings._symboltable.IBindingsGlobalScope;
 import bindings._symboltable.IBindingsScope;
@@ -17,7 +16,6 @@ import de.monticore.io.paths.ModelPath;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
-import montithings._symboltable.MontiThingsGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;

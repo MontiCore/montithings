@@ -4,7 +4,6 @@ package cocoTest;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._parser.BindingsParser;
-import bindings._symboltable.BindingsGlobalScope;
 import bindings._symboltable.IBindingsGlobalScope;
 import bindings.util.Error;
 import de.se_rwth.commons.logging.Finding;

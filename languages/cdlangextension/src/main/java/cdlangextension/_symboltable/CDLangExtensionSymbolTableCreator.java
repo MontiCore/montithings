@@ -2,9 +2,7 @@
 package cdlangextension._symboltable;
 
 import cdlangextension._ast.ASTCDEImportStatement;
-import cdlangextension.util.CDLangExtensionError;
 import de.monticore.cdbasis._symboltable.CDTypeSymbol;
-import de.se_rwth.commons.logging.Log;
 
 import java.util.Optional;
 
