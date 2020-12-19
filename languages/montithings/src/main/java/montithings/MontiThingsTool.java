@@ -12,6 +12,7 @@ import de.monticore.cd4code._parser.CD4CodeParser;
 import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCreatorDelegator;
 import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code._symboltable.ICD4CodeScope;
 import de.monticore.cd4code.cocos.CD4CodeCoCos;
 import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
@@ -47,6 +48,8 @@ public class MontiThingsTool {
   public static final String MT_FILE_EXTENSION = "mt";
 
   public static final String CD_FILE_EXTENSION = "cd";
+
+  protected static final String TOOL_NAME = "MontiThingsTool";
 
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());
@@ -96,17 +99,35 @@ public class MontiThingsTool {
   }
 
   public void processModels(@NotNull IMontiThingsGlobalScope scope) {
+    processModels(scope, false);
+  }
+
+  public void processModels(@NotNull IMontiThingsGlobalScope scope, boolean shouldLog) {
     Preconditions.checkArgument(scope != null);
-    this.createSymbolTable(scope).stream().map(as -> (ASTMACompilationUnit) as.getAstNode())
-      .forEach(a -> a.accept(this.getMTChecker()));
+    for (IMontiThingsArtifactScope as : this.createSymbolTable(scope)) {
+      ASTMACompilationUnit a = (ASTMACompilationUnit) as.getAstNode();
+      if (shouldLog) {
+        Log.info("Check model: " + a.getComponentType().getSymbol().getFullName(), TOOL_NAME);
+      }
+      a.accept(this.getMTChecker());
+    }
   }
 
   public void processModels(@NotNull ICD4CodeGlobalScope scope) {
+    processModels(scope, false);
+  }
+
+  public void processModels(@NotNull ICD4CodeGlobalScope scope, boolean shouldLog) {
     Preconditions.checkArgument(scope != null);
-    this.createSymbolTable(scope).stream()
-      .flatMap(a -> a.getSubScopes().stream())
-      .map(as -> (ASTCDPackage) as.getSpanningSymbol().getAstNode())
-      .forEach(a -> a.accept(this.getCdChecker()));
+    for (ICD4CodeArtifactScope a : this.createSymbolTable(scope)) {
+      for (ICD4CodeScope as : a.getSubScopes()) {
+        ASTCDPackage astNode = (ASTCDPackage) as.getSpanningSymbol().getAstNode();
+        if (shouldLog) {
+          Log.info("Check model: " + a.getName(), TOOL_NAME);
+        }
+        astNode.accept(this.getCdChecker());
+      }
+    }
   }
 
   public Collection<IMontiThingsArtifactScope> createSymbolTable(
