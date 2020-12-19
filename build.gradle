@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
   group = 'montithings'
-  version = '6.2.0-SNAPSHOT'
+  version = '6.5.0-SNAPSHOT'
   buildDir = "$projectDir/target"
   apply plugin: 'com.adarshr.test-logger'
 }
