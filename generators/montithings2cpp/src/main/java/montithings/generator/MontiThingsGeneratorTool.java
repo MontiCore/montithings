@@ -403,8 +403,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       String packageName = Names.getQualifier(model);
 
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
-      new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model,
-        Names.getQualifiedName(packageName, simpleName)).generate();
+      new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model)
+        .generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
     }
   }
 
