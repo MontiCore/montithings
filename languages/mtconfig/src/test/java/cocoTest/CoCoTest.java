@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +48,8 @@ public class CoCoTest extends AbstractTest {
   public ASTMTConfigUnit getAST(String fileName) {
     ASTMTConfigUnit astMTCFG = null;
     try {
-      astMTCFG = new MTConfigParser().parseMTConfigUnit(MODEL_PATH + fileName).orElse(null);
+      Path filePath = Paths.get(MODEL_PATH + fileName);
+      astMTCFG = new MTConfigParser().parseMTConfigUnit(filePath.toFile().getPath()).orElse(null);
     }
     catch (IOException e) {
       Log.error("File '" + MODEL_PATH + fileName + "' MTCFG artifact was not found");
