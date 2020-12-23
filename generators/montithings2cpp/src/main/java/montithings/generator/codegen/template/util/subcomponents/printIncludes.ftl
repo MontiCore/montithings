@@ -5,8 +5,8 @@ ${tc.signature("comp","config")}
 
 <#if config.getSplittingMode().toString() == "OFF">
   <#list comp.getSubComponents() as subcomponent>
-      <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getType().getName())>
-        <#assign type = subcomponent.getType().getName()>
+      <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
+        <#assign type = subcomponent.getGenericType().getName()>
       <#else>
         <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>
       </#if>

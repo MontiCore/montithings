@@ -61,7 +61,7 @@ TEST_F (ExampleTest, AdapterTEST)
 {
   montithings::hierarchy::ColorsAdapter adapter;
   uint8_t intValue;
-  montithings::hierarchy::Colors::Color color;
+  montithings::Colors::Color color;
   for (int i = 0; i < 4; i++)
     {
       intValue = i;
@@ -71,16 +71,16 @@ TEST_F (ExampleTest, AdapterTEST)
   intValue = 5;
   color = adapter.convert (intValue);
   EXPECT_EQ (adapter.convert (color), 0);
-  color = montithings::hierarchy::Colors::Color::RED;
+  color = montithings::Colors::Color::RED;
   intValue = adapter.convert (color);
   EXPECT_EQ (adapter.convert (intValue), color);
-  color = montithings::hierarchy::Colors::Color::GREEN;
+  color = montithings::Colors::Color::GREEN;
   intValue = adapter.convert (color);
   EXPECT_EQ (adapter.convert (intValue), color);
-  color = montithings::hierarchy::Colors::Color::BLUE;
+  color = montithings::Colors::Color::BLUE;
   intValue = adapter.convert (color);
   EXPECT_EQ (adapter.convert (intValue), color);
-  color = montithings::hierarchy::Colors::Color::YELLOW;
+  color = montithings::Colors::Color::YELLOW;
   intValue = adapter.convert (color);
   EXPECT_EQ (adapter.convert (intValue), color);
 }

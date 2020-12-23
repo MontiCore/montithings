@@ -2,6 +2,7 @@
 ${tc.signature("packageName", "compname", "config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign escape = Utils.escapePackage(packageName)>
 #pragma once
 #include ${"<string>"}
 #include "Port.h"
@@ -11,7 +12,7 @@ ${tc.signature("packageName", "compname", "config")}
 #include ${"<set>"}
 #include ${"<utility>"}
 #include "tl/optional.hpp"
-${Utils.printIncludes(ComponentHelper.getImportStatements(compname,config))}
+${Utils.printIncludes(escape, ComponentHelper.getImportStatements(compname,config))}
 
 ${tc.includeArgs("template.adapter.printNamespaceStart", [packageName])}
 

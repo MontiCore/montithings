@@ -31,7 +31,7 @@ public abstract class AbstractTest {
   public static void cleanUpLog() {
     Log.getFindings().clear();
     Log.enableFailQuick(false);
-    LogStub.init();
+    //LogStub.init();
   }
 
   @BeforeEach

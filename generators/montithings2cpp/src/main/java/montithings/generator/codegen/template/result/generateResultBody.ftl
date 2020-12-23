@@ -33,7 +33,7 @@ ${tc.signature("comp", "compname", "config")}
     this->${port.getName()} = ${port.getName()};
     }
     <#if ComponentHelper.portUsesCdType(port)>
-        <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
+        <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
         <#if cdeImportStatementOpt.isPresent()>
             <#assign fullImportStatemantName = cdeImportStatementOpt.get().getSymbol().getFullName()?split(".")>
             <#assign adapterName = fullImportStatemantName[0]+"Adapter">

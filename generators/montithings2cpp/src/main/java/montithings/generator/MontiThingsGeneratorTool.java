@@ -404,7 +404,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
       new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model)
-        .generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
+        //.generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
+        //.generate(Optional.of(packageName));
+        .generate(Optional.empty());
     }
   }
 

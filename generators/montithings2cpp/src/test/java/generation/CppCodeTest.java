@@ -50,13 +50,14 @@ public class CppCodeTest {
 
   @ParameterizedTest
   @ValueSource(strings = {
-    "basicInputOutputTest",
-    "additionalPortTest",
-    "behaviorTest",
+    //"basicInputOutputTest",
+    //"additionalPortTest",
+    //"behaviorTest",
     "classDiagramsTest",
-    "prePostConditionsTest",
-    "interfaceComponentsTest",
-    "interfaceComponentsBindingTest" })
+    //"prePostConditionsTest",
+    //"interfaceComponentsTest",
+    //"interfaceComponentsBindingTest"
+    })
   public void CPPTests(String testName) {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
     script.generate(

@@ -15,9 +15,9 @@
     <module>behavior</module>
     <module>interface-componentsMTB</module>
     <module>class-diagrams</module>
-    <!--
+
     <module>interface-components</module>
-    -->
+
     <module>pre-postconditions</module>
   </modules>
 

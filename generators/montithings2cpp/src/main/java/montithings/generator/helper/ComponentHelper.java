@@ -16,6 +16,7 @@ import com.google.common.collect.FluentIterable;
 import conditionbasis._ast.ASTCondition;
 import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.ast.ASTNode;
+import de.monticore.cd4code._symboltable.CD4CodeScope;
 import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
@@ -77,7 +78,7 @@ public class ComponentHelper {
 
   public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp, ConfigParams config) {
     if (expression.getTypeInfo() instanceof CDTypeSymbol) {
-      return printCdPackageNamespace(comp, expression.getTypeInfo(), config);
+      return printCdFQN(comp, expression.getTypeInfo(), config);
     }
     return java2cppTypeString(expression.print());
   }
@@ -147,42 +148,24 @@ public class ComponentHelper {
   }
 
   public static boolean portUsesCdType(PortSymbol portSymbol) {
-    return portSymbol.getType().getTypeInfo() instanceof CDTypeSymbol;
+    return portSymbol.getTypeInfo() instanceof CDTypeSymbol;
   }
 
-  public static String printCdPortPackageNamespace(ComponentTypeSymbol componentSymbol,
+  public static String printCdPortFQN(ComponentTypeSymbol componentSymbol,
     PortSymbol portSymbol, ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       throw new IllegalArgumentException(
         "Can't print namespace of non-CD type " + portSymbol.getType().getTypeInfo().getFullName());
     }
     TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
-
-    return printCdPackageNamespace(componentSymbol, cdTypeSymbol, config);
+    return printCdFQN(componentSymbol, cdTypeSymbol, config);
   }
 
-  public static String printCdPackageNamespace(ComponentTypeSymbol componentSymbol,
+  public static String printCdFQN(ComponentTypeSymbol componentSymbol,
     TypeSymbol typeSymbol, ConfigParams config) {
-    Optional<ASTCDEImportStatement> cdeImportStatementOpt = getCppImportExtension(typeSymbol,
-      config);
-    if (cdeImportStatementOpt.isPresent()) {
-      String componentNamespace = printPackageNamespaceForComponent(componentSymbol);
-      String cdNamespace = "montithings::";
-      cdNamespace +=cdeImportStatementOpt.get().getCdType().getQName().replaceAll("\\.", "::");
-      return printPackageNamespaceFromString(cdNamespace, componentNamespace);
-    }
-    return printPackageNamespace(componentSymbol, typeSymbol);
-  }
-
-  public static String printPackageNamespaceFromString(String fullNamespaceSubcomponent,
-    String fullNamespaceEnclosingComponent) {
-    if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
-      fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
-      return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent)[1];
-    }
-    else {
-      return fullNamespaceSubcomponent;
-    }
+    String packageName = ((CD4CodeScope)typeSymbol.getEnclosingScope()).getPackageName();
+    String typeName = typeSymbol.getName();
+    return packageName.replaceAll("\\.", "::") + "::" + typeName;
   }
 
   /**
@@ -192,19 +175,21 @@ public class ComponentHelper {
    * @param config     config containing a cdlangextension, that is used to search for import statements.
    * @return c++ import statement of the port type if specified in the cde model. Otherwise empty.
    */
-  public static Optional<ASTCDEImportStatement> getCppImportExtension(PortSymbol portSymbol,
+  public static Optional<ASTCDEImportStatement> getCDEReplacement(PortSymbol portSymbol,
     ConfigParams config) {
     if (!portUsesCdType(portSymbol)) {
       return Optional.empty();
     }
     TypeSymbol typeSymbol = portSymbol.getTypeInfo();
-    return getCppImportExtension(typeSymbol, config);
+    return getCDEReplacement(typeSymbol, config);
   }
 
-  public static Optional<ASTCDEImportStatement> getCppImportExtension(TypeSymbol typeSymbol,
+  public static Optional<ASTCDEImportStatement> getCDEReplacement(TypeSymbol typeSymbol,
     ConfigParams config) {
-    if (config.getCdLangExtensionScope() != null && typeSymbol instanceof CDTypeSymbol) {
-      Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = config.getCdLangExtensionScope()
+    ICDLangExtensionScope scope = config.getCdLangExtensionScope();
+
+    if (scope != null && typeSymbol instanceof CDTypeSymbol) {
+      Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = scope
         .resolveASTCDEImportStatement("Cpp", (CDTypeSymbol) typeSymbol);
       if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get()
         .isPresentAstNode()) {
@@ -224,26 +209,13 @@ public class ComponentHelper {
    *                   determined.
    * @return The String representation of the type of the port.
    */
-  public static String getRealPortTypeString(arcbasis._symboltable.ComponentTypeSymbol comp,
-    arcbasis._symboltable.PortSymbol portSymbol) {
+  public static String getRealPortTypeString(ComponentTypeSymbol comp, PortSymbol portSymbol) {
     // TODO: call portSymbol.getType().print() once MontiArc fixes its types
+    //return portSymbol.getType().print();
     return portSymbol.getType().getTypeInfo().getName();
   }
 
-  public static String printPackageNamespace(arcbasis._symboltable.ComponentTypeSymbol comp,
-    TypeSymbol cdtype) {
-    String fullNamespaceSubcomponent = "montithings::" + cdtype.getFullName().replace(".", "::");
-    String fullNamespaceEnclosingComponent = printPackageNamespaceForComponent(comp);
-    if (!fullNamespaceSubcomponent.equals(fullNamespaceEnclosingComponent) &&
-      fullNamespaceSubcomponent.startsWith(fullNamespaceEnclosingComponent)) {
-      return fullNamespaceSubcomponent.split(fullNamespaceEnclosingComponent)[1];
-    }
-    else {
-      return fullNamespaceSubcomponent;
-    }
-  }
-
-  public static boolean isInterfaceComponent(arcbasis._symboltable.ComponentTypeSymbol comp) {
+  public static boolean isInterfaceComponent(ComponentTypeSymbol comp) {
     if (comp.getAstNode() instanceof ASTMTComponentType) {
       ASTMTComponentType astmtComponentType = (ASTMTComponentType) comp.getAstNode();
       return astmtComponentType.getMTComponentModifier().isInterface();
@@ -528,10 +500,10 @@ public class ComponentHelper {
 
 
 
-  public static String getRealPortCppTypeString(ComponentTypeSymbol comp,
-    arcbasis._symboltable.PortSymbol port, ConfigParams config) {
+  public static String getRealPortCppTypeString(ComponentTypeSymbol comp, PortSymbol port,
+    ConfigParams config) {
     if (ComponentHelper.portUsesCdType(port)) {
-      return printCdPortPackageNamespace(comp, port, config);
+      return printCdPortFQN(comp, port, config);
     }
     else {
       return java2cppTypeString(getRealPortTypeString(comp, port));

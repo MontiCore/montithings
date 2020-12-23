@@ -277,6 +277,12 @@ public class Utils {
     HashSet<ASTCDEImportStatement> includeStatements = new HashSet<>();
     List<ImportStatement> imports = ComponentHelper.getImports(comp);
 
+    String escape = "";
+    int escapeCount = 1 + StringUtils.countMatches(comp.getPackageName(), '.');
+    for (int i = 0; i < escapeCount; i++) {
+      escape += "../";
+    }
+
     for (ImportStatement imp : imports) {
       // Skip imports that import enum constants
       Optional<TypeSymbol> type = comp.getEnclosingScope().resolveType(imp.getStatement());
@@ -292,11 +298,6 @@ public class Utils {
         continue;
       }
 
-      String escape = "";
-      int escapeCount = 1 + StringUtils.countMatches(comp.getPackageName(), '.');
-      for (int i = 0; i < escapeCount; i++) {
-        escape += "../";
-      }
       String importStatement = "#include \""
         + escape
         + imp.getStatement().replaceAll("\\.", "/")
@@ -305,20 +306,21 @@ public class Utils {
       s.append(importStatement + "\n");
     }
 
+
     for (PortSymbol port : comp.getPorts()) {
       if (ComponentHelper.portUsesCdType(port)) {
         Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper
-          .getCppImportExtension(port, config);
+          .getCDEReplacement(port, config);
         if (cdeImportStatementOpt.isPresent()) {
           includeStatements.add(cdeImportStatementOpt.get());
-          String portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config);
+          String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
           String[] adapterName = portNamespace.split("::");
           if (adapterName.length >= 2) {
             portIncludes.add("#include \"" + adapterName[adapterName.length - 2] + "Adapter.h\"");
           }
         }
         else {
-          String portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config);
+          String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
           portIncludes.add("#include \"" + portNamespace.replace("::", "/") + ".h\"");
         }
       }
@@ -326,7 +328,8 @@ public class Utils {
     for (String include : portIncludes) {
       s.append(include + "\n");
     }
-    s.append(printIncludes(Lists.newArrayList(includeStatements)));
+
+    s.append(printIncludes(escape, Lists.newArrayList(includeStatements)));
     return s.toString();
   }
 
@@ -355,12 +358,20 @@ public class Utils {
     return s.toString();
   }
 
-  public static String printIncludes(List<ASTCDEImportStatement> imports) {
+  public static String escapePackage(List<String> packageName) {
+    String result = "";
+    for (String ignored : packageName) {
+      result += "../";
+    }
+    return result;
+  }
+
+  public static String printIncludes(String prefix, List<ASTCDEImportStatement> imports) {
     HashSet<String> portIncludes = new HashSet<String>();
     for (ASTCDEImportStatement importStatement : imports) {
       String portPackage = importStatement.getImportSource().toString();
       portIncludes.add("#include " + portPackage);
-      portIncludes.add("#include \"" + printCDType(importStatement).replace("::", "/") + ".h\"");
+      portIncludes.add("#include \"" + prefix + printCDType(importStatement).replace("::", "/") + ".h\"");
     }
     StringBuilder s = new StringBuilder();
     for (String include : portIncludes) {
@@ -371,14 +382,11 @@ public class Utils {
 
   public static String printCDType(ASTCDEImportStatement importStatement) {
     StringBuilder namespace = new StringBuilder("montithings::");
-    List<String> packages = importStatement.getCdType().getPartsList();
-
-    for (int i = 0; i < packages.size() - 1; i++) {
-      String packageName = importStatement.getCdType().getPartsList().get(i);
-      namespace.append(packageName).append("::");
-    }
-    return ComponentHelper.printPackageNamespaceFromString(
-      packages.get(packages.size() - 1) + "::" + importStatement.getName(), namespace.toString());
+    String importType = importStatement.getSymbol().getEnclosingScope()
+      .resolveType(importStatement.getCdType().getQName()).get()
+      .getFullName()
+      .replaceAll("\\.", "::");
+    return importType;
   }
 
   public static String printPackageNamespace(ComponentTypeSymbol comp,
