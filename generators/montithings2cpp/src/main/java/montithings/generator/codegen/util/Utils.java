@@ -371,7 +371,7 @@ public class Utils {
     for (ASTCDEImportStatement importStatement : imports) {
       String portPackage = importStatement.getImportSource().toString();
       portIncludes.add("#include " + portPackage);
-      portIncludes.add("#include \"" + prefix + printCDType(importStatement).replace("::", "/") + ".h\"");
+      portIncludes.add("#include \"" + prefix + printCDType(importStatement).replaceFirst("montithings::", "").replaceAll("::", "/") + ".h\"");
     }
     StringBuilder s = new StringBuilder();
     for (String include : portIncludes) {
@@ -386,7 +386,7 @@ public class Utils {
       .resolveType(importStatement.getCdType().getQName()).get()
       .getFullName()
       .replaceAll("\\.", "::");
-    return importType;
+    return namespace + importType;
   }
 
   public static String printPackageNamespace(ComponentTypeSymbol comp,
