@@ -21,7 +21,6 @@ import de.monticore.io.paths.ModelPath;
 import de.monticore.types.check.DefsTypeBasic;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
-import montiarc._symboltable.adapters.ArcCD4CodeResolver;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
 import montithings._symboltable.IMontiThingsArtifactScope;
@@ -93,7 +92,7 @@ public class MontiThingsTool {
 
   protected void resolvingDelegates(@NotNull IMontiThingsGlobalScope montiThingsGlobalScope,
     @NotNull ICD4CodeGlobalScope cd4CGlobalScope) {
-    CD4CodeResolver cd4CodeResolver = new ArcCD4CodeResolver(cd4CGlobalScope);
+    CD4CodeResolver cd4CodeResolver = new CD4CodeResolver(cd4CGlobalScope);
     montiThingsGlobalScope.addAdaptedFieldSymbolResolver(cd4CodeResolver);
     montiThingsGlobalScope.addAdaptedTypeSymbolResolver(cd4CodeResolver);
   }
