@@ -2,5 +2,5 @@
 package fireAlarm.sensors;
 
 component TemperatureSensor {
-  port out Integer value;
+  port out int value;
 }
