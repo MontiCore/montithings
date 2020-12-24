@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>montithings.generators</groupId>
 		<artifactId>generators</artifactId>
-		<version>6.2.0-SNAPSHOT</version>
+		<version>6.5.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>montithings2cpp</artifactId>
 
@@ -25,12 +25,6 @@
 			<groupId>montiarc</groupId>
 			<artifactId>util</artifactId>
 			<version>${montiarc.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>de.monticore</groupId>
-			<artifactId>monticore-emf-runtime</artifactId>
-			<version>${monticore.version}</version>
 		</dependency>
 
 		<dependency>

@@ -75,7 +75,7 @@ fileTree(grammarDir).matching { include "**/*.mc4" }.each {
   task "generateGrammar$grammarName"(type: MCTask) {
     grammar = file g
     outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
-    handcodedPath file("$projectDir/src/main/java")
+    handcodedPath = ["$projectDir/src/main/java"]
     def grammarIncludingPackage = file(grammarDir).toURI().relativize(g.toURI()).toString()
     def upToDate = incCheck(grammarIncludingPackage)
     outputs.upToDateWhen { upToDate }

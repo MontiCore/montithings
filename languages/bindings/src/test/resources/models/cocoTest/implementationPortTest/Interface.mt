@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.implementationPortTest;
+package implementationPortTest;
 
 interface component Interface {
   port in String inPort;

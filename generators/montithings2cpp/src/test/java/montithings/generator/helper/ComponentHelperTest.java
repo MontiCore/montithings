@@ -25,7 +25,7 @@ class ComponentHelperTest {
   void java2cppTypeString(String given, String expected) {
     // given
     // when
-    String actualResult = ComponentHelper.java2cppTypeString(given);
+    String actualResult = TypesHelper.java2cppTypeString(given);
 
     // then
     assertThat(actualResult).isEqualTo(expected);

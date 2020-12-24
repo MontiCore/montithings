@@ -1,8 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.interfaceMismatch;
+package interfaceMismatch;
 
-import cocoTest.interfaceMismatch.ImplementationWithInterfaceComponent;
-import cocoTest.interfaceMismatch.InterfaceWithoutInterfaceComponent;
+import interfaceMismatch.ImplementationWithInterfaceComponent;
+import interfaceMismatch.InterfaceWithoutInterfaceComponent;
 
 component InterfaceWithAndWithoutInterfaceInstance {
   ImplementationWithInterfaceComponent x;

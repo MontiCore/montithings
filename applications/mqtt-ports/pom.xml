@@ -6,7 +6,7 @@
     <parent>
         <artifactId>applications</artifactId>
         <groupId>montithings.applications</groupId>
-        <version>6.2.0-SNAPSHOT</version>
+        <version>6.5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -257,6 +257,11 @@
                     </execution>
                 </executions>
                 <dependencies>
+                    <dependency>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                        <version>${guava.version}</version>
+                    </dependency>
                     <dependency>
                         <groupId>montithings.generators</groupId>
                         <artifactId>montithings2cpp</artifactId>

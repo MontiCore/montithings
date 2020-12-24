@@ -3,7 +3,6 @@ package montithings.cocos;
 
 import arcbasis._ast.ASTComponentType;
 import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
-import de.se_rwth.commons.logging.Log;
 
 /**
  * TODO move from control block to component, since interval was moved.

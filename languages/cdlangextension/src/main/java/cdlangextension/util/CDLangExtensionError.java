@@ -10,8 +10,8 @@ public enum CDLangExtensionError implements cdlangextension.util.Error {
   AMBIGUOUS_IMPORT_NAME("0xCDE1010", "Import Name '%s' at '%s' is used multiple times in Language '%s'"),
   AMBIGUOUS_LANGUAGE_NAME("0xCDE1020", "Language Name '%s' at '%s' is used multiple times");
 
-  private final String errorCode;
-  private final String errorMessage;
+  protected final String errorCode;
+  protected final String errorMessage;
 
   CDLangExtensionError(String errorCode, String errorMessage) {
     assert (errorCode != null);

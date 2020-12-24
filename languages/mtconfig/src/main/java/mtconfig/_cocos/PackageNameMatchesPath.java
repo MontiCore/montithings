@@ -18,7 +18,7 @@ public class PackageNameMatchesPath {
   public boolean check(@NotNull String relativeFilePath, @NotNull ASTMTConfigUnit ast) {
     String packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath));
     String packageOfModel = Names.getQualifiedName(
-      ast.isPresentPackage() ? ast.getPackage().getPartList() : new ArrayList<>());
+      ast.isPresentPackage() ? ast.getPackage().getPartsList() : new ArrayList<>());
 
     if (!packageOfFile.endsWith(packageOfModel)) {
       Log.error(String.format(MTConfigError.PACKAGENAME_MATCHES_CONFIG.toString(),

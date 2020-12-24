@@ -1,18 +1,27 @@
 // (c) https://github.com/MontiCore/monticore
 package mtconfig._symboltable;
 
+import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;
+import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTConfigUnit;
+import mtconfig._ast.ASTPortTemplateTag;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Optional;
 
 /**
  * Symbol table creator.
  */
 public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
+
+  public MTConfigSymbolTableCreator() {
+    super();
+  }
 
   public MTConfigSymbolTableCreator(IMTConfigScope enclosingScope) {
     super(enclosingScope);
@@ -30,12 +39,12 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
    * @return scope created from given AST.
    */
   @Override
-  public MTConfigArtifactScope createFromAST(@NotNull ASTMTConfigUnit rootNode) {
+  public IMTConfigArtifactScope createFromAST(@NotNull ASTMTConfigUnit rootNode) {
     Preconditions.checkArgument(rootNode != null);
 
-    MTConfigArtifactScope artifactScope = mtconfig.MTConfigMill.mTConfigArtifactScopeBuilder()
+    IMTConfigArtifactScope artifactScope = mtconfig.MTConfigMill.mTConfigArtifactScopeBuilder()
         .setPackageName(rootNode.getPackage().getQName())
-        .setImportList(new ArrayList<>())
+        .setImportsList(new ArrayList<>())
         .build();
     putOnStack(artifactScope);
     rootNode.accept(getRealThis());
@@ -73,5 +82,21 @@ public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
    */
   protected  mtconfig._symboltable.CompConfigSymbol create_CompConfig (mtconfig._ast.ASTCompConfig ast)  {
     return mtconfig.MTConfigMill.compConfigSymbolBuilder().setName(ast.getName()+"_"+ast.getPlatform()).build();
+  }
+
+  @Override public void visit(ASTCompConfig node) {
+    super.visit(node);
+    Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(node.getComponentType());
+    comp.ifPresent(node::setComponentTypeSymbol);
+  }
+
+  @Override public void visit(ASTPortTemplateTag node) {
+    super.visit(node);
+    String packageName = node.getEnclosingScope().getSpanningSymbol().getPackageName();
+    String compName = ((ASTCompConfig)node.getEnclosingScope().getSpanningSymbol().getAstNode()).getName();
+    String portFQN = packageName + "." + compName + "." + node.getPort();
+
+    Optional<PortSymbol> port = node.getEnclosingScope().resolvePort(portFQN);
+    port.ifPresent(node::setPortSymbol);
   }
 }

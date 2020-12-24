@@ -2,5 +2,5 @@
 package hierarchy;
 
 component Sink {
-  port in Integer value;
+  port in int value;
 }

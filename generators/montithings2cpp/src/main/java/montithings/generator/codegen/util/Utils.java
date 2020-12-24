@@ -9,15 +9,17 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import cdlangextension._ast.ASTCDEImportStatement;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.symboltable.ImportStatement;
-import de.monticore.types.typesymbols._symboltable.FieldSymbol;
-import de.monticore.types.typesymbols._symboltable.TypeSymbol;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
 import montithings._ast.ASTMTComponentType;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
+import montithings.generator.helper.TypesHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 
@@ -31,8 +33,8 @@ public class Utils {
   public static String printConfigurationParametersAsList(ComponentTypeSymbol comp) {
     StringBuilder s = new StringBuilder();
     int i = 1;
-    for (FieldSymbol param : comp.getParameters()) {
-      s.append(ComponentHelper.java2cppTypeString(param.getType().print()) + " " + param.getName());
+    for (VariableSymbol param : comp.getParameters()) {
+      s.append(TypesHelper.java2cppTypeString(param.getType().print()) + " " + param.getName());
       if (i != comp.getParameters().size()) {
         s.append(',');
       }
@@ -74,7 +76,7 @@ public class Utils {
    */
   public static String printConfigParameters(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
-    for (FieldSymbol param : comp.getParameters()) {
+    for (VariableSymbol param : comp.getParameters()) {
       if (param.getAstNode() instanceof ASTArcParameter) {
         ASTArcParameter parameter = (ASTArcParameter) param.getAstNode();
         s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
@@ -93,7 +95,7 @@ public class Utils {
    */
   public static String printVariables(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
-    for (FieldSymbol variable : ComponentHelper.getFields(comp)) {
+    for (VariableSymbol variable : ComponentHelper.getFields(comp)) {
       if (variable.getAstNode() instanceof ASTArcField) {
         ASTArcField field = (ASTArcField) variable.getAstNode();
         s.append(
@@ -219,7 +221,7 @@ public class Utils {
   }
 
   public static String printSuperClassFQ(ComponentTypeSymbol comp) {
-    String packageName = printPackageWithoutKeyWordAndSemicolon(comp.getParentInfo());
+    String packageName = printPackageWithoutKeyWordAndSemicolon(comp.getParent());
     if (packageName.equals("")) {
       return comp.getParent().getName();
     }
@@ -275,46 +277,50 @@ public class Utils {
     HashSet<ASTCDEImportStatement> includeStatements = new HashSet<>();
     List<ImportStatement> imports = ComponentHelper.getImports(comp);
 
+    String escape = "";
+    int escapeCount = 1 + StringUtils.countMatches(comp.getPackageName(), '.');
+    for (int i = 0; i < escapeCount; i++) {
+      escape += "../";
+    }
+
     for (ImportStatement imp : imports) {
       // Skip imports that import enum constants
       Optional<TypeSymbol> type = comp.getEnclosingScope().resolveType(imp.getStatement());
-      if (type.isPresent() && type.get().isEnum() && imp.isStar()) {
+      if (type.isPresent() && ((OOTypeSymbol) type.get()).isIsEnum() && imp.isStar()) {
         continue;
       }
 
       // Skip interface components. We dont generate code for them, there's nothing to import here
-      Optional<ComponentTypeSymbol> compType = comp.getEnclosingScope().resolveComponentType(imp.getStatement());
-      if (compType.isPresent() && ((ASTMTComponentType)compType.get().getAstNode()).getMTComponentModifier().isInterface()) {
+      Optional<ComponentTypeSymbol> compType = comp.getEnclosingScope()
+        .resolveComponentType(imp.getStatement());
+      if (compType.isPresent() && ((ASTMTComponentType) compType.get().getAstNode())
+        .getMTComponentModifier().isInterface()) {
         continue;
       }
 
-      String escape = "";
-      int escapeCount = 1 + StringUtils.countMatches(comp.getPackageName(), '.');
-      for (int i = 0; i < escapeCount; i++) {
-        escape += "../";
-      }
       String importStatement = "#include \""
-          + escape
-          + imp.getStatement().replaceAll("\\.", "/")
-          + (imp.isStar() ? "/Package.h" : ".h")
-          + "\"";
+        + escape
+        + imp.getStatement().replaceAll("\\.", "/")
+        + (imp.isStar() ? "/Package.h" : ".h")
+        + "\"";
       s.append(importStatement + "\n");
     }
+
 
     for (PortSymbol port : comp.getPorts()) {
       if (ComponentHelper.portUsesCdType(port)) {
         Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper
-          .getCppImportExtension(port, config);
+          .getCDEReplacement(port, config);
         if (cdeImportStatementOpt.isPresent()) {
           includeStatements.add(cdeImportStatementOpt.get());
-          String portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config);
+          String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
           String[] adapterName = portNamespace.split("::");
           if (adapterName.length >= 2) {
             portIncludes.add("#include \"" + adapterName[adapterName.length - 2] + "Adapter.h\"");
           }
         }
         else {
-          String portNamespace = ComponentHelper.printCdPortPackageNamespace(comp, port, config);
+          String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
           portIncludes.add("#include \"" + portNamespace.replace("::", "/") + ".h\"");
         }
       }
@@ -322,7 +328,8 @@ public class Utils {
     for (String include : portIncludes) {
       s.append(include + "\n");
     }
-    s.append(printIncludes(Lists.newArrayList(includeStatements)));
+
+    s.append(printIncludes(escape, Lists.newArrayList(includeStatements)));
     return s.toString();
   }
 
@@ -330,8 +337,8 @@ public class Utils {
     ConfigParams config) {
     Set<String> compIncludes = new HashSet<String>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
-      if (!getGenericParameters(comp).contains(subcomponent.getType().getName())) {
-        boolean isInner = subcomponent.getType().getLoadedSymbol().isInnerComponent();
+      if (!getGenericParameters(comp).contains(subcomponent.getGenericType().getName())) {
+        boolean isInner = subcomponent.getType().isInnerComponent();
         compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
           + (isInner ? (comp.getName() + "-Inner/") : "")
           + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
@@ -351,12 +358,20 @@ public class Utils {
     return s.toString();
   }
 
-  public static String printIncludes(List<ASTCDEImportStatement> imports) {
+  public static String escapePackage(List<String> packageName) {
+    String result = "";
+    for (String ignored : packageName) {
+      result += "../";
+    }
+    return result;
+  }
+
+  public static String printIncludes(String prefix, List<ASTCDEImportStatement> imports) {
     HashSet<String> portIncludes = new HashSet<String>();
     for (ASTCDEImportStatement importStatement : imports) {
       String portPackage = importStatement.getImportSource().toString();
       portIncludes.add("#include " + portPackage);
-      portIncludes.add("#include \"" + printCDType(importStatement).replace("::", "/") + ".h\"");
+      portIncludes.add("#include \"" + prefix + printCDType(importStatement).replaceFirst("montithings::", "").replaceAll("::", "/") + ".h\"");
     }
     StringBuilder s = new StringBuilder();
     for (String include : portIncludes) {
@@ -367,21 +382,17 @@ public class Utils {
 
   public static String printCDType(ASTCDEImportStatement importStatement) {
     StringBuilder namespace = new StringBuilder("montithings::");
-    if (importStatement.isPresentPackage()) {
-      List<String> packages = importStatement.getPackage().getPartList();
-
-      for (String packageName : packages) {
-        namespace.append(packageName).append("::");
-      }
-      return ComponentHelper.printPackageNamespaceFromString(
-        packages.get(packages.size() - 1) + "::" + importStatement.getName(), namespace.toString());
-    }
-    return importStatement.getName();
+    String importType = importStatement.getSymbol().getEnclosingScope()
+      .resolveType(importStatement.getCdType().getQName()).get()
+      .getFullName()
+      .replaceAll("\\.", "::");
+    return namespace + importType;
   }
 
   public static String printPackageNamespace(ComponentTypeSymbol comp,
     ComponentInstanceSymbol subcomp) {
-    ComponentTypeSymbol subcomponentType = subcomp.getTypeInfo();
+    // TODO: getTypeInfo statt getType hat früher hier Generics aufgelöst
+    ComponentTypeSymbol subcomponentType = subcomp.getType();
     String fullNamespaceSubcomponent = ComponentHelper
       .printPackageNamespaceForComponent(subcomponentType);
     String fullNamespaceEnclosingComponent = ComponentHelper

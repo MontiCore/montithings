@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2cpp;
 
-import de.monticore.cd.cd4analysis._symboltable.CDTypeSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 
 public class TypeHelper {
 
@@ -11,7 +11,7 @@ public class TypeHelper {
     this._package = _package.replace(".", "::");
   }
 
-  public String printType(CDTypeSymbol type) {
+  public String printType(TypeSymbol type) {
     return "montithings::" + _package + "::" + type.getName();
   }
 }

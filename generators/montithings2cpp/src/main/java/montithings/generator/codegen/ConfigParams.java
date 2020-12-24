@@ -8,7 +8,9 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
 import cdlangextension._symboltable.CDLangExtensionScope;
+import cdlangextension._symboltable.ICDLangExtensionScope;
 import montithings.generator.data.PortMap;
+import mtconfig._symboltable.IMTConfigGlobalScope;
 import mtconfig._symboltable.MTConfigScope;
 
 import java.io.File;
@@ -116,10 +118,10 @@ public class ConfigParams {
   private Set<PortSymbol> templatedPorts = new HashSet<>();
 
   /** Scope of the cdLangExtension language*/
-  private CDLangExtensionScope cdLangExtensionScope;
+  private ICDLangExtensionScope cdLangExtensionScope;
 
   /** Scope of the MTConfig language*/
-  private MTConfigScope mtConfigScope;
+  private IMTConfigGlobalScope mtConfigScope;
 
   private final PortMap componentPortMap = new PortMap();
 
@@ -190,8 +192,8 @@ public class ConfigParams {
    */
   public Optional<ASTComponentType> getBinding(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(!binding.isInstance()&&binding.getInterfaceComponentDefinition()==componentType){
-        return Optional.of(binding.getImplementationComponentDefinition());
+      if(!binding.isInstance()&&binding.getInterfaceComponentSymbol().getAstNode()==componentType){
+        return Optional.of(binding.getInterfaceComponentSymbol().getAstNode());
       }
     }
     return Optional.empty();
@@ -218,8 +220,8 @@ public class ConfigParams {
    */
   public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.isInstance()&&binding.getInterfaceInstanceDefinition()==componentInstance){
-        return Optional.of(binding.getImplementationComponentDefinition());
+      if(binding.isInstance()&&binding.getInterfaceInstanceSymbol().getAstNode()==componentInstance){
+        return Optional.of(binding.getImplementationComponentSymbol().getAstNode());
       }
     }
     return Optional.empty();
@@ -232,7 +234,7 @@ public class ConfigParams {
    */
   public boolean isImplementation(ASTComponentType componentType){
     for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentDefinition()==componentType){
+      if(binding.getImplementationComponentSymbol().getAstNode()==componentType){
         return true;
       }
     }
@@ -253,19 +255,19 @@ public class ConfigParams {
     return false;
   }
 
-  public CDLangExtensionScope getCdLangExtensionScope() {
+  public ICDLangExtensionScope getCdLangExtensionScope() {
     return cdLangExtensionScope;
   }
 
-  public void setCdLangExtensionScope(CDLangExtensionScope cdLangExtensionScope) {
+  public void setCdLangExtensionScope(ICDLangExtensionScope cdLangExtensionScope) {
     this.cdLangExtensionScope = cdLangExtensionScope;
   }
 
-  public MTConfigScope getMtConfigScope() {
+  public IMTConfigGlobalScope getMtConfigScope() {
     return mtConfigScope;
   }
 
-  public void setMtConfigScope(MTConfigScope mtConfigScope) {
+  public void setMtConfigScope(IMTConfigGlobalScope mtConfigScope) {
     this.mtConfigScope = mtConfigScope;
   }
 

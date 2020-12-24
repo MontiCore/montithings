@@ -5,7 +5,7 @@ component FireExtinguisherContr {
 
   port
   	in  Boolean smoke,
-  	in  Integer temp,
+  	in  int temp,
     out Boolean alarmOn,
     out Boolean sprinklerOn;
     

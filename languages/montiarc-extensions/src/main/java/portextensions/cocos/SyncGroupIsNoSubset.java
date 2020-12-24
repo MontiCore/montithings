@@ -3,7 +3,6 @@ package portextensions.cocos;
 
 import arcbasis._ast.ASTComponentType;
 import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
-import de.se_rwth.commons.logging.Log;
 
 /**
  * Checks that sync groups are no subset of another sync group

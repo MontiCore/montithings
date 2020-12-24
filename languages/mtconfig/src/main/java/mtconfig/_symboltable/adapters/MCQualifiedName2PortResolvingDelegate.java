@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package mtconfig._symboltable.adapters;
 
-import arcbasis._symboltable.IPortSymbolResolvingDelegate;
+import arcbasis._symboltable.IPortSymbolResolver;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.symboltable.modifiers.AccessModifier;
-import montithings._symboltable.MontiThingsGlobalScope;
+import montithings._symboltable.IMontiThingsGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.List;
@@ -15,11 +15,11 @@ import java.util.function.Predicate;
  *
  * @author Julian Krebber
  */
-public class MCQualifiedName2PortResolvingDelegate implements IPortSymbolResolvingDelegate {
+public class MCQualifiedName2PortResolvingDelegate implements IPortSymbolResolver {
 
-  protected MontiThingsGlobalScope globalScope;
+  protected IMontiThingsGlobalScope globalScope;
 
-  public MCQualifiedName2PortResolvingDelegate(@NotNull MontiThingsGlobalScope globalScope) {
+  public MCQualifiedName2PortResolvingDelegate(@NotNull IMontiThingsGlobalScope globalScope) {
     this.globalScope = globalScope;
   }
 

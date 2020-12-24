@@ -3,7 +3,6 @@ package montithings.cocos;
 
 import arcbasis._ast.ASTComponentType;
 import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
-import de.se_rwth.commons.logging.Log;
 
 /**
  * Gives a warning if a timesync component contains subcomponents that use timing options

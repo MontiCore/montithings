@@ -1,8 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-// You can import single elements from class diagrams
-import hierarchy.Colors.Color;
+import Colors.*;
 
 component Sink {
   port in Color value;

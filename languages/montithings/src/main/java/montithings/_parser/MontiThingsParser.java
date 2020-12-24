@@ -51,7 +51,7 @@ public class MontiThingsParser extends MontiThingsParserTOP {
       else {
         packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath, "/"),"/");
       }
-      String packageOfModel = Names.getQualifiedName(optAst.get().getPackage().getPartList());
+      String packageOfModel = Names.getQualifiedName(optAst.get().getPackage().getPartsList());
       if (!modelName.equals(fileRoot)) {
         Log.error(String
             .format(MontiArcError.COMPONENT_AND_FILE_NAME_DIFFER.toString(), modelName, fileRoot));

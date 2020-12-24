@@ -22,10 +22,11 @@ grammar MontiThings extends MontiArc,
     // MontiCore's SetInExpression defines this rule using "in". As a result, incoming ports
     // can no longer be parsed because they are read as "portin" instead of "port in". Until
     // MontiCore uses key("in") for this rule, we need to overwrite it.
+    @Override
     SetInExpression implements Expression <190> =
-          elem:Expression
-          operator:key("in")
-          set:Expression;
+      elem:Expression
+      operator:key("in")
+      set:Expression;
 
     /* ============================================================ */
     /* ================== ArcElement Insertions =================== */

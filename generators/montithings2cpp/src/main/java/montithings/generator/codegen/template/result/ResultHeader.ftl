@@ -43,7 +43,7 @@ ${compname}Result() = default;
   tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> get${port.getName()?cap_first}() const;
   void set${port.getName()?cap_first}(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>);
     <#if ComponentHelper.portUsesCdType(port)>
-        <#assign cdeImportStatementOpt = ComponentHelper.getCppImportExtension(port, config)>
+        <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
         <#if cdeImportStatementOpt.isPresent()>
           tl::optional<${cdeImportStatementOpt.get().getImportClass().toString()}> get${port.getName()?cap_first}Adap() const;
           void set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()});

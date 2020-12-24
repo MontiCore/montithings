@@ -1,0 +1,10 @@
+/* (c) https://github.com/MontiCore/monticore */
+package ImportValid;
+ImportValid {
+Cpp {
+  from <arma> import armadillo::vector as Vector;
+}
+Java {
+  from java.util.list import List as Vector;
+}
+}

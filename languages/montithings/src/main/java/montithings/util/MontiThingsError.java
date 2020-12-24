@@ -21,8 +21,8 @@ public enum MontiThingsError implements montithings.util.Error {
       + "Does the generic extend an component?"),
   NO_BEHAVIOR("0xMT1490", "Component %s has no behavior (neither in model nor hand-written code)");
 
-  private final String errorCode;
-  private final String errorMessage;
+  protected final String errorCode;
+  protected final String errorMessage;
 
   MontiThingsError(String errorCode, String errorMessage) {
     assert (errorCode != null);

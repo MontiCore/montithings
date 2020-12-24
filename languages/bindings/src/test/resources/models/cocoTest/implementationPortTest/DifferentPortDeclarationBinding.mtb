@@ -1,2 +1,2 @@
-cocoTest.implementationPortTest.Interface -> cocoTest.implementationPortTest.ImplementationWithDifferentPortDeclaration;
-instance cocoTest.implementationPortTest.InterfaceInstance.xy -> cocoTest.implementationPortTest.ImplementationWithDifferentPortDeclaration;
+implementationPortTest.Interface -> implementationPortTest.ImplementationWithDifferentPortDeclaration;
+instance implementationPortTest.InterfaceInstance.xy -> implementationPortTest.ImplementationWithDifferentPortDeclaration;

@@ -6,10 +6,10 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.configuration.Configuration;
 import de.se_rwth.commons.groovy.GroovyInterpreter;
@@ -66,14 +66,14 @@ public class CppGeneratorScript extends Script implements GroovyRunner {
    */
   public void generate(File modelPath, File targetFilepath) {
     File fqnMP = Paths.get(modelPath.getAbsolutePath()).toFile();
-    List<String> foundModels = Modelfinder.getModelsInModelPath(fqnMP, CD4AnalysisLanguage.FILE_ENDING);
+    List<String> foundModels = Modelfinder.getModelsInModelPath(fqnMP, "cd");
     for (String model : foundModels) {
       String simpleName = Names.getSimpleName(model);
       String packageName = Names.getQualifier(model);
       
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
-      new CppGenerator(outDir, Paths.get(fqnMP.getAbsolutePath()), model,
-          Names.getQualifiedName(packageName, simpleName)).generate();
+      new CppGenerator(outDir, Paths.get(fqnMP.getAbsolutePath()), model)
+        .generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
     }    
   }
   

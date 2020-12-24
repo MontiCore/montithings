@@ -6,14 +6,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import de.monticore.io.paths.ModelPath;
 import montithings.MontiThingsMill;
-import montithings._symboltable.MontiThingsGlobalScope;
-import montithings._symboltable.MontiThingsLanguage;
+import montithings.MontiThingsTool;
+import montithings._symboltable.IMontiThingsGlobalScope;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCoChecker;
 import mtconfig._cocos.MTConfigCoCos;
-import mtconfig._symboltable.MTConfigArtifactScope;
-import mtconfig._symboltable.MTConfigGlobalScope;
-import mtconfig._symboltable.MTConfigLanguage;
+import mtconfig._symboltable.IMTConfigArtifactScope;
+import mtconfig._symboltable.IMTConfigGlobalScope;
 import mtconfig._symboltable.MTConfigSymbolTableCreatorDelegator;
 import mtconfig._symboltable.adapters.MCQualifiedName2PortResolvingDelegate;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -28,29 +27,27 @@ import java.util.Set;
  */
 public class MTConfigTool {
 
-  protected MTConfigLanguage language;
+  public static String FILE_ENDING = "mtcfg";
 
-  private MTConfigArtifactScope artifactScope;
+  protected IMTConfigArtifactScope artifactScope;
 
   protected MTConfigCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
 
-  private MontiThingsGlobalScope mtGlobalScope;
+  protected IMontiThingsGlobalScope mtGlobalScope;
 
   public MTConfigTool() {
-    this(MTConfigCoCos.createChecker() ,new MTConfigLanguage());
+    this(MTConfigCoCos.createChecker());
   }
 
-  public MTConfigTool(@NotNull MTConfigCoCoChecker checker, @NotNull MTConfigLanguage language) {
+  public MTConfigTool(@NotNull MTConfigCoCoChecker checker) {
     Preconditions.checkArgument(checker != null);
-    Preconditions.checkArgument(language != null);
     this.checker = checker;
-    this.language = language;
     this.isSymTabInitialized = false;
   }
 
-  public MTConfigArtifactScope getArtifactScope() {
+  public IMTConfigArtifactScope getArtifactScope() {
     return artifactScope;
   }
 
@@ -64,7 +61,7 @@ public class MTConfigTool {
    * @param modelPaths paths of all folders containing models
    * @return The initialized symbol table
    */
-  public MTConfigGlobalScope initSymbolTable(File... modelPaths) {
+  public IMTConfigGlobalScope initSymbolTable(File... modelPaths) {
     Set<Path> p = Sets.newHashSet();
     for (File mP : modelPaths) {
       p.add(Paths.get(mP.getAbsolutePath()));
@@ -75,12 +72,14 @@ public class MTConfigTool {
 
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
     MCQualifiedName2PortResolvingDelegate portResolvingDelegate;
-    if(this.mtGlobalScope ==null) {
-      MontiThingsLanguage mtLang = MontiThingsMill.montiThingsLanguageBuilder().build();
-      MontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
+    if(this.mtGlobalScope == null) {
+      IMontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
           .setModelPath(mp)
-          .setMontiThingsLanguage(mtLang)
+          .setModelFileExtension("mt")
           .build();
+      this.mtGlobalScope = newMtGlobalScope;
+      MontiThingsTool tool = new MontiThingsTool();
+      tool.processModels(this.mtGlobalScope);
       componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
       portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(newMtGlobalScope);
     }
@@ -89,9 +88,13 @@ public class MTConfigTool {
       portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
     }
 
-    MTConfigGlobalScope mtConfigGlobalScope = new MTConfigGlobalScope(mp, language);
-    mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolvingDelegate(componentTypeResolvingDelegate);
-    mtConfigGlobalScope.addAdaptedPortSymbolResolvingDelegate(portResolvingDelegate);
+    IMTConfigGlobalScope mtConfigGlobalScope = MTConfigMill
+      .mTConfigGlobalScopeBuilder()
+      .setModelPath(mp)
+      .setModelFileExtension("mtcfg")
+      .build();
+    mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
+    mtConfigGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
 
     isSymTabInitialized = true;
     return mtConfigGlobalScope;
@@ -104,10 +107,10 @@ public class MTConfigTool {
    * @param modelPaths path that contains all models
    * @return created global scope
    */
-  public MTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
+  public IMTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
       File... modelPaths) {
 
-    MTConfigGlobalScope globalScope = initSymbolTable(modelPaths);
+    IMTConfigGlobalScope globalScope = initSymbolTable(modelPaths);
 
     return createSymboltable(ast,globalScope);
   }
@@ -119,17 +122,16 @@ public class MTConfigTool {
    * @param globalScope globalScope used for the symbolTable
    * @return extended global scope
    */
-  public MTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
-      MTConfigGlobalScope globalScope) {
+  public IMTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
+      IMTConfigGlobalScope globalScope) {
 
-    MTConfigSymbolTableCreatorDelegator stc = language
-        .getSymbolTableCreator(globalScope);
+    MTConfigSymbolTableCreatorDelegator stc = new MTConfigSymbolTableCreatorDelegator(globalScope);
     artifactScope = stc.createFromAST(ast);
 
     return globalScope;
   }
 
-  public MontiThingsGlobalScope getMtGlobalScope() {
+  public IMontiThingsGlobalScope getMtGlobalScope() {
     return mtGlobalScope;
   }
 
@@ -137,7 +139,7 @@ public class MTConfigTool {
    * Setter for the global scope that should be used for resolving non native symbols.
    * @param mtGlobalScope globalScope used for resolving non native symbols
    */
-  public void setMtGlobalScope(MontiThingsGlobalScope mtGlobalScope) {
+  public void setMtGlobalScope(IMontiThingsGlobalScope mtGlobalScope) {
     this.mtGlobalScope = mtGlobalScope;
   }
 }

@@ -1,4 +1,4 @@
-// (c) https://github.com/MontiCore/monticore
+/* (c) https://github.com/MontiCore/monticore */
 package montithings;
 
 import arcbasis._ast.ASTArcBasisNode;
@@ -6,75 +6,181 @@ import arcbasis._ast.ASTComponentType;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import de.monticore.cd.cd4analysis.CD4AnalysisMill;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd.cd4analysis._symboltable.CD4AnalysisLanguage;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._cocos.CD4CodeCoCoChecker;
+import de.monticore.cd4code._parser.CD4CodeParser;
+import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCreatorDelegator;
+import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
+import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code._symboltable.ICD4CodeScope;
+import de.monticore.cd4code.cocos.CD4CodeCoCos;
+import de.monticore.cd4code.resolver.CD4CodeResolver;
+import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
+import de.monticore.cdbasis._ast.ASTCDPackage;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.types.typesymbols._symboltable.TypeSymbol;
+import de.monticore.types.check.DefsTypeBasic;
 import de.se_rwth.commons.logging.Log;
-import montiarc.MontiArcTool;
 import montiarc._ast.ASTMACompilationUnit;
-import montiarc._symboltable.IMontiArcScope;
-import montiarc._symboltable.adapters.Type2CDTypeResolvingDelegate;
-import montiarc.util.Modelfinder;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
-import montithings._symboltable.*;
+import montithings._symboltable.IMontiThingsArtifactScope;
+import montithings._symboltable.IMontiThingsGlobalScope;
+import montithings._symboltable.IMontiThingsScope;
+import montithings._symboltable.MontiThingsSymbolTableCreatorDelegator;
 import montithings.cocos.MontiThingsCoCos;
+import montithings.util.ParserUtil;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-/**
- * Provides useful methods for handling the MontiThings language.
- */
-public class MontiThingsTool extends MontiArcTool {
+public class MontiThingsTool {
 
-  protected MontiThingsLanguage language;
+  protected MontiThingsCoCoChecker mtChecker;
 
-  protected MontiThingsCoCoChecker checker;
+  protected CD4CodeCoCoChecker cdChecker;
 
   protected boolean isSymTabInitialized;
 
-  private CD4AnalysisGlobalScope cdGlobalScope;
+  public static final String MT_FILE_EXTENSION = "mt";
+
+  public static final String CD_FILE_EXTENSION = "cd";
+
+  protected static final String TOOL_NAME = "MontiThingsTool";
 
   public MontiThingsTool() {
-    this(MontiThingsCoCos.createChecker(), new MontiThingsLanguage());
+    this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());
   }
 
-  public MontiThingsTool(@NotNull MontiThingsCoCoChecker checker, @NotNull MontiThingsLanguage language) {
-    Preconditions.checkArgument(checker != null);
-    Preconditions.checkArgument(language != null);
-    this.checker = checker;
-    this.language = language;
+  public MontiThingsTool(@NotNull MontiThingsCoCoChecker mtChecker,
+    @NotNull CD4CodeCoCoChecker cdChecker) {
+    Preconditions.checkArgument(mtChecker != null);
+    Preconditions.checkArgument(cdChecker != null);
+    this.mtChecker = mtChecker;
+    this.cdChecker = cdChecker;
     this.isSymTabInitialized = false;
   }
 
-  public Optional<ASTMACompilationUnit> parse(@NotNull String filename) {
-    Preconditions.checkArgument(filename != null);
-    MontiThingsParser p = new MontiThingsParser();
-    Optional<ASTMACompilationUnit> compUnit;
-    try {
-      compUnit = p.parse(filename);
-      return compUnit;
-    }
-    catch (IOException e) {
-      e.printStackTrace();
-    }
-    return Optional.empty();
-
+  protected MontiThingsCoCoChecker getMTChecker() {
+    return this.mtChecker;
   }
 
+  protected CD4CodeCoCoChecker getCdChecker() {
+    return this.cdChecker;
+  }
+
+  public IMontiThingsGlobalScope processModels(@NotNull Path... modelPaths) {
+    Preconditions.checkArgument(modelPaths != null);
+    Preconditions.checkArgument(!Arrays.asList(modelPaths).contains(null));
+    ModelPath mp = new ModelPath(Arrays.asList(modelPaths));
+    ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
+      .setModelPath(mp)
+      .setModelFileExtension(CD_FILE_EXTENSION)
+      .build();
+    IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
+      .setModelPath(mp)
+      .setModelFileExtension(MT_FILE_EXTENSION)
+      .build();
+    resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
+    addBasicTypes(montiThingsGlobalScope);
+    this.processModels(cd4CGlobalScope);
+    this.processModels(montiThingsGlobalScope);
+    return montiThingsGlobalScope;
+  }
+
+  protected void resolvingDelegates(@NotNull IMontiThingsGlobalScope montiThingsGlobalScope,
+    @NotNull ICD4CodeGlobalScope cd4CGlobalScope) {
+    CD4CodeResolver cd4CodeResolver = new CD4CodeResolver(cd4CGlobalScope);
+    montiThingsGlobalScope.addAdaptedFieldSymbolResolver(cd4CodeResolver);
+    montiThingsGlobalScope.addAdaptedTypeSymbolResolver(cd4CodeResolver);
+  }
+
+  public void processModels(@NotNull IMontiThingsGlobalScope scope) {
+    processModels(scope, false);
+  }
+
+  public void processModels(@NotNull IMontiThingsGlobalScope scope, boolean shouldLog) {
+    Preconditions.checkArgument(scope != null);
+    for (IMontiThingsArtifactScope as : this.createSymbolTable(scope)) {
+      ASTMACompilationUnit a = (ASTMACompilationUnit) as.getAstNode();
+      if (shouldLog) {
+        Log.info("Check model: " + a.getComponentType().getSymbol().getFullName(), TOOL_NAME);
+      }
+      a.accept(this.getMTChecker());
+    }
+  }
+
+  public void processModels(@NotNull ICD4CodeGlobalScope scope) {
+    processModels(scope, false);
+  }
+
+  public void processModels(@NotNull ICD4CodeGlobalScope scope, boolean shouldLog) {
+    Preconditions.checkArgument(scope != null);
+    for (ICD4CodeArtifactScope a : this.createSymbolTable(scope)) {
+      for (ICD4CodeScope as : a.getSubScopes()) {
+        ASTCDPackage astNode = (ASTCDPackage) as.getSpanningSymbol().getAstNode();
+        if (shouldLog) {
+          Log.info("Check model: " + a.getName(), TOOL_NAME);
+        }
+        astNode.accept(this.getCdChecker());
+      }
+    }
+  }
+
+  public Collection<IMontiThingsArtifactScope> createSymbolTable(
+    @NotNull IMontiThingsGlobalScope scope) {
+    Preconditions.checkArgument(scope != null);
+    Collection<IMontiThingsArtifactScope> result = new HashSet<>();
+    for (ASTMACompilationUnit ast : parseModels(scope)) {
+      MontiThingsSymbolTableCreatorDelegator symTab = new MontiThingsSymbolTableCreatorDelegator(
+        scope);
+      result.add(symTab.createFromAST(ast));
+    }
+    return result;
+  }
+
+  public Collection<ICD4CodeArtifactScope> createSymbolTable(@NotNull ICD4CodeGlobalScope scope) {
+    Preconditions.checkArgument(scope != null);
+    Collection<ICD4CodeArtifactScope> result = new HashSet<>();
+    for (ASTCDCompilationUnit ast : parseModels(scope)) {
+      CD4CodeSymbolTableCreatorDelegator symTab = new CD4CodeSymbolTableCreatorDelegator(scope);
+      result.add(symTab.createFromAST(ast));
+    }
+    return result;
+  }
+
+  public Collection<ASTMACompilationUnit> parseModels(@NotNull IMontiThingsGlobalScope scope) {
+    return (Collection<ASTMACompilationUnit>) ParserUtil.parseModels(scope, MT_FILE_EXTENSION, new MontiThingsParser());
+  }
+
+  public Collection<ASTCDCompilationUnit> parseModels(@NotNull ICD4CodeGlobalScope scope) {
+    return (Collection<ASTCDCompilationUnit>) ParserUtil.parseModels(scope, CD_FILE_EXTENSION, new CD4CodeParser());
+  }
+
+  public Optional<ASTMACompilationUnit> parseMT(@NotNull String filename) {
+    return (Optional<ASTMACompilationUnit>) ParserUtil.parse(filename, new MontiThingsParser());
+  }
+
+  public Optional<ASTCDCompilationUnit> parseCD(@NotNull String filename) {
+    return (Optional<ASTCDCompilationUnit>) ParserUtil.parse(filename, new CD4CodeParser());
+  }
+
+  public Collection<ASTMACompilationUnit> parseMT(@NotNull Path path) {
+    return (Collection<ASTMACompilationUnit>) ParserUtil.parse(path, MT_FILE_EXTENSION, new MontiThingsParser());
+  }
+
+  public Collection<ASTCDCompilationUnit> parseCD(@NotNull Path path) {
+    return (Collection<ASTCDCompilationUnit>) ParserUtil.parse(path, CD_FILE_EXTENSION, new CD4CodeParser());
+  }
+
+  @Deprecated
   public boolean checkCoCos(@NotNull ASTArcBasisNode node) {
     Preconditions.checkArgument(node != null);
     Preconditions.checkState(this.isSymTabInitialized, "Please initialize symbol-table before "
-        + "checking portextensions.cocos.");
-    this.checker.checkAll(node);
+      + "checking cocos.");
+    this.getMTChecker().checkAll(node);
     if (Log.getErrorCount() != 0) {
       Log.debug("Found " + Log.getErrorCount() + " errors in node " + node + ".", "XX");
       return false;
@@ -91,18 +197,23 @@ public class MontiThingsTool extends MontiArcTool {
    * @param componentName Name of the component
    * @param modelPaths    Folders containing the packages with models
    * @return an {@code Optional} of the loaded component type
+   * @deprecated
    */
+  @Deprecated
   public Optional<ComponentTypeSymbol> loadComponentSymbolWithoutCocos(String componentName,
-      File... modelPaths) {
+    File... modelPaths) {
     IMontiThingsScope s = initSymbolTable(modelPaths);
     return s.resolveComponentType(componentName);
   }
 
+  @Deprecated
   public Optional<ComponentTypeSymbol> loadComponentSymbolWithCocos(String componentName,
-      File... modelPaths) {
+    File... modelPaths) {
     Optional<ComponentTypeSymbol> compSym = loadComponentSymbolWithoutCocos(componentName,
-        modelPaths);
+      modelPaths);
+
     compSym.ifPresent(componentTypeSymbol -> this.checkCoCos(componentTypeSymbol.getAstNode()));
+
     return compSym;
   }
 
@@ -115,12 +226,14 @@ public class MontiThingsTool extends MontiArcTool {
    * @param modelPath The model path containing the package with the model
    * @param model     the fully qualified model name
    * @return the AST node of the model
+   * @deprecated
    */
+  @Deprecated
   public Optional<ASTComponentType> getAstNode(String modelPath, String model) {
     // ensure an empty log
     Log.getFindings().clear();
     Optional<ComponentTypeSymbol> comp = loadComponentSymbolWithoutCocos(model,
-        Paths.get(modelPath).toFile());
+      Paths.get(modelPath).toFile());
 
     if (!comp.isPresent()) {
       Log.error("Model could not be resolved!");
@@ -143,70 +256,37 @@ public class MontiThingsTool extends MontiArcTool {
    *
    * @param modelPaths paths of all folders containing models
    * @return The initialized symbol table
+   * @deprecated
    */
+  @Deprecated
   public IMontiThingsScope initSymbolTable(File... modelPaths) {
     Set<Path> p = Sets.newHashSet();
     for (File mP : modelPaths) {
       p.add(Paths.get(mP.getAbsolutePath()));
     }
-
     final ModelPath mp = new ModelPath(p);
-
-    Field2CDFieldResolvingDelegate fieldDelegate;
-    Type2CDTypeResolvingDelegate typeDelegate;
-    if(this.cdGlobalScope ==null) {
-      CD4AnalysisLanguage cd4ALanguage = CD4AnalysisMill.cD4AnalysisLanguageBuilder().build();
-      CD4AnalysisGlobalScope cd4AGlobalScope = CD4AnalysisMill.cD4AnalysisGlobalScopeBuilder()
-          .setModelPath(mp)
-          .setCD4AnalysisLanguage(cd4ALanguage)
-          .build();
-      fieldDelegate = new Field2CDFieldResolvingDelegate(cd4AGlobalScope);
-      typeDelegate =  new Type2CDTypeResolvingDelegate(cd4AGlobalScope);
-    }
-    else{
-      fieldDelegate = new Field2CDFieldResolvingDelegate(this.cdGlobalScope);
-      typeDelegate =  new Type2CDTypeResolvingDelegate(this.cdGlobalScope);
-    }
-
-    MontiThingsGlobalScope gs = new MontiThingsGlobalScope(mp, language);
-    gs.addAdaptedFieldSymbolResolvingDelegate(fieldDelegate);
-    gs.addAdaptedTypeSymbolResolvingDelegate(typeDelegate);
-    addBasicTypes(gs);
-
+    IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
+      .setModelPath(mp).setModelFileExtension(MT_FILE_EXTENSION).build();
+    ICD4CodeGlobalScope cd4CodeGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
+      .setModelPath(mp).setModelFileExtension(CD_FILE_EXTENSION).build();
+    this.resolvingDelegates(montiThingsGlobalScope, cd4CodeGlobalScope);
+    this.addBasicTypes(montiThingsGlobalScope);
     isSymTabInitialized = true;
-    return gs;
+    return montiThingsGlobalScope;
   }
 
-  /**
-   * Creates a GlobalScope from a given model path and adds the given AST to it.
-   *
-   * @param ast node used to create symboltable
-   * @param modelPaths path that contains all models
-   * @return created global scope
-   */
-  public MontiThingsGlobalScope createSymboltable(ASTMACompilationUnit ast,
-      File... modelPaths) {
-
-    MontiThingsGlobalScope globalScope = (MontiThingsGlobalScope) initSymbolTable(modelPaths);
-
-    return createSymboltable(ast,globalScope);
-  }
-
-  /**
-   * Creates the symbol table for a given AST and adds it to the given global scope.
-   *
-   * @param ast node used to create symboltable
-   * @param globalScope globalScope used for the symbolTable
-   * @return extended global scope
-   */
-  public MontiThingsGlobalScope createSymboltable(ASTMACompilationUnit ast,
-      MontiThingsGlobalScope globalScope) {
-
-    MontiThingsSymbolTableCreatorDelegator stc = language
-        .getSymbolTableCreator(globalScope);
-    stc.createFromAST(ast);
-
-    return globalScope;
+  public void addBasicTypes(@NotNull IMontiThingsScope scope) {
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._boolean);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._char);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._short);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._String);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._int);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._long);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._float);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._double);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._null);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._Object);
+    DefsTypeBasic.add2scope(scope, DefsTypeBasic._array);
   }
 
   /**
@@ -218,63 +298,10 @@ public class MontiThingsTool extends MontiArcTool {
    *
    * @param modelPath The model path for the symbol table
    * @return the initialized symbol table
+   * @deprecated
    */
+  @Deprecated
   public IMontiThingsScope initSymbolTable(String modelPath) {
     return initSymbolTable(Paths.get(modelPath).toFile());
-  }
-
-  public IMontiThingsScope addBasicTypes(@NotNull IMontiThingsScope scope) {
-    scope.add(new TypeSymbol("String"));
-    scope.add(new TypeSymbol("Integer"));
-    scope.add(new TypeSymbol("Map"));
-    scope.add(new TypeSymbol("Set"));
-    scope.add(new TypeSymbol("List"));
-    scope.add(new TypeSymbol("Boolean"));
-    scope.add(new TypeSymbol("Character"));
-    scope.add(new TypeSymbol("Double"));
-    scope.add(new TypeSymbol("Float"));
-
-    //primitives
-    scope.add(new TypeSymbol("int"));
-    scope.add(new TypeSymbol("boolean"));
-    scope.add(new TypeSymbol("float"));
-    scope.add(new TypeSymbol("double"));
-    scope.add(new TypeSymbol("char"));
-    scope.add(new TypeSymbol("long"));
-    scope.add(new TypeSymbol("short"));
-    scope.add(new TypeSymbol("byte"));
-
-    return scope;
-  }
-
-  public IMontiArcScope buildSymbolTable(File... modelPaths) {
-    MontiThingsGlobalScope gs = (MontiThingsGlobalScope) initSymbolTable(modelPaths);
-
-    final MontiThingsSymbolTableCreatorDelegator symbolTableCreator = MontiThingsMill
-        .montiThingsSymbolTableCreatorDelegatorBuilder()
-        .setGlobalScope(gs)
-        .build();
-
-    Set<File> modelFiles = Modelfinder.getModelFiles(MontiThingsLanguage.FILE_ENDING, modelPaths);
-
-    // Build artifacts scopes for all models (automatically added to GlobalScope gs)
-    for (File model : modelFiles) {
-      ASTMACompilationUnit ast = parse(model.getPath()).get();
-      final MontiThingsArtifactScope scope = symbolTableCreator.createFromAST(ast);
-    }
-
-    return gs;
-  }
-
-  public CD4AnalysisGlobalScope getCdGlobalScope() {
-    return cdGlobalScope;
-  }
-
-  /**
-   * Setter for the global scope that should be used for resolving non native symbols.
-   * @param cdGlobalScope globalScope used for resolving non native symbols
-   */
-  public void setCdGlobalScope(CD4AnalysisGlobalScope cdGlobalScope) {
-    this.cdGlobalScope = cdGlobalScope;
   }
 }

@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.implementationPortTest;
+package implementationPortTest;
 
-import cocoTest.implementationPortTest.Interface;
+import implementationPortTest.Interface;
 
 component InterfaceInstance {
   Interface xy;

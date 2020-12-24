@@ -90,7 +90,7 @@ public class ImplementationFitsInterface implements ArcBasisASTComponentTypeCoCo
     return false;
   }
 
-  private void checkBindingAssignment(ASTMCType type,ASTComponentType node, ASTComponentInstantiation subComponent) {
+  protected void checkBindingAssignment(ASTMCType type,ASTComponentType node, ASTComponentInstantiation subComponent) {
     if (!GenericBindingUtil.getGenericBindings(node).containsKey(GenericBindingUtil.printSimpleType(type))) {
       ComponentTypeSymbol ComponentTypeSymbol = GenericBindingUtil.getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), GenericBindingUtil.printSimpleType(type));
       if (ComponentTypeSymbol == null || !ComponentTypeSymbol.isPresentAstNode()) {

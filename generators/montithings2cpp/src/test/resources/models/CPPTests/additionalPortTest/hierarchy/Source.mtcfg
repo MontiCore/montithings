@@ -2,7 +2,7 @@ package hierarchy;
 
 config Source for GENERIC {
   sensor {
-    getExternalMessages  = "SourceSensorPortGetExternalMessages.ftl";
-    body = "Variable.ftl";
+    provide  = "SourceSensorPortProvide.ftl";
+    init     = "Variable.ftl";
   }
 }

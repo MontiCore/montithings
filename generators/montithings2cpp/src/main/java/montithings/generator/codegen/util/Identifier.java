@@ -4,8 +4,8 @@ package montithings.generator.codegen.util;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
-import de.monticore.types.typesymbols._symboltable.FieldSymbol;
-import de.monticore.types.typesymbols._symboltable.TypeVarSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 
 
 public class Identifier {
@@ -41,7 +41,7 @@ public class Identifier {
       }
     }
 
-    for (FieldSymbol fieldSymbol : component.getParameters()) {
+    for (VariableSymbol fieldSymbol : component.getParameters()) {
       if (fieldSymbol.getName().equals(identifier)) {
         return true;
       }

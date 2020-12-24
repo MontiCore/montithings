@@ -3,7 +3,7 @@
 /**
  * CDLangExtension provides deployment language dependent import statements.
  */
-grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.literals.MCCommonLiterals, de.monticore.cd.CD4Analysis  {
+grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.literals.MCCommonLiterals, de.monticore.CDBasis  {
 
   start CDLangExtensionUnit;
 
@@ -37,7 +37,7 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.li
    */
   // Example: from <arma> import armadillo::vector as Vector;
   symbol CDEImportStatement implements CDEElement =
-    "from" importSource:CDEImportName "import" importClass:CDEImportName "as" (package:MCQualifiedName ".")? Name@CDType ";"
+    "from" importSource:CDEImportName "import" importClass:CDEImportName "as" cdType:MCQualifiedName ";"
     ;
 
   /**
@@ -61,12 +61,12 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.li
   /**
    * CDEQualifiedColonName are Names concatenated by ':'.
    */
-  CDEQualifiedColonName extends MCQualifiedName=
-    part:(Name || ":")+;
+  CDEQualifiedColonName extends MCQualifiedName =
+    parts:(Name || ":")+;
 
   /**
    * CDEQualifiedDoubleColonName are Names concatenated by '::'.
    */
-  CDEQualifiedDoubleColonName extends MCQualifiedName=
-      part:(Name || "::")+;
+  CDEQualifiedDoubleColonName extends MCQualifiedName =
+      parts:(Name || "::")+;
 }

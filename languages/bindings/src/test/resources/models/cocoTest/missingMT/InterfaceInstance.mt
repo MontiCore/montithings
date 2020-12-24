@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.missingMT;
+package missingMT;
 
-import cocoTest.missingMT.Interface;
+import missingMT.Interface;
 
 component InterfaceInstance {
   Interface xy;

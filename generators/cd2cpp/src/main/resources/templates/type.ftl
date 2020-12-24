@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 // (c) https://github.com/MontiCore/monticore
-${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper", "imports")}
+${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper", "imports", "associations")}
+<#assign AssociationHelper = tc.instantiate("montithings.generator.cd2cpp.AssociationHelper")>
 #pragma once
 
 <#function java2cppTypeString type>
@@ -29,11 +30,11 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 namespace ${package}
 {
 
-${kind} <#if type.isIsEnum()>class</#if> ${type.getName()} <#if super != "">: ${super} </#if>{
+${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
 
   <#if type.isIsEnum()>
     <#-- enum -->
-    <#list type.getFields() as field>
+    <#list type.getFieldList() as field>
         ${field.getName()}
         <#if !field?is_last>,</#if>
     </#list>
@@ -45,62 +46,65 @@ ${kind} <#if type.isIsEnum()>class</#if> ${type.getName()} <#if super != "">: ${
     <#-- They may originate from attributes or associations with cardinality [1] -->
     <#assign mandatoryFields = []>
     
-    <#list type.getFields() as field>
-        <#-- attributes -->
-        <#assign mandatoryFields = mandatoryFields + [{"name": field.getName(), "type":field.getType().getLoadedSymbol().getStringRepresentation()}]>
-        private: ${java2cppTypeString(field.getType().getLoadedSymbol().getStringRepresentation())} ${field.getName()};
-        public: ${java2cppTypeString(field.getType().getLoadedSymbol().getStringRepresentation())} get${field.getName()?cap_first}() {
-          return ${field.getName()};
-        }
-        public: void set${field.getName()?cap_first}(${java2cppTypeString(field.getType().getLoadedSymbol().getStringRepresentation())} ${field.getName()}) {
-          this->${field.getName()} = ${field.getName()};
-        }
+    <#list type.getFieldList() as field>
+      <#-- attributes -->
+      <#assign fieldType = java2cppTypeString(field.getType().getTypeInfo().getName())>
+      <#assign mandatoryFields = mandatoryFields + [{"name": field.getName(), "type":fieldType}]>
+      private: ${fieldType} ${field.getName()};
+      public: ${fieldType} get${field.getName()?cap_first}() {
+        return ${field.getName()};
+      }
+      public: void set${field.getName()?cap_first}(${fieldType} ${field.getName()}) {
+        this->${field.getName()} = ${field.getName()};
+      }
     </#list>
 
     <#-- associations -->
-    <#list type.getAssociations() as assoc>
-      <#assign t=typeHelper.printType(assoc.getTargetType().getLoadedSymbol())>
-      <#assign n=assoc.getDerivedName()>
+    <#list associations as assoc>
+      <#-- TODO: Fix types printing -->
+      <#-- <#assign t=typeHelper.printType(assoc.getTargetType().getLoadedSymbol())> -->
+      <#assign t=AssociationHelper.getOtherSideTypeName(assoc, type)>
+      <#assign n=AssociationHelper.getDerivedName(assoc, type)>
 
-      <#if assoc.getTargetCardinality().isMultiple()>
-        <#-- [*] -->
+      <#if AssociationHelper.getOtherSideCardinality(assoc, type).isMult() >
+      <#-- [*] ASTCDCardMult -->
 
         private: std::vector<${t}> ${n};
         public: void set${n?cap_first}(std::vector<${t}> ${n}){
-            this->${n} = ${n};
+        this->${n} = ${n};
         }
         public: std::vector<${t}> get${n?cap_first}(){
-            return this->${n};
+        return this->${n};
         }
         public: void add${n?cap_first}(${t} ${n}){
-            this->${n}.push_back(${n});
+        this->${n}.push_back(${n});
         }
         public: void remove${n?cap_first}(${t} ${n}){
-            this->${n}.erase(std::remove(this->${n}.begin(), this->${n}.end(), ${n}), this->${n}.end());
+        this->${n}.erase(std::remove(this->${n}.begin(), this->${n}.end(), ${n}), this->${n}.end());
         }
 
-      <#elseif assoc.getTargetCardinality().getMin()==0>
-        <#-- [0..1]-->
+      <#elseif AssociationHelper.getOtherSideCardinality(assoc, type).isOpt() >
+      <#-- [0..1] ASTCDCardOpt -->
 
         <#assign tOpt="tl::optional<"+t+">">
         private: ${tOpt} ${n} = tl::nullopt;
         public: ${tOpt} get${n?cap_first}() {
-          return ${n};
+        return ${n};
         }
         public: void set${n?cap_first}(${t} ${n}) {
-          this->${n} = ${n};
+        this->${n} = ${n};
         }
 
       <#else>
-        <#-- [1] -->
+      <#-- [1] ASTCDCardOne -->
 
         <#assign mandatoryFields = mandatoryFields + [{"name": n, "type": t}]>
         private: ${t} ${n};
         public: ${t} get${n?cap_first}() {
-          return ${n};
+        return ${n};
         }
         public: void set${n?cap_first}(${t} ${n}) {
-          this->${n} = ${n};
+        this->${n} = ${n};
         }
       </#if>
     </#list> <#-- /associations -->
@@ -111,12 +115,13 @@ ${kind} <#if type.isIsEnum()>class</#if> ${type.getName()} <#if super != "">: ${
     operator== (const ${type.getName()} &rhs) const
     {
     return
-    <#list type.getFields() as field>
-      ${field.getName()} == rhs.${field.getName()} <#sep>&&</#sep>
+    <#list type.getFieldList() as field>
+        ${field.getName()} == rhs.${field.getName()} <#sep>&&</#sep>
     </#list>
-    <#if type.getFields()?size != 0 && type.getAssociations()?size != 0>&&</#if>
-    <#list type.getAssociations() as assoc>
-      ${assoc.getDerivedName()} == rhs.${assoc.getDerivedName()} <#sep>&&</#sep>
+    <#if type.getFieldList()?size != 0 && associations?size != 0>&&</#if>
+    <#list associations as assoc>
+        <#assign otherSide = AssociationHelper.getDerivedName(assoc, type)>
+        ${otherSide} == rhs.${otherSide} <#sep>&&</#sep>
     </#list>
     ;
     }

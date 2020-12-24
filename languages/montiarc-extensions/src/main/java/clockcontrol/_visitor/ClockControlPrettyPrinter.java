@@ -8,7 +8,7 @@ import org.codehaus.commons.nullanalysis.NotNull;
 
 public class ClockControlPrettyPrinter implements ClockControlVisitor {
 
-  private ClockControlVisitor realThis = this;
+  protected ClockControlVisitor realThis = this;
   protected IndentPrinter printer;
 
   public ClockControlPrettyPrinter() {

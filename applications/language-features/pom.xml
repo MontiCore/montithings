@@ -6,7 +6,7 @@
   <parent>
     <artifactId>applications</artifactId>
     <groupId>montithings.applications</groupId>
-    <version>6.2.0-SNAPSHOT</version>
+    <version>6.5.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>language-features</artifactId>
@@ -15,9 +15,9 @@
     <module>behavior</module>
     <module>interface-componentsMTB</module>
     <module>class-diagrams</module>
-    <!--
+
     <module>interface-components</module>
-    -->
+
     <module>pre-postconditions</module>
   </modules>
 

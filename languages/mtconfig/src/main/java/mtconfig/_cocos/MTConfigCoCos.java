@@ -12,8 +12,7 @@ public class MTConfigCoCos {
       .addCoCo(new AllConfigsReferToTheSameComponent())
       .addCoCo(new HookpointExists())
       .addCoCo(new CompConfigExists())
-      .addCoCo(new PortTemplateTagExists())
-      .addCoCo(new RequirementNameExists());
+      .addCoCo(new PortTemplateTagExists());
     return mtConfigCoCoChecker;
   }
 }

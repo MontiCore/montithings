@@ -1,19 +1,20 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._cocos;
 
+import arcbasis._symboltable.ComponentTypeSymbol;
+import de.monticore.cd4code._cocos.CD4CodeCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
-import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsTool;
-import montithings._parser.MontiThingsParser;
+import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings.util.Error;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.io.File;
-import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,8 +25,8 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractTest {
 
-  private static final String MODEL_PATH = "src/test/resources/models/";
-  private Pattern errorCodePattern;
+  protected static final String MODEL_PATH = "src/test/resources/models/";
+  protected Pattern errorCodePattern;
 
   @BeforeAll
   public static void cleanUpLog() {
@@ -95,17 +96,13 @@ public abstract class AbstractTest {
     return errorCodes;
   }
 
-  public ASTMACompilationUnit getAST(String fileName) {
-    ASTMACompilationUnit montiThingsAST = null;
-    try {
-      montiThingsAST = new MontiThingsParser().parseMACompilationUnit(MODEL_PATH + fileName).orElse(null);
-    }
-    catch (IOException e) {
-      Log.error("File '" + MODEL_PATH + fileName + "' MontiThings artifact was not found");
-    }
-    Assertions.assertNotNull(montiThingsAST);
-    MontiThingsTool tool = new MontiThingsTool();
-    tool.createSymboltable(montiThingsAST, new File(MODEL_PATH));
-    return montiThingsAST;
+  public ComponentTypeSymbol getSymbol(String componentName) {
+    MontiThingsTool tool = new MontiThingsTool(new MontiThingsCoCoChecker(), new CD4CodeCoCoChecker());
+    Path p = Paths.get("src", "test", "resources", "models");
+    IMontiThingsGlobalScope scope = tool.processModels(p);
+    ComponentTypeSymbol typeSymbol = scope.resolveComponentType(componentName).get();
+    Log.init();
+    LogStub.init();
+    return typeSymbol;
   }
 }

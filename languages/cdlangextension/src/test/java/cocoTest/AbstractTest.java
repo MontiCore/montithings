@@ -1,6 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 package cocoTest;
 
+import cdlangextension.CDLangExtensionTool;
+import cdlangextension._ast.ASTCDLangExtensionUnit;
+import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension.util.Error;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
@@ -9,6 +12,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +26,7 @@ public abstract class AbstractTest {
 
   protected static final String RELATIVE_MODEL_PATH = "src/test/resources";
 
-  private Pattern errorCodePattern;
+  protected Pattern errorCodePattern;
 
   @BeforeAll
   public static void cleanUpLog() {
@@ -89,5 +94,22 @@ public abstract class AbstractTest {
       errorCodes.add(matcher.group());
     }
     return errorCodes;
+  }
+
+  public ASTCDLangExtensionUnit getAST(String modelPath, String fileName) {
+    ASTCDLangExtensionUnit astCDE = null;
+    try {
+      astCDE = new CDLangExtensionParser().parseCDLangExtensionUnit(modelPath + fileName)
+        .orElse(null);
+    }
+    catch (IOException e) {
+      Log.error("File '" + modelPath + fileName + "' CDE artifact was not found");
+    }
+    Assertions.assertNotNull(astCDE);
+    CDLangExtensionTool tool = new CDLangExtensionTool();
+    tool.createSymboltable(astCDE, new File(modelPath));
+    Log.init();
+    LogStub.init();
+    return astCDE;
   }
 }

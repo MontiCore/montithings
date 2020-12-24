@@ -34,7 +34,7 @@ grammar MTConfig extends MontiThings  {
    * @attribute Name Name of the MontiThings component.
    * @attribute platform Deployment platform. E.g. GENERIC, Windows, Arduino etc.
    */
-  scope symbol CompConfig implements Element = "config" Name@ComponentType "for" platform:Name /*TODO set appropriate reference when possible */
+  scope symbol CompConfig implements Element = "config" componentType:Name "for" platform:Name /*TODO set appropriate reference when possible */
   "{"
     MTCFGTag*
   "}";
@@ -43,7 +43,7 @@ grammar MTConfig extends MontiThings  {
    * PortTemplateTag specifies the templates that are used for processing of the specified port.
    * @attribute Name Name of the MontiThings port.
    */
-  scope symbol PortTemplateTag implements MTCFGTag = Name@Port "{"
+  scope symbol PortTemplateTag implements MTCFGTag = port:Name "{"
         Hookpoint+
   "}";
 
@@ -59,8 +59,8 @@ grammar MTConfig extends MontiThings  {
    *  RequirementStatement contain information about what physical requirements
    *  a component has. E.g Sensors/Actuators etc.
    */
-  scope symbol RequirementStatement implements MTCFGTag =
-    (package:MCQualifiedName ".")? component:Name@ComponentType "requires" (propertiess:Property | "{" propertiess:Property+ "}");
+  scope RequirementStatement implements MTCFGTag =
+    "requires" (propertiess:Property | "{" propertiess:Property+ "}");
 
   symbol Property = Name& ":"
     (

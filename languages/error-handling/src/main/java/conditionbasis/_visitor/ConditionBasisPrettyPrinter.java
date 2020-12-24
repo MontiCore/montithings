@@ -7,7 +7,7 @@ import org.codehaus.commons.nullanalysis.NotNull;
 
 public class ConditionBasisPrettyPrinter implements ConditionBasisVisitor {
 
-  private ConditionBasisVisitor realThis = this;
+  protected ConditionBasisVisitor realThis = this;
   protected IndentPrinter printer;
 
   public ConditionBasisPrettyPrinter() {

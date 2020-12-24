@@ -18,7 +18,7 @@ import java.util.Iterator;
  */
 public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements MTConfigVisitor {
 
-  private MTConfigVisitor realThis = this;
+  protected MTConfigVisitor realThis = this;
 
   /**
    * Constructor.
@@ -56,11 +56,6 @@ public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
 
   @Override
   public void handle(ASTRequirementStatement a){
-    if(a.isPresentPackage()){
-      this.getPrinter().print(a.getPackage());
-      this.getPrinter().print(".");
-    }
-    this.getPrinter().print(a.getName());
     this.getPrinter().print(" requires ");
     if(a.getPropertiessList().size()==1){
       a.getPropertiess(0).accept(this.getRealThis());

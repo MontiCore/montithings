@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.missingMT;
+package missingMT;
 
 interface component Interface {
   port in String inPort;

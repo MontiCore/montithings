@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter implements CDLangExtensionVisitor {
 
-  private CDLangExtensionVisitor realThis = this;
+  protected CDLangExtensionVisitor realThis = this;
 
   /**
    * Constructor.
@@ -78,7 +78,7 @@ public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter impl
 
   @Override
   public void visit(ASTCDLangExtensionUnit a){
-    if(!a.isEmptyPackages()) {
+    if(!a.isEmptyPackage()) {
       this.getPrinter().print("package ");
       StringUtils.join(a.getPackageList(),".");
       this.getPrinter().println(";");

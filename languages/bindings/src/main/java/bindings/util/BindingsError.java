@@ -5,14 +5,14 @@ package bindings.util;
  * The enum of all Bindings errors. Extends the mixing interface {@link Error}
  */
 public enum BindingsError implements bindings.util.Error {
-  NO_MODEL_IMPLEMENTATION("0xMTB0000", "Implementation has no model implementation!"),
-  NOT_SAME_PORTS_IMPLEMENTED("0xMTB0001", "Implementation and Interface don't implement the same ports!"),
-  NO_MODEL_INTERFACE("0xMTB0002", "Interface has no model Interface!"),
-  LEFT_SIDE_NO_INTERFACE("0xMTB0003", "Left side is no interface!"),
-  RIGHT_SIDE_NO_IMPLEMENTATION("0xMTB0004", "Right side is no implementation!");
+  NO_MODEL_IMPLEMENTATION("0xMTB0010", "Implementation '%s' has no model file!"),
+  NOT_SAME_PORTS_IMPLEMENTED("0xMTB0020", "Interface '%s' and Implementation '%s' don't implement the same ports!"),
+  NO_MODEL_INTERFACE("0xMTB0030", "Interface '%s' has no model!"),
+  LEFT_SIDE_NO_INTERFACE("0xMTB0040", "Left side '%s' is no interface!"),
+  RIGHT_SIDE_NO_IMPLEMENTATION("0xMTB0050", "Right side '%s' is no implementation!");
 
-  private final String errorCode;
-  private final String errorMessage;
+  protected final String errorCode;
+  protected final String errorMessage;
 
   BindingsError(String errorCode, String errorMessage) {
     assert (errorCode != null);

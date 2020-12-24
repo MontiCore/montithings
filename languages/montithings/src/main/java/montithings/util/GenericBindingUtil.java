@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 public class GenericBindingUtil {
 
-  private GenericBindingUtil(){
+  protected GenericBindingUtil(){
 
   }
 
@@ -57,7 +57,7 @@ public class GenericBindingUtil {
    * @param generic name and upper bounds that will be returned as mapping
    * @return mapping between generic and its upper bounds if upper bounds are present, otherwise an empty mapping
    */
-  private static Map<String, String> linkGenericWithInterface(ASTArcTypeParameter generic) {
+  protected static Map<String, String> linkGenericWithInterface(ASTArcTypeParameter generic) {
     Map<String,String> genericToInterface = new HashMap<>();
     String typeName = generic.getName();
     for (ASTMCType type : generic.getUpperBoundList()) {
@@ -80,7 +80,7 @@ public class GenericBindingUtil {
     componentTypeSymbol = globalScope.resolveComponentType(compWithIncludes.getPackageName()+ "." + componentToGet);
     if (componentTypeSymbol.isPresent())
       return componentTypeSymbol.get();
-    for (ImportStatement i : compWithIncludes.getImportList()) {
+    for (ImportStatement i : compWithIncludes.getImportsList()) {
       if(i.isStar()) {
         componentTypeSymbol = globalScope.resolveComponentType(i.getStatement() + "." + componentToGet);
       }
@@ -125,7 +125,13 @@ public class GenericBindingUtil {
       else if (s.isIncoming() != similarS.get().isIncoming()) {
         return false;
       }
-      else if (!s.getType().print().equals(similarS.get().getType().print())){
+      /*
+       * TODO: use the commented out version once it is clear why print() uses
+       * the fully qualified name and why its prefixed with the component's
+       * fully qualified name
+       */
+      //else if (!s.getType().print().equals(similarS.get().getType().print())){
+      else if (!s.getTypeInfo().getName().equals(similarS.get().getTypeInfo().getName())){
         return false;
       }
     }
@@ -137,7 +143,7 @@ public class GenericBindingUtil {
    * @param s subscope of a GlobalScope.
    * @return GlobalScope if present, or else null.
    */
-  private static MontiThingsGlobalScope getGlobalScope(MontiThingsScope s) {
+  protected static MontiThingsGlobalScope getGlobalScope(MontiThingsScope s) {
     while(!(s instanceof MontiThingsGlobalScope)){
       if(s.getEnclosingScope()==null){
         return null;
