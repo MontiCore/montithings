@@ -337,7 +337,7 @@ public class Utils {
     ConfigParams config) {
     Set<String> compIncludes = new HashSet<String>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
-      if (!getGenericParameters(comp).contains(subcomponent.getType().getName())) {
+      if (!getGenericParameters(comp).contains(subcomponent.getGenericType().getName())) {
         boolean isInner = subcomponent.getType().isInnerComponent();
         compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
           + (isInner ? (comp.getName() + "-Inner/") : "")
