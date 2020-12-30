@@ -84,3 +84,27 @@ distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>
 </#list>
     % finishing query with a .
     1 == 1.
+
+any_distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>) :-
+    % retrieve possible lists of devices
+<#list ast.distributions as distribution>
+    get_distribution_${distribution.name}(${distribution.name}), !,
+</#list>
+
+    % apply incompatible checks
+<#list ast.incompatibilities as incompatibilitiesList>
+    <#list incompatibilitiesList as key, value>
+    check_incompatible(${key}, ${value}),
+    </#list>
+</#list>
+
+    % apply dependency checks
+<#list ast.dependencies as dependency>
+    <#if dependency.type == "distinct">
+    check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+    <#else>
+    check_dependency(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+    </#if>
+</#list>
+    % finishing query with a .
+    1 == 1.
