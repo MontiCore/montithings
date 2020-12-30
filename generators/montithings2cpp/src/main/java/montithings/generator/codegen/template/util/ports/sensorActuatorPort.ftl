@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("portTemeplateName")}
+${tc.signature("portTemeplateName", "existsHWC")}
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 #pragma once
 #include "tl/optional.hpp"
@@ -7,7 +7,7 @@ ${tc.signature("portTemeplateName")}
 #include "Utils.h"
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
-class ${Names.getSimpleName(portTemeplateName)?cap_first} : public Port${r"<T>"}{
+class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
     ${defineHookPoint("<CppBlock>?portTemplate:body")}
     public: void getExternalMessages() override
     {

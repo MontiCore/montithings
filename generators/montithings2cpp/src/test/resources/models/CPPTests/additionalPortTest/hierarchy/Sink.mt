@@ -2,8 +2,8 @@
 package hierarchy;
 
 component Sink {
-  port in Integer value;
-  port out Integer actuator;
+  port in int value;
+  port out int actuator;
 
   behavior {
     actuator = value?;

@@ -152,6 +152,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           ComponentTypeSymbol comp = modelToSymbol(model, symTab);
           MTGenerator.generatePortJson(compTarget, comp, config);
         }
+
+        generateCDEAdapter(compTarget, config);
+        generateCD(modelPath, compTarget);
       }
       if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
         MTGenerator.generateDDSDCPSConfig(compTarget, config);
@@ -160,8 +163,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
     }
-    generateCDEAdapter(target, config);
-    generateCD(modelPath, target);
+
+    if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
+      generateCDEAdapter(target, config);
+      generateCD(modelPath, target);
+    }
     MTGenerator.generateBuildScript(target, config);
 
     for (String model : models.getMontithings()) {
@@ -305,9 +311,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
       if (config.getMtConfigScope() == null) {
         config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
-      }
-      else {
-        mtConfigTool.createSymboltable(ast, (IMTConfigGlobalScope) config.getMtConfigScope());
       }
 
       // check cocos
@@ -463,11 +466,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       if (config.getTemplatedPorts().contains(port)) {
         Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config);
         if (portType.isPresent()) {
-          File portFile = new File(target + File.separator + "hwc" + File.separator + Names
-            .getPathFromPackage(Names.getQualifier(portType.get())));
-          MTGenerator
-            .generateAdditionalPort(config.getHwcTemplatePath(), portFile, portType.get(), config,
-              port);
+          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), target, portType.get(),
+            config, port);
         }
       }
     }
