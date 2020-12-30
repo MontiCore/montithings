@@ -2,8 +2,8 @@
 package hierarchy;
 
 component Source {
-  port in Integer sensor;
-  port out Integer value;
+  port in int sensor;
+  port out int value;
 
   behavior {
     value = sensor?;
