@@ -312,9 +312,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       if (config.getMtConfigScope() == null) {
         config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
       }
-      else {
-        mtConfigTool.createSymboltable(ast, (IMTConfigGlobalScope) config.getMtConfigScope());
-      }
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
@@ -469,11 +466,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       if (config.getTemplatedPorts().contains(port)) {
         Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config);
         if (portType.isPresent()) {
-          File portFile = new File(target + File.separator + "hwc" + File.separator + Names
-            .getPathFromPackage(Names.getQualifier(portType.get())));
-          MTGenerator
-            .generateAdditionalPort(config.getHwcTemplatePath(), portFile, portType.get(), config,
-              port);
+          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), target, portType.get(),
+            config, port);
         }
       }
     }

@@ -117,6 +117,7 @@ public class FileHelper {
     return allFiles.stream()
       .filter(f -> !f.getName().toLowerCase().endsWith("impl.cpp"))
       .filter(f -> !f.getName().toLowerCase().endsWith("impl.h"))
+      .filter(f -> !f.getName().toLowerCase().endsWith(".ftl"))
       .collect(Collectors.toSet());
   }
 
