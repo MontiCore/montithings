@@ -152,6 +152,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           ComponentTypeSymbol comp = modelToSymbol(model, symTab);
           MTGenerator.generatePortJson(compTarget, comp, config);
         }
+
+        generateCDEAdapter(compTarget, config);
+        generateCD(modelPath, compTarget);
       }
       if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
         MTGenerator.generateDDSDCPSConfig(compTarget, config);
@@ -160,8 +163,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
     }
-    generateCDEAdapter(target, config);
-    generateCD(modelPath, target);
+
+    if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
+      generateCDEAdapter(target, config);
+      generateCD(modelPath, target);
+    }
     MTGenerator.generateBuildScript(target, config);
 
     for (String model : models.getMontithings()) {

@@ -2,18 +2,19 @@
 package montithings.generator.helper;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
+import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.ConfigParams;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for file-related actions of the generator
@@ -49,6 +50,8 @@ public class FileHelper {
   public static void copyHwcToTarget(File target, File hwcPath, String fqComponentName,
     ConfigParams config) {
     Set<File> hwcFiles = getHwcClassWithoutExtension(hwcPath, fqComponentName);
+    addNonImplFiles(hwcPath, config, hwcFiles);
+
     for (File file : hwcFiles) {
       try {
         if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
@@ -61,6 +64,18 @@ public class FileHelper {
       catch (IOException e) {
         System.err.println(e.getMessage());
         e.printStackTrace();
+      }
+    }
+  }
+
+  protected static void addNonImplFiles(File hwcPath, ConfigParams config, Set<File> hwcFiles) {
+    if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+      try {
+        hwcFiles.addAll(getNonImplFiles(hwcPath));
+      }
+      catch (IOException e) {
+        e.printStackTrace();
+        Log.error("Could not get adapter files from HWC.");
       }
     }
   }
@@ -91,6 +106,18 @@ public class FileHelper {
       System.err.println(e.getMessage());
       e.printStackTrace();
     }
+  }
+
+  public static Set<File> getNonImplFiles(File hwcPath) throws IOException {
+    Set<File> allFiles = Files.walk(hwcPath.toPath())
+      .filter(Files::isRegularFile)
+      .map(Path::toFile)
+      .collect(Collectors.toSet());
+
+    return allFiles.stream()
+      .filter(f -> !f.getName().toLowerCase().endsWith("impl.cpp"))
+      .filter(f -> !f.getName().toLowerCase().endsWith("impl.h"))
+      .collect(Collectors.toSet());
   }
 
   /**
