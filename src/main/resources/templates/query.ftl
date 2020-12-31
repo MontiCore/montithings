@@ -110,7 +110,7 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     <#list distribution.equalConstraints as constraint>
         (
         include_equal(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}), Constraint${count_constraint} = '';
-        (\+include_equal(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count} ,AllAvailableDevicesFiltered${count+1}), Constraint${count_constraint} = '${distribution.name} ${constraint.key} ${constraint.value} == ${constraint.number}')
+        (\+include_equal(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count} , _), Constraint${count_constraint} = '${distribution.name} ${constraint.key} ${constraint.value} == ${constraint.number}')
         ),
         <#assign count++>
         <#assign count_constraint++>
@@ -129,7 +129,7 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
         <#assign contraintnum = constraint.number?number - 1>
         <#list contraintnum..0 as gte_satisfiable>
         (
-        \+check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
+        \+check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, _),
         check_gte(property("${constraint.key}", "${constraint.value}"), ${gte_satisfiable}, AllAvailableDevicesFiltered${count}),
         Constraint${count_constraint} = '${distribution.name} ${constraint.key} ${constraint.value} >= ${constraint.number} (${gte_satisfiable} would be satisfiable)'
         )<#sep>;</#sep>
