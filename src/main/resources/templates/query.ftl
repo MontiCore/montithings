@@ -179,7 +179,7 @@ distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>
 <#-- -------------------------------- -->
 <#-- DISTRIBUTION QUERY (With Drops)  -->
 <#-- -------------------------------- -->
-distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list><#list 1..total_constraints as i>,Constraint${i}</#list>) :-
+distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>) :-
     % retrieve possible lists of devices
 <#assign current_constraint = 1>
 <#list ast.distributions as distribution>
