@@ -58,6 +58,26 @@ public class Utils {
     }
 
     public static String generatePrologCompliantName(String name) {
-        return "D" + Math.abs(name.hashCode());
+        String nameWithoutRegistry = name.split("/")[name.split("/").length-1];
+        String nameWithoutDockerTag = nameWithoutRegistry.split(":")[0];
+        String nameAsPrologVariable = capitalize(nameWithoutDockerTag);
+        nameAsPrologVariable = replaceNonAlphanumeric(nameAsPrologVariable);
+        nameAsPrologVariable = nameAsPrologVariable.replaceAll("[^a-zA-Z0-9_]", "");
+        return nameAsPrologVariable;
+    }
+
+    protected static String capitalize(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    }
+
+    protected static String replaceNonAlphanumeric(String input) {
+        Pattern p = Pattern.compile( "[^a-zA-Z0-9]([a-zA-Z0-9])" );
+        Matcher m = p.matcher( input );
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            m.appendReplacement(sb, m.group(1).toUpperCase());
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 }
