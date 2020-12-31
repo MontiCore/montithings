@@ -124,8 +124,8 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
 
     % then constrains greater than equal: >=
     <#list distribution.gteConstraints as constraint>
-        check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}), Constraint${count_constraint} = '';
         (
+        check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}), Constraint${count_constraint} = '';
         <#assign contraintnum = constraint.number?number - 1>
         <#list contraintnum..0 as gte_satisfiable>
         (
