@@ -188,7 +188,7 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
 </#list>
 
 <#list 1..total_constraints as i>
-(Constraint${i} == '' ;(\+(Constraint${i} == ''), writeln('Dropped constraint:'), write(Constraint${i}))),
+(Constraint${i} == '' ;(\+(Constraint${i} == ''), writeln('Dropped constraint:'), writeln(Constraint${i}))),
 </#list>
 
     % apply incompatible checks
