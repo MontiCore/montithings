@@ -126,13 +126,13 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#list 1..t
     <#list distribution.gteConstraints as constraint>
         check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}), Constraint${count_constraint} = '';
         (
-        <#assign contraintnum = constraint.number?number>
+        <#assign contraintnum = constraint.number?number - 1>
         <#list contraintnum..0 as gte_satisfiable>
         (
         \+check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
         check_gte(property("${constraint.key}", "${constraint.value}"), ${gte_satisfiable}, AllAvailableDevicesFiltered${count}),
         Constraint${count_constraint} = '${distribution.name} ${constraint.key} ${constraint.value} >= ${constraint.number} (${gte_satisfiable} would be satisfiable)'
-        );
+        )<#sep>;</#sep>
         </#list>
         ),
         <#assign count_constraint++>
