@@ -187,24 +187,61 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
     (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_constraints_this_distribution gt 0><#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint}<#assign current_constraint++></#list></#if>); (!, false) ),
 </#list>
 
-<#list 1..total_constraints as i>
-(Constraint${i} == '' ;(\+(Constraint${i} == ''), write('Dropped constraint: '), writeln(Constraint${i}))),
-</#list>
-
     % apply incompatible checks
 <#list ast.incompatibilities as incompatibilitiesList>
     <#list incompatibilitiesList as key, value>
-    check_incompatible(${key}, ${value}),
+    (
+    (check_incompatible(${key}, ${value}), Constraint${current_constraint} = ''); 
+    (Constraint${current_constraint} = 'Incompatibility between "${key}" and "${value}"')
+    <#assign current_constraint++>
+    <#assign total_constraints++>
+    ),
     </#list>
 </#list>
 
     % apply dependency checks
 <#list ast.dependencies as dependency>
     <#if dependency.type == "distinct">
-    check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+    (
+        (
+        check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+        Constraint${current_constraint} = ''
+        );
+        (
+        <#assign contraintnum = dependency.amount_at_least?number - 1>
+        <#list contraintnum..0 as dep_satisfiable>
+        (
+        check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dep_satisfiable}),
+        Constraint${current_constraint} = '"${dependency.dependent}"" depends on at least ${dependency.amount_at_least} distinct instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
+        )<#sep>;</#sep>
+        </#list>
+        )
+    ),
     <#else>
-    check_dependency(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+    (
+        (   
+        check_dependency(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+        Constraint${current_constraint} = ''
+        );
+        (
+        <#assign contraintnum = dependency.amount_at_least?number - 1>
+        <#list contraintnum..0 as dep_satisfiable>
+        (
+        check_dependency(${dependency.dependent},${dependency.dependency},${dep_satisfiable}),
+        Constraint${current_constraint} = '"${dependency.dependent}"" depends on at least ${dependency.amount_at_least} (possibly shared) instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
+        )<#sep>;</#sep>
+        </#list>
+        )
+    ),
     </#if>
+    <#assign current_constraint++>
+    <#assign total_constraints++>
 </#list>
+
+    <#list 1..total_constraints as i>
+    (Constraint${i} == '' ;(\+(Constraint${i} == ''), write('Dropped constraint: '), writeln(Constraint${i}))),
+    </#list>
+
     % finishing query with a .
     1 == 1.
+
