@@ -181,9 +181,10 @@ distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>
 <#-- -------------------------------- -->
 distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list><#list 1..total_constraints as i>,Constraint${i}</#list>) :-
     % retrieve possible lists of devices
+<#assign current_constraint = 1>
 <#list ast.distributions as distribution>
     <#assign total_constraints_this_distribution = distribution.equalConstraints?size + distribution.gteConstraints?size>
-    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#list 1..total_constraints_this_distribution as i>,Constraint${i}</#list>); (!, false) ),
+    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint+i}<#assign current_constraint++></#list>); (!, false) ),
 </#list>
 
 <#list 1..total_constraints as i>
