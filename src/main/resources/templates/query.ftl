@@ -73,7 +73,7 @@ get_distribution_${distribution.name}(${distribution.name}) :-
 <#list ast.distributions as distribution>
 <#assign total_constraints_this_distribution = distribution.equalConstraints?size + distribution.gteConstraints?size>
 <#assign total_constraints += total_constraints_this_distribution>
-get_distribution_allow_drop_${distribution.name}(${distribution.name}<#list 1..total_constraints_this_distribution as i>,Constraint${i}</#list>) :-
+get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_constraints_this_distribution gt 0><#list 1..total_constraints_this_distribution as i>,Constraint${i}</#list></#if>) :-
     get_available_devices(AllAvailableDevices),
 
     <#assign count_constraint=1>
@@ -181,11 +181,11 @@ distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>
 <#-- -------------------------------- -->
 distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list><#list 1..total_constraints as i>,Constraint${i}</#list>) :-
     % retrieve possible lists of devices
-<#assign current_constraint = 0>
+<#assign current_constraint = 1>
 <#list ast.distributions as distribution>
     <#assign total_constraints_this_distribution = distribution.equalConstraints?size + distribution.gteConstraints?size>
-    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint}<#assign current_constraint++></#list>); (!, false) ),
-</#list>
+    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_constraints_this_distribution gt 0><#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint}<#assign current_constraint++></#list>); (!, false) ),
+</#list></#if>
 
 <#list 1..total_constraints as i>
 (Constraint${i} == '' ;(\+(Constraint${i} == ''), writeln('Dropped constraint:'), write(Constraint${i}))),
