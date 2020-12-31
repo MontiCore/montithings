@@ -184,8 +184,8 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
 <#assign current_constraint = 1>
 <#list ast.distributions as distribution>
     <#assign total_constraints_this_distribution = distribution.equalConstraints?size + distribution.gteConstraints?size>
-    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_constraints_this_distribution gt 0><#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint}<#assign current_constraint++></#list>); (!, false) ),
-</#list></#if>
+    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_constraints_this_distribution gt 0><#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint}<#assign current_constraint++></#list></#if>); (!, false) ),
+</#list>
 
 <#list 1..total_constraints as i>
 (Constraint${i} == '' ;(\+(Constraint${i} == ''), writeln('Dropped constraint:'), write(Constraint${i}))),
