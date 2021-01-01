@@ -1,10 +1,10 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname")}
+${tc.signature("comp","compname","className")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${Utils.printTemplateArguments(comp)}
 void
-${compname}${Utils.printFormalTypeParameters(comp)}::run ()
+${className}${Utils.printFormalTypeParameters(comp)}::run ()
 {
 std::cout << "Thread for ${compname} started\n";
 

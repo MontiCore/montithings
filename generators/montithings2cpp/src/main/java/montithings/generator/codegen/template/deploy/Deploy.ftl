@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config")}
+${tc.signature("comp", "compname", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
 #include "${compname}.h"
@@ -11,7 +11,7 @@ ${tc.signature("comp", "compname", "config")}
 #include ${"<chrono>"}
 #include ${"<thread>"}
 
-int main(int argc, char* argv[])
+int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 {
 ${tc.includeArgs("template.deploy.ParameterCheck", [comp, config])}
 ${tc.includeArgs("template.deploy.CommunicationManager", [comp, config])}

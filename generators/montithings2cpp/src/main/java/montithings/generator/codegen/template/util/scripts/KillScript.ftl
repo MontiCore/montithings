@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("components", "config")}
+${tc.signature("components", "config", "existsHWC")}
 
 <#list components as comp >
   killall ${comp}

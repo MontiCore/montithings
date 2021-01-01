@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+${tc.signature("config","existsHWC")}
 @echo off
 
 for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (

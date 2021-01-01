@@ -1,9 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","config")}
+${tc.signature("comp","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
 void
-${comp.name}::publishConnectors ()
+${className}::publishConnectors ()
 {
 <#list comp.getAstNode().getConnectors() as connector>
   <#list connector.getTargetList() as target>

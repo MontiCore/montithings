@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("pack", "compname")}
+${tc.signature("pack", "compname", "existsHWC")}
 How to compile for Arduino-based boards:
 
 1) Copy the folder ${pack} to ${"<Arduino Folder"}/libraries/

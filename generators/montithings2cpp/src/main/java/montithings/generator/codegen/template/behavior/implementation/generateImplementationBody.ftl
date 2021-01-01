@@ -1,17 +1,17 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","isTOP")}
+${tc.signature("comp","compname","className")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign generics = Utils.printFormalTypeParameters(comp)>
 <#if ComponentHelper.hasBehavior(comp)>
     ${Utils.printTemplateArguments(comp)}
-    ${compname}Result${generics} ${compname}Impl<#if isTOP>TOP</#if>${generics}::getInitialValues(){
+    ${compname}Result${generics} ${className}${generics}::getInitialValues(){
     return {};
     }
 
     ${Utils.printTemplateArguments(comp)}
-    ${compname}Result${generics} ${compname}Impl<#if isTOP>TOP</#if>${generics}::compute(${compname}Input${generics}
+    ${compname}Result${generics} ${className}${generics}::compute(${compname}Input${generics}
     ${Identifier.getInputName()}){
     ${compname}Result${generics} result;
     ${ComponentHelper.printStatementBehavior(comp)}
@@ -20,9 +20,9 @@ ${tc.signature("comp","compname","isTOP")}
 </#if>
 
 ${Utils.printTemplateArguments(comp)}
-void ${compname}Impl<#if isTOP>TOP</#if>${generics}::setInstanceName (const std::string &instanceName)
+void ${className}${generics}::setInstanceName (const std::string &instanceName)
 {
 this->instanceName = instanceName;
 }
 
-${tc.includeArgs("template.behavior.implementation.printStateMethods", [comp, isTOP])}
+${tc.includeArgs("template.behavior.implementation.printStateMethods", [comp, className])}

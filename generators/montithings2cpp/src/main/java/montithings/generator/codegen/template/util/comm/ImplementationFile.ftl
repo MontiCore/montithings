@@ -1,9 +1,13 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "config")}
+${tc.signature("comp", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign className = comp.getName() + "Manager">
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
 
-#include "${comp.getName()}Manager.h"
+#include "${className}.h"
 #include "messages/PortToSocket.h"
 <#if config.getSplittingMode().toString() == "LOCAL">
   #include "json/json.hpp"
@@ -16,7 +20,7 @@ ${Utils.printNamespaceStart(comp)}
   using json = nlohmann::json;
 </#if>
 
-${comp.getName()}Manager::${comp.getName()}Manager
+${className}::${className}
 (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp,
 std::string managementPort, std::string communicationPort)
 : comp (comp), managementPort (managementPort), communicationPort (communicationPort)
@@ -28,19 +32,19 @@ portConfigFilePath = "ports/" + comp->getInstanceName () + ".json";
 }
 
 void
-${comp.getName()}Manager::process (std::string msg)
+${className}::process (std::string msg)
 {
   ${tc.includeArgs("template.util.comm.checkForManagementInstructions", [comp, config])}
 }
 
 void
-${comp.getName()}Manager::initializePorts ()
+${className}::initializePorts ()
 {
   ${tc.includeArgs("template.util.comm.initializePorts", [comp, config])}
 }
 
 void
-${comp.getName()}Manager::searchSubcomponents ()
+${className}::searchSubcomponents ()
 {
   ${tc.includeArgs("template.util.comm.searchForSubComps", [comp, config])}
 }

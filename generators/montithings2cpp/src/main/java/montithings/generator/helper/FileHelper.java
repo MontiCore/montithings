@@ -185,4 +185,8 @@ public class FileHelper {
     // cast to ArrayList to File[] and return
     return subPackagesPaths.toArray(new File[subPackagesPaths.size()]);
   }
+
+  public static boolean fileIsInDirectory(File file, File directory) {
+    return file.getAbsolutePath().startsWith(directory.getAbsolutePath());
+  }
 }

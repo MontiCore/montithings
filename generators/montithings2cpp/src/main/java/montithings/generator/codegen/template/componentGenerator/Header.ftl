@@ -1,10 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config", "useWsPorts")}
+${tc.signature("comp", "compname", "config", "useWsPorts", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign GeneratorHelper = tc.instantiate("montithings.generator.helper.GeneratorHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
+<#assign className = compname>
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
 ${Identifier.createInstance(comp)}
 
 #pragma once
@@ -43,7 +47,7 @@ ${Utils.printIncludes(comp, config)}
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
-class ${compname} : public IComponent
+class ${className} : public IComponent
 <#if config.getMessageBroker().toString() == "MQTT">
     , public MqttUser
 </#if>
@@ -85,7 +89,7 @@ TimeMode timeMode =
 
 public:
 ${tc.includeArgs("template.util.ports.printMethodHeaders", [comp.getPorts(), config])}
-${compname}(std::string instanceName<#if comp.getParameters()?has_content>
+${className}(std::string instanceName<#if comp.getParameters()?has_content>
   ,
 </#if>${ComponentHelper.printConstructorArguments(comp)});
 
@@ -108,7 +112,7 @@ void start() override;
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config])}
+    ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config, className])}
 </#if>
 
 ${Utils.printNamespaceEnd(comp)}

@@ -1,7 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "config")}
+${tc.signature("comp", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign className = comp.getName() + "DDSParticipant">
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
 
 #pragma once
 #include ${"<ace/Log_Msg.h>"}
@@ -30,7 +34,7 @@ ${tc.signature("comp", "config")}
 
 ${Utils.printNamespaceStart(comp)}
 
-class ${comp.getName()}DDSParticipant : public DDSParticipant
+class ${className} : public DDSParticipant
 {
 protected:
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}* comp;
@@ -40,8 +44,8 @@ protected:
   std::unique_ptr${"<DDSPort<std::string>>"} connectorPortIn;
 
 public:
-  ${comp.getName()}DDSParticipant (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, int argc, char *argv[]);
-  ~${comp.getName()}DDSParticipant() {}
+  ${className} (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, int argc, char *argv[]);
+  ~${className} {}
 
   /*
    * Initially create ports of this component
