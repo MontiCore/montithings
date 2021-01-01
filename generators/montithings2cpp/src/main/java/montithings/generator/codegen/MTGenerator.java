@@ -230,9 +230,9 @@ public class MTGenerator {
   }
 
   public void generateAdapter(File targetPath, List<String> packageName, String simpleName) {
-    fg.generate(targetPath, simpleName + "AdapterTOP", ".h",
+    fg.generate(targetPath, simpleName + "Adapter", ".h",
       "template/adapter/Header.ftl", packageName, simpleName, config);
-    fg.generate(targetPath, simpleName + "AdapterTOP", ".cpp",
+    fg.generate(targetPath, simpleName + "Adapter", ".cpp",
       "template/adapter/ImplementationFile.ftl", packageName, simpleName, config);
   }
 
