@@ -170,7 +170,7 @@ public class MTGenerator {
 
   public void generateTestMakeFile(File targetPath, ComponentTypeSymbol comp,
     File libraryPath, File[] subPackagesPath) {
-    FileGenerator fg = new FileGenerator(targetPath, targetPath);
+    FileGenerator fg = new FileGenerator(targetPath, hwcDir);
     fg.generate(Paths.get(targetPath.toString(), "test", "gtests").toFile(), "CMakeLists", ".txt",
       "template/util/cmake/GoogleTestParameters.ftl", comp);
     fg.generate(targetPath, "CMakeLists", ".txt",
