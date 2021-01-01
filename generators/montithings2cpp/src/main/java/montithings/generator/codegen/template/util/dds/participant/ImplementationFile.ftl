@@ -7,7 +7,7 @@ ${tc.signature("comp", "config", "existsHWC")}
     <#assign className += "TOP">
 </#if>
 
-#include "${comp.getName()}DDSParticipant.h"
+#include "${className}.h"
 
 ${Utils.printNamespaceStart(comp)}
 

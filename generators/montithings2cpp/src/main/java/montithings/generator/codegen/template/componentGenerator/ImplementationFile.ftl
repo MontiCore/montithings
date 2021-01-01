@@ -8,7 +8,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts", "existsHWC")}
     <#assign className += "TOP">
 </#if>
 
-#include "${compname}.h"
+#include "${className}.h"
 #include ${"<regex>"}
 ${Utils.printNamespaceStart(comp)}
 <#if !Utils.hasTypeParameter(comp)>

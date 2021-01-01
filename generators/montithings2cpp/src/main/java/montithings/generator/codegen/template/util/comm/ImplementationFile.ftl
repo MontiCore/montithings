@@ -7,7 +7,7 @@ ${tc.signature("comp", "config", "existsHWC")}
     <#assign className += "TOP">
 </#if>
 
-#include "${comp.getName()}Manager.h"
+#include "${className}.h"
 #include "messages/PortToSocket.h"
 <#if config.getSplittingMode().toString() == "LOCAL">
   #include "json/json.hpp"
