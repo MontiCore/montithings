@@ -25,7 +25,7 @@ class ${className}
 {
 protected:
 public:
-${className} = default;
+${className}() = default;
 <#list ComponentHelper.getImportStatements(compname,config) as importStatement >
   virtual ${Utils.printCDType(importStatement)} convert(${importStatement.getImportClass()} element) = 0;
   virtual ${importStatement.getImportClass()} convert(${Utils.printCDType(importStatement)} element) = 0;
