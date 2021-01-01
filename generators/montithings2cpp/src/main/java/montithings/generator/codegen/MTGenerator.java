@@ -13,6 +13,7 @@ import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
 import mtconfig._symboltable.HookpointSymbol;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -25,37 +26,46 @@ import java.util.*;
  **/
 public class MTGenerator {
 
-  public static void generateAll(File targetPath, File hwc, ComponentTypeSymbol comp,
-    String compname, ConfigParams config, boolean generateDeploy) {
+  protected File genSrcDir;
+  protected File hwcDir;
+  protected ConfigParams config;
+  protected FileGenerator fg;
+
+  public MTGenerator(@NotNull File genSrcDir, @NotNull File hwcDir, @NotNull ConfigParams config) {
+    this.genSrcDir = genSrcDir;
+    this.hwcDir = hwcDir;
+    this.config = config;
+    this.fg = new FileGenerator(genSrcDir, hwcDir);
+  }
+
+  public void generateAll(File targetPath, ComponentTypeSymbol comp, boolean generateDeploy) {
     Identifier.createInstance(comp);
+    String compname = comp.getName();
 
     boolean useWsPorts = (config.getSplittingMode() != ConfigParams.SplittingMode.OFF
       && generateDeploy);
 
-    toFile(targetPath, compname + "Input", "template/input/InputHeader.ftl", ".h", comp, compname,
-      config);
-    toFile(targetPath, compname + "Input", "template/input/ImplementationFile.ftl", ".cpp", comp,
-      compname, config);
-    toFile(targetPath, compname + "Result", "template/result/ResultHeader.ftl", ".h", comp,
-      compname, config);
-    toFile(targetPath, compname + "Result", "template/result/ImplementationFile.ftl", ".cpp", comp,
-      compname, config);
-    toFile(targetPath, compname, "template/componentGenerator/Header.ftl", ".h", comp, compname,
-      config, useWsPorts);
-    toFile(targetPath, compname, "template/componentGenerator/ImplementationFile.ftl", ".cpp", comp,
-      compname, config, useWsPorts);
+    fg.generate(targetPath, compname + "Input", ".h",
+      "template/input/InputHeader.ftl", comp, compname, config);
+    fg.generate(targetPath, compname + "Input", ".cpp",
+      "template/input/ImplementationFile.ftl", comp, compname, config);
+    fg.generate(targetPath, compname + "Result", ".h",
+      "template/result/ResultHeader.ftl", comp, compname, config);
+    fg.generate(targetPath, compname + "Result", ".cpp",
+      "template/result/ImplementationFile.ftl", comp, compname, config);
+    fg.generate(targetPath, compname, ".h",
+      "template/componentGenerator/Header.ftl", comp, compname, config, useWsPorts);
+    fg.generate(targetPath, compname, ".cpp",
+      "template/componentGenerator/ImplementationFile.ftl", comp, compname, config, useWsPorts);
 
     if (comp.isAtomic()) {
-      boolean existsHWC = FileHelper.existsHWCClass(hwc, comp.getPackageName() + "." + compname);
-      generateBehaviorImplementation(comp, config, targetPath, compname, existsHWC);
+      generateBehaviorImplementation(comp, targetPath);
     }
 
     // Generate inner components
     for (ComponentTypeSymbol innerComp : comp.getInnerComponents()) {
       //TODO Fix hwc path for inner components
-
-      generateAll(targetPath.toPath().resolve(compname + "-Inner").toFile(), hwc, innerComp,
-        innerComp.getName(), config, false);
+      generateAll(targetPath.toPath().resolve(compname + "-Inner").toFile(), innerComp, false);
     }
 
     // Generate deploy class
@@ -65,178 +75,164 @@ public class MTGenerator {
         File sketchDirectory = new File(
           targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
         sketchDirectory.mkdir();
-        toFile(sketchDirectory, "Deploy" + compname, "template/deploy/DeployArduino.ftl", ".ino",
-          comp, compname);
-        toFile(targetPath.getParentFile(), "README",
-          "template/util/arduinoReadme/ArduinoReadme.ftl", ".txt", targetPath.getName(), compname);
+        fg.generate(sketchDirectory, "Deploy" + compname, ".ino",
+          "template/deploy/DeployArduino.ftl", comp, compname);
+        fg.generate(targetPath.getParentFile(),
+          "README", ".txt", "template/util/arduinoReadme/ArduinoReadme.ftl", targetPath.getName(),
+          compname);
       }
       else {
-        toFile(targetPath, "Deploy" + compname, "template/deploy/Deploy.ftl", ".cpp", comp,
-          compname, config);
+        fg.generate(targetPath, "Deploy" + compname, ".cpp", "template/deploy/Deploy.ftl",
+          comp, compname, config);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
           if (config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
-            toFile(targetPath, compname + "Manager", "template/util/comm/Header.ftl", ".h", comp,
-              config);
-            toFile(targetPath, compname + "Manager", "template/util/comm/ImplementationFile.ftl",
-              ".cpp", comp, config);
+            fg.generate(targetPath, compname + "Manager", ".h", "template/util/comm/Header.ftl",
+              comp, config);
+            fg.generate(targetPath, compname + "Manager",
+              ".cpp",
+              "template/util/comm/ImplementationFile.ftl", comp, config);
           }
           else if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
-            toFile(targetPath, compname + "DDSParticipant",
-              "template/util/dds/participant/Header.ftl", ".h", comp, config);
-            toFile(targetPath, compname + "DDSParticipant",
-              "template/util/dds/participant/ImplementationFile.ftl", ".cpp", comp, config);
+            fg.generate(targetPath,
+              compname + "DDSParticipant", ".h", "template/util/dds/participant/Header.ftl", comp,
+              config);
+            fg.generate(targetPath,
+              compname + "DDSParticipant", ".cpp",
+              "template/util/dds/participant/ImplementationFile.ftl", comp, config);
           }
         }
       }
     }
   }
 
-  public static void generateBehaviorImplementation(ComponentTypeSymbol comp, ConfigParams config,
-    File targetPath, String compname, boolean existsHWC) {
-    if (!existsHWC) {
-      toFile(targetPath, compname + "Impl",
-        "template/behavior/implementation/ImplementationHeader.ftl"
-        , ".h", comp, compname, config, existsHWC);
-      toFile(targetPath, compname + "Impl",
-        "template/behavior/implementation/ImplementationFile.ftl", ".cpp", comp, compname, config,
-        existsHWC);
-    }
-    else {
-      toFile(targetPath, compname + "ImplTOP",
-        "template/behavior/implementation/ImplementationHeader.ftl"
-        , ".h", comp, compname, config, existsHWC);
-      toFile(targetPath, compname + "ImplTOP",
-        "template/behavior/implementation/ImplementationFile.ftl", ".cpp", comp, compname, config,
-        existsHWC);
-    }
+  public void generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath) {
+    fg.generate(targetPath, comp.getName() + "Impl", ".h",
+        "template/behavior/implementation/ImplementationHeader.ftl", comp, comp.getName(), config);
+    fg.generate(targetPath, comp.getName() + "Impl", ".cpp",
+        "template/behavior/implementation/ImplementationFile.ftl", comp, comp.getName(), config);
   }
 
-  static private void toFile(File targetPath, String name, String template, String fileExtension,
-    Object... templateArguments) {
-    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
-    Log.debug("Writing to file " + path + ".", "MTGenerator");
-    GeneratorSetup setup = new GeneratorSetup();
-    setup.setTracing(false);
-    //setup.setAdditionalTemplatePaths(Collections.singletonList(new File("src/main/java/montithings/generator/codegen")));
-
-    GeneratorEngine engine = new GeneratorEngine(setup);
-
-    engine.generateNoA(template, path, templateArguments);
-  }
-
-  static private void makeExecutable(File targetPath, String name, String fileExtension) {
+  protected void makeExecutable(File targetPath, String name, String fileExtension) {
     Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
     path.toFile().setExecutable(true);
   }
 
-  public static void generateBuildScript(File targetPath, ConfigParams config) {
-    toFile(targetPath, "build", "template/util/scripts/BuildScript.ftl", ".sh", config);
+  public void generateBuildScript(File targetPath) {
+    fg.generate(targetPath, "build", ".sh",
+      "template/util/scripts/BuildScript.ftl", config);
     makeExecutable(targetPath, "build", ".sh");
-    toFile(targetPath, "build", "template/util/scripts/WinBuildScript.ftl", ".bat", config);
+
+    fg.generate(targetPath, "build", ".bat",
+      "template/util/scripts/WinBuildScript.ftl", config);
     makeExecutable(targetPath, "build", ".bat");
 
-    toFile(targetPath, "reformatCode", "template/util/scripts/ReformatScript.ftl", ".sh");
-    toFile(targetPath, "", "template/util/scripts/ClangFormat.ftl", ".clang-format");
+    fg.generate(targetPath, "reformatCode", ".sh",
+      "template/util/scripts/ReformatScript.ftl");
     makeExecutable(targetPath, "reformatCode", ".sh");
 
-    generateDDSDCPSConfig(targetPath, config);
+    fg.generate(targetPath, "", ".clang-format",
+      "template/util/scripts/ClangFormat.ftl");
+
+    generateDDSDCPSConfig(targetPath);
   }
 
-  public static void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp,
-    ConfigParams config) {
-    toFile(targetPath, "Dockerfile", "template/util/scripts/DockerfileScript.ftl", "", comp,
-      config);
-    toFile(targetPath, "dockerBuild", "template/util/scripts/DockerBuild.ftl", ".sh", comp, config);
+  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp) {
+    fg.generate(targetPath, "Dockerfile", "",
+      "template/util/scripts/DockerfileScript.ftl", comp, config);
+    fg.generate(targetPath, "dockerBuild", ".sh",
+      "template/util/scripts/DockerBuild.ftl", comp, config);
     makeExecutable(targetPath, "dockerBuild", ".sh");
-    toFile(targetPath, "dockerRun", "template/util/scripts/DockerRun.ftl", ".sh", comp, config);
+    fg.generate(targetPath, "dockerRun", ".sh",
+      "template/util/scripts/DockerRun.ftl", comp, config);
     makeExecutable(targetPath, "dockerRun", ".sh");
   }
 
-  public static void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath,
-    File libraryPath, File[] subPackagesPath, ConfigParams config) {
-    toFile(targetPath, "CMakeLists", "template/util/cmake/TopLevelCMake.ftl", ".txt",
+  public void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File libraryPath,
+    File[] subPackagesPath) {
+    fg.generate(targetPath, "CMakeLists", ".txt",
+      "template/util/cmake/TopLevelCMake.ftl",
       targetPath.listFiles(),
       comp,
-      targetPath.toPath().toAbsolutePath().relativize(hwcPath.toPath().toAbsolutePath()).toString(),
+      targetPath.toPath().toAbsolutePath().relativize(hwcDir.toPath().toAbsolutePath()).toString(),
       targetPath.toPath().toAbsolutePath().relativize(libraryPath.toPath().toAbsolutePath())
-        .toString(),
-      subPackagesPath, config, false);
+        .toString(), subPackagesPath, config, false);
   }
 
-  public static void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
+  public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
     List sortedDirs = new ArrayList<String>();
     sortedDirs.addAll(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
-    toFile(targetPath, "CMakeLists", "template/util/cmake/CMakeForSubdirectories.ftl", ".txt",
-      sortedDirs);
+
+    fg.generate(targetPath, "CMakeLists", ".txt",
+      "template/util/cmake/CMakeForSubdirectories.ftl", sortedDirs);
   }
 
-  public static void generateTestMakeFile(File targetPath, ComponentTypeSymbol comp, File hwcPath,
-    File libraryPath, File[] subPackagesPath, ConfigParams config) {
-    toFile(Paths.get(targetPath.toString(), "test", "gtests").toFile(),
-      "CMakeLists", "template/util/cmake/GoogleTestParameters.ftl", ".txt", comp);
-    toFile(targetPath, "CMakeLists", "template/util/cmake/LinkTestLibraries.ftl", ".txt",
+  public void generateTestMakeFile(File targetPath, ComponentTypeSymbol comp,
+    File libraryPath, File[] subPackagesPath) {
+    fg.generate(Paths.get(targetPath.toString(), "test", "gtests").toFile(), "CMakeLists", ".txt",
+      "template/util/cmake/GoogleTestParameters.ftl", comp);
+    fg.generate(targetPath, "CMakeLists", ".txt",
+      "template/util/cmake/LinkTestLibraries.ftl",
       targetPath.listFiles(),
       comp,
-      targetPath.toPath().toAbsolutePath().relativize(hwcPath.toPath().toAbsolutePath()).toString(),
+      targetPath.toPath().toAbsolutePath().relativize(hwcDir.toPath().toAbsolutePath()).toString(),
       targetPath.toPath().toAbsolutePath().relativize(libraryPath.toPath().toAbsolutePath())
-        .toString(),
-      subPackagesPath, config, true);
+        .toString(), subPackagesPath, config, true);
   }
 
-  public static void generateScripts(File targetPath, ComponentTypeSymbol comp, ConfigParams config,
-    List<String> subdirectories) {
-    List sortedDirs = new ArrayList<String>();
-    sortedDirs.addAll(subdirectories);
+  public void generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> subdirectories) {
+    List<String> sortedDirs = new ArrayList<>(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
-    toFile(targetPath, "run", "template/util/scripts/RunScript.ftl", ".sh", comp, config);
-    toFile(targetPath, "kill", "template/util/scripts/KillScript.ftl", ".sh", sortedDirs, config);
-
+    fg.generate(targetPath, "run", ".sh",
+      "template/util/scripts/RunScript.ftl", comp, config);
     makeExecutable(targetPath, "run", ".sh");
+
+    fg.generate(targetPath, "kill", ".sh",
+      "template/util/scripts/KillScript.ftl", sortedDirs, config);
     makeExecutable(targetPath, "kill", ".sh");
   }
 
-  public static void generateDDSDCPSConfig(File targetPath, ConfigParams config) {
-    toFile(targetPath, "dcpsconfig", "template/util/dds/DCPSConfig.ftl", ".ini", config);
+  public void generateDDSDCPSConfig(File targetPath) {
+    fg.generate(targetPath, "dcpsconfig", ".ini",
+      "template/util/dds/DCPSConfig.ftl", config);
   }
 
-  public static void generateTestScript(File targetPath, ConfigParams config) {
-    toFile(targetPath, "runTests", "template/util/scripts/RunTests.ftl", ".sh", config);
+  public void generateTestScript(File targetPath) {
+    FileGenerator fg = new FileGenerator(targetPath, targetPath);
+    fg.generate(targetPath, "runTests", ".sh",
+      "template/util/scripts/RunTests.ftl", config);
     makeExecutable(targetPath, "runTests", ".sh");
   }
 
-  public static void generatePortJson(File targetPath, ComponentTypeSymbol comp,
-    ConfigParams config) {
+  public void generatePortJson(File targetPath, ComponentTypeSymbol comp) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
       Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + "ports");
-      toFile(path.toFile(), comp.getFullName(), "template/util/comm/PortJson.ftl", ".json", comp,
-        config, comp.getFullName());
+      fg.generate(path.toFile(), comp.getFullName(), ".json",
+        "template/util/comm/PortJson.ftl", comp, config, comp.getFullName());
       for (ComponentInstanceSymbol subcomp : comp.getSubComponents()) {
-        generatePortJson(targetPath, subcomp, config, comp.getFullName());
+        generatePortJson(targetPath, subcomp, comp.getFullName());
       }
     }
   }
 
-  public static void generatePortJson(File targetPath, ComponentInstanceSymbol comp,
-    ConfigParams config, String prefix) {
+  public void generatePortJson(File targetPath, ComponentInstanceSymbol comp, String prefix) {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
       Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + "ports");
-      toFile(path.toFile(), prefix + "." + comp.getName(), "template/util/comm/PortJson.ftl",
-        ".json", comp.getType(), config, prefix + "." + comp.getName());
+      fg.generate(path.toFile(), prefix + "." + comp.getName(), ".json",
+        "template/util/comm/PortJson.ftl", comp.getType(), config, prefix + "." + comp.getName());
       for (ComponentInstanceSymbol subcomp : comp.getType().getSubComponents()) {
-        generatePortJson(targetPath, subcomp, config, prefix + "." + comp.getName());
+        generatePortJson(targetPath, subcomp, prefix + "." + comp.getName());
       }
     }
   }
 
-  public static void generateAdapter(File targetPath, List<String> packageName, String simpleName,
-    ConfigParams config) {
-    toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/Header.ftl", ".h", packageName,
-      simpleName, config);
-    toFile(targetPath, simpleName + "AdapterTOP", "template/adapter/ImplementationFile.ftl", ".cpp",
-      packageName, simpleName, config);
+  public void generateAdapter(File targetPath, List<String> packageName, String simpleName) {
+    fg.generate(targetPath, simpleName + "AdapterTOP", ".h",
+      "template/adapter/Header.ftl", packageName, simpleName, config);
+    fg.generate(targetPath, simpleName + "AdapterTOP", ".cpp",
+      "template/adapter/ImplementationFile.ftl", packageName, simpleName, config);
   }
 
   /**

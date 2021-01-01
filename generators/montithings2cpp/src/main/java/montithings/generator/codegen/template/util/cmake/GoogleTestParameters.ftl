@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp")}
+${tc.signature("comp", "existsHWC")}
 project(gtests)
 
 enable_testing()

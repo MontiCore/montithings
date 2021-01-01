@@ -1,8 +1,13 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("packageName", "compname", "config")}
+${tc.signature("packageName", "compname", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign escape = Utils.escapePackage(packageName)>
+<#assign className = compname + "Adapter">
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
+
 #pragma once
 #include ${"<string>"}
 #include "Port.h"
@@ -16,11 +21,11 @@ ${Utils.printIncludes(escape, ComponentHelper.getImportStatements(compname,confi
 
 ${tc.includeArgs("template.adapter.printNamespaceStart", [packageName])}
 
-class ${compname}AdapterTOP
+class ${className}
 {
 protected:
 public:
-${compname}AdapterTOP() = default;
+${className} = default;
 <#list ComponentHelper.getImportStatements(compname,config) as importStatement >
   virtual ${Utils.printCDType(importStatement)} convert(${importStatement.getImportClass()} element) = 0;
   virtual ${importStatement.getImportClass()} convert(${Utils.printCDType(importStatement)} element) = 0;

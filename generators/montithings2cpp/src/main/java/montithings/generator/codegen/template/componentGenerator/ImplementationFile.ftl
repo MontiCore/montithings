@@ -1,14 +1,18 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config", "useWsPorts")}
+${tc.signature("comp", "compname", "config", "useWsPorts", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign className = compname>
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
 
 #include "${compname}.h"
 #include ${"<regex>"}
 ${Utils.printNamespaceStart(comp)}
 <#if !Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config])}
+    ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}
 

@@ -1,11 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname")}
+${tc.signature("comp","compname","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
 ${Utils.printTemplateArguments(comp)}
-void ${compname}${Utils.printFormalTypeParameters(comp)}::compute() {
+void ${className}${Utils.printFormalTypeParameters(comp)}::compute() {
 if (shouldCompute())
 {
 <#if ComponentHelper.retainState(comp)>

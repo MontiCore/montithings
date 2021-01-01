@@ -1,10 +1,10 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","config")}
+${tc.signature("comp","compname","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF")>
 ${Utils.printTemplateArguments(comp)}
-${compname}${Utils.printFormalTypeParameters(comp)}::${compname}(std::string instanceName<#if comp.getParameters()?has_content>
+${className}${Utils.printFormalTypeParameters(comp)}::${className}(std::string instanceName<#if comp.getParameters()?has_content>
   ,
 </#if>${Utils.printConfigurationParametersAsList(comp)})
 <#if comp.isAtomic() || comp.getParameters()?has_content || shouldPrintSubcomponents>

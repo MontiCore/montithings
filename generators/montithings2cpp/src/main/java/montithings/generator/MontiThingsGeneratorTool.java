@@ -60,12 +60,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected static final String TOOL_NAME = "MontiThingsGeneratorTool";
 
+  protected MTGenerator mtg;
+
   public void generate(File modelPath, File target, File hwcPath, File testPath,
     ConfigParams config) {
 
     //Log.initWARN();
 
     ModelPath mp = new ModelPath(modelPath.toPath());
+    mtg = new MTGenerator(target, hwcPath, config);
 
     /* ============================================================ */
     /* ==================== Copy HWC to target ==================== */
@@ -146,18 +149,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         compTarget = Paths.get(target.getAbsolutePath(), model).toFile();
         generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab,
           compTarget, hwcPath, config);
-        MTGenerator.generateMakeFileForSubdirs(target, models.getMontithings());
+        mtg.generateMakeFileForSubdirs(target, models.getMontithings());
 
         if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
           ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-          MTGenerator.generatePortJson(compTarget, comp, config);
+          mtg.generatePortJson(compTarget, comp);
         }
 
         generateCDEAdapter(compTarget, config);
         generateCD(modelPath, compTarget);
       }
       if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
-        MTGenerator.generateDDSDCPSConfig(compTarget, config);
+        mtg.generateDDSDCPSConfig(compTarget);
       }
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
@@ -168,12 +171,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       generateCDEAdapter(target, config);
       generateCD(modelPath, target);
     }
-    MTGenerator.generateBuildScript(target, config);
+    mtg.generateBuildScript(target);
 
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
       if (ComponentHelper.isApplication(comp)) {
-        MTGenerator.generateDockerfileScript(target, comp, config);
+        mtg.generateDockerfileScript(target, comp);
       }
     }
 
@@ -214,31 +217,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
       checkCoCos(comp.getAstNode());
     }
-
-  }
-
-  protected void checkCds(List<String> foundModels, ICD4CodeGlobalScope symTab) {
-    /*
-    for (String model : foundModels) {
-      ASTCDCompilationUnit cdAST = null;
-      try {
-        cdAST = new CD4AnalysisParser().parseCDCompilationUnit(model)
-          .orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: " + model));
-      }
-      catch (IOException e) {
-        Log.error("File '" + model + "' CD4A artifact was not found");
-      }
-
-      // parse + resolve model
-      Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      parseCD(model);
-      createSymbolTable(symTab);
-
-      // check cocos
-      Log.info("Check model: " + model, "MontiThingsGeneratorTool");
-      new CD4CodeCoCos().createNewChecker().checkAll(cdAST);
-    }
-     */
   }
 
   protected void checkCdExtensionModels(List<String> foundCDExtensionModels, File modelPath,
@@ -349,9 +327,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     // Generate Files
-    MTGenerator.generateAll(
-      Paths.get(target.getAbsolutePath(), Names.getPathFromPackage(comp.getPackageName()))
-        .toFile(), hwcPath, comp, compname, config, generateDeploy);
+    mtg.generateAll(Paths.get(target.getAbsolutePath(),
+      Names.getPathFromPackage(comp.getPackageName())).toFile(),
+      comp, generateDeploy);
 
     generateHwcPort(target, config, comp);
 
@@ -389,10 +367,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       if (config.getTargetPlatform()
         != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
         Log.info("Generate CMake file", "MontiThingsGeneratorTool");
-        MTGenerator.generateMakeFile(target, comp, hwcPath, libraryPath,
-          subPackagesPath, config);
+        mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          MTGenerator.generateScripts(target, comp, config, models.getMontithings());
+          mtg.generateScripts(target, comp, models.getMontithings());
         }
       }
     }
@@ -420,9 +397,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           String simpleName = unit.getAstNode().getName();
           List<String> packageName = unit.getAstNode().getPackageList();
 
-          MTGenerator.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(),
+          mtg.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(),
             Names.getPathFromPackage(Names.getQualifiedName(packageName))).toFile(), packageName,
-            simpleName, config);
+            simpleName);
         }
       }
     }
@@ -444,10 +421,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         File[] subPackagesPath = getSubPackagesPath(modelPath.getAbsolutePath());
 
         // 6 generate make file
-        if (config.getTargetPlatform()
-          != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
-          MTGenerator.generateTestMakeFile(target.toFile(), comp, hwcPath, libraryPath,
-            subPackagesPath, config);
+        if (config.getTargetPlatform() != ConfigParams.TargetPlatform.ARDUINO) {
+          // Arduino uses its own build system
+          mtg.generateTestMakeFile(target.toFile(), comp, libraryPath, subPackagesPath);
         }
       }
     }

@@ -1,11 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","isTOP")}
+${tc.signature("comp","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign generics = Utils.printFormalTypeParameters(comp)>
 
 ${Utils.printTemplateArguments(comp)}
-void ${comp.name}Impl<#if isTOP>TOP</#if>${generics}::storeState ()
+void ${className}${generics}::storeState ()
 {
 // serialize state
 json state;
@@ -26,7 +26,7 @@ storeFile.close ();
 
 
 ${Utils.printTemplateArguments(comp)}
-bool ${comp.name}Impl<#if isTOP>TOP</#if>${generics}::restoreState ()
+bool ${className}${generics}::restoreState ()
 {
 try
 {

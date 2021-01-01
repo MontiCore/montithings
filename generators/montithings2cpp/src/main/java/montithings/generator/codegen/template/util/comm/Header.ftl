@@ -1,7 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "config")}
+${tc.signature("comp", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign className = comp.getName() + "Manager">
+<#if existsHWC>
+ <#assign className += "TOP">
+</#if>
 
 #pragma once
 #include "${comp.getName()}.h"
@@ -10,7 +14,7 @@ ${tc.signature("comp", "config")}
 
 ${Utils.printNamespaceStart(comp)}
 
-class ${comp.getName()}Manager : public ManagementMessageProcessor
+class ${className} : public ManagementMessageProcessor
 {
 protected:
 montithings::hierarchy::${comp.getName()}* comp;
@@ -22,7 +26,7 @@ std::string communicationPort;
 </#if>
 
 public:
-${comp.getName()}Manager (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, std::string managementPort, std::string communicationPort);
+${className} (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, std::string managementPort, std::string communicationPort);
 
 /*
  * Process management instructions from the enclosing component

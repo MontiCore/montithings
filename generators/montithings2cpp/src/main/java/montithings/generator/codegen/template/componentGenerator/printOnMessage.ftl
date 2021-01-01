@@ -1,9 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","config")}
+${tc.signature("comp","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
 void
-${comp.name}::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message)
+${className}::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message)
 {
 std::string topic = std::string ((char *) message->topic);
 std::string payload = std::string ((char *) message->payload, message->payloadlen);

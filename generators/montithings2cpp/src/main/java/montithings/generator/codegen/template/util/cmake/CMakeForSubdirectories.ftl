@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("subdirectories")}
+${tc.signature("subdirectories", "existsHWC")}
 
 cmake_minimum_required (VERSION 3.8)
 project ("MontiThings Application")

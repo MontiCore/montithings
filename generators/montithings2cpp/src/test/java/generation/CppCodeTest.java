@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,14 +60,15 @@ public class CppCodeTest {
     "interfaceComponentsBindingTest"
     })
   public void CPPTests(String testName) {
+    File models = Paths.get(MODELPATH.toString(), testName).toFile();
+    File target = Paths.get(TARGETPATH.toString(), testName, "generated-test-sources/").toFile();
+    File hwc = Paths.get(HWCPATH.toString(), testName).toFile();
+    File test = Paths.get(TESTPATH.toString(), testName).toFile();
+
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(
-      Paths.get(MODELPATH.toString(), testName).toFile(),
-      Paths.get(TARGETPATH.toString(), testName, "generated-test-sources/").toFile(),
-      Paths.get(HWCPATH.toString(), testName).toFile(),
-      Paths.get(TESTPATH.toString(), testName).toFile(),
-      setup(testName));
-    MTGenerator.generateTestScript(Paths.get(TARGETPATH.toString()).toFile(), setup(testName));
+    script.generate(models, target, hwc, test, setup(testName));
+    MTGenerator mtg = new MTGenerator(target, hwc, setup(testName));
+    mtg.generateTestScript(Paths.get(TARGETPATH.toString()).toFile());
   }
 
 }

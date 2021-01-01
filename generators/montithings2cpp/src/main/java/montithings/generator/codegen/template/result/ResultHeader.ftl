@@ -1,8 +1,12 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config")}
+${tc.signature("comp", "compname", "config", "existsHWC")}
 
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign className = compname + "Result">
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
 
 #pragma once
 #include ${"<string>"}
@@ -17,7 +21,7 @@ ${Utils.printIncludes(comp, config)}
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
-class ${compname}Result
+class ${className}
 <#if comp.isPresentParentComponent()> :
     ${Utils.printSuperClassFQ(comp)}Result
 <#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
@@ -33,9 +37,9 @@ protected:
   tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()};
 </#list>
 public:
-${compname}Result() = default;
+${className}() = default;
 <#if !(comp.getAllOutgoingPorts()?size == 0)>
-    ${compname}Result(<#list comp.getAllOutgoingPorts() as port > ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
+    ${className}(<#list comp.getAllOutgoingPorts() as port > ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
     ${port.getName()}<#sep>,</#sep>
 </#list>);
 </#if>
@@ -53,6 +57,6 @@ ${compname}Result() = default;
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.result.generateResultBody", [comp, compname, config])}
+    ${tc.includeArgs("template.result.generateResultBody", [comp, compname, config, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

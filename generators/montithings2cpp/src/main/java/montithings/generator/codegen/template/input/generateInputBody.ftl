@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config")}
+${tc.signature("comp", "compname", "config", "className")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
@@ -7,7 +7,7 @@ ${tc.signature("comp", "compname", "config")}
 <#if !isBatch>
     <#if !(comp.getAllIncomingPorts()?size == 0)>
         ${Utils.printTemplateArguments(comp)}
-        ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::${compname}Input(
+        ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
         <#list comp.getAllIncomingPorts() as port>
             tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
             <#sep>,</#sep>
@@ -28,14 +28,14 @@ ${tc.signature("comp", "compname", "config")}
     <#if port.isIncoming()>
         ${Utils.printTemplateArguments(comp)}
         std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>
-        ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}() const
+        ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}() const
         {
         return ${port.getName()};
         }
 
         ${Utils.printTemplateArguments(comp)}
         void
-        ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::add${port.getName()?cap_first}Element(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> element)
+        ${className}${Utils.printFormalTypeParameters(comp, false)}::add${port.getName()?cap_first}Element(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> element)
         {
         if (element)
         {
@@ -45,7 +45,7 @@ ${tc.signature("comp", "compname", "config")}
 
         ${Utils.printTemplateArguments(comp)}
         void
-        ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> vector)
+        ${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(std::vector<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> vector)
         {
         this->${port.getName()} = std::move(vector);
         }
@@ -56,14 +56,14 @@ ${tc.signature("comp", "compname", "config")}
     <#if port.isIncoming()>
         ${Utils.printTemplateArguments(comp)}
         tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>
-        ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}() const
+        ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}() const
         {
         return ${port.getName()};
         }
 
         ${Utils.printTemplateArguments(comp)}
         void
-        ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> element)
+        ${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> element)
         {
         this->${port.getName()} = std::move(element);
         }
@@ -75,7 +75,7 @@ ${tc.signature("comp", "compname", "config")}
                 <#assign adapterName = fullImportStatemantName[0]+"Adapter">
 
                 tl::optional<${cdeImportStatementOpt.get().getImportClass().toString()}>
-                ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Adap() const
+                ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Adap() const
                 {
                 if (!get${port.getName()?cap_first}().has_value()) {
                 return {};
@@ -86,7 +86,7 @@ ${tc.signature("comp", "compname", "config")}
                 }
 
                 void
-                ${compname}Input${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()} element)
+                ${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()} element)
                 {
                 ${adapterName?cap_first} ${adapterName?uncap_first};
                 this->${port.getName()} = ${adapterName?uncap_first}.convert(element);

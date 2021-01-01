@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname")}
+${tc.signature("comp", "compname", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
 #include "${compname}.h"
@@ -8,7 +8,7 @@ ${ComponentHelper.printPackageNamespaceForComponent(comp)}${compname} cmp;
 const long interval = ${ComponentHelper.getExecutionIntervalInMillis(comp)};
 unsigned long previousMillis = 0;
 
-void setup() {
+void setup<#if existsHWC>TOP</#if>() {
 Serial.begin(9600);
 cmp.setUp(<#if ComponentHelper.isTimesync(comp)>
   TIMESYNC
@@ -21,7 +21,7 @@ cmp.init();
 </#if>
 }
 
-void loop() {
+void loop<#if existsHWC>TOP</#if>() {
 <#if ComponentHelper.isTimesync(comp)>
   unsigned long currentMillis = millis();
 

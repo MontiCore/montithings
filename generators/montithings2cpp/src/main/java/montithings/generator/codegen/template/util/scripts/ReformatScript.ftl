@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
+${tc.signature("existsHWC")}
 
 # Check if clang-format is installed
 which clang-format > /dev/null
