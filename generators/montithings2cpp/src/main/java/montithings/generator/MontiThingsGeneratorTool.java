@@ -146,10 +146,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       File compTarget = target;
 
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+        mtg.generateMakeFileForSubdirs(target, models.getMontithings());
+
         compTarget = Paths.get(target.getAbsolutePath(), model).toFile();
+        mtg = new MTGenerator(compTarget, hwcPath, config);
         generateCppForSubcomponents(model, modelPath, models.getMontithings(), symTab,
           compTarget, hwcPath, config);
-        mtg.generateMakeFileForSubdirs(target, models.getMontithings());
 
         if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
           ComponentTypeSymbol comp = modelToSymbol(model, symTab);
@@ -165,6 +167,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       generateCppForComponent(model, symTab, compTarget, hwcPath, config);
       generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
+      mtg = new MTGenerator(target, hwcPath, config);
     }
 
     if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
