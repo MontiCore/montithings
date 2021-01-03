@@ -544,6 +544,12 @@ public class ComponentHelper {
       .or(50);
   }
 
+  public static boolean hasUpdateInterval(ComponentTypeSymbol comp) {
+    return !elementsOf(comp)
+      .filter(ASTCalculationInterval.class)
+      .isEmpty();
+  }
+
   /**
    * Gets a string that corresponds to the update interval of the component in CPP code
    *

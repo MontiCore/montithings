@@ -65,7 +65,8 @@ protected:
 ${tc.includeArgs("template.util.ports.printVars", [comp, comp.getPorts(), config])}
 ${Utils.printVariables(comp, config)}
 
-<#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters --><#-- Utils.printConfigParameters(comp) -->
+<#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters -->
+<#-- Utils.printConfigParameters(comp) -->
 std::vector< std::thread > threads;
 TimeMode timeMode = 
 <#if ComponentHelper.isTimesync(comp)>
@@ -79,7 +80,6 @@ TimeMode timeMode =
     </#if>
     ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}
 <#else>
-
   ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
   void initialize();
@@ -109,6 +109,7 @@ void init() override;
 void compute() override;
 bool shouldCompute();
 void start() override;
+void onEvent () override;
 };
 
 <#if Utils.hasTypeParameter(comp)>

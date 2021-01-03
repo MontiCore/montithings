@@ -2,38 +2,43 @@
 // (c) https://github.com/MontiCore/monticore
 
 #pragma once
-#include "tl/optional.hpp"
-#include "sole/sole.hpp"
+#include "EventObserver.h"
+#include "EventSource.h"
+#include "UniqueElement.h"
 #include "rigtorp/SPSCQueue.h"
+#include "sole/sole.hpp"
+#include "string"
+#include "tl/optional.hpp"
 #include <map>
 #include <mutex>
-#include "UniqueElement.h"
-#include "string"
 
-template<typename T>
-class MessageProvider
+template <typename T>
+class MessageProvider : public virtual EventSource
 {
-  public:
-  MessageProvider ()
-  {
-  };
+public:
+  MessageProvider (){};
 
-  protected:
+protected:
   typedef std::map<sole::uuid, std::pair<rigtorp::SPSCQueue<T>, std::mutex> > map_type;
   map_type queueMap;
 
-  public:
+public:
   /* ============================================================ */
   /* ========================= Management ======================= */
   /* ============================================================ */
 
-  /**
-   * Registers an element that wants to receive messages from this message provider
-   * \param requester uuid of the element that requests messages
-   */
-  virtual void registerListeningPort (sole::uuid requester)
+  void
+  attach (EventObserver *observer) override
   {
-    this->queueMap[requester];
+    EventSource::attach (observer);
+    this->queueMap[observer->getUuid ()];
+  }
+
+  void
+  detach (EventObserver *observer) override
+  {
+    EventSource::detach (observer);
+    this->queueMap.erase (observer->getUuid ());
   }
 
   /**
@@ -51,7 +56,8 @@ class MessageProvider
    * \param requester UUID of the element requesting a new message
    * \return true iff there is a message for the requesting element
    */
-  virtual bool hasValue (sole::uuid requester)
+  virtual bool
+  hasValue (sole::uuid requester)
   {
     this->queueMap[requester].second.lock ();
     if (this->queueMap[requester].first.front ())
@@ -72,7 +78,8 @@ class MessageProvider
    * \param requester the uuid of the element requesting a message
    * \return the next message for the requester, empty optional if no message present
    */
-  virtual tl::optional<T> getCurrentValue (sole::uuid requester)
+  virtual tl::optional<T>
+  getCurrentValue (sole::uuid requester)
   {
     updateMessageSource ();
 
@@ -95,4 +102,3 @@ class MessageProvider
     return currentValue;
   }
 };
-

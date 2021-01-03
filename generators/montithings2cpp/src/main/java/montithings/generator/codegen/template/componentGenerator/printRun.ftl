@@ -6,8 +6,10 @@ ${Utils.printTemplateArguments(comp)}
 void
 ${className}${Utils.printFormalTypeParameters(comp)}::run ()
 {
-std::cout << "Thread for ${compname} started\n";
+bool hasUpdateInterval = ${ComponentHelper.hasUpdateInterval(comp)?c};
 
+if (timeMode == TIMESYNC || hasUpdateInterval) {
+std::cout << "Thread for ${compname} started\n";
 while (true)
 {
 auto end = std::chrono::high_resolution_clock::now()
@@ -18,5 +20,6 @@ do {
 std::this_thread::yield();
 std::this_thread::sleep_for(std::chrono::milliseconds(1));
 } while (std::chrono::high_resolution_clock::now()  < end);
+}
 }
 }
