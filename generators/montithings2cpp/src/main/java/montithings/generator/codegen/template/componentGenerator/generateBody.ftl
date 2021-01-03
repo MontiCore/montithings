@@ -34,8 +34,9 @@ ${tc.includeArgs("template.util.init.Init", [comp, compname, config, className])
 
 <#if config.getMessageBroker().toString() == "MQTT">
   ${tc.includeArgs("template.componentGenerator.printPublishConnectors", [comp, config, className])}
-
   ${tc.includeArgs("template.componentGenerator.printOnMessage", [comp, config, className])}
 </#if>
+
+${tc.includeArgs("template.componentGenerator.printOnEvent", [comp, config, className])}
 
 ${tc.includeArgs("template.componentGenerator.printConstructor", [comp, compname, config, className])}

@@ -24,14 +24,25 @@ class InOutPort : public Port<T>
   MultiPort<T> *inport = new MultiPort<T>;
   MultiPort<T> *outport = new MultiPort<T>;
 
-  // a regular outport that is used to provide data to
+  // a regular incoming port that is used to get data from
+  // components on the same system
+  Port<T> *inportInterface;
+
+  // a regular outgoing port that is used to provide data to
   // components on the same system
   Port<T> *outportInterface;
 
   public:
-  void registerListeningPort (sole::uuid requester) override
+  void
+  attach (EventObserver *observer) override
   {
-    outportInterface->registerListeningPort (requester);
+    outportInterface->attach (observer);
+  }
+
+  void
+  detach (EventObserver *observer) override
+  {
+    outportInterface->detach (observer);
   }
 
   bool hasValue (sole::uuid requester) override
@@ -59,7 +70,7 @@ class InOutPort : public Port<T>
   void setDataProvidingPort (Port<T> *port) override
   {
     // if a port provides data to the InOutPort, it should arrive at the inport
-    inport->setDataProvidingPort (port);
+    inportInterface->setDataProvidingPort (port);
   }
 
   void updateMessageSource () override
@@ -81,8 +92,10 @@ class InOutPort : public Port<T>
     outport->updateMessageSource ();
   }
 
-  InOutPort () {
-    inport->addManagedPort(new Port<T> ());
+  InOutPort ()
+  {
+    inportInterface = new Port<T> ();
+    inport->addManagedPort(inportInterface);
     outportInterface = new Port<T> ();
     outport->addManagedPort(outportInterface);
     outport->setDataProvidingPort (inport);
@@ -96,7 +109,8 @@ class InOutPort : public Port<T>
 
     this->inport = inport;
     this->outport = outport;
-    inport->addManagedPort(new Port<T> ());
+    inportInterface = new Port<T> ();
+    inport->addManagedPort(inportInterface);
     outportInterface = new Port<T> ();
     outport->addManagedPort(outportInterface);
     outport->setDataProvidingPort (inport);
