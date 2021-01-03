@@ -45,7 +45,7 @@ protected:
 
 public:
   ${className} (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, int argc, char *argv[]);
-  ~${className} {}
+  ~${className}() {}
 
   /*
    * Initially create ports of this component
