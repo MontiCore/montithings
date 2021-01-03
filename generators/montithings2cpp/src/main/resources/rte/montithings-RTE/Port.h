@@ -23,8 +23,8 @@ protected:
   /// Ports that need to be notified when new data is available
   std::set<Port<T> *> portsToNotify;
 
-  /// If true, onEvent() is ignored
-  bool ignoreEvents = false;
+  /// If true, no events are created for new messages on this port
+  bool suppressNotification = false;
 
 public:
   /**
@@ -66,12 +66,7 @@ public:
       }
     if (this->dataProvider->hasValue (this->uuid))
       {
-        // if dataProvider->getCurrentValue() causes an event, we need to
-        // prevent an endless loop of calling updateMessageSource() as a
-        // result of the onEvent() call
-        ignoreEvents = true;
         this->setNextValue (this->dataProvider->getCurrentValue (this->uuid));
-        ignoreEvents = false;
       }
   }
 
@@ -94,8 +89,23 @@ public:
         x.second.second.unlock ();
       }
 
-    // notify event-based elements about new input
-    this->notify ();
+    if (!suppressNotification)
+      {
+        // notify event-based elements about new input
+        this->notify ();
+      }
+  }
+
+  tl::optional<T>
+  getCurrentValue (sole::uuid requester) override
+  {
+    // getCurrentValue's updateMessageSource() call can cause new messages
+    // to be added to the queue. As we're already querying the queue here,
+    // we need to suppress additional events to prevent endless loops
+    suppressNotification = true;
+    tl::optional<T> result = MessageProvider<T>::getCurrentValue (requester);
+    suppressNotification = false;
+    return result;
   }
 
   void
@@ -110,10 +120,7 @@ public:
   void
   onEvent () override
   {
-    if (!ignoreEvents)
-      {
-        updateMessageSource ();
-      }
+    updateMessageSource ();
   }
 
   /* ============================================================ */
