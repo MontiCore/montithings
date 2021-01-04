@@ -9,7 +9,6 @@ import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
-import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.helper.ComponentHelper;
