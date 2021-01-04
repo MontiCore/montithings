@@ -28,8 +28,7 @@ import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
-import static montithings.generator.visitor.CppPrettyPrinterUtils.isSet;
+import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
 
 /**
  * TODO
@@ -197,23 +196,8 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
       return;
     }
 
-    ComponentTypeSymbol comp;
-    IMontiThingsScope s;
-    if (node.getEnclosingScope().isPresentSpanningSymbol()) {
-      s = node.getEnclosingScope();
-    }
-    else {
-      s = node.getEnclosingScope().getEnclosingScope();
-    }
-    if (s.getSpanningSymbol() instanceof ComponentTypeSymbol) {
-      comp = (ComponentTypeSymbol) s.getSpanningSymbol();
-    }
-    else {
-      de.se_rwth.commons.logging.Log.error("ASTNameExpression " + node.getNameExpression().getName()
-        + "has an unknown scope (neither statement nor automaton)");
-      // throw useless exception to make compiler happy with accessing "comp" afterwards
-      throw new IllegalArgumentException();
-    }
+    IMontiThingsScope componentScope = getScopeOfEnclosingComponent(node);
+    ComponentTypeSymbol comp = (ComponentTypeSymbol) componentScope.getSpanningSymbol();
 
     List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
 

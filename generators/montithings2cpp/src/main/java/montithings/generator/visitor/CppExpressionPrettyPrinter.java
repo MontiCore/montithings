@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
-import static montithings.generator.visitor.CppPrettyPrinterUtils.isSet;
+import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
 
 /**
  * Transforms cd attribute calls to getter expression which correspond to the
@@ -56,23 +55,9 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
       return;
     }
 
-    ComponentTypeSymbol comp;
-    IMontiThingsScope s;
-    if (node.getEnclosingScope().isPresentSpanningSymbol()) {
-      s = (IMontiThingsScope) node.getEnclosingScope();
-    }
-    else {
-      s = (IMontiThingsScope) node.getEnclosingScope().getEnclosingScope();
-    }
-    if (s.getSpanningSymbol() instanceof ComponentTypeSymbol) {
-      comp = (ComponentTypeSymbol) s.getSpanningSymbol();
-    }
-    else {
-      Log.error("ASTNameExpression " + node.getName()
-        + "has an unknown scope (neither statement nor automaton)");
-      // throw useless exception to make compiler happy with accessing "comp" afterwards
-      throw new IllegalArgumentException();
-    }
+    IMontiThingsScope componentScope = getScopeOfEnclosingComponent(node);
+    ComponentTypeSymbol comp = (ComponentTypeSymbol) componentScope.getSpanningSymbol();
+
     List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
     List<ASTSyncStatement> syncStatements = ComponentHelper
       .elementsOf(comp).filter(ASTSyncStatement.class).toList();
