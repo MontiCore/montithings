@@ -311,17 +311,16 @@ public class Utils {
       if (ComponentHelper.portUsesCdType(port)) {
         Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper
           .getCDEReplacement(port, config);
+        String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
         if (cdeImportStatementOpt.isPresent()) {
           includeStatements.add(cdeImportStatementOpt.get());
-          String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
           String[] adapterName = portNamespace.split("::");
           if (adapterName.length >= 2) {
             portIncludes.add("#include \"" + adapterName[adapterName.length - 2] + "Adapter.h\"");
           }
         }
         else {
-          String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
-          portIncludes.add("#include \"" + portNamespace.replace("::", "/") + ".h\"");
+          portIncludes.add("#include \"" + escape + portNamespace.replace("::", "/") + ".h\"");
         }
       }
     }
