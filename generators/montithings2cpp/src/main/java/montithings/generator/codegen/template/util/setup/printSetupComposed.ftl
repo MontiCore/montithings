@@ -33,6 +33,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   MqttClient::instance ()->publish (replaceDotsBySlashes ("/components"),
   replaceDotsBySlashes (instanceName));
 
+  MqttClient::instance ()->subscribe ("/prepareComponent");
   MqttClient::instance ()->subscribe ("/components");
 </#if>
 

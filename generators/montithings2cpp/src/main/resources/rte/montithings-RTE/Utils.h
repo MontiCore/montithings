@@ -53,3 +53,11 @@ jsonToData (char *json)
  * \return the input string with each dot "." being replaced by a slash "/"
  */
 std::string replaceDotsBySlashes (std::string input);
+
+/**
+ * Takes a fully qualified name of a component throws away everything after and including
+ * the last dot in the fully qualified name
+ * \param input the fully qualified name of a component
+ * \return the fully qualified name of the enclosing component
+ */
+std::string getEnclosingComponentName (const std::string& input);

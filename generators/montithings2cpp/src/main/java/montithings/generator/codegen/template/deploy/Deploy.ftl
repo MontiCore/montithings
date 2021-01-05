@@ -10,6 +10,9 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 </#if>
 #include ${"<chrono>"}
 #include ${"<thread>"}
+<#if config.getMessageBroker().toString() == "MQTT">
+#include "MqttConfigRequester.h"
+</#if>
 
 int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 {

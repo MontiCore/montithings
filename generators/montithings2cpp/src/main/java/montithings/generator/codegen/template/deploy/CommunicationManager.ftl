@@ -10,12 +10,31 @@ ${tc.signature("comp", "config")}
   MqttClient::instance();
   }
   // Wait for initial connection
-  while(!MqttClient::instance()->isConnected());
+  while(!MqttClient::instance()->isConnected())
+  ;
+
+  <#if comp.getParameters()?size gt 0>
+    MqttConfigRequester configRequester;
+    configRequester.requestConfig(argv[1]);
+
+    // Wait for initial connection
+    while (!configRequester.hasReceivedConfig())
+    ;
+
+    json config = configRequester.getConfig();
+    <#list comp.getParameters() as variable>
+      <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>
+      ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config["${variable.getName()}"]);
+    </#list>
+  </#if>
 </#if>
 
-
-
-${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (argv[1]);
+${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (argv[1]
+<#if comp.getParameters()?size gt 0>,</#if>
+<#list comp.getParameters() as variable>
+    ${variable.getName()} <#sep>,</#sep>
+</#list>
+);
 
 <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(&cmp, argc, argv);

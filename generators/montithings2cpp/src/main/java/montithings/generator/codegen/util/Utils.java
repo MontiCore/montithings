@@ -22,6 +22,7 @@ import montithings.generator.helper.CppPrettyPrinter;
 import montithings.generator.helper.TypesHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
+import org.assertj.core.util.Preconditions;
 
 import java.util.*;
 
@@ -41,6 +42,21 @@ public class Utils {
       i++;
     }
     return s.toString();
+  }
+
+  public static String printSerializeParameters(ComponentInstanceSymbol compInstance) {
+    List<VariableSymbol> params = compInstance.getType().getParameters();
+    List<String> paramValues = ComponentHelper.getParamValues(compInstance);
+    Preconditions.checkArgument(params.size() == paramValues.size(),
+      "0xMT2000 Number of parameters does not match number of arguments for instance ",
+      compInstance.getName());
+
+    String result = "";
+    for (int i = 0 ; i < params.size() ; i++) {
+      result += "config[\"" + params.get(i).getName() + "\"]"
+        + " = dataToJson (" + paramValues.get(i) + ");\n";
+    }
+    return result;
   }
 
   /**
@@ -95,7 +111,15 @@ public class Utils {
    */
   public static String printVariables(ComponentTypeSymbol comp, ConfigParams config) {
     StringBuilder s = new StringBuilder();
-    for (VariableSymbol variable : ComponentHelper.getFields(comp)) {
+
+    // Sort to print params before fields
+    List<VariableSymbol> fields = ComponentHelper.getFields(comp);
+    List<VariableSymbol> params = comp.getParameters();
+    fields.removeAll(params);
+    List<VariableSymbol> vars = new ArrayList<>(params);
+    vars.addAll(fields);
+
+    for (VariableSymbol variable : vars) {
       if (variable.getAstNode() instanceof ASTArcField) {
         ASTArcField field = (ASTArcField) variable.getAstNode();
         s.append(
