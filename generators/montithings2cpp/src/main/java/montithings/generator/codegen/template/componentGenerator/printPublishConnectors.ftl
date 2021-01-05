@@ -2,8 +2,9 @@
 ${tc.signature("comp","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
+${Utils.printTemplateArguments(comp)}
 void
-${className}::publishConnectors ()
+${className}${Utils.printFormalTypeParameters(comp)}::publishConnectors ()
 {
 <#list comp.getAstNode().getConnectors() as connector>
   <#list connector.getTargetList() as target>

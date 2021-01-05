@@ -38,6 +38,7 @@ import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
+import montithings.generator.visitor.GenericInstantiationVisitor;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
@@ -127,6 +128,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     Log.info("Looking for code templates", TOOL_NAME);
 
+    GenericInstantiationVisitor genericInstantiationVisitor = new GenericInstantiationVisitor();
+
     for (String model : models.getMontithings()) {
       // Parse model
       String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
@@ -138,7 +141,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config);
       comp.getAstNode().accept(vistor);
       config.getTemplatedPorts().addAll(vistor.getTemplatedPorts());
+
+      comp.getAstNode().accept(genericInstantiationVisitor);
     }
+
+    config.setTypeArguments(genericInstantiationVisitor.getTypeArguments());
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
