@@ -112,6 +112,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     Log.info("Checking models", TOOL_NAME);
 
+    mtChecker.addCoCo(new PortConnection(config.getTemplatedPorts()));
+    mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
     processModels(cd4CGlobalScope, true);
     processModels(symTab, true);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
@@ -204,23 +206,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /* ============================================================ */
   /* ====================== Check Models ======================== */
   /* ============================================================ */
-
-  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab,
-    ConfigParams config) {
-
-    for (String model : foundModels) {
-      String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-
-      // parse + resolve model
-      ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
-
-      // check cocos
-      Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
-      mtChecker.addCoCo(new PortConnection(config.getTemplatedPorts()));
-      mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
-      checkCoCos(comp.getAstNode());
-    }
-  }
 
   protected void checkCdExtensionModels(List<String> foundCDExtensionModels, File modelPath,
     ConfigParams config, CDLangExtensionTool cdExtensionTool) {
