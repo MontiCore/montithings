@@ -1,6 +1,19 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
+import arcbasis._ast.ASTComponentInstantiation;
+import arcbasis._symboltable.ComponentInstanceSymbol;
+import arcbasis._symboltable.ComponentTypeSymbol;
+import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
+import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
+import montithings.generator.codegen.util.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static montithings.generator.helper.ComponentHelper.getInstantiation;
+
 public class TypesHelper {
   /**
    * @return Corresponding CPP types from input java types
@@ -52,5 +65,25 @@ public class TypesHelper {
       type.startsWith("Float") ||
       type.startsWith("float")
       ;
+  }
+
+  /**
+   * Gets the type arguments of a component as a comma-separated list
+   */
+  public static String getTypeArguments(ComponentInstanceSymbol instance) {
+    final ComponentTypeSymbol component = instance.getType();
+
+    if (Utils.hasTypeParameter(component)) {
+      ASTComponentInstantiation instantiation = getInstantiation(instance);
+      if (instantiation.getMCType() instanceof ASTMCBasicGenericType) {
+        List<ASTMCTypeArgument> types = new ArrayList<>(
+          ((ASTMCBasicGenericType) instantiation.getMCType()).getMCTypeArgumentList());
+        return types.stream()
+          .map(ComponentHelper::printTypeArgumentIterate)
+          .collect(Collectors.joining(", "));
+      }
+    }
+
+    return "";
   }
 }

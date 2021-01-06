@@ -33,6 +33,7 @@ ${tc.includeArgs("template.util.setup.Setup", [comp, compname, config, className
 ${tc.includeArgs("template.util.init.Init", [comp, compname, config, className])}
 
 <#if config.getMessageBroker().toString() == "MQTT">
+  ${tc.includeArgs("template.componentGenerator.printPublishConfigForSubcomponent", [comp, config, className])}
   ${tc.includeArgs("template.componentGenerator.printPublishConnectors", [comp, config, className])}
   ${tc.includeArgs("template.componentGenerator.printOnMessage", [comp, config, className])}
 </#if>

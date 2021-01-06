@@ -23,10 +23,12 @@ import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
+import montiarc._ast.ASTMACompilationUnit;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
+import montithings._symboltable.IMontiThingsArtifactScope;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
 import montithings.cocos.PortConnection;
@@ -38,6 +40,7 @@ import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
+import montithings.generator.visitor.GenericInstantiationVisitor;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
@@ -113,7 +116,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Log.info("Checking models", TOOL_NAME);
 
     processModels(cd4CGlobalScope, true);
-    processModels(symTab, true);
+    processModels(symTab, false);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
     checkMTConfig(models.getMTConfig(), config, mtConfigTool,
@@ -124,6 +127,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
 
     Log.info("Looking for code templates", TOOL_NAME);
+
+    GenericInstantiationVisitor genericInstantiationVisitor = new GenericInstantiationVisitor();
 
     for (String model : models.getMontithings()) {
       // Parse model
@@ -136,7 +141,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       FindTemplatedPortsVisitor vistor = new FindTemplatedPortsVisitor(config);
       comp.getAstNode().accept(vistor);
       config.getTemplatedPorts().addAll(vistor.getTemplatedPorts());
+
+      comp.getAstNode().accept(genericInstantiationVisitor);
     }
+
+    config.setTypeArguments(genericInstantiationVisitor.getTypeArguments());
+
+    checkMtGeneratorCoCos(symTab, config);
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -201,24 +212,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
+
   /* ============================================================ */
   /* ====================== Check Models ======================== */
   /* ============================================================ */
 
-  protected void checkMtModels(List<String> foundModels, IMontiThingsScope symTab,
-    ConfigParams config) {
-
-    for (String model : foundModels) {
-      String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
-
-      // parse + resolve model
-      ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
-
-      // check cocos
-      Log.info("Check model: " + qualifiedModelName, TOOL_NAME);
-      mtChecker.addCoCo(new PortConnection(config.getTemplatedPorts()));
-      mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
-      checkCoCos(comp.getAstNode());
+  protected void checkMtGeneratorCoCos(IMontiThingsGlobalScope symTab, ConfigParams config) {
+    mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
+    mtChecker.addCoCo(new PortConnection(config.getTemplatedPorts()));
+    for (IMontiThingsScope as : symTab.getSubScopes()) {
+      ASTMACompilationUnit a = (ASTMACompilationUnit) as.getAstNode();
+      Log.info("Check model: " + a.getComponentType().getSymbol().getFullName(), TOOL_NAME);
+      a.accept(this.getMTChecker());
     }
   }
 
