@@ -39,6 +39,7 @@ public class MontiThingsCoCos {
       .addCoCo(new SyncGroupIsNoSubset())
       .addCoCo(new PortsInSyncGroupAreIncoming())
       .addCoCo(new PortsInBatchStatementAreIncoming())
+      .addCoCo(new NameExpressionsAreResolvable())
       ;
   }
 }
