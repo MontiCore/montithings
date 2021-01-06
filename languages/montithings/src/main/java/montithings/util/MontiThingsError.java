@@ -6,22 +6,33 @@ package montithings.util;
  */
 public enum MontiThingsError implements montithings.util.Error {
   NO_ENCLOSING_SCOPE("0xMT1400", "No Component enclosing Scope. Was SymbolTable initialized?"),
-  NOT_INTERFACE("0xMT1410", "Generic %s for component instance %s in component %s line %s does not extend only interface models."
+  NOT_INTERFACE("0xMT1410",
+    "Generic '%s' for component instance '%s' in component '%s' line '%s' does not extend only interface models."
       + " Is an resolveable interface component model available?"),
-  TYPE_NOT_FOUND("0xMT1420", "Type %s line %s could not be found."),
-  IMPLEMENTATION_MISSING("0xMT1430", "Implementation Component %s of SubComponent %s in component %s line %s does not exist."
+  TYPE_NOT_FOUND("0xMT1420", "Type '%s' line '%s' could not be found."),
+  IMPLEMENTATION_MISSING("0xMT1430",
+    "Implementation Component '%s' of SubComponent '%s' in component '%s' line '%s' does not exist."
       + "Is an resolveable implementing component model available?"),
-  INTERFACE_IMPLEMENTS_INTERFACE("0xMT1440", "Implementation Component %s of SubComponent %s in component %s can not be an interface component line %s."),
-  NOT_FITS_INTERFACE("0xMT1450", "Implementation Component %s of SubComponent %s in component %s line %s does not meet required interface component specification."),
-  GENERIC_PARAMTER_INTERFACE_NOT_FOUND("0xMT1460", "Interface component %s of Generic %s in component %s line %s not found."
+  INTERFACE_IMPLEMENTS_INTERFACE("0xMT1440",
+    "Implementation Component '%s' of SubComponent '%s' in component '%s' can not be an interface component line '%s'."),
+  NOT_FITS_INTERFACE("0xMT1450",
+    "Implementation Component '%s' of SubComponent '%s' in component '%s' line '%s' does not meet required interface component specification."),
+  GENERIC_PARAMTER_INTERFACE_NOT_FOUND("0xMT1460",
+    "Interface component '%s' of Generic '%s' in component '%s' line '%s' not found."
       + " Is the interface component model available and resolve able?"),
-  GENERIC_PARAMTER_NOT_FITS_INTERFACE("0xMT1470", "Generic %s of SubComponent %s in component %s does not allow the interface component %s line %s."
+  GENERIC_PARAMTER_NOT_FITS_INTERFACE("0xMT1470",
+    "Generic '%s' of SubComponent '%s' in component '%s' does not allow the interface component '%s' line '%s'."
       + "Is a valid resolve able interface component model available and does the generic extend it?"),
-  GENERIC_PARAMETER_NEEDS_INTERFACE("0xMT1480", "Generic %s of SubComponent %s in component %s requires an interface component line %s."
+  GENERIC_PARAMETER_NEEDS_INTERFACE("0xMT1480",
+    "Generic '%s' of SubComponent '%s' in component '%s' requires an interface component line '%s'."
       + "Does the generic extend an component?"),
-  NO_BEHAVIOR("0xMT1490", "Component %s has no behavior (neither in model nor hand-written code)");
+  NO_BEHAVIOR("0xMT1490",
+    "Component '%s' has no behavior (neither in model nor hand-written code)"),
+  ONLY_ONE_UPDATE_INTERVAL("0xMT1500", "Update intervals should only be defined once in '%s'"),
+  IDENTIFIER_UNKNOWN("0xMT1510", "The identifier '%s' cannot be resolved.");
 
   protected final String errorCode;
+
   protected final String errorMessage;
 
   MontiThingsError(String errorCode, String errorMessage) {
