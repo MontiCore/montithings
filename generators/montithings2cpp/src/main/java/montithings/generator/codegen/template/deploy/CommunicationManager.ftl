@@ -26,22 +26,22 @@ ${tc.signature("comp", "config")}
       <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>
       ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config["${variable.getName()}"]);
     </#list>
-    <#if config.getTypeArguments().get(comp)?size gt 0>
+    <#if config.getTypeArguments(comp)?size gt 0>
       std::string _typeArgs = jsonToData${"<"}std::string${">"} (config["_typeArgs"]);
     </#if>
   </#if>
 </#if>
 
 <#-- NO TEMPLATE ARGUMENTS -->
-<#if config.getTypeArguments().get(comp)?size == 0>
-  ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (argv[1]
-  <#if comp.getParameters()?size gt 0>,</#if>
-  <#list comp.getParameters() as variable>
-      ${variable.getName()} <#sep>,</#sep>
-  </#list>
+<#if config.getTypeArguments(comp)?size == 0>
+    ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (argv[1]
+    <#if comp.getParameters()?size gt 0>,</#if>
+    <#list comp.getParameters() as variable>
+        ${variable.getName()} <#sep>,</#sep>
+    </#list>
   );
-  ${tc.includeArgs("template.deploy.InitDDSParticipant", [comp, config])}
-  ${tc.includeArgs("template.deploy.InitCommunicationManager", [comp, config])}
+    ${tc.includeArgs("template.deploy.InitDDSParticipant", [comp, config])}
+    ${tc.includeArgs("template.deploy.InitCommunicationManager", [comp, config])}
 
   cmp.setUp(
   <#if ComponentHelper.isTimesync(comp)>
@@ -58,17 +58,17 @@ ${tc.signature("comp", "config")}
 
 <#else>
 <#-- WITH TEMPLATE ARGUMENTS -->
-  <#list config.getTypeArguments().get(comp) as typeArguments>
-  <#if typeArguments?counter gt 1>else</#if>
-  if (_typeArgs == "${typeArguments}")
-  {
-    ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name}${"<"}${typeArguments}${">"} cmp (argv[1]
-    <#if comp.getParameters()?size gt 0>,</#if>
-    <#list comp.getParameters() as variable>
-        ${variable.getName()} <#sep>,</#sep>
-    </#list>
-    );
-    ${tc.includeArgs("template.deploy.InitDDSParticipant", [comp, config])}
+    <#list config.getTypeArguments(comp) as typeArguments>
+        <#if typeArguments?counter gt 1>else</#if>
+      if (_typeArgs == "${typeArguments}")
+      {
+        ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name}${"<"}${typeArguments}${">"} cmp (argv[1]
+        <#if comp.getParameters()?size gt 0>,</#if>
+        <#list comp.getParameters() as variable>
+            ${variable.getName()} <#sep>,</#sep>
+        </#list>
+      );
+        ${tc.includeArgs("template.deploy.InitDDSParticipant", [comp, config])}
     ${tc.includeArgs("template.deploy.InitCommunicationManager", [comp, config])}
 
 

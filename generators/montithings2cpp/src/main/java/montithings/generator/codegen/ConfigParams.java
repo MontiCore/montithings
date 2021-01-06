@@ -7,15 +7,14 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
-import cdlangextension._symboltable.CDLangExtensionScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import com.google.common.collect.Multimap;
 import montithings.generator.data.PortMap;
 import mtconfig._symboltable.IMTConfigGlobalScope;
-import mtconfig._symboltable.MTConfigScope;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -210,13 +209,20 @@ public class ConfigParams {
    * @param componentType implementing component
    * @return If the component implements according to componentBindings.
    */
-  public boolean isImplementation(ComponentTypeSymbol componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentSymbol()==componentType){
+  public boolean isImplementation(ComponentTypeSymbol componentType) {
+    for (ASTBindingRule binding : componentBindings) {
+      if (binding.getImplementationComponentSymbol() == componentType) {
         return true;
       }
     }
     return false;
+  }
+
+  /**
+   * Wrapper for typeArguments.get(). Only necessary to avoid Freemarker problems
+   */
+  public Collection<String> getTypeArguments(ComponentTypeSymbol componentType) {
+    return typeArguments.get(componentType);
   }
 
   /* ============================================================ */
