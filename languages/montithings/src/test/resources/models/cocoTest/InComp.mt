@@ -2,5 +2,6 @@
 package cocoTest;
 
 component InComp{
-port in String inPort;
+  port in String inPort;
+  mm^2/kVA^2h lastValue = 20 km;
 }

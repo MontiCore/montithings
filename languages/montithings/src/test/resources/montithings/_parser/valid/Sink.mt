@@ -2,5 +2,7 @@
 package valid;
 
 component Sink {
-  port in int value;
+  port in mm^2/kVA^2h value;
+
+  mm^2/kVA^2h<int> lastValue = 20 km;
 }

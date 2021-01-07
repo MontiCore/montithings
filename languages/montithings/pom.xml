@@ -96,6 +96,19 @@
             <artifactId>cd4analysis</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>6.5.0-SNAPSHOT</version>
+            <classifier>grammars</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>6.5.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- MontiCore / SE / ANTLR -->
 
         <dependency>
