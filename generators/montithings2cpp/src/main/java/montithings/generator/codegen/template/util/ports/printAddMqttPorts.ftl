@@ -14,7 +14,7 @@ ${tc.signature("comp","config")}
     <#if p.isIncoming() && !comp.isAtomic()>
       // additional outgoing port for port incoming port ${p.getName()}
       // to forward data to subcomponents
-      this->addOutPort${p.getName()?cap_first}(new MqttPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(this->getInstanceName () + "/${p.getName()}"));
+      this->addOutPort${p.getName()?cap_first}(new MqttPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(this->getInstanceName () + "/${p.getName()}", false));
     </#if>
 
 </#list>
