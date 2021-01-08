@@ -2,16 +2,17 @@ package montithings.cocos;
 
 import arcbasis._ast.ASTArcField;
 import arcbasis._ast.ASTArcParameter;
-import arcbasis._ast.ASTPortDeclaration;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.check.cocos.TypeCheckCoCo;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._cocos.MontiArcASTMACompilationUnitCoCo;
+import montithings._ast.ASTMTComponentType;
+import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
 import montithings._visitor.MontiThingsVisitor;
 import montithings.types.check.DeriveSymTypeOfMontiThings;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
-public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiArcASTMACompilationUnitCoCo, MontiThingsVisitor {
+public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
   /**
    * Creates an instance of TypeCheckCoCo
    *
@@ -29,8 +30,8 @@ public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiArcASTMA
   }
 
   @Override
-  public void check(ASTMACompilationUnit astmaCompilationUnit) {
-    astmaCompilationUnit.accept(this);
+  public void check(ASTMTComponentType ast) {
+    ast.accept(this);
   }
 
   @Override

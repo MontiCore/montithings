@@ -9,6 +9,7 @@ import java.util.Optional;
 public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisitor implements ISynthesize {
 
   private SynthesizeSymTypeFromMCBasicTypes symTypeFromMCBasicTypes;
+  private SynthesizeSymTypeFromMCSimpleGenericTypes symTypeFromMCSimpleGenericTypes;
   private SynthesizeSymTypeFromSIUnitTypes4Math symTypeFromSIUnitTypes4Math;
   private SynthesizeSymTypeFromSIUnitTypes4Computing symTypeFromSIUnitTypes4Computing;
 
@@ -16,14 +17,17 @@ public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisito
     typeCheckResult = new TypeCheckResult();
 
     symTypeFromMCBasicTypes = new SynthesizeSymTypeFromMCBasicTypes();
+    symTypeFromMCSimpleGenericTypes = new SynthesizeSymTypeFromMCSimpleGenericTypes();
     symTypeFromSIUnitTypes4Math = new SynthesizeSymTypeFromSIUnitTypes4Math();
     symTypeFromSIUnitTypes4Computing = new SynthesizeSymTypeFromSIUnitTypes4Computing();
 
     symTypeFromMCBasicTypes.setTypeCheckResult(typeCheckResult);
+    symTypeFromMCSimpleGenericTypes.setTypeCheckResult(typeCheckResult);
     symTypeFromSIUnitTypes4Math.setTypeCheckResult(typeCheckResult);
     symTypeFromSIUnitTypes4Computing.setTypeCheckResult(typeCheckResult);
 
     setMCBasicTypesVisitor(symTypeFromMCBasicTypes);
+    setMCSimpleGenericTypesVisitor(symTypeFromMCSimpleGenericTypes);
     setSIUnitTypes4MathVisitor(symTypeFromSIUnitTypes4Math);
     setSIUnitTypes4ComputingVisitor(symTypeFromSIUnitTypes4Computing);
     setMontiThingsVisitor(new MontiThingsDelegatorVisitor());
@@ -51,6 +55,7 @@ public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisito
   public void setTypeCheckResult(TypeCheckResult typeCheckResult){
     this.typeCheckResult = typeCheckResult;
     this.symTypeFromMCBasicTypes.setTypeCheckResult(typeCheckResult);
+    this.symTypeFromMCSimpleGenericTypes.setTypeCheckResult(typeCheckResult);
     this.symTypeFromSIUnitTypes4Math.setTypeCheckResult(typeCheckResult);
     this.symTypeFromSIUnitTypes4Computing.setTypeCheckResult(typeCheckResult);
   }
