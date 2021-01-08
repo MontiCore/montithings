@@ -32,8 +32,11 @@ component grammar PortExtensions extends ArcBasis {
    * have data available. If a component cannot process messages
    * because no full sync group has data available, the messages
    * are buffered for later processing.
+   *
+   * Priority higher than 100 to prevent MontiCore from trying to
+   * interpret "sync" as a component type's name.
    */
-  SyncStatement implements ArcElement =
+  SyncStatement implements ArcElement <110> =
       key("sync") syncedPort:(Name || ",")+ ";";
 
 }
