@@ -22,6 +22,9 @@ try
 TCLAP::CmdLine cmd("${compname} MontiThings component", ' ', "${config.getProjectVersion()}");
 ${tc.includeArgs("template.deploy.CmdParameters", [comp, config])}
 ${tc.includeArgs("template.deploy.ComponentStart", [comp, config])}
+<#if config.getMessageBroker().toString() == "DDS">
+  ${tc.includeArgs("template.deploy.DDSParticipantCleanup", [comp, config])}
+</#if>
 }
 catch (TCLAP::ArgException &e) // catch exceptions
 {

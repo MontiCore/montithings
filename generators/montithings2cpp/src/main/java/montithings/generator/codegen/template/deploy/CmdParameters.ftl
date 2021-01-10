@@ -11,6 +11,6 @@ cmd.add ( instanceNameArg );
   ${tc.includeArgs("template.deploy.MqttArgs", [comp, config])}
 <#elseif config.getMessageBroker().toString() == "DDS">
   ${tc.includeArgs("template.deploy.DDSParticipantArgs", [comp, config])}
-</#if>
+</#if>>
 
 cmd.parse ( argc, argv );
