@@ -75,6 +75,7 @@ public class SimpleGenerationTest {
     params.setSplittingMode(splittingMode);
     params.setMessageBroker(messageBroker);
     params.setHwcPath(HWCPATH.toFile());
+    params.setProjectVersion("unspecified");
     script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(), null, params);
   }
 
