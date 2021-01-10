@@ -73,18 +73,6 @@ public class ConfigParams {
     }
   }
 
-  /** property for message brokers */
-
-  private MessageBroker messageBroker = MessageBroker.OFF;
-
-  public MessageBroker getMessageBroker() {
-    return messageBroker;
-  }
-
-  public void setMessageBroker(MessageBroker messageBroker) {
-    this.messageBroker = messageBroker;
-  }
-
   public enum MessageBroker {
     OFF("OFF"),
     MQTT("MQTT"),
@@ -105,10 +93,15 @@ public class ConfigParams {
     }
   }
 
+  /** property for message brokers */
+  protected MessageBroker messageBroker = MessageBroker.OFF;
+
   /** property for target platform */
   protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 
   protected SplittingMode splittingMode = SplittingMode.OFF;
+
+  protected String projectVersion;
 
   /** Rules that bind a interface component/componentInstance to another non interface component */
   protected Set<ASTBindingRule> componentBindings = new HashSet<>();
@@ -229,6 +222,14 @@ public class ConfigParams {
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
 
+  public MessageBroker getMessageBroker() {
+    return messageBroker;
+  }
+
+  public void setMessageBroker(MessageBroker messageBroker) {
+    this.messageBroker = messageBroker;
+  }
+
   public File getHwcPath() {
     return hwcPath;
   }
@@ -300,5 +301,13 @@ public class ConfigParams {
   public void setTypeArguments(
     Multimap<ComponentTypeSymbol, String> typeArguments) {
     this.typeArguments = typeArguments;
+  }
+
+  public String getProjectVersion() {
+    return projectVersion;
+  }
+
+  public void setProjectVersion(String projectVersion) {
+    this.projectVersion = projectVersion;
   }
 }

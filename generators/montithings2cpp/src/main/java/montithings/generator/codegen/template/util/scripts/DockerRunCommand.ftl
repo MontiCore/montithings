@@ -9,17 +9,17 @@ CONTAINER=$(docker run -d --rm --net=host \
 <#if config.getMessageBroker().toString() == "DDS">
   -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini \
 </#if>
---name ${instanceName} ${typeName?lower_case}:latest ${instanceName} ${lineBreak}
+--name ${instanceName} ${typeName?lower_case}:latest --name ${instanceName} ${lineBreak}
 <#if config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF">
-  30006 30007)
+  --managementPort 30006 --dataPortArg 30007)
 </#if>
 <#if config.getMessageBroker().toString() == "MQTT">
-  host.docker.internal 1883)
+  --brokerHostname host.docker.internal --brokerPort 1883)
 </#if>
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
-  -DCPSInfoRepo localhost:12345 -DCPSConfigFile dcpsconfig.ini)
+  --DCPSInfoRepo localhost:12345 --DCPSConfigFile dcpsconfig.ini)
 </#if>
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() != "DISTRIBUTED">
-  -DCPSConfigFile dcpsconfig.ini)
+  --DCPSConfigFile dcpsconfig.ini)
 </#if>
 echo docker stop $CONTAINER >> dockerStop.sh
