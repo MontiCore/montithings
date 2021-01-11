@@ -197,7 +197,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     if (testPath != null && !testPath.toString().equals("")) {
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
         config.setSplittingMode(ConfigParams.SplittingMode.OFF);
-        generate(modelPath, Paths
+        MontiThingsGeneratorTool testTool = new MontiThingsGeneratorTool();
+        testTool.generate(modelPath, Paths
           .get(Paths.get(target.getAbsolutePath()).getParent().toString(), "generated-test-sources")
           .toFile(), hwcPath, testPath, config);
       }
