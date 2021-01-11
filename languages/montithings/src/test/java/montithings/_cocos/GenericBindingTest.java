@@ -47,7 +47,7 @@ public class GenericBindingTest extends AbstractTest {
   protected static Stream<Arguments> validInput() {
     return Stream.of(
       Arguments.of("cocoTest.genericBindingTest.valid.Assignment"),
-      Arguments.of("cocoTest.InComp")
+      Arguments.of("cocoTest.SIUnits")
     );
   }
 

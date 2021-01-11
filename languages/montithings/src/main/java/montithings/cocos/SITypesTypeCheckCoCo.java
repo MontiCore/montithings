@@ -1,16 +1,21 @@
 package montithings.cocos;
 
-import arcbasis._ast.ASTArcField;
-import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.*;
+import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpression;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.statements.mcvardeclarationstatements._ast.ASTSimpleInit;
+import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
+import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.check.cocos.TypeCheckCoCo;
-import montiarc._ast.ASTMACompilationUnit;
-import montiarc._cocos.MontiArcASTMACompilationUnitCoCo;
+import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
 import montithings._visitor.MontiThingsVisitor;
 import montithings.types.check.DeriveSymTypeOfMontiThings;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
+
+import java.util.List;
 
 public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
   /**
@@ -39,6 +44,9 @@ public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsAS
     if(node.isPresentDefault()){
       checkFieldOrVariable(node, node.getDefault());
     }
+    else {
+      checkFieldOrVariable(node, (ASTExpression) null);
+    }
   }
 
   @Override
@@ -46,5 +54,14 @@ public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsAS
     checkFieldOrVariable(node, node.getInitial());
   }
 
-  //TODO: PortDeclaration
+  @Override
+  public void visit(ASTVariableDeclarator node){
+    //check if VariableInit is an expression, otherwise initiation cannot be checked here
+    if(node.isPresentVariableInit() && node.getVariableInit() instanceof ASTSimpleInit){
+      checkFieldOrVariable(node.getDeclarator(), ((ASTSimpleInit) node.getVariableInit()).getExpression());
+    }
+    else {
+      checkFieldOrVariable(node.getDeclarator(), (ASTExpression) null);
+    }
+  }
 }
