@@ -196,6 +196,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     if (testPath != null && !testPath.toString().equals("")) {
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+        Log.info("--------------------------------", "MontiThingsGeneratorTool");
+        Log.info("Generate Test Sources", "MontiThingsGeneratorTool");
+        Log.info("--------------------------------", "MontiThingsGeneratorTool");
         config.setSplittingMode(ConfigParams.SplittingMode.OFF);
         MontiThingsGeneratorTool testTool = new MontiThingsGeneratorTool();
         testTool.generate(modelPath, Paths
@@ -318,7 +321,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
     File hwcPath, ConfigParams config, boolean generateDeploy) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-    Log.info("Generate model: " + comp.getFullName(), TOOL_NAME);
+    Log.info("Generate MT model: " + comp.getFullName(), TOOL_NAME);
 
     // check if component is implementation
     if (comp.getAstNode() instanceof ASTMTComponentType &&
@@ -375,7 +378,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // 6 generate make file
       if (config.getTargetPlatform()
         != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
-        Log.info("Generate CMake file", "MontiThingsGeneratorTool");
+        Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
         mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
           mtg.generateScripts(target, comp, models.getMontithings());
@@ -391,6 +394,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       String simpleName = Names.getSimpleName(model);
       String packageName = Names.getQualifier(model);
 
+      Log.info("Generate CD model: " + model, TOOL_NAME);
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
       new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model)
         //.generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
