@@ -119,11 +119,11 @@ public class MontiThingsTool {
   public void processModels(@NotNull ICD4CodeGlobalScope scope, boolean shouldLog) {
     Preconditions.checkArgument(scope != null);
     for (ICD4CodeArtifactScope a : this.createSymbolTable(scope)) {
+      if (shouldLog) {
+        Log.info("Check model: " + a.getName(), TOOL_NAME);
+      }
       for (ICD4CodeScope as : a.getSubScopes()) {
         ASTCDPackage astNode = (ASTCDPackage) as.getSpanningSymbol().getAstNode();
-        if (shouldLog) {
-          Log.info("Check model: " + a.getName(), TOOL_NAME);
-        }
         astNode.accept(this.getCdChecker());
       }
     }
