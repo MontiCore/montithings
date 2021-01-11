@@ -187,6 +187,7 @@
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
+                        <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>
                 </configuration>

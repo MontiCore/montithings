@@ -246,6 +246,7 @@
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
+                        <version>${project.version}</version>
                         <splitting>LOCAL</splitting>
                         <messageBroker>DDS</messageBroker>
                     </arguments>

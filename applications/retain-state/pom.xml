@@ -245,6 +245,7 @@
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<splitting>LOCAL</splitting>-->
                         <!--<messageBroker>MQTT</messageBroker>-->
+                        <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>
                 </configuration>

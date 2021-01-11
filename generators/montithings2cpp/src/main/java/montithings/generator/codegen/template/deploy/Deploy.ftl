@@ -8,6 +8,7 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   #include "${compname}DDSParticipant.h"
 </#if>
+#include "tclap/CmdLine.h"
 #include ${"<chrono>"}
 #include ${"<thread>"}
 <#if config.getMessageBroker().toString() == "MQTT">
@@ -16,7 +17,18 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 
 int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 {
-${tc.includeArgs("template.deploy.ParameterCheck", [comp, config])}
-${tc.includeArgs("template.deploy.CommunicationManager", [comp, config])}
+try
+{
+TCLAP::CmdLine cmd("${compname} MontiThings component", ' ', "${config.getProjectVersion()}");
+${tc.includeArgs("template.deploy.CmdParameters", [comp, config])}
+${tc.includeArgs("template.deploy.ComponentStart", [comp, config])}
+<#if config.getMessageBroker().toString() == "DDS">
+  ${tc.includeArgs("template.deploy.DDSParticipantCleanup", [comp, config])}
+</#if>
+}
+catch (TCLAP::ArgException &e) // catch exceptions
+{
+std::cerr << "error: " << e.error () << " for arg " << e.argId () << std::endl;
+}
 return 0;
 }
