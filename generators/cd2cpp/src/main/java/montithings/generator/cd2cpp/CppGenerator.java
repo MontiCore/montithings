@@ -116,7 +116,6 @@ public class CppGenerator {
     }
 
     this.generatePackageHeader(new ArrayList<>(cdSymbols));
-    Log.info("Done.", "Generator");
   }
 
   protected void injectPrimitives(ICD4AnalysisGlobalScope scope) {
