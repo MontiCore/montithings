@@ -20,6 +20,8 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 </#function>
 
 #include ${"<vector>"}
+#include ${"<cereal/types/vector.hpp>"}
+#include ${"<cereal/types/tloptional.hpp>"}
 #include ${"<algorithm>"}
 #include "tl/optional.hpp"
 #include "Package.h"
@@ -142,6 +144,23 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
        <#list mandatoryFields as mandatoryField>
          this->${mandatoryField.name} = ${mandatoryField.name};
        </#list>
+    }
+
+    <#-- serialization -->
+    public:
+    template <class Archive>
+    void serialize( Archive & ar )
+    {
+    ar(
+    <#list type.getFieldList() as field>
+      ${field.getName()}<#sep>,</#sep>
+    </#list>
+    <#if type.getFieldList()?size gt 0 && associations?size gt 0>,</#if>
+    <#list associations as assoc>
+      <#assign n=AssociationHelper.getDerivedName(assoc, type)>
+      ${n}<#sep>,</#sep>
+    </#list>
+    );
     }
     
     <#-- no-args constructor, if any arguments are present -->
