@@ -17,7 +17,7 @@ ${Utils.printNamespaceStart(comp)}
 class ${className} : public ManagementMessageProcessor
 {
 protected:
-montithings::hierarchy::${comp.getName()}* comp;
+${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}* comp;
 ManagementCommunication* comm;
 std::string managementPort;
 std::string communicationPort;
