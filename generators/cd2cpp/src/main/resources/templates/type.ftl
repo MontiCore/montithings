@@ -50,7 +50,7 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
       <#-- attributes -->
       <#assign fieldType = java2cppTypeString(field.getType().getTypeInfo().getName())>
       <#assign mandatoryFields = mandatoryFields + [{"name": field.getName(), "type":fieldType}]>
-      private: ${fieldType} ${field.getName()};
+      protected: ${fieldType} ${field.getName()};
       public: ${fieldType} get${field.getName()?cap_first}() {
         return ${field.getName()};
       }
@@ -69,7 +69,7 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
       <#if AssociationHelper.getOtherSideCardinality(assoc, type).isMult() >
       <#-- [*] ASTCDCardMult -->
 
-        private: std::vector<${t}> ${n};
+        protected: std::vector<${t}> ${n};
         public: void set${n?cap_first}(std::vector<${t}> ${n}){
         this->${n} = ${n};
         }
@@ -87,7 +87,7 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
       <#-- [0..1] ASTCDCardOpt -->
 
         <#assign tOpt="tl::optional<"+t+">">
-        private: ${tOpt} ${n} = tl::nullopt;
+        protected: ${tOpt} ${n} = tl::nullopt;
         public: ${tOpt} get${n?cap_first}() {
         return ${n};
         }
@@ -99,7 +99,7 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
       <#-- [1] ASTCDCardOne -->
 
         <#assign mandatoryFields = mandatoryFields + [{"name": n, "type": t}]>
-        private: ${t} ${n};
+        protected: ${t} ${n};
         public: ${t} get${n?cap_first}() {
         return ${n};
         }
