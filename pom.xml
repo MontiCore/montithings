@@ -23,6 +23,7 @@
 
 		<!-- DSLs -->
 		<cd4a.version>6.5.0-SNAPSHOT</cd4a.version>
+		<siunits.version>6.5.0-SNAPSHOT</siunits.version>
 		<montiarc.version>6.5.0-SNAPSHOT</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->

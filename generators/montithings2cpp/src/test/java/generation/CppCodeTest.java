@@ -55,6 +55,7 @@ public class CppCodeTest {
     //"behaviorTest",
     "classDiagramsTest",
     //"prePostConditionsTest",
+    "siunitsTest",
     //"interfaceComponentsTest",
     //"interfaceComponentsBindingTest"
     })

@@ -21,6 +21,7 @@ import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
@@ -80,6 +81,7 @@ public class ComponentHelper {
     if (expression.getTypeInfo() instanceof CDTypeSymbol) {
       return printCdFQN(comp, expression.getTypeInfo(), config);
     }
+    //TODO: Type wenn SIUnit
     return java2cppTypeString(expression.print());
   }
 

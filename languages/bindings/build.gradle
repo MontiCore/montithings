@@ -59,6 +59,7 @@ dependencies {
   implementation project(":languages:error-handling")
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.monticore.lang:cd4analysis:1.6.0"
+  implementation "de.monticore:siunits:$siunits_version"
   implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
   implementation "com.google.guava:guava:$guava_version"
   implementation "org.antlr:antlr4-runtime:$antlr_version"
