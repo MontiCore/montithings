@@ -3,8 +3,7 @@ package hierarchy;
 
 component Source {
 
-  port
-    out int value;
+  port out int value;
 
-  //guarantee : value < 3;
+  update interval 1sec;
 }

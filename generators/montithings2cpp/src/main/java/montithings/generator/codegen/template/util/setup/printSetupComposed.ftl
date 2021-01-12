@@ -1,9 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","config")}
+${tc.signature("comp","compname","config", "className")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${Utils.printTemplateArguments(comp)}
-void ${compname}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
+void ${className}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
 if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 <#if comp.isPresentParentComponent()>
   super.setUp(enclosingComponentTiming);
@@ -33,6 +33,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   MqttClient::instance ()->publish (replaceDotsBySlashes ("/components"),
   replaceDotsBySlashes (instanceName));
 
+  MqttClient::instance ()->subscribe ("/prepareComponent");
   MqttClient::instance ()->subscribe ("/components");
 </#if>
 

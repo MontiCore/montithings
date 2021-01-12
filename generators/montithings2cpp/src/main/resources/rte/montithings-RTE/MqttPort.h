@@ -27,7 +27,7 @@ class MqttPort : public Port<T>, public MqttUser
   std::set<std::string> subscriptions;
 
   public:
-  explicit MqttPort (std::string name);
+  explicit MqttPort (std::string name, bool shouldSubscribe = true);
   ~MqttPort () = default;
 
   /**
@@ -61,13 +61,16 @@ class MqttPort : public Port<T>, public MqttUser
 };
 
 template<typename T>
-MqttPort<T>::MqttPort (std::string name) : fullyQualifiedName (std::move (name))
+MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe) : fullyQualifiedName (std::move (name))
 {
   MqttClient::instance ()->addUser (this);
 
   std::string topic = "/connectors/" + replaceDotsBySlashes (fullyQualifiedName);
-  MqttClient::instance ()->subscribe (topic);
-  subscriptions.emplace (topic);
+  if (shouldSubscribe)
+    {
+      MqttClient::instance ()->subscribe (topic);
+      subscriptions.emplace (topic);
+    }
 }
 
 template<typename T>

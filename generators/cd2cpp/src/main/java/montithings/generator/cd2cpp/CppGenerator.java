@@ -19,7 +19,6 @@ import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
-import de.se_rwth.commons.logging.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -116,7 +115,6 @@ public class CppGenerator {
     }
 
     this.generatePackageHeader(new ArrayList<>(cdSymbols));
-    Log.info("Done.", "Generator");
   }
 
   protected void injectPrimitives(ICD4AnalysisGlobalScope scope) {

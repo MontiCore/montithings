@@ -1,5 +1,8 @@
-// (c) https://github.com/MontiCore/monticore
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* (c) https://github.com/MontiCore/monticore */
+
 #pragma once
+#include "EventObserver.h"
 #include "UniqueElement.h"
 
 enum TimeMode
@@ -8,7 +11,7 @@ enum TimeMode
   EVENTBASED
 };
 
-class IComponent : public UniqueElement
+class IComponent : public EventObserver
 {
   protected:
   std::string instanceName;

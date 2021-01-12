@@ -15,3 +15,10 @@ replaceDotsBySlashes (std::string input)
 
   return input;
 }
+
+std::string
+getEnclosingComponentName (const std::string& input)
+{
+  std::size_t found = input.find_last_of ('.');
+  return input.substr (0, found);
+}

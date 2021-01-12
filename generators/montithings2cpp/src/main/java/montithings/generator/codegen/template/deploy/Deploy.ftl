@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config")}
+${tc.signature("comp", "compname", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
 #include "${compname}.h"
@@ -8,43 +8,27 @@ ${tc.signature("comp", "compname", "config")}
 <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   #include "${compname}DDSParticipant.h"
 </#if>
+#include "tclap/CmdLine.h"
 #include ${"<chrono>"}
 #include ${"<thread>"}
+<#if config.getMessageBroker().toString() == "MQTT">
+#include "MqttConfigRequester.h"
+</#if>
 
-int main(int argc, char* argv[])
+int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 {
-${tc.includeArgs("template.deploy.ParameterCheck", [comp, config])}
-${tc.includeArgs("template.deploy.CommunicationManager", [comp, config])}
-
-
-cmp.setUp(<#if ComponentHelper.isTimesync(comp)>
-  TIMESYNC
-<#else>
-  EVENTBASED
-</#if>);
-cmp.init();
-<#if !ComponentHelper.isTimesync(comp)>
-  cmp.start();
-</#if>
-
-
-std::cout << "Started." << std::endl;
-
-while (true)
+try
 {
-auto end = std::chrono::high_resolution_clock::now()
-+ ${ComponentHelper.getExecutionIntervalMethod(comp)};
-<#if ComponentHelper.isTimesync(comp)>
-  cmp.compute();
+TCLAP::CmdLine cmd("${compname} MontiThings component", ' ', "${config.getProjectVersion()}");
+${tc.includeArgs("template.deploy.CmdParameters", [comp, config])}
+${tc.includeArgs("template.deploy.ComponentStart", [comp, config])}
+<#if config.getMessageBroker().toString() == "DDS">
+  ${tc.includeArgs("template.deploy.DDSParticipantCleanup", [comp, config])}
 </#if>
-do {
-std::this_thread::yield();
-<#if ComponentHelper.isTimesync(comp)>
-  std::this_thread::sleep_for(std::chrono::milliseconds(1));
-<#else>
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-</#if>
-} while (std::chrono::high_resolution_clock::now() < end);
+}
+catch (TCLAP::ArgException &e) // catch exceptions
+{
+std::cerr << "error: " << e.error () << " for arg " << e.argId () << std::endl;
 }
 return 0;
 }

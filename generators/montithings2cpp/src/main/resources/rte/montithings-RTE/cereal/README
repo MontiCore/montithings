@@ -1,0 +1,5 @@
+Cereal Project Page: https://uscilab.github.io/cereal/
+
+MontiThings Adaptions:
+- New class types/tloptional.hpp for serializing tl::optional.
+  This class was adapted from types/optional.hpp

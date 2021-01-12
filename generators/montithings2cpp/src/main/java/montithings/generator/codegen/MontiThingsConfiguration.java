@@ -39,7 +39,8 @@ public class MontiThingsConfiguration implements Configuration {
     OUT_SHORT("o"),
     PLATFORM("platform"),
     SPLITTING("splitting"),
-    MESSAGEBROKER("messageBroker");
+    MESSAGEBROKER("messageBroker"),
+    VERSION("version");
 
     String name;
 
@@ -77,6 +78,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker());
     configParams.setHwcPath(getHWCPath());
+    configParams.setProjectVersion(getVersion());
   }
 
   /**
@@ -263,6 +265,10 @@ public class MontiThingsConfiguration implements Configuration {
       return hwc.toFile();
     }
     return Paths.get(DEFAULT_HWC_DIRECTORY).toFile();
+  }
+
+  public String getVersion() {
+    return getAsString(Options.VERSION).orElse("unspecified");
   }
 
   /**

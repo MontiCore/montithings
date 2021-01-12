@@ -1,4 +1,6 @@
-// (c) https://github.com/MontiCore/monticore
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* (c) https://github.com/MontiCore/monticore */
+
 
 #ifndef OUTPORTSERVER_ABSTRACTIPCCLIENT_H
 #define OUTPORTSERVER_ABSTRACTIPCCLIENT_H

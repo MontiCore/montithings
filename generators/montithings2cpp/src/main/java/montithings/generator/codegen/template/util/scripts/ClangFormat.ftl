@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+${tc.signature("existsHWC")}
 # Run manually to reformat a file:
 # clang-format -i --style=file <file>
 BasedOnStyle: GNU

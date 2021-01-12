@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("config")}
+${tc.signature("config", "existsHWC")}
 
 set -e # Stop on first error
 

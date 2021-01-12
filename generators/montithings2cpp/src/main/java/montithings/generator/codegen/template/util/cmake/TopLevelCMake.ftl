@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test")}
+${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "existsHWC")}
 
 <#assign commonCodePrefix = "">
 <#if config.getSplittingMode().toString() != "OFF">

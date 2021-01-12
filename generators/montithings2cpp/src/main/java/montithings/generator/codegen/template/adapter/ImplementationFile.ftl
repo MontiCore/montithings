@@ -1,8 +1,12 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("packageName", "compname", "config")}
+${tc.signature("packageName", "compname", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign className = compname + "Adapter">
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
 
-#include "${compname}AdapterTOP.h"
+#include "${className}.h"
 
 namespace montithings {
 <#list packageName as package>

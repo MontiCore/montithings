@@ -9,4 +9,6 @@ component Source {
   behavior {
     value = lastValue++;
   }
+
+  update interval 1sec;
 }

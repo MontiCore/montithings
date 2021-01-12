@@ -3,32 +3,35 @@ package montithings.cocos;
 
 import arcbasis._ast.ASTComponentType;
 import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
+import arcbasis._symboltable.ComponentTypeSymbol;
+import clockcontrol._ast.ASTCalculationInterval;
+import com.google.common.base.Preconditions;
+import de.se_rwth.commons.logging.Log;
+import montithings.util.MontiThingsError;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * TODO move from control block to component, since interval was moved.
  * Checks that the update interval is uniquely defined
  */
 public class MaxOneUpdateInterval implements ArcBasisASTComponentTypeCoCo {
 
   @Override public void check(ASTComponentType node) {
-    //TODO: Write me
-  }
+    Preconditions.checkArgument(node != null);
+    Preconditions.checkArgument(node.isPresentSymbol(), "ASTComponent node '%s' has no symbol. "
+      + "Did you forget to run the SymbolTableCreator before checking cocos?", node.getName());
+    final ComponentTypeSymbol component = node.getSymbol();
 
-  // MontiThings 5 version below
-  /*
-  @Override
-  public void check(ASTComponent node) {
-    List<ASTControlStatement> collect = node.getBody().getElementList()
-        .stream()
-        .filter(ASTControlBlock.class::isInstance)
-        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
+    Set<ASTCalculationInterval> calculationIntervals =
+      component.getAstNode().getBody().getArcElementList().stream()
         .filter(ASTCalculationInterval.class::isInstance)
-        .collect(Collectors.toList());
+        .map(ASTCalculationInterval.class::cast)
+        .collect(Collectors.toSet());
 
-    if (collect.size() > 1) {
-      Log.error("0xMT132 Update intervals should only be defined once in " + node.getName(),
-          collect.get(0).get_SourcePositionStart());
+    if (calculationIntervals.size() > 1) {
+      Log.error(String.format(MontiThingsError.ONLY_ONE_UPDATE_INTERVAL.toString(), node.getName()),
+        node.get_SourcePositionStart());
     }
   }
-   */
 }

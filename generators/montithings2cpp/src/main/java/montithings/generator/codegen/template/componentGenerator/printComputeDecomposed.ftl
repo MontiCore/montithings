@@ -1,8 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","config")}
+${tc.signature("comp","compname","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${Utils.printTemplateArguments(comp)}
-void ${compname}${Utils.printFormalTypeParameters(comp)}::compute(){
+void ${className}${Utils.printFormalTypeParameters(comp)}::compute(){
 if (shouldCompute()) {
 
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
@@ -17,7 +17,7 @@ ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, c
     </#list>
 </#if>
 
-${tc.includeArgs("template.componentGenerator.printComputeResults", [comp, compname, true])}
+${tc.includeArgs("template.componentGenerator.printComputeResults", [comp, compname, true, className])}
 <#list comp.getOutgoingPorts() as port>
 <#-- ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>

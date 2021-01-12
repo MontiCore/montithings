@@ -1,13 +1,17 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "config")}
+${tc.signature("comp", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign className = comp.getName() + "DDSParticipant">
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
 
-#include "${comp.getName()}DDSParticipant.h"
+#include "${className}.h"
 
 ${Utils.printNamespaceStart(comp)}
 
-${comp.getName()}DDSParticipant::${comp.getName()}DDSParticipant
+${className}::${className}
 (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, int argc, char *argv[]) : comp (comp)
 {
   while (!this->tryInitializeDDS (argc, argv)) {
@@ -22,7 +26,7 @@ ${comp.getName()}DDSParticipant::${comp.getName()}DDSParticipant
 }
 
 bool
-${comp.getName()}DDSParticipant::tryInitializeDDS (int argc, char *argv[])
+${className}::tryInitializeDDS (int argc, char *argv[])
 {
   DDS::DomainParticipantFactory_var dpf = TheParticipantFactoryWithArgs (argc, argv);
 
@@ -80,19 +84,19 @@ ${comp.getName()}DDSParticipant::tryInitializeDDS (int argc, char *argv[])
 }
 
 
-void ${comp.getName()}DDSParticipant::onNewConnectors(std::string payload)
+void ${className}::onNewConnectors(std::string payload)
 {
   ${tc.includeArgs("template.util.dds.participant.printOnNewConnectors", [comp, config])}
 }
 
 void
-${comp.getName()}DDSParticipant::initializePorts ()
+${className}::initializePorts ()
 {
   ${tc.includeArgs("template.util.ports.printAddDDSPorts", [comp, config])}
 }
 
 void
-${comp.getName()}DDSParticipant::publishConnectors ()
+${className}::publishConnectors ()
 {
   ${tc.includeArgs("template.util.dds.participant.printPublishConnectors", [comp, config])}
 }

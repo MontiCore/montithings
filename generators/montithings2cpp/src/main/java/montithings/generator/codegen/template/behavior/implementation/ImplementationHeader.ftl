@@ -3,8 +3,12 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#import "/template/behavior/implementation/ImplementationFile.ftl" as ImplementationFile>
-
 <#assign generics = Utils.printFormalTypeParameters(comp)>
+<#assign className = compname + "Impl">
+<#if existsHWC>
+    <#assign className += "TOP">
+</#if>
+
 #pragma once
 #include "${compname}Input.h"
 #include "${compname}Result.h"
@@ -20,7 +24,7 @@ using json = nlohmann::json;
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
-class ${compname}Impl<#if existsHWC>TOP</#if>
+class ${className}
 : public IComputable<${compname}Input${generics},${compname}Result${generics}>{
 
 protected:
@@ -29,7 +33,7 @@ ${Utils.printVariables(comp, config)}
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters -->
 <#-- ${Utils.printConfigParameters(comp)} -->
 public:
-${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, compname, existsHWC])}
+${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, compname, className])}
 
 void setInstanceName (const std::string &instanceName);
 
@@ -46,6 +50,6 @@ virtual bool restoreState ();
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, existsHWC])}
+    ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

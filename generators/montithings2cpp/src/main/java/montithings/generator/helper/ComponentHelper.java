@@ -290,8 +290,7 @@ public class ComponentHelper {
    *              should be calculated.
    * @return The parameters.
    */
-  public static Collection<String> getParamValues(
-    arcbasis._symboltable.ComponentInstanceSymbol param) {
+  public static List<String> getParamValues(ComponentInstanceSymbol param) {
     List<ASTExpression> configArguments = param.getArguments();
     MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
 
@@ -544,6 +543,12 @@ public class ComponentHelper {
       .first()
       .transform(e -> e.getInterval().getValue())
       .or(50);
+  }
+
+  public static boolean hasUpdateInterval(ComponentTypeSymbol comp) {
+    return !elementsOf(comp)
+      .filter(ASTCalculationInterval.class)
+      .isEmpty();
   }
 
   /**
@@ -860,9 +865,8 @@ public class ComponentHelper {
   /**
    * Workaround for the fact that MontiArc returns parameters twice
    */
-  public static Set<VariableSymbol> getFields(
-    arcbasis._symboltable.ComponentTypeSymbol component) {
-    return component.getFields().stream().collect(Collectors.toSet());
+  public static List<VariableSymbol> getFields(ComponentTypeSymbol component) {
+    return component.getFields().stream().collect(Collectors.toList());
   }
 
   public static String printStatementBehavior(ComponentTypeSymbol component) {

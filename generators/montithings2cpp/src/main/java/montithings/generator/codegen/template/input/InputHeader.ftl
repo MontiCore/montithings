@@ -1,8 +1,12 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config")}
+${tc.signature("comp", "compname", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
+<#assign className = compname + "Input">
+<#if existsHWC>
+  <#assign className += "TOP">
+</#if>
 
 #pragma once
 #include ${"<string>"}
@@ -19,7 +23,7 @@ ${Utils.printIncludes(comp,config)}
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
-class ${compname}Input
+class ${className}
 <#if comp.isPresentParentComponent()> :
     ${Utils.printSuperClassFQ(comp)}Input
 <#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
@@ -40,9 +44,9 @@ protected:
 </#list>
 
 public:
-${compname}Input() = default;
+${className}() = default;
 <#if comp.getAllIncomingPorts()?has_content && !isBatch>
-  explicit ${compname}Input(
+  explicit ${className}(
     <#list comp.getAllIncomingPorts() as port>
       tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
       <#sep>,</#sep>
@@ -73,6 +77,6 @@ ${compname}Input() = default;
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.input.generateInputBody", [comp, compname, config])}
+    ${tc.includeArgs("template.input.generateInputBody", [comp, compname, config, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

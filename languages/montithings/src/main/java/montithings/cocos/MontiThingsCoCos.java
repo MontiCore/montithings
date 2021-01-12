@@ -40,6 +40,7 @@ public class MontiThingsCoCos {
       .addCoCo(new PortsInSyncGroupAreIncoming())
       .addCoCo(new PortsInBatchStatementAreIncoming())
       .addCoCo(SITypesTypeCheckCoCo.getCoCo())
+      .addCoCo(new NameExpressionsAreResolvable())
       ;
   }
 }

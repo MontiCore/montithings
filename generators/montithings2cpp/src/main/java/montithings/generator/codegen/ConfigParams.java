@@ -7,14 +7,14 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import bindings._ast.ASTBindingRule;
-import cdlangextension._symboltable.CDLangExtensionScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
+import com.google.common.collect.Multimap;
 import montithings.generator.data.PortMap;
 import mtconfig._symboltable.IMTConfigGlobalScope;
-import mtconfig._symboltable.MTConfigScope;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -22,7 +22,6 @@ import java.util.Set;
 /**
  * Bundle of parameters for montithings2cpp generator.
  *
- * @author Julian Krebber
  * @since 5.0.2
  */
 public class ConfigParams {
@@ -74,18 +73,6 @@ public class ConfigParams {
     }
   }
 
-  /** property for message brokers */
-
-  private MessageBroker messageBroker = MessageBroker.OFF;
-
-  public MessageBroker getMessageBroker() {
-    return messageBroker;
-  }
-
-  public void setMessageBroker(MessageBroker messageBroker) {
-    this.messageBroker = messageBroker;
-  }
-
   public enum MessageBroker {
     OFF("OFF"),
     MQTT("MQTT"),
@@ -106,70 +93,39 @@ public class ConfigParams {
     }
   }
 
-  /** property for target platform */
-  private TargetPlatform targetPlatform = TargetPlatform.GENERIC;
+  /** property for message brokers */
+  protected MessageBroker messageBroker = MessageBroker.OFF;
 
-  private SplittingMode splittingMode = SplittingMode.OFF;
+  /** property for target platform */
+  protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
+
+  protected SplittingMode splittingMode = SplittingMode.OFF;
+
+  protected String projectVersion;
 
   /** Rules that bind a interface component/componentInstance to another non interface component */
-  private Set<ASTBindingRule> componentBindings = new HashSet<>();
+  protected Set<ASTBindingRule> componentBindings = new HashSet<>();
 
   /** Unconnected ports that have hand-written templates available.*/
-  private Set<PortSymbol> templatedPorts = new HashSet<>();
+  protected Set<PortSymbol> templatedPorts = new HashSet<>();
 
   /** Scope of the cdLangExtension language*/
-  private ICDLangExtensionScope cdLangExtensionScope;
+  protected ICDLangExtensionScope cdLangExtensionScope;
 
   /** Scope of the MTConfig language*/
-  private IMTConfigGlobalScope mtConfigScope;
+  protected IMTConfigGlobalScope mtConfigScope;
 
-  private final PortMap componentPortMap = new PortMap();
+  /** Maps MontiThings components to network ports for local web socket communication */
+  protected final PortMap componentPortMap = new PortMap();
 
   /** Directory that contains handwritten code for components.*/
   protected File hwcPath;
 
-  public File getHwcPath() {
-    return hwcPath;
-  }
-
-  public void setHwcPath(File hwcPath) {
-    this.hwcPath = hwcPath;
-  }
+  /** All type arguments which which a component type is ever instantiated */
+  Multimap<ComponentTypeSymbol, String> typeArguments;
 
   /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
   protected Path hwcTemplatePath;
-
-  public PortMap getComponentPortMap() {
-    return componentPortMap;
-  }
-
-  public TargetPlatform getTargetPlatform() {
-    return targetPlatform;
-  }
-
-  public void setTargetPlatform(TargetPlatform targetPlatform) {
-    this.targetPlatform = targetPlatform;
-  }
-
-  public Set<ASTBindingRule> getComponentBindings() {
-    return componentBindings;
-  }
-
-  public void setComponentBindings(Set<ASTBindingRule> componentBindings) {
-    this.componentBindings = componentBindings;
-  }
-
-  public Set<PortSymbol> getTemplatedPorts() {return templatedPorts;}
-
-  public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {this.templatedPorts = templatedPorts;}
-
-  public Path getHwcTemplatePath() {
-    return hwcTemplatePath;
-  }
-
-  public void setHwcTemplatePath(Path hwcTemplatePath) {
-    this.hwcTemplatePath = hwcTemplatePath;
-  }
 
   /**
    * Gets the implementing component of given interface component, if the component is bound by componentBindings.
@@ -246,14 +202,73 @@ public class ConfigParams {
    * @param componentType implementing component
    * @return If the component implements according to componentBindings.
    */
-  public boolean isImplementation(ComponentTypeSymbol componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentSymbol()==componentType){
+  public boolean isImplementation(ComponentTypeSymbol componentType) {
+    for (ASTBindingRule binding : componentBindings) {
+      if (binding.getImplementationComponentSymbol() == componentType) {
         return true;
       }
     }
     return false;
   }
+
+  /**
+   * Wrapper for typeArguments.get(). Only necessary to avoid Freemarker problems
+   */
+  public Collection<String> getTypeArguments(ComponentTypeSymbol componentType) {
+    return typeArguments.get(componentType);
+  }
+
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
+  public MessageBroker getMessageBroker() {
+    return messageBroker;
+  }
+
+  public void setMessageBroker(MessageBroker messageBroker) {
+    this.messageBroker = messageBroker;
+  }
+
+  public File getHwcPath() {
+    return hwcPath;
+  }
+
+  public void setHwcPath(File hwcPath) {
+    this.hwcPath = hwcPath;
+  }
+
+  public Path getHwcTemplatePath() {
+    return hwcTemplatePath;
+  }
+
+  public void setHwcTemplatePath(Path hwcTemplatePath) {
+    this.hwcTemplatePath = hwcTemplatePath;
+  }
+
+  public PortMap getComponentPortMap() {
+    return componentPortMap;
+  }
+
+  public TargetPlatform getTargetPlatform() {
+    return targetPlatform;
+  }
+
+  public void setTargetPlatform(TargetPlatform targetPlatform) {
+    this.targetPlatform = targetPlatform;
+  }
+
+  public Set<ASTBindingRule> getComponentBindings() {
+    return componentBindings;
+  }
+
+  public void setComponentBindings(Set<ASTBindingRule> componentBindings) {
+    this.componentBindings = componentBindings;
+  }
+
+  public Set<PortSymbol> getTemplatedPorts() {return templatedPorts;}
+
+  public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {this.templatedPorts = templatedPorts;}
 
   public ICDLangExtensionScope getCdLangExtensionScope() {
     return cdLangExtensionScope;
@@ -277,5 +292,22 @@ public class ConfigParams {
 
   public void setSplittingMode(SplittingMode splittingMode) {
     this.splittingMode = splittingMode;
+  }
+
+  public Multimap<ComponentTypeSymbol, String> getTypeArguments() {
+    return typeArguments;
+  }
+
+  public void setTypeArguments(
+    Multimap<ComponentTypeSymbol, String> typeArguments) {
+    this.typeArguments = typeArguments;
+  }
+
+  public String getProjectVersion() {
+    return projectVersion;
+  }
+
+  public void setProjectVersion(String projectVersion) {
+    this.projectVersion = projectVersion;
   }
 }

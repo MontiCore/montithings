@@ -1,9 +1,10 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 #pragma once
-#include <set>
-#include "tl/optional.hpp"
 #include "Port.h"
+#include "MessageProvider.h"
+#include "tl/optional.hpp"
+#include <set>
 
 /**
  * A port that consists of multiple ports acting as one port in the architecture.
@@ -14,24 +15,21 @@
  * For each communication technology, add an appropriate port using addManagedPort(Port*).
  * By default, the multiport consists of a regular port.
  */
-template<class T>
-class MultiPort : public Port<T>
+template <class T> class MultiPort : public Port<T>
 {
-  protected:
+protected:
   std::set<Port<T> *> managedPorts;
-  std::set<sole::uuid> listeningPorts;
   Port<T> *dataProvidingPort = nullptr;
 
-  public:
-  MultiPort ()
-  {
-  }
+public:
+  MultiPort () = default;
 
-  void addManagedPort (Port<T> *portToAdd)
+  void
+  addManagedPort (Port<T> *portToAdd)
   {
-    for (auto listener : listeningPorts)
+    for (auto listener : this->observers)
       {
-        portToAdd->registerListeningPort (listener);
+        portToAdd->attach (listener);
       }
     if (dataProvidingPort != nullptr)
       {
@@ -40,21 +38,34 @@ class MultiPort : public Port<T>
     managedPorts.emplace (portToAdd);
   }
 
-  void removeManagedPort (Port<T> *portToAdd)
+  void
+  removeManagedPort (Port<T> *portToAdd)
   {
-    managedPorts.erase(portToAdd);
+    managedPorts.erase (portToAdd);
   }
 
-  void registerListeningPort (sole::uuid requester) override
+  void
+  attach (EventObserver *observer) override
   {
-    listeningPorts.emplace (requester);
+    Port<T>::attach (observer);
     for (auto port : managedPorts)
       {
-        port->registerListeningPort (requester);
+        port->attach (observer);
       }
   }
 
-  bool hasValue (sole::uuid requester) override
+  void
+  detach (EventObserver *observer) override
+  {
+    this->detach (observer);
+    for (auto port : managedPorts)
+    {
+      port->detach (observer);
+    }
+  }
+
+  bool
+  hasValue (sole::uuid requester) override
   {
     // A multiport has a value if any of its managed ports has a value
     for (auto port : managedPorts)
@@ -67,18 +78,21 @@ class MultiPort : public Port<T>
     return false;
   }
 
-  tl::optional<T> getCurrentValue (sole::uuid requester) override
+  tl::optional<T>
+  getCurrentValue (sole::uuid requester) override
   {
     tl::optional<T> returnValue = tl::nullopt;
     for (auto port : managedPorts)
       {
         returnValue = port->getCurrentValue (requester);
-        if (returnValue != tl::nullopt) break;
+        if (returnValue != tl::nullopt)
+          break;
       }
     return returnValue;
   }
 
-  void getExternalMessages () override
+  void
+  getExternalMessages () override
   {
     for (auto port : managedPorts)
       {
@@ -86,7 +100,8 @@ class MultiPort : public Port<T>
       }
   }
 
-  void sendToExternal (tl::optional<T> nextVal) override
+  void
+  sendToExternal (tl::optional<T> nextVal) override
   {
     for (auto port : managedPorts)
       {
@@ -94,7 +109,8 @@ class MultiPort : public Port<T>
       }
   }
 
-  void setDataProvidingPort (Port<T> *port) override
+  void
+  setDataProvidingPort (Port<T> *port) override
   {
     dataProvidingPort = port;
     for (auto currentport : managedPorts)
@@ -103,7 +119,8 @@ class MultiPort : public Port<T>
       }
   }
 
-  void updateMessageSource () override
+  void
+  updateMessageSource () override
   {
     for (auto port : managedPorts)
       {
@@ -111,7 +128,8 @@ class MultiPort : public Port<T>
       }
   }
 
-  void setNextValue (T nextVal) override
+  void
+  setNextValue (T nextVal) override
   {
     for (auto port : managedPorts)
       {
@@ -119,7 +137,8 @@ class MultiPort : public Port<T>
       }
   }
 
-  void setNextValue (tl::optional<T> nextVal) override
+  void
+  setNextValue (tl::optional<T> nextVal) override
   {
     for (auto port : managedPorts)
       {
