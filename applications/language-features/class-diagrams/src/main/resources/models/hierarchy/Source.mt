@@ -5,4 +5,5 @@ import Colors.*;
 
 component Source {
   port out Color value;
+  update interval 1sec;
 }
