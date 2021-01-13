@@ -21,12 +21,12 @@ import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
@@ -81,7 +81,9 @@ public class ComponentHelper {
     if (expression.getTypeInfo() instanceof CDTypeSymbol) {
       return printCdFQN(comp, expression.getTypeInfo(), config);
     }
-    //TODO: Type wenn SIUnit
+    if (expression instanceof SymTypeOfNumericWithSIUnit) {
+      expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
+    }
     return java2cppTypeString(expression.print());
   }
 
@@ -330,7 +332,7 @@ public class ComponentHelper {
 
     for (int i = 0; i < parameters.size(); i++) {
       ASTArcParameter param = parameters.get(i);
-      result += java2cppTypeString(printer.prettyprint(param.getMCType()));
+      result += java2cppTypeString(printNumericType(param.getSymbol().getType()));
       ;
       result += " ";
       result += param.getName();
@@ -962,5 +964,12 @@ public class ComponentHelper {
       Log.error("0xMT0790 instance not found.");
     }
     return result.get();
+  }
+
+  private static String printNumericType(SymTypeExpression symTypeExpression) {
+    if (symTypeExpression instanceof SymTypeOfNumericWithSIUnit)
+      return ((SymTypeOfNumericWithSIUnit) symTypeExpression)
+              .getNumericType().print();
+    else return symTypeExpression.print();
   }
 }

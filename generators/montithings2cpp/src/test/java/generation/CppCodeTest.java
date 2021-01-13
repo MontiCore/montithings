@@ -52,14 +52,14 @@ public class CppCodeTest {
 
   @ParameterizedTest
   @ValueSource(strings = {
-    "basicInputOutputTest",
-    "additionalPortTest",
-    "behaviorTest",
-    "classDiagramsTest",
+    //"basicInputOutputTest",
+    //"additionalPortTest",
+    //"behaviorTest",
+    //"classDiagramsTest",
     "siunitsTest",
-    "prePostConditionsTest",
-    "interfaceComponentsTest",
-    "interfaceComponentsBindingTest"
+    //"prePostConditionsTest",
+    //"interfaceComponentsTest",
+    //"interfaceComponentsBindingTest"
     })
   public void CPPTests(String testName) {
     File models = Paths.get(MODELPATH.toString(), testName).toFile();

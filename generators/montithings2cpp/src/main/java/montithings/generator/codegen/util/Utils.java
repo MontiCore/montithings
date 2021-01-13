@@ -13,6 +13,8 @@ import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.symboltable.ImportStatement;
+import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
 import montithings._ast.ASTMTComponentType;
@@ -35,7 +37,11 @@ public class Utils {
     StringBuilder s = new StringBuilder();
     int i = 1;
     for (VariableSymbol param : comp.getParameters()) {
-      s.append(TypesHelper.java2cppTypeString(param.getType().print()) + " " + param.getName());
+      SymTypeExpression type = param.getType();
+      if (type instanceof SymTypeOfNumericWithSIUnit){
+        type = ((SymTypeOfNumericWithSIUnit) type).getNumericType();
+      }
+      s.append(TypesHelper.java2cppTypeString(type.print()) + " " + param.getName());
       if (i != comp.getParameters().size()) {
         s.append(',');
       }
