@@ -4,7 +4,9 @@ package montithings.generator.cd2cpp;
 import com.google.common.collect.LinkedListMultimap;
 import de.monticore.cd4analysis.CD4AnalysisMill;
 import de.monticore.cd4analysis._parser.CD4AnalysisParser;
-import de.monticore.cd4analysis._symboltable.*;
+import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
+import de.monticore.cd4analysis._symboltable.CD4AnalysisScopeDeSer;
+import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import de.monticore.cd4analysis.cocos.CD4AnalysisCoCos;
 import de.monticore.cd4analysis.prettyprint.CD4AnalysisPrettyPrinter;
 import de.monticore.cd4code.CD4CodeMill;
@@ -24,14 +26,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class CppGenerator {
+import static montithings.generator.cd2cpp.TypeHelper.primitiveTypes;
 
-  private static final List<String> primitiveTypes = new ArrayList<>(
-    Arrays.asList("boolean", "byte", "char", "double", "float",
-      "int", "long", "short", "String"));
+public class CppGenerator {
 
   private Path outputDir;
 
