@@ -17,7 +17,7 @@ std::cout << "onNewConnectors: " << payload << std::endl;
       <#if !comp.isAtomic()>
       // additional outgoing port for port incoming port ${p.getName()}
       // to forward data to subcomponents
-      topic = topic.substr(0, payload.find("/") + "/out"; 
+      topic = topic.substr(0, payload.find("/")) + "/out"; 
       comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic));
       </#if>
     }
