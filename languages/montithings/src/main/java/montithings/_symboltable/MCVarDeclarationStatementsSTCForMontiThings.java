@@ -1,6 +1,7 @@
 package montithings._symboltable;
 
 import com.google.common.collect.Lists;
+import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTLocalVariableDeclaration;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
@@ -41,6 +42,11 @@ public class MCVarDeclarationStatementsSTCForMontiThings extends MCVarDeclaratio
     if(ast instanceof ASTSIUnitType){
       SynthesizeSymTypeFromMontiThings synthesizeSymTypeFromMontiThings = new SynthesizeSymTypeFromMontiThings();
       ((ASTSIUnitType) ast).accept(synthesizeSymTypeFromMontiThings);
+      return (SymTypeExpression)synthesizeSymTypeFromMontiThings.getResult().orElse(new SymTypeOfNull());
+    }
+    else if(ast instanceof ASTSIUnitType4Computing){
+      SynthesizeSymTypeFromMontiThings synthesizeSymTypeFromMontiThings = new SynthesizeSymTypeFromMontiThings();
+      ((ASTSIUnitType4Computing) ast).accept(synthesizeSymTypeFromMontiThings);
       return (SymTypeExpression)synthesizeSymTypeFromMontiThings.getResult().orElse(new SymTypeOfNull());
     }
     else {

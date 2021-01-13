@@ -214,9 +214,14 @@ public class ComponentHelper {
    * @return The String representation of the type of the port.
    */
   public static String getRealPortTypeString(ComponentTypeSymbol comp, PortSymbol portSymbol) {
-    // TODO: call portSymbol.getType().print() once MontiArc fixes its types
-    //return portSymbol.getType().print();
-    return portSymbol.getType().getTypeInfo().getName();
+    if(portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit){
+      return ((SymTypeOfNumericWithSIUnit) portSymbol.getType()).getNumericType().getTypeInfo().getName();
+    }
+    else {
+      // TODO: call portSymbol.getType().print() once MontiArc fixes its types
+      //return portSymbol.getType().print();
+      return portSymbol.getType().getTypeInfo().getName();
+    }
   }
 
   public static boolean isInterfaceComponent(ComponentTypeSymbol comp) {
