@@ -57,6 +57,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
 /**
@@ -976,5 +977,13 @@ public class ComponentHelper {
       return ((SymTypeOfNumericWithSIUnit) symTypeExpression)
               .getNumericType().print();
     else return symTypeExpression.print();
+  }
+
+  public static double getConversionFactorFromConnector(ASTConnector connector) {
+    if (connector.getSource().getPortSymbol().getType() instanceof SymTypeOfNumericWithSIUnit){
+      return getConversionFactor(((SymTypeOfNumericWithSIUnit) connector.getSource().getPortSymbol().getType()).getUnit(),
+              ((SymTypeOfNumericWithSIUnit) connector.getTarget(0).getPortSymbol().getType()).getUnit());
+    }
+    return 1;
   }
 }
