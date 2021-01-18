@@ -29,6 +29,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}(std::string i
 this->instanceName = instanceName;
 <#if comp.isAtomic()>
   this->${Identifier.getBehaviorImplName()}.setInstanceName (instanceName);
+  this->${Identifier.getBehaviorImplName()}.setup ();
 </#if>
 <#if comp.isPresentParentComponent()>
   super(<#list getInheritedParams(comp) as inhParam >
