@@ -10,7 +10,7 @@ ${tc.signature("comp","ports","config")}
 
 <#list ports as port>
   <#assign name = port.getName()>
-  int ${name}ConversionFactor = 1;
+  double ${name}ConversionFactor = 1;
 </#list>
 
 <#if comp.isDecomposed()>

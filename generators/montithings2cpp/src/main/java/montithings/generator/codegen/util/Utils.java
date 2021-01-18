@@ -293,6 +293,17 @@ public class Utils {
     return s.toString();
   }
 
+  public static String printComponentPrefix(ASTPortAccess access){
+    StringBuilder s = new StringBuilder();
+    if (access.isPresentComponent()) {
+      s.append(access.getComponent() + ".");
+    }
+    else {
+      s.append("this->");
+    }
+    return s.toString();
+  }
+
   public static String printExpression(ASTExpression expr, boolean isAssignment) {
     return CppPrettyPrinter.print(expr);
   }

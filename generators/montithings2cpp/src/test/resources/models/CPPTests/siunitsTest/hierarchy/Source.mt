@@ -4,5 +4,5 @@ package hierarchy;
 component Source {
   int lastValue = 0;
 
-  port out int value;
+  port out m/s<double> value;
 }

@@ -31,7 +31,7 @@ ${tc.signature("ports","comp","compname","config", "className")}
     }
 
     ${Utils.printTemplateArguments(comp)}
-    void ${className}${Utils.printFormalTypeParameters(comp)}::setPort${name?cap_first}ConversionFactor(int factor){
+    void ${className}${Utils.printFormalTypeParameters(comp)}::setPort${name?cap_first}ConversionFactor(double factor){
     ${name}ConversionFactor = factor;
     }
 </#list>

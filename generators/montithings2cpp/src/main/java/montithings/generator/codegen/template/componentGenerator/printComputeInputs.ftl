@@ -3,7 +3,8 @@ ${tc.signature("comp","compname","isMonitor")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
     <#if !ComponentHelper.usesBatchMode(comp)>
-        ${compname}Input${Utils.printFormalTypeParameters(comp)} input<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>
+        ${compname}Input${Utils.printFormalTypeParameters(comp)} input<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >tl::make_optional(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
+        .value()  * this->${inPort.getName()}ConversionFactor
         )<#sep>,</#sep>
     </#list>)</#if>;
     <#else>
