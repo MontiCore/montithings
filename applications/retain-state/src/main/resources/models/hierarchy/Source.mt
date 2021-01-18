@@ -11,4 +11,5 @@ component Source {
   }
 
   retain state;
+  update interval 1sec;
 }

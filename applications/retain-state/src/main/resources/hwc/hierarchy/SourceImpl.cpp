@@ -6,7 +6,7 @@ namespace montithings {
 namespace hierarchy {
 
 SourceResult SourceImpl::getInitialValues(){
-    lastValue = 1;
+    lastValue = 0;
 	return {lastValue};
 }
 
