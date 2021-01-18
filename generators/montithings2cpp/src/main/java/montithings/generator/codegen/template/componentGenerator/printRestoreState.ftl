@@ -13,27 +13,37 @@ return true;
 }
 else
 {
-std::cout << "Could not restore state from local file." << std::endl;
+std::cout << "Component instance '"
+          << instanceName
+          << "' could not restore state from local file."
+          << std::endl;
 }
 
-// 2. Option restore state and replay messages since state
-behaviorImpl.requestState ();
-auto requestStateTimeout = std::chrono::high_resolution_clock::now () + std::chrono::seconds (1);
-while (!behaviorImpl.isReceivedState ()
-&& std::chrono::high_resolution_clock::now () < requestStateTimeout)
-;
-if (behaviorImpl.isReceivedState ())
-{
-behaviorImpl.requestReplay ();
-while (!behaviorImpl.isReplayFinished ())
-;
-}
+<#if config.getMessageBroker().toString() == "MQTT">
+  // 2. Option restore state and replay messages since state
+  behaviorImpl.requestState ();
+  auto requestStateTimeout = std::chrono::high_resolution_clock::now () + std::chrono::seconds (1);
+  while (!behaviorImpl.isReceivedState ()
+  && std::chrono::high_resolution_clock::now () < requestStateTimeout)
+  ;
+  if (behaviorImpl.isReceivedState ())
+  {
+  behaviorImpl.requestReplay ();
+  while (!behaviorImpl.isReplayFinished ())
+  ;
+  }
 
-bool restoreSuccessful = behaviorImpl.isReceivedState () && behaviorImpl.isReplayFinished ();
-if (!restoreSuccessful)
-{
-std::cout << "Could not restore state from external service." << std::endl;
-}
+  bool restoreSuccessful = behaviorImpl.isReceivedState () && behaviorImpl.isReplayFinished ();
+  if (!restoreSuccessful)
+  {
+  std::cout << "Component instance '"
+            << instanceName
+            << "' could not restore state from external service."
+            << std::endl;
+  }
 
-return restoreSuccessful;
+  return restoreSuccessful;
+<#else>
+  return false;
+</#if>
 }

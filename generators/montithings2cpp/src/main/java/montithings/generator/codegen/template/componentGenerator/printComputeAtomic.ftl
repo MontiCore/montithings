@@ -22,18 +22,20 @@ ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, 
 setResult(result);
 <#if ComponentHelper.retainState(comp)>
   json state = ${Identifier.getBehaviorImplName()}.serializeState ();
-  <#-- if there's no incoming ports, we have no chance of replaying and need
-       to store every message. If there's at least one incoming port it is sufficient
-       to save every couple of messages and replay everything after last save -->
-  <#if comp.getIncomingPorts()?size gt 0>
-    static int computeCounter = 0;
-    computeCounter++;
-    computeCounter %= 5;
-    if (computeCounter == 0)
+  <#if config.getMessageBroker().toString() == "MQTT">
+    <#-- if there's no incoming ports, we have no chance of replaying and need
+         to store every message. If there's at least one incoming port it is sufficient
+         to save every couple of messages and replay everything after last save -->
+    <#if comp.getIncomingPorts()?size gt 0>
+      static int computeCounter = 0;
+      computeCounter++;
+      computeCounter %= 5;
+      if (computeCounter == 0)
+    </#if>
+    {
+    ${Identifier.getBehaviorImplName()}.publishState (state);
+    }
   </#if>
-  {
-  ${Identifier.getBehaviorImplName()}.publishState (state);
-  }
   ${Identifier.getBehaviorImplName()}.storeState (state);
 </#if>
 }

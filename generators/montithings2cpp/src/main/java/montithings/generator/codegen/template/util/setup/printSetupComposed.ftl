@@ -2,6 +2,7 @@
 ${tc.signature("comp","compname","config", "className")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
 if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
@@ -26,7 +27,15 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 <#if config.getMessageBroker().toString() == "MQTT">
-  ${tc.includeArgs("template.util.ports.printAddMqttPorts", [comp, config])}
+  ${tc.includeArgs("template.util.ports.printAddMqttInPorts", [comp, config])}
+</#if>
+
+<#if ComponentHelper.retainState(comp)>
+  this->restoreState ();
+</#if>
+
+<#if config.getMessageBroker().toString() == "MQTT">
+  ${tc.includeArgs("template.util.ports.printAddMqttOutPorts", [comp, config])}
   this->publishConnectors();
 
   MqttClient::instance ()->addUser (this);
