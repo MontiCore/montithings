@@ -11,6 +11,7 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import montiarc._symboltable.IMontiArcScope;
 import montithings._symboltable.IMontiThingsScope;
+import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import portextensions._ast.ASTSyncStatement;
 
@@ -64,10 +65,10 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
     if (port.isPresent()) {
       String prefix;
       if (port.get().isIncoming()) {
-        prefix = "input";
+        prefix = Identifier.getInputName();
       }
       else {
-        prefix = "result";
+        prefix = Identifier.getResultName();
       }
 
       if (isComparedToNoData) {
@@ -83,7 +84,7 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
         String s1 = sync
           .getSyncedPortList()
           .stream()
-          .map(str -> "input.get" + capitalize(str) + "()" + isSet(portsInBatchStatement, str))
+          .map(str -> Identifier.getInputName() + ".get" + capitalize(str) + "()" + isSet(portsInBatchStatement, str))
           .collect(Collectors.joining(" && "));
         synced.append(s1);
       }
