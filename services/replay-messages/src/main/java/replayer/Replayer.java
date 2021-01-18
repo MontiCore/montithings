@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class Replayer implements MqttCallback {
 
+  public final static String REPLAY_FINISHED_TOPIC = "/replayFinished/";
+
   /**
    * all messages received from ports
    * topic -> [(timestamp, payload)]
@@ -38,20 +40,23 @@ public class Replayer implements MqttCallback {
     client.setCallback(this);
     client.subscribe("/ports/#");
     client.subscribe("/connectors/#");
-    client.subscribe("/reqestReplay/ports/#");
+    client.subscribe("/requestReplay/#");
   }
 
   @Override public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
     if (topic.startsWith("/ports/")) {
+      System.out.println("Store message: " + topic + " " + mqttMessage);
       storeMessage(topic, mqttMessage);
     }
-    if (topic.startsWith("/reqestReplay/ports/")) {
-      String instanceName = topic.substring("/reqestReplay/ports/".length());
+    if (topic.startsWith("/requestReplay/")) {
+      String instanceName = topic.substring("/requestReplay/".length());
+      System.out.println("Request replay for: " + instanceName);
       replayTopics(instanceName);
     }
     if (topic.startsWith("/connectors/")) {
       String target = topic.substring("/connectors/".length());
       String source = new String(mqttMessage.getPayload());
+      System.out.println("Connector: " + source + " -> " + target);
       if (!datasources.containsKey(target)) {
         datasources.put(target, new HashSet<>());
       }
@@ -93,6 +98,8 @@ public class Replayer implements MqttCallback {
       // Increase iterator for that topic
       iterator.put(nextTopic, iterator.get(nextTopic) + 1);
     }
+
+    publishMessage(REPLAY_FINISHED_TOPIC + instanceName, "");
   }
 
   protected void publishMessage(String topic, String payload) throws MqttException {
@@ -133,12 +140,30 @@ public class Replayer implements MqttCallback {
 
   private boolean allTopicsAreReplayed(Set<String> topicsToReplay, Map<String, Integer> iterator) {
     topicsToReplay.forEach(t -> ensureTopicExists(t));
-    return topicsToReplay.stream()
-      .noneMatch(t -> iterator.get(t) < receivedMessages.get(t).size());
+    topicsToReplay.stream().filter(t -> iterator.get(t) == null).forEach(t -> iterator.put(t, Integer.MAX_VALUE));
+    for (String t : topicsToReplay) {
+      Integer messagesReplayed = iterator.get(t);
+      Integer totalNumberOfMessages = receivedMessages.get(t).size();
+      boolean topicHasMessagesLeft = messagesReplayed < totalNumberOfMessages;
+      if (topicHasMessagesLeft) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  @Override public void connectionLost(Throwable throwable) {
-    // useless for us
+  @Override public void connectionLost(Throwable cause) {
+    cause.printStackTrace();
+    System.out.println("Replayer lost connection. Reconncting...");
+    while (!client.isConnected()) {
+      try {
+        client.connect();
+      }
+      catch (MqttException e) {
+        e.printStackTrace();
+      }
+    }
+    System.out.println("Replayer reconnected.");
   }
 
   @Override public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {

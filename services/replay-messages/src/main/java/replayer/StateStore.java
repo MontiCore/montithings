@@ -9,8 +9,11 @@ import java.util.Map;
 public class StateStore implements MqttCallback {
 
   public final static String SET_STATE_TOPIC = "/setState/";
+
   public final static String GET_STATE_TOPIC = "/getState/";
+
   public final static String STATE_TOPIC = "/state/";
+
   public final static String REPLAY_STATE_TOPIC = "/replaySinceState/";
 
   // component instance FQN -> last state of the instance
@@ -34,15 +37,13 @@ public class StateStore implements MqttCallback {
     if (topic.startsWith(SET_STATE_TOPIC)) {
       String instanceName = topic.substring(SET_STATE_TOPIC.length());
       String state = new String(message.getPayload());
+      System.out.println("Set state: " + instanceName + " : " + state);
       storeState(instanceName, state);
     }
     if (topic.startsWith(GET_STATE_TOPIC)) {
       String instanceName = topic.substring(GET_STATE_TOPIC.length());
+      System.out.println("Get state for: " + instanceName);
       publishState(instanceName);
-    }
-    if (topic.startsWith(REPLAY_STATE_TOPIC)) {
-      String instanceName = topic.substring(REPLAY_STATE_TOPIC.length());
-      replayMessagesSinceState(instanceName);
     }
   }
 
@@ -56,7 +57,14 @@ public class StateStore implements MqttCallback {
 
   protected void publishState(String instanceName) throws MqttException {
     MqttMessage mqttMessage = new MqttMessage();
-    mqttMessage.setPayload(getLastKnownState(instanceName).getState().getBytes());
+    State state = getLastKnownState(instanceName);
+    String payload;
+    if (state == null) {
+      payload = "none";
+    } else {
+      payload = state.getState();
+    }
+    mqttMessage.setPayload(payload.getBytes());
     client.publish(STATE_TOPIC + instanceName, mqttMessage);
   }
 
@@ -76,12 +84,19 @@ public class StateStore implements MqttCallback {
     return new HashMap<>(lastKnownStates.get(instanceName).getMessagesToSkipForPort());
   }
 
-  protected void replayMessagesSinceState(String instanceName) {
-
-  }
-
   @Override public void connectionLost(Throwable cause) {
     // useless for us
+    cause.printStackTrace();
+    System.out.println("State Store lost connection. Reconncting...");
+    while (!client.isConnected()) {
+      try {
+        client.connect();
+      }
+      catch (MqttException e) {
+        e.printStackTrace();
+      }
+    }
+    System.out.println("State Store reconnected.");
   }
 
   @Override public void deliveryComplete(IMqttDeliveryToken token) {

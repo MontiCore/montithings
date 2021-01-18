@@ -1,8 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
-package replayer;
-
+package main;
 import com.google.common.base.Preconditions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import replayer.Replayer;
+import replayer.StateStore;
 
 public class Main {
   public static void main(String[] args) throws MqttException {
