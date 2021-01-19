@@ -42,6 +42,7 @@
         <junit.vintage.version>5.5.2</junit.vintage.version>
         <junit.platform.version>1.1.0</junit.platform.version>
 		<assertj.version>3.7.0</assertj.version>
+		<jscience.version>4.3.1</jscience.version>
 		
 		<!-- .. Plugins ....................................................... -->
 		<monticore.plugin>6.5.0</monticore.plugin>

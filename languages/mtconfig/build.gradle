@@ -64,6 +64,7 @@ dependencies {
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "org.apache.commons:commons-lang3:3.9"
+  implementation "de.monticore:siunits:$siunits_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
   testImplementation "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"

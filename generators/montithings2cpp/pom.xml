@@ -108,7 +108,7 @@
 		<dependency>
 			<groupId>org.jscience</groupId>
 			<artifactId>jscience</artifactId>
-			<version>4.3.1</version>
+			<version>${jscience.version}</version>
 		</dependency>
 
 
