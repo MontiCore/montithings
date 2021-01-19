@@ -999,6 +999,13 @@ public class ComponentHelper {
     return false;
   }
 
+  public static boolean isSIUnitPort(PortSymbol portSymbol){
+    if(portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit){
+      return true;
+    }
+    return false;
+  }
+
   public static Optional<PortSymbol> getPortSymbolFromPortAccess(ASTPortAccess portAccess){
     if (!portAccess.isPresentComponent()){
       return Optional.of(portAccess.getPortSymbol());
