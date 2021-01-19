@@ -1,15 +1,16 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-component Source {
+component RunningSum {
+  port in int input;
   port out int value;
 
-  int lastValue = 0;
+  int sum = 0;
 
   behavior {
-    value = lastValue++;
+  	sum = sum + input;
+    value = sum;
   }
 
   retain state;
-  update interval 1sec;
 }

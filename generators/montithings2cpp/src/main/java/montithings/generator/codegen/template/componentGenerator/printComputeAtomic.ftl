@@ -8,9 +8,6 @@ ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::compute() {
 if (shouldCompute())
 {
-<#if ComponentHelper.retainState(comp)>
-  ${Identifier.getBehaviorImplName()}.restoreState();
-</#if>
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} result;
 <#list comp.incomingPorts as port>
@@ -24,7 +21,22 @@ result = ${Identifier.getBehaviorImplName()}.compute(input);
 ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, compname])}
 setResult(result);
 <#if ComponentHelper.retainState(comp)>
-  ${Identifier.getBehaviorImplName()}.storeState();
+  json state = ${Identifier.getBehaviorImplName()}.serializeState ();
+  <#if config.getMessageBroker().toString() == "MQTT">
+    <#-- if there's no incoming ports, we have no chance of replaying and need
+         to store every message. If there's at least one incoming port it is sufficient
+         to save every couple of messages and replay everything after last save -->
+    <#if comp.getIncomingPorts()?size gt 0>
+      static int computeCounter = 0;
+      computeCounter++;
+      computeCounter %= 5;
+      if (computeCounter == 0)
+    </#if>
+    {
+    ${Identifier.getBehaviorImplName()}.publishState (state);
+    }
+  </#if>
+  ${Identifier.getBehaviorImplName()}.storeState (state);
 </#if>
 }
 }

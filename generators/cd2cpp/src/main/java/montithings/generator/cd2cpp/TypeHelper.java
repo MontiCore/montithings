@@ -3,6 +3,10 @@ package montithings.generator.cd2cpp;
 
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class TypeHelper {
 
   private String _package;
@@ -13,5 +17,13 @@ public class TypeHelper {
 
   public String printType(TypeSymbol type) {
     return "montithings::" + _package + "::" + type.getName();
+  }
+
+  public static final List<String> primitiveTypes = new ArrayList<>(
+    Arrays.asList("boolean", "byte", "char", "double", "float",
+      "int", "long", "short", "String"));
+
+  public boolean isPrimitive(TypeSymbol type) {
+    return primitiveTypes.contains(type.getName());
   }
 }

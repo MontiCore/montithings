@@ -18,6 +18,9 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include ${"<Utils.h>"}
 #include ${"<fstream>"}
 ${Utils.printIncludes(comp,config)}
+<#if config.getMessageBroker().toString() == "MQTT">
+  #include "MqttClient.h"
+</#if>
 
 using json = nlohmann::json;
 
@@ -25,10 +28,21 @@ ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
 class ${className}
-: public IComputable<${compname}Input${generics},${compname}Result${generics}>{
+: public IComputable<${compname}Input${generics},${compname}Result${generics}>
+<#if config.getMessageBroker().toString() == "MQTT">
+, public MqttUser
+</#if>
+{
 
 protected:
 std::string instanceName;
+
+bool replayFinished = false;
+bool replayTimeout = false;
+bool receivedState = false;
+bool restoredState = false;
+
+
 ${Utils.printVariables(comp, config)}
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters -->
 <#-- ${Utils.printConfigParameters(comp)} -->
@@ -37,19 +51,36 @@ ${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, com
 
 void setInstanceName (const std::string &instanceName);
 
-virtual void storeState ();
+virtual void setup ();
+<#if config.getMessageBroker().toString() == "MQTT">
+  virtual void requestState ();
+  virtual void requestReplay ();
+  virtual void publishState (json state);
+</#if>
+virtual json serializeState ();
+virtual void storeState (json state);
 virtual bool restoreState ();
+virtual bool restoreState (std::string content);
+
+bool isReplayFinished () const;
+bool isReplayTimeout () const;
+bool isReceivedState () const;
+bool isRestoredState () const;
+
+<#if config.getMessageBroker().toString() == "MQTT">
+  void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
+</#if>
 
 <#if ComponentHelper.hasBehavior(comp)>
-    ${compname}Result${generics} getInitialValues() override;
-    ${compname}Result${generics} compute(${compname}Input${generics} input) override;
+  ${compname}Result${generics} getInitialValues() override;
+  ${compname}Result${generics} compute(${compname}Input${generics} input) override;
 <#else>
-    ${compname}Result${generics} getInitialValues() = 0;
-    ${compname}Result${generics} compute(${compname}Input${generics} input) = 0;
+  ${compname}Result${generics} getInitialValues() override = 0;
+  ${compname}Result${generics} compute(${compname}Input${generics} input) override = 0;
 </#if>
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, className])}
+  ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

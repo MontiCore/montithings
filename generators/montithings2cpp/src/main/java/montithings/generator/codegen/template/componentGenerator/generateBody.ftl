@@ -29,7 +29,9 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
 ${tc.includeArgs("template.componentGenerator.printShouldComputeCheck", [comp, compname, className])}
 
 ${tc.includeArgs("template.util.setup.Setup", [comp, compname, config, className])}
-
+<#if ComponentHelper.retainState(comp)>
+  ${tc.includeArgs("template.componentGenerator.printRestoreState", [comp, config, className])}
+</#if>
 ${tc.includeArgs("template.util.init.Init", [comp, compname, config, className])}
 
 <#if config.getMessageBroker().toString() == "MQTT">

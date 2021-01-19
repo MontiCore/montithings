@@ -2,6 +2,7 @@
 // (c) https://github.com/MontiCore/monticore
 ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper", "imports", "associations")}
 <#assign AssociationHelper = tc.instantiate("montithings.generator.cd2cpp.AssociationHelper")>
+<#assign TypeHelper = tc.instantiate("montithings.generator.cd2cpp.TypeHelper", [package])>
 #pragma once
 
 <#function java2cppTypeString type>
@@ -23,8 +24,20 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 #include ${"<cereal/types/vector.hpp>"}
 #include ${"<cereal/types/tloptional.hpp>"}
 #include ${"<algorithm>"}
+<#if type.isIsClass()>
+  <#list type.getFieldList() as field>
+    <#if !TypeHelper.isPrimitive(field.getType().getTypeInfo())>
+      <#assign fieldType = java2cppTypeString(field.getType().getTypeInfo().getName())>
+      #include "${fieldType}.h"
+    </#if>
+  </#list>
+</#if>
+<#list associations as assoc>
+  <#assign t=AssociationHelper.getOtherSideTypeName(assoc, type)>
+  #include "${t}.h"
+</#list>
 #include "tl/optional.hpp"
-#include "Package.h"
+
 <#list imports as import>
 #include "${import}"
 </#list>

@@ -111,6 +111,9 @@ void compute() override;
 bool shouldCompute();
 void start() override;
 void onEvent () override;
+<#if ComponentHelper.retainState(comp)>
+  bool restoreState ();
+</#if>
 };
 
 <#if Utils.hasTypeParameter(comp)>

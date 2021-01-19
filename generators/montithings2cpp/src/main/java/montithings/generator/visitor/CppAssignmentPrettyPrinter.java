@@ -6,17 +6,15 @@ import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressi
 import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
-import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
-import montithings.generator.helper.ComponentHelper;
+import montithings.generator.codegen.util.Identifier;
 
 import java.util.Optional;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
-import static montithings.generator.visitor.CppPrettyPrinterUtils.isSet;
 
 public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrinter {
   public CppAssignmentPrettyPrinter(IndentPrinter printer) {
@@ -26,7 +24,6 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
 
   @Override
   public void handle(ASTAssignmentExpression node) {
-    CommentPrettyPrinter.printPreComments(node, getPrinter());
 
     ASTNameExpression nameExpression;
     if (node.getLeft() instanceof ASTNameExpression) {
@@ -39,12 +36,14 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
     Optional<PortSymbol> port = getPortForName(nameExpression);
 
     if (port.isPresent()) {
+      CommentPrettyPrinter.printPreComments(node, getPrinter());
+
       String prefix;
       if (port.get().isIncoming()) {
-        prefix = "input";
+        prefix = Identifier.getInputName();
       }
       else {
-        prefix = "result";
+        prefix = Identifier.getResultName();
       }
 
       getPrinter().print(prefix + ".set" + capitalize(nameExpression.getName()) + "( ");
@@ -95,6 +94,10 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
 
       node.getRight().accept(getRealThis());
       getPrinter().print(" )");
+    }
+    else
+    {
+      super.handle(node);
     }
 
     CommentPrettyPrinter.printPostComments(node, getPrinter());

@@ -15,6 +15,7 @@ import montithings._ast.ASTIsPresentExpression;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsPrettyPrinter;
 import montithings._visitor.MontiThingsVisitor;
+import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import portextensions._ast.ASTSyncStatement;
 import setdefinitions._ast.ASTSetDefinition;
@@ -207,10 +208,10 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
     if (port.isPresent()) {
       String prefix;
       if (port.get().isIncoming()) {
-        prefix = "input";
+        prefix = Identifier.getInputName();
       }
       else {
-        prefix = "result";
+        prefix = Identifier.getResultName();
       }
 
       getPrinter().print(prefix + ".get" + capitalize(node.getNameExpression().getName()) + "()");
@@ -222,7 +223,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
         String s1 = sync
           .getSyncedPortList()
           .stream()
-          .map(str -> "input.get" + capitalize(str) + "()" + isSet(portsInBatchStatement, str))
+          .map(str -> Identifier.getInputName() + ".get" + capitalize(str) + "()" + isSet(portsInBatchStatement, str))
           .collect(Collectors.joining(" && "));
         synced.append(s1);
       }
