@@ -3,6 +3,7 @@ package montithings.generator.codegen.util;
 
 import arcbasis._ast.ASTArcField;
 import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.ASTConnector;
 import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
@@ -61,6 +62,24 @@ public class Utils {
     for (int i = 0 ; i < params.size() ; i++) {
       result += "config[\"" + params.get(i).getName() + "\"]"
         + " = dataToJson (" + paramValues.get(i) + ");\n";
+    }
+    return result;
+  }
+
+  public static String printSIParameters(ComponentTypeSymbol comp, ComponentInstanceSymbol compInstance){
+    String result = "";
+    for (PortSymbol ps : compInstance.getType().getAllPorts()){
+      if (ComponentHelper.isSIUnitPort(ps) && ps.isIncoming()){
+        for (ASTConnector c : comp.getAstNode().getConnectors()){
+          for (ASTPortAccess portAccess : c.getTargetList()){
+            Optional<PortSymbol> ops = ComponentHelper.getPortSymbolFromPortAccess(portAccess);
+            if(ops.isPresent() && ops.get().equals(ps)){
+              result += "config[\"" + ps.getName() + "ConversionFactor\"]" + " = dataToJson (" + ComponentHelper.
+                getConversionFactorFromSourceAndTarget(c.getSource(), portAccess) + ");\n";
+            }
+          }
+        }
+      }
     }
     return result;
   }

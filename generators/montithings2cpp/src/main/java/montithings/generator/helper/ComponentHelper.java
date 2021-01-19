@@ -1012,4 +1012,14 @@ public class ComponentHelper {
     }
     return portAccess.getComponentSymbol().getType().getPort(portAccess.getPort());
   }
+
+  public static List<String> getSIUnitPortNames(ComponentTypeSymbol comp){
+    List names = new ArrayList();
+    for (PortSymbol ps : comp.getAllIncomingPorts()){
+      if(ps.getType() instanceof SymTypeOfNumericWithSIUnit){
+        names.add(ps.getName());
+      }
+    }
+    return names;
+  }
 }
