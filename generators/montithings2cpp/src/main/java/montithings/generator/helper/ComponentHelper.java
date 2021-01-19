@@ -979,11 +979,30 @@ public class ComponentHelper {
     else return symTypeExpression.print();
   }
 
-  public static double getConversionFactorFromConnector(ASTConnector connector) {
-    if (connector.getSource().getPortSymbol().getType() instanceof SymTypeOfNumericWithSIUnit){
-      return getConversionFactor(((SymTypeOfNumericWithSIUnit) connector.getSource().getPortSymbol().getType()).getUnit(),
-              ((SymTypeOfNumericWithSIUnit) connector.getTarget(0).getPortSymbol().getType()).getUnit());
+  public static double getConversionFactorFromSourceAndTarget(ASTPortAccess source, ASTPortAccess target) {
+    Optional<PortSymbol> pss = getPortSymbolFromPortAccess(source);
+    if (pss.isPresent() && pss.get().getType() instanceof SymTypeOfNumericWithSIUnit){
+      Optional<PortSymbol> pst = getPortSymbolFromPortAccess(target);
+      if(pst.isPresent()){
+        return getConversionFactor(((SymTypeOfNumericWithSIUnit) pss.get().getType()).getUnit(),
+                ((SymTypeOfNumericWithSIUnit) pst.get().getType()).getUnit());
+      }
     }
     return 1;
+  }
+
+  public static boolean isSIUnitPort(ASTPortAccess portAccess){
+    Optional<PortSymbol> ps = getPortSymbolFromPortAccess(portAccess);
+    if(ps.isPresent() && ps.get().getType() instanceof SymTypeOfNumericWithSIUnit){
+      return true;
+    }
+    return false;
+  }
+
+  public static Optional<PortSymbol> getPortSymbolFromPortAccess(ASTPortAccess portAccess){
+    if (!portAccess.isPresentComponent()){
+      return Optional.of(portAccess.getPortSymbol());
+    }
+    return portAccess.getComponentSymbol().getType().getPort(portAccess.getPort());
   }
 }

@@ -3,6 +3,6 @@ package hierarchy;
 
 component Sink {
 
-  port in km/s<int> value;
+  port in km/h<double> value;
 
 }

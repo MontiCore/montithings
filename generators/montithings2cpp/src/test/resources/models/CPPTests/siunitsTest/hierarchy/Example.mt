@@ -9,10 +9,5 @@ application Example /*(km/h sadge, int testint)*/ {
 
   source.value -> sink.value;
 
-  behavior {
-    km/h<float> testBehavior;
-    testBehavior = 53 km;
-  }
-
   timing sync;
 }
