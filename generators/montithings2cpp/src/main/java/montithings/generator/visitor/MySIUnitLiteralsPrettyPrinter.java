@@ -72,4 +72,3 @@ public class MySIUnitLiteralsPrettyPrinter extends SIUnitLiteralsPrettyPrinter {
     return UnitConverter.IDENTITY;
   }
 }
-

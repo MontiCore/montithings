@@ -12,7 +12,6 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunits._ast.ASTSIUnit;
 import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import de.monticore.siunittypes4computing._visitor.SIUnitTypes4ComputingVisitor;
-import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.siunittypes4math._visitor.SIUnitTypes4MathVisitor;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;

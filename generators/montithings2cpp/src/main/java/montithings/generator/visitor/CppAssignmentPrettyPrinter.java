@@ -165,9 +165,9 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
         }
 
         UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()), tc.typeOf(node.getRight()));
-        getPrinter().print(factorStart(converter));
+        getPrinter().print(factorStartSimple(converter));
         node.getRight().accept(getRealThis());
-        getPrinter().print(factorEnd(converter));
+        getPrinter().print(factorEndSimple(converter));
         CommentPrettyPrinter.printPostComments(node, this.getPrinter());
       }
       else {
