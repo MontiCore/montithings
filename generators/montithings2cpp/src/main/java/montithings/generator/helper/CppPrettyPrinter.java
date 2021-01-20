@@ -22,6 +22,7 @@ public class CppPrettyPrinter {
     printer.setCommonExpressionsVisitor(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
     printer.setAssignmentExpressionsVisitor(new CppAssignmentPrettyPrinter(printer.getPrinter()));
     printer.setSIUnitLiteralsVisitor(new MySIUnitLiteralsPrettyPrinter(printer.getPrinter()));
+    printer.setMCVarDeclarationStatementsVisitor(new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
     printer.setSetDefinitionsVisitor(setPrinter);
     printer.setSetExpressionsVisitor(setPrinter);
