@@ -75,6 +75,9 @@ public class ComponentHelper {
   }
 
   public static String printCPPTypeName(SymTypeExpression expression) {
+    if (expression instanceof SymTypeOfNumericWithSIUnit) {
+      expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
+    }
     return java2cppTypeString(expression.print());
   }
 

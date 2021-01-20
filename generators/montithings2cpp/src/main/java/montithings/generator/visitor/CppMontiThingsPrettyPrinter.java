@@ -9,6 +9,11 @@ import de.monticore.expressions.setexpressions._ast.*;
 import de.monticore.expressions.setexpressions._visitor.SetExpressionsVisitor;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.siunits._ast.ASTSIUnit;
+import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
+import de.monticore.siunittypes4computing._visitor.SIUnitTypes4ComputingVisitor;
+import de.monticore.siunittypes4math._ast.ASTSIUnitType;
+import de.monticore.siunittypes4math._visitor.SIUnitTypes4MathVisitor;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings._ast.ASTIsPresentExpression;
@@ -239,6 +244,16 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
       getPrinter());
   }
 
+  @Override
+  public void handle(ASTSIUnitType4Computing node){
+    node.getMCPrimitiveType().accept(getRealThis());
+  }
+
+  @Override
+  public void handle(ASTSIUnit node){
+    getPrinter().print("double");
+  }
+
   protected Optional<PortSymbol> getPortForName(ASTNameExpression node) {
     if (!(node.getEnclosingScope() instanceof IMontiArcScope)) {
       getPrinter().print(node.getName());
@@ -265,6 +280,16 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
 
   @Override
   public void setRealThis(SetExpressionsVisitor realThis) {
+    this.realThis = (MontiThingsVisitor) realThis;
+  }
+
+  @Override
+  public void setRealThis(SIUnitTypes4ComputingVisitor realThis) {
+    this.realThis = (MontiThingsVisitor) realThis;
+  }
+
+  @Override
+  public void setRealThis(SIUnitTypes4MathVisitor realThis) {
     this.realThis = (MontiThingsVisitor) realThis;
   }
 }

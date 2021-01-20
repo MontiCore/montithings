@@ -26,6 +26,8 @@ public class CppPrettyPrinter {
     printer.setSetDefinitionsVisitor(setPrinter);
     printer.setSetExpressionsVisitor(setPrinter);
     printer.setMontiThingsVisitor(setPrinter);
+    printer.setSIUnitTypes4MathVisitor(setPrinter);
+    printer.setSIUnitTypes4ComputingVisitor(setPrinter);
     return printer;
   }
 }
