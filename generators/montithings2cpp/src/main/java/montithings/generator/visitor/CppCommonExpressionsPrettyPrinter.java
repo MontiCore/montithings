@@ -84,7 +84,10 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       // edge case: we're comparing a name to NoData. Prevent unwrapping optionals
       expressionPP.handle((ASTNameExpression) node.getLeft(), true);
     }
-    else if(tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
+    //TODO: MontiThings TypeCheck so erweitern, dass Ports aus NameExpressions richtig ausgewertet werden
+    else if(!(node.getLeft() instanceof ASTNameExpression) &&
+            !(node.getRight() instanceof ASTNameExpression) &&
+            tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
             tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit) {
       //SIUnit Types are used - conversion might be necessary
       node.getLeft().accept(getRealThis());
