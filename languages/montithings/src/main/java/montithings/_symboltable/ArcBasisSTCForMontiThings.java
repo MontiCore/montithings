@@ -16,7 +16,7 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
-import montithings.types.check.DeriveSymTypeOfMontiThings;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -29,12 +29,12 @@ public class ArcBasisSTCForMontiThings extends ArcBasisSTCForMontiThingsTOP{
   public ArcBasisSTCForMontiThings(Deque<? extends IArcBasisScope> scopeStack, MCBasicTypesPrettyPrinter typePrinter){
     super(scopeStack);
     setTypePrinter(typePrinter);
-    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThings());
+    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
   }
 
   public ArcBasisSTCForMontiThings(Deque<? extends arcbasis._symboltable.IArcBasisScope> scopeStack)  {
     super(scopeStack);
-    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThings());
+    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
   }
 
   public void setTypeVisitor(MCBasicTypesPrettyPrinter typePrinter){

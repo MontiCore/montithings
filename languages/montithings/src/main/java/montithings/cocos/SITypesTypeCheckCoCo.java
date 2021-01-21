@@ -5,17 +5,13 @@ import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressi
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTSimpleInit;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
-import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.check.cocos.TypeCheckCoCo;
-import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
 import montithings._visitor.MontiThingsVisitor;
-import montithings.types.check.DeriveSymTypeOfMontiThings;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
-
-import java.util.List;
 
 public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
   /**
@@ -30,7 +26,7 @@ public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsAS
   }
 
   public static SITypesTypeCheckCoCo getCoCo() {
-    TypeCheck typeCheck = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThings());
+    TypeCheck typeCheck = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
     return new SITypesTypeCheckCoCo(typeCheck);
   }
 
@@ -63,5 +59,10 @@ public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsAS
     else {
       checkFieldOrVariable(node.getDeclarator(), (ASTExpression) null);
     }
+  }
+
+  @Override
+  public void visit(ASTAssignmentExpression node){
+    checkExpression(node);
   }
 }

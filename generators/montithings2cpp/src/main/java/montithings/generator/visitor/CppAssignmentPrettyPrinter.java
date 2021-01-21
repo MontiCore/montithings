@@ -8,14 +8,13 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.siunits.utility.Converter;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings.generator.codegen.util.Identifier;
-import montithings.types.check.DeriveSymTypeOfMontiThings;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import javax.measure.converter.UnitConverter;
@@ -30,7 +29,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
 
   public CppAssignmentPrettyPrinter(IndentPrinter printer) {
     super(printer);
-    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThings());
+    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
     this.realThis = this;
   }
 

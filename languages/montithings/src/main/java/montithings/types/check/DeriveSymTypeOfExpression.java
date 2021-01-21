@@ -51,6 +51,7 @@ public class DeriveSymTypeOfExpression extends de.monticore.types.check.DeriveSy
     } else if (optPort.isPresent()){
       PortSymbol port = optPort.get();
       SymTypeExpression res = port.getType().deepClone();
+      typeCheckResult.setField();
       return Optional.of(res);
     }
     return Optional.empty();

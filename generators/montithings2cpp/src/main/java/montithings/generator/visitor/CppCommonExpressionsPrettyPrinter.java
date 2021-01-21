@@ -9,7 +9,7 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
 import montithings.generator.helper.ASTNoData;
-import montithings.types.check.DeriveSymTypeOfMontiThings;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import javax.measure.converter.UnitConverter;
@@ -22,7 +22,7 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
 
   public CppCommonExpressionsPrettyPrinter(IndentPrinter printer) {
     super(printer);
-    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThings());
+    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
     this.realThis = this;
   }
 

@@ -25,7 +25,7 @@ import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
 import montithings.generator.helper.TypesHelper;
 import montithings.generator.visitor.MySIUnitLiteralsPrettyPrinter;
-import montithings.types.check.DeriveSymTypeOfMontiThings;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
@@ -349,7 +349,7 @@ public class Utils {
   }
 
   public static String printSIExpression(ASTExpression expr, SymTypeExpression type){
-    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThings());
+    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
     SymTypeExpression exprType = tc.typeOf(expr);
     return MySIUnitLiteralsPrettyPrinter.factorStart(MySIUnitLiteralsPrettyPrinter.getSIConverter(type, exprType))
             + printExpression(expr, true) +
