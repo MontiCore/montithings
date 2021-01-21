@@ -112,5 +112,4 @@ public class DeriveSymTypeOfMontiThings extends MontiThingsDelegatorVisitor impl
     typeCheckResult.setCurrentResultAbsent();
     return result;
   }
-
 }
