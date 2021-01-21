@@ -27,6 +27,7 @@ import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
+import de.monticore.types.check.TypeCheck;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
@@ -43,6 +44,8 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import montithings.util.GenericBindingUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
@@ -306,8 +309,15 @@ public class ComponentHelper {
     MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
 
     List<String> outputParameters = new ArrayList<>();
-    for (ASTExpression configArgument : configArguments) {
-      final String prettyprint = printer.prettyprint(configArgument);
+    for (int i = 0; i < configArguments.size(); i++) {
+      SymTypeExpression requiredType = param.getType().getAstNode().getHead().getArcParameter(i).getSymbol().getType();
+      String prettyprint;
+      if(requiredType instanceof SymTypeOfNumericWithSIUnit){
+        prettyprint = Utils.printSIExpression(configArguments.get(i), requiredType);
+      }
+      else {
+        prettyprint = printer.prettyprint(configArguments.get(i));
+      }
       outputParameters.add(autobox(prettyprint));
     }
 
@@ -326,7 +336,13 @@ public class ComponentHelper {
       for (int counter = 0; counter < numberOfMissingParameters; counter++) {
         // Fill up from the last parameter
         final ASTArcParameter astParameter = parameters.get(parameters.size() - 1 - counter);
-        final String prettyprint = printer.prettyprint(astParameter.getDefault());
+        String prettyprint;
+        if(astParameter.getSymbol().getType() instanceof SymTypeOfNumericWithSIUnit){
+          prettyprint = Utils.printSIExpression(astParameter.getDefault(), astParameter.getSymbol().getType());
+        }
+        else {
+          prettyprint = printer.prettyprint(astParameter.getDefault());
+        }
         outputParameters.add(outputParameters.size() - counter, prettyprint);
       }
     }
@@ -347,7 +363,12 @@ public class ComponentHelper {
       result += param.getName();
       if (param.isPresentDefault()) {
         result += " = ";
-        result += printer.prettyprint(param.getDefault());
+        if(param.getSymbol().getType() instanceof SymTypeOfNumericWithSIUnit){
+          result += Utils.printSIExpression(param.getDefault(), param.getSymbol().getType());
+        }
+        else {
+          result += printer.prettyprint(param.getDefault());
+        }
       }
       if (i < parameters.size() - 1) {
         result += ", ";
