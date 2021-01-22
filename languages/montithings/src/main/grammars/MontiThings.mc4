@@ -6,7 +6,6 @@ grammar MontiThings extends MontiArc,
                             PrePostCondition,
                             ConditionCatch,
                             SetDefinitions,
-                            de.monticore.expressions.SetExpressions,
                             de.monticore.ocl.OCLExpressions
 {
     start MACompilationUnit;
@@ -19,15 +18,6 @@ grammar MontiThings extends MontiArc,
     ;
 
     MTComponentModifier =  ["interface"]? (["component"] | ["application"]);
-
-    // MontiCore's SetInExpression defines this rule using "in". As a result, incoming ports
-    // can no longer be parsed because they are read as "portin" instead of "port in". Until
-    // MontiCore uses key("in") for this rule, we need to overwrite it.
-    @Override
-    SetInExpression implements Expression <190> =
-      elem:Expression
-      operator:key("in")
-      set:Expression;
 
     /* ============================================================ */
     /* ================== ArcElement Insertions =================== */

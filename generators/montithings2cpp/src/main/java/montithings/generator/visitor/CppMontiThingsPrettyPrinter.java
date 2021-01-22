@@ -5,8 +5,8 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.expressions.setexpressions._ast.*;
-import de.monticore.expressions.setexpressions._visitor.SetExpressionsVisitor;
+import de.monticore.ocl.setexpressions._ast.*;
+import de.monticore.ocl.setexpressions._visitor.SetExpressionsVisitor;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
@@ -18,8 +18,6 @@ import montithings._visitor.MontiThingsVisitor;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import portextensions._ast.ASTSyncStatement;
-import setdefinitions._ast.ASTSetDefinition;
-import setdefinitions._ast.ASTSetValueList;
 import setdefinitions._ast.ASTSetValueRange;
 import setdefinitions._ast.ASTSetValueRegEx;
 import setdefinitions._visitor.SetDefinitionsVisitor;
@@ -47,24 +45,6 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   Stack<ASTExpression> expressions = new Stack<>();
 
   @Override
-  public void handle(ASTIsInExpression node) {
-    CommentPrettyPrinter.printPreComments(node, getPrinter());
-    expressions.push(node.getElem());
-    node.getSet().accept(getRealThis());
-    expressions.pop();
-    CommentPrettyPrinter.printPostComments(node, getPrinter());
-  }
-
-  @Override
-  public void handle(montithings._ast.ASTSetInExpression node) {
-    CommentPrettyPrinter.printPreComments(node, getPrinter());
-    expressions.push(node.getElem());
-    node.getSet().accept(getRealThis());
-    expressions.pop();
-    CommentPrettyPrinter.printPostComments(node, getPrinter());
-  }
-
-  @Override
   public void handle(ASTSetInExpression node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
     expressions.push(node.getElem());
@@ -74,7 +54,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTUnionExpressionInfix node) {
+  public void handle(ASTUnionExpression node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
     getPrinter().print("(");
     node.getLeft().accept(getRealThis());
@@ -87,7 +67,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTIntersectionExpressionInfix node) {
+  public void handle(ASTIntersectionExpression node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
     getPrinter().print("(");
     node.getLeft().accept(getRealThis());
@@ -110,17 +90,17 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTUnionExpressionPrefix node) {
-    Log.error("0xMT822 UnionExpression is not supported.");
+  public void handle(ASTSetUnionExpression node) {
+    Log.error("0xMT822 SetUnionExpression is not supported.");
   }
 
   @Override
-  public void handle(ASTIntersectionExpressionPrefix node) {
-    Log.error("0xMT823 IntersectionExpression is not supported.");
+  public void handle(ASTSetIntersectionExpression node) {
+    Log.error("0xMT823 SetIntersectionExpression is not supported.");
   }
 
   @Override
-  public void handle(ASTSetValueList node) {
+  public void handle(ASTSetValueItem node) {
     for (int i = 0; i < node.sizeExpressions(); i++) {
       getPrinter().print("(");
       expressions.peek().accept(getRealThis());
@@ -177,12 +157,12 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTSetDefinition node) {
-    for (int i = 0; i < node.sizeSetAllowedValuess(); i++) {
+  public void handle(ASTSetEnumeration node) {
+    for (int i = 0; i < node.sizeSetCollectionItems(); i++) {
       getPrinter().print("(");
-      node.getSetAllowedValues(i).accept(getRealThis());
+      node.getSetCollectionItem(i).accept(getRealThis());
       getPrinter().print(")");
-      if (i < node.sizeSetAllowedValuess() - 1) {
+      if (i < node.sizeSetCollectionItems() - 1) {
         getPrinter().print(" || ");
       }
     }

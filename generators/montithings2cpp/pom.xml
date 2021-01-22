@@ -99,6 +99,12 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>de.monticore.lang</groupId>
+			<artifactId>ocl</artifactId>
+			<version>${ocl.version}</version>
+		</dependency>
+
 		<!-- .. Test Libraries ............................................... -->
 		<dependency>
 			<groupId>junit</groupId>

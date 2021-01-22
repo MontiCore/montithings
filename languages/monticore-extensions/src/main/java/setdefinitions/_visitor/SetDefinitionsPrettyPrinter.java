@@ -65,11 +65,6 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsVisitor {
   }
 
   @Override
-  public void handle(ASTSetValueList node){
-    acceptSeperatedList(node.getExpressionList());
-  }
-
-  @Override
   public void handle(ASTSetValueRange node){
     node.getLowerBound().accept(this.getRealThis());
     if(node.isPresentStepsize()){
@@ -84,14 +79,4 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsVisitor {
   public void visit(ASTSetValueRegEx node){
     this.getPrinter().print("format :");
   }
-
-  @Override
-  public void handle(ASTSetDefinition node){
-    this.getPrinter().println(" { ");
-    this.getPrinter().indent();
-    acceptSeperatedSetList(node.getSetAllowedValuesList());
-    this.getPrinter().unindent();
-    this.getPrinter().println(" }");
-  }
-
 }
