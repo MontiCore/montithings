@@ -9,7 +9,7 @@ ${tc.signature("comp", "config")}
   while(!MqttClient::instance()->isConnected())
   ;
 
-  <#if comp.getParameters()?size gt 0>
+  <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0>
     MqttConfigRequester configRequester;
     configRequester.requestConfig(instanceNameArg.getValue ());
 
