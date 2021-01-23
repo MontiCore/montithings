@@ -13,12 +13,11 @@
   <modules>
 
     <module>behavior</module>
-    <module>interface-componentsMTB</module>
     <module>class-diagrams</module>
-
     <module>interface-components</module>
-
+    <module>interface-componentsMTB</module>
     <module>pre-postconditions</module>
+    <module>si-units</module>
   </modules>
 
   <packaging>pom</packaging>
