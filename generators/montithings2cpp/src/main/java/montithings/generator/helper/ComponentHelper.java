@@ -26,6 +26,8 @@ import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
+import de.monticore.types.check.TypeCheck;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
@@ -42,6 +44,8 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import montithings.util.GenericBindingUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
@@ -56,6 +60,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
 /**
@@ -73,12 +78,18 @@ public class ComponentHelper {
   }
 
   public static String printCPPTypeName(SymTypeExpression expression) {
+    if (expression instanceof SymTypeOfNumericWithSIUnit) {
+      expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
+    }
     return java2cppTypeString(expression.print());
   }
 
   public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp, ConfigParams config) {
     if (expression.getTypeInfo() instanceof CDTypeSymbol) {
       return printCdFQN(comp, expression.getTypeInfo(), config);
+    }
+    if (expression instanceof SymTypeOfNumericWithSIUnit) {
+      expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
     }
     return java2cppTypeString(expression.print());
   }
@@ -210,9 +221,14 @@ public class ComponentHelper {
    * @return The String representation of the type of the port.
    */
   public static String getRealPortTypeString(ComponentTypeSymbol comp, PortSymbol portSymbol) {
-    // TODO: call portSymbol.getType().print() once MontiArc fixes its types
-    //return portSymbol.getType().print();
-    return portSymbol.getType().getTypeInfo().getName();
+    if(portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit){
+      return ((SymTypeOfNumericWithSIUnit) portSymbol.getType()).getNumericType().getTypeInfo().getName();
+    }
+    else {
+      // TODO: call portSymbol.getType().print() once MontiArc fixes its types
+      //return portSymbol.getType().print();
+      return portSymbol.getType().getTypeInfo().getName();
+    }
   }
 
   public static boolean isInterfaceComponent(ComponentTypeSymbol comp) {
@@ -293,8 +309,15 @@ public class ComponentHelper {
     MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
 
     List<String> outputParameters = new ArrayList<>();
-    for (ASTExpression configArgument : configArguments) {
-      final String prettyprint = printer.prettyprint(configArgument);
+    for (int i = 0; i < configArguments.size(); i++) {
+      SymTypeExpression requiredType = param.getType().getAstNode().getHead().getArcParameter(i).getSymbol().getType();
+      String prettyprint;
+      if(requiredType instanceof SymTypeOfNumericWithSIUnit){
+        prettyprint = Utils.printSIExpression(configArguments.get(i), requiredType);
+      }
+      else {
+        prettyprint = printer.prettyprint(configArguments.get(i));
+      }
       outputParameters.add(autobox(prettyprint));
     }
 
@@ -313,7 +336,13 @@ public class ComponentHelper {
       for (int counter = 0; counter < numberOfMissingParameters; counter++) {
         // Fill up from the last parameter
         final ASTArcParameter astParameter = parameters.get(parameters.size() - 1 - counter);
-        final String prettyprint = printer.prettyprint(astParameter.getDefault());
+        String prettyprint;
+        if(astParameter.getSymbol().getType() instanceof SymTypeOfNumericWithSIUnit){
+          prettyprint = Utils.printSIExpression(astParameter.getDefault(), astParameter.getSymbol().getType());
+        }
+        else {
+          prettyprint = printer.prettyprint(astParameter.getDefault());
+        }
         outputParameters.add(outputParameters.size() - counter, prettyprint);
       }
     }
@@ -328,13 +357,18 @@ public class ComponentHelper {
 
     for (int i = 0; i < parameters.size(); i++) {
       ASTArcParameter param = parameters.get(i);
-      result += java2cppTypeString(printer.prettyprint(param.getMCType()));
+      result += java2cppTypeString(printNumericType(param.getSymbol().getType()));
       ;
       result += " ";
       result += param.getName();
       if (param.isPresentDefault()) {
         result += " = ";
-        result += printer.prettyprint(param.getDefault());
+        if(param.getSymbol().getType() instanceof SymTypeOfNumericWithSIUnit){
+          result += Utils.printSIExpression(param.getDefault(), param.getSymbol().getType());
+        }
+        else {
+          result += printer.prettyprint(param.getDefault());
+        }
       }
       if (i < parameters.size() - 1) {
         result += ", ";
@@ -960,5 +994,56 @@ public class ComponentHelper {
       Log.error("0xMT0790 instance not found.");
     }
     return result.get();
+  }
+
+  private static String printNumericType(SymTypeExpression symTypeExpression) {
+    if (symTypeExpression instanceof SymTypeOfNumericWithSIUnit)
+      return ((SymTypeOfNumericWithSIUnit) symTypeExpression)
+              .getNumericType().print();
+    else return symTypeExpression.print();
+  }
+
+  public static double getConversionFactorFromSourceAndTarget(ASTPortAccess source, ASTPortAccess target) {
+    Optional<PortSymbol> pss = getPortSymbolFromPortAccess(source);
+    if (pss.isPresent() && pss.get().getType() instanceof SymTypeOfNumericWithSIUnit){
+      Optional<PortSymbol> pst = getPortSymbolFromPortAccess(target);
+      if(pst.isPresent()){
+        return getConversionFactor(((SymTypeOfNumericWithSIUnit) pss.get().getType()).getUnit(),
+                ((SymTypeOfNumericWithSIUnit) pst.get().getType()).getUnit());
+      }
+    }
+    return 1;
+  }
+
+  public static boolean isSIUnitPort(ASTPortAccess portAccess){
+    Optional<PortSymbol> ps = getPortSymbolFromPortAccess(portAccess);
+    if(ps.isPresent() && ps.get().getType() instanceof SymTypeOfNumericWithSIUnit){
+      return true;
+    }
+    return false;
+  }
+
+  public static boolean isSIUnitPort(PortSymbol portSymbol){
+    if(portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit){
+      return true;
+    }
+    return false;
+  }
+
+  public static Optional<PortSymbol> getPortSymbolFromPortAccess(ASTPortAccess portAccess){
+    if (!portAccess.isPresentComponent()){
+      return Optional.of(portAccess.getPortSymbol());
+    }
+    return portAccess.getComponentSymbol().getType().getPort(portAccess.getPort());
+  }
+
+  public static List<String> getSIUnitPortNames(ComponentTypeSymbol comp){
+    List names = new ArrayList();
+    for (PortSymbol ps : comp.getAllIncomingPorts()){
+      if(ps.getType() instanceof SymTypeOfNumericWithSIUnit){
+        names.add(ps.getName());
+      }
+    }
+    return names;
   }
 }

@@ -4,6 +4,9 @@ package montithings.generator.helper;
 import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import de.monticore.siunits._ast.ASTSIUnit;
+import de.monticore.siunits.utility.Converter;
+import de.monticore.siunits.utility.UnitFactory;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import montithings.generator.codegen.util.Utils;
@@ -11,6 +14,7 @@ import montithings.generator.codegen.util.Utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.measure.unit.Unit;
 
 import static montithings.generator.helper.ComponentHelper.getInstantiation;
 
@@ -85,5 +89,16 @@ public class TypesHelper {
     }
 
     return "";
+  }
+
+  public static double getConversionFactor(ASTSIUnit source, ASTSIUnit target){
+    Unit sourceUnit = UnitFactory.createUnit(source);
+    Unit targetUnit =  UnitFactory.createUnit(target);
+    return getConversionFactor(sourceUnit, targetUnit);
+  }
+
+  public static double getConversionFactor(Unit sourceUnit, Unit targetUnit){
+    double conversionFactor = Converter.convert(1, sourceUnit, targetUnit);
+    return conversionFactor;
   }
 }

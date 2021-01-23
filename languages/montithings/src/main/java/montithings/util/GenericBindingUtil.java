@@ -7,6 +7,9 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.siunits._ast.ASTSIUnit;
+import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrettyPrinter;
+import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
@@ -187,6 +190,9 @@ public class GenericBindingUtil {
   public static String printSimpleType(ASTMCType type){
     if (type instanceof ASTMCGenericType){
       return ((ASTMCGenericType)type).printWithoutTypeArguments();
+    }
+    else if (type instanceof ASTSIUnitType){
+      return type.printType(new SIUnitTypes4ComputingPrettyPrinter(new IndentPrinter()));
     }
     else{
       return type.printType(new MCBasicTypesPrettyPrinter(new IndentPrinter()));

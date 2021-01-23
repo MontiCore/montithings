@@ -96,6 +96,32 @@
             <artifactId>cd4analysis</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+            <classifier>grammars</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>ocl</artifactId>
+            <version>${ocl.version}</version>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>ocl</artifactId>
+            <version>${ocl.version}</version>
+        </dependency>
+
         <!-- MontiCore / SE / ANTLR -->
 
         <dependency>
@@ -111,19 +137,6 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>de.monticore.lang</groupId>
-            <artifactId>ocl</artifactId>
-            <version>${ocl.version}</version>
-            <classifier>${grammars.classifier}</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>de.monticore.lang</groupId>
-            <artifactId>ocl</artifactId>
-            <version>${ocl.version}</version>
         </dependency>
 
         <!-- Java -->

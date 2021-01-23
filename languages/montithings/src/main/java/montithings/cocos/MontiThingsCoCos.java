@@ -2,6 +2,7 @@
 package montithings.cocos;
 
 import arcbasis._cocos.*;
+import de.monticore.siunittypes4computing._cocos.PrimitiveIsNumericType;
 import montithings._cocos.MontiThingsCoCoChecker;
 import portextensions.cocos.PortsInBatchStatementAreIncoming;
 import portextensions.cocos.PortsInSyncGroupAreIncoming;
@@ -33,12 +34,16 @@ public class MontiThingsCoCos {
       // really an option because MontiCore stores the CoCos in a gazillion
       // different Collections and provides no getters
 
+      // SIUNITS
+      .addCoCo(new PrimitiveIsNumericType())
+
       // MONTITHINGS
       .addCoCo(new TimeSyncInSubComponents())
       .addCoCo(new MaxOneUpdateInterval())
       .addCoCo(new SyncGroupIsNoSubset())
       .addCoCo(new PortsInSyncGroupAreIncoming())
       .addCoCo(new PortsInBatchStatementAreIncoming())
+      .addCoCo(SITypesTypeCheckCoCo.getCoCo())
       .addCoCo(new NameExpressionsAreResolvable())
       ;
   }

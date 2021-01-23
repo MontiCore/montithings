@@ -9,7 +9,7 @@ ${tc.signature("comp", "config")}
   while(!MqttClient::instance()->isConnected())
   ;
 
-  <#if comp.getParameters()?size gt 0>
+  <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0>
     MqttConfigRequester configRequester;
     configRequester.requestConfig(instanceNameArg.getValue ());
 
@@ -21,6 +21,9 @@ ${tc.signature("comp", "config")}
     <#list comp.getParameters() as variable>
       <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>
       ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config["${variable.getName()}"]);
+    </#list>
+    <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
+      double ${portName}ConversionFactor = jsonToData${"<"}double${">"}(config["${portName}ConversionFactor"]);
     </#list>
     <#if config.getTypeArguments(comp)?size gt 0>
       std::string _typeArgs = jsonToData${"<"}std::string${">"} (config["_typeArgs"]);

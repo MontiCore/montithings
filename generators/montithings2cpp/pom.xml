@@ -105,6 +105,18 @@
 			<version>${ocl.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>de.monticore</groupId>
+			<artifactId>siunits</artifactId>
+			<version>${siunits.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jscience</groupId>
+			<artifactId>jscience</artifactId>
+			<version>${jscience.version}</version>
+		</dependency>
+
 		<!-- .. Test Libraries ............................................... -->
 		<dependency>
 			<groupId>junit</groupId>

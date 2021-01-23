@@ -3,6 +3,7 @@ package montithings.generator.codegen.util;
 
 import arcbasis._ast.ASTArcField;
 import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.ASTConnector;
 import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
@@ -13,6 +14,9 @@ import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.symboltable.ImportStatement;
+import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
+import de.monticore.types.check.TypeCheck;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
 import montithings._ast.ASTMTComponentType;
@@ -20,6 +24,9 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
 import montithings.generator.helper.TypesHelper;
+import montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Preconditions;
@@ -35,7 +42,11 @@ public class Utils {
     StringBuilder s = new StringBuilder();
     int i = 1;
     for (VariableSymbol param : comp.getParameters()) {
-      s.append(TypesHelper.java2cppTypeString(param.getType().print()) + " " + param.getName());
+      SymTypeExpression type = param.getType();
+      if (type instanceof SymTypeOfNumericWithSIUnit){
+        type = ((SymTypeOfNumericWithSIUnit) type).getNumericType();
+      }
+      s.append(TypesHelper.java2cppTypeString(type.print()) + " " + param.getName());
       if (i != comp.getParameters().size()) {
         s.append(',');
       }
@@ -55,6 +66,24 @@ public class Utils {
     for (int i = 0 ; i < params.size() ; i++) {
       result += "config[\"" + params.get(i).getName() + "\"]"
         + " = dataToJson (" + paramValues.get(i) + ");\n";
+    }
+    return result;
+  }
+
+  public static String printSIParameters(ComponentTypeSymbol comp, ComponentInstanceSymbol compInstance){
+    String result = "";
+    for (PortSymbol ps : compInstance.getType().getAllPorts()){
+      if (ComponentHelper.isSIUnitPort(ps) && ps.isIncoming()){
+        for (ASTConnector c : comp.getAstNode().getConnectors()){
+          for (ASTPortAccess portAccess : c.getTargetList()){
+            Optional<PortSymbol> ops = ComponentHelper.getPortSymbolFromPortAccess(portAccess);
+            if(ops.isPresent() && ops.get().equals(ps)){
+              result += "config[\"" + ps.getName() + "ConversionFactor\"]" + " = dataToJson (" + ComponentHelper.
+                getConversionFactorFromSourceAndTarget(c.getSource(), portAccess) + ");\n";
+            }
+          }
+        }
+      }
     }
     return result;
   }
@@ -95,8 +124,14 @@ public class Utils {
     for (VariableSymbol param : comp.getParameters()) {
       if (param.getAstNode() instanceof ASTArcParameter) {
         ASTArcParameter parameter = (ASTArcParameter) param.getAstNode();
-        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
-          param.getName(), printExpression(parameter.getDefault())));
+        if(param.getType() instanceof SymTypeOfNumericWithSIUnit){
+          s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+                  param.getName(), printSIExpression(parameter.getDefault(), param.getType())));
+        }
+        else {
+          s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+                  param.getName(), printExpression(parameter.getDefault())));
+        }
       }
       else {
         s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
@@ -122,9 +157,16 @@ public class Utils {
     for (VariableSymbol variable : vars) {
       if (variable.getAstNode() instanceof ASTArcField) {
         ASTArcField field = (ASTArcField) variable.getAstNode();
-        s.append(
-          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
-            variable.getName(), printExpression(field.getInitial())));
+        if(variable.getType() instanceof SymTypeOfNumericWithSIUnit){
+          s.append(
+            printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
+              variable.getName(), printSIExpression(field.getInitial(), variable.getType())));
+        }
+        else {
+          s.append(
+            printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
+              variable.getName(), printExpression(field.getInitial())));
+        }
       }
       else {
         s.append(
@@ -287,12 +329,33 @@ public class Utils {
     return s.toString();
   }
 
+  public static String printComponentPrefix(ASTPortAccess access){
+    StringBuilder s = new StringBuilder();
+    if (access.isPresentComponent()) {
+      s.append(access.getComponent() + ".");
+    }
+    else {
+      s.append("this->");
+    }
+    return s.toString();
+  }
+
   public static String printExpression(ASTExpression expr, boolean isAssignment) {
     return CppPrettyPrinter.print(expr);
   }
 
   public static String printExpression(ASTExpression expr) {
     return printExpression(expr, true);
+  }
+
+  public static String printSIExpression(ASTExpression expr, SymTypeExpression type){
+    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    SymTypeExpression exprType = tc.typeOf(expr);
+    return MontiThingsSIUnitLiteralsPrettyPrinter
+      .factorStart(MontiThingsSIUnitLiteralsPrettyPrinter.getSIConverter(type, exprType))
+            + printExpression(expr, true) +
+            MontiThingsSIUnitLiteralsPrettyPrinter
+              .factorEnd(MontiThingsSIUnitLiteralsPrettyPrinter.getSIConverter(type, exprType));
   }
 
   public static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {

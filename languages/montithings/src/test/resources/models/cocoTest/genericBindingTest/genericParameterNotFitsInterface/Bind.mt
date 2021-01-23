@@ -4,11 +4,11 @@ package cocoTest.genericBindingTest.genericParameterNotFitsInterface;
 import cocoTest.genericBindingTest.genericParameterNotFitsInterface.*;
 import cocoTest.genericBindingTest.genericParameterNotFitsInterface.sensors.*;
 
-component Bind<T extends SmokeSensor> {
+component Bind<T1 extends SmokeSensor> {
 
   /* Subcomponents */
-  Intermediate<T> intermediate;
-  T smokeSensor;
+  Intermediate<T1> intermediate;
+  T1 smokeSensor;
   Accept a;
 
   smokeSensor.value -> a.accept;
