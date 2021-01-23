@@ -6,7 +6,9 @@ grammar MontiThings extends MontiArc,
                             PrePostCondition,
                             ConditionCatch,
                             SetDefinitions,
-                            de.monticore.expressions.SetExpressions
+                            de.monticore.expressions.SetExpressions,
+                            de.monticore.SIUnitTypes4Computing,
+                            de.monticore.SIUnitLiterals
 {
     start MACompilationUnit;
 

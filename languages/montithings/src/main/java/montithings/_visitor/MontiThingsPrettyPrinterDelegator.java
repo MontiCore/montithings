@@ -15,6 +15,12 @@ import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.expressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.prettyprint.MCBasicsPrettyPrinter;
+import de.monticore.siunitliterals.prettyprint.SIUnitLiteralsPrettyPrinter;
+import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
+import de.monticore.siunittypes4computing._visitor.SIUnitTypes4ComputingVisitor;
+import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrettyPrinter;
+import de.monticore.siunittypes4math._ast.ASTSIUnitType;
+import de.monticore.siunittypes4math.prettyprint.SIUnitTypes4MathPrettyPrinter;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
@@ -64,6 +70,11 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
     setComfortableArcVisitor(new ComfortableArcPrettyPrinter(printer));
     setGenericArcVisitor(new GenericArcPrettyPrinter(printer));
 
+    setSIUnitTypes4ComputingVisitor(new SIUnitTypes4ComputingPrettyPrinter(printer));
+    setSIUnitTypes4MathVisitor(new SIUnitTypes4MathPrettyPrinter(printer));
+    setSIUnitsVisitor(new SIUnitsPrettyPrinter(printer));
+    setSIUnitLiteralsVisitor(new SIUnitLiteralsPrettyPrinter(printer));
+
     setMontiThingsVisitor(new MontiThingsPrettyPrinter(printer));
   }
 
@@ -94,6 +105,11 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
     setArcBasisVisitor(new ArcBasisPrettyPrinter(printer));
     setComfortableArcVisitor(new ComfortableArcPrettyPrinter(printer));
     setGenericArcVisitor(new GenericArcPrettyPrinter(printer));
+
+    setSIUnitTypes4ComputingVisitor(new SIUnitTypes4ComputingPrettyPrinter(printer));
+    setSIUnitTypes4MathVisitor(new SIUnitTypes4MathPrettyPrinter(printer));
+    setSIUnitsVisitor(new SIUnitsPrettyPrinter(printer));
+    setSIUnitLiteralsVisitor(new SIUnitLiteralsPrettyPrinter(printer));
 
     setMontiThingsVisitor(new MontiThingsPrettyPrinter(printer));
   }

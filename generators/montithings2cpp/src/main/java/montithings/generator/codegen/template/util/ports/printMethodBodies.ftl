@@ -29,4 +29,9 @@ ${tc.signature("ports","comp","compname","config", "className")}
     void ${className}${Utils.printFormalTypeParameters(comp)}::removeOutPort${name?cap_first}(Port<${type}>* port){
     ${name}->getOutport ()->removeManagedPort (port);
     }
+
+    ${Utils.printTemplateArguments(comp)}
+    void ${className}${Utils.printFormalTypeParameters(comp)}::setPort${name?cap_first}ConversionFactor(double factor){
+    ${name}ConversionFactor = factor;
+    }
 </#list>

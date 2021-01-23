@@ -9,4 +9,5 @@ ${tc.signature("ports","config")}
     void removeInPort${name?cap_first}(Port<${type}>* ${name});
     void addOutPort${name?cap_first}(Port<${type}>* ${name});
     void removeOutPort${name?cap_first}(Port<${type}>* ${name});
+    void setPort${name?cap_first}ConversionFactor(double ${name}ConversionFactor);
 </#list>

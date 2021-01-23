@@ -48,6 +48,7 @@ dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
   grammar "montiarc.languages:montiarc-fe:$montiarc_version:$grammars_classifier"
   grammar "montiarc.languages:arc-fe:$montiarc_version:$grammars_classifier"
+  grammar "de.monticore:siunits:$siunits_version:$grammars_classifier"
   grammar files(project(":languages:monticore-extensions").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:montiarc-extensions").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:error-handling").projectDir.toPath().resolve("src/main/grammars"))
@@ -59,6 +60,7 @@ dependencies {
   implementation project(":languages:error-handling")
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.monticore.lang:cd4analysis:1.6.0"
+  implementation "de.monticore:siunits:$siunits_version"
   implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
   implementation "com.google.guava:guava:$guava_version"
   implementation "org.antlr:antlr4-runtime:$antlr_version"
@@ -66,6 +68,7 @@ dependencies {
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "org.apache.commons:commons-lang3:3.9"
   implementation "org.assertj:assertj-core:$assertj_version"
+  implementation "de.monticore:siunits:$siunits_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
   testImplementation "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"

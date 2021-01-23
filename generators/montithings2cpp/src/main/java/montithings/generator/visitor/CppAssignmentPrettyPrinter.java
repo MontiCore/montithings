@@ -8,17 +8,28 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
+import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings.generator.codegen.util.Identifier;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
+import javax.measure.converter.UnitConverter;
 import java.util.Optional;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
+import static montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter.*;
 
 public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrinter {
+
+  private TypeCheck tc;
+
   public CppAssignmentPrettyPrinter(IndentPrinter printer) {
     super(printer);
+    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
     this.realThis = this;
   }
 
@@ -92,12 +103,75 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
           Log.error("0xMT814 Missing implementation for RegularAssignmentExpression");
       }
 
-      node.getRight().accept(getRealThis());
+      if (port.get().getType() instanceof SymTypeOfNumericWithSIUnit){
+        SymTypeExpression exprType = tc.typeOf(node.getRight());
+        if(exprType instanceof SymTypeOfNumericWithSIUnit){
+          UnitConverter converter = getSIConverter(port.get().getType(), exprType);
+          getPrinter().print(factorStart(converter));
+          node.getRight().accept(getRealThis());
+          getPrinter().print(factorEnd(converter));
+        }
+      }
+      else {
+        node.getRight().accept(getRealThis());
+      }
       getPrinter().print(" )");
     }
-    else
-    {
-      super.handle(node);
+    else {
+      if(tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
+              tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit){
+        CommentPrettyPrinter.printPreComments(node, this.getPrinter());
+        node.getLeft().accept(this.getRealThis());
+        switch(node.getOperator()) {
+          case 1:
+            this.getPrinter().print("&=");
+            break;
+          case 2:
+            this.getPrinter().print("=");
+            break;
+          case 3:
+            this.getPrinter().print(">>=");
+            break;
+          case 4:
+            this.getPrinter().print(">>>=");
+            break;
+          case 5:
+            this.getPrinter().print("<<=");
+            break;
+          case 6:
+            this.getPrinter().print("-=");
+            break;
+          case 7:
+            this.getPrinter().print("%=");
+            break;
+          case 8:
+            this.getPrinter().print("|=");
+            break;
+          case 9:
+            this.getPrinter().print("+=");
+            break;
+          case 10:
+            this.getPrinter().print("^=");
+            break;
+          case 11:
+            this.getPrinter().print("/=");
+            break;
+          case 12:
+            this.getPrinter().print("*=");
+            break;
+          default:
+            Log.error("0xA0114 Missing implementation for RegularAssignmentExpression");
+        }
+
+        UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()), tc.typeOf(node.getRight()));
+        getPrinter().print(factorStartSimple(converter));
+        node.getRight().accept(getRealThis());
+        getPrinter().print(factorEndSimple(converter));
+        CommentPrettyPrinter.printPostComments(node, this.getPrinter());
+      }
+      else {
+        super.handle(node);
+      }
     }
 
     CommentPrettyPrinter.printPostComments(node, getPrinter());

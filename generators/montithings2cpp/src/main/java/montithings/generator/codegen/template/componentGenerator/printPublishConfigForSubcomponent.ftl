@@ -14,6 +14,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::publishConfigForSubcompone
   {
     json config;
     ${Utils.printSerializeParameters(subcomponent)}
+    ${Utils.printSIParameters(comp, subcomponent)}
     <#assign typeArgs = TypesHelper.getTypeArguments(subcomponent)>
     <#if typeArgs != "">
     std::string typeArgs = "${typeArgs}";

@@ -8,6 +8,11 @@ ${tc.signature("comp","ports","config")}
   InOutPort<${type}>* ${name} = new InOutPort<${type}>();
 </#list>
 
+<#list ports as port>
+  <#assign name = port.getName()>
+  double ${name}ConversionFactor = 1;
+</#list>
+
 <#if comp.isDecomposed()>
   // Internal monitoring of ports (for pre- and postconditions of composed components)
   <#list ports as port>

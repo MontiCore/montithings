@@ -24,6 +24,7 @@
 
 		<!-- DSLs -->
 		<cd4a.version>6.5.0-SNAPSHOT</cd4a.version>
+		<siunits.version>6.5.0-SNAPSHOT</siunits.version>
 		<montiarc.version>6.5.0-SNAPSHOT</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
@@ -42,8 +43,9 @@
         <junit.vintage.version>5.5.2</junit.vintage.version>
         <junit.platform.version>1.1.0</junit.platform.version>
 		<assertj.version>3.7.0</assertj.version>
+		<jscience.version>4.3.1</jscience.version>
 		<mosquitto.version>1.2.5</mosquitto.version>
-		
+
 		<!-- .. Plugins ....................................................... -->
 		<monticore.plugin>6.5.0</monticore.plugin>
 		<assembly.plugin>3.2.0</assembly.plugin>

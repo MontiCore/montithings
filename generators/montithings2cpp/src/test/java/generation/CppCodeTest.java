@@ -56,6 +56,7 @@ public class CppCodeTest {
     "additionalPortTest",
     "behaviorTest",
     "classDiagramsTest",
+    "siunitsTest",
     "prePostConditionsTest",
     "interfaceComponentsTest",
     "interfaceComponentsBindingTest"
