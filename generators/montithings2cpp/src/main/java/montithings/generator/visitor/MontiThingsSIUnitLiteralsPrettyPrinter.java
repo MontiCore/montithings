@@ -12,9 +12,9 @@ import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 
 import javax.measure.converter.UnitConverter;
 
-public class MySIUnitLiteralsPrettyPrinter extends SIUnitLiteralsPrettyPrinter {
+public class MontiThingsSIUnitLiteralsPrettyPrinter extends SIUnitLiteralsPrettyPrinter {
 
-  public MySIUnitLiteralsPrettyPrinter(IndentPrinter printer) {
+  public MontiThingsSIUnitLiteralsPrettyPrinter(IndentPrinter printer) {
     super(printer);
   }
 

@@ -14,7 +14,7 @@ import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import javax.measure.converter.UnitConverter;
 
-import static montithings.generator.visitor.MySIUnitLiteralsPrettyPrinter.*;
+import static montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter.*;
 
 public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPrinter {
 

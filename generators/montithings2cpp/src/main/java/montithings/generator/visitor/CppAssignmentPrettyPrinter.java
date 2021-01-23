@@ -21,7 +21,7 @@ import javax.measure.converter.UnitConverter;
 import java.util.Optional;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
-import static montithings.generator.visitor.MySIUnitLiteralsPrettyPrinter.*;
+import static montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter.*;
 
 public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrinter {
 
