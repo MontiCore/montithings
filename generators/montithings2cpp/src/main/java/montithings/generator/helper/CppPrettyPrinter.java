@@ -4,10 +4,7 @@ package montithings.generator.helper;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import montithings._ast.ASTMontiThingsNode;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
-import montithings.generator.visitor.CppAssignmentPrettyPrinter;
-import montithings.generator.visitor.CppCommonExpressionsPrettyPrinter;
-import montithings.generator.visitor.CppExpressionPrettyPrinter;
-import montithings.generator.visitor.CppMontiThingsPrettyPrinter;
+import montithings.generator.visitor.*;
 
 public class CppPrettyPrinter {
 
@@ -24,6 +21,7 @@ public class CppPrettyPrinter {
     printer.setExpressionsBasisVisitor(new CppExpressionPrettyPrinter(printer.getPrinter()));
     printer.setCommonExpressionsVisitor(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
     printer.setAssignmentExpressionsVisitor(new CppAssignmentPrettyPrinter(printer.getPrinter()));
+    printer.setOCLExpressionsVisitor(new CppOCLExpressionsPrettyPrinter(printer.getPrinter()));
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
     printer.setSetDefinitionsVisitor(setPrinter);
     printer.setSetExpressionsVisitor(setPrinter);
