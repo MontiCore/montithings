@@ -6,7 +6,4 @@ application Example {
   Sink sink;
 
   source.value -> sink.value;
-
-  timing sync;
-  update interval 1sec;
 }

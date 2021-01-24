@@ -138,6 +138,12 @@ MqttClient::loop ()
   mosquitto_loop_forever (mosq, 1, 1);
 }
 
+void
+MqttClient::wait ()
+{
+  _loop.wait();
+}
+
 bool
 MqttClient::isConnected () const
 {
