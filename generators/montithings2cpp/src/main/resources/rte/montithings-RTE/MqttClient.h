@@ -99,6 +99,13 @@ class MqttClient
    */
   void loop ();
 
+  /**
+   * Waits for the Mosquitto loop to finish. If there are no runtime exceptions,
+   * the Mosquitto loop is infinite. Therefore, this can be used to keep the main
+   * thread of the program alive.
+   */
+  void wait();
+
   /* ============================================================ */
   /* ======================= MQTT Callbacks ===================== */
   /* ============================================================ */
