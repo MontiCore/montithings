@@ -4,7 +4,7 @@ ${tc.signature("comp", "config")}
 
 std::cout << "Started." << std::endl;
 
-<#if ComponentHelper.isTimesync(comp)>
+<#if ComponentHelper.isTimesync(comp) || (config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() != "MQTT")>
   while (true)
   {
   auto end = std::chrono::high_resolution_clock::now()
