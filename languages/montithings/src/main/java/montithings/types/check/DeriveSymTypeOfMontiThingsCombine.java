@@ -3,6 +3,7 @@ package montithings.types.check;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
+import de.monticore.ocl.types.check.DeriveSymTypeOfOCLExpressions;
 import de.monticore.types.check.*;
 import montithings._visitor.MontiThingsDelegatorVisitor;
 
@@ -15,6 +16,8 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
   private DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes deriveSymTypeOfAssignmentExpressions;
 
   private DeriveSymTypeOfCommonExpressionsWithSIUnitTypes deriveSymTypeOfCommonExpressions;
+
+  private DeriveSymTypeOfOCLExpressions deriveSymTypeOfOCLExpressions;
 
   private DeriveSymTypeOfExpression deriveSymTypeOfExpression;
 
@@ -63,6 +66,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfLiterals.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfSIUnitLiterals.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfMontiThings.setTypeCheckResult(typeCheckResult);
+    deriveSymTypeOfOCLExpressions.setTypeCheckResult(typeCheckResult);
   }
 
   /**
@@ -77,6 +81,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfLiterals = new DeriveSymTypeOfLiterals();
     deriveSymTypeOfSIUnitLiterals = new DeriveSymTypeOfSIUnitLiterals();
     deriveSymTypeOfMontiThings = new DeriveSymTypeOfMontiThings();
+    deriveSymTypeOfOCLExpressions = new DeriveSymTypeOfOCLExpressions();
 
     setCommonExpressionsVisitor(deriveSymTypeOfCommonExpressions);
     setAssignmentExpressionsVisitor(deriveSymTypeOfAssignmentExpressions);
@@ -85,6 +90,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     setMCCommonLiteralsVisitor(deriveSymTypeOfMCCommonLiterals);
     setSIUnitLiteralsVisitor(deriveSymTypeOfSIUnitLiterals);
     setMontiThingsVisitor(deriveSymTypeOfMontiThings);
+    setOCLExpressionsVisitor(deriveSymTypeOfOCLExpressions);
 
     setTypeCheckResult(typeCheckResult);
   }
