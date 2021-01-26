@@ -23,9 +23,10 @@
 	<properties>
 
 		<!-- DSLs -->
-		<cd4a.version>6.5.0-SNAPSHOT</cd4a.version>
+
+		<cd4a.version>6.5.0</cd4a.version>
 		<ocl.version>6.5.0-SNAPSHOT</ocl.version>
-		<siunits.version>6.5.0-SNAPSHOT</siunits.version>
+		<siunits.version>6.5.0</siunits.version>
 		<montiarc.version>6.5.0-SNAPSHOT</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->

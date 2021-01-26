@@ -6,6 +6,9 @@ ${tc.signature("comp","compname","className")}
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::compute() {
+// ensure there are no parallel compute() executions
+std::lock_guard${"<std::mutex>"} guard(computeMutex);
+
 if (shouldCompute())
 {
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}

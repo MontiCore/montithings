@@ -3,6 +3,9 @@ ${tc.signature("comp","compname","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::compute(){
+// ensure there are no parallel compute() executions
+std::lock_guard${"<std::mutex>"} guard(computeMutex);
+
 if (shouldCompute()) {
 
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}

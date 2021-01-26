@@ -41,5 +41,6 @@ ${tc.includeArgs("template.util.init.Init", [comp, compname, config, className])
 </#if>
 
 ${tc.includeArgs("template.componentGenerator.printOnEvent", [comp, config, className])}
+${tc.includeArgs("template.componentGenerator.printThreadJoin", [comp, config, className])}
 
 ${tc.includeArgs("template.componentGenerator.printConstructor", [comp, compname, config, className])}

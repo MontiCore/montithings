@@ -4,19 +4,20 @@ ${tc.signature("comp", "config")}
 
 std::cout << "Started." << std::endl;
 
-while (true)
-{
-auto end = std::chrono::high_resolution_clock::now()
-+ ${ComponentHelper.getExecutionIntervalMethod(comp)};
-<#if ComponentHelper.isTimesync(comp)>
+<#if ComponentHelper.isTimesync(comp) || (config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() != "MQTT")>
+  while (true)
+  {
+  auto end = std::chrono::high_resolution_clock::now()
+  + ${ComponentHelper.getExecutionIntervalMethod(comp)};
   cmp.compute();
-</#if>
-do {
-std::this_thread::yield();
-<#if ComponentHelper.isTimesync(comp)>
+  do {
+  std::this_thread::yield();
   std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  } while (std::chrono::high_resolution_clock::now() < end);
+  }
 <#else>
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  cmp.threadJoin();
+  <#if config.getMessageBroker().toString() == "MQTT">
+    MqttClient::instance()->wait();
+  </#if>
 </#if>
-} while (std::chrono::high_resolution_clock::now() < end);
-}

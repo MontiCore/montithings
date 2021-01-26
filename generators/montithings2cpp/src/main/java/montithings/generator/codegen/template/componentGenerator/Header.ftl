@@ -68,6 +68,7 @@ ${Utils.printVariables(comp, config)}
 <#-- Currently useless. MontiArc 6's getFields() returns both variables and parameters -->
 <#-- Utils.printConfigParameters(comp) -->
 std::vector< std::thread > threads;
+std::mutex computeMutex;
 TimeMode timeMode = 
 <#if ComponentHelper.isTimesync(comp)>
   TIMESYNC
@@ -114,6 +115,7 @@ void onEvent () override;
 <#if ComponentHelper.retainState(comp)>
   bool restoreState ();
 </#if>
+void threadJoin ();
 };
 
 <#if Utils.hasTypeParameter(comp)>
