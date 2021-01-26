@@ -4,10 +4,10 @@ package montithings.generator.visitor;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.ocl.oclexpressions._ast.*;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
-import de.monticore.ocl.setexpressions._ast.ASTSetEnumeration;
-import de.monticore.ocl.setexpressions._ast.ASTSetValueItem;
-import de.monticore.ocl.setexpressions._ast.ASTSetValueRange;
+import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import jdk.internal.jline.internal.Log;
 
 public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter {
 
@@ -95,7 +95,13 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
             getSymbol().getType().getTypeInfo().getName();
 
     getPrinter().print("std::vector<" + symbolType + "> set = ");
-    printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
+    if(!node.getInDeclaration(0).isPresentExpression()){
+      //TODO: no Expression present
+    } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetEnumeration){
+      printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
+    } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetComprehension){
+      printSet((ASTSetComprehension) node.getInDeclaration(0).getExpression());
+    }
     getPrinter().println(";");
 
     getPrinter().println("for (int _index = 0; _index < set.size(); _index++){");
@@ -134,6 +140,43 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
         getPrinter().print(", ");
       }
     }
+    getPrinter().print("}");
+  }
+
+  public void printSet(ASTSetComprehension node){
+    if (node.getLeft().isPresentGeneratorDeclaration()){
+      if(node.getLeft().getGeneratorDeclaration().getExpression() instanceof ASTSetEnumeration){
+        printSet((ASTSetEnumeration) node.getLeft().getGeneratorDeclaration().getExpression());
+      } else if (node.getLeft().getGeneratorDeclaration().getExpression() instanceof ASTSetComprehension){
+        //TODO: test, this case probably doesn't work yet
+        printSet((ASTSetComprehension) node.getLeft().getGeneratorDeclaration().getExpression());
+      } else {
+        Log.error("Set building expressions other than SetEnumerations and SetComprehensions are " +
+                "not supported in GeneratorDeclarations");
+      }
+      getPrinter().println(";");
+      getPrinter().print("set.erase(std::remove_if(set.begin(), set.end(), ");
+      printSetComprehensionExpressions(node);
+      getPrinter().print("), set.end())");
+    }
+  }
+
+  private void printSetComprehensionExpressions(ASTSetComprehension setComprehension) {
+    getPrinter().print("[&] (int " + setComprehension.getLeft().getGeneratorDeclaration().getName() + ") { return ");
+
+    for (int i = 0; i < setComprehension.sizeSetComprehensionItems(); i++){
+      if(!(setComprehension.getSetComprehensionItem(i).isPresentExpression())){
+        Log.error("Only expressions are supported at the right side of set comprehensions");
+      }
+      getPrinter().print("!(");
+      setComprehension.getSetComprehensionItem(i).getExpression().accept(getRealThis());
+      getPrinter().print(")");
+
+      if (i != setComprehension.sizeSetComprehensionItems() - 1){
+        getPrinter().print("||");
+      }
+    }
+    getPrinter().print(";");
     getPrinter().print("}");
   }
 }
