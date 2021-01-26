@@ -1,11 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.visitor;
 
-import de.monticore.ocl.oclexpressions._ast.ASTEquivalentExpression;
-import de.monticore.ocl.oclexpressions._ast.ASTForallExpression;
-import de.monticore.ocl.oclexpressions._ast.ASTIfThenElseExpression;
-import de.monticore.ocl.oclexpressions._ast.ASTImpliesExpression;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.ocl.oclexpressions._ast.*;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
+import de.monticore.ocl.setexpressions._ast.ASTSetEnumeration;
+import de.monticore.ocl.setexpressions._ast.ASTSetValueItem;
+import de.monticore.ocl.setexpressions._ast.ASTSetValueRange;
 import de.monticore.prettyprint.IndentPrinter;
 
 public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter {
@@ -57,12 +58,14 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
   public void handle (ASTForallExpression node){
     getPrinter().println("[&]() -> bool {");
 
-    //TODO: print Set
-    getPrinter().print("std::vector<int> set = {1,2,3,4,5,6,7,8,9,10,11,12};");
-
+    //TODO: multiple InDeclarations?
     String symbolName = node.getInDeclaration(0).getInDeclarationVariable(0).getName();
     String symbolType = node.getInDeclaration(0).getInDeclarationVariable(0).
             getSymbol().getType().getTypeInfo().getName();
+
+    getPrinter().print("std::vector<" + symbolType + "> set = ");
+    printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
+    getPrinter().println(";");
 
     getPrinter().println("for (int _index = 0; _index < set.size(); _index++){");
     getPrinter().print("if(!(");
@@ -72,7 +75,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     node.getExpression().accept(getRealThis());
 
     getPrinter().print("){ return true;} return false;");
-    getPrinter().println(";}(set.at(_index))");
+    getPrinter().println("}(set.at(_index))");
     getPrinter().println(")){");
 
     getPrinter().println("return false;");
@@ -80,5 +83,57 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().println("}");
     getPrinter().println("return true;");
     getPrinter().println("}()");
+  }
+
+  @Override
+  public void handle (ASTExistsExpression node){
+    getPrinter().println("[&]() -> bool {");
+
+    //TODO: multiple InDeclarations?
+    String symbolName = node.getInDeclaration(0).getInDeclarationVariable(0).getName();
+    String symbolType = node.getInDeclaration(0).getInDeclarationVariable(0).
+            getSymbol().getType().getTypeInfo().getName();
+
+    getPrinter().print("std::vector<" + symbolType + "> set = ");
+    printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
+    getPrinter().println(";");
+
+    getPrinter().println("for (int _index = 0; _index < set.size(); _index++){");
+    getPrinter().print("if(");
+    getPrinter().println("[&](" + symbolType + " " + symbolName + ") -> bool {");
+    getPrinter().print("if(");
+
+    node.getExpression().accept(getRealThis());
+
+    getPrinter().print("){ return true;} return false;");
+    getPrinter().println("}(set.at(_index))");
+    getPrinter().println("){");
+
+    getPrinter().println("return true;");
+    getPrinter().println("}");
+    getPrinter().println("}");
+    getPrinter().println("return false;");
+    getPrinter().println("}()");
+  }
+
+  public void printSet(ASTSetEnumeration node){
+    getPrinter().print("{");
+    for (int i = 0; i < node.sizeSetCollectionItems(); i++){
+      if (node.getSetCollectionItem(i) instanceof ASTSetValueItem){
+        for (ASTExpression expr : ((ASTSetValueItem) node.getSetCollectionItem(i)).getExpressionList()){
+          expr.accept(getRealThis());
+          if (expr != ((ASTSetValueItem) node.getSetCollectionItem(i)).getExpression(((ASTSetValueItem)
+                  node.getSetCollectionItem(i)).sizeExpressions() - 1)){
+            getPrinter().print(", ");
+          }
+        }
+      } else if (node.getSetCollectionItem(i) instanceof ASTSetValueRange){
+        //TODO: SetBuilder for other SetCollection Types
+      }
+      if (i != node.sizeSetCollectionItems() - 1){
+        getPrinter().print(", ");
+      }
+    }
+    getPrinter().print("}");
   }
 }
