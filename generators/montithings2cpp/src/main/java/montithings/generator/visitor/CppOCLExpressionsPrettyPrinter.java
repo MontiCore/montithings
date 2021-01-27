@@ -6,8 +6,7 @@ import de.monticore.ocl.oclexpressions._ast.*;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
 import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
-import jdk.internal.jline.internal.Log;
+import de.se_rwth.commons.logging.Log;
 
 public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter {
 
