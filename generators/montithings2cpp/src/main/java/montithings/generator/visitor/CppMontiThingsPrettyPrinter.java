@@ -13,9 +13,12 @@ import de.monticore.siunits._ast.ASTSIUnit;
 import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import de.monticore.siunittypes4computing._visitor.SIUnitTypes4ComputingVisitor;
 import de.monticore.siunittypes4math._visitor.SIUnitTypes4MathVisitor;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings._ast.ASTIsPresentExpression;
+import montithings._auxiliary.OCLExpressionsMillForMontiThings;
+import montithings._auxiliary.SetExpressionsMillForMontiThings;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsPrettyPrinter;
 import montithings._visitor.MontiThingsVisitor;
@@ -170,6 +173,54 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
         getPrinter().print(" || ");
       }
     }
+  }
+
+  @Override
+  public void handle(ASTSetComprehension node) {
+    if (!expressions.isEmpty()){
+      //Called from SetInExpression
+      if(node.getLeft().isPresentSetVariableDeclaration()) {
+        //check expressions on the right side, if they are the only restrictions,
+        //this method only gets called after handling SetInExpressions
+        printSetComprehensionExpressionsForSetInExpression(node, node.getLeft().getSetVariableDeclaration().getSymbol());
+      }
+      else if(node.getLeft().isPresentGeneratorDeclaration()){
+        //check expressions and check that element is in set of GeneratorDeclaration
+        printSetComprehensionExpressionsForSetInExpression(node, node.getLeft().getGeneratorDeclaration().getSymbol());
+        getPrinter().print(" && ");
+        getPrinter().print("(");
+        ASTSetInExpression expr = SetExpressionsMillForMontiThings.setInExpressionBuilder().setOperator("isin")
+                .setElem(expressions.peek()).setSet(node.getLeft().getGeneratorDeclaration().getExpression()).build();
+        expr.accept(getRealThis());
+        getPrinter().print(")");
+      }
+      else {
+        Log.error("Expressions at the right side of SetComprehensions are not supported");
+      }
+    }
+  }
+
+  private void printSetComprehensionExpressionsForSetInExpression(ASTSetComprehension setComprehension, VariableSymbol symbol) {
+    String varName = symbol.getName();
+    String varType = symbol.getType().getTypeInfo().getName();
+    getPrinter().print("[&] (" + varType +  " " + varName + ") { return ");
+
+    for (int i = 0; i < setComprehension.sizeSetComprehensionItems(); i++){
+      if(!(setComprehension.getSetComprehensionItem(i).isPresentExpression())){
+        Log.error("Only expressions are supported at the right side of set comprehensions");
+      }
+      getPrinter().print("(");
+      setComprehension.getSetComprehensionItem(i).getExpression().accept(getRealThis());
+      getPrinter().print(")");
+
+      if (i != setComprehension.sizeSetComprehensionItems() - 1){
+        getPrinter().print("&&");
+      }
+    }
+    getPrinter().print(";");
+    getPrinter().print("}(");
+    expressions.peek().accept(getRealThis());
+    getPrinter().print(")");
   }
 
   @Override

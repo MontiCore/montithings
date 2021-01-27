@@ -66,7 +66,15 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
             getSymbol().getType().getTypeInfo().getName();
 
     getPrinter().print("std::vector<" + symbolType + "> set = ");
-    printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
+    if(!node.getInDeclaration(0).isPresentExpression()){
+      //TODO: no Expression present
+    } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetEnumeration){
+      printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
+    } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetComprehension){
+      printSet((ASTSetComprehension) node.getInDeclaration(0).getExpression());
+    } else {
+      //TODO: other expression types
+    }
     getPrinter().println(";");
 
     getPrinter().println("for (int _index = 0; _index < set.size(); _index++){");
@@ -103,6 +111,8 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
     } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetComprehension){
       printSet((ASTSetComprehension) node.getInDeclaration(0).getExpression());
+    } else {
+      //TODO: other expression types
     }
     getPrinter().println(";");
 
@@ -140,6 +150,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     }
     getPrinter().print("return ");
     getPrinter().print("[&](");
+    //TODO: einfacher? nicht noch eine lambda fkt aufmachen?
     for (int i = 0; i < varNames.size(); i++){
       getPrinter().print(varTypes.get(i) + " ");
       getPrinter().print(varNames.get(i));
@@ -203,22 +214,25 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     if (node.getLeft().isPresentGeneratorDeclaration()){
       if(node.getLeft().getGeneratorDeclaration().getExpression() instanceof ASTSetEnumeration){
         printSet((ASTSetEnumeration) node.getLeft().getGeneratorDeclaration().getExpression());
-      } else if (node.getLeft().getGeneratorDeclaration().getExpression() instanceof ASTSetComprehension){
-        //TODO: test, this case probably doesn't work yet
-        printSet((ASTSetComprehension) node.getLeft().getGeneratorDeclaration().getExpression());
       } else {
-        Log.error("Set building expressions other than SetEnumerations and SetComprehensions are " +
-                "not supported in GeneratorDeclarations");
+        Log.error("Set building expressions other than SetEnumerations are " +
+                "not supported in GeneratorDeclarations of SetComprehensions");
       }
       getPrinter().println(";");
       getPrinter().print("set.erase(std::remove_if(set.begin(), set.end(), ");
       printSetComprehensionExpressions(node);
       getPrinter().print("), set.end())");
     }
+    else {
+      //TODO: support SetVariableDeclaration as well (?)
+      Log.error("SetComprehensions in InDeclarations are only supported if the left side is a generator declaration");
+    }
   }
 
   private void printSetComprehensionExpressions(ASTSetComprehension setComprehension) {
-    getPrinter().print("[&] (int " + setComprehension.getLeft().getGeneratorDeclaration().getName() + ") { return ");
+    String varName = setComprehension.getLeft().getGeneratorDeclaration().getName();
+    String varType = setComprehension.getLeft().getGeneratorDeclaration().getSymbol().getType().getTypeInfo().getName();
+    getPrinter().print("[&] (" + varType + " " + varName + ") { return ");
 
     for (int i = 0; i < setComprehension.sizeSetComprehensionItems(); i++){
       if(!(setComprehension.getSetComprehensionItem(i).isPresentExpression())){
