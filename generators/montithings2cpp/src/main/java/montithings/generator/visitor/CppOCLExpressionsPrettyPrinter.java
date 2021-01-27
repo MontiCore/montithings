@@ -8,6 +8,9 @@ import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter {
 
   public CppOCLExpressionsPrettyPrinter(IndentPrinter printer) {
@@ -119,6 +122,60 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().println("}");
     getPrinter().println("return false;");
     getPrinter().println("}()");
+  }
+
+  @Override
+  public void handle (ASTLetinExpression node){
+    getPrinter().print("[&]() -> bool {");
+
+    List<String> varNames = new ArrayList<>();
+    List<String> varTypes = new ArrayList<>();
+    for (ASTOCLVariableDeclaration variableDeclaration : node.getOCLVariableDeclarationList()){
+      variableDeclaration.accept(getRealThis());
+      if(variableDeclaration.isPresentExpression()){
+        varNames.add(variableDeclaration.getName());
+        varTypes.add(variableDeclaration.getSymbol().getType().getTypeInfo().getName());
+      }
+      //TODO: was wenn Expression nicht present?
+    }
+    getPrinter().print("return ");
+    getPrinter().print("[&](");
+    for (int i = 0; i < varNames.size(); i++){
+      getPrinter().print(varTypes.get(i) + " ");
+      getPrinter().print(varNames.get(i));
+      if(i != varNames.size() - 1){
+        getPrinter().print(", ");
+      }
+    }
+    getPrinter().print(") -> bool {");
+
+    getPrinter().print("return (");
+    node.getExpression().accept(getRealThis());
+    getPrinter().print(");");
+
+    getPrinter().print("}(");
+    for (int i = 0; i < varNames.size(); i++){
+      getPrinter().print(varNames.get(i));
+      if(i != varNames.size() - 1){
+        getPrinter().print(", ");
+      }
+    }
+    getPrinter().print(")");
+    getPrinter().print(";");
+
+    getPrinter().print("}()");
+  }
+
+  @Override
+  public void handle (ASTOCLVariableDeclaration node){
+    getPrinter().print(node.getSymbol().getType().getTypeInfo().getName());
+    getPrinter().print(" ");
+    getPrinter().print(node.getName());
+    if(node.isPresentExpression()){
+      getPrinter().print(" = ");
+      node.getExpression().accept(getRealThis());
+    }
+    getPrinter().print(";");
   }
 
   public void printSet(ASTSetEnumeration node){
