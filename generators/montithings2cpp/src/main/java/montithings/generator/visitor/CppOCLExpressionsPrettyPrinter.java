@@ -2,6 +2,7 @@
 package montithings.generator.visitor;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.ocl.oclexpressions._ast.*;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
 import de.monticore.ocl.setexpressions._ast.*;
@@ -189,6 +190,17 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().print(";");
   }
 
+  @Override
+  public void handle (ASTOCLAtPreQualification node){
+    if(!(node.getExpression() instanceof ASTNameExpression)) {
+      Log.error("OCLAtPreQualification can only be applied to variables of components");
+    }
+    else {
+      node.getExpression().accept(getRealThis());
+      getPrinter().print("__at__pre");
+    }
+  }
+
   public void printSet(ASTSetEnumeration node){
     getPrinter().print("{");
     for (int i = 0; i < node.sizeSetCollectionItems(); i++){
@@ -200,7 +212,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
             getPrinter().print(", ");
           }
         }
-      } else if (node.getSetCollectionItem(i) instanceof ASTSetValueRange){
+      } else if (node.getSetCollectionItem(i) instanceof setdefinitions._ast.ASTSetValueRange){
         //TODO: SetBuilder for other SetCollection Types
       }
       if (i != node.sizeSetCollectionItems() - 1){

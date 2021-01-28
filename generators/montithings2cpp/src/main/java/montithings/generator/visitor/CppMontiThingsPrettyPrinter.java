@@ -17,7 +17,6 @@ import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings._ast.ASTIsPresentExpression;
-import montithings._auxiliary.OCLExpressionsMillForMontiThings;
 import montithings._auxiliary.SetExpressionsMillForMontiThings;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsPrettyPrinter;
