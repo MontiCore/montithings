@@ -16,6 +16,9 @@ ${compname}Result${Utils.printFormalTypeParameters(comp)} result;
 <#list comp.incomingPorts as port>
 <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>
+<#list ComponentHelper.getArcFieldVariables(comp) as field>
+${ComponentHelper.printCPPTypeName(field.getType())} ${field.getName()}__at__pre = ${field.getName()};
+</#list>
 ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
 result = ${Identifier.getBehaviorImplName()}.compute(input);
 <#list comp.getOutgoingPorts() as port>

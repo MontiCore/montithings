@@ -901,6 +901,16 @@ public class ComponentHelper {
     return component.getFields().stream().collect(Collectors.toList());
   }
 
+  public static List<VariableSymbol> getArcFieldVariables(ComponentTypeSymbol component){
+    List<VariableSymbol> arcFieldSymbols = new ArrayList<>();
+    for (VariableSymbol symbol : getFields(component)){
+      if(symbol.isPresentAstNode() && symbol.getAstNode() instanceof ASTArcField){
+        arcFieldSymbols.add(symbol);
+      }
+    }
+    return arcFieldSymbols;
+  }
+
   public static String printStatementBehavior(ComponentTypeSymbol component) {
     List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class).toList();
     Preconditions.checkArgument(!behaviors.isEmpty(),
