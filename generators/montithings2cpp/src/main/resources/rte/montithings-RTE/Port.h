@@ -23,21 +23,10 @@ protected:
   /// Ports that need to be notified when new data is available
   std::set<Port<T> *> portsToNotify;
 
-  /// If true, no events are created for new messages on this port
-  bool suppressNotification = false;
+  /// Contains the UUID of a requester that should not be notified to avoid loops
+  tl::optional<sole::uuid> suppressNotification = tl::nullopt;
 
 public:
-  /**
-   * This method is to be implemented by all ports that get messages from
-   * external sources, e.g. through web sockets or CAN bus
-   */
-  virtual void
-  getExternalMessages ()
-  {
-    // Intentionally left empty.
-    // Internal components do not have external message sources
-  }
-
   /**
    * Send the given message to external message acceptors, e.g. using web sockets or CAN bus
    * \param nextVal the value to be sent. May be empty
@@ -56,12 +45,27 @@ public:
     dataProvider->attach (this);
   }
 
+  bool
+  hasValue (sole::uuid requester) override
+  {
+    bool messageInQueue = MessageProvider<T>::hasValue (requester);
+    if (messageInQueue)
+      {
+        return true;
+      }
+    else if (this->dataProvider != nullptr)
+      {
+        // check if our message source has something for us
+        return this->dataProvider->hasValue (this->uuid);
+      }
+    return false;
+  }
+
   void
   updateMessageSource () override
   {
     if (this->dataProvider == nullptr)
       {
-        getExternalMessages ();
         return;
       }
     if (this->dataProvider->hasValue (this->uuid))
@@ -89,11 +93,8 @@ public:
         x.second.second.unlock ();
       }
 
-    if (!suppressNotification)
-      {
-        // notify event-based elements about new input
-        this->notify ();
-      }
+    // notify event-based elements about new input
+    this->notify (suppressNotification);
   }
 
   tl::optional<T>
@@ -102,9 +103,9 @@ public:
     // getCurrentValue's updateMessageSource() call can cause new messages
     // to be added to the queue. As we're already querying the queue here,
     // we need to suppress additional events to prevent endless loops
-    suppressNotification = true;
+    suppressNotification = requester;
     tl::optional<T> result = MessageProvider<T>::getCurrentValue (requester);
-    suppressNotification = false;
+    suppressNotification = tl::nullopt;
     return result;
   }
 

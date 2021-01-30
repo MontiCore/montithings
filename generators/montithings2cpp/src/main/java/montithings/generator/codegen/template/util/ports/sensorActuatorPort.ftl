@@ -8,14 +8,23 @@ ${tc.signature("portTemeplateName", "existsHWC")}
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
 class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
-    ${defineHookPoint("<CppBlock>?portTemplate:body")}
-    public: void getExternalMessages() override
-    {
-        ${defineHookPoint("<CppBlock>?portTemplate:provide")}
-    }
-    void sendToExternal(tl::optional${r"<T>"} nextVal) override
-    {
-        ${defineHookPoint("<CppBlock>?portTemplate:consume")}
-    }
-    ${Names.getSimpleName(portTemeplateName)?cap_first} (){}
+  ${defineHookPoint("<CppBlock>?portTemplate:body")}
+  public:
+  bool
+  hasValue (sole::uuid requester) override
+  {
+  return true;
+  }
+
+  void getExternalMessages() override
+  {
+  ${defineHookPoint("<CppBlock>?portTemplate:provide")}
+  }
+
+  void sendToExternal(tl::optional${r"<T>"} nextVal) override
+  {
+  ${defineHookPoint("<CppBlock>?portTemplate:consume")}
+  }
+
+  ${Names.getSimpleName(portTemeplateName)?cap_first} (){}
 };

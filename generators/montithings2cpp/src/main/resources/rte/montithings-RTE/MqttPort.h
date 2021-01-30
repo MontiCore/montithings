@@ -65,11 +65,14 @@ MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe) : fullyQualifiedN
 {
   MqttClient::instance ()->addUser (this);
 
-  std::string topic = "/connectors/" + replaceDotsBySlashes (fullyQualifiedName);
+  std::string connectorTopic = "/connectors/" + replaceDotsBySlashes (fullyQualifiedName);
+  std::string manualInjectTopic = "/portsInject/" + replaceDotsBySlashes (fullyQualifiedName);
   if (shouldSubscribe)
     {
-      MqttClient::instance ()->subscribe (topic);
-      subscriptions.emplace (topic);
+      MqttClient::instance ()->subscribe (connectorTopic);
+      subscriptions.emplace (connectorTopic);
+      MqttClient::instance ()->subscribe (manualInjectTopic);
+      subscriptions.emplace (manualInjectTopic);
     }
 }
 
@@ -95,7 +98,8 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
       if (topic.find (subscription) != std::string::npos)
         {
           // check if this message informs us about new data
-          if (topic.find ("/ports/") != std::string::npos)
+          if (topic.find ("/ports/") != std::string::npos ||
+              topic.find ("/portsInject/") != std::string::npos)
             {
               T result = jsonToData<T> (payload);
               this->setNextValue (result);
