@@ -19,7 +19,7 @@ grammar MontiThings extends MontiArc,
       body:ComponentBody
     ;
 
-    MTComponentModifier =  ["interface"]? (["component"] | ["application"]);
+    MTComponentModifier =  ["interface"]? "component";
 
     // MontiCore's SetInExpression defines this rule using "in". As a result, incoming ports
     // can no longer be parsed because they are read as "portin" instead of "port in". Until

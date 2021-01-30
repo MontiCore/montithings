@@ -244,6 +244,9 @@
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
+                        <main>hierarchy.Example</main>
+                        <splitting>LOCAL</splitting>
+                        <messageBroker>MQTT</messageBroker>
                         <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>

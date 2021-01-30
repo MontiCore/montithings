@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-application Example {
+component Example {
   Source source;
   LowPassFilter lpf (5, 0);
   Sink sink;

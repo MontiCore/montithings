@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package cocoTest.nameExpressionsAreResolvableTest.variableDefaultUnknown;
 
-application Example {
+component Example {
   Source source (0);
   Sink sink;
 

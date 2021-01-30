@@ -76,6 +76,7 @@ public class SimpleGenerationTest {
     params.setMessageBroker(messageBroker);
     params.setHwcPath(HWCPATH.toFile());
     params.setProjectVersion("unspecified");
+    params.setMainComponent("hierarchy.Example");
     script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(), null, params);
   }
 

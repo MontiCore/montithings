@@ -4,7 +4,6 @@ package montithings._visitor;
 import arcbasis._ast.ASTArcBasisNode;
 import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
-import de.se_rwth.commons.logging.Log;
 import montithings._ast.*;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -14,6 +13,7 @@ import java.util.List;
 public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
 
   protected MontiThingsVisitor realThis = this;
+
   protected IndentPrinter printer;
 
   public MontiThingsPrettyPrinter() {
@@ -41,7 +41,7 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
     return this.printer;
   }
 
-  public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list){
+  public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
     if (list.size() <= 0) {
       return;
     }
@@ -64,24 +64,16 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
 
   @Override
   public void handle(@NotNull ASTMTComponentModifier node) {
-    if(node.isInterface()){
+    if (node.isInterface()) {
       this.getPrinter().print("interface ");
     }
-    if(node.isComponent()){
-      this.getPrinter().print("component ");
-    }
-    else if(node.isApplication()){
-      this.getPrinter().print("application ");
-    }
-    else {
-      Log.error("MontiThingsPrettyPrinter: Unknown ASTMTComponentModifier was used.");
-    }
+    this.getPrinter().print("component ");
   }
 
   @Override
-  public void handle(@NotNull ASTSetInExpression node){
+  public void handle(@NotNull ASTSetInExpression node) {
     node.getElem().accept(this.getRealThis());
-    this.getPrinter().print(" "+node.getOperator()+" ");
+    this.getPrinter().print(" " + node.getOperator() + " ");
     node.getSet().accept(this.getRealThis());
   }
 

@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package valid;
 
-application Composed {
+component Composed {
   Source source;
   Sink sink;
 
