@@ -14,17 +14,24 @@ protected:
 public:
   /**
    * triggers the onEvent() callback of the observers
+   * @param except UUID of an observer that should not be notified
    */
   virtual void
-  notify ()
+  notify (tl::optional<sole::uuid> except)
   {
     for (EventObserver *observer : observers)
-    {
-      if (observer != nullptr)
       {
-        observer->onEvent ();
+        if (except.has_value () && observer->getUuid () == except.value ())
+          {
+            // skip observer that does not want to be notified
+            continue;
+          }
+
+        if (observer != nullptr)
+          {
+            observer->onEvent ();
+          }
       }
-    }
   }
 
   /**
@@ -35,9 +42,9 @@ public:
   attach (EventObserver *observer)
   {
     if (observer != nullptr)
-    {
-      observers.emplace (observer);
-    }
+      {
+        observers.emplace (observer);
+      }
   }
 
   /**
@@ -49,8 +56,8 @@ public:
   detach (EventObserver *observer)
   {
     if (observer != nullptr)
-    {
-      observers.erase (observer);
-    }
+      {
+        observers.erase (observer);
+      }
   }
 };

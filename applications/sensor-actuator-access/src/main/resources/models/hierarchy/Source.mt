@@ -8,4 +8,6 @@ component Source {
   behavior {
     value = sensor?;
   }
+
+  update interval 1sec;
 }
