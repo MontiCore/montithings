@@ -367,10 +367,9 @@ public class MontiThingsConfiguration implements Configuration {
       Log.error(String.format(MontiThingsError.GENERATOR_ONLY_ONE_MAIN.toString(),
         mainComp.get(), mainCompShort.get()));
     }
-    if (configParams.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
-      if (!mainComp.isPresent() && !mainCompShort.isPresent()) {
-        Log.error(MontiThingsError.GENERATOR_MAIN_REQUIRED.toString());
-      }
+    if (configParams.getSplittingMode() == ConfigParams.SplittingMode.OFF
+      && !mainComp.isPresent() && !mainCompShort.isPresent()) {
+      Log.error(MontiThingsError.GENERATOR_MAIN_REQUIRED.toString());
     }
 
     return mainComp.orElseGet(mainCompShort::get);
