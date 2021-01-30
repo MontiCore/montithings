@@ -127,6 +127,9 @@ public class ConfigParams {
   /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
   protected Path hwcTemplatePath;
 
+  /** fully qualified name of the component that acts as the main (outermost) component */
+  protected String mainComponent;
+
   /**
    * Gets the implementing component of given interface component, if the component is bound by componentBindings.
    * @param componentType interface component
@@ -309,5 +312,13 @@ public class ConfigParams {
 
   public void setProjectVersion(String projectVersion) {
     this.projectVersion = projectVersion;
+  }
+
+  public String getMainComponent() {
+    return mainComponent;
+  }
+
+  public void setMainComponent(String mainComponent) {
+    this.mainComponent = mainComponent;
   }
 }

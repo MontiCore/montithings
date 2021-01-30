@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-application Example /*(km/h sadge, int testint)*/ {
+component Example /*(km/h sadge, int testint)*/ {
   Source source;
   Sink sink;
 

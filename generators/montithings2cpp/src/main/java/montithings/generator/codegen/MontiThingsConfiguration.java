@@ -4,6 +4,8 @@ package montithings.generator.codegen;
 import de.se_rwth.commons.configuration.Configuration;
 import de.se_rwth.commons.configuration.ConfigurationContributorChainBuilder;
 import de.se_rwth.commons.configuration.DelegatingConfigurationContributor;
+import de.se_rwth.commons.logging.Log;
+import montithings.util.MontiThingsError;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -40,6 +42,8 @@ public class MontiThingsConfiguration implements Configuration {
     PLATFORM("platform"),
     SPLITTING("splitting"),
     MESSAGEBROKER("messageBroker"),
+    MAINCOMP("mainComponent"),
+    MAINCOMP_SHORT("main"),
     VERSION("version");
 
     String name;
@@ -79,6 +83,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setMessageBroker(getMessageBroker());
     configParams.setHwcPath(getHWCPath());
     configParams.setProjectVersion(getVersion());
+    configParams.setMainComponent(getMainComponent());
   }
 
   /**
@@ -352,6 +357,23 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "off"
     return ConfigParams.MessageBroker.OFF;
+  }
+
+  public String getMainComponent() {
+    Optional<String> mainComp = getAsString(Options.MAINCOMP);
+    Optional<String> mainCompShort = getAsString(Options.MAINCOMP_SHORT);
+
+    if (mainComp.isPresent() && mainCompShort.isPresent()) {
+      Log.error(String.format(MontiThingsError.GENERATOR_ONLY_ONE_MAIN.toString(),
+        mainComp.get(), mainCompShort.get()));
+    }
+    if (configParams.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
+      if (!mainComp.isPresent() && !mainCompShort.isPresent()) {
+        Log.error(MontiThingsError.GENERATOR_MAIN_REQUIRED.toString());
+      }
+    }
+
+    return mainComp.orElseGet(mainCompShort::get);
   }
 
   /**

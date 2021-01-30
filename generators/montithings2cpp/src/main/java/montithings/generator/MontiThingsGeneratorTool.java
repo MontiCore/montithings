@@ -28,7 +28,6 @@ import montiarc.util.Modelfinder;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
-import montithings._symboltable.IMontiThingsArtifactScope;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
 import montithings.cocos.PortConnection;
@@ -41,6 +40,7 @@ import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
+import montithings.util.MontiThingsError;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
@@ -99,7 +99,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     resolvingDelegates(symTab, cd4CGlobalScope);
     addBasicTypes(symTab);
 
-
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);
 
@@ -117,6 +116,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     processModels(cd4CGlobalScope, true);
     processModels(symTab, false);
+    checkIfMainComponentExists(symTab, models, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
     checkMTConfig(models.getMTConfig(), config, mtConfigTool,
@@ -189,7 +189,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-      if (ComponentHelper.isApplication(comp)) {
+      if (ComponentHelper.isApplication(comp, config)) {
         mtg.generateDockerfileScript(target, comp);
       }
     }
@@ -208,7 +208,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       else {
         for (String model : models.getMontithings()) {
           ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-          if (ComponentHelper.isApplication(comp)) {
+          if (ComponentHelper.isApplication(comp, config)) {
             generateTests(modelPath, testPath, target, hwcPath, comp, config);
           }
         }
@@ -220,6 +220,21 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /* ============================================================ */
   /* ====================== Check Models ======================== */
   /* ============================================================ */
+
+  protected void checkIfMainComponentExists(IMontiThingsGlobalScope symTab,
+    Models models, ConfigParams config) {
+    List<String> allComponentsList = models.getMontithings().stream()
+      .map(c -> Names.getQualifier(c) + "." + Names.getSimpleName(c))
+      .collect(Collectors.toList());
+
+    String allComponents = String.join(", ", allComponentsList);
+
+    if (!symTab.resolveComponentType(config.getMainComponent()).isPresent()) {
+      Log.error(String.format(MontiThingsError.GENERATOR_MAIN_UNKNOWN.toString(),
+        config.getMainComponent(), allComponents)
+      );
+    }
+  }
 
   protected void checkMtGeneratorCoCos(IMontiThingsGlobalScope symTab, ConfigParams config) {
     mtChecker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
@@ -369,7 +384,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     File target, File hwcPath, ConfigParams config, Models models) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
 
-    if (ComponentHelper.isApplication(comp)
+    if (ComponentHelper.isApplication(comp, config)
       || config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
       // Check for Subpackages
@@ -426,7 +441,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       /* ============================================================ */
       copyGeneratedToTarget(targetFilepath);
       copyTestToTarget(testFilepath, targetFilepath, comp);
-      if (ComponentHelper.isApplication(comp)) {
+      if (ComponentHelper.isApplication(comp, config)) {
         Path target = Paths.get(Paths.get(targetFilepath.getAbsolutePath()).getParent().toString(),
           "generated-test-sources");
         File libraryPath = Paths.get(target.toString(), "montithings-RTE").toFile();

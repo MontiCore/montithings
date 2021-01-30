@@ -27,7 +27,6 @@ import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
-import de.monticore.types.check.TypeCheck;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
@@ -44,8 +43,6 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
-import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
-import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import montithings.util.GenericBindingUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
@@ -858,9 +855,8 @@ public class ComponentHelper {
     return !elementsOf(component).filter(ASTBehavior.class).isEmpty();
   }
 
-  public static boolean isApplication(arcbasis._symboltable.ComponentTypeSymbol component) {
-    ASTMTComponentType ast = (ASTMTComponentType) component.getAstNode();
-    return ast.getMTComponentModifier().isApplication();
+  public static boolean isApplication(ComponentTypeSymbol component, ConfigParams config) {
+    return component.getFullName().equals(config.getMainComponent());
   }
 
   public static List<arcbasis._symboltable.PortSymbol> getPortsInGuardExpression(

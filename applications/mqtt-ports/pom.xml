@@ -244,6 +244,7 @@
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
+                        <main>hierarchy.Example</main>
                         <version>${project.version}</version>
                         <splitting>LOCAL</splitting>
                         <messageBroker>MQTT</messageBroker>

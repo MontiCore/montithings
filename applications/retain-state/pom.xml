@@ -243,6 +243,7 @@
                         <out>${basedir}/target/generated-sources/</out>
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
+                        <main>hierarchy.Example</main>
                         <!--<splitting>LOCAL</splitting>-->
                         <!--<messageBroker>MQTT</messageBroker>-->
                         <version>${project.version}</version>
