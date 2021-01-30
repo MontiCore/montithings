@@ -92,7 +92,7 @@ public class Replayer implements MqttCallback {
 
       // Publish message
       for (String target : datareceivers.get(nextTopic.substring("/ports/".length()))) {
-        publishMessage("/ports/" + target, nextPaylaod);
+        publishMessage("/portsInject/" + target, nextPaylaod);
       }
 
       // Increase iterator for that topic
