@@ -222,7 +222,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle (ASTIterateExpression node){
-    String type = printCPPTypeName(node.getNameSymbol().getType());
+    String type = printCPPTypeName(node.getInit().getSymbol().getType());
     getPrinter().print("[&]() -> " + type + "{");
     getPrinter().print("std::vector<" + type + "> set = ");
     if (node.getIteration().getExpression() instanceof ASTSetEnumeration){
@@ -232,14 +232,16 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       printSet((ASTSetComprehension) node.getIteration().getExpression());
     }
     else {
-      Log.error("Only SetEnumerations or SetComprehensions are allowed in the Iterator of IterateExpressions");
+      Log.error("Only SetEnumerations or SetComprehensions are allow  ed in the Iterator of IterateExpressions");
     }
+    getPrinter().print(";");
     node.getInit().accept(getRealThis());
-    getPrinter().print("for( auto " + node.getInit().getName() + " : set) {");
+    getPrinter().print("for( auto " + node.getIteration().getInDeclarationVariable(0).getName() + " : set) {");
     getPrinter().print(node.getName() + " = ");
     node.getValue().accept(getRealThis());
     getPrinter().print(";");
     getPrinter().print("}");
+    getPrinter().print("return " + node.getName() + ";");
     getPrinter().print("}()");
   }
 
