@@ -8,14 +8,15 @@ import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
 import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.check.TypeCheck;
-import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.helper.ComponentHelper;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
+import setdefinitions._ast.ASTSetValueRange;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static montithings.generator.helper.ComponentHelper.printCPPTypeName;
 
 public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter {
 
@@ -68,8 +69,8 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
     //TODO: multiple InDeclarations?
     String symbolName = node.getInDeclaration(0).getInDeclarationVariable(0).getName();
-    String symbolType = node.getInDeclaration(0).getInDeclarationVariable(0).
-            getSymbol().getType().getTypeInfo().getName();
+    String symbolType = printCPPTypeName(node.getInDeclaration(0).getInDeclarationVariable(0).
+            getSymbol().getType());
 
     getPrinter().print("std::vector<" + symbolType + "> set = ");
     if(!node.getInDeclaration(0).isPresentExpression()){
@@ -107,8 +108,8 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
     //TODO: multiple InDeclarations?
     String symbolName = node.getInDeclaration(0).getInDeclarationVariable(0).getName();
-    String symbolType = node.getInDeclaration(0).getInDeclarationVariable(0).
-            getSymbol().getType().getTypeInfo().getName();
+    String symbolType = printCPPTypeName(node.getInDeclaration(0).getInDeclarationVariable(0).
+            getSymbol().getType());
 
     getPrinter().print("std::vector<" + symbolType + "> set = ");
     if(!node.getInDeclaration(0).isPresentExpression()){
@@ -150,7 +151,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       variableDeclaration.accept(getRealThis());
       if(variableDeclaration.isPresentExpression()){
         varNames.add(variableDeclaration.getName());
-        varTypes.add(variableDeclaration.getSymbol().getType().getTypeInfo().getName());
+        varTypes.add(printCPPTypeName(variableDeclaration.getSymbol().getType()));
       }
       //TODO: was wenn Expression nicht present?
     }
@@ -185,7 +186,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle (ASTOCLVariableDeclaration node){
-    getPrinter().print(node.getSymbol().getType().getTypeInfo().getName());
+    getPrinter().print(printCPPTypeName(node.getSymbol().getType()));
     getPrinter().print(" ");
     getPrinter().print(node.getName());
     if(node.isPresentExpression()){
@@ -221,7 +222,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle (ASTIterateExpression node){
-    String type = ComponentHelper.printCPPTypeName(node.getNameSymbol().getType());
+    String type = printCPPTypeName(node.getNameSymbol().getType());
     getPrinter().print("[&]() -> " + type + "{");
     getPrinter().print("std::vector<" + type + "> set = ");
     if (node.getIteration().getExpression() instanceof ASTSetEnumeration){
@@ -245,7 +246,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
   @Override
   public void handle (ASTAnyExpression node){
     TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
-    String type = ComponentHelper.printCPPTypeName(tc.typeOf(node));
+    String type = printCPPTypeName(tc.typeOf(node));
     getPrinter().print("[&]() -> " + type + "{");
     getPrinter().print("std::vector<" + type + "> set = ");
     if (node.getExpression() instanceof ASTSetEnumeration){
@@ -263,7 +264,8 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle (ASTTypeCastExpression node){
-
+    //TODO: special handling of SI Types
+    super.handle(node);
   }
 
   @Override
@@ -279,6 +281,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   public void printSet(ASTSetEnumeration node){
     getPrinter().print("{");
+    List<ASTSetValueRange> elementsToAdd = new ArrayList<>();
     for (int i = 0; i < node.sizeSetCollectionItems(); i++){
       if (node.getSetCollectionItem(i) instanceof ASTSetValueItem){
         for (ASTExpression expr : ((ASTSetValueItem) node.getSetCollectionItem(i)).getExpressionList()){
@@ -288,14 +291,42 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
             getPrinter().print(", ");
           }
         }
-      } else if (node.getSetCollectionItem(i) instanceof setdefinitions._ast.ASTSetValueRange){
-        //TODO: SetBuilder for other SetCollection Types
+      }
+      else if (node.getSetCollectionItem(i) instanceof setdefinitions._ast.ASTSetValueRange){
+        elementsToAdd.add((ASTSetValueRange) node.getSetCollectionItem(i));
+      }
+      else {
+        Log.error("only SetValueItems and SetValueRanges are supported in InDeclaration SetDefinitions");
       }
       if (i != node.sizeSetCollectionItems() - 1){
         getPrinter().print(", ");
       }
     }
     getPrinter().print("}");
+
+    //print SetValueRanges if enumeration uses them
+    for (ASTSetValueRange range : elementsToAdd){
+      getPrinter().print(";");
+      getPrinter().print("for (int _set_value_range_index = ");
+      range.getLowerBound().accept(getRealThis());
+      getPrinter().print("; _set_value_range_index <=");
+      range.getUpperBound().accept(getRealThis());
+      getPrinter().print("; _set_value_range_index++){");
+      if(range.isPresentStepsize()){
+        getPrinter().print("if((_set_value_range_index - (");
+        range.getLowerBound().accept(getRealThis());
+        getPrinter().print(")) % ");
+        range.getStepsize().accept(getRealThis());
+        getPrinter().print(" == 0){");
+        getPrinter().print("set.push_back(_set_value_range_index);");
+        getPrinter().print("}");
+        //wenn ich mit lowerBound addiere / stepSize teilbar
+      }
+      else {
+        getPrinter().print("set.push_back(_set_value_range_index);");
+      }
+      getPrinter().print("}");
+    }
   }
 
   public void printSet(ASTSetComprehension node){
@@ -319,7 +350,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   private void printSetComprehensionExpressions(ASTSetComprehension setComprehension) {
     String varName = setComprehension.getLeft().getGeneratorDeclaration().getName();
-    String varType = setComprehension.getLeft().getGeneratorDeclaration().getSymbol().getType().getTypeInfo().getName();
+    String varType = printCPPTypeName(setComprehension.getLeft().getGeneratorDeclaration().getSymbol().getType());
     getPrinter().print("[&] (" + varType + " " + varName + ") { return ");
 
     for (int i = 0; i < setComprehension.sizeSetComprehensionItems(); i++){
