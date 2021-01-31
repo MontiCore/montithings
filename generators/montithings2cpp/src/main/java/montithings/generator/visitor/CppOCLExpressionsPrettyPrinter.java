@@ -7,7 +7,12 @@ import de.monticore.ocl.oclexpressions._ast.*;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
 import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.types.check.TypeCheck;
+import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import de.se_rwth.commons.logging.Log;
+import montithings.generator.helper.ComponentHelper;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -188,6 +193,77 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       node.getExpression().accept(getRealThis());
     }
     getPrinter().print(";");
+  }
+
+  @Override
+  public void handle (ASTTypeIfExpression node){
+    getPrinter().print("if (");
+    getPrinter().print("std::is_base_of<");
+    node.getMCType().accept(getRealThis());
+    getPrinter().print(", " + node.getName() + ">) {");
+    //TODO: cast to Base Type
+    node.getThenExpression().accept(getRealThis());
+    getPrinter().print("} else {");
+    node.getElseExpression().accept(getRealThis());
+    getPrinter().print("}");
+  }
+
+  @Override
+  public void handle (ASTInstanceOfExpression node){
+    getPrinter().print("[&]() -> bool {");
+    getPrinter().print("return ");
+    getPrinter().print("std::is_base_of<");
+    //TODO: naechste Zeile testen
+    node.getMCType().accept(getRealThis());
+    getPrinter().print(", " + node.getExpression() + ">;");
+    getPrinter().print("}()");
+  }
+
+  @Override
+  public void handle (ASTIterateExpression node){
+    String type = ComponentHelper.printCPPTypeName(node.getNameSymbol().getType());
+    getPrinter().print("[&]() -> " + type + "{");
+    getPrinter().print("std::vector<" + type + "> set = ");
+    if (node.getIteration().getExpression() instanceof ASTSetEnumeration){
+      printSet((ASTSetEnumeration) node.getIteration().getExpression());
+    }
+    else if (node.getIteration().getExpression() instanceof ASTSetComprehension){
+      printSet((ASTSetComprehension) node.getIteration().getExpression());
+    }
+    else {
+      Log.error("Only SetEnumerations or SetComprehensions are allowed in the Iterator of IterateExpressions");
+    }
+    node.getInit().accept(getRealThis());
+    getPrinter().print("for( auto " + node.getInit().getName() + " : set) {");
+    getPrinter().print(node.getName() + " = ");
+    node.getValue().accept(getRealThis());
+    getPrinter().print(";");
+    getPrinter().print("}");
+    getPrinter().print("}()");
+  }
+
+  @Override
+  public void handle (ASTAnyExpression node){
+    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    String type = ComponentHelper.printCPPTypeName(tc.typeOf(node));
+    getPrinter().print("[&]() -> " + type + "{");
+    getPrinter().print("std::vector<" + type + "> set = ");
+    if (node.getExpression() instanceof ASTSetEnumeration){
+      printSet((ASTSetEnumeration) node.getExpression());
+    }
+    else if (node.getExpression() instanceof ASTSetComprehension){
+      printSet((ASTSetComprehension) node.getExpression());
+    }
+    else {
+      Log.error("Only SetEnumerations or SetComprehensions are allowed in AnyExpressions");
+    }
+    getPrinter().print("return set.at(0);");
+    getPrinter().print("}()");
+  }
+
+  @Override
+  public void handle (ASTTypeCastExpression node){
+
   }
 
   @Override
