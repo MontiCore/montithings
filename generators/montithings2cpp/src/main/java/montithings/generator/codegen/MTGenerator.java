@@ -69,7 +69,7 @@ public class MTGenerator {
     }
 
     // Generate deploy class
-    if (ComponentHelper.isApplication(comp) || (
+    if (ComponentHelper.isApplication(comp, config) || (
       config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy)) {
       if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
         File sketchDirectory = new File(

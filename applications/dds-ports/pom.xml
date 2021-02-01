@@ -247,6 +247,7 @@
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
                         <version>${project.version}</version>
+                        <main>hierarchy.Example</main>
                         <splitting>LOCAL</splitting>
                         <messageBroker>DDS</messageBroker>
                     </arguments>

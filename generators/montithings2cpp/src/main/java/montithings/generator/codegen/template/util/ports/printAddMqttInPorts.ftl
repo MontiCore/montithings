@@ -5,7 +5,6 @@ ${tc.signature("comp","config")}
 <#list comp.getIncomingPorts() as p>
     // incoming port ${p.getName()}
     MqttPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}> *${p.getName()} = new MqttPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(this->getInstanceName () + "/${p.getName()}");
-    ${p.getName()}->subscribe(this->getInstanceName () + "/${p.getName()}");
     getPort${p.getName()?cap_first} ()->attach (this);
     this->addInPort${p.getName()?cap_first} (${p.getName()});
 

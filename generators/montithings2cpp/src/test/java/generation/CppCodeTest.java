@@ -47,6 +47,7 @@ public class CppCodeTest {
     params.setHwcTemplatePath(Paths.get(HWCPATH.toString(),packageName));
     params.setHwcPath(HWCPATH.toFile());
     params.setProjectVersion("unspecified");
+    params.setMainComponent("hierarchy.Example");
     return params;
   }
 

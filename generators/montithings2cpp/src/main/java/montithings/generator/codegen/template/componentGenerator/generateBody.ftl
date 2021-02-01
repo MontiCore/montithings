@@ -13,7 +13,7 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
         ${tc.includeArgs("template.util.subcomponents.printMethodDefinitions", [comp, config])}
     </#if>
 
-    <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)>
+    <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
         ${tc.includeArgs("template.componentGenerator.printRun", [comp, compname, className])}
     </#if>
     ${tc.includeArgs("template.componentGenerator.printComputeDecomposed", [comp, compname, config, className])}

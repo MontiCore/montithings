@@ -47,6 +47,17 @@ public:
    */
   virtual void updateMessageSource () = 0;
 
+  /**
+   * This method is to be implemented by all providers that get messages from
+   * external sources, e.g. through web sockets or CAN bus
+   */
+  virtual void
+  getExternalMessages ()
+  {
+    // Intentionally left empty.
+    // Internal components do not have external message sources
+  }
+
   /* ============================================================ */
   /* ========================= Get Values ======================= */
   /* ============================================================ */
@@ -66,11 +77,7 @@ public:
         return true;
       }
     this->queueMap[requester].second.unlock ();
-    updateMessageSource ();
-    this->queueMap[requester].second.lock ();
-    bool result = this->queueMap[requester].first.front ();
-    this->queueMap[requester].second.unlock ();
-    return result;
+    return false;
   }
 
   /**
@@ -82,6 +89,17 @@ public:
   getCurrentValue (sole::uuid requester)
   {
     updateMessageSource ();
+
+    // pull new message if queue is empty
+    {
+      this->queueMap[requester].second.lock ();
+      T *frontElement = this->queueMap[requester].first.front ();
+      this->queueMap[requester].second.unlock ();
+      if (frontElement == nullptr)
+        {
+          getExternalMessages ();
+        }
+    }
 
     this->queueMap[requester].second.lock ();
     T *frontElement = this->queueMap[requester].first.front ();

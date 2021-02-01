@@ -76,7 +76,7 @@ TimeMode timeMode =
   EVENTBASED
 </#if>;
 <#if comp.isDecomposed()>
-    <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp)>
+    <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
       void run();
     </#if>
     ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}

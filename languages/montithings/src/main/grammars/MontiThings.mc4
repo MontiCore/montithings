@@ -19,7 +19,7 @@ grammar MontiThings extends MontiArc,
       body:ComponentBody
     ;
 
-    MTComponentModifier =  ["interface"]? (["component"] | ["application"]);
+    MTComponentModifier =  ["interface"]? "component";
 
     /* ============================================================ */
     /* ================== ArcElement Insertions =================== */
