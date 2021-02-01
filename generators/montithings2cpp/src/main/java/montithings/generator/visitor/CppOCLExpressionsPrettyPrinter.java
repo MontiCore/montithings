@@ -67,20 +67,22 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
   public void handle (ASTForallExpression node){
     getPrinter().println("[&]() -> bool {");
 
-    //TODO: multiple InDeclarations?
+    if(node.getInDeclarationList().size() > 1){
+      Log.error("Only one InDeclaration is supported for every ForallExpression");
+    }
     String symbolName = node.getInDeclaration(0).getInDeclarationVariable(0).getName();
     String symbolType = printCPPTypeName(node.getInDeclaration(0).getInDeclarationVariable(0).
             getSymbol().getType());
 
     getPrinter().print("std::vector<" + symbolType + "> set = ");
     if(!node.getInDeclaration(0).isPresentExpression()){
-      //TODO: no Expression present
+      Log.error("InDeclarations without Expressions are not supported");
     } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetEnumeration){
       printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
     } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetComprehension){
       printSet((ASTSetComprehension) node.getInDeclaration(0).getExpression());
     } else {
-      //TODO: other expression types
+      Log.error("Only SetEnumerations and SetComprehensions are supported as Expressions in InDeclarations");
     }
     getPrinter().println(";");
 
@@ -106,20 +108,22 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
   public void handle (ASTExistsExpression node){
     getPrinter().println("[&]() -> bool {");
 
-    //TODO: multiple InDeclarations?
+    if(node.getInDeclarationList().size() > 1){
+      Log.error("Only one InDeclaration is supported for every ExistsExpression");
+    }
     String symbolName = node.getInDeclaration(0).getInDeclarationVariable(0).getName();
     String symbolType = printCPPTypeName(node.getInDeclaration(0).getInDeclarationVariable(0).
             getSymbol().getType());
 
     getPrinter().print("std::vector<" + symbolType + "> set = ");
     if(!node.getInDeclaration(0).isPresentExpression()){
-      //TODO: no Expression present
+      Log.error("InDeclarations without Expressions are not supported");
     } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetEnumeration){
       printSet((ASTSetEnumeration) node.getInDeclaration(0).getExpression());
     } else if(node.getInDeclaration(0).getExpression() instanceof ASTSetComprehension){
       printSet((ASTSetComprehension) node.getInDeclaration(0).getExpression());
     } else {
-      //TODO: other expression types
+      Log.error("Only SetEnumerations and SetComprehensions are supported as Expressions in InDeclarations");
     }
     getPrinter().println(";");
 
@@ -145,41 +149,12 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
   public void handle (ASTLetinExpression node){
     getPrinter().print("[&]() -> bool {");
 
-    List<String> varNames = new ArrayList<>();
-    List<String> varTypes = new ArrayList<>();
     for (ASTOCLVariableDeclaration variableDeclaration : node.getOCLVariableDeclarationList()){
       variableDeclaration.accept(getRealThis());
-      if(variableDeclaration.isPresentExpression()){
-        varNames.add(variableDeclaration.getName());
-        varTypes.add(printCPPTypeName(variableDeclaration.getSymbol().getType()));
-      }
-      //TODO: was wenn Expression nicht present?
     }
-    getPrinter().print("return ");
-    getPrinter().print("[&](");
-    //TODO: einfacher? nicht noch eine lambda fkt aufmachen?
-    for (int i = 0; i < varNames.size(); i++){
-      getPrinter().print(varTypes.get(i) + " ");
-      getPrinter().print(varNames.get(i));
-      if(i != varNames.size() - 1){
-        getPrinter().print(", ");
-      }
-    }
-    getPrinter().print(") -> bool {");
-
     getPrinter().print("return (");
     node.getExpression().accept(getRealThis());
     getPrinter().print(");");
-
-    getPrinter().print("}(");
-    for (int i = 0; i < varNames.size(); i++){
-      getPrinter().print(varNames.get(i));
-      if(i != varNames.size() - 1){
-        getPrinter().print(", ");
-      }
-    }
-    getPrinter().print(")");
-    getPrinter().print(";");
 
     getPrinter().print("}()");
   }
@@ -198,25 +173,28 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle (ASTTypeIfExpression node){
+    //TODO: test TypeIfExpression and InstanceOfExpression
+    String varType = printCPPTypeName(node.getNameSymbol().getType());
     getPrinter().print("if (");
     getPrinter().print("std::is_base_of<");
     node.getMCType().accept(getRealThis());
-    getPrinter().print(", " + node.getName() + ">) {");
+    getPrinter().print(", " + varType + ">::value) {");
     //TODO: cast to Base Type
     node.getThenExpression().accept(getRealThis());
-    getPrinter().print("} else {");
+    getPrinter().print(";} else {");
     node.getElseExpression().accept(getRealThis());
-    getPrinter().print("}");
+    getPrinter().print(";}");
   }
 
   @Override
   public void handle (ASTInstanceOfExpression node){
+    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    String expressionType = printCPPTypeName(tc.typeOf(node.getExpression()));
     getPrinter().print("[&]() -> bool {");
     getPrinter().print("return ");
     getPrinter().print("std::is_base_of<");
-    //TODO: naechste Zeile testen
     node.getMCType().accept(getRealThis());
-    getPrinter().print(", " + node.getExpression() + ">;");
+    getPrinter().print(", " + expressionType + ">::value;");
     getPrinter().print("}()");
   }
 
@@ -247,10 +225,11 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle (ASTAnyExpression node){
-    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
-    String type = printCPPTypeName(tc.typeOf(node));
-    getPrinter().print("[&]() -> " + type + "{");
-    getPrinter().print("std::vector<" + type + "> set = ");
+    //TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    //String type = printCPPTypeName(tc.typeOf(node));
+    //TODO: other types than int
+    getPrinter().print("[&]() -> int {");
+    getPrinter().print("std::vector<int> set = ");
     if (node.getExpression() instanceof ASTSetEnumeration){
       printSet((ASTSetEnumeration) node.getExpression());
     }
@@ -260,6 +239,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     else {
       Log.error("Only SetEnumerations or SetComprehensions are allowed in AnyExpressions");
     }
+    getPrinter().print(";");
     getPrinter().print("return set.at(0);");
     getPrinter().print("}()");
   }
@@ -322,7 +302,6 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
         getPrinter().print(" == 0){");
         getPrinter().print("set.push_back(_set_value_range_index);");
         getPrinter().print("}");
-        //wenn ich mit lowerBound addiere / stepSize teilbar
       }
       else {
         getPrinter().print("set.push_back(_set_value_range_index);");
@@ -345,7 +324,6 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       getPrinter().print("), set.end())");
     }
     else {
-      //TODO: support SetVariableDeclaration as well (?)
       Log.error("SetComprehensions in InDeclarations are only supported if the left side is a generator declaration");
     }
   }
@@ -369,5 +347,9 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     }
     getPrinter().print(";");
     getPrinter().print("}");
+  }
+
+  public void handle(ASTOCLTransitiveQualification node){
+    Log.error("OCLTransitiveQualification is not supported");
   }
 }
