@@ -25,7 +25,7 @@
 		<!-- DSLs -->
 		<cd4a.version>6.5.0</cd4a.version>
 		<siunits.version>6.5.0</siunits.version>
-		<montiarc.version>6.5.0-SNAPSHOT</montiarc.version>
+		<montiarc.version>6.5.0</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
 		<monticore.version>6.5.0.1</monticore.version>
