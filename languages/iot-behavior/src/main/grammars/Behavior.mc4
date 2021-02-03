@@ -1,0 +1,17 @@
+// (c) https://github.com/MontiCore/monticore
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * This grammar can be used to define sets of values using, e.g., single values,
+ * ranges of values, or regular expressions.
+ */
+component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
+                                         de.monticore.statements.MCCommonStatements
+{
+    AfterStatement implements MCStatement =
+        "after" NatLiteral (seconds:"sec"|milliseconds:"msec"|minutes:"min") MCJavaBlock;
+
+    EveryStatement implements MCStatement =
+        "every" NatLiteral (seconds:"sec"|milliseconds:"msec"|minutes:"min") MCJavaBlock;
+}
