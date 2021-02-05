@@ -46,6 +46,19 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+            <classifier>grammars</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+        </dependency>
+
         <!-- Java -->
 
         <dependency>

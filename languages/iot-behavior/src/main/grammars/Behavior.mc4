@@ -3,15 +3,16 @@
 /* Alpha-version: This is intended to become a MontiCore stable grammar. */
 
 /**
- * This grammar can be used to define sets of values using, e.g., single values,
- * ranges of values, or regular expressions.
+ * This grammar is supposed to extend the functionality for writing
+ * behavior for components directly into the MontiThings models
  */
 component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
-                                         de.monticore.statements.MCCommonStatements
+                                         de.monticore.statements.MCCommonStatements,
+                                         de.monticore.SIUnitLiterals
 {
     AfterStatement implements MCStatement =
-        "after" NatLiteral (seconds:"sec"|milliseconds:"msec"|minutes:"min") MCJavaBlock;
+        "after" SIUnitLiteral MCJavaBlock;
 
-    EveryStatement implements MCStatement =
-        "every" NatLiteral (seconds:"sec"|milliseconds:"msec"|minutes:"min") MCJavaBlock;
+    symbol EveryStatement implements MCStatement =
+        (Name ":")? "every" SIUnitLiteral MCJavaBlock;
 }
