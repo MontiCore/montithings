@@ -349,6 +349,12 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().print("}");
   }
 
+  @Override
+  public void handle(ASTOCLArrayQualification node){
+    Log.error("OCLArrayQualification is not supported");
+  }
+
+  @Override
   public void handle(ASTOCLTransitiveQualification node){
     Log.error("OCLTransitiveQualification is not supported");
   }
