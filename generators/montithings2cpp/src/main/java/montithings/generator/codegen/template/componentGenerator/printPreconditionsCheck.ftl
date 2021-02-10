@@ -20,8 +20,9 @@ ${tc.signature("comp","compname")}
     !(
     ${Utils.printExpression(statement.guard)}
     )) {
-    <#if ComponentHelper.getCatch(comp, statement)??>
-        ${ComponentHelper.printJavaBlock(ComponentHelper.getCatch(comp, statement).get().handler)}
+    <#assign catch = ComponentHelper.getCatch(comp, statement)>
+    <#if catch.isPresent()>
+      ${ComponentHelper.printJavaBlock(catch.get().handler)}
     <#else>
         std::stringstream error;
         error << "Violated precondition ${Utils.printExpression(statement.guard, false)} on component ${comp.packageName}.${compname}" << std::endl;
