@@ -17,10 +17,10 @@ ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResult
 <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>
 <#list ComponentHelper.getArcFieldVariables(comp) as field>
-${ComponentHelper.printCPPTypeName(field.getType())} ${field.getName()}__at__pre = ${field.getName()};
+  ${ComponentHelper.printCPPTypeName(field.getType())} ${field.getName()}__at__pre = ${field.getName()};
 </#list>
 ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
-${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute(input);
+${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute(${Identifier.getInputName()});
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
   <#assign varName = var.getName()>
   ${varName} = ${Identifier.getBehaviorImplName()}.get${varName?cap_first}();

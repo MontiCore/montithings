@@ -1,13 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign preconditions = ComponentHelper.getPreconditions(comp)>
 <#list preconditions as statement>
     if (
     <#list ComponentHelper.getPortsInGuardExpression(statement.guard) as port>
         <#if !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.getName())>
-            input.get${port.getName()?cap_first}()
+            ${Identifier.getInputName()}.get${port.getName()?cap_first}()
         <#else>
             true // presence of value on port ${port.getName()} not checked as it is compared to NoData
         </#if>
@@ -29,16 +30,16 @@ ${tc.signature("comp","compname")}
         error << "Input port values: " << std::endl;
         <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort>
           <#if inPort.isIncoming()>
-            if (input.get${inPort.getName()?cap_first} ().has_value()) {
-            error << "Port \"${inPort.getName()}\": " << input.get${inPort.getName()?cap_first} ().value() << std::endl;
+            if (${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().has_value()) {
+            error << "Port \"${inPort.getName()}\": " << ${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().value() << std::endl;
             } else {
             error << "Port \"${inPort.getName()}\": No data." << std::endl;
             }
           </#if>
         </#list>
         <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
-            if (input.get${inPort.getName()?cap_first} ().has_value()) {
-            error << "Port \"${inPort.getName()}\": " << input.get${inPort.getName()?cap_first} () << std::endl;
+            if (${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().has_value()) {
+            error << "Port \"${inPort.getName()}\": " << ${Identifier.getInputName()}.get${inPort.getName()?cap_first} () << std::endl;
             } else {
             error << "Port \"${inPort.getName()}\": No data." << std::endl;
             }

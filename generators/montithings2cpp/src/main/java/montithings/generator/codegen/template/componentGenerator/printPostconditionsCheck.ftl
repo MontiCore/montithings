@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
     <#assign postconditions = ComponentHelper.getPostconditions(comp)>
     <#list postconditions as statement>
@@ -8,9 +9,9 @@ ${tc.signature("comp","compname")}
         <#list ComponentHelper.getPortsInGuardExpression(statement.guard) as port>
             <#if !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.getName())>
                 <#if port.isIncoming()>
-                  input.get${port.getName()?cap_first}()
+                  ${Identifier.getInputName()}.get${port.getName()?cap_first}()
                 <#else>
-                  result.get${port.getName()?cap_first}()
+                  ${Identifier.getResultName()}.get${port.getName()?cap_first}()
                 </#if>
             <#else>
               true // presence of value on port ${port.getName()} not checked as it is compared to NoData
@@ -33,23 +34,23 @@ ${tc.signature("comp","compname")}
           error << "Port values: " << std::endl;
             <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort>
               <#if inPort.isIncoming()>
-                if (input.get${inPort.getName()?cap_first} ().has_value()) {
-                error << "In port \"${inPort.getName()}\": " << input.get${inPort.getName()?cap_first} ().value() << std::endl;
+                if (${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().has_value()) {
+                error << "In port \"${inPort.getName()}\": " << ${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().value() << std::endl;
                 } else {
                 error << "In port \"${inPort.getName()}\": No data." << std::endl;
                 }
               </#if>
             </#list>
             <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
-              if (input.get${inPort.getName()?cap_first} ().has_value()) {
-              error << "In port \"${inPort.getName()}\": " << input.get${inPort.getName()?cap_first} () << std::endl;
+              if (${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().has_value()) {
+              error << "In port \"${inPort.getName()}\": " << ${Identifier.getInputName()}.get${inPort.getName()?cap_first} () << std::endl;
               } else {
               error << "In port \"${inPort.getName()}\": No data." << std::endl;
               }
             </#list>
             <#list comp.getAllOutgoingPorts() as outPort>
-              if (result.get${outPort.getName()?cap_first} ().has_value()) {
-              error << "Out port \"${outPort.getName()}\": " << result.get${outPort.getName()?cap_first} ().value() << std::endl;
+              if (${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().has_value()) {
+              error << "Out port \"${outPort.getName()}\": " << ${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().value() << std::endl;
               } else {
               error << "Out port \"${outPort.getName()}\": No data." << std::endl;
               }
