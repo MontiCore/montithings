@@ -21,6 +21,10 @@ ${ComponentHelper.printCPPTypeName(field.getType())} ${field.getName()}__at__pre
 </#list>
 ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute(input);
+<#list ComponentHelper.getVariablesAndParameters(comp) as var>
+  <#assign varName = var.getName()>
+  ${varName} = ${Identifier.getBehaviorImplName()}.get${varName?cap_first}();
+</#list>
 <#list comp.getOutgoingPorts() as port>
 <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>

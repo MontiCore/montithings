@@ -770,6 +770,15 @@ public class ComponentHelper {
     return printer.prettyprint(block);
   }
 
+  public static List<VariableSymbol> getVariablesAndParameters(ComponentTypeSymbol comp) {
+    List<VariableSymbol> fields = ComponentHelper.getFields(comp);
+    List<VariableSymbol> params = comp.getParameters();
+    fields.removeAll(params);
+    List<VariableSymbol> vars = new ArrayList<>(params);
+    vars.addAll(fields);
+    return vars;
+  }
+
   /* ============================================================ */
   /* =================== MontiThings Adapter ==================== */
   /* ============================================================ */
