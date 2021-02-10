@@ -28,11 +28,13 @@ ${tc.signature("comp","compname")}
         error << "Violated precondition ${Utils.printExpression(statement.guard, false)} on component ${comp.packageName}.${compname}" << std::endl;
         error << "Input port values: " << std::endl;
         <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort>
+          <#if inPort.isIncoming()>
             if (input.get${inPort.getName()?cap_first} ().has_value()) {
             error << "Port \"${inPort.getName()}\": " << input.get${inPort.getName()?cap_first} ().value() << std::endl;
             } else {
             error << "Port \"${inPort.getName()}\": No data." << std::endl;
             }
+          </#if>
         </#list>
         <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
             if (input.get${inPort.getName()?cap_first} ().has_value()) {
