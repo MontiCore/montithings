@@ -194,7 +194,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
         getPrinter().print(")");
       }
       else {
-        Log.error("Expressions at the right side of SetComprehensions are not supported");
+        Log.error("Expressions at the left side of SetComprehensions are not supported");
       }
     }
   }

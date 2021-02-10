@@ -45,6 +45,7 @@ public class MontiThingsCoCos {
       .addCoCo(new PortsInBatchStatementAreIncoming())
       .addCoCo(SITypesTypeCheckCoCo.getCoCo())
       .addCoCo(new NameExpressionsAreResolvable())
+      .addCoCo(new OCLExpressionsValid())
       ;
   }
 }

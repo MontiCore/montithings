@@ -221,6 +221,9 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     String type = printCPPTypeName(node.getInit().getSymbol().getType());
     getPrinter().print("[&]() -> " + type + "{");
     getPrinter().print("std::vector<" + type + "> set = ");
+    if (!node.getIteration().isPresentExpression()){
+      Log.error("InDeclarations without Expressions are not supported");
+    }
     if (node.getIteration().getExpression() instanceof ASTSetEnumeration){
       printSet((ASTSetEnumeration) node.getIteration().getExpression());
     }
@@ -228,7 +231,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       printSet((ASTSetComprehension) node.getIteration().getExpression());
     }
     else {
-      Log.error("Only SetEnumerations or SetComprehensions are allow  ed in the Iterator of IterateExpressions");
+      Log.error("Only SetEnumerations or SetComprehensions are allowed in the Iterator of IterateExpressions");
     }
     getPrinter().print(";");
     node.getInit().accept(getRealThis());
