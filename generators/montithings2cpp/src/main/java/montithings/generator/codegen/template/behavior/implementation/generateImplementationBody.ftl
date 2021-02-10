@@ -13,9 +13,9 @@ ${tc.signature("comp","compname","className")}
     ${Utils.printTemplateArguments(comp)}
     ${compname}Result${generics} ${className}${generics}::compute(${compname}Input${generics}
     ${Identifier.getInputName()}){
-    ${compname}Result${generics} result;
+    ${compname}Result${generics} ${Identifier.getResultName()};
     ${ComponentHelper.printStatementBehavior(comp)}
-    return result;
+    return ${Identifier.getResultName()};
     }
 </#if>
 

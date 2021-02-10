@@ -62,7 +62,7 @@ public class Identifier {
     return false;
   }
 
-  private void checkIdentifiers(ComponentTypeSymbol comp) {
+  protected void checkIdentifiers(ComponentTypeSymbol comp) {
     if (containsIdentifier("result", comp)) {
       resultName = "r__result";
     }
