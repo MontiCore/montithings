@@ -27,16 +27,25 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle(ASTIfThenElseExpression node) {
+    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    String expressionType = printCPPTypeName(tc.typeOf(node));
+
+    getPrinter().print("[&]() -> " + expressionType + " {");
+
     getPrinter().print("if (");
     node.getCondition().accept(getRealThis());
     getPrinter().println(") {");
+    getPrinter().print("return ");
     node.getThenExpression().accept(getRealThis());
-    getPrinter().println();
+    getPrinter().println(";");
     getPrinter().println(" }");
     getPrinter().println("else {");
+    getPrinter().print("return ");
     node.getElseExpression().accept(getRealThis());
-    getPrinter().println();
+    getPrinter().println(";");
     getPrinter().println("}");
+
+    getPrinter().print("}()");
   }
 
   @Override
@@ -173,17 +182,26 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   @Override
   public void handle (ASTTypeIfExpression node){
+    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    String expressionType = printCPPTypeName(tc.typeOf(node.getThenExpression()));
+
+    getPrinter().print("[&]() -> " + expressionType + " {");
+
     //TODO: test TypeIfExpression and InstanceOfExpression
     String varType = printCPPTypeName(node.getNameSymbol().getType());
     getPrinter().print("if (");
     getPrinter().print("std::is_base_of<");
     node.getMCType().accept(getRealThis());
     getPrinter().print(", " + varType + ">::value) {");
+    getPrinter().print("return ");
     //TODO: cast to Base Type
     node.getThenExpression().accept(getRealThis());
-    getPrinter().print(";} else {");
+    getPrinter().print("; } else {");
+    getPrinter().print("return ");
     node.getElseExpression().accept(getRealThis());
-    getPrinter().print(";}");
+    getPrinter().print("; }");
+
+    getPrinter().print("}()");
   }
 
   @Override
