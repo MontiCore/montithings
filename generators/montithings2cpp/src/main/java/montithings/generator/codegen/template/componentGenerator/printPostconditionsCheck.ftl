@@ -7,7 +7,7 @@ ${tc.signature("comp","compname")}
       if (
         <#list ComponentHelper.getPortsInGuardExpression(statement.guard) as port>
             <#if !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.getName())>
-                <#if port.isIncoming>
+                <#if port.isIncoming()>
                   input.get${port.getName()?cap_first}()
                 <#else>
                   result.get${port.getName()?cap_first}()
