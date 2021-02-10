@@ -2,6 +2,7 @@
 package montithings.cocos;
 
 import arcbasis._cocos.*;
+import behavior.cocos.SIUnitLiteralsDescribeTime;
 import de.monticore.siunittypes4computing._cocos.PrimitiveIsNumericType;
 import montithings._cocos.MontiThingsCoCoChecker;
 import portextensions.cocos.PortsInBatchStatementAreIncoming;
@@ -45,6 +46,7 @@ public class MontiThingsCoCos {
       .addCoCo(new PortsInBatchStatementAreIncoming())
       .addCoCo(SITypesTypeCheckCoCo.getCoCo())
       .addCoCo(new NameExpressionsAreResolvable())
+      .addCoCo(new SIUnitLiteralsDescribeTime())
       ;
   }
 }
