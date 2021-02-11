@@ -7,29 +7,18 @@
  * ranges of values, or regular expressions.
  */
 component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
-                                         de.monticore.types.MCBasicTypes,
-                                         de.monticore.expressions.ExpressionsBasis
+                                         de.monticore.ocl.SetExpressions
 {
-    interface SetAllowedValues;
-
-    // list of allowed values
-    SetValueList implements SetAllowedValues =
-      (Expression || ",")+
-    ;
-
     // range of allowed values (optionally with stepsize)
-    SetValueRange implements SetAllowedValues =
+    @Override
+    SetValueRange implements SetCollectionItem =
       lowerBound:Expression
       (":" stepsize:Expression)?
       ":" upperBound:Expression
     ;
 
     // RegEx to which value has to conform
-    SetValueRegEx implements SetAllowedValues =
+    SetValueRegEx implements SetCollectionItem =
       "format" ":" format:StringLiteral
-    ;
-
-    SetDefinition implements Expression =
-      "{" (SetAllowedValues || ",")+ "}"
     ;
 }

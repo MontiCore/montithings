@@ -16,6 +16,7 @@
     <module>class-diagrams</module>
     <module>interface-components</module>
     <module>interface-componentsMTB</module>
+    <module>ocl</module>
     <module>pre-postconditions</module>
     <module>si-units</module>
   </modules>

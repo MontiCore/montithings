@@ -1,20 +1,25 @@
 package montithings._symboltable;
 
-import arcbasis._symboltable.ArcBasisSymbolTableCreator;
+import de.monticore.ocl.oclexpressions._symboltable.OCLExpressionsSymbolTableCreator;
+
+import de.monticore.ocl.setexpressions._symboltable.SetExpressionsSymbolTableCreator;
+import montithings.types.check.DeriveSymTypeOfOCLCombineExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrettyPrinter;
-import de.monticore.siunittypes4math.prettyprint.SIUnitTypes4MathPrettyPrinter;
-import de.monticore.types.check.SynthesizeSymTypeFromSIUnitTypes4Computing;
 
 public class MontiThingsSymbolTableCreatorDelegator extends MontiThingsSymbolTableCreatorDelegatorTOP {
 
   public MontiThingsSymbolTableCreatorDelegator(){
     super();
+    ((OCLExpressionsSymbolTableCreator) getOCLExpressionsVisitor().get()).setTypeVisitor(new DeriveSymTypeOfOCLCombineExpression());
+    ((SetExpressionsSymbolTableCreator) getSetExpressionsVisitor().get()).setTypeVisitor(new DeriveSymTypeOfOCLCombineExpression());
   }
 
   public MontiThingsSymbolTableCreatorDelegator(montithings._symboltable.IMontiThingsGlobalScope globalScope) {
     super(globalScope);
     ((ArcBasisSTCForMontiThings)getArcBasisVisitor().get()).setTypeVisitor(
             new SIUnitTypes4ComputingPrettyPrinter(new IndentPrinter()));
+    ((OCLExpressionsSymbolTableCreator) getOCLExpressionsVisitor().get()).setTypeVisitor(new DeriveSymTypeOfOCLCombineExpression());
+    ((SetExpressionsSymbolTableCreator) getSetExpressionsVisitor().get()).setTypeVisitor(new DeriveSymTypeOfOCLCombineExpression());
   }
 }

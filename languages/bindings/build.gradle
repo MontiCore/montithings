@@ -49,6 +49,7 @@ dependencies {
   grammar "montiarc.languages:montiarc-fe:$montiarc_version:$grammars_classifier"
   grammar "montiarc.languages:arc-fe:$montiarc_version:$grammars_classifier"
   grammar "de.monticore:siunits:$siunits_version:$grammars_classifier"
+  grammar "de.monticore.lang:ocl:$ocl_version:$grammars_classifier"
   grammar files(project(":languages:monticore-extensions").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:montiarc-extensions").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:error-handling").projectDir.toPath().resolve("src/main/grammars"))
@@ -61,6 +62,7 @@ dependencies {
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.monticore.lang:cd4analysis:1.6.0"
   implementation "de.monticore:siunits:$siunits_version"
+  implementation "de.monticore.lang:ocl:$ocl_version"
   implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
   implementation "com.google.guava:guava:$guava_version"
   implementation "org.antlr:antlr4-runtime:$antlr_version"

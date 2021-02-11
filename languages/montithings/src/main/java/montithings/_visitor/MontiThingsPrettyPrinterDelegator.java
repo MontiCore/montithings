@@ -9,10 +9,9 @@ import conditionbasis._visitor.ConditionBasisPrettyPrinter;
 import conditioncatch._visitor.ConditionCatchPrettyPrinter;
 import de.monticore.MCCommonLiteralsPrettyPrinter;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
-import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
-import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
-import de.monticore.expressions.prettyprint.SetExpressionsPrettyPrinter;
+import de.monticore.expressions.prettyprint.*;
+import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
+import de.monticore.ocl.setexpressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.prettyprint.MCBasicsPrettyPrinter;
 import de.monticore.siunitliterals.prettyprint.SIUnitLiteralsPrettyPrinter;
@@ -53,6 +52,7 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
     setConditionCatchVisitor(new ConditionCatchPrettyPrinter(printer));
     setSetDefinitionsVisitor(new SetDefinitionsPrettyPrinter(printer));
     setSetExpressionsVisitor(new SetExpressionsPrettyPrinter(printer));
+    setOCLExpressionsVisitor(new OCLExpressionsPrettyPrinter(printer));
 
     setMCCommonLiteralsVisitor(new MCCommonLiteralsPrettyPrinter(printer));
     setCommonExpressionsVisitor(new CommonExpressionsPrettyPrinter(printer));
@@ -89,6 +89,7 @@ public class MontiThingsPrettyPrinterDelegator extends MontiThingsDelegatorVisit
     setConditionCatchVisitor(new ConditionCatchPrettyPrinter(printer));
     setSetDefinitionsVisitor(new SetDefinitionsPrettyPrinter(printer));
     setSetExpressionsVisitor(new SetExpressionsPrettyPrinter(printer));
+    setOCLExpressionsVisitor(new OCLExpressionsPrettyPrinter(printer));
 
     setMCCommonLiteralsVisitor(new MCCommonLiteralsPrettyPrinter(printer));
     setCommonExpressionsVisitor(new CommonExpressionsPrettyPrinter(printer));

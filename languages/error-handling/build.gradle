@@ -43,10 +43,12 @@ configurations { grammar }
 
 dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+  grammar "de.monticore.lang:ocl:$ocl_version:$grammars_classifier"
 
   implementation "de.monticore:monticore-generator:$monticore_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
+  implementation "de.monticore.lang:ocl:$ocl_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version:tests"
 

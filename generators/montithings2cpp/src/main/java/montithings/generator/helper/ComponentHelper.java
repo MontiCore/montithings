@@ -770,6 +770,15 @@ public class ComponentHelper {
     return printer.prettyprint(block);
   }
 
+  public static List<VariableSymbol> getVariablesAndParameters(ComponentTypeSymbol comp) {
+    List<VariableSymbol> fields = ComponentHelper.getFields(comp);
+    List<VariableSymbol> params = comp.getParameters();
+    fields.removeAll(params);
+    List<VariableSymbol> vars = new ArrayList<>(params);
+    vars.addAll(fields);
+    return vars;
+  }
+
   /* ============================================================ */
   /* =================== MontiThings Adapter ==================== */
   /* ============================================================ */
@@ -895,6 +904,16 @@ public class ComponentHelper {
    */
   public static List<VariableSymbol> getFields(ComponentTypeSymbol component) {
     return component.getFields().stream().collect(Collectors.toList());
+  }
+
+  public static List<VariableSymbol> getArcFieldVariables(ComponentTypeSymbol component){
+    List<VariableSymbol> arcFieldSymbols = new ArrayList<>();
+    for (VariableSymbol symbol : getFields(component)){
+      if(symbol.isPresentAstNode() && symbol.getAstNode() instanceof ASTArcField){
+        arcFieldSymbols.add(symbol);
+      }
+    }
+    return arcFieldSymbols;
   }
 
   public static String printStatementBehavior(ComponentTypeSymbol component) {

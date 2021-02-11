@@ -51,6 +51,12 @@ ${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, com
 
 void setInstanceName (const std::string &instanceName);
 
+<#list ComponentHelper.getVariablesAndParameters(comp) as var>
+  <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+  ${type} get${var.getName()?cap_first}() const;
+  void set${var.getName()?cap_first}(${type});
+</#list>
+
 virtual void setup ();
 <#if config.getMessageBroker().toString() == "MQTT">
   virtual void requestState ();
