@@ -5,25 +5,25 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.expressions.setexpressions._ast.*;
-import de.monticore.expressions.setexpressions._visitor.SetExpressionsVisitor;
+import de.monticore.ocl.setexpressions._ast.*;
+import de.monticore.ocl.setexpressions._visitor.SetExpressionsVisitor;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunits._ast.ASTSIUnit;
 import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import de.monticore.siunittypes4computing._visitor.SIUnitTypes4ComputingVisitor;
 import de.monticore.siunittypes4math._visitor.SIUnitTypes4MathVisitor;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.logging.Log;
 import montiarc._symboltable.IMontiArcScope;
 import montithings._ast.ASTIsPresentExpression;
+import montithings._auxiliary.SetExpressionsMillForMontiThings;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsPrettyPrinter;
 import montithings._visitor.MontiThingsVisitor;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import portextensions._ast.ASTSyncStatement;
-import setdefinitions._ast.ASTSetDefinition;
-import setdefinitions._ast.ASTSetValueList;
 import setdefinitions._ast.ASTSetValueRange;
 import setdefinitions._ast.ASTSetValueRegEx;
 import setdefinitions._visitor.SetDefinitionsVisitor;
@@ -51,24 +51,6 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   Stack<ASTExpression> expressions = new Stack<>();
 
   @Override
-  public void handle(ASTIsInExpression node) {
-    CommentPrettyPrinter.printPreComments(node, getPrinter());
-    expressions.push(node.getElem());
-    node.getSet().accept(getRealThis());
-    expressions.pop();
-    CommentPrettyPrinter.printPostComments(node, getPrinter());
-  }
-
-  @Override
-  public void handle(montithings._ast.ASTSetInExpression node) {
-    CommentPrettyPrinter.printPreComments(node, getPrinter());
-    expressions.push(node.getElem());
-    node.getSet().accept(getRealThis());
-    expressions.pop();
-    CommentPrettyPrinter.printPostComments(node, getPrinter());
-  }
-
-  @Override
   public void handle(ASTSetInExpression node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
     expressions.push(node.getElem());
@@ -78,7 +60,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTUnionExpressionInfix node) {
+  public void handle(ASTUnionExpression node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
     getPrinter().print("(");
     node.getLeft().accept(getRealThis());
@@ -91,7 +73,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTIntersectionExpressionInfix node) {
+  public void handle(ASTIntersectionExpression node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
     getPrinter().print("(");
     node.getLeft().accept(getRealThis());
@@ -114,17 +96,17 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTUnionExpressionPrefix node) {
-    Log.error("0xMT822 UnionExpression is not supported.");
+  public void handle(ASTSetUnionExpression node) {
+    Log.error("0xMT822 SetUnionExpression is not supported.");
   }
 
   @Override
-  public void handle(ASTIntersectionExpressionPrefix node) {
-    Log.error("0xMT823 IntersectionExpression is not supported.");
+  public void handle(ASTSetIntersectionExpression node) {
+    Log.error("0xMT823 SetIntersectionExpression is not supported.");
   }
 
   @Override
-  public void handle(ASTSetValueList node) {
+  public void handle(ASTSetValueItem node) {
     for (int i = 0; i < node.sizeExpressions(); i++) {
       getPrinter().print("(");
       expressions.peek().accept(getRealThis());
@@ -181,15 +163,63 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTSetDefinition node) {
-    for (int i = 0; i < node.sizeSetAllowedValuess(); i++) {
+  public void handle(ASTSetEnumeration node) {
+    for (int i = 0; i < node.sizeSetCollectionItems(); i++) {
       getPrinter().print("(");
-      node.getSetAllowedValues(i).accept(getRealThis());
+      node.getSetCollectionItem(i).accept(getRealThis());
       getPrinter().print(")");
-      if (i < node.sizeSetAllowedValuess() - 1) {
+      if (i < node.sizeSetCollectionItems() - 1) {
         getPrinter().print(" || ");
       }
     }
+  }
+
+  @Override
+  public void handle(ASTSetComprehension node) {
+    if (!expressions.isEmpty()){
+      //Called from SetInExpression
+      if(node.getLeft().isPresentSetVariableDeclaration()) {
+        //check expressions on the right side, if they are the only restrictions,
+        //this method only gets called after handling SetInExpressions
+        printSetComprehensionExpressionsForSetInExpression(node, node.getLeft().getSetVariableDeclaration().getSymbol());
+      }
+      else if(node.getLeft().isPresentGeneratorDeclaration()){
+        //check expressions and check that element is in set of GeneratorDeclaration
+        printSetComprehensionExpressionsForSetInExpression(node, node.getLeft().getGeneratorDeclaration().getSymbol());
+        getPrinter().print(" && ");
+        getPrinter().print("(");
+        ASTSetInExpression expr = SetExpressionsMillForMontiThings.setInExpressionBuilder().setOperator("isin")
+                .setElem(expressions.peek()).setSet(node.getLeft().getGeneratorDeclaration().getExpression()).build();
+        expr.accept(getRealThis());
+        getPrinter().print(")");
+      }
+      else {
+        Log.error("Expressions at the left side of SetComprehensions are not supported");
+      }
+    }
+  }
+
+  private void printSetComprehensionExpressionsForSetInExpression(ASTSetComprehension setComprehension, VariableSymbol symbol) {
+    String varName = symbol.getName();
+    String varType = symbol.getType().getTypeInfo().getName();
+    getPrinter().print("[&] (" + varType +  " " + varName + ") { return ");
+
+    for (int i = 0; i < setComprehension.sizeSetComprehensionItems(); i++){
+      if(!(setComprehension.getSetComprehensionItem(i).isPresentExpression())){
+        Log.error("Only expressions are supported at the right side of set comprehensions");
+      }
+      getPrinter().print("(");
+      setComprehension.getSetComprehensionItem(i).getExpression().accept(getRealThis());
+      getPrinter().print(")");
+
+      if (i != setComprehension.sizeSetComprehensionItems() - 1){
+        getPrinter().print("&&");
+      }
+    }
+    getPrinter().print(";");
+    getPrinter().print("}(");
+    expressions.peek().accept(getRealThis());
+    getPrinter().print(")");
   }
 
   @Override

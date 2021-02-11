@@ -12,17 +12,24 @@ std::lock_guard${"<std::mutex>"} guard(computeMutex);
 if (shouldCompute())
 {
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
-${compname}Result${Utils.printFormalTypeParameters(comp)} result;
+${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 <#list comp.incomingPorts as port>
 <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>
+<#list ComponentHelper.getArcFieldVariables(comp) as field>
+  ${ComponentHelper.printCPPTypeName(field.getType())} ${field.getName()}__at__pre = ${field.getName()};
+</#list>
 ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
-result = ${Identifier.getBehaviorImplName()}.compute(input);
+${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute(${Identifier.getInputName()});
+<#list ComponentHelper.getVariablesAndParameters(comp) as var>
+  <#assign varName = var.getName()>
+  ${varName} = ${Identifier.getBehaviorImplName()}.get${varName?cap_first}();
+</#list>
 <#list comp.getOutgoingPorts() as port>
 <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>
 ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, compname])}
-setResult(result);
+setResult(${Identifier.getResultName()});
 <#if ComponentHelper.retainState(comp)>
   json state = ${Identifier.getBehaviorImplName()}.serializeState ();
   <#if config.getMessageBroker().toString() == "MQTT">

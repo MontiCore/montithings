@@ -148,11 +148,7 @@ public class Utils {
     StringBuilder s = new StringBuilder();
 
     // Sort to print params before fields
-    List<VariableSymbol> fields = ComponentHelper.getFields(comp);
-    List<VariableSymbol> params = comp.getParameters();
-    fields.removeAll(params);
-    List<VariableSymbol> vars = new ArrayList<>(params);
-    vars.addAll(fields);
+    List<VariableSymbol> vars = ComponentHelper.getVariablesAndParameters(comp);
 
     for (VariableSymbol variable : vars) {
       if (variable.getAstNode() instanceof ASTArcField) {
