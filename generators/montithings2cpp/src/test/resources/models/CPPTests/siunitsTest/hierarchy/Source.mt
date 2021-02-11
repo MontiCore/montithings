@@ -2,7 +2,7 @@
 package hierarchy;
 
 component Source {
-  int lastValue = 0;
+  double lastValue = 0.0;
 
   port out m/s<double> value;
 }
