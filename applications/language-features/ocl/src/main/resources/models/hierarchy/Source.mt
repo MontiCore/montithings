@@ -14,7 +14,7 @@ component Source {
     }
   }
 
-  post lastValue % 3 == 0;
+  post value % 3 == 0;
   post lastValue == lastValue@pre + 1;
 
   post exists i in {x in {1:100} | x % 3 == 0}:
