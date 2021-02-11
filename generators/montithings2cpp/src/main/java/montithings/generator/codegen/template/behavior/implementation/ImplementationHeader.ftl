@@ -17,6 +17,8 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include "json/json.hpp"
 #include ${"<Utils.h>"}
 #include ${"<fstream>"}
+#include ${"<future>"}
+#include ${"<thread>"}
 ${Utils.printIncludes(comp,config)}
 <#if config.getMessageBroker().toString() == "MQTT">
   #include "MqttClient.h"
