@@ -54,7 +54,9 @@ dependencies {
   grammar files(project(":languages:montiarc-extensions").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:error-handling").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:montithings").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:iot-behavior").projectDir.toPath().resolve("src/main/grammars"))
 
+  implementation project(":languages:iot-behavior")
   implementation project(":languages:montithings")
   implementation project(":languages:montiarc-extensions")
   implementation project(":languages:monticore-extensions")
