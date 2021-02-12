@@ -7,8 +7,8 @@
  * behavior for components directly into the MontiThings models
  */
 component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
-                                         de.monticore.statements.MCCommonStatements,
-                                         de.monticore.SIUnitLiterals
+                                   de.monticore.statements.MCCommonStatements,
+                                   de.monticore.SIUnitLiterals
 {
     AfterStatement implements MCStatement =
         "after" SIUnitLiteral MCJavaBlock;
