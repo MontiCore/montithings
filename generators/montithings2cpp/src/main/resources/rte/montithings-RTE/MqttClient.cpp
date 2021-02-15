@@ -3,9 +3,10 @@
 
 #include "MqttClient.h"
 #include "easyloggingpp/easylogging++.h"
+#define MQTT_LOG_ID "MQTT"
 
 MqttClient *
-MqttClient::instance (const std::string& brokerHostname, int brokerPort)
+MqttClient::instance (const std::string &brokerHostname, int brokerPort)
 {
   static MqttClient *_instance = new MqttClient (brokerHostname, brokerPort);
   return _instance;
@@ -16,28 +17,29 @@ MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort)
   // Log version number
   int major, minor, revision;
   mosquitto_lib_version (&major, &minor, &revision);
-  LOG(DEBUG) << "Using libmosquitto " << major << "." << minor << "." << revision;
+  CLOG (DEBUG, MQTT_LOG_ID) << "Using libmosquitto " << major << "." << minor << "." << revision;
 
   // Initialize
   mosquitto_lib_init ();
 
   // Create instance
   mosq = mosquitto_new (nullptr, true, nullptr);
-  if (!mosq) throw std::runtime_error ("Failed to initialize libmosquitto");
+  if (!mosq)
+    {
+      throw std::runtime_error ("Failed to initialize libmosquitto");
+    }
 
   // Set callbacks
-  mosquitto_connect_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, int result)
-  {
+  mosquitto_connect_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, int result) {
     MqttClient::instance ()->onConnect (mosquitto, obj, result);
   });
-  mosquitto_disconnect_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, int result)
-  {
+  mosquitto_disconnect_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, int result) {
     MqttClient::instance ()->onDisconnect (mosquitto, obj, result);
   });
-  mosquitto_message_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, const struct mosquitto_message *message)
-  {
-    MqttClient::instance ()->onMessage (mosquitto, obj, message);
-  });
+  mosquitto_message_callback_set (
+      mosq, [] (struct mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) {
+        MqttClient::instance ()->onMessage (mosquitto, obj, message);
+      });
 
   // Connect to MQTT broker
   int keepalive = 60;
@@ -60,8 +62,7 @@ MqttClient::publish (const std::string &topic, const std::string &message)
 {
   mosquitto_publish (mosq,
                      nullptr, // could be used to set a msg id
-                     topic.c_str (), message.length (), message.c_str (),
-                     qos, false);
+                     topic.c_str (), message.length (), message.c_str (), qos, false);
 }
 
 void
@@ -70,29 +71,25 @@ MqttClient::subscribe (std::string topic)
   int returnCode = mosquitto_subscribe (mosq, nullptr, topic.c_str (), qos);
   switch (returnCode)
     {
-      case MOSQ_ERR_SUCCESS:
-        LOG(DEBUG) << "Connected to MQTT topic "
-                  << topic;
+    case MOSQ_ERR_SUCCESS:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Connected to MQTT topic " << topic;
       break;
-      case MOSQ_ERR_INVAL:
-        LOG(DEBUG) << "Invalid Input Parameters. Could not connect to MQTT topic "
-                  << topic;
+    case MOSQ_ERR_INVAL:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Invalid Input Parameters. Could not connect to MQTT topic "
+                                << topic;
       break;
-      case MOSQ_ERR_NOMEM:
-        LOG(DEBUG) << "Out of memory. Could not connect to MQTT topic "
-                  << topic;
+    case MOSQ_ERR_NOMEM:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Out of memory. Could not connect to MQTT topic " << topic;
       break;
-      case MOSQ_ERR_NO_CONN:
-        LOG(DEBUG) << "No connection to broker. Could not connect to MQTT topic "
-                  << topic;
+    case MOSQ_ERR_NO_CONN:
+      CLOG (DEBUG, MQTT_LOG_ID) << "No connection to broker. Could not connect to MQTT topic "
+                                << topic;
       break;
-      case MOSQ_ERR_MALFORMED_UTF8:
-        LOG(DEBUG) << "Topic is not UTF-8. Could not connect to MQTT topic "
-                  << topic;
+    case MOSQ_ERR_MALFORMED_UTF8:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Topic is not UTF-8. Could not connect to MQTT topic " << topic;
       break;
-      case MOSQ_ERR_OVERSIZE_PACKET:
-        LOG(DEBUG) << "Packet too large. Could not connect to MQTT topic "
-                  << topic;
+    case MOSQ_ERR_OVERSIZE_PACKET:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Packet too large. Could not connect to MQTT topic " << topic;
       break;
     }
   MqttClient::instance ()->subscriptions.emplace (topic);
@@ -101,7 +98,7 @@ MqttClient::subscribe (std::string topic)
 void
 MqttClient::onConnect (mosquitto *mosquitto, void *obj, int result)
 {
-  LOG(DEBUG) << "Connected to MQTT broker";
+  CLOG (DEBUG, MQTT_LOG_ID) << "Connected to MQTT broker";
   connected = true;
 
   // (re)subscribe topics
@@ -114,7 +111,7 @@ MqttClient::onConnect (mosquitto *mosquitto, void *obj, int result)
 void
 MqttClient::onDisconnect (mosquitto *mosquitto, void *obj, int result)
 {
-  LOG(DEBUG) << "Disconnected from MQTT broker";
+  CLOG (DEBUG, MQTT_LOG_ID) << "Disconnected from MQTT broker";
   connected = false;
 }
 
@@ -136,7 +133,7 @@ MqttClient::loop ()
 void
 MqttClient::wait ()
 {
-  _loop.wait();
+  _loop.wait ();
 }
 
 bool

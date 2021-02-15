@@ -9,3 +9,6 @@ cmd.add ( dcpsConfigArg );
   TCLAP::ValueArg${"<"}std::string${">"} dcpsInfoRepoArg ("","DCPSInfoRepo","Hostname and network port of the DCPSInfoRepo (e.g. localhost:12345)",false,"","string");
   cmd.add ( dcpsInfoRepoArg );
 </#if>
+
+TCLAP::SwitchArg muteDdsLogger ("", "muteDDS", "Suppress all logs from DDS broker", false);
+cmd.add (muteDdsLogger);

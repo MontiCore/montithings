@@ -14,3 +14,15 @@ cmd.add ( instanceNameArg );
 </#if>
 
 cmd.parse ( argc, argv );
+
+<#if config.getMessageBroker().toString() == "MQTT">
+  if (muteMqttLogger.getValue ())
+  {
+  el::Loggers::reconfigureLogger ("MQTT", el::ConfigurationType::Enabled, "false");
+  }
+<#elseif config.getMessageBroker().toString() == "DDS">
+  if (muteDdsLogger.getValue ())
+  {
+  el::Loggers::reconfigureLogger ("DDS", el::ConfigurationType::Enabled, "false");
+  }
+</#if>

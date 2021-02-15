@@ -8,6 +8,6 @@ ${tc.signature("comp","config")}
     // implements "source.value -> sink.value"
     connectorPortOut->sendToExternal(comp->getInstanceName() + ".${connector.getSource().getQName()}/out->" + comp->getInstanceName() + ".${target.getQName()}/in");
 
-    LOG(DEBUG) << "Published connector via DDS: " << comp->getInstanceName() + ".${connector.getSource().getQName()}/out->" + comp->getInstanceName() + ".${target.getQName()}/in";
+    CLOG (DEBUG, "DDS") << "Published connector via DDS: " << comp->getInstanceName() + ".${connector.getSource().getQName()}/out->" + comp->getInstanceName() + ".${target.getQName()}/in";
   </#list>
 </#list>

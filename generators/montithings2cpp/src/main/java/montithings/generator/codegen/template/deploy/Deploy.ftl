@@ -21,6 +21,9 @@ INITIALIZE_EASYLOGGINGPP
 int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 {
 
+el::Loggers::getLogger("MQTT");
+el::Loggers::getLogger("DDS");
+
 el::Configurations defaultConf;
 defaultConf.setToDefault();
 defaultConf.set(el::Level::Global,
@@ -29,7 +32,7 @@ el::ConfigurationType::Format,
 defaultConf.set(el::Level::Global,
 el::ConfigurationType::ToFile,
 "false");
-el::Loggers::reconfigureLogger("default", defaultConf);
+el::Loggers::reconfigureAllLoggers(defaultConf);
 el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
 
 try
