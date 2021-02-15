@@ -24,8 +24,8 @@ ${className}${Utils.printFormalTypeParameters(comp)}::publishConfigForSubcompone
 
     MqttClient::instance ()->publish ("/config/${subcomponentWithSlashes}", configJson);
     CLOG (DEBUG, "MQTT") << "Published config via MQTT. "
-                              << "/config/${subcomponentWithSlashes}"
-                              << " " << configJson;
+                         << "/config/${subcomponentWithSlashes}"
+                         << " " << configJson;
   }
 </#list>
 }
