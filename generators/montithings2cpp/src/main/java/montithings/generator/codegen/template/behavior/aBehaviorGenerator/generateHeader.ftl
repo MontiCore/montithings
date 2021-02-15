@@ -6,6 +6,7 @@ ${tc.signature("comp","compname", "config")}
 #include "${compname}Input.h"
 #include "${compname}Result.h"
 #include "IComputable.h"
+#include "easyloggingpp/easylogging++.h"
 #include ${"<stdexcept>"}
 #include ${"<string>"}
 ${Utils.printNamespaceStart(comp)}

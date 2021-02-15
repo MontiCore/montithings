@@ -10,11 +10,10 @@ ${className}${Utils.printFormalTypeParameters(comp)}::publishConnectors ()
   <#list connector.getTargetList() as target>
     // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
     MqttClient::instance()->publish(replaceDotsBySlashes("/connectors/" + instanceName + "/${target.getQName()}"), replaceDotsBySlashes(instanceName + "/${connector.getSource().getQName()}"));
-    std::cout << "Published connector via MQTT. "
+    LOG(DEBUG) << "Published connector via MQTT. "
     << replaceDotsBySlashes("/connectors/" + instanceName + "/${target.getQName()}")
     << " "
-    << replaceDotsBySlashes(instanceName + "/${connector.getSource().getQName()}")
-    << std::endl;
+    << replaceDotsBySlashes(instanceName + "/${connector.getSource().getQName()}");
   </#list>
 </#list>
 }

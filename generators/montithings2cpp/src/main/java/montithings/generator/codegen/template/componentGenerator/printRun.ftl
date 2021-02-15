@@ -9,7 +9,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::run ()
 bool hasUpdateInterval = ${ComponentHelper.hasUpdateInterval(comp)?c};
 
 if (timeMode == TIMESYNC || hasUpdateInterval) {
-std::cout << "Thread for ${compname} started\n";
+LOG(DEBUG) << "Thread for ${compname} started";
 while (true)
 {
 auto end = std::chrono::high_resolution_clock::now()

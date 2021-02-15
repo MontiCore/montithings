@@ -9,14 +9,29 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
   #include "${compname}DDSParticipant.h"
 </#if>
 #include "tclap/CmdLine.h"
+#include "easyloggingpp/easylogging++.h"
 #include ${"<chrono>"}
 #include ${"<thread>"}
 <#if config.getMessageBroker().toString() == "MQTT">
 #include "MqttConfigRequester.h"
 </#if>
 
+INITIALIZE_EASYLOGGINGPP
+
 int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 {
+
+el::Configurations defaultConf;
+defaultConf.setToDefault();
+defaultConf.set(el::Level::Global,
+el::ConfigurationType::Format,
+"%level: %datetime %msg");
+defaultConf.set(el::Level::Global,
+el::ConfigurationType::ToFile,
+"false");
+el::Loggers::reconfigureLogger("default", defaultConf);
+el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
+
 try
 {
 TCLAP::CmdLine cmd("${compname} MontiThings component", ' ', "${config.getProjectVersion()}");
@@ -28,7 +43,7 @@ ${tc.includeArgs("template.deploy.ComponentStart", [comp, config])}
 }
 catch (TCLAP::ArgException &e) // catch exceptions
 {
-std::cerr << "error: " << e.error () << " for arg " << e.argId () << std::endl;
+LOG(FATAL) << "error: " << e.error () << " for arg " << e.argId ();
 }
 return 0;
 }

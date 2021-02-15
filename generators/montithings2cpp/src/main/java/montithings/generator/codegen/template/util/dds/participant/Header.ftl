@@ -14,6 +14,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<vector>"}
 #include ${"<chrono>"}
 #include ${"<thread>"}
+#include "easyloggingpp/easylogging++.h"
 
 #include ${"<dds/DdsDcpsInfrastructureC.h>"}
 #include ${"<dds/DdsDcpsPublicationC.h>"}

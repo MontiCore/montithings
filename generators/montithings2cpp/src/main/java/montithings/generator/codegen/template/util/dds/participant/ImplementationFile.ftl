@@ -16,11 +16,11 @@ ${className}::${className}
 {
   while (!this->tryInitializeDDS (argc, argv)) {
     <#if config.getSplittingMode().toString() == "LOCAL">
-      std::cout << "Creating dds instances failed. Is multicast enabled/allowed?" << std::endl;
+      LOG(DEBUG) << "Creating dds instances failed. Is multicast enabled/allowed?";
     <#else>
-      std::cout << "Creating dds instances failed. Is the DCPSInfoRepo service running?" << std::endl;
+      LOG(DEBUG) << "Creating dds instances failed. Is the DCPSInfoRepo service running?";
     </#if>
-    std::cout << "Trying again..." << std::endl;
+    LOG(DEBUG) << "Trying again...";
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 }

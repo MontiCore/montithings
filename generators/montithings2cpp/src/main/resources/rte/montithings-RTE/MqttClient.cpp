@@ -2,6 +2,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "MqttClient.h"
+#include "easyloggingpp/easylogging++.h"
 
 MqttClient *
 MqttClient::instance (const std::string& brokerHostname, int brokerPort)
@@ -15,7 +16,7 @@ MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort)
   // Log version number
   int major, minor, revision;
   mosquitto_lib_version (&major, &minor, &revision);
-  std::cout << "Using libmosquitto " << major << "." << minor << "." << revision << std::endl;
+  LOG(DEBUG) << "Using libmosquitto " << major << "." << minor << "." << revision;
 
   // Initialize
   mosquitto_lib_init ();
@@ -70,34 +71,28 @@ MqttClient::subscribe (std::string topic)
   switch (returnCode)
     {
       case MOSQ_ERR_SUCCESS:
-        std::cout << "Connected to MQTT topic "
-                  << topic
-                  << std::endl;
+        LOG(DEBUG) << "Connected to MQTT topic "
+                  << topic;
       break;
       case MOSQ_ERR_INVAL:
-        std::cout << "Invalid Input Parameters. Could not connect to MQTT topic "
-                  << topic
-                  << std::endl;
+        LOG(DEBUG) << "Invalid Input Parameters. Could not connect to MQTT topic "
+                  << topic;
       break;
       case MOSQ_ERR_NOMEM:
-        std::cout << "Out of memory. Could not connect to MQTT topic "
-                  << topic
-                  << std::endl;
+        LOG(DEBUG) << "Out of memory. Could not connect to MQTT topic "
+                  << topic;
       break;
       case MOSQ_ERR_NO_CONN:
-        std::cout << "No connection to broker. Could not connect to MQTT topic "
-                  << topic
-                  << std::endl;
+        LOG(DEBUG) << "No connection to broker. Could not connect to MQTT topic "
+                  << topic;
       break;
       case MOSQ_ERR_MALFORMED_UTF8:
-        std::cout << "Topic is not UTF-8. Could not connect to MQTT topic "
-                  << topic
-                  << std::endl;
+        LOG(DEBUG) << "Topic is not UTF-8. Could not connect to MQTT topic "
+                  << topic;
       break;
       case MOSQ_ERR_OVERSIZE_PACKET:
-        std::cout << "Packet too large. Could not connect to MQTT topic "
-                  << topic
-                  << std::endl;
+        LOG(DEBUG) << "Packet too large. Could not connect to MQTT topic "
+                  << topic;
       break;
     }
   MqttClient::instance ()->subscriptions.emplace (topic);
@@ -106,7 +101,7 @@ MqttClient::subscribe (std::string topic)
 void
 MqttClient::onConnect (mosquitto *mosquitto, void *obj, int result)
 {
-  std::cout << "Connected to MQTT broker" << std::endl;
+  LOG(DEBUG) << "Connected to MQTT broker";
   connected = true;
 
   // (re)subscribe topics
@@ -119,7 +114,7 @@ MqttClient::onConnect (mosquitto *mosquitto, void *obj, int result)
 void
 MqttClient::onDisconnect (mosquitto *mosquitto, void *obj, int result)
 {
-  std::cout << "Disconnected from MQTT broker" << std::endl;
+  LOG(DEBUG) << "Disconnected from MQTT broker";
   connected = false;
 }
 
