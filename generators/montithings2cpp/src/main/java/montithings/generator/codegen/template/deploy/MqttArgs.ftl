@@ -6,3 +6,6 @@ TCLAP::ValueArg${"<"}std::string${">"} brokerHostnameArg ("","brokerHostname","H
 TCLAP::ValueArg${"<"}int${">"} brokerPortArg ("","brokerPort","Network port of the MQTT broker",false,1883,"int");
 cmd.add ( brokerHostnameArg );
 cmd.add ( brokerPortArg );
+
+TCLAP::SwitchArg muteMqttLogger ("", "muteMQTT", "Suppress all logs from MQTT broker", false);
+cmd.add (muteMqttLogger);

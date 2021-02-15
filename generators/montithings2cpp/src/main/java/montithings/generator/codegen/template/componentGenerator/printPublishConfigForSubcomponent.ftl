@@ -23,9 +23,9 @@ ${className}${Utils.printFormalTypeParameters(comp)}::publishConfigForSubcompone
     std::string configJson = config.dump ();
 
     MqttClient::instance ()->publish ("/config/${subcomponentWithSlashes}", configJson);
-    std::cout << "Published config via MQTT. "
-              << "/config/${subcomponentWithSlashes}"
-              << " " << configJson << std::endl;
+    CLOG (DEBUG, "MQTT") << "Published config via MQTT. "
+                         << "/config/${subcomponentWithSlashes}"
+                         << " " << configJson;
   }
 </#list>
 }

@@ -4,6 +4,7 @@
 #include "ManagementCommunication.h"
 #include "json/json.hpp"
 #include "cpp-httplib/httplib.h"
+#include "easyloggingpp/easylogging++.h"
 #include <fstream>
 #include <utility>
 
@@ -98,7 +99,7 @@ ManagementCommunication::receiveMessage ()
 {
   while (true)
     {
-      std::cout << "Waiting for connection\n";
+      LOG(DEBUG) << "Waiting for connection";
 
       tl::optional<std::string> msg = managementIn->getCurrentValue (uuid);
       if (msg)

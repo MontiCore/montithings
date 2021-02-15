@@ -15,6 +15,7 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include "IComputable.h"
 #include ${"<stdexcept>"}
 #include "json/json.hpp"
+#include "easyloggingpp/easylogging++.h"
 #include ${"<Utils.h>"}
 #include ${"<fstream>"}
 ${Utils.printIncludes(comp,config)}

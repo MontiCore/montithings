@@ -3,8 +3,11 @@
 #include "Source.h"
 #include "Sink.h"
 #include "Example.h"
+#include "easyloggingpp/easylogging++.h"
 #include <chrono>
 #include <thread>
+
+INITIALIZE_EASYLOGGINGPP
 
 struct ExampleTest : testing::Test
 {
