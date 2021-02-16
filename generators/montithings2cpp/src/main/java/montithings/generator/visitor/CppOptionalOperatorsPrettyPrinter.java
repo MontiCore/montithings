@@ -82,26 +82,21 @@ public class CppOptionalOperatorsPrettyPrinter extends OptionalOperatorsPrettyPr
       return false;
     }
 
-    if (port.isPresent()) {
-      String prefix;
-      if (port.get().isIncoming()) {
-        prefix = Identifier.getInputName();
-      }
-      else {
-        prefix = Identifier.getResultName();
-      }
-
-      CommentPrettyPrinter.printPreComments(node, getPrinter());
-      getPrinter().print(prefix + ".get" + capitalize(nameExpr.getName()) + "().has_value ()");
-      getPrinter().print(" " + leftOperator + " ");
-      getPrinter().print(prefix + ".get" + capitalize(nameExpr.getName()) + "().value ()");
-      getPrinter().print(" " + rightOperator + " ");
-      node.getRight().accept(getRealThis());
-      CommentPrettyPrinter.printPostComments(node, getPrinter());
-      return true;
+    String prefix;
+    if (port.get().isIncoming()) {
+      prefix = Identifier.getInputName();
     }
     else {
-      return false;
+      prefix = Identifier.getResultName();
     }
+
+    CommentPrettyPrinter.printPreComments(node, getPrinter());
+    getPrinter().print(prefix + ".get" + capitalize(nameExpr.getName()) + "().has_value ()");
+    getPrinter().print(" " + leftOperator + " ");
+    getPrinter().print(prefix + ".get" + capitalize(nameExpr.getName()) + "().value ()");
+    getPrinter().print(" " + rightOperator + " ");
+    node.getRight().accept(getRealThis());
+    CommentPrettyPrinter.printPostComments(node, getPrinter());
+    return true;
   }
 }

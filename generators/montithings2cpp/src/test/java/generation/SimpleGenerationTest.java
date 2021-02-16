@@ -70,9 +70,10 @@ public class SimpleGenerationTest {
     @FromDataPoints("messageBroker") ConfigParams.MessageBroker messageBroker
   ) throws IOException {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    System.out.println("Target: " + targetPlatform.toString() + ", " +
+    Log.info("Target: " + targetPlatform.toString() + ", " +
       "Splitting: " + splittingMode.toString() + ", " +
-      "Broker: " + messageBroker.toString());
+      "Broker: " + messageBroker.toString(),
+      "SimpleGenerationTest");
     ConfigParams params = new ConfigParams();
     params.setTargetPlatform(targetPlatform);
     params.setSplittingMode(splittingMode);
