@@ -13,7 +13,7 @@ import montithings.generator.codegen.util.Identifier;
 import java.util.Optional;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
-import static montithings.generator.visitor.CppPrettyPrinterUtils.getPortForName;
+import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppOptionalOperatorsPrettyPrinter extends OptionalOperatorsPrettyPrinter {
   public CppOptionalOperatorsPrettyPrinter(IndentPrinter printer) {

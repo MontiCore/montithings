@@ -11,6 +11,7 @@ import montiarc._symboltable.IMontiArcScope;
 import java.util.Optional;
 
 import static de.monticore.types.check.SymTypeExpressionFactory.createTypeExpression;
+import static montithings.util.IdentifierUtils.getPortForName;
 
 public class DeriveSymTypeOfExpression extends de.monticore.types.check.DeriveSymTypeOfExpression {
 
@@ -57,12 +58,5 @@ public class DeriveSymTypeOfExpression extends de.monticore.types.check.DeriveSy
     return Optional.empty();
   }
 
-  protected Optional<PortSymbol> getPortForName(ASTNameExpression node) {
-    if (!(node.getEnclosingScope() instanceof IMontiArcScope)) {
-      return Optional.empty();
-    }
-    IMontiArcScope s = (IMontiArcScope) node.getEnclosingScope();
-    String name = node.getName();
-    return s.resolvePort(name);
-  }
+
 }

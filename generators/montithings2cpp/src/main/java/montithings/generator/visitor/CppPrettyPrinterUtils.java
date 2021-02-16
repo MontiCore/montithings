@@ -4,19 +4,11 @@ package montithings.generator.visitor;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.ast.ASTNode;
-import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.se_rwth.commons.logging.Log;
-import montiarc._symboltable.IMontiArcScope;
 import montithings._symboltable.IMontiThingsScope;
 
 import java.util.List;
-import java.util.Optional;
 
-/**
- * TODO
- *
- * @since 12.07.20
- */
 public class CppPrettyPrinterUtils {
 
   protected static String capitalize(String str) {
@@ -45,14 +37,5 @@ public class CppPrettyPrinterUtils {
     }
 
     return componentScope;
-  }
-
-  protected static Optional<PortSymbol> getPortForName(ASTNameExpression node) {
-    if (!(node.getEnclosingScope() instanceof IMontiArcScope)) {
-      return Optional.empty();
-    }
-    IMontiArcScope s = (IMontiArcScope) node.getEnclosingScope();
-    String name = node.getName();
-    return s.resolvePort(name);
   }
 }

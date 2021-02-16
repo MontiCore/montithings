@@ -32,12 +32,8 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
+import static montithings.util.IdentifierUtils.getPortForName;
 
-/**
- * TODO
- *
- * @since 23.07.20
- */
 public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   private MontiThingsVisitor realThis;
 
