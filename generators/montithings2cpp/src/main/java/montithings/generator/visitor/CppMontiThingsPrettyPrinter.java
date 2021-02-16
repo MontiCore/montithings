@@ -4,7 +4,6 @@ package montithings.generator.visitor;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.ocl.setexpressions._visitor.SetExpressionsVisitor;
 import de.monticore.prettyprint.CommentPrettyPrinter;
@@ -15,7 +14,6 @@ import de.monticore.siunittypes4computing._visitor.SIUnitTypes4ComputingVisitor;
 import de.monticore.siunittypes4math._visitor.SIUnitTypes4MathVisitor;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.logging.Log;
-import montiarc._symboltable.IMontiArcScope;
 import montithings._ast.ASTIsPresentExpression;
 import montithings._auxiliary.SetExpressionsMillForMontiThings;
 import montithings._symboltable.IMontiThingsScope;
@@ -268,9 +266,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
     else {
       getPrinter().print(node.getNameExpression().getName());
     }
-    CommentPrettyPrinter.printPostComments(node,
-
-      getPrinter());
+    CommentPrettyPrinter.printPostComments(node, getPrinter());
   }
 
   @Override
@@ -281,16 +277,6 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   @Override
   public void handle(ASTSIUnit node){
     getPrinter().print("double");
-  }
-
-  protected Optional<PortSymbol> getPortForName(ASTNameExpression node) {
-    if (!(node.getEnclosingScope() instanceof IMontiArcScope)) {
-      getPrinter().print(node.getName());
-      return Optional.empty();
-    }
-    IMontiArcScope s = (IMontiArcScope) node.getEnclosingScope();
-    String name = node.getName();
-    return s.resolvePort(name);
   }
 
   @Override public MontiThingsVisitor getRealThis() {

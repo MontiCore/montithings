@@ -30,10 +30,12 @@ public enum MontiThingsError implements montithings.util.Error {
     "Component '%s' has no behavior (neither in model nor hand-written code)"),
   ONLY_ONE_UPDATE_INTERVAL("0xMT1500", "Update intervals should only be defined once in '%s'"),
   IDENTIFIER_UNKNOWN("0xMT1510", "The identifier '%s' cannot be resolved."),
+  UNSUPPORTED_OPERATOR("0xMT1600", "The operator '%s' is not supported."),
 
   GENERATOR_ONLY_ONE_MAIN("0xMT2001", "Configured both '%s' (as 'mainComponent') and '%s' (as 'main') as main components using generator parameters. Only use of them."),
   GENERATOR_MAIN_REQUIRED("0xMT2002", "You did not configure generator parameter 'mainComponent'."),
   GENERATOR_MAIN_UNKNOWN("0xMT2003", "Component '%s' which is set as 'mainComponent' is unknown. Possible choices are: %s"),
+
   ;
 
   protected final String errorCode;

@@ -24,7 +24,8 @@ public class SimpleGenerationTest {
 
   private static final Path HWCPATH = Paths.get("src/test/resources/hwc/hierarchy/");
 
-  private static final Path TARGETPATH = Paths.get("target/generated-test-sources/SimpleGenerationTest");
+  private static final Path TARGETPATH = Paths
+    .get("target/generated-test-sources/SimpleGenerationTest");
 
   private static final Path RTEPATH = Paths.get("src/main/resources/rte/montithings-RTE");
 
@@ -69,7 +70,9 @@ public class SimpleGenerationTest {
     @FromDataPoints("messageBroker") ConfigParams.MessageBroker messageBroker
   ) throws IOException {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    System.out.println(MODELPATH.toAbsolutePath().toString());
+    System.out.println("Target: " + targetPlatform.toString() + ", " +
+      "Splitting: " + splittingMode.toString() + ", " +
+      "Broker: " + messageBroker.toString());
     ConfigParams params = new ConfigParams();
     params.setTargetPlatform(targetPlatform);
     params.setSplittingMode(splittingMode);
