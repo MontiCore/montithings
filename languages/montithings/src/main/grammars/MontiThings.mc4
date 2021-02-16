@@ -7,6 +7,7 @@ grammar MontiThings extends MontiArc,
                             ConditionCatch,
                             SetDefinitions,
                             de.monticore.ocl.OCLExpressions,
+                            de.monticore.ocl.OptionalOperators,
                             de.monticore.SIUnitTypes4Computing,
                             de.monticore.SIUnitLiterals
 {

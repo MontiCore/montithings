@@ -46,6 +46,7 @@ public class MontiThingsCoCos {
       .addCoCo(SITypesTypeCheckCoCo.getCoCo())
       .addCoCo(new NameExpressionsAreResolvable())
       .addCoCo(new OCLExpressionsValid())
+      .addCoCo(new UnsupportedOperator())
       ;
   }
 }

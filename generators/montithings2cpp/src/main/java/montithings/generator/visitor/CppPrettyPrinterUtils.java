@@ -9,11 +9,6 @@ import montithings._symboltable.IMontiThingsScope;
 
 import java.util.List;
 
-/**
- * TODO
- *
- * @since 12.07.20
- */
 public class CppPrettyPrinterUtils {
 
   protected static String capitalize(String str) {
