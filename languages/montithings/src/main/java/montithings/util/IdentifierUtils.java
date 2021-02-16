@@ -9,6 +9,9 @@ import java.util.Optional;
 
 public class IdentifierUtils {
 
+  // Util class prevent instantiation
+  private IdentifierUtils() { }
+
   /**
    * Finds the Port for a NameExpression
    * @param node the node to search the portsymbol for
