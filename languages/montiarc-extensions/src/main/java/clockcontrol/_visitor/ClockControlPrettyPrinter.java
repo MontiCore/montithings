@@ -43,7 +43,6 @@ public class ClockControlPrettyPrinter implements ClockControlVisitor {
     switch (node.getTimeUnit()){
       case MSEC: this.getPrinter().print("msec"); break;
       case SEC: this.getPrinter().print("sec"); break;
-      case MIN: this.getPrinter().print("min"); break;
     }
     this.getPrinter().println(";");
   }

@@ -3,6 +3,13 @@ package montithings.generator.visitor;
 import behavior._ast.ASTAfterStatement;
 import behavior._visitor.BehaviorVisitor;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
+import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
+import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
+import de.monticore.siunits.utility.Converter;
+import de.monticore.siunits.utility.UnitFactory;
+
+import javax.measure.unit.Unit;
 
 public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   private BehaviorVisitor realThis;
@@ -17,9 +24,8 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   public void handle(ASTAfterStatement node){
     getPrinter().print("std::future<bool> fut = std::async(std::launch::async, [=] () -> bool {");
     getPrinter().print("std::this_thread::sleep_for( std::chrono::");
-    getPrinter().print("seconds" + "{");
-    node.getSIUnitLiteral().getNumericLiteral().accept(getRealThis());
-    getPrinter().print("});");
+    printTime(node.getSIUnitLiteral());
+    getPrinter().print(");");
 
     node.getMCJavaBlock().accept(getRealThis());
 
@@ -39,5 +45,28 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   @Override
   public void setRealThis(BehaviorVisitor realThis){
     this.realThis = realThis;
+  }
+
+  private void printTime(ASTSIUnitLiteral lit){
+    if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")){
+      getPrinter().print("nanoseconds");
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("μs")){
+      getPrinter().print("nanoseconds");
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ms")){
+      getPrinter().print("milliseconds");
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("s")){
+      getPrinter().print("seconds");
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")){
+      getPrinter().print("minutes");
+    }
+    SIUnitLiteralDecoder decoder = new SIUnitLiteralDecoder();
+    double valueInSeconds = decoder.getValue(lit);
+    getPrinter().print("{");
+    getPrinter().print((int) valueInSeconds);
+    getPrinter().print("}");
   }
 }

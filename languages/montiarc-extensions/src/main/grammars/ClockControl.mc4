@@ -17,6 +17,6 @@ component grammar ClockControl extends ArcBasis,
     key("update") key("interval") interval:NatLiteral TimeUnit ";"
   ;
 
-  enum TimeUnit = "msec" | "sec" | "min";
+  enum TimeUnit = "msec" | "sec";
 
 }
