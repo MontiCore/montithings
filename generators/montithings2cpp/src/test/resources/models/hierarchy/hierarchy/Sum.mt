@@ -6,5 +6,5 @@ component Sum {
   port in int in2;
   port out int result;
 
-  update interval 1sec;
+  update interval 1s;
 }

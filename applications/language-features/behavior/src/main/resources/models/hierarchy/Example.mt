@@ -9,6 +9,6 @@ component Example {
   source.value -> lpf.givenValue;
   lpf.filteredValue -> sink.value;
 
-  update interval 1sec;
+  update interval 1s;
   timing sync;
 }

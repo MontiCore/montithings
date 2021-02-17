@@ -10,5 +10,5 @@ component Example {
   rs.value -> sink.value;
 
   timing sync;
-  update interval 1sec;
+  update interval 1s;
 }

@@ -11,5 +11,5 @@ component Source (m/s startSpeed) {
     lastValue = lastValue + 1 km/h;
   }
 
-  update interval 1sec;
+  update interval 1s;
 }

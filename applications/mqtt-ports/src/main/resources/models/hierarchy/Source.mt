@@ -10,5 +10,5 @@ component Source {
     value = lastValue++;
   }
 
-  update interval 50 msec;
+  update interval 50 ms;
 }

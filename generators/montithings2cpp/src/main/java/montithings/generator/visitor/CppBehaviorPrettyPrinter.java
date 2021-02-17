@@ -52,7 +52,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
       getPrinter().print("nanoseconds");
     }
     else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("μs")){
-      getPrinter().print("nanoseconds");
+      getPrinter().print("microseconds");
     }
     else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ms")){
       getPrinter().print("milliseconds");

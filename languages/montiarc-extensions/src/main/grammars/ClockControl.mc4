@@ -6,7 +6,7 @@
  * This grammar describes modifications to the clock of a component
  */
 component grammar ClockControl extends ArcBasis,
-                                       de.monticore.literals.MCCommonLiterals
+                                       de.monticore.SIUnitLiterals
 {
 
   /**
@@ -14,9 +14,6 @@ component grammar ClockControl extends ArcBasis,
    * interval the component is executed.
    */
   CalculationInterval implements ArcElement =
-    key("update") key("interval") interval:NatLiteral TimeUnit ";"
+    key("update") key("interval") interval:SIUnitLiteral ";"
   ;
-
-  enum TimeUnit = "msec" | "sec";
-
 }

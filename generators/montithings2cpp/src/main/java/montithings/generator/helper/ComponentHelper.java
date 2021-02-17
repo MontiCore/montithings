@@ -21,6 +21,9 @@ import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
+import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
+import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
@@ -557,23 +560,6 @@ public class ComponentHelper {
     return implLocation.isFile();
   }
 
-  protected static String getCalculationIntervalUnit(
-    arcbasis._symboltable.ComponentTypeSymbol comp) {
-    return elementsOf(comp)
-      .filter(ASTCalculationInterval.class)
-      .first()
-      .transform(e -> e.getTimeUnit().toString())
-      .or("MSEC");
-  }
-
-  protected static int getCalculationInterval(arcbasis._symboltable.ComponentTypeSymbol comp) {
-    return elementsOf(comp)
-      .filter(ASTCalculationInterval.class)
-      .first()
-      .transform(e -> e.getInterval().getValue())
-      .or(50);
-  }
-
   public static boolean hasUpdateInterval(ComponentTypeSymbol comp) {
     return !elementsOf(comp)
       .filter(ASTCalculationInterval.class)
@@ -587,38 +573,67 @@ public class ComponentHelper {
    * @return CPP duration
    */
   public static String getExecutionIntervalMethod(arcbasis._symboltable.ComponentTypeSymbol comp) {
-    int interval = getCalculationInterval(comp);
-    String intervalUnit = getCalculationIntervalUnit(comp);
-    String method = "std::chrono::milliseconds(" + interval + ")";
-
-    switch (intervalUnit) {
-      case "MSEC":
-        method = "std::chrono::milliseconds(" + interval + ")";
-        break;
-      case "SEC":
-        method = "std::chrono::seconds(" + interval + ")";
-        break;
-      case "MIN":
-        method = "std::chrono::seconds(" + interval * 60 + ")";
-
-    }
+    ASTCalculationInterval interval =  elementsOf(comp)
+            .filter(ASTCalculationInterval.class)
+            .first().orNull();
+    String method = "std::chrono::";
+    method += printTime(interval);
     return method;
   }
 
   public static String getExecutionIntervalInMillis(
     arcbasis._symboltable.ComponentTypeSymbol comp) {
-    int interval = getCalculationInterval(comp);
-    String intervalUnit = getCalculationIntervalUnit(comp);
+    ASTCalculationInterval interval =  elementsOf(comp)
+            .filter(ASTCalculationInterval.class)
+            .first().orNull();
+    if(interval == null){
+      return "50";
+    }
 
-    switch (intervalUnit) {
-      case "MSEC":
-        return "" + interval;
-      case "SEC":
-        return "" + interval * 1000;
-      case "MIN":
-        return "" + interval * 60 * 1000;
+    ASTSIUnitLiteral lit = interval.getInterval();
+    SIUnitLiteralDecoder decoder = new SIUnitLiteralDecoder();
+    double value = decoder.getValue(lit);
+
+    switch (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit())) {
+      case ("ns"):
+        return "" + (int) (value / (1000 * 1000));
+      case ("μs"):
+        return "" + (int) (value / 1000);
+      case ("ms"):
+        return "" + (int) (value);
+      case ("s"):
+        return "" + (int) (value * 1000);
+      case ("min"):
+        return "" + (int) (value * 1000 * 60);
     }
     return "50";
+  }
+
+  private static String printTime(ASTCalculationInterval calculationInterval){
+    String time = "milliseconds";
+    if(calculationInterval == null){
+      return time += "(50)";
+    }
+    ASTSIUnitLiteral lit = calculationInterval.getInterval();
+    if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")){
+      time = "nanoseconds";
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("μs")){
+      time = "microseconds";
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ms")){
+      time = "milliseconds";
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("s")){
+      time = "seconds";
+    }
+    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")){
+      time = "minutes";
+    }
+    SIUnitLiteralDecoder decoder = new SIUnitLiteralDecoder();
+    double value = decoder.getValue(lit);
+    time += "(" + (int) value + ")";
+    return time;
   }
 
   /**
