@@ -10,6 +10,7 @@ import de.se_rwth.commons.logging.Log;
 public class SIUnitLiteralsDescribeTime implements BehaviorASTAfterStatementCoCo {
   @Override
   public void check(ASTAfterStatement node) {
+    //TODO: implement
     ASTSIUnit siUnit = node.getSIUnitLiteral().getSIUnit();
     //if(UnitFactory.createBaseUnit(siUnit).equals()){
       //Log.error("test");

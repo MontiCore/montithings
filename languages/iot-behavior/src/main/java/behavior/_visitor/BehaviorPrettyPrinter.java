@@ -46,6 +46,7 @@ public class BehaviorPrettyPrinter implements BehaviorVisitor {
 
   @Override
   public void handle (ASTEveryBlock node){
+    getPrinter().print(node.getName() + ": ");
     getPrinter().print("every ");
     node.getSIUnitLiteral().accept(getRealThis());
     getPrinter().print(" ");
