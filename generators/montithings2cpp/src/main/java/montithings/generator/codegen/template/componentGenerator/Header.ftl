@@ -87,6 +87,9 @@ TimeMode timeMode =
   void initialize();
   void setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result);
   void run();
+  <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+  void run_Every${everyBlock.getName()}();
+  </#list>
 </#if>
 
 public:

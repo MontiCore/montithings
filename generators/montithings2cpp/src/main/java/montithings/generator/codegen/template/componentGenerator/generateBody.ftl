@@ -24,6 +24,7 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
     ${tc.includeArgs("template.componentGenerator.printRun", [comp, compname, className])}
     ${tc.includeArgs("template.componentGenerator.printInitialize", [comp, compname, config, className])}
     ${tc.includeArgs("template.componentGenerator.printSetResult", [comp, compname, config, className])}
+    ${tc.includeArgs("template.componentGenerator.printEveryBlocks", [comp, compname, className])}
 </#if>
 
 ${tc.includeArgs("template.componentGenerator.printShouldComputeCheck", [comp, compname, className])}

@@ -6,6 +6,7 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.IArcBasisScope;
 import arcbasis._symboltable.PortSymbol;
+import behavior._ast.ASTEveryBlock;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
 import cdlangextension._symboltable.DepLanguageSymbol;
@@ -581,6 +582,12 @@ public class ComponentHelper {
     return method;
   }
 
+  public static String getExecutionIntervalMethod(arcbasis._symboltable.ComponentTypeSymbol comp, ASTEveryBlock everyBlock) {
+    String method = "std::chrono::";
+    method += printTime(everyBlock.getSIUnitLiteral());
+    return method;
+  }
+
   public static String getExecutionIntervalInMillis(
     arcbasis._symboltable.ComponentTypeSymbol comp) {
     ASTCalculationInterval interval =  elementsOf(comp)
@@ -610,11 +617,14 @@ public class ComponentHelper {
   }
 
   private static String printTime(ASTCalculationInterval calculationInterval){
-    String time = "milliseconds";
     if(calculationInterval == null){
-      return time += "(50)";
+      return "milliseconds(50)";
     }
-    ASTSIUnitLiteral lit = calculationInterval.getInterval();
+    return printTime(calculationInterval.getInterval());
+  }
+
+  private static String printTime(ASTSIUnitLiteral lit){
+    String time = "milliseconds";
     if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")){
       time = "nanoseconds";
     }
@@ -1075,5 +1085,14 @@ public class ComponentHelper {
       }
     }
     return names;
+  }
+
+  public static List<ASTEveryBlock> getEveryBlocks(ComponentTypeSymbol comp){
+    List<ASTMTEveryBlock> mtEveryBlockList = elementsOf(comp).filter(ASTMTEveryBlock.class).toList();
+    List<ASTEveryBlock> everyBlockList = new ArrayList<>();
+    for (ASTMTEveryBlock b : mtEveryBlockList){
+      everyBlockList.add(b.getEveryBlock());
+    }
+    return everyBlockList;
   }
 }

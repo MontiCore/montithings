@@ -25,6 +25,15 @@ void ${className}${generics}::setInstanceName (const std::string &instanceName)
 this->instanceName = instanceName;
 }
 
+<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+${Utils.printTemplateArguments(comp)}
+void
+${className}${generics}::compute_Every${everyBlock.getName()} ()
+{
+${ComponentHelper.printJavaBlock(everyBlock.getMCJavaBlock())}
+}
+</#list>
+
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
   <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
   <#assign varName = var.getName()>
