@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
-std::cout << "Started." << std::endl;
+LOG(DEBUG) << "Started.";
 
 <#if ComponentHelper.isTimesync(comp) || (config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() != "MQTT")>
   while (true)

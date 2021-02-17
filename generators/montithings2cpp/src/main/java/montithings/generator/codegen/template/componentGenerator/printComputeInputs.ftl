@@ -1,9 +1,10 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","isMonitor")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
     <#if !ComponentHelper.usesBatchMode(comp)>
-        ${compname}Input${Utils.printFormalTypeParameters(comp)} input<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >
+        ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()}<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >
         <#if ComponentHelper.isSIUnitPort(inPort)>
             tl::make_optional(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
             .value()  * this->${inPort.getName()}ConversionFactor
@@ -13,10 +14,10 @@ ${tc.signature("comp","compname","isMonitor")}
         )<#sep>,</#sep>
     </#list>)</#if>;
     <#else>
-        ${compname}Input${Utils.printFormalTypeParameters(comp)} input;
+        ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()};
         <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
             while(getPort${inPort.getName()?cap_first}()->hasValue(this->uuid)){
-            input.add${inPort.getName()?cap_first}Element(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
+            ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
 
         <#else>
             this->uuid
@@ -24,7 +25,7 @@ ${tc.signature("comp","compname","isMonitor")}
             }
         </#list>
         <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort >
-            input.add${inPort.getName()?cap_first}Element(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
+            ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
 
         <#else>
             this->uuid

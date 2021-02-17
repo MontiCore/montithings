@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Port.h"
 #include "Utils.h"
+#include "easyloggingpp/easylogging++.h"
 
 template<typename T>
 class WSPort : public Port<T>
@@ -44,11 +45,11 @@ class WSPort : public Port<T>
               }
             catch (const std::exception &e)
               {
-                std::cout << "Could not create listener for URI \"" << uri
-                          << "\". Exception: " << e.what () << std::endl;
+                LOG(ERROR) << "Could not create listener for URI \"" << uri
+                          << "\". Exception: " << e.what ();
                 return;
               }
-            std::cout << "Created listener for URI " << uri << "\n";
+            LOG(DEBUG) << "Created listener for URI " << uri;
           }
         futInSocket = std::async (std::launch::async, &WSPort::accept, this);
       }
@@ -96,14 +97,14 @@ class WSPort : public Port<T>
               }
             catch (const std::exception &e)
               {
-                std::cout << "Could not create listener for URI \"" << uri
-                          << "\". Exception: " << e.what () << std::endl;
+                LOG(DEBUG) << "Could not create listener for URI \"" << uri
+                          << "\". Exception: " << e.what ();
 
                 // Do not make this process eat up all resources in an endless loop
                 std::this_thread::sleep_for (std::chrono::seconds (1));
               }
           }
-        std::cout << "Created listener for: " << uri << "\n";
+        LOG(DEBUG) << "Created listener for: " << uri;
       }
 
     //Receive Message and convert to target type T
@@ -141,13 +142,13 @@ class WSPort : public Port<T>
           }
         catch (const std::exception &)
           {
-            std::cout << "Connection to \"" << uri << "\" could not be established!\n";
+            LOG(DEBUG) << "Connection to \"" << uri << "\" could not be established!";
 
             // Do not make this process eat up all resources in an endless loop
             std::this_thread::sleep_for (std::chrono::seconds (1));
           }
       }
-    std::cout << "Connection to \"" << uri << "\" established\n";
+    LOG(DEBUG) << "Connection to \"" << uri << "\" established";
 
     while (true)
       {

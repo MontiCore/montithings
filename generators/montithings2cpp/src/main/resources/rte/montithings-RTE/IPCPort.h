@@ -8,6 +8,7 @@
 #include <nngpp/protocol/req0.h>
 #include <nngpp/protocol/push0.h>
 #include "Utils.h"
+#include "easyloggingpp/easylogging++.h"
 
 template<typename T>
 class IPCPort : public Port<T>
@@ -32,10 +33,10 @@ class IPCPort : public Port<T>
       }
     catch (const std::exception &e)
       {
-        std::cout << "Connection to " << uri << " could not be established! (" << e.what () << ")\n";
+        LOG(ERROR) << "Connection to " << uri << " could not be established! (" << e.what () << ")";
         return false;
       }
-    std::cout << "Connection to " << uri << " established\n";
+    LOG(DEBUG) << "Connection to " << uri << " established";
     return true;
   }
 
@@ -83,7 +84,7 @@ class IPCPort : public Port<T>
         auto dataString = dataToJson (nextVal);
         socket.send (nng::buffer (nng_strdup (dataString.c_str ()), dataString.length () + 1), nng::flag::alloc);
 
-        std::cout << dataString << "\n";
+        LOG(DEBUG) << dataString;
       }
   }
 };

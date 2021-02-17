@@ -8,7 +8,7 @@ ${tc.signature("comp","config")}
     bool allConnected = 0;
     while (!allConnected)
     {
-    std::cout << "Searching for subcomponents\n";
+    LOG(DEBUG) << "Searching for subcomponents";
     <#list comp.subComponents as subcomponent>
         <#assign subcomponentSymbol = subcomponent.type>
         // ${subcomponentSymbol.getName()} ${subcomponent.getName()}
@@ -61,7 +61,7 @@ ${tc.signature("comp","config")}
         </#list>
 
         comp->set${subcomponent.getName()?cap_first}IP(${subcomponent.getName()}_ip);
-        std::cout << "Found ${subcomponentSymbol.getName()} ${subcomponent.getName()}\n";
+        LOG(DEBUG) << "Found ${subcomponentSymbol.getName()} ${subcomponent.getName()}";
 
         continue;
         }
@@ -76,6 +76,6 @@ ${tc.signature("comp","config")}
     // circuit breaker
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    std::cout << "Found all subcomponents." << std::endl;
+    LOG(DEBUG) << "Found all subcomponents.";
     }
 </#if>

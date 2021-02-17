@@ -28,6 +28,7 @@ ${Identifier.createInstance(comp)}
 #include ${"<set>"}
 #include ${"<thread>"}
 #include "sole/sole.hpp"
+#include "easyloggingpp/easylogging++.h"
 #include ${"<iostream>"}
 <#if config.getMessageBroker().toString() == "MQTT">
   #include "MqttClient.h"

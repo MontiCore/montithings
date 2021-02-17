@@ -13,10 +13,9 @@ return true;
 }
 else
 {
-std::cout << "Component instance '"
-          << instanceName
-          << "' could not restore state from local file."
-          << std::endl;
+LOG(DEBUG) << "Component instance '"
+           << instanceName
+           << "' could not restore state from local file.";
 }
 
 <#if config.getMessageBroker().toString() == "MQTT">
@@ -36,10 +35,10 @@ std::cout << "Component instance '"
   bool restoreSuccessful = behaviorImpl.isReceivedState () && behaviorImpl.isReplayFinished ();
   if (!restoreSuccessful)
   {
-  std::cout << "Component instance '"
-            << instanceName
-            << "' could not restore state from external service."
-            << std::endl;
+  LOG(DEBUG) << "Component instance '"
+             << instanceName
+             << "' could not restore state from external service."
+             << std::endl;
   }
 
   return restoreSuccessful;

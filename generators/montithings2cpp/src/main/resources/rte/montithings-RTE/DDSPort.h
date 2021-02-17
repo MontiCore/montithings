@@ -5,12 +5,15 @@
 #include <ace/OS_NS_stdlib.h>
 #include <future>
 #include <iostream>
+#include "easyloggingpp/easylogging++.h"
 
 #include "DDSMessageTypeSupportC.h"
 #include "DDSMessageTypeSupportImpl.h"
 #include "DDSParticipant.h"
 #include "Port.h"
 #include "Utils.h"
+
+#define DDS_LOG_ID "DDS"
 
 template<typename T>
 class DDSPort
@@ -53,7 +56,7 @@ class DDSPort
 
     if (!topic)
     {
-      std::cerr << "ERROR: DDSPort() - OpenDDS topic creation failed." << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "ERROR: DDSPort() - OpenDDS topic creation failed.";
     } else {
       if (direction == INCOMING)
       {
@@ -131,7 +134,7 @@ class DDSPort
 
     if (!reader)
     {
-      std::cerr << "ERROR: initReader() - OpenDDS data reader creation failed." << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS data reader creation failed.";
       return 0;
     }
 
@@ -142,7 +145,7 @@ class DDSPort
 
     if (!messageReader)
     {
-      std::cerr << "ERROR: initReader() - OpenDDS message reader narrowing failed." << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS message reader narrowing failed.";
     }
     return messageReader;
   }
@@ -172,7 +175,7 @@ class DDSPort
 
     if (!writer)
     {
-      std::cerr << "ERROR: initWriter() - OpenDDS Data Writer creation failed." << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer creation failed.";
       return 0;
     }
 
@@ -182,7 +185,7 @@ class DDSPort
 
     if (!messageWriter)
     {
-      std::cerr << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. " << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. ";
     }
 
     return messageWriter;
@@ -200,7 +203,7 @@ class DDSPort
       {
         if (!messageWriter) 
         {
-          std::cerr << "ERROR: sendToExternal() - writer not initialized " << std::endl;
+          CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - writer not initialized ";
           return;
         }
 
@@ -216,7 +219,7 @@ class DDSPort
 
         if (error != DDS::RETCODE_OK)
           {
-            std::cerr << "ERROR: sendToExternal() - write returned " << error << std::endl;
+            CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - write returned " << error;
           }
 
         ++messageId;
@@ -235,7 +238,7 @@ class DDSPort
 
     if (!reader_i)
       {
-        std::cerr << "ERROR: on_data_available() - _narrow failed!" << std::endl;
+        CLOG (ERROR, DDS_LOG_ID) << "ERROR: on_data_available() - _narrow failed!";
         return;
       }
 
@@ -258,7 +261,7 @@ class DDSPort
       }
     else
       {
-        std::cerr << "ERROR: on_data_available() - _ake_next_sample failed!" << std::endl;
+        CLOG (ERROR, DDS_LOG_ID) << "on_data_available() - _ake_next_sample failed!";
         return;
       }
   }
@@ -269,38 +272,38 @@ class DDSPort
   void on_requested_deadline_missed (DDS::DataReader_ptr /*reader*/,
                                      const DDS::RequestedDeadlineMissedStatus & /*status*/) override
   {
-    std::cout << "DDSPort::on_requested_deadline_missed" << std::endl;
+    CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_requested_deadline_missed";
   }
 
   void on_liveliness_changed (DDS::DataReader_ptr /*reader*/,
                               const DDS::LivelinessChangedStatus & /*status*/) override
   {
-    std::cout << "DDSPort::on_liveliness_changed" << std::endl;
+    CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_liveliness_changed";
   }
 
   void on_requested_incompatible_qos (
       DDS::DataReader_ptr /*reader*/,
       const DDS::RequestedIncompatibleQosStatus & /*status*/) override
   {
-    std::cout << "DDSPort::on_requested_incompatible_qos" << std::endl;
+    CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_requested_incompatible_qos";
   }
 
   void on_sample_rejected (DDS::DataReader_ptr /*reader*/,
                            const DDS::SampleRejectedStatus & /*status*/) override
   {
-    std::cout << "DDSPort::on_sample_rejected" << std::endl;
+    CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_sample_rejected";
   }
 
   void
   on_subscription_matched (DDS::DataReader_ptr /*reader*/,
                            const DDS::SubscriptionMatchedStatus & /*status*/) override
   {
-    std::cout << "DDSPort::on_subscription_matched" << std::endl;
+    CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_subscription_matched";
   }
 
   void on_sample_lost (DDS::DataReader_ptr /*reader*/,
                        const DDS::SampleLostStatus & /*status*/) override
   {
-    std::cout << "DDSPort::on_sample_lost" << std::endl;
+    CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_sample_lost";
   }
 };

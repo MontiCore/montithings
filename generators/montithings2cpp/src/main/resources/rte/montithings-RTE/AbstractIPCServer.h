@@ -53,7 +53,7 @@ class AbstractIPCServer
         dataString = stream.str ();
         sock.send (nng::buffer (nng_strdup (dataString.c_str ()), dataString.length () + 1), nng::flag::alloc);
 
-        std::cout << dataString << "\n";
+        LOG(DEBUG) << dataString;
 
         //sock.send(nng::view(dataString.c_str(), strlen(dataString.c_str()) + 1));
       }

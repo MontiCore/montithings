@@ -48,6 +48,7 @@ public class MontiThingsCoCos {
       .addCoCo(new NameExpressionsAreResolvable())
       .addCoCo(new SIUnitLiteralsDescribeTime())
       .addCoCo(new OCLExpressionsValid())
+      .addCoCo(new UnsupportedOperator())
       ;
   }
 }

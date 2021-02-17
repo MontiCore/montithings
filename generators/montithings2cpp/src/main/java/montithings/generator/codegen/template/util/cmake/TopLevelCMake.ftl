@@ -90,7 +90,7 @@ HEADER_DIRECTORIES("hwc" dir_list)
 include_directories("hwc" ${r"${dir_list}"})
 
 # Include RTE
-file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix}montithings-RTE/*.h")
+file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix}montithings-RTE/*.h" "${commonCodePrefix}montithings-RTE/easyloggingpp/*.cpp" "${commonCodePrefix}montithings-RTE/easyloggingpp/*.h")
 
 
 <#if config.getMessageBroker().toString() == "MQTT">

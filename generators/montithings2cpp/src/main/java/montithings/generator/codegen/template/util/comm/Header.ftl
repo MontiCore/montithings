@@ -11,6 +11,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include "${comp.getName()}.h"
 #include "ManagementCommunication.h"
 #include "ManagementMessageProcessor.h"
+#include "easyloggingpp/easylogging++.h"
 
 ${Utils.printNamespaceStart(comp)}
 
