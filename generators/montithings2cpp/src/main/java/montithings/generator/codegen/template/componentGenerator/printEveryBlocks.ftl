@@ -8,18 +8,19 @@ ${tc.signature("comp","compname","className")}
 <#assign everyname = ComponentHelper.getEveryBlockName(comp, everyBlock)>
 ${Utils.printTemplateArguments(comp)}
 void
-${className}${Utils.printFormalTypeParameters(comp)}::run_Every${everyname} ()
+${className}${Utils.printFormalTypeParameters(comp)}::run${everyname} ()
 {
 
-LOG(DEBUG) << "Every-thread ${everyname} for ${compname} started";
+LOG(DEBUG) << "Every-thread ${everyname?replace("__", "")} for ${compname} started";
 while (true)
 {
 auto end = std::chrono::high_resolution_clock::now()
 + ${ComponentHelper.getExecutionIntervalMethod(comp, everyBlock)};
-${Identifier.getBehaviorImplName()}.compute_Every${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
+this->compute${everyname}();
 
-if(std::chrono::high_resolution_clock::now() > end){
-LOG(WARNING) << "Execution of EveryBlock ${ComponentHelper.getEveryBlockName(comp, everyBlock)} took longer than its interval";
+if (std::chrono::high_resolution_clock::now() > end)
+{
+LOG(WARNING) << "Execution of EveryBlock ${everyname?replace("__", "")} took longer than its interval";
 }
 
 do {

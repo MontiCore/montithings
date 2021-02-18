@@ -19,20 +19,23 @@ ${tc.signature("comp","compname","className")}
   }
 </#if>
 
+<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+  ${Utils.printTemplateArguments(comp)}
+  ${compname}Result${generics}
+  ${className}${generics}::compute${ComponentHelper.getEveryBlockName(comp, everyBlock)}
+  (${compname}Input${generics} ${Identifier.getInputName()})
+  {
+    ${compname}Result${generics} ${Identifier.getResultName()};
+    ${ComponentHelper.printJavaBlock(everyBlock.getMCJavaBlock())}
+    return ${Identifier.getResultName()};
+  }
+</#list>
+
 ${Utils.printTemplateArguments(comp)}
 void ${className}${generics}::setInstanceName (const std::string &instanceName)
 {
 this->instanceName = instanceName;
 }
-
-<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
-${Utils.printTemplateArguments(comp)}
-void
-${className}${generics}::compute_Every${ComponentHelper.getEveryBlockName(comp, everyBlock)} ()
-{
-${ComponentHelper.printJavaBlock(everyBlock.getMCJavaBlock())}
-}
-</#list>
 
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
   <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>

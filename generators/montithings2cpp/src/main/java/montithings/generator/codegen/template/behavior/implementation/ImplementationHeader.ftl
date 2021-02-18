@@ -54,10 +54,6 @@ ${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, com
 
 void setInstanceName (const std::string &instanceName);
 
-<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
-void compute_Every${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
-</#list>
-
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
   <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
   ${type} get${var.getName()?cap_first}() const;
@@ -88,9 +84,14 @@ bool isRestoredState () const;
   ${compname}Result${generics} getInitialValues() override;
   ${compname}Result${generics} compute(${compname}Input${generics} input) override;
 <#else>
-  ${compname}Result${generics} getInitialValues() override = 0;
-  ${compname}Result${generics} compute(${compname}Input${generics} input) override = 0;
+  ${compname}Result${generics} getInitialValues() override <#if existsHWC>= 0<#else>{return {};}</#if>;
+  ${compname}Result${generics} compute(${compname}Input${generics} input) override <#if existsHWC>= 0<#else>{return {};}</#if>;
 </#if>
+
+<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+  <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
+    ${compname}Result${generics} compute${everyBlockName}(${compname}Input${generics} input);
+</#list>
 };
 
 <#if Utils.hasTypeParameter(comp)>

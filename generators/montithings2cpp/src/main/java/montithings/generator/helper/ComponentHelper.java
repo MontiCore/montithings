@@ -1105,7 +1105,7 @@ public class ComponentHelper {
           return everyBlock.getName();
         }
         else {
-          return "" + i;
+          return "__Every" + i;
         }
       }
       i++;

@@ -28,6 +28,8 @@ public enum MontiThingsError implements montithings.util.Error {
       + "Does the generic extend an component?"),
   NO_BEHAVIOR("0xMT1490",
     "Component '%s' has no behavior (neither in model nor hand-written code)"),
+  NO_BEHAVIOR_ONLY_EVERY("0xMT1491",
+    "Component '%s' has no behavior (only (an) every block(s)) but (an) incoming port(s)"),
   ONLY_ONE_UPDATE_INTERVAL("0xMT1500", "Update intervals should only be defined once in '%s'"),
   IDENTIFIER_UNKNOWN("0xMT1510", "The identifier '%s' cannot be resolved."),
   UNSUPPORTED_OPERATOR("0xMT1600", "The operator '%s' is not supported."),
