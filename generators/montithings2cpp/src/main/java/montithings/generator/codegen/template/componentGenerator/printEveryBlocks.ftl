@@ -18,6 +18,10 @@ auto end = std::chrono::high_resolution_clock::now()
 + ${ComponentHelper.getExecutionIntervalMethod(comp, everyBlock)};
 ${Identifier.getBehaviorImplName()}.compute_Every${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
 
+if(std::chrono::high_resolution_clock::now() > end){
+LOG(WARNING) << "Execution of EveryBlock ${ComponentHelper.getEveryBlockName(comp, everyBlock)} took longer than its interval";
+}
+
 do {
 std::this_thread::yield();
 std::this_thread::sleep_for(std::chrono::milliseconds(1));
