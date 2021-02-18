@@ -58,7 +58,7 @@ public class BehaviorPrettyPrinter implements BehaviorVisitor {
 
   @Override
   public void handle (ASTLogStatement node){
-    getPrinter().print("#log ");
+    getPrinter().print("log ");
     node.getStringLiteral().accept(getRealThis());
   }
 }

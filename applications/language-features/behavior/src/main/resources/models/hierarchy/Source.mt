@@ -8,6 +8,6 @@ component Source {
 
   every 1s {
     value = lastValue++;
-    #log "Source: $value";
+    log "Source: $value";
   }
 }

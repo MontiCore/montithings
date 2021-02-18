@@ -5,6 +5,6 @@ component Sink {
   port in int value;
 
   behavior {
-    #log "Sink: $value";
+    log "Sink: $value";
   }
 }

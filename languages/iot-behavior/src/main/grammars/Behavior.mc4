@@ -53,5 +53,6 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    *            Text to print to the console
    */
   LogStatement implements MCStatement =
-    "#log" StringLiteral ";" ;
+    "log" StringLiteral ";" ;
+    nokeyword "log";
 }
