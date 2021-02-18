@@ -36,6 +36,7 @@ public enum MontiThingsError implements montithings.util.Error {
     "Port '%s' of component '%s' may not be referenced by an every block (including log statements)"),
   ONLY_ONE_UPDATE_INTERVAL("0xMT1500", "Update intervals should only be defined once in '%s'"),
   IDENTIFIER_UNKNOWN("0xMT1510", "The identifier '%s' cannot be resolved."),
+  LOG_IDENTIFIER_UNKNOWN("0xMT1515", "Identifier '%s' is unknown. It cannot be logged."),
   UNSUPPORTED_OPERATOR("0xMT1600", "The operator '%s' is not supported."),
 
   GENERATOR_ONLY_ONE_MAIN("0xMT2001", "Configured both '%s' (as 'mainComponent') and '%s' (as 'main') as main components using generator parameters. Only use of them."),

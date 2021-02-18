@@ -50,6 +50,7 @@ public class MontiThingsCoCos {
       .addCoCo(new OCLExpressionsValid())
       .addCoCo(new UnsupportedOperator())
       .addCoCo(new NoIncomingPortsInEveryBlocks())
+      .addCoCo(new LoggedVariablesAreResolvable())
       ;
   }
 }
