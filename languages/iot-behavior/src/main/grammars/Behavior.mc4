@@ -10,12 +10,48 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
                                    de.monticore.statements.MCCommonStatements,
                                    de.monticore.SIUnitLiterals
 {
-    AfterStatement implements MCStatement =
-        "after" SIUnitLiteral MCJavaBlock;
+  /**
+   * ASTAfterStatement can be used to defer the execution
+   * of a MCJavaBlock by the specified amount of time.
+   * This is done asynchronously, i.e. statements after the
+   * statement will be executed without delay.
+   *
+   * @attribute SIUnitLiteral
+   *            Amount of time by which the execution of the  statements shall be deferred
+   * @attribute MCJavaBlock
+   *            Statements to be executed later
+   */
+  AfterStatement implements MCStatement =
+    "after" SIUnitLiteral MCJavaBlock;
 
-    symbol EveryBlock =
-        (Name ":")? "every" SIUnitLiteral MCJavaBlock;
+  /**
+   * ASTEveryBlock contains statements that shall be executed
+   * periodically. The interval between two executions refers
+   * to the time since the last execution was started. For example,
+   * if the code should be executed "every 5s" and the computation
+   * takes 2 seconds, then the next computation will start 3 seconds
+   * after the last execution finished. If the execution takes longer
+   * than the interval between two execution a warning will be logged.
+   *
+   * @attribute Name
+   *            Name of the block (can be used to start / stop execution)
+   * @attribute SIUnitLiteral
+   *            Distance between two executions
+   * @attribute MCJavaBlock
+   *            Statements to be executed periodically
+   */
+  symbol EveryBlock =
+    (Name ":")? "every" SIUnitLiteral MCJavaBlock;
 
-    LogStatement implements MCStatement =
-        "#log" StringLiteral;
+  /**
+   * ASTLogStatement can be used to log to the console.
+   * Similar to Bash, variables referenced in the StringLiteral
+   * prefixed with a dollar symbol (e.g. "$variable") will be
+   * replaced by their value.
+   *
+   * @attribute StringLiteral
+   *            Text to print to the console
+   */
+  LogStatement implements MCStatement =
+    "#log" StringLiteral ";" ;
 }
