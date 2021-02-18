@@ -14,8 +14,8 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
         "after" SIUnitLiteral MCJavaBlock;
 
     symbol EveryBlock =
-        Name ":" "every" SIUnitLiteral MCJavaBlock;
+        (Name ":")? "every" SIUnitLiteral MCJavaBlock;
 
-    LogStatement =
+    LogStatement implements MCStatement =
         "#log" StringLiteral;
 }

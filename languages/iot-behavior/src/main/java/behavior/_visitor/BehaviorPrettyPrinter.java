@@ -2,6 +2,7 @@ package behavior._visitor;
 
 import behavior._ast.ASTAfterStatement;
 import behavior._ast.ASTEveryBlock;
+import behavior._ast.ASTLogStatement;
 import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -51,5 +52,11 @@ public class BehaviorPrettyPrinter implements BehaviorVisitor {
     node.getSIUnitLiteral().accept(getRealThis());
     getPrinter().print(" ");
     node.getMCJavaBlock().accept(getRealThis());
+  }
+
+  @Override
+  public void handle (ASTLogStatement node){
+    getPrinter().print("#log ");
+    node.getStringLiteral().accept(getRealThis());
   }
 }
