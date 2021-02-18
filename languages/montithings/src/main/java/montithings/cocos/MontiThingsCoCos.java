@@ -49,6 +49,7 @@ public class MontiThingsCoCos {
       .addCoCo(new SIUnitLiteralsDescribeTime())
       .addCoCo(new OCLExpressionsValid())
       .addCoCo(new UnsupportedOperator())
+      .addCoCo(new NoIncomingPortsInEveryBlocks())
       ;
   }
 }
