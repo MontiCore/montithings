@@ -38,6 +38,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   public void handle (ASTLogStatement node){
     getPrinter().print("LOG(INFO) ");
     printLogString(node.getStringLiteral().getValue(), node);
+    getPrinter().print(";");
   }
 
   private IndentPrinter getPrinter() {
