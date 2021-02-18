@@ -1,13 +1,13 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","className")}
+${tc.signature("comp","compname","className", "computeName")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
 ${Utils.printTemplateArguments(comp)}
-void ${className}${Utils.printFormalTypeParameters(comp)}::compute() {
+void ${className}${Utils.printFormalTypeParameters(comp)}::compute${computeName}() {
 // ensure there are no parallel compute() executions
-std::lock_guard${"<std::mutex>"} guard(computeMutex);
+std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
 if (shouldCompute())
 {
@@ -20,7 +20,7 @@ ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResult
   ${ComponentHelper.printCPPTypeName(field.getType())} ${field.getName()}__at__pre = ${field.getName()};
 </#list>
 ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
-${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute(${Identifier.getInputName()});
+${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
   <#assign varName = var.getName()>
   ${varName} = ${Identifier.getBehaviorImplName()}.get${varName?cap_first}();

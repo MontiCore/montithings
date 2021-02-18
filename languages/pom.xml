@@ -22,6 +22,7 @@
 		<module>cdlangextension</module>
 		<module>mtconfig</module>
 		<module>bindings</module>
+		<module>iot-behavior</module>
 	</modules>
 
 	<build>

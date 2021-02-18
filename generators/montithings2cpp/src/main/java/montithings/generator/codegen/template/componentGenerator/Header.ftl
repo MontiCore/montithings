@@ -70,6 +70,10 @@ ${Utils.printVariables(comp, config)}
 <#-- Utils.printConfigParameters(comp) -->
 std::vector< std::thread > threads;
 std::mutex computeMutex;
+<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+  <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
+  std::mutex compute${everyBlockName}Mutex;
+</#list>
 TimeMode timeMode = 
 <#if ComponentHelper.isTimesync(comp)>
   TIMESYNC
@@ -87,6 +91,9 @@ TimeMode timeMode =
   void initialize();
   void setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result);
   void run();
+  <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+    void run${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
+  </#list>
 </#if>
 
 public:
@@ -110,6 +117,10 @@ ${className}(std::string instanceName<#if comp.getParameters()?has_content>
 void setUp(TimeMode enclosingComponentTiming) override;
 void init() override;
 void compute() override;
+<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+  <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
+  void compute${everyBlockName} ();
+</#list>
 bool shouldCompute();
 void start() override;
 void onEvent () override;
@@ -120,7 +131,7 @@ void threadJoin ();
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config, className])}
+  ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config, className])}
 </#if>
 
 ${Utils.printNamespaceEnd(comp)}

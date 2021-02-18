@@ -44,7 +44,9 @@ configurations { grammar }
 dependencies {
   grammar "montiarc.languages:arc-fe:$montiarc_version:$grammars_classifier"
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+  grammar "de.monticore:siunits:$siunits_version:$grammars_classifier"
 
+  implementation "de.monticore:siunits:$siunits_version"
   implementation "montiarc.languages:arc-fe:$montiarc_version"
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"

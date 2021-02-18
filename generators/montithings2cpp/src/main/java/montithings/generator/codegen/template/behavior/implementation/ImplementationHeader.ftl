@@ -18,6 +18,8 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include "easyloggingpp/easylogging++.h"
 #include ${"<Utils.h>"}
 #include ${"<fstream>"}
+#include ${"<future>"}
+#include ${"<thread>"}
 ${Utils.printIncludes(comp,config)}
 <#if config.getMessageBroker().toString() == "MQTT">
   #include "MqttClient.h"
@@ -82,9 +84,14 @@ bool isRestoredState () const;
   ${compname}Result${generics} getInitialValues() override;
   ${compname}Result${generics} compute(${compname}Input${generics} input) override;
 <#else>
-  ${compname}Result${generics} getInitialValues() override = 0;
-  ${compname}Result${generics} compute(${compname}Input${generics} input) override = 0;
+  ${compname}Result${generics} getInitialValues() override <#if existsHWC>= 0<#else>{return {};}</#if>;
+  ${compname}Result${generics} compute(${compname}Input${generics} input) override <#if existsHWC>= 0<#else>{return {};}</#if>;
 </#if>
+
+<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
+  <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
+    ${compname}Result${generics} compute${everyBlockName}(${compname}Input${generics} input);
+</#list>
 };
 
 <#if Utils.hasTypeParameter(comp)>

@@ -21,5 +21,5 @@ component Source {
          i == value;
   catch { value = 0; }
 
-  update interval 10msec;
+  update interval 10ms;
 }

@@ -18,6 +18,7 @@ dependencies {
   implementation project(":languages:error-handling")
   implementation project(":languages:montiarc-extensions")
   implementation project(":languages:montithings")
+  implementation project(":languages:iot-behavior")
   implementation project(":generators:cd2cpp")
 
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"

@@ -5,5 +5,5 @@ component Source {
 
   port out int value;
 
-  update interval 1sec;
+  update interval 1s;
 }

@@ -6,6 +6,6 @@ port in String inPort;
 
 control {
     batch inPort;
-    update interval 200msec;
+    update interval 200ms;
 }
 }

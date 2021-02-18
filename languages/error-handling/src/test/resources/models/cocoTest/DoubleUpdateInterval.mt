@@ -9,7 +9,7 @@ component DoubleUpdateInterval {
     connect oc.outPort -> ic.inPort;
 
     control{
-        update interval 50msec;
-        update interval 29msec;
+        update interval 50ms;
+        update interval 29ms;
     }
 }

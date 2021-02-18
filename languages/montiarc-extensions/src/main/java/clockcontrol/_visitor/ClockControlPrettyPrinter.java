@@ -40,11 +40,6 @@ public class ClockControlPrettyPrinter implements ClockControlVisitor {
   public void handle(ASTCalculationInterval node){
     this.getPrinter().print("update interval ");
     node.getInterval().accept(this.getRealThis());
-    switch (node.getTimeUnit()){
-      case MSEC: this.getPrinter().print("msec"); break;
-      case SEC: this.getPrinter().print("sec"); break;
-      case MIN: this.getPrinter().print("min"); break;
-    }
     this.getPrinter().println(";");
   }
 

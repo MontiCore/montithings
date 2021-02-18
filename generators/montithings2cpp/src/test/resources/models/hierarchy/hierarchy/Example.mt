@@ -13,6 +13,6 @@ component Example {
   c.outport -> d.x;
   d.y -> sink.value;
 
-  update interval 1sec;
+  update interval 1s;
 
 }

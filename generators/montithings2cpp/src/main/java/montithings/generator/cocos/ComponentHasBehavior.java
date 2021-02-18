@@ -27,12 +27,21 @@ public class ComponentHasBehavior implements MontiThingsASTMTComponentTypeCoCo {
     Preconditions.checkArgument(node.isPresentSymbol(), "ASTComponent node '%s' has no symbol. "
       + "Did you forget to run the SymbolTableCreator before checking cocos?", node.getName());
     final ComponentTypeSymbol compSymbol = node.getSymbol();
+
     boolean hasHwc = FileHelper.existsHWCClass(hwcPath, compSymbol.getFullName());
     boolean hasBehavior = ComponentHelper.hasBehavior(compSymbol);
+    boolean hasEveryBlock = !ComponentHelper.getEveryBlocks(compSymbol).isEmpty();
     boolean isComposed = compSymbol.isDecomposed();
     boolean isInterfaceComp = node.getMTComponentModifier().isInterface();
-    if (!hasHwc && !hasBehavior && !isComposed && !isInterfaceComp) {
+
+    if (!hasHwc && !hasBehavior && !hasEveryBlock && !isComposed && !isInterfaceComp) {
       Log.error(String.format(MontiThingsError.NO_BEHAVIOR.toString(), compSymbol.getFullName()));
+    }
+
+    boolean hasIncomingPorts = !compSymbol.getIncomingPorts().isEmpty();
+
+    if (!hasBehavior && hasEveryBlock && hasIncomingPorts) {
+      Log.warn(String.format(MontiThingsError.NO_BEHAVIOR_ONLY_EVERY.toString(), compSymbol.getFullName()));
     }
   }
 }

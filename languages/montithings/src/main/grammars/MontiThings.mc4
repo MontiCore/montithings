@@ -6,6 +6,7 @@ grammar MontiThings extends MontiArc,
                             PrePostCondition,
                             ConditionCatch,
                             SetDefinitions,
+                            Behavior,
                             de.monticore.ocl.OCLExpressions,
                             de.monticore.ocl.OptionalOperators,
                             de.monticore.SIUnitTypes4Computing,
@@ -28,6 +29,7 @@ grammar MontiThings extends MontiArc,
 
     MTCondition implements ArcElement = Condition;
     MTCatch implements ArcElement = ConditionCatch;
+    MTEveryBlock implements ArcElement = EveryBlock;
 
     /**
      * Store and restore component states in case of failure
