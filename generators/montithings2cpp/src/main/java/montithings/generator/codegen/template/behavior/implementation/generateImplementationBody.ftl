@@ -28,7 +28,7 @@ this->instanceName = instanceName;
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
 ${Utils.printTemplateArguments(comp)}
 void
-${className}${generics}::compute_Every${everyBlock.getName()} ()
+${className}${generics}::compute_Every${ComponentHelper.getEveryBlockName(comp, everyBlock)} ()
 {
 ${ComponentHelper.printJavaBlock(everyBlock.getMCJavaBlock())}
 }

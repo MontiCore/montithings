@@ -8,9 +8,9 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
+import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 
 import de.se_rwth.commons.logging.Log;
-import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 
 public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   private BehaviorVisitor realThis;

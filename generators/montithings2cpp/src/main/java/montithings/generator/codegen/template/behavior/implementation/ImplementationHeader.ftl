@@ -55,7 +55,7 @@ ${tc.includeArgs("template.behavior.implementation.printConstructor", [comp, com
 void setInstanceName (const std::string &instanceName);
 
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
-void compute_Every${everyBlock.getName()}();
+void compute_Every${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
 </#list>
 
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>

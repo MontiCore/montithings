@@ -1095,4 +1095,23 @@ public class ComponentHelper {
     }
     return everyBlockList;
   }
+
+  public static String getEveryBlockName(ComponentTypeSymbol comp, ASTEveryBlock ast){
+    List<ASTEveryBlock> everyBlockList = getEveryBlocks(comp);
+    int i = 1;
+    for (ASTEveryBlock everyBlock : everyBlockList){
+      if(everyBlock.equals(ast)){
+        if(everyBlock.isPresentName()){
+          return everyBlock.getName();
+        }
+        else {
+          return "" + i;
+        }
+      }
+      i++;
+    }
+
+    //this code should normally not be executed
+    return "";
+  }
 }

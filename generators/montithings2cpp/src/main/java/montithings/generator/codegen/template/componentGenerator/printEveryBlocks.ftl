@@ -5,7 +5,7 @@ ${tc.signature("comp","compname","className")}
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 
-<#assign everyname = everyBlock.getName()>
+<#assign everyname = ComponentHelper.getEveryBlockName(comp, everyBlock)>
 ${Utils.printTemplateArguments(comp)}
 void
 ${className}${Utils.printFormalTypeParameters(comp)}::run_Every${everyname} ()
@@ -16,7 +16,7 @@ while (true)
 {
 auto end = std::chrono::high_resolution_clock::now()
 + ${ComponentHelper.getExecutionIntervalMethod(comp, everyBlock)};
-${Identifier.getBehaviorImplName()}.compute_Every${everyBlock.getName()}();
+${Identifier.getBehaviorImplName()}.compute_Every${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
 
 do {
 std::this_thread::yield();
