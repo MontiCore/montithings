@@ -4,12 +4,12 @@ import behavior._ast.ASTAfterStatement;
 import behavior._ast.ASTLogStatement;
 import behavior._visitor.BehaviorVisitor;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.expressions.expressionsbasis._ast.ASTNameExpressionBuilder;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
-import jdk.internal.jline.internal.Log;
+
+import de.se_rwth.commons.logging.Log;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 
 public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
