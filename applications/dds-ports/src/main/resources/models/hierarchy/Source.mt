@@ -7,6 +7,7 @@ component Source {
   int lastValue = 0;
 
   behavior {
+    log "Source: $lastValue";
     value = lastValue++;
   }
 }
