@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD 11)
 MACRO(HEADER_DIRECTORIES input return_list)
     FILE(GLOB_RECURSE new_list ${input}/*.h)
     SET(dir_list "")
-    FOREACH(file_path ${new_list})
+    FOREACH (file_path ${new_list})
         GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
         SET(dir_list ${dir_list} ${dir_path})
-    ENDFOREACH()
+    ENDFOREACH ()
     LIST(REMOVE_DUPLICATES dir_list)
     SET(${return_list} ${dir_list})
 ENDMACRO()
@@ -42,23 +42,27 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 file(GLOB_RECURSE RTE_SOURCES "./*.cpp" "./*.h")
 include_directories(".")
 
+# Exclude DDS files
+if (EXCLUDE_DDS)
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.cpp")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "DDSMessage.idl")
+endif ()
+
+
+# exclude MQTT related part of the RTE to not require Mosquitto for compiling
+if (EXCLUDE_MQTT)
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.h")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.cpp")
+endif ()
+
+if (EXCLUDE_COMM_MANAGER)
+    # Exclude management communication because splitting is disabled
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.h")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.cpp")
+endif ()
+
 add_library(MontiThingsRTE ${RTE_SOURCES})
 target_link_libraries(MontiThingsRTE nng::nng)
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -442,6 +442,17 @@ public class ComponentHelper {
       arg.printType(new MCCollectionTypesPrettyPrinter(new IndentPrinter())));
   }
 
+  public static Set<ComponentTypeSymbol> getSubcompTypesRecursive(ComponentTypeSymbol comp) {
+    Set<ComponentTypeSymbol> result;
+    result = comp.getSubComponents().stream()
+      .map(ComponentInstanceSymbol::getType)
+      .collect(Collectors.toSet());
+    for (ComponentTypeSymbol subcomp : new HashSet<>(result)) {
+      result.addAll(getSubcompTypesRecursive(subcomp));
+    }
+    return result;
+  }
+
   /**
    * Print the type of the specified subcomponent.
    *

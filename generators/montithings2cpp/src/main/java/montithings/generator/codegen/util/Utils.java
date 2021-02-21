@@ -35,6 +35,15 @@ import java.util.*;
 
 public class Utils {
 
+  public static String getDeployFile(ComponentTypeSymbol comp) {
+    String filename = comp.getFullName();
+    int indexComponentName = filename.length() - comp.getName().length();
+    filename = filename.substring(0, indexComponentName);
+    filename = filename.replaceAll("\\.", "/");
+    filename += "Deploy" + comp.getName() + ".cpp";
+    return filename;
+  }
+
   /**
    * Prints the component's configuration parameters as a comma separated list.
    */
