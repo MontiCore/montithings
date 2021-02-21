@@ -1,25 +1,17 @@
 // (c) https://github.com/MontiCore/monticore
 #pragma once
-#include "LowPassFilterInput.h"
-#include "LowPassFilterResult.h"
-#include "IComputable.h"
-#include <stdexcept>
+#include "LowPassFilterImplTOP.h"
 
 namespace montithings {
 namespace hierarchy {
 
-class LowPassFilterImpl : IComputable<LowPassFilterInput,LowPassFilterResult>{
+class LowPassFilterImpl : LowPassFilterImplTOP {
 	
 private:  
     int threshold;
     
 public:
-    LowPassFilterImpl( int threshold )
-    :
-    threshold (threshold)
-    {
-    }
-	//LowPassFilterImpl() = default;
+  using LowPassFilterImplTOP::LowPassFilterImplTOP;
 	LowPassFilterResult getInitialValues() override;
 	LowPassFilterResult passthrough(LowPassFilterInput input);
 	LowPassFilterResult dismiss(LowPassFilterInput input);

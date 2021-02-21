@@ -10,13 +10,8 @@ class SourceImpl : public SourceImplTOP {
 private:  
     
 public:
-    SourceImpl()
-    {
-    }
-
-    int lastValue;
-
-	//SourceImpl() = default;
+  int lastValue;
+  using SourceImplTOP::SourceImplTOP;
 	SourceResult getInitialValues() override;
 	SourceResult compute(SourceInput input) override;
 };

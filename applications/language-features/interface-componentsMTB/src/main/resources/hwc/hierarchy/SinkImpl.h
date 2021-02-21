@@ -7,7 +7,7 @@ namespace hierarchy {
 
 class SinkImpl : public SinkImplTOP {
 public:
-	SinkImpl() = default;
+	using SinkImplTOP::SinkImplTOP;
 	SinkResult getInitialValues() override;
 	SinkResult compute(SinkInput input) override;
 };

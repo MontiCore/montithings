@@ -24,7 +24,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::initialize(){
   </#if>
 </#list>
 <#if ComponentHelper.retainState(comp)>
-  if (!${Identifier.getBehaviorImplName()}.isRestoredState ())
+  if (!${Identifier.getStateName()}.isRestoredState ())
 </#if>
 {
 ${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();

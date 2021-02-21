@@ -5,10 +5,13 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.ocl.oclexpressions._ast.*;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
-import de.monticore.ocl.setexpressions._ast.*;
+import de.monticore.ocl.setexpressions._ast.ASTSetComprehension;
+import de.monticore.ocl.setexpressions._ast.ASTSetEnumeration;
+import de.monticore.ocl.setexpressions._ast.ASTSetValueItem;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
+import montithings.generator.codegen.util.Identifier;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import setdefinitions._ast.ASTSetValueRange;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static montithings.generator.helper.ComponentHelper.printCPPTypeName;
+import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
 
 public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter {
 
@@ -277,8 +281,9 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       Log.error("OCLAtPreQualification can only be applied to variables of components");
     }
     else {
-      node.getExpression().accept(getRealThis());
-      getPrinter().print("__at__pre");
+      ASTNameExpression name = (ASTNameExpression) node.getExpression();
+      getPrinter().print(Identifier.getStateName() + "__at__pre.get");
+      getPrinter().print(capitalize(name.getName()) + "()");
     }
   }
 

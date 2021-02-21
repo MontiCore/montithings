@@ -21,9 +21,6 @@ ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, c
 </#if>
 
 ${tc.includeArgs("template.componentGenerator.printComputeResults", [comp, compname, true, className])}
-<#list comp.getOutgoingPorts() as port>
-<#-- ${ValueCheck.printPortValuecheck(comp, port)} -->
-</#list>
 ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, compname])}
 }
 }

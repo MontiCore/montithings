@@ -10,10 +10,7 @@ class SinkImpl : public SinkImplTOP {
 private:  
     
 public:
-    SinkImpl()
-    {
-    }
-	//SinkImpl() = default;
+  using SinkImplTOP::SinkImplTOP;
 	SinkResult getInitialValues() override;
 	SinkResult compute(SinkInput input) override;
 };

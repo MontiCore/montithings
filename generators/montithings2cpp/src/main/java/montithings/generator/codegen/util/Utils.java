@@ -109,11 +109,15 @@ public class Utils {
    * Prints a member of given visibility name and type
    */
   public static String printMember(String type, String name, String initialValue) {
-    return type + " " + name + "=" + initialValue + ";";
+    String result = type + " " + name;
+    if (!initialValue.equals("")) {
+      result += "=" + initialValue;
+    }
+    return result + ";";
   }
 
   public static String printMember(String type, String name) {
-    return type + " " + name + ";";
+    return printMember(type, name, "");
   }
 
   /**
@@ -145,32 +149,38 @@ public class Utils {
    * Prints members for variables
    */
   public static String printVariables(ComponentTypeSymbol comp, ConfigParams config) {
+    return printVariables(comp, config, true);
+  }
+
+  public static String printVariables(ComponentTypeSymbol comp, ConfigParams config, boolean printStateVariablePrefix) {
     StringBuilder s = new StringBuilder();
 
     // Sort to print params before fields
     List<VariableSymbol> vars = ComponentHelper.getVariablesAndParameters(comp);
 
     for (VariableSymbol variable : vars) {
-      if (variable.getAstNode() instanceof ASTArcField) {
-        ASTArcField field = (ASTArcField) variable.getAstNode();
-        if(variable.getType() instanceof SymTypeOfNumericWithSIUnit){
-          s.append(
-            printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
-              variable.getName(), printSIExpression(field.getInitial(), variable.getType())));
-        }
-        else {
-          s.append(
-            printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
-              variable.getName(), printExpression(field.getInitial())));
-        }
+      String initialValue = getInitialValue(variable);
+      if (!printStateVariablePrefix) {
+        initialValue = initialValue.replaceAll(Identifier.getStateName() + ".", "");
       }
-      else {
-        s.append(
-          printMember(ComponentHelper.printCPPTypeName(variable.getType(), comp, config),
-            variable.getName()));
-      }
+      String typeName = ComponentHelper.printCPPTypeName(variable.getType(), comp, config);
+      s.append(printMember(typeName, variable.getName(), initialValue));
     }
     return s.toString();
+  }
+
+  public static String getInitialValue (VariableSymbol variable) {
+    String initialValue = "";
+    if (variable.getAstNode() instanceof ASTArcField) {
+      ASTArcField field = (ASTArcField) variable.getAstNode();
+      if(variable.getType() instanceof SymTypeOfNumericWithSIUnit){
+        initialValue = printSIExpression(field.getInitial(), variable.getType());
+      }
+      else {
+        initialValue = printExpression(field.getInitial());
+      }
+    }
+    return initialValue;
   }
 
   /**

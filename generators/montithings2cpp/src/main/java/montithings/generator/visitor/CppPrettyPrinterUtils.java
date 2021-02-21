@@ -4,10 +4,15 @@ package montithings.generator.visitor;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.ast.ASTNode;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.IMontiThingsScope;
+import montithings.generator.helper.ComponentHelper;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CppPrettyPrinterUtils {
 
@@ -37,5 +42,19 @@ public class CppPrettyPrinterUtils {
     }
 
     return componentScope;
+  }
+
+  protected static boolean isStateVariable(ASTExpression node) {
+    IMontiThingsScope componentScope = getScopeOfEnclosingComponent(node);
+    ComponentTypeSymbol component = (ComponentTypeSymbol) componentScope.getSpanningSymbol();
+
+    List<VariableSymbol> stateVariables = ComponentHelper.getVariablesAndParameters(component);
+    ASTNameExpression nameExpr = (ASTNameExpression) node;
+    IMontiThingsScope scope = (IMontiThingsScope) node.getEnclosingScope();
+    Optional<VariableSymbol> foundVariable = scope.resolveVariable(nameExpr.getName());
+    if (foundVariable.isPresent()) {
+      return stateVariables.contains(foundVariable.get());
+    }
+    return false;
   }
 }

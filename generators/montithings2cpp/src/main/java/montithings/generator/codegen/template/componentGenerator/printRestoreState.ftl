@@ -1,13 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 
 ${Utils.printTemplateArguments(comp)}
 bool
 ${className}${Utils.printFormalTypeParameters(comp)}::restoreState ()
 {
 // 1. Option: Try to restore state locally from file
-if (behaviorImpl.restoreState ())
+if (${Identifier.getStateName()}.restoreState ())
 {
 return true;
 }
@@ -20,19 +21,19 @@ LOG(DEBUG) << "Component instance '"
 
 <#if config.getMessageBroker().toString() == "MQTT">
   // 2. Option restore state and replay messages since state
-  behaviorImpl.requestState ();
+  ${Identifier.getStateName()}.requestState ();
   auto requestStateTimeout = std::chrono::high_resolution_clock::now () + std::chrono::seconds (1);
-  while (!behaviorImpl.isReceivedState ()
+  while (!${Identifier.getStateName()}.isReceivedState ()
   && std::chrono::high_resolution_clock::now () < requestStateTimeout)
   ;
-  if (behaviorImpl.isReceivedState ())
+  if (${Identifier.getStateName()}.isReceivedState ())
   {
-  behaviorImpl.requestReplay ();
-  while (!behaviorImpl.isReplayFinished ())
+  ${Identifier.getStateName()}.requestReplay ();
+  while (!${Identifier.getStateName()}.isReplayFinished ())
   ;
   }
 
-  bool restoreSuccessful = behaviorImpl.isReceivedState () && behaviorImpl.isReplayFinished ();
+  bool restoreSuccessful = ${Identifier.getStateName()}.isReceivedState () && ${Identifier.getStateName()}.isReplayFinished ();
   if (!restoreSuccessful)
   {
   LOG(DEBUG) << "Component instance '"

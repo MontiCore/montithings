@@ -1,22 +1,16 @@
 // (c) https://github.com/MontiCore/monticore
 #pragma once
-#include "SumInput.h"
-#include "SumResult.h"
-#include "IComputable.h"
-#include <stdexcept>
+#include "SumImplTOP.h"
 
 namespace montithings {
 namespace hierarchy {
 
-class SumImpl : IComputable<SumInput,SumResult>{
+class SumImpl : SumImplTOP {
 	
 private:  
     
 public:
-    SumImpl()
-    {
-    }
-	//SumImpl() = default;
+  using SumImplTOP::SumImplTOP;
 	SumResult getInitialValues() override;
 	SumResult compute(SumInput input) override;
 };

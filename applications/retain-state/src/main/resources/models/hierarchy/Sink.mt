@@ -3,4 +3,8 @@ package hierarchy;
 
 component Sink {
   port in int value;
+
+  behavior {
+    log "Sink: $value";
+  }
 }

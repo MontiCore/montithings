@@ -6,12 +6,14 @@ namespace montithings {
 namespace hierarchy {
 
 SourceResult SourceImpl::getInitialValues(){
-    lastValue = 1.0;
-	return {lastValue};
+  state.setLastValue(1.0);
+  return {state.getLastValue()};
 }
 
 SourceResult SourceImpl::compute(SourceInput input){
-	return {lastValue++};
+  std::cout << "Source: " << state.getLastValue() << std::endl;
+  state.setLastValue(state.getLastValue() + 1);
+  return {state.getLastValue()};
 }
 
 }}

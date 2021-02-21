@@ -53,6 +53,10 @@ public class MTGenerator {
       "template/result/ResultHeader.ftl", comp, compname, config);
     fg.generate(targetPath, compname + "Result", ".cpp",
       "template/result/ImplementationFile.ftl", comp, compname, config);
+    fg.generate(targetPath, compname + "State", ".h",
+      "template/state/StateHeader.ftl", comp, config);
+    fg.generate(targetPath, compname + "State", ".cpp",
+      "template/state/ImplementationFile.ftl", comp, config);
     fg.generate(targetPath, compname, ".h",
       "template/componentGenerator/Header.ftl", comp, compname, config, useWsPorts);
     fg.generate(targetPath, compname, ".cpp",
