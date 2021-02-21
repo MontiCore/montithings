@@ -5,7 +5,7 @@
 namespace montithings {
 namespace hierarchy {
 
-class SourceImpl : public SinkImplTOP {
+class SourceImpl : public SourceImplTOP {
 	
 private:  
     
