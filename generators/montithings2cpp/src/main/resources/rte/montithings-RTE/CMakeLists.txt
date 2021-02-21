@@ -52,14 +52,14 @@ endif ()
 
 # exclude MQTT related part of the RTE to not require Mosquitto for compiling
 if (EXCLUDE_MQTT)
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.h")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.cpp")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.h")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.cpp")
 endif ()
 
 if (EXCLUDE_COMM_MANAGER)
     # Exclude management communication because splitting is disabled
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.h")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.cpp")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.h")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.cpp")
 endif ()
 
 add_library(MontiThingsRTE ${RTE_SOURCES})

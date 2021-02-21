@@ -104,17 +104,29 @@ include_directories("hwc" ${r"${dir_list}"})
   LINK_DIRECTORIES(/usr/local/Cellar/mosquitto/1.6.10/lib)
 </#if>
 
+<#if test>
+  <#if config.getMessageBroker().toString() != "DDS">
+    set(EXCLUDE_DDS 1)
+  </#if>
+  <#if config.getMessageBroker().toString() != "MQTT">
+    set(EXCLUDE_MQTT 1)
+  </#if>
+  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")>
+    set(EXCLUDE_COMM_MANAGER 1)
+  </#if>
+</#if>
+
 add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}
 </#list>)
+target_link_libraries(${comp.getFullName()?replace(".","_")}Lib MontiThingsRTE)
 target_link_libraries(${comp.getFullName()?replace(".","_")}Lib nng::nng)
 set_target_properties(${comp.getFullName()?replace(".","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
 <#if !test>
   add_executable(${comp.getFullName()} ${Utils.getDeployFile(comp)})
-  target_link_libraries(${comp.getFullName()} MontiThingsRTE)
   target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
   <#if config.getTargetPlatform().toString() == "DSA_VCG"
   || config.getTargetPlatform().toString() == "DSA_LAB">
