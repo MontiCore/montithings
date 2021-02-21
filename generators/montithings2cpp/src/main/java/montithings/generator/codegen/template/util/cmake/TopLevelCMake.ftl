@@ -104,7 +104,7 @@ include_directories("hwc" ${r"${dir_list}"})
   LINK_DIRECTORIES(/usr/local/Cellar/mosquitto/1.6.10/lib)
 </#if>
 
-<#if test>
+<#if test || config.getSplittingMode().toString() == "OFF">
   <#if config.getMessageBroker().toString() != "DDS">
     set(EXCLUDE_DDS 1)
   </#if>
@@ -114,6 +114,7 @@ include_directories("hwc" ${r"${dir_list}"})
   <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")>
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
+  add_subdirectory(montithings-RTE)
 </#if>
 
 add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
