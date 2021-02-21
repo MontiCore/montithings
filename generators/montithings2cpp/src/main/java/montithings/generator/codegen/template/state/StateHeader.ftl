@@ -43,6 +43,14 @@ class ${className}
 protected:
 ${Utils.printVariables(comp, config, false)}
 public:
+${className} (${Utils.printConfigurationParametersAsList(comp)})
+<#if comp.getParameters()?has_content>:</#if>
+<#list comp.getParameters() as param >
+  ${param.getName()} (${param.getName()})
+  <#sep>,</#sep>
+</#list>
+{}
+
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
   <#assign varName = var.getName()>
   <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>

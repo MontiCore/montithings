@@ -3,15 +3,26 @@ ${tc.signature("comp","compname","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF")>
+
 ${Utils.printTemplateArguments(comp)}
-${className}${Utils.printFormalTypeParameters(comp)}::${className}(std::string instanceName<#if comp.getParameters()?has_content>
-  ,
-</#if>${Utils.printConfigurationParametersAsList(comp)})
-<#if comp.isAtomic() || shouldPrintSubcomponents>
+${className}${Utils.printFormalTypeParameters(comp)}::${className}
+(std::string instanceName
+<#if comp.getParameters()?has_content>
+  , ${Utils.printConfigurationParametersAsList(comp)}
+</#if>
+)
+<#if comp.isAtomic() || shouldPrintSubcomponents || comp.getParameters()?has_content>
   :
 </#if>
+<#if comp.getParameters()?has_content>
+  ${Identifier.getStateName()}(
+  <#list comp.getParameters() as param >
+    ${param.getName()} <#sep>,</#sep>
+  </#list>)
+  <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
+</#if>
 <#if comp.isAtomic()>
-    ${tc.includeArgs("template.componentGenerator.printBehaviorInitializerListEntry", [comp, compname])}
+  ${tc.includeArgs("template.componentGenerator.printBehaviorInitializerListEntry", [comp, compname])}
 </#if>
 <#if shouldPrintSubcomponents>
   ${tc.includeArgs("template.util.subcomponents.printInitializerList", [comp, config])}
