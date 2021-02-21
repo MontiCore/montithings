@@ -11,7 +11,7 @@ private:
     
 public:
   int lastValue;
-  using SinkImplTOP::SinkImplTOP;
+  using SourceImplTOP::SourceImplTOP;
 	SourceResult getInitialValues() override;
 	SourceResult compute(SourceInput input) override;
 };
