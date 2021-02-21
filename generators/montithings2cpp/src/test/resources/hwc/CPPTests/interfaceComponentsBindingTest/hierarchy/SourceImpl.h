@@ -8,7 +8,7 @@ namespace hierarchy {
 class SourceImpl : public SourceImplTOP {
 
 public:
-  SourceImpl() = default;
+  using SourceImplTOP::SourceImplTOP;
   SourceResult getInitialValues() override;
   SourceResult compute(SourceInput input) override;
 };

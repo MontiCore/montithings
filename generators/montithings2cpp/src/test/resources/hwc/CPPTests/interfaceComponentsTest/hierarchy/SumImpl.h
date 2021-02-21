@@ -8,7 +8,7 @@ namespace hierarchy {
 class SumImpl : public SumImplTOP
 {
   public:
-  SumImpl () = default;
+  using SumImplTOP::SumImplTOP;
   SumResult getInitialValues () override;
   SumResult compute (SumInput input) override;
 };

@@ -9,10 +9,7 @@ class SourceImpl : public SourceImplTOP {
 	
 
 public:
-    SourceImpl()
-    {
-    }
-
+  using SourceImplTOP::SourceImplTOP;
 	SourceResult getInitialValues() override;
 	SourceResult compute(SourceInput input) override;
 };
