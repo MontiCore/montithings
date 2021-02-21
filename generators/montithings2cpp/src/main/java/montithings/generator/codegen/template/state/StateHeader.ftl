@@ -41,7 +41,7 @@ class ${className}
 </#if>
 {
 protected:
-${Utils.printVariables(comp, config)}
+${Utils.printVariables(comp, config, false)}
 public:
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
   <#assign varName = var.getName()>

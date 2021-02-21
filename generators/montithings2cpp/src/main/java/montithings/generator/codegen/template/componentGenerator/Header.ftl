@@ -97,9 +97,9 @@ TimeMode timeMode =
 
 public:
 ${tc.includeArgs("template.util.ports.printMethodHeaders", [comp.getPorts(), config])}
-${className}(std::string instanceName<#if comp.getParameters()?has_content>
-  ,
-</#if>${ComponentHelper.printConstructorArguments(comp)});
+${className}(std::string instanceName
+<#if comp.getParameters()?has_content>,</#if>
+${ComponentHelper.printConstructorArguments(comp)});
 
 <#if config.getMessageBroker().toString() == "MQTT">
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;

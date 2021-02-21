@@ -13,18 +13,12 @@ if (shouldCompute())
 {
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
-<#list comp.incomingPorts as port>
-<#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
-</#list>
-
 ${compname}State ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-<#list comp.getOutgoingPorts() as port>
-<#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
-</#list>
 ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, compname])}
+
 setResult(${Identifier.getResultName()});
 <#if ComponentHelper.retainState(comp)>
   json state = ${Identifier.getStateName()}.serializeState ();
