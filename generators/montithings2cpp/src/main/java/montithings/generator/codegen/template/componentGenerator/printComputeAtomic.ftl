@@ -21,7 +21,7 @@ ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, 
 
 setResult(${Identifier.getResultName()});
 <#if ComponentHelper.retainState(comp)>
-  json state = ${Identifier.getStateName()}.serializeState ();
+  json json__state = ${Identifier.getStateName()}.serializeState ();
   <#if config.getMessageBroker().toString() == "MQTT">
     <#-- if there's no incoming ports, we have no chance of replaying and need
          to store every message. If there's at least one incoming port it is sufficient
@@ -33,10 +33,10 @@ setResult(${Identifier.getResultName()});
       if (computeCounter == 0)
     </#if>
     {
-    ${Identifier.getStateName()}.publishState (state);
+    ${Identifier.getStateName()}.publishState (json__state);
     }
   </#if>
-  ${Identifier.getStateName()}.storeState (state);
+  ${Identifier.getStateName()}.storeState (json__state);
 </#if>
 }
 }
