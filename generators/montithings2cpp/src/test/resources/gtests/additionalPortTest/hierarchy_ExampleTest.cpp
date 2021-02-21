@@ -15,13 +15,15 @@ struct ExampleTest : testing::Test
   montithings::hierarchy::Source *source;
   montithings::hierarchy::SourceImpl *sourceImpl;
   montithings::hierarchy::SinkImpl *sink;
+  montithings::hierarchy::SourceState sourceState;
+  montithings::hierarchy::SinkState sinkState;
 
   ExampleTest ()
   {
     cmp = new montithings::hierarchy::Example ("example");
-    source = new montithings::hierarchy::Source ("example.sink");
-    sourceImpl = new montithings::hierarchy::SourceImpl ();
-    sink = new montithings::hierarchy::SinkImpl ();
+    source = new montithings::hierarchy::Source ("example.source");
+    sourceImpl = new montithings::hierarchy::SourceImpl (sourceState);
+    sink = new montithings::hierarchy::SinkImpl (sinkState);
   }
   ~ExampleTest ()
   {
