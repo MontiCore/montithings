@@ -10,7 +10,7 @@ class SourceImpl : public SourceImplTOP {
 private:
   int lastValue;
 public:
-  SourceImpl() = default;
+  using SourceImplTOP::SourceImplTOP;
   SourceResult getInitialValues() override;
   SourceResult compute(SourceInput input) override;
 };

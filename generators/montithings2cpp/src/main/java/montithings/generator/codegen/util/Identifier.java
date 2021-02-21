@@ -23,7 +23,7 @@ public class Identifier {
 
   String behaviorImplName = "behaviorImpl";
 
-  String currentStateName = "currentState";
+  String stateName = "state";
 
   /**
    * Checks whether component parameter, variable, subcomponent instance, or
@@ -73,8 +73,8 @@ public class Identifier {
       behaviorImplName = "r__behaviorImpl";
     }
 
-    if (this.containsIdentifier("currentState", comp)) {
-      currentStateName = "r__currentState";
+    if (this.containsIdentifier("state", comp)) {
+      stateName = "r__state";
     }
   }
 
@@ -102,7 +102,7 @@ public class Identifier {
   /**
    * @return currentStateName
    */
-  public static String getCurrentStateName() {
-    return instance.currentStateName;
+  public static String getStateName() {
+    return instance.stateName;
   }
 }

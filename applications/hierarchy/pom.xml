@@ -189,7 +189,7 @@
                         <!--<platform>DSA</platform>-->
                         <main>hierarchy.Example</main>
                         <messageBroker>MQTT</messageBroker>
-                        <splitting>LOCAL</splitting>
+                        <splitting>OFF</splitting>
                         <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>

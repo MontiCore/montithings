@@ -7,29 +7,24 @@ ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp)}::${className}(std::string instanceName<#if comp.getParameters()?has_content>
   ,
 </#if>${Utils.printConfigurationParametersAsList(comp)})
-<#if comp.isAtomic() || comp.getParameters()?has_content || shouldPrintSubcomponents>
+<#if comp.isAtomic() || shouldPrintSubcomponents>
   :
 </#if>
 <#if comp.isAtomic()>
     ${tc.includeArgs("template.componentGenerator.printBehaviorInitializerListEntry", [comp, compname])}
 </#if>
-<#if comp.isAtomic() && comp.getParameters()?has_content>
-  ,
-</#if>
 <#if shouldPrintSubcomponents>
   ${tc.includeArgs("template.util.subcomponents.printInitializerList", [comp, config])}
 </#if>
-<#if comp.getParameters()?has_content && shouldPrintSubcomponents>,</#if>
-<#if comp.isAtomic() && !comp.getParameters()?has_content && shouldPrintSubcomponents>,
-</#if>
-<#list comp.getParameters() as param >
-  ${param.getName()} (${param.getName()})<#sep>,</#sep>
-</#list>
 {
 this->instanceName = instanceName;
+<#list comp.getParameters() as param >
+  ${Identifier.getStateName()}.set${param.getName()?cap_first} (${param.getName()});
+</#list>
 <#if comp.isAtomic()>
   this->${Identifier.getBehaviorImplName()}.setInstanceName (instanceName);
-  this->${Identifier.getBehaviorImplName()}.setup ();
+  this->${Identifier.getStateName()}.setInstanceName (instanceName);
+  this->${Identifier.getStateName()}.setup ();
 </#if>
 <#if comp.isPresentParentComponent()>
   super(<#list getInheritedParams(comp) as inhParam >

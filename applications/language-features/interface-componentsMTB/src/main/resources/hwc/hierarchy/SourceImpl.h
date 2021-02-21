@@ -7,10 +7,10 @@ namespace hierarchy {
 
 class SourceImpl : public SourceImplTOP {
 
-private:
+protected:
   int lastValue;
 public:
-  SourceImpl() = default;
+  using SourceImplTOP::SourceImplTOP;
   SourceResult getInitialValues() override;
   SourceResult compute(SourceInput input) override;
 };

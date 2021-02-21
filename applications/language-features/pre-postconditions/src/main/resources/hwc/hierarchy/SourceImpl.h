@@ -5,18 +5,13 @@
 namespace montithings {
 namespace hierarchy {
 
-class SourceImpl : public SourceImplTOP {
+class SourceImpl : public SinkImplTOP {
 	
 private:  
     
 public:
-    SourceImpl()
-    {
-    }
-
-    int lastValue;
-
-	//SourceImpl() = default;
+  int lastValue;
+  using SinkImplTOP::SinkImplTOP;
 	SourceResult getInitialValues() override;
 	SourceResult compute(SourceInput input) override;
 };

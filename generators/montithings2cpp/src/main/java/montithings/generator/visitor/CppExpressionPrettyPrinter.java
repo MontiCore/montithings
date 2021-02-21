@@ -9,7 +9,6 @@ import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
-import montiarc._symboltable.IMontiArcScope;
 import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
@@ -20,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
+import static montithings.util.IdentifierUtils.getPortForName;
 
 /**
  * Transforms cd attribute calls to getter expression which correspond to the
@@ -50,7 +50,12 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
         String cppFullyQualifiedName = fullName.replaceAll("\\.", "::");
         getPrinter().print("montithings::" + cppFullyQualifiedName);
       } else {
-        getPrinter().print(node.getName());
+        if (isStateVariable(node)) {
+          getPrinter().print(Identifier.getStateName() + ".get");
+          getPrinter().print(capitalize(node.getName()) + "()");
+        } else {
+          getPrinter().print(node.getName());
+        }
       }
       return;
     }
@@ -93,18 +98,11 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
 
     }
     else {
+      if (isStateVariable(node)) {
+        getPrinter().print(Identifier.getStateName() + ".");
+      }
       getPrinter().print(node.getName());
     }
     CommentPrettyPrinter.printPostComments(node, getPrinter());
-  }
-
-  protected Optional<PortSymbol> getPortForName(ASTNameExpression node) {
-    if (!(node.getEnclosingScope() instanceof IMontiArcScope)) {
-      getPrinter().print(node.getName());
-      return Optional.empty();
-    }
-    IMontiArcScope s = (IMontiArcScope) node.getEnclosingScope();
-    String name = node.getName();
-    return s.resolvePort(name);
   }
 }

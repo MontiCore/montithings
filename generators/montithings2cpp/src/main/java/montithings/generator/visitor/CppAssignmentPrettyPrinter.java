@@ -2,8 +2,8 @@
 package montithings.generator.visitor;
 
 import arcbasis._symboltable.PortSymbol;
-import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpression;
-import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
+import de.monticore.expressions.assignmentexpressions._ast.*;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
@@ -12,7 +12,6 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
-import montiarc._symboltable.IMontiArcScope;
 import montithings.generator.codegen.util.Identifier;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
@@ -21,7 +20,9 @@ import javax.measure.converter.UnitConverter;
 import java.util.Optional;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
+import static montithings.generator.visitor.CppPrettyPrinterUtils.isStateVariable;
 import static montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter.*;
+import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrinter {
 
@@ -29,8 +30,57 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
 
   public CppAssignmentPrettyPrinter(IndentPrinter printer) {
     super(printer);
-    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
+      new DeriveSymTypeOfMontiThingsCombine());
     this.realThis = this;
+  }
+
+  @Override public void handle(ASTIncSuffixExpression node) {
+    if (node.getExpression() instanceof ASTNameExpression) {
+      handleIncDec(node.getExpression(), "post", "+1");
+    }
+    else {
+      super.handle(node);
+    }
+  }
+
+  @Override public void handle(ASTDecSuffixExpression node) {
+    if (node.getExpression() instanceof ASTNameExpression) {
+      handleIncDec(node.getExpression(), "post", "-1");
+    }
+    else {
+      super.handle(node);
+    }
+  }
+
+  @Override public void handle(ASTIncPrefixExpression node) {
+    if (node.getExpression() instanceof ASTNameExpression) {
+      handleIncDec(node.getExpression(), "pre", "+1");
+    }
+    else {
+      super.handle(node);
+    }
+  }
+
+  @Override public void handle(ASTDecPrefixExpression node) {
+    if (node.getExpression() instanceof ASTNameExpression) {
+      handleIncDec(node.getExpression(), "pre", "-1");
+    }
+    else {
+      super.handle(node);
+    }
+  }
+
+  protected void handleIncDec(ASTExpression node, String preOrPost, String operation) {
+    if (isStateVariable(node)) {
+      ASTNameExpression nameExpr = (ASTNameExpression) node;
+      getPrinter().print(Identifier.getStateName() + ".");
+      getPrinter().print(preOrPost + "Set" + capitalize(nameExpr.getName()) + "(");
+      getPrinter().print(Identifier.getStateName() + ".");
+      getPrinter().print("get" + capitalize(nameExpr.getName()) + "()");
+      getPrinter().print(operation);
+      getPrinter().print(")");
+    }
   }
 
   @Override
@@ -46,11 +96,14 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
     }
     Optional<PortSymbol> port = getPortForName(nameExpression);
 
-    if (port.isPresent()) {
+    if (port.isPresent() || isStateVariable(nameExpression)) {
       CommentPrettyPrinter.printPreComments(node, getPrinter());
 
       String prefix;
-      if (port.get().isIncoming()) {
+      if (isStateVariable(nameExpression)) {
+        prefix = Identifier.getStateName();
+      }
+      else if (port.get().isIncoming()) {
         prefix = Identifier.getInputName();
       }
       else {
@@ -103,67 +156,81 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
           Log.error("0xMT814 Missing implementation for RegularAssignmentExpression");
       }
 
-      if (port.get().getType() instanceof SymTypeOfNumericWithSIUnit){
-        SymTypeExpression exprType = tc.typeOf(node.getRight());
-        if(exprType instanceof SymTypeOfNumericWithSIUnit){
-          UnitConverter converter = getSIConverter(port.get().getType(), exprType);
-          getPrinter().print(factorStart(converter));
-          node.getRight().accept(getRealThis());
-          getPrinter().print(factorEnd(converter));
-        }
+      Optional<SymTypeExpression> leftType = Optional.empty();
+      Optional<SymTypeExpression> rightType = Optional.empty();
+
+      if (port.isPresent() && port.get().getType() instanceof SymTypeOfNumericWithSIUnit) {
+        leftType = Optional.of(port.get().getType());
+        rightType = Optional.of(tc.typeOf(node.getRight()));
       }
+
+      if (isStateVariable(nameExpression)
+        && tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit
+        && tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit) {
+        leftType = Optional.of(tc.typeOf(node.getLeft()));
+        rightType = Optional.of(tc.typeOf(node.getRight()));
+      }
+
+      if (leftType.isPresent() && rightType.isPresent()) {
+        UnitConverter converter = getSIConverter(leftType.get(), rightType.get());
+        getPrinter().print(factorStart(converter));
+        node.getRight().accept(getRealThis());
+        getPrinter().print(factorEnd(converter));
+      }
+
       else {
         node.getRight().accept(getRealThis());
       }
       getPrinter().print(" )");
     }
     else {
-      if(tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
-              tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit){
+      if (tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
+        tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit) {
         CommentPrettyPrinter.printPreComments(node, this.getPrinter());
         node.getLeft().accept(this.getRealThis());
-        switch(node.getOperator()) {
-          case 1:
+        switch (node.getOperator()) {
+          case ASTConstantsAssignmentExpressions.ANDEQUALS:
             this.getPrinter().print("&=");
             break;
-          case 2:
+          case ASTConstantsAssignmentExpressions.EQUALS:
             this.getPrinter().print("=");
             break;
-          case 3:
+          case ASTConstantsAssignmentExpressions.GTGTEQUALS:
             this.getPrinter().print(">>=");
             break;
-          case 4:
+          case ASTConstantsAssignmentExpressions.GTGTGTEQUALS:
             this.getPrinter().print(">>>=");
             break;
-          case 5:
+          case ASTConstantsAssignmentExpressions.LTLTEQUALS:
             this.getPrinter().print("<<=");
             break;
-          case 6:
+          case ASTConstantsAssignmentExpressions.MINUSEQUALS:
             this.getPrinter().print("-=");
             break;
-          case 7:
+          case ASTConstantsAssignmentExpressions.PERCENTEQUALS:
             this.getPrinter().print("%=");
             break;
-          case 8:
+          case ASTConstantsAssignmentExpressions.PIPEEQUALS:
             this.getPrinter().print("|=");
             break;
-          case 9:
+          case ASTConstantsAssignmentExpressions.PLUSEQUALS:
             this.getPrinter().print("+=");
             break;
-          case 10:
+          case ASTConstantsAssignmentExpressions.ROOFEQUALS:
             this.getPrinter().print("^=");
             break;
-          case 11:
+          case ASTConstantsAssignmentExpressions.SLASHEQUALS:
             this.getPrinter().print("/=");
             break;
-          case 12:
+          case ASTConstantsAssignmentExpressions.STAREQUALS:
             this.getPrinter().print("*=");
             break;
           default:
             Log.error("0xA0114 Missing implementation for RegularAssignmentExpression");
         }
 
-        UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()), tc.typeOf(node.getRight()));
+        UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()),
+          tc.typeOf(node.getRight()));
         getPrinter().print(factorStartSimple(converter));
         node.getRight().accept(getRealThis());
         getPrinter().print(factorEndSimple(converter));
@@ -175,15 +242,5 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
     }
 
     CommentPrettyPrinter.printPostComments(node, getPrinter());
-  }
-
-  protected Optional<PortSymbol> getPortForName(ASTNameExpression node) {
-    if (!(node.getEnclosingScope() instanceof IMontiArcScope)) {
-      getPrinter().print(node.getName());
-      return Optional.empty();
-    }
-    IMontiArcScope s = (IMontiArcScope) node.getEnclosingScope();
-    String name = node.getName();
-    return s.resolvePort(name);
   }
 }

@@ -13,9 +13,7 @@ class SinkImpl : public SinkImplTOP
   private:
 
   public:
-  SinkImpl ()
-  {
-  }
+  using SinkImplTOP::SinkImplTOP;
 
   SinkResult getInitialValues () override;
   SinkResult compute (SinkInput input) override;

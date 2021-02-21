@@ -36,22 +36,3 @@ void ${className}${generics}::setInstanceName (const std::string &instanceName)
 {
 this->instanceName = instanceName;
 }
-
-<#list ComponentHelper.getVariablesAndParameters(comp) as var>
-  <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
-  <#assign varName = var.getName()>
-
-  ${Utils.printTemplateArguments(comp)}
-  ${type} ${className}${generics}::get${varName?cap_first}() const
-  {
-    return ${varName};
-  }
-
-  ${Utils.printTemplateArguments(comp)}
-  void ${className}${generics}::set${varName?cap_first}(${type} ${varName})
-  {
-    ${className}${generics}::${varName} = ${varName};
-  }
-</#list>
-
-${tc.includeArgs("template.behavior.implementation.printStateMethods", [comp, className])}

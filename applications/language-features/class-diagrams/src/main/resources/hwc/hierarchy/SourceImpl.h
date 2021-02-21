@@ -13,10 +13,7 @@ class SourceImpl : public SourceImplTOP
   private:
 
   public:
-  SourceImpl ()
-  {
-  }
-
+  using SourceImplTOP::SourceImplTOP;
   int lastValue;
   SourceResult getInitialValues () override;
   SourceResult compute (SourceInput input) override;

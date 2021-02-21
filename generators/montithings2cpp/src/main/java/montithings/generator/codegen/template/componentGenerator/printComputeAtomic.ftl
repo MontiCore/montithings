@@ -16,22 +16,18 @@ ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResult
 <#list comp.incomingPorts as port>
 <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>
-<#list ComponentHelper.getArcFieldVariables(comp) as field>
-  ${ComponentHelper.printCPPTypeName(field.getType())} ${field.getName()}__at__pre = ${field.getName()};
-</#list>
+
+${compname}State ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+
 ${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-<#list ComponentHelper.getVariablesAndParameters(comp) as var>
-  <#assign varName = var.getName()>
-  ${varName} = ${Identifier.getBehaviorImplName()}.get${varName?cap_first}();
-</#list>
 <#list comp.getOutgoingPorts() as port>
 <#--  ${ValueCheck.printPortValuecheck(comp, port)} -->
 </#list>
 ${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, compname])}
 setResult(${Identifier.getResultName()});
 <#if ComponentHelper.retainState(comp)>
-  json state = ${Identifier.getBehaviorImplName()}.serializeState ();
+  json state = ${Identifier.getStateName()}.serializeState ();
   <#if config.getMessageBroker().toString() == "MQTT">
     <#-- if there's no incoming ports, we have no chance of replaying and need
          to store every message. If there's at least one incoming port it is sufficient
@@ -43,10 +39,10 @@ setResult(${Identifier.getResultName()});
       if (computeCounter == 0)
     </#if>
     {
-    ${Identifier.getBehaviorImplName()}.publishState (state);
+    ${Identifier.getStateName()}.publishState (state);
     }
   </#if>
-  ${Identifier.getBehaviorImplName()}.storeState (state);
+  ${Identifier.getStateName()}.storeState (state);
 </#if>
 }
 }
