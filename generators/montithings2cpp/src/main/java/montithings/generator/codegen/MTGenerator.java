@@ -162,14 +162,14 @@ public class MTGenerator {
         .toString(), subPackagesPath, config, false);
   }
 
-  public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories) {
+  public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories, ConfigParams config) {
     List sortedDirs = new ArrayList<String>();
     sortedDirs.addAll(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
 
     fg.generate(targetPath, "CMakeLists", ".txt",
-      "template/util/cmake/CMakeForSubdirectories.ftl", sortedDirs);
+      "template/util/cmake/CMakeForSubdirectories.ftl", sortedDirs, config);
   }
 
   public void generateTestMakeFile(File targetPath, ComponentTypeSymbol comp,

@@ -1,5 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "existsHWC")}
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
 <#assign commonCodePrefix = "">
 <#if config.getSplittingMode().toString() != "OFF">
@@ -76,12 +78,20 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${r"${CMAKE_BINARY_DIR}"}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${r"${CMAKE_BINARY_DIR}"}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${r"${CMAKE_BINARY_DIR}"}/bin)
 
-<#-- include_directories("${hwcPath?replace("\\","/")}/${comp.getName()?uncap_first}") -->include_directories("${commonCodePrefix}${libraryPath?replace("\\","/")}")
+include_directories("${commonCodePrefix}${libraryPath?replace("\\","/")}")
 
 # Include packages
 <#list subPackagesPath as subdir>
   file(GLOB_RECURSE ${subdir.getName()?upper_case}_SOURCES "${subdir.getName()}/*.cpp" "${subdir.getName()}/*.h")
+  list(FILTER ${subdir.getName()?upper_case}_SOURCES EXCLUDE REGEX "${Utils.getDeployFile(comp)}")
   include_directories("${subdir.getName()}")
+</#list>
+
+# Include Subcomponent Headers
+<#list ComponentHelper.getSubcompTypesRecursive(comp) as subcomp>
+  <#assign subcompName = subcomp.getFullName()>
+  HEADER_DIRECTORIES("../${subcompName}" ${subcompName?replace(".","_")}_HEADER)
+  include_directories("../${subcompName}" ${"$"}{${subcompName?replace(".","_")}_HEADER})
 </#list>
 
 # Include HWC
@@ -89,49 +99,34 @@ file(GLOB_RECURSE HWC_SOURCES "hwc/*.cpp" "hwc/*.h")
 HEADER_DIRECTORIES("hwc" dir_list)
 include_directories("hwc" ${r"${dir_list}"})
 
-# Include RTE
-file(GLOB SOURCES "${commonCodePrefix}montithings-RTE/*.cpp" "${commonCodePrefix}montithings-RTE/*.h" "${commonCodePrefix}montithings-RTE/easyloggingpp/*.cpp" "${commonCodePrefix}montithings-RTE/easyloggingpp/*.h")
-
-
 <#if config.getMessageBroker().toString() == "MQTT">
   # Include Mosquitto Library
   LINK_DIRECTORIES(/usr/local/Cellar/mosquitto/1.6.10/lib)
-<#else>
-  # exclude MQTT related part of the RTE to not require Mosquitto for compiling
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.h")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/Mqtt.*.cpp")
 </#if>
 
-<#if config.getMessageBroker().toString() != "DDS">
-  # Exclude DDS files
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.h")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDS.*.cpp")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/DDSMessage.idl")
-</#if>
-
-<#if config.getSplittingMode().toString() == "OFF">
-  # Exclude management communication because splitting is disabled
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.h")
-  list(FILTER SOURCES EXCLUDE REGEX "montithings-RTE/ManagementCommunication.cpp")
-</#if>
-
+add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
+<#list subPackagesPath as subdir >
+${r"${"}${subdir.getName()?upper_case}_SOURCES}
+</#list>)
+target_link_libraries(${comp.getFullName()?replace(".","_")}Lib nng::nng)
+set_target_properties(${comp.getFullName()?replace(".","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
+install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
 <#if !test>
-add_executable(${comp.getFullName()} ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
-<#list subPackagesPath as subdir >
-    ${r"${"}${subdir.getName()?upper_case}_SOURCES}
-</#list>)
-<#if config.getTargetPlatform().toString() == "DSA_VCG"
-|| config.getTargetPlatform().toString() == "DSA_LAB">
-    ${tc.includeArgs("template.util.cmake.dsaLinkLibraries", [comp.getFullName()])}
-<#else>
-  <#if config.getMessageBroker().toString() == "MQTT">
-    target_link_libraries(${comp.getFullName()} mosquitto)
-  <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
-    OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
-    target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
+  add_executable(${comp.getFullName()} ${Utils.getDeployFile(comp)})
+  target_link_libraries(${comp.getFullName()} MontiThingsRTE)
+  target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
+  <#if config.getTargetPlatform().toString() == "DSA_VCG"
+  || config.getTargetPlatform().toString() == "DSA_LAB">
+      ${tc.includeArgs("template.util.cmake.dsaLinkLibraries", [comp.getFullName()])}
+  <#else>
+    <#if config.getMessageBroker().toString() == "MQTT">
+      target_link_libraries(${comp.getFullName()} mosquitto)
+    <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+      OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
+      target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
+    </#if>
+    target_link_libraries(${comp.getFullName()} nng::nng)
   </#if>
-  target_link_libraries(${comp.getFullName()} nng::nng)
-</#if>
-set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
+  set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
 </#if>
