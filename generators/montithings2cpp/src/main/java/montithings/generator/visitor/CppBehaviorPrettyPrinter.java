@@ -6,11 +6,9 @@ import behavior._visitor.BehaviorVisitor;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
-import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
-import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
-
 import de.se_rwth.commons.logging.Log;
+import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 
 public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   private BehaviorVisitor realThis;
@@ -71,10 +69,8 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
     else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")){
       getPrinter().print("minutes");
     }
-    SIUnitLiteralDecoder decoder = new SIUnitLiteralDecoder();
-    double valueInSeconds = decoder.getValue(lit);
     getPrinter().print("{");
-    getPrinter().print((int) valueInSeconds);
+    lit.getNumericLiteral().accept(getRealThis());
     getPrinter().print("}");
   }
 
