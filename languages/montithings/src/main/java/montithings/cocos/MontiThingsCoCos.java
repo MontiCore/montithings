@@ -51,6 +51,7 @@ public class MontiThingsCoCos {
       .addCoCo(new UnsupportedOperator())
       .addCoCo(new NoIncomingPortsInEveryBlocks())
       .addCoCo(new LoggedVariablesAreResolvable())
+      .addCoCo(new PublishReferencesPort())
       ;
   }
 }

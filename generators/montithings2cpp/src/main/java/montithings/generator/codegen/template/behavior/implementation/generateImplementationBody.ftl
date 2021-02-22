@@ -15,6 +15,9 @@ ${tc.signature("comp","compname","className")}
   ${Identifier.getInputName()}){
   ${compname}Result${generics} ${Identifier.getResultName()};
   ${ComponentHelper.printStatementBehavior(comp)}
+  <#list ComponentHelper.getPublishedPortsForBehavior(comp) as port>
+    ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
+  </#list>
   return ${Identifier.getResultName()};
   }
 </#if>
@@ -27,6 +30,9 @@ ${tc.signature("comp","compname","className")}
   {
     ${compname}Result${generics} ${Identifier.getResultName()};
     ${ComponentHelper.printJavaBlock(everyBlock.getMCJavaBlock())}
+    <#list ComponentHelper.getPublishedPorts(comp, everyBlock.getMCJavaBlock()) as port>
+      ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
+    </#list>
     return ${Identifier.getResultName()};
   }
 </#list>
@@ -36,3 +42,13 @@ void ${className}${generics}::setInstanceName (const std::string &instanceName)
 {
 this->instanceName = instanceName;
 }
+
+<#list comp.getOutgoingPorts() as port>
+  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+  <#assign name = port.getName()>
+  ${Utils.printTemplateArguments(comp)}
+  void ${className}${generics}::setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first})
+  {
+    this->port${name?cap_first} = port${name?cap_first};
+  }
+</#list>

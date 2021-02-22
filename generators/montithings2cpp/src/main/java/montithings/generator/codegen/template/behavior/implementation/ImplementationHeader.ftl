@@ -14,6 +14,7 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include "${compname}Input.h"
 #include "${compname}Result.h"
 #include "${compname}State.h"
+#include "InOutPort.h"
 #include "IComputable.h"
 #include ${"<stdexcept>"}
 #include "easyloggingpp/easylogging++.h"
@@ -28,13 +29,22 @@ class ${className}
 
 protected:
 std::string instanceName;
-
 ${compname}State& ${Identifier.getStateName()};
+<#list comp.getOutgoingPorts() as port>
+  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign name = port.getName()>
+  InOutPort<${type}>* port${name?cap_first};
+</#list>
 
 public:
 ${className}(${compname}State& state) : ${Identifier.getStateName()}(state) {}
 
 void setInstanceName (const std::string &instanceName);
+<#list comp.getOutgoingPorts() as port>
+  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign name = port.getName()>
+  void setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first});
+</#list>
 
 <#if ComponentHelper.hasBehavior(comp)>
   ${compname}Result${generics} getInitialValues() override;

@@ -45,6 +45,9 @@ grammar MontiThings extends MontiArc,
 
     Behavior implements ArcElement = "behavior" MCJavaBlock;
 
+    PublishPort implements MCStatement =
+        "publish" publishedPorts:(Name@Port || ",")+ ";";
+
     /**
      * ASTIsPresentExpression can be used use a port regardless of whether it
      * has a value or to check if it has a value.

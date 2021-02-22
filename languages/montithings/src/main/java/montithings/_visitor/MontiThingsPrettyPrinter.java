@@ -81,4 +81,16 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
     node.getNameExpression().accept(this.getRealThis());
     this.getPrinter().print("?");
   }
+
+  @Override public void handle(ASTPublishPort node) {
+    getPrinter().print("publish ");
+    List<String> ports = node.getPublishedPortsList();
+    for (int i = 0; i < ports.size(); i++) {
+      if (i != 0) {
+        getPrinter().print(", ");
+      }
+      getPrinter().print(ports.get(i));
+    }
+    getPrinter().print(";");
+  }
 }

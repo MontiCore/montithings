@@ -15,6 +15,7 @@ import de.monticore.siunittypes4math._visitor.SIUnitTypes4MathVisitor;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTIsPresentExpression;
+import montithings._ast.ASTPublishPort;
 import montithings._auxiliary.SetExpressionsMillForMontiThings;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsPrettyPrinter;
@@ -43,6 +44,16 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   Stack<ASTExpression> expressions = new Stack<>();
+
+  @Override public void handle(ASTPublishPort node) {
+    CommentPrettyPrinter.printPreComments(node, getPrinter());
+    for (String port : node.getPublishedPortsList()) {
+      getPrinter().print("port" + capitalize(port) +
+        "->setNextValue(" + Identifier.getResultName() +
+        ".get" + capitalize(port) + "());");
+    }
+    CommentPrettyPrinter.printPostComments(node, getPrinter());
+  }
 
   @Override
   public void handle(ASTSetInExpression node) {
@@ -170,20 +181,24 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
 
   @Override
   public void handle(ASTSetComprehension node) {
-    if (!expressions.isEmpty()){
+    if (!expressions.isEmpty()) {
       //Called from SetInExpression
-      if(node.getLeft().isPresentSetVariableDeclaration()) {
+      if (node.getLeft().isPresentSetVariableDeclaration()) {
         //check expressions on the right side, if they are the only restrictions,
         //this method only gets called after handling SetInExpressions
-        printSetComprehensionExpressionsForSetInExpression(node, node.getLeft().getSetVariableDeclaration().getSymbol());
+        printSetComprehensionExpressionsForSetInExpression(node,
+          node.getLeft().getSetVariableDeclaration().getSymbol());
       }
-      else if(node.getLeft().isPresentGeneratorDeclaration()){
+      else if (node.getLeft().isPresentGeneratorDeclaration()) {
         //check expressions and check that element is in set of GeneratorDeclaration
-        printSetComprehensionExpressionsForSetInExpression(node, node.getLeft().getGeneratorDeclaration().getSymbol());
+        printSetComprehensionExpressionsForSetInExpression(node,
+          node.getLeft().getGeneratorDeclaration().getSymbol());
         getPrinter().print(" && ");
         getPrinter().print("(");
-        ASTSetInExpression expr = SetExpressionsMillForMontiThings.setInExpressionBuilder().setOperator("isin")
-                .setElem(expressions.peek()).setSet(node.getLeft().getGeneratorDeclaration().getExpression()).build();
+        ASTSetInExpression expr = SetExpressionsMillForMontiThings.setInExpressionBuilder()
+          .setOperator("isin")
+          .setElem(expressions.peek())
+          .setSet(node.getLeft().getGeneratorDeclaration().getExpression()).build();
         expr.accept(getRealThis());
         getPrinter().print(")");
       }
@@ -193,20 +208,21 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
     }
   }
 
-  private void printSetComprehensionExpressionsForSetInExpression(ASTSetComprehension setComprehension, VariableSymbol symbol) {
+  private void printSetComprehensionExpressionsForSetInExpression(
+    ASTSetComprehension setComprehension, VariableSymbol symbol) {
     String varName = symbol.getName();
     String varType = symbol.getType().getTypeInfo().getName();
-    getPrinter().print("[&] (" + varType +  " " + varName + ") { return ");
+    getPrinter().print("[&] (" + varType + " " + varName + ") { return ");
 
-    for (int i = 0; i < setComprehension.sizeSetComprehensionItems(); i++){
-      if(!(setComprehension.getSetComprehensionItem(i).isPresentExpression())){
+    for (int i = 0; i < setComprehension.sizeSetComprehensionItems(); i++) {
+      if (!(setComprehension.getSetComprehensionItem(i).isPresentExpression())) {
         Log.error("Only expressions are supported at the right side of set comprehensions");
       }
       getPrinter().print("(");
       setComprehension.getSetComprehensionItem(i).getExpression().accept(getRealThis());
       getPrinter().print(")");
 
-      if (i != setComprehension.sizeSetComprehensionItems() - 1){
+      if (i != setComprehension.sizeSetComprehensionItems() - 1) {
         getPrinter().print("&&");
       }
     }
@@ -251,7 +267,8 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
         String s1 = sync
           .getSyncedPortList()
           .stream()
-          .map(str -> Identifier.getInputName() + ".get" + capitalize(str) + "()" + isSet(portsInBatchStatement, str))
+          .map(str -> Identifier.getInputName() + ".get" + capitalize(str) + "()" + isSet(
+            portsInBatchStatement, str))
           .collect(Collectors.joining(" && "));
         synced.append(s1);
       }
@@ -266,12 +283,12 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   }
 
   @Override
-  public void handle(ASTSIUnitType4Computing node){
+  public void handle(ASTSIUnitType4Computing node) {
     node.getMCPrimitiveType().accept(getRealThis());
   }
 
   @Override
-  public void handle(ASTSIUnit node){
+  public void handle(ASTSIUnit node) {
     getPrinter().print("double");
   }
 
