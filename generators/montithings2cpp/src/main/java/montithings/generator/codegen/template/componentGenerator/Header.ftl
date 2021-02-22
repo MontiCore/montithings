@@ -36,6 +36,8 @@ ${Identifier.createInstance(comp)}
   #include "Utils.h"
 </#if>
 ${Utils.printIncludes(comp, config)}
+${tc.includeArgs("template.prepostconditions.hooks.Include", [comp])}
+#include "${compname}State.h"
 
 <#if comp.isDecomposed()>
   ${Utils.printIncludes(comp, compname, config)}
@@ -43,7 +45,6 @@ ${Utils.printIncludes(comp, config)}
   #include "${compname}Impl.h"
   #include "${compname}Input.h"
   #include "${compname}Result.h"
-  #include "${compname}State.h"
 </#if>
 
 ${Utils.printNamespaceStart(comp)}
@@ -66,6 +67,8 @@ class ${className} : public IComponent
 protected:
 ${tc.includeArgs("template.util.ports.printVars", [comp, comp.getPorts(), config])}
 
+${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
+
 std::vector< std::thread > threads;
 std::mutex computeMutex;
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
@@ -78,13 +81,13 @@ TimeMode timeMode =
 <#else>
   EVENTBASED
 </#if>;
+${compname}State ${Identifier.getStateName()};
 <#if comp.isDecomposed()>
     <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
       void run();
     </#if>
     ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}
 <#else>
-  ${compname}State ${Identifier.getStateName()};
   ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
   void initialize();

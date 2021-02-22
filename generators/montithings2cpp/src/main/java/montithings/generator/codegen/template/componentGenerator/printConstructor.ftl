@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF")>
 
@@ -40,6 +41,7 @@ this->instanceName = instanceName;
     this->${Identifier.getBehaviorImplName()}.setPort${name?cap_first} (getPort${name?cap_first}());
   </#list>
   this->${Identifier.getStateName()}.setup ();
+  ${tc.includeArgs("template.prepostconditions.hooks.Constructor", [comp])}
 </#if>
 <#if comp.isPresentParentComponent()>
   super(<#list getInheritedParams(comp) as inhParam >
