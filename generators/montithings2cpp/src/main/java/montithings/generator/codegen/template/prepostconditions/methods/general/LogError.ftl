@@ -1,14 +1,16 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "isPrecondition", "existsHWC")}
-<#include "/template/Preamble.ftl">
-<#include "/template/prepostconditions/GeneralPreamble.ftl">
+<#include "/template/prepostconditions/helper/GeneralPreamble.ftl">
 
 
 ${Utils.printTemplateArguments(comp)}
 void
-${className}${generics}::logError (${compname}State${generics} state,
+${className}${generics}::logError (${compname}State${generics} ${Identifier.getStateName()},
 ${compname}Input${generics} ${Identifier.getInputName()}
-<#if !isPrecondition>, ${compname}Result${generics} ${Identifier.getResultName()}</#if>) const
+<#if !isPrecondition>
+  , ${compname}Result${generics} ${Identifier.getResultName()}
+  , ${compname}State${generics} ${Identifier.getStateName()}__at__pre
+</#if>) const
 {
 std::stringstream error;
 error << "Violated <#if !isPrecondition>pre<#else>post</#if>condition " << toString () << " on component '" << instanceName << "'" << std::endl;

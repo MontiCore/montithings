@@ -1,8 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "statement", "config", "number", "isPrecondition", "existsHWC")}
-<#include "/template/Preamble.ftl">
-<#include "/template/prepostconditions/SpecificPreamble.ftl">
-
+<#include "/template/prepostconditions/helper/SpecificPreamble.ftl">
+<#include "/template/Copyright.ftl">
 
 #include "${compname}${prefix}condition${number}.h"
 
