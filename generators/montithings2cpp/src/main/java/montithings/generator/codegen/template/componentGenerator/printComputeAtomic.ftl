@@ -13,11 +13,11 @@ if (shouldCompute())
 {
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
-${compname}State ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
-${tc.includeArgs("template.componentGenerator.printPreconditionsCheck", [comp, compname])}
+${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-${tc.includeArgs("template.componentGenerator.printPostconditionsCheck", [comp, compname])}
+${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
 
 setResult(${Identifier.getResultName()});
 <#if ComponentHelper.retainState(comp)>

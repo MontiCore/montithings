@@ -4,4 +4,6 @@ ${tc.signature("existsHWC")}
 # clang-format -i --style=file <file>
 BasedOnStyle: GNU
 ColumnLimit: 100
+Language: Cpp
+Standard: Cpp11
 KeepEmptyLinesAtTheStartOfBlocks: false
