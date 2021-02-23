@@ -10,7 +10,7 @@ std::lock_guard${"<std::mutex>"} guard(computeMutex);
 if (shouldCompute()) {
 
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
-${compname}State ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 
 <#if config.getSplittingMode().toString() == "OFF">
