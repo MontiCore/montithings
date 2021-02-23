@@ -1,18 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "config", "isPrecondition" "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign compname = comp.getName()>
-<#assign prefix = "">
-<#if isPrecondition>
-  <#assign prefix = "Pre">
-<#else>
-  <#assign prefix = "Post">
-</#if>
-<#assign className = compname + prefix + "condition">
-<#if existsHWC>
-    <#assign className += "TOP">
-</#if>
+${tc.signature("comp", "config", "isPrecondition", "existsHWC")}
+<#include "/template/Preamble.ftl">
+<#include "/template/prepostconditions/GeneralPreamble.ftl">
     
 #pragma once
 #include "${compname}Input.h"
@@ -24,6 +13,7 @@ ${tc.signature("comp", "config", "isPrecondition" "existsHWC")}
 
 ${Utils.printNamespaceStart(comp)}
 
+${Utils.printTemplateArguments(comp)}
 class ${className}
 {
 protected:
@@ -31,11 +21,14 @@ std::string instanceName;
 public:
 ${className} (const std::string &instanceName);
 virtual bool isCatched ();
-virtual bool check (${compname}State state, ${compname}Input input <#if !isPrecondition>, ${compname}Result result</#if>) const = 0;
+virtual bool check (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result</#if>) const = 0;
 virtual std::string toString () const = 0;
-virtual void resolve (${compname}State &state, ${compname}Input &input <#if !isPrecondition>, ${compname}Result &result</#if>) = 0;
-void apply (${compname}State &state, ${compname}Input &input <#if !isPrecondition>, ${compname}Result &result</#if>);
-void logError (${compname}State state, ${compname}Input input <#if !isPrecondition>, ${compname}Result result</#if>) const;
+virtual void resolve (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result</#if>) = 0;
+void apply (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result</#if>);
+void logError (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result</#if>) const;
 };
 
+<#if Utils.hasTypeParameter(comp)>
+  ${tc.includeArgs("template.prepostconditions.GeneralBody", [comp, config, isPrecondition, existsHWC])}
+</#if>
 ${Utils.printNamespaceEnd(comp)}

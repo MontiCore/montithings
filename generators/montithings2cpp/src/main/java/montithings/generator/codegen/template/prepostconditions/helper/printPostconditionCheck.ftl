@@ -1,9 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "statement")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign compname = comp.getName()>
+<#include "/template/Preamble.ftl">
 
 <#list ComponentHelper.getPortsInGuardExpression(statement.guard) as port>
   <#if !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.getName())>

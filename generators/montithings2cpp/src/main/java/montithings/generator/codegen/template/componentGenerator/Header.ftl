@@ -5,6 +5,7 @@ ${tc.signature("comp", "compname", "config", "useWsPorts", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
+<#assign generics = Utils.printFormalTypeParameters(comp)>
 <#assign className = compname>
 <#if existsHWC>
     <#assign className += "TOP">
@@ -81,7 +82,7 @@ TimeMode timeMode =
 <#else>
   EVENTBASED
 </#if>;
-${compname}State ${Identifier.getStateName()};
+${compname}State${generics} ${Identifier.getStateName()};
 <#if comp.isDecomposed()>
     <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
       void run();

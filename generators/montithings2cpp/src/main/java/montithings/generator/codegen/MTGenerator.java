@@ -75,7 +75,7 @@ public class MTGenerator {
     int preconditionNumber = 1;
     for (ASTPrecondition precondition : ComponentHelper.getPreconditions(comp)) {
       fg.generate(targetPath, compname + "Precondition" + preconditionNumber, ".h",
-        "template/prepostconditions/SpecificHeader.ftl", comp, config, preconditionNumber, true);
+        "template/prepostconditions/SpecificHeader.ftl", comp, precondition, config, preconditionNumber, true);
       fg.generate(targetPath, compname + "Precondition" + preconditionNumber, ".cpp",
         "template/prepostconditions/SpecificImplementationFile.ftl", comp, precondition, config, preconditionNumber, true);
       preconditionNumber++;
@@ -84,7 +84,7 @@ public class MTGenerator {
     int postconditionNumber = 1;
     for (ASTPostcondition postcondition : ComponentHelper.getPostconditions(comp)) {
       fg.generate(targetPath, compname + "Postcondition" + postconditionNumber, ".h",
-        "template/prepostconditions/SpecificHeader.ftl", comp, config, postconditionNumber, false);
+        "template/prepostconditions/SpecificHeader.ftl", comp, postcondition, config, postconditionNumber, false);
       fg.generate(targetPath, compname + "Postcondition" + postconditionNumber, ".cpp",
         "template/prepostconditions/SpecificImplementationFile.ftl", comp, postcondition, config, postconditionNumber, false);
       postconditionNumber++;
