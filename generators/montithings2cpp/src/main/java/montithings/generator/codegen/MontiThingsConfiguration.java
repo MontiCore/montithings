@@ -42,6 +42,8 @@ public class MontiThingsConfiguration implements Configuration {
     PLATFORM("platform"),
     SPLITTING("splitting"),
     MESSAGEBROKER("messageBroker"),
+    REPLAYMODE("replayMode"),
+    REPLAYDATAFILE("replayDataPath"),
     MAINCOMP("mainComponent"),
     MAINCOMP_SHORT("main"),
     VERSION("version");
@@ -81,6 +83,8 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setSplittingMode(getSplittingMode());
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker());
+    configParams.setReplayMode(getReplayMode());
+    configParams.setReplayDataFile(getReplayDataFile());
     configParams.setHwcPath(getHWCPath());
     configParams.setProjectVersion(getVersion());
     configParams.setMainComponent(getMainComponent());
@@ -352,11 +356,42 @@ public class MontiThingsConfiguration implements Configuration {
           return ConfigParams.MessageBroker.DDS;
         default:
           throw new IllegalArgumentException(
-            "0xMT302 Message broker " + messageBroker + " in pom.xml is unknown");
+                  "0xMT302 Message broker " + messageBroker + " in pom.xml is unknown");
       }
     }
     // fallback default is "off"
     return ConfigParams.MessageBroker.OFF;
+  }
+
+  public ConfigParams.ReplayMode getReplayMode() {
+    Optional<String> replayMode = getAsString(Options.REPLAYMODE);
+    if (replayMode.isPresent()) {
+      switch (replayMode.get()) {
+        case "OFF":
+          return ConfigParams.ReplayMode.OFF;
+        case "ON":
+          return ConfigParams.ReplayMode.ON;
+        default:
+          throw new IllegalArgumentException(
+                  "0xMT303 Replay mode " + replayMode + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "off"
+    return ConfigParams.ReplayMode.OFF;
+  }
+
+  public File getReplayDataFile() {
+    Optional<String> path = getAsString(Options.REPLAYDATAFILE);
+
+    if (configParams.getReplayMode() == ConfigParams.ReplayMode.ON && !path.isPresent()) {
+      Log.error(MontiThingsError.GENERATOR_REPLAYDATA_REQUIRED.toString());
+    }
+
+    if (path.isPresent()) {
+      return new File(path.get());
+    }
+
+    return new File(path.orElse(""));
   }
 
   public String getMainComponent() {
@@ -365,10 +400,10 @@ public class MontiThingsConfiguration implements Configuration {
 
     if (mainComp.isPresent() && mainCompShort.isPresent()) {
       Log.error(String.format(MontiThingsError.GENERATOR_ONLY_ONE_MAIN.toString(),
-        mainComp.get(), mainCompShort.get()));
+              mainComp.get(), mainCompShort.get()));
     }
     if (configParams.getSplittingMode() == ConfigParams.SplittingMode.OFF
-      && !mainComp.isPresent() && !mainCompShort.isPresent()) {
+            && !mainComp.isPresent() && !mainCompShort.isPresent()) {
       Log.error(MontiThingsError.GENERATOR_MAIN_REQUIRED.toString());
     }
 

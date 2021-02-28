@@ -192,7 +192,9 @@ public class GenericBindingUtil {
       return ((ASTMCGenericType)type).printWithoutTypeArguments();
     }
     else if (type instanceof ASTSIUnitType){
-      return type.printType(new SIUnitTypes4ComputingPrettyPrinter(new IndentPrinter()));
+      // TODO go with a more generic way, dont know if this holds true for all situations
+      return ((ASTSIUnitType) type).getSIUnit().getSIUnitPrimitive().getSIUnitWithPrefix().getName();
+      //return type.printType(new SIUnitTypes4ComputingPrettyPrinter(new IndentPrinter()));
     }
     else{
       return type.printType(new MCBasicTypesPrettyPrinter(new IndentPrinter()));
