@@ -14,8 +14,7 @@ import montithings.generator.helper.FileHelper;
 import mtconfig._symboltable.HookpointSymbol;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
-import prepostcondition._ast.ASTPostcondition;
-import prepostcondition._ast.ASTPrecondition;
+import prepostcondition._ast.ASTPrePostConditionNode;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -76,23 +75,8 @@ public class MTGenerator {
     fg.generate(targetPath, compname + "Postcondition", ".cpp",
       "template/prepostconditions/GeneralImplementationFile.ftl", comp, config, false);
 
-    int preconditionNumber = 1;
-    for (ASTPrecondition precondition : ComponentHelper.getPreconditions(comp)) {
-      fg.generate(targetPath, compname + "Precondition" + preconditionNumber, ".h",
-        "template/prepostconditions/SpecificHeader.ftl", comp, precondition, config, preconditionNumber, true);
-      fg.generate(targetPath, compname + "Precondition" + preconditionNumber, ".cpp",
-        "template/prepostconditions/SpecificImplementationFile.ftl", comp, precondition, config, preconditionNumber, true);
-      preconditionNumber++;
-    }
-
-    int postconditionNumber = 1;
-    for (ASTPostcondition postcondition : ComponentHelper.getPostconditions(comp)) {
-      fg.generate(targetPath, compname + "Postcondition" + postconditionNumber, ".h",
-        "template/prepostconditions/SpecificHeader.ftl", comp, postcondition, config, postconditionNumber, false);
-      fg.generate(targetPath, compname + "Postcondition" + postconditionNumber, ".cpp",
-        "template/prepostconditions/SpecificImplementationFile.ftl", comp, postcondition, config, postconditionNumber, false);
-      postconditionNumber++;
-    }
+    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPreconditions(comp)), "Precondition");
+    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPostconditions(comp)), "Postcondition");
 
     if (comp.isAtomic()) {
       generateBehaviorImplementation(comp, targetPath);
@@ -138,6 +122,18 @@ public class MTGenerator {
           }
         }
       }
+    }
+  }
+
+  protected void generatePrePostcondition(File targetPath, ComponentTypeSymbol comp,
+    List<ASTPrePostConditionNode> conditions, String name) {
+    int number = 1;
+    for (ASTPrePostConditionNode condition : conditions) {
+      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".h",
+        "template/prepostconditions/SpecificHeader.ftl", comp, condition, config, number, true);
+      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".cpp",
+        "template/prepostconditions/SpecificImplementationFile.ftl", comp, condition, config, number, true);
+      number++;
     }
   }
 
