@@ -49,12 +49,16 @@ public class MTGenerator {
 
     fg.generate(targetPath, compname + "Input", ".h",
       "template/input/InputHeader.ftl", comp, compname, config);
-    fg.generate(targetPath, compname + "Input", ".cpp",
-      "template/input/ImplementationFile.ftl", comp, compname, config);
+    if (!comp.getIncomingPorts().isEmpty()) {
+      fg.generate(targetPath, compname + "Input", ".cpp",
+        "template/input/ImplementationFile.ftl", comp, compname, config);
+    }
     fg.generate(targetPath, compname + "Result", ".h",
       "template/result/ResultHeader.ftl", comp, compname, config);
-    fg.generate(targetPath, compname + "Result", ".cpp",
-      "template/result/ImplementationFile.ftl", comp, compname, config);
+    if (!comp.getOutgoingPorts().isEmpty()) {
+      fg.generate(targetPath, compname + "Result", ".cpp",
+        "template/result/ImplementationFile.ftl", comp, compname, config);
+    }
     fg.generate(targetPath, compname + "State", ".h",
       "template/state/StateHeader.ftl", comp, config);
     fg.generate(targetPath, compname + "State", ".cpp",
