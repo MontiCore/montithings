@@ -101,4 +101,10 @@ ${className}::publishConnectors ()
   ${tc.includeArgs("template.util.dds.participant.printPublishConnectors", [comp, config])}
 }
 
+std::string
+${className}::getInstanceName ()
+{
+  return comp->getInstanceName();
+}
+
 ${Utils.printNamespaceEnd(comp)}

@@ -46,7 +46,7 @@ protected:
 
 public:
   ${className} (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, int argc, char *argv[]);
-  ~${className}() {}
+  ~${className}() = default;
 
   /*
    * Initially create ports of this component
@@ -56,6 +56,8 @@ public:
   bool tryInitializeDDS(int argc, char *argv[]);
   void publishConnectors();
   void onNewConnectors(std::string payload);
+
+  std::string getInstanceName() override;
 };
 
 ${Utils.printNamespaceEnd(comp)}

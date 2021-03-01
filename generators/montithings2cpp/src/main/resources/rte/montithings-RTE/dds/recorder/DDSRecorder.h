@@ -1,0 +1,55 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+// (c) https://github.com/MontiCore/monticore
+#pragma once
+#include <ace/OS_NS_stdlib.h>
+#include <algorithm>
+#include <dds/DCPS/Marked_Default_Qos.h>
+#include <dds/DCPS/Service_Participant.h>
+#include <future>
+#include <iostream>
+#include <unordered_map>
+#include <utility>
+
+#include "../../json/json.hpp"
+#include "../../tl/optional.hpp"
+#include "../message-types/DDSMessageTypeSupportImpl.h"
+#include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
+#include "DDSCommunicator.h"
+#include "HWCInterceptor.h"
+#include "VectorClockImpl.h"
+#include "utils.h"
+
+class DDSRecorder : public VectorClockImpl
+{
+private:
+  int messageId = 0;
+
+  DDSCommunicator ddsCommunicator;
+  std::string instanceName;
+  std::string portIdentifier;
+  std::unordered_map<long, long long> unackedMessageTimestampMap;
+  std::unordered_map<long, long long> unackedRecordedMessageTimestampMap;
+  std::unordered_map<long, long long> unsentMessageDelays;
+  std::unordered_map<long, long long> unsentRecordMessageDelays;
+
+  static std::string getSendingInstanceNameFromTopic (const std::string &topicId);
+  bool isOutgoingPort ();
+  void start ();
+  void stop ();
+  void sendNDCalls (int commandId);
+  void sendInternalRecords ();
+  void onCommandMessage (const DDSRecorderMessage::Command &message);
+  void onAcknowledgementMessage (const DDSRecorderMessage::Acknowledgement& message);
+  static void handleAck (std::unordered_map<long, long long> &unackedMap,
+                  std::unordered_map<long, long long> &unsentDelayMap, long ackedId);
+
+public:
+  DDSRecorder () = default;
+  ~DDSRecorder () = default;
+
+  void init ();
+  void setInstanceName (std::string name);
+  void setPortIdentifier (std::string name);
+  void recordMessage (DDSMessage::Message message, char *topicName,
+                      const std::unordered_map<std::string, long>& vectorClock);
+};
