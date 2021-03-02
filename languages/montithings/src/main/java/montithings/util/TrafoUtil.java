@@ -1,6 +1,10 @@
 package montithings.util;
 
 import arcbasis._ast.*;
+import de.monticore.expressions.expressionsbasis._ast.ASTArguments;
+import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpression;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
+import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
 import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import montiarc._ast.ASTMACompilationUnit;
@@ -8,6 +12,7 @@ import montithings._visitor.MontiThingsVisitor;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static montithings.util.GenericBindingUtil.printSimpleType;
 
@@ -44,14 +49,14 @@ public abstract class TrafoUtil {
      * Returns the component type which declared the given port (part of a connection).
      * If the port is declared locally the name of the given component is returned
      * Otherwise the type is searched in the sub-component instantiations.
-     *
+     * <p>
      * E.g. v -> sink.value
      * Left hand side is declared locally, right hand side is declared in instance sink.
      * When searching through all component instantiation, sink may resolve to type Sink.
-     *
+     * <p>
      * This method may return null.
      *
-     * @param comp AST of component which contains the connection with the port
+     * @param comp      AST of component which contains the connection with the port
      * @param qNamePort AST of port which is part of a connection in comp
      * @return String of component type or null
      */
@@ -84,7 +89,7 @@ public abstract class TrafoUtil {
     /**
      * Searches in the collection of models for the given name
      *
-     * @param models Collection of AST components where is searched in
+     * @param models      Collection of AST components where is searched in
      * @param comp
      * @param qNameSearch Qualified component name
      * @return AST of searched component
@@ -135,6 +140,21 @@ public abstract class TrafoUtil {
         return null;
     }
 
+    public static String instanceArgsToString(ASTArguments arguments) {
+        List<String> list = arguments.getExpressionList().stream()
+                .filter(arg -> arg instanceof ASTLiteralExpression)
+                .map(arg -> (ASTLiteralExpression) arg)
+                .map(ASTLiteralExpression::getLiteral)
+                // TODO support other ASTLiteral types
+                .filter(l -> l instanceof ASTNatLiteral)
+                .map(l -> (ASTNatLiteral) l)
+                .map(ASTNatLiteral::getValue)
+                .map(Object::toString)
+                .collect(Collectors.toList());
+        return String.join("_", list);
+    }
+
+
     /**
      * Capitalizes first character of the given string
      *
@@ -151,7 +171,7 @@ public abstract class TrafoUtil {
 
     /**
      * @param models Collection of AST models where is searched in
-     * @param child AST child component
+     * @param child  AST child component
      * @return collection of parent component names
      */
     public static Collection<String> findParents(Collection<ASTMACompilationUnit> models, ASTMACompilationUnit child) {

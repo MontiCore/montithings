@@ -64,7 +64,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
                         + "Delay";
 
         // Adds instantiation statement, e.g. "SourceValueSinkValueDelay sourcevaluesinkvaluedelay";
-        addSubComponentInstantiation(comp, channelInterceptorComponentName, channelInterceptorComponentName.toLowerCase());
+        addSubComponentInstantiation(comp, channelInterceptorComponentName, channelInterceptorComponentName.toLowerCase(), createEmptyArguments());
 
         // Find out the port type. Therefore, first get the component of the source and search for the port.
         // This is only done with the source port as port types have to match anyway

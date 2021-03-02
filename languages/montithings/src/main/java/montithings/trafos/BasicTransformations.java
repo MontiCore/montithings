@@ -1,6 +1,8 @@
 package montithings.trafos;
 
 import arcbasis._ast.*;
+import de.monticore.expressions.expressionsbasis._ast.*;
+import de.monticore.literals.mccommonliterals._ast.ASTStringLiteralBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
@@ -12,7 +14,6 @@ import montithings._ast.ASTBehaviorBuilder;
 import montithings._ast.ASTMTComponentModifierBuilder;
 import montithings._ast.ASTMTComponentTypeBuilder;
 import montithings._auxiliary.ComfortableArcMillForMontiThings;
-import montithings.util.TrafoUtil;
 
 import java.util.Collections;
 import java.util.List;
@@ -118,13 +119,20 @@ public abstract class BasicTransformations {
      * @param comp         AST of component which is modified
      * @param typeName     Type name
      * @param instanceName Instance name
+     * @param args         Instance arguments
+     * @return
      */
-    protected void addSubComponentInstantiation(ASTMACompilationUnit comp, String typeName, String instanceName) {
+    protected ASTComponentInstantiation addSubComponentInstantiation(ASTMACompilationUnit comp, String typeName, String instanceName, ASTArguments args) {
         ASTComponentInstantiationBuilder instantiationBuilder = ComfortableArcMillForMontiThings.componentInstantiationBuilder();
-        instantiationBuilder.addInstance(instanceName);
 
+        instantiationBuilder.addInstance(instanceName);
+        instantiationBuilder.getComponentInstance(0).setArguments(args);
         instantiationBuilder.setMCType(createCompilationUnitType(typeName));
-        comp.getComponentType().getBody().addArcElement(instantiationBuilder.build());
+
+        ASTComponentInstantiation instantiation = instantiationBuilder.build();
+        comp.getComponentType().getBody().addArcElement(instantiation);
+
+        return instantiation;
     }
 
     /**
@@ -144,6 +152,38 @@ public abstract class BasicTransformations {
     }
 
     /**
+     * Returns all instantiations of a given type within the given component
+     *
+     * @param comp AST of component which is searched in
+     * @param type The type as a string which is searched for
+     * @return List<ASTComponentInstantiation> with the given type
+     */
+    protected List<ASTComponentInstantiation> getInstantiationsByType(ASTMACompilationUnit comp, String type) {
+        return comp.getComponentType().getSubComponentInstantiations().stream()
+                .filter(i -> printSimpleType(i.getMCType()).equals(type))
+                .collect(Collectors.toList());
+    }
+
+    protected ASTArguments createEmptyArguments() {
+        ASTArgumentsBuilder builder = new ASTArgumentsBuilder();
+        return builder.build();
+    }
+
+    protected ASTArguments createArguments(List<String> args) {
+        ASTStringLiteralBuilder stringLiteralBuilder = new ASTStringLiteralBuilder();
+        ASTLiteralExpressionBuilder literalExpressionBuilder = new ASTLiteralExpressionBuilder();
+        ASTArgumentsBuilder argumentsBuilder = new ASTArgumentsBuilder();
+
+        for (String arg : args) {
+            stringLiteralBuilder.setSource(arg);
+            literalExpressionBuilder.setLiteral(stringLiteralBuilder.build());
+            argumentsBuilder.addExpression(literalExpressionBuilder.build());
+        }
+
+        return argumentsBuilder.build();
+    }
+
+    /**
      * Creates a ASTMCQualifiedType with the given name.
      *
      * @param name Name of the type
@@ -151,8 +191,10 @@ public abstract class BasicTransformations {
      */
     private ASTMCQualifiedType createCompilationUnitType(String name) {
         ASTMCQualifiedName astmcQualifiedName = MontiThingsMill.mCQualifiedNameBuilder()
-                .setPartsList(Collections.singletonList(name)).build();
+                .setPartsList(Collections.singletonList(name))
+                .build();
         return MontiThingsMill.mCQualifiedTypeBuilder().
                 setMCQualifiedName(astmcQualifiedName).build();
     }
+
 }

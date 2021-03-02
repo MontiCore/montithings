@@ -1,6 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.trafos;
 
+import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.ASTComponentInstance;
+import arcbasis._ast.ASTComponentInstantiation;
+import de.monticore.expressions.expressionsbasis._ast.ASTArguments;
 import de.monticore.types.mcbasictypes._ast.ASTMCPrimitiveType;
 import de.monticore.types.mcbasictypes._ast.MCBasicTypesNodeFactory;
 import de.se_rwth.commons.logging.Log;
@@ -11,7 +15,9 @@ import montithings.util.TrafoUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Transformer for delaying computation times according to the recorded data.
@@ -64,7 +70,8 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         ASTMACompilationUnit compWrapper = createCompilationUnit(targetComp.getPackage(), compWrapperName);
 
         // copies parameters from original model
-        compWrapper.getComponentType().getHead().setArcParameterList(targetComp.getComponentType().getHead().getArcParameterList());
+        List<ASTArcParameter> parameterList = targetComp.getComponentType().getHead().getArcParameterList();
+        compWrapper.getComponentType().getHead().setArcParameterList(parameterList);
 
         // For each wrapping component, two additional components are required: before and after the computation
         ASTMACompilationUnit[] newComps = new ASTMACompilationUnit[2];
@@ -85,9 +92,18 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         /* ============================================================ */
         /* ======================= INSTANTIATIONS ===================== */
         /* ============================================================ */
-        addSubComponentInstantiation(compWrapper, compName, compName.toLowerCase());
-        addSubComponentInstantiation(compWrapper, newCompNames[0], newCompNames[0].toLowerCase());
-        addSubComponentInstantiation(compWrapper, newCompNames[1], newCompNames[1].toLowerCase());
+        // In case of parameterized components the wrapping component takes the same parameters as the original one and simply forwards it
+        // e.g. component LowPassFilterWrapper (int threshold, int defaultValue) {
+        //          LowPassFilter lpf (threshold, defaultValue);
+        //      }
+        List<String> parameterStringList = parameterList.stream()
+                .map(ASTArcParameter::getName)
+                .collect(Collectors.toList());
+        ASTArguments arguments = createArguments(parameterStringList);
+        addSubComponentInstantiation(compWrapper, compName, compName.toLowerCase(), arguments);
+
+        addSubComponentInstantiation(compWrapper, newCompNames[0], newCompNames[0].toLowerCase(), createEmptyArguments());
+        addSubComponentInstantiation(compWrapper, newCompNames[1], newCompNames[1].toLowerCase(), createEmptyArguments());
 
         // wherever the original component was initiated, the declaration has to be changed.
         // E.g. "Sink sink" becomes "SinkWrapper sink"
@@ -95,6 +111,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             ASTMACompilationUnit p = TrafoUtil.getComponentByName(originalModels, targetComp, parent);
             assert p != null;
             replaceComponentInstantiationType(p, compName, compWrapperName);
+
         }
 
         /* ============================================================ */

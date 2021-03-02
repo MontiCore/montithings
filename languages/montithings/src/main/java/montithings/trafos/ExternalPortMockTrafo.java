@@ -132,7 +132,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        addSubComponentInstantiation(mainComp, mockedComponentName, mockedComponentName.toLowerCase());
+        addSubComponentInstantiation(mainComp, mockedComponentName, mockedComponentName.toLowerCase(), createEmptyArguments());
 
         // connects mocked component with templated port
         for (String instanceName : instanceNames) {
