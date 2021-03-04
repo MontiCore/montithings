@@ -19,7 +19,6 @@ import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
-import montithings._ast.ASTMTComponentType;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.CppPrettyPrinter;
@@ -392,11 +391,10 @@ public class Utils {
         continue;
       }
 
-      // Skip interface components. We dont generate code for them, there's nothing to import here
+      // Skip components. Will be added later
       Optional<ComponentTypeSymbol> compType = comp.getEnclosingScope()
         .resolveComponentType(imp.getStatement());
-      if (compType.isPresent() && ((ASTMTComponentType) compType.get().getAstNode())
-        .getMTComponentModifier().isInterface()) {
+      if (compType.isPresent()) {
         continue;
       }
 
@@ -440,10 +438,17 @@ public class Utils {
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
       if (!getGenericParameters(comp).contains(subcomponent.getGenericType().getName())) {
         boolean isInner = subcomponent.getType().isInnerComponent();
-        compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
-          + (isInner ? (comp.getName() + "-Inner/") : "")
-          + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
-          + ".h\"");
+
+        if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF || isInner){
+          compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
+            + (isInner ? (comp.getName() + "-Inner/") : "")
+            + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
+            + ".h\"");
+        } else {
+          compIncludes.add("#include <"
+            + subcomponent.getType().getFullName().replaceAll("\\.", "/")
+            + ".h>");
+        }
       }
       Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent);
       for (String genericInclude : genericIncludes) {

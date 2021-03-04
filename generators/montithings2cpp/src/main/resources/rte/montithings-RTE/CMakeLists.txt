@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.8.2)
 project("MontiThingsRTE")
 set(CMAKE_CXX_STANDARD 11)
 
@@ -16,6 +16,19 @@ MACRO(HEADER_DIRECTORIES input return_list)
 ENDMACRO()
 SET(dir_list "")
 
+if (NOT EXCLUDE_DDS)
+    find_package(OpenDDS REQUIRED)
+
+    set(CMAKE_CXX_COMPILER "${OPENDDS_COMPILER}")
+    set(opendds_libs
+        OpenDDS::Dcps # Core OpenDDS Library
+        OpenDDS::InfoRepoDiscovery
+        OpenDDS::Tcp
+        OpenDDS::Rtps #RTPS Discovery
+        OpenDDS::Udp
+        OpenDDS::Rtps_Udp
+    )
+endif ()
 
 find_package(nng 1.1.1 CONFIG REQUIRED)
 
@@ -64,6 +77,13 @@ if (EXCLUDE_COMM_MANAGER)
 endif ()
 
 add_library(MontiThingsRTE ${RTE_SOURCES})
+
+if (NOT EXCLUDE_DDS)
+    # Generates type support code
+    OPENDDS_TARGET_SOURCES(MontiThingsRTE "../montithings-RTE/DDSMessage.idl")
+    target_link_libraries(MontiThingsRTE ${opendds_libs})
+endif ()
+
 target_link_libraries(MontiThingsRTE nng::nng)
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)

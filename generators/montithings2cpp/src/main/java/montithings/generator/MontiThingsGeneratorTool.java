@@ -69,6 +69,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     ConfigParams config) {
 
     //Log.initWARN();
+    Log.enableFailQuick(false);
 
     ModelPath mp = new ModelPath(modelPath.toPath());
     mtg = new MTGenerator(target, hwcPath, config);
@@ -103,11 +104,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);
 
     BindingsTool bindingsTool = new BindingsTool();
-    bindingsTool.setMtGlobalScope((IMontiThingsGlobalScope) symTab);
+    bindingsTool.setMtGlobalScope(symTab);
     IBindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
     MTConfigTool mtConfigTool = new MTConfigTool();
-    mtConfigTool.setMtGlobalScope((IMontiThingsGlobalScope) symTab);
+    mtConfigTool.setMtGlobalScope(symTab);
 
     /* ============================================================ */
     /* ====================== Check Models ======================== */
@@ -168,7 +169,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         }
 
         generateCDEAdapter(compTarget, config);
-        generateCD(modelPath, compTarget);
       }
       if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
         mtg.generateDDSDCPSConfig(compTarget);
@@ -181,8 +181,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
       generateCDEAdapter(target, config);
-      generateCD(modelPath, target);
     }
+    generateCD(modelPath, target);
     mtg.generateBuildScript(target);
 
     for (String model : models.getMontithings()) {
