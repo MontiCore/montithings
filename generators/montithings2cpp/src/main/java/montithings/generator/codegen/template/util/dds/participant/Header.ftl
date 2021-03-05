@@ -28,7 +28,6 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<dds/DCPS/transport/rtps_udp/RtpsUdp.h>"}
 </#if>
 
-#include "DDSMessageTypeSupportImpl.h"
 #include "DDSPort.h"
 #include "DDSParticipant.h"
 #include "${comp.getName()}.h"

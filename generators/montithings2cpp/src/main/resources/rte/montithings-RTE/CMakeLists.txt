@@ -80,7 +80,6 @@ add_library(MontiThingsRTE ${RTE_SOURCES})
 
 if (NOT EXCLUDE_DDS)
     # Generates type support code
-    OPENDDS_TARGET_SOURCES(MontiThingsRTE "../montithings-RTE/DDSMessage.idl")
     target_link_libraries(MontiThingsRTE ${opendds_libs})
 endif ()
 

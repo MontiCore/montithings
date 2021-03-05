@@ -136,7 +136,6 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
     <#if config.getMessageBroker().toString() == "MQTT">
       target_link_libraries(${comp.getFullName()} mosquitto)
     <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
-      OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
       target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
     </#if>
     target_link_libraries(${comp.getFullName()} nng::nng)

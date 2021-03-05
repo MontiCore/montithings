@@ -8,8 +8,11 @@
 #include <iostream>
 #include "easyloggingpp/easylogging++.h"
 
-#include "DDSMessageTypeSupportC.h"
-#include "DDSMessageTypeSupportImpl.h"
+#include "dds/message-types/DDSMessageTypeSupportC.h"
+#include "dds/message-types/DDSMessageTypeSupportImpl.h"
+#include "dds/recorder/DDSRecorder.h"
+#include "dds/recorder/MessageWithClockContainer.h"
+
 #include "DDSParticipant.h"
 #include "Port.h"
 #include "Utils.h"
@@ -40,10 +43,14 @@ private:
     // arrives
     std::function<void(T)> onDataAvailableCallback;
 
+    DDSRecorder ddsRecorder;
+
 public:
     explicit DDSPort(DDSParticipant &participant, Direction direction, std::string topicName,
                      bool isRecordingEnabled, bool setQoSTransientDurability)
-            : participant(&participant), direction(direction), topicName(topicName),
+            : participant(&participant),
+            direction(direction),
+            topicName(topicName),
               isRecordingEnabled(isRecordingEnabled),
               setQoSTransientDurability(setQoSTransientDurability) {
         if (isRecordingEnabled) {

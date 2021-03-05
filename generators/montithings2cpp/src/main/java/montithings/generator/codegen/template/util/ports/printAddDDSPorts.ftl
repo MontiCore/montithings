@@ -4,17 +4,17 @@ ${tc.signature("comp","config")}
 
 // Adds port which publishes connectors
 std::string topicConnections = "/connectors";
-connectorPortOut = std::unique_ptr${"<DDSPort<std::string>>"}(new DDSPort${"<std::string>"}(*this, OUTGOING, topicConnections, true));
+connectorPortOut = std::unique_ptr${"<DDSPort<std::string>>"}(new DDSPort${"<std::string>"}(*this, OUTGOING, topicConnections, false, true));
 
 
 // Adds port which subscribes to connectors
-connectorPortIn = std::unique_ptr${"<DDSPort<std::string>>"}(new DDSPort${"<std::string>"}(*this, INCOMING, topicConnections, true));
+connectorPortIn = std::unique_ptr${"<DDSPort<std::string>>"}(new DDSPort${"<std::string>"}(*this, INCOMING, topicConnections, false, true));
 
 connectorPortIn->addOnDataAvailableCallbackHandler(std::bind(&${comp.getName()}DDSParticipant::onNewConnectors, this, std::placeholders::_1));
 
 <#list comp.getPorts() as p>
     <#if p.isOutgoing()>
       // outgoing port ${p.getName()}
-      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, comp->getInstanceName() + ".value/out", false, true));
+      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, comp->getInstanceName() + ".${p.getName()}/out", true, false));
     </#if>
 </#list>

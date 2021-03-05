@@ -14,7 +14,7 @@
 
 #include <dds/DCPS/StaticIncludes.h>
 
-#include "DDSMessageTypeSupportImpl.h"
+#include "dds/message-types/DDSMessageTypeSupportImpl.h"
 
 
 class DDSParticipant {
@@ -30,4 +30,6 @@ public:
     DDS::Publisher_var getPublisher() { return publisher; }
     DDS::Subscriber_var getSubscriber() { return subscriber; }
     CORBA::String_var getMessageTypeName(){ return type_name; }
+
+    virtual std::string getInstanceName() = 0;
 };
