@@ -59,8 +59,8 @@ include_directories(".")
 if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.cpp")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "DDSMessage.idl")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "DDSRecorderMessage.idl")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/message-types/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")
 endif ()
 
 
