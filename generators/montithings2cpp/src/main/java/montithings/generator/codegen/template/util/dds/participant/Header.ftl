@@ -43,6 +43,12 @@ protected:
   std::unique_ptr${"<DDSPort<std::string>>"} connectorPortOut;
   std::unique_ptr${"<DDSPort<std::string>>"} connectorPortIn;
 
+  <#if config.getRecordingMode().toString() == "ON">
+    bool isRecording = true;
+  <#else>
+    bool isRecording = false;
+  </#if>
+
 public:
   ${className} (${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()} *comp, int argc, char *argv[]);
   ~${className}() = default;

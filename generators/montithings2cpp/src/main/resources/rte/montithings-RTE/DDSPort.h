@@ -43,10 +43,11 @@ private:
     // arrives
     std::function<void(T)> onDataAvailableCallback;
 
-    DDSRecorder ddsRecorder;
+    // Using pointer to avoid initializing it despite not being enabled in pom.xml
+    std::unique_ptr<DDSRecorder> ddsRecorder;
 
 public:
-    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string topicName,
+    explicit DDSPort(DDSParticipant &participant, Direction direction, const std::string& topicName,
                      bool isRecordingEnabled, bool setQoSTransientDurability)
             : participant(&participant),
             direction(direction),
@@ -54,9 +55,10 @@ public:
               isRecordingEnabled(isRecordingEnabled),
               setQoSTransientDurability(setQoSTransientDurability) {
         if (isRecordingEnabled) {
-            ddsRecorder.setInstanceName(participant.getInstanceName());
-            ddsRecorder.setPortIdentifier(topicName);
-            ddsRecorder.init();
+            ddsRecorder = std::make_unique<DDSRecorder>();
+            ddsRecorder->setInstanceName(participant.getInstanceName());
+            ddsRecorder->setPortIdentifier(topicName);
+            ddsRecorder->init();
         }
 
         // independently of the port direction, a topic instance is required
@@ -73,7 +75,7 @@ public:
         }
     }
 
-    ~DDSPort() = default;
+    ~DDSPort() override = default;
 
     void addOnDataAvailableCallbackHandler(std::function<void(T)> callback) {
         onDataAvailableCallback = callback;
@@ -90,7 +92,7 @@ public:
                 // when log traces are inspected
                 TOPIC_QOS_DEFAULT,
                 // no topic listener required
-                0,
+                nullptr,
                 // default status mask ensures that
                 // all relevant communication status
                 // changes are communicated to the
@@ -110,7 +112,7 @@ public:
 
         // Applies default qos settings
         participant->getSubscriber()->get_default_datareader_qos(dataReaderQos);
-        // Default reliability is best effort. Thus, its changed to reliabe
+        // Default reliability is best effort. Thus, its changed to reliable
         // communication
         dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
@@ -132,7 +134,7 @@ public:
 
         if (!reader) {
             CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS data reader creation failed.";
-            return 0;
+            exit (EXIT_FAILURE);
         }
 
         // narrows the generic data reader passed into the listener to the
@@ -160,7 +162,7 @@ public:
         DDS::DataWriter_var writer = participant->getPublisher()->create_datawriter(
                 topic, dataWriterQoS,
                 // no listener required
-                0,
+                nullptr,
                 // default status mask ensures that
                 // all relevant communication status
                 // changes are communicated to the
@@ -169,7 +171,7 @@ public:
 
         if (!writer) {
             CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer creation failed.";
-            return 0;
+            exit (EXIT_FAILURE);
         }
 
         // narrows the generic DataWriter to the type-specific DataWriter
@@ -201,7 +203,7 @@ public:
             if (isRecordingEnabled) {
                 MessageWithClockContainer <T> container;
                 container.message = nextVal.value();
-                container.vectorClock = ddsRecorder.getVectorClock();
+                container.vectorClock = ddsRecorder->getVectorClock();
                 auto dataString = dataToJson(container);
                 message.content = dataString.c_str();
             } else {
@@ -218,8 +220,8 @@ public:
             }
 
             if (isRecordingEnabled) {
-                ddsRecorder.recordMessage(message, messageWriter->get_topic()->get_name(),
-                                          ddsRecorder.getVectorClock());
+                ddsRecorder->recordMessage(message, messageWriter->get_topic()->get_name(),
+                                          ddsRecorder->getVectorClock());
             }
 
             ++messageId;
@@ -241,7 +243,7 @@ public:
         }
 
         DDSMessage::Message message;
-        DDS::SampleInfo info;
+        DDS::SampleInfo info{};
 
         DDS::ReturnCode_t error = reader_i->take_next_sample(message, info);
 
@@ -259,7 +261,7 @@ public:
 
                 char *topicId = reader_i->get_topicdescription()->get_name();
                 // message.content = container.message;
-                ddsRecorder.recordMessage(message, topicId, container.vectorClock);
+                ddsRecorder->recordMessage(message, topicId, container.vectorClock);
 
                 result = container.message;
             } else {
@@ -272,7 +274,7 @@ public:
                 onDataAvailableCallback(result);
             }
         } else {
-            CLOG (ERROR, DDS_LOG_ID) << "on_data_available() - _ake_next_sample failed!";
+            CLOG (ERROR, DDS_LOG_ID) << "on_data_available() - _take_next_sample failed!";
             return;
         }
     }

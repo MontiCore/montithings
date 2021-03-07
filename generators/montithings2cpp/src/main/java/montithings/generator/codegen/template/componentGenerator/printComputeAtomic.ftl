@@ -16,7 +16,20 @@ ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResult
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
-${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+<#if config.getRecordingMode().toString() == "ON">
+    if (HWCInterceptor::isRecording)
+    {
+      auto timeStartCalc = std::chrono::high_resolution_clock::now();
+      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+      auto timeEndCalc = std::chrono::high_resolution_clock::now();
+      auto latency = timeEndCalc - timeStartCalc;
+      HWCInterceptor::storeCalculationLatency(latency.count());
+    } else {
+      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+    }
+<#else>
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+</#if>
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
 
 setResult(${Identifier.getResultName()});

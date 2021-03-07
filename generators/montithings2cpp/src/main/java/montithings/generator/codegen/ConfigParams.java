@@ -93,8 +93,29 @@ public class ConfigParams {
     }
   }
 
+  public enum RecordingMode {
+    OFF("OFF"),
+    ON("ON");
+
+    String mode;
+
+    RecordingMode(String mode) {
+      this.mode = mode;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.mode;
+    }
+   }
+
   /** property for message brokers */
   protected MessageBroker messageBroker = MessageBroker.OFF;
+
+  protected RecordingMode recordingMode = RecordingMode.OFF;
 
   /** property for target platform */
   protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
@@ -295,6 +316,14 @@ public class ConfigParams {
 
   public void setSplittingMode(SplittingMode splittingMode) {
     this.splittingMode = splittingMode;
+  }
+
+  public RecordingMode getRecordingMode() {
+    return recordingMode;
+  }
+
+  public void setRecordingMode(RecordingMode recordingMode) {
+    this.recordingMode = recordingMode;
   }
 
   public Multimap<ComponentTypeSymbol, String> getTypeArguments() {

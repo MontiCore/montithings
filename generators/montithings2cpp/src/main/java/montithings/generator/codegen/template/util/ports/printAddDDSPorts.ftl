@@ -15,6 +15,6 @@ connectorPortIn->addOnDataAvailableCallbackHandler(std::bind(&${comp.getName()}D
 <#list comp.getPorts() as p>
     <#if p.isOutgoing()>
       // outgoing port ${p.getName()}
-      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, comp->getInstanceName() + ".${p.getName()}/out", true, false));
+      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, comp->getInstanceName() + ".${p.getName()}/out", isRecording, false));
     </#if>
 </#list>

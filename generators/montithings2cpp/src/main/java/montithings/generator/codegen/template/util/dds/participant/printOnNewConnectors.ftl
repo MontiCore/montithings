@@ -12,9 +12,10 @@ CLOG (DEBUG, "DDS") << "onNewConnectors: " << payload;
     {
       std::string topic = payload.substr(0, payload.find("->"));
       CLOG (DEBUG, "DDS") << "New connection! Creating INCOMING PORT: " << topic;
-      comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, true, false));
+      comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, isRecording, false));
 
       <#if !comp.isAtomic()>
+        //TODO check!
       // additional outgoing port for port incoming port ${p.getName()}
       // to forward data to subcomponents
       topic = topic.substr(0, payload.find("/")) + "/out"; 
