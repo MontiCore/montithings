@@ -2,6 +2,7 @@
 // (c) https://github.com/MontiCore/monticore
 #pragma once
 #include <ace/OS_NS_stdlib.h>
+#include "../../easyloggingpp/easylogging++.h"
 #include <algorithm>
 #include <dds/DCPS/Marked_Default_Qos.h>
 #include <dds/DCPS/Service_Participant.h>
@@ -18,6 +19,8 @@
 #include "HWCInterceptor.h"
 #include "VectorClockImpl.h"
 #include "utils.h"
+
+#define LOG_ID "RECORDER"
 
 class DDSRecorder : public VectorClockImpl
 {

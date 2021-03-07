@@ -61,7 +61,7 @@ Configurator::initMessageTypes ()
       || commandReplyRegistration != DDS::RETCODE_OK
       || acknowledgementRegistration != DDS::RETCODE_OK)
     {
-      std::cerr << "DDSCommunicator | initMessageTypes failed!" << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | initMessageTypes failed!";
       exit (EXIT_FAILURE);
     }
 }
@@ -91,7 +91,7 @@ Configurator::initParticipant ()
 
   if (!participant)
     {
-      std::cerr << "DDSCommunicator | createParticipant failed." << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | createParticipant failed.";
       exit (EXIT_FAILURE);
     }
 }
@@ -140,7 +140,7 @@ Configurator::initTopics ()
   if (!topicRecorder || !topicCommand || !topicCommandReply || !topicAcknowledgement
       || !topicAcknowledgementFiltered)
     {
-      std::cerr << "DDSCommunicator | initTopics failed!" << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | initTopics failed!";
       exit (EXIT_FAILURE);
     }
 }
@@ -153,7 +153,7 @@ Configurator::initSubscriber ()
 
   if (!subscriber)
     {
-      std::cerr << "DDSCommunicator | initSubscriber failed." << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | initSubscriber failed.";
       exit (EXIT_FAILURE);
     }
 }
@@ -166,7 +166,7 @@ Configurator::initPublisher ()
 
   if (!publisher)
     {
-      std::cerr << "DDSCommunicator | initPublisher failed." << std::endl;
+      CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | initPublisher failed.";
       exit (EXIT_FAILURE);
     }
 }
@@ -190,8 +190,7 @@ Configurator::initReaderRecorderMessage ()
 
   if (!dataReaderRecorder)
     {
-      std::cerr << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed."
-                << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed.";
       exit (EXIT_FAILURE);
     }
 
@@ -201,9 +200,8 @@ Configurator::initReaderRecorderMessage ()
 
   if (!readerRecorder)
     {
-      std::cerr
-          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed."
-          << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)
+          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed.";
       exit (EXIT_FAILURE);
     }
 }
@@ -238,8 +236,7 @@ Configurator::initReaderAcknowledgement (bool isFiltered)
 
   if (!dataReaderAcknowledgement)
     {
-      std::cerr << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed."
-                << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed.";
       exit (EXIT_FAILURE);
     }
 
@@ -250,9 +247,8 @@ Configurator::initReaderAcknowledgement (bool isFiltered)
 
   if (!readerAcknowledgement)
     {
-      std::cerr
-          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed."
-          << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)
+          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed.";
       exit (EXIT_FAILURE);
     }
 }
@@ -278,8 +274,7 @@ Configurator::initReaderCommandMessage ()
 
   if (!dataReaderCommand)
     {
-      std::cerr << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed."
-                << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed.";
       exit (EXIT_FAILURE);
     }
 
@@ -289,9 +284,8 @@ Configurator::initReaderCommandMessage ()
 
   if (!readerCommand)
     {
-      std::cerr
-          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed."
-          << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)
+          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed.";
       exit (EXIT_FAILURE);
     }
 }
@@ -312,8 +306,7 @@ Configurator::initReaderCommandReplyMessage ()
 
   if (!dataReaderCommandReply)
     {
-      std::cerr << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed."
-                << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed.";
       exit (EXIT_FAILURE);
     }
 
@@ -323,9 +316,8 @@ Configurator::initReaderCommandReplyMessage ()
 
   if (!readerCommandReply)
     {
-      std::cerr
-          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed."
-          << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)
+          << "DDSCommunicator | ERROR: initReader() - OpenDDS message reader narrowing failed.";
       exit (EXIT_FAILURE);
     }
 }
@@ -362,8 +354,7 @@ Configurator::initWriter ()
   if (!dataWriterCommand || !dataWriterCommandReply || !dataWriterRecorder
       || !dataWriterAcknowledge)
     {
-      std::cerr << "DDSCommunicator | ERROR: initWriter() - OpenDDS Data Writer creation failed."
-                << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | ERROR: initWriter() - OpenDDS Data Writer creation failed.";
       exit (EXIT_FAILURE);
     }
 
@@ -376,8 +367,7 @@ Configurator::initWriter ()
 
   if (!writerCommand || !writerCommandReply || !writerRecorder || !writerAcknowledgement)
     {
-      std::cerr << "DDSCommunicator | ERROR: initWriter() - OpenDDS Data Writer narrowing failed. "
-                << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | ERROR: initWriter() - OpenDDS Data Writer narrowing failed. ";
       exit (EXIT_FAILURE);
     }
 }

@@ -54,7 +54,7 @@ DDSCommunicator::waitUntilCommandReadersConnected (int amount)
       DDS::PublicationMatchedStatus matches{};
       if (writerCommand->get_publication_matched_status (matches) != DDS::RETCODE_OK)
         {
-          std::cerr << "DDSCommunicator | subscription_matched_status failed!" << std::endl;
+          CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | subscription_matched_status failed!";
           exit (EXIT_FAILURE);
         }
 
@@ -81,7 +81,7 @@ DDSCommunicator::waitForRecorderReaders ()
       DDS::PublicationMatchedStatus matches{};
       if (writerRecorder->get_publication_matched_status (matches) != DDS::RETCODE_OK)
         {
-          std::cerr << "DDSCommunicator | subscription_matched_status failed!" << std::endl;
+          CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | subscription_matched_status failed!";
           exit (1);
         }
       if (matches.current_count >= 2)
@@ -106,7 +106,7 @@ DDSCommunicator::waitUntilRecorderWritersDisconnect ()
       DDS::SubscriptionMatchedStatus matches{};
       if (readerRecorder->get_subscription_matched_status (matches) != DDS::RETCODE_OK)
         {
-          std::cerr << "DDSCommunicator | subscription_matched_status failed!" << std::endl;
+          CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | subscription_matched_status failed!";
           exit (1);
         }
       if (matches.current_count == 1)
@@ -129,13 +129,18 @@ DDSCommunicator::cleanup ()
 void
 DDSCommunicator::cleanupRecorderMessageWriter ()
 {
-  publisher->delete_datawriter (writerRecorder);
+    if (!CORBA::is_nil(writerRecorder))
+    {
+        publisher->delete_datawriter (writerRecorder);
+    }
 }
 
 void
 DDSCommunicator::cleanupCommandReplyMessageWriter ()
 {
-  publisher->delete_datawriter (writerCommandReply);
+    if (!CORBA::is_nil(writerCommandReply)) {
+        publisher->delete_datawriter(writerCommandReply);
+    }
 }
 
 void
@@ -152,7 +157,7 @@ DDSCommunicator::send (const DDSRecorderMessage::Command &command)
 
   if (error != DDS::RETCODE_OK)
     {
-      std::cerr << "DDSCommunicator | send() write returned " << error << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | send() write returned " << error;
       return false;
     }
 
@@ -166,7 +171,7 @@ DDSCommunicator::send (const DDSRecorderMessage::CommandReply &command)
 
   if (error != DDS::RETCODE_OK)
     {
-      std::cerr << "DDSCommunicator | send() write returned " << error << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | send() write returned " << error;
       return false;
     }
 
@@ -180,7 +185,7 @@ DDSCommunicator::send (const DDSRecorderMessage::Message &message)
 
   if (error != DDS::RETCODE_OK)
     {
-      std::cerr << "DDSCommunicator | send() write returned " << error << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | send() write returned " << error;
       return false;
     }
 
@@ -194,7 +199,7 @@ DDSCommunicator::send (const DDSRecorderMessage::Acknowledgement &message)
 
   if (error != DDS::RETCODE_OK)
     {
-      std::cerr << "DDSCommunicator | send() write returned " << error << std::endl;
+      CLOG (ERROR, DDS_LOG_ID)  << "DDSCommunicator | send() write returned " << error;
       return false;
     }
 
@@ -207,8 +212,7 @@ DDSCommunicator::commandWaitForAcks ()
   DDS::PublicationMatchedStatus matches{};
   if (writerCommand->get_publication_matched_status (matches) == DDS::RETCODE_OK)
     {
-      std::cout << "DDSCommunicator | commandWaitForAcks: " << matches.current_count << " listeners"
-                << std::endl;
+      std::cout << "DDSCommunicator | commandWaitForAcks: " << matches.current_count << " listeners";
     }
 
   DDS::Duration_t timeout = { 10, 0 };
@@ -226,7 +230,7 @@ DDSCommunicator::commandReplyWaitForAcks ()
   if (writerCommandReply->get_publication_matched_status (matches) == DDS::RETCODE_OK)
     {
       // std::cout << "DDSCommunicator | commandWaitForAcks: " << matches.current_count << "
-      // listeners" << std::endl;
+      // listeners";
     }
 
   DDS::Duration_t timeout = { 10, 0 };

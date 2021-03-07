@@ -10,7 +10,7 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
   DDS::SampleInfo info{};
   DDS::ReturnCode_t error;
 
-  // std::cout << "ondata topic: " << reader->get_topicdescription()->get_type_name() << std::endl;
+  // CLOG (DEBUG, LOG_ID) << "ondata topic: " << reader->get_topicdescription()->get_type_name();
   if (strcmp (reader->get_topicdescription ()->get_type_name (), RECORDER_MESSAGE_TYPE) == 0)
     {
       DDSRecorderMessage::MessageDataReader_var reader_i
@@ -18,8 +18,7 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
 
       if (!reader_i)
         {
-          std::cerr << "MessageListener | on_data_available _narrow DDSRecorderMessage failed!"
-                    << std::endl;
+          CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow DDSRecorderMessage failed!";
           exit (EXIT_FAILURE);
         }
 
@@ -32,7 +31,7 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
         }
       else
         {
-          // std::cerr << "MessageListener | on_data_available take_next_sample failed!" <<
+          // CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available take_next_sample failed!" <<
           // std::endl;
         }
     }
@@ -43,8 +42,7 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
 
       if (!reader_i)
         {
-          std::cerr << "MessageListener | on_data_available _narrow DDSCommandMessage failed!"
-                    << std::endl;
+          CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow DDSCommandMessage failed!";
           exit (EXIT_FAILURE);
         }
 
@@ -57,8 +55,7 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
         }
       else
         {
-          // std::cerr << "MessageListener | on_data_available take_next_sample failed!" <<
-          // std::endl;
+          // CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available take_next_sample failed!";
         }
     }
   else if (strcmp (reader->get_topicdescription ()->get_type_name (), RECORDER_COMMANDREPLY_TYPE)
@@ -69,8 +66,7 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
 
       if (!reader_i)
         {
-          std::cerr << "MessageListener | on_data_available _narrow DDSCommandMessage failed!"
-                    << std::endl;
+          CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow DDSCommandMessage failed!";
           exit (EXIT_FAILURE);
         }
 
@@ -83,20 +79,17 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
         }
       else
         {
-          // std::cerr << "MessageListener | on_data_available take_next_sample failed!" <<
-          // std::endl;
+          // CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available take_next_sample failed!";
         }
     }
-  else if (strcmp (reader->get_topicdescription ()->get_type_name (), RECORDER_ACKNOWLEDGE_TYPE)
-           == 0)
+  else if (strcmp (reader->get_topicdescription ()->get_type_name (), RECORDER_ACKNOWLEDGE_TYPE) == 0)
     {
       DDSRecorderMessage::AcknowledgementDataReader_var reader_i
           = DDSRecorderMessage::AcknowledgementDataReader::_narrow (reader);
 
       if (!reader_i)
         {
-          std::cerr << "MessageListener | on_data_available _narrow AcknowledgementMessage failed!"
-                    << std::endl;
+          CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow AcknowledgementMessage failed!";
           exit (EXIT_FAILURE);
         }
 
@@ -109,7 +102,7 @@ MessageListener::on_data_available (DDS::DataReader_ptr reader)
         }
       else
         {
-          // std::cerr << "MessageListener | on_data_available take_next_sample failed!" <<
+          // CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available take_next_sample failed!" <<
           // std::endl;
         }
     }
@@ -148,8 +141,8 @@ MessageListener::on_data_available (const DDSRecorderMessage::Message& message)
 {
   if (isVerbose)
     {
-      std::cout << message.id << " | " << message.msg_content << " | " << message.timestamp << " | "
-                << message.topic << std::endl;
+      CLOG (DEBUG, LOG_ID) << message.id << " | " << message.msg_content << " | " << message.timestamp << " | "
+                << message.topic;
     }
   if (onRecorderMessageCallback)
     {
@@ -162,7 +155,7 @@ MessageListener::on_data_available (const DDSRecorderMessage::Command& message)
 {
   if (isVerbose)
     {
-      std::cout << message.id << " | " << message.cmd << std::endl;
+      CLOG (DEBUG, LOG_ID) << message.id << " | " << message.cmd;
     }
   if (onCommandMessageCallback)
     {
@@ -175,8 +168,8 @@ MessageListener::on_data_available (const DDSRecorderMessage::CommandReply& mess
 {
   if (isVerbose)
     {
-      std::cout << message.id << " | " << message.content << " | " << message.command_id
-                << std::endl;
+      CLOG (DEBUG, LOG_ID) << message.id << " | " << message.content << " | " << message.command_id
+               ;
     }
   if (onCommandReplyMessageCallback)
     {
@@ -189,8 +182,8 @@ MessageListener::on_data_available (const DDSRecorderMessage::Acknowledgement& m
 {
   if (isVerbose)
     {
-      std::cout << message.id << " | " << message.instance << " | " << message.acked_id
-                << std::endl;
+      CLOG (DEBUG, LOG_ID) << message.id << " | " << message.instance << " | " << message.acked_id
+               ;
     }
   if (onAcknowledgementMessageCallback)
     {
@@ -230,8 +223,8 @@ void
 MessageListener::on_subscription_matched (DDS::DataReader_ptr reader,
                                           const DDS::SubscriptionMatchedStatus &status)
 {
-  // std::cout << "Change detected on topic " << reader->get_topicdescription()->get_name() << ".
-  // Todal amount of writers: " <<  status.current_count << std::endl;
+  // CLOG (DEBUG, LOG_ID) << "Change detected on topic " << reader->get_topicdescription()->get_name() << ".
+  // Todal amount of writers: " <<  status.current_count;
 }
 
 void

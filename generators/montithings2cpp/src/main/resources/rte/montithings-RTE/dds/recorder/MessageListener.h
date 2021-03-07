@@ -7,6 +7,8 @@
 #include <vector>
 #include <future>
 
+#include "../../easyloggingpp/easylogging++.h"
+
 #include <dds/DdsDcpsInfrastructureC.h>
 #include <dds/DdsDcpsSubscriptionC.h>
 #include <dds/DCPS/LocalObject.h>
@@ -16,6 +18,8 @@
 #include <dds/DCPS/StaticIncludes.h>
 
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
+
+#define LOG_ID "RECORDER"
 
 class MessageListener
       : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>

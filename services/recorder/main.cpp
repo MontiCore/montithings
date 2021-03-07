@@ -4,10 +4,14 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "../montithings-RTE/easyloggingpp/easylogging++.h"
+
 #include "lib/cxxopts.hpp"
 #include "lib/loguru.hpp"
 
 #include "MessageFlowRecorder.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 // Initializing recorder as a global variable, as it is used in the signal handler
 MessageFlowRecorder recorder;

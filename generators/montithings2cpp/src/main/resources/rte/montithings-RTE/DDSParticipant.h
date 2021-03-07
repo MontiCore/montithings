@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ace/Log_Msg.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -25,7 +24,7 @@ protected:
     CORBA::String_var type_name;
 
 public:
-    virtual ~DDSParticipant(){};
+    virtual ~DDSParticipant() = default;
     DDS::DomainParticipant_var getParticipant() { return participant; }
     DDS::Publisher_var getPublisher() { return publisher; }
     DDS::Subscriber_var getSubscriber() { return subscriber; }

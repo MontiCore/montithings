@@ -1,6 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 #pragma once
 
+#include "../../easyloggingpp/easylogging++.h"
+
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 
 #include <dds/DdsDcpsInfrastructureC.h>
@@ -16,6 +18,8 @@
 #include <dds/DCPS/transport/tcp/Tcp.h>
 
 #include "MessageListener.h"
+
+#define DDS_LOG_ID "DDS"
 
 using namespace OpenDDS::DCPS;
 
