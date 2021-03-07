@@ -8,3 +8,7 @@ opendds_idl DDSRecorderMessage.idl
 
 # TODO FIX: xyzTypeSupport.idl wont be generated
 tao_idl --idl-version 4 DDSRecorderMessageTypeSupport.idl
+
+# Workaround: temporarily add the following to the cmakelists and copy files from build directory
+#OPENDDS_TARGET_SOURCES(MontiThingsRTE "dds/message-types/DDSMessage.idl")
+#OPENDDS_TARGET_SOURCES(MontiThingsRTE "dds/message-types/DDSRecorderMessage.idl")

@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 #pragma once
+
 #include <functional>
 #include <future>
 #include <iostream>
@@ -19,38 +20,52 @@
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "Configurator.h"
 
-class DDSCommunicator : public Configurator
-{
+class DDSCommunicator : public Configurator {
 private:
-  // increasing message id for acknowledgements
-  int ackId = 0;
+    // increasing message id for acknowledgements
+    int ackId = 0;
 
 public:
-  DDSCommunicator () = default;
-  ~DDSCommunicator () = default;
+    DDSCommunicator() = default;
 
-  void waitForRecorderReaders ();
-  void waitUntilCommandReadersConnected (int amount);
-  void waitUntilRecorderWritersDisconnect ();
+    ~DDSCommunicator() = default;
 
-  void cleanup ();
-  void cleanupPublisher ();
-  void cleanupRecorderMessageWriter ();
-  void cleanupCommandReplyMessageWriter ();
+    void waitForRecorderReaders();
 
-  bool send (const DDSRecorderMessage::Message &message);
-  bool send (const DDSRecorderMessage::Command &message);
-  bool send (const DDSRecorderMessage::CommandReply &message);
-  bool send (const DDSRecorderMessage::Acknowledgement &message);
-  void sendAck (long ackedId, const std::string &ackedInstance, const std::string &jVectorClock);
+    void waitUntilCommandReadersConnected(int amount);
 
-  bool commandWaitForAcks ();
-  bool commandReplyWaitForAcks ();
+    void waitUntilRecorderWritersDisconnect();
 
-  void addOnRecorderMessageCallback (std::function<void (DDSRecorderMessage::Message)> callback);
-  void addOnCommandMessageCallback (std::function<void (DDSRecorderMessage::Command)> callback);
-  void addOnCommandReplyMessageCallback (
-      std::function<void (DDSRecorderMessage::CommandReply)> callback);
-  void addOnAcknowledgementMessageCallback (
-      std::function<void (DDSRecorderMessage::Acknowledgement)> callback);
+    void cleanup();
+
+    void cleanupPublisher();
+
+    void cleanupRecorderMessageWriter();
+
+    void cleanupCommandReplyMessageWriter();
+
+    bool send(const DDSRecorderMessage::Message &message);
+
+    bool send(const DDSRecorderMessage::Command &message);
+
+    bool send(const DDSRecorderMessage::CommandReply &message);
+
+    bool send(const DDSRecorderMessage::Acknowledgement &message);
+
+    void sendAck(const std::string &ackedInstance, long ackedId, const std::string &sendingInstance,
+                 const std::string &jVectorClock);
+
+    bool commandWaitForAcks();
+
+    bool commandReplyWaitForAcks();
+
+    void addOnRecorderMessageCallback(std::function<void(DDSRecorderMessage::Message)> callback);
+
+    void addOnCommandMessageCallback(std::function<void(DDSRecorderMessage::Command)> callback);
+
+    void addOnCommandReplyMessageCallback(
+            std::function<void(DDSRecorderMessage::CommandReply)> callback);
+
+    void addOnAcknowledgementMessageCallback(
+            std::function<void(DDSRecorderMessage::Acknowledgement)> callback);
 };

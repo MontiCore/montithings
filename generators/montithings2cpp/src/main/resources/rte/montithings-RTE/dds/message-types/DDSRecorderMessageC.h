@@ -236,7 +236,8 @@ namespace DDSRecorderMessage
     typedef Acknowledgement_out _out_type;
     
     ::CORBA::Long id;
-    ::TAO::String_Manager instance;
+    ::TAO::String_Manager sending_instance;
+    ::TAO::String_Manager receiving_instance;
     ::CORBA::Long acked_id;
     ::TAO::String_Manager serialized_vector_clock;
   };

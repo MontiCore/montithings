@@ -40,7 +40,8 @@ module DDSRecorderMessage {
   @topic
   struct Acknowledgement {
     @key long id;
-    @key string instance;
+    @key string sending_instance;
+    @key string receiving_instance;
     long acked_id;
     string serialized_vector_clock;
   };

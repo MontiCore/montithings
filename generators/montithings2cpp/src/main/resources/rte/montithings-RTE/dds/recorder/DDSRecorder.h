@@ -44,15 +44,16 @@ private:
   void onCommandMessage (const DDSRecorderMessage::Command &message);
   void onAcknowledgementMessage (const DDSRecorderMessage::Acknowledgement& message);
   static void handleAck (std::unordered_map<long, long long> &unackedMap,
-                  std::unordered_map<long, long long> &unsentDelayMap, long ackedId);
+                  std::unordered_map<long, long long> &unsentDelayMap,
+                  const char* sendingInstance, long ackedId);
 
 public:
   DDSRecorder () = default;
   ~DDSRecorder () = default;
 
   void init ();
-  void setInstanceName (std::string name);
-  void setPortIdentifier (std::string name);
+  void setInstanceName (const std::string& name);
+  void setPortIdentifier (const std::string& name);
   void recordMessage (DDSMessage::Message message, char *topicName,
                       const std::unordered_map<std::string, long>& vectorClock);
 };

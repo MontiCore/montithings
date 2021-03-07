@@ -180,11 +180,6 @@ MessageListener::on_data_available (const DDSRecorderMessage::CommandReply& mess
 void
 MessageListener::on_data_available (const DDSRecorderMessage::Acknowledgement& message)
 {
-  if (isVerbose)
-    {
-      CLOG (DEBUG, LOG_ID) << message.id << " | " << message.instance << " | " << message.acked_id
-               ;
-    }
   if (onAcknowledgementMessageCallback)
     {
       onAcknowledgementMessageCallback (message);

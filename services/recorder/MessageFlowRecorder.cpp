@@ -170,9 +170,9 @@ MessageFlowRecorder::onDebugMessage (const DDSRecorderMessage::Message &message)
   switch (message.type)
     {
     case DDSRecorderMessage::MESSAGE_RECORD:
-      ddsCommunicator.sendAck (message.id, "recorder", "");
+      ddsCommunicator.sendAck (message.instance_name.in (), message.id, "recorder", "");
 
-      // store message unprocessed and move on, dont waste time
+      // store message unprocessed and move on, dont wae time
       recordedMessages.push_back (message);
       break;
     case DDSRecorderMessage::INTERNAL_RECORDS:
@@ -217,7 +217,7 @@ MessageFlowRecorder::onCommandReplyMessage (const DDSRecorderMessage::CommandRep
 void
 MessageFlowRecorder::onAcknowledgementMessage (const DDSRecorderMessage::Acknowledgement &ack)
 {
-  LOG_F (1, "onAcknowledgementMessage:%d,%s,%d,,%s.", ack.id, ack.instance.in (), ack.acked_id,
+  LOG_F (1, "onAcknowledgementMessage:%d,%s,%s,%d,%s.", ack.id, ack.sending_instance.in (), ack.sending_instance.in(),ack.acked_id,
          ack.serialized_vector_clock.in ());
 }
 
