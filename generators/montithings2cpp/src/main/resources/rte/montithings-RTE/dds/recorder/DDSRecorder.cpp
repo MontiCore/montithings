@@ -25,13 +25,13 @@ DDSRecorder::init() {
 }
 
 void
-DDSRecorder::setInstanceName(const std::string& name) {
+DDSRecorder::setInstanceName(const std::string &name) {
     instanceName = name;
     ddsCommunicator.setInstanceName(name);
 }
 
 void
-DDSRecorder::setPortIdentifier(const std::string& name) {
+DDSRecorder::setPortIdentifier(const std::string &name) {
     portIdentifier = name;
     ddsCommunicator.setPortIdentifier(name);
 }
@@ -184,7 +184,8 @@ DDSRecorder::onCommandMessage(const DDSRecorderMessage::Command &command) {
 void
 DDSRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &ack) {
     CLOG (DEBUG, LOG_ID) << "Received ACK | id=" << ack.id << ", from=" << ack.sending_instance.in() << ", clock="
-                         << ack.serialized_vector_clock.in() << ", receiving_instance=" << ack.receiving_instance.in()<< ", acked_id=" << ack.acked_id;
+                         << ack.serialized_vector_clock.in() << ", receiving_instance=" << ack.receiving_instance.in()
+                         << ", acked_id=" << ack.acked_id;
 
     if (strcmp(ack.sending_instance.in(), "recorder") == 0) {
         handleAck(unackedRecordedMessageTimestampMap, unsentRecordMessageDelays, "recorder", ack.acked_id);
@@ -196,7 +197,7 @@ DDSRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement 
 void
 DDSRecorder::handleAck(std::unordered_map<long, long long> &unackedMap,
                        std::unordered_map<long, long long> &unsentDelayMap,
-                       const char* sendingInstance, long ackedId) {
+                       const char *sendingInstance, long ackedId) {
     long long timestamp_ack_received = Util::Time::getCurrentTimestampNano();
 
     if (unackedMap.count(ackedId) == 0) {

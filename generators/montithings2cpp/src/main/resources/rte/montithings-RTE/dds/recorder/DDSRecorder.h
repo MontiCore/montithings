@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 #pragma once
+
 #include <ace/OS_NS_stdlib.h>
 #include "../../easyloggingpp/easylogging++.h"
 #include <algorithm>
@@ -22,38 +23,49 @@
 
 #define LOG_ID "RECORDER"
 
-class DDSRecorder : public VectorClockImpl
-{
+class DDSRecorder : public VectorClockImpl {
 private:
-  int messageId = 0;
+    int messageId = 0;
 
-  DDSCommunicator ddsCommunicator;
-  std::string instanceName;
-  std::string portIdentifier;
-  std::unordered_map<long, long long> unackedMessageTimestampMap;
-  std::unordered_map<long, long long> unackedRecordedMessageTimestampMap;
-  std::unordered_map<long, long long> unsentMessageDelays;
-  std::unordered_map<long, long long> unsentRecordMessageDelays;
+    DDSCommunicator ddsCommunicator;
+    std::string instanceName;
+    std::string portIdentifier;
+    std::unordered_map<long, long long> unackedMessageTimestampMap;
+    std::unordered_map<long, long long> unackedRecordedMessageTimestampMap;
+    std::unordered_map<long, long long> unsentMessageDelays;
+    std::unordered_map<long, long long> unsentRecordMessageDelays;
 
-  static std::string getSendingInstanceNameFromTopic (const std::string &topicId);
-  bool isOutgoingPort ();
-  void start ();
-  void stop ();
-  void sendNDCalls (int commandId);
-  void sendInternalRecords ();
-  void onCommandMessage (const DDSRecorderMessage::Command &message);
-  void onAcknowledgementMessage (const DDSRecorderMessage::Acknowledgement& message);
-  static void handleAck (std::unordered_map<long, long long> &unackedMap,
-                  std::unordered_map<long, long long> &unsentDelayMap,
-                  const char* sendingInstance, long ackedId);
+    static std::string getSendingInstanceNameFromTopic(const std::string &topicId);
+
+    bool isOutgoingPort();
+
+    void start();
+
+    void stop();
+
+    void sendNDCalls(int commandId);
+
+    void sendInternalRecords();
+
+    void onCommandMessage(const DDSRecorderMessage::Command &message);
+
+    void onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &message);
+
+    static void handleAck(std::unordered_map<long, long long> &unackedMap,
+                          std::unordered_map<long, long long> &unsentDelayMap,
+                          const char *sendingInstance, long ackedId);
 
 public:
-  DDSRecorder () = default;
-  ~DDSRecorder () = default;
+    DDSRecorder() = default;
 
-  void init ();
-  void setInstanceName (const std::string& name);
-  void setPortIdentifier (const std::string& name);
-  void recordMessage (DDSMessage::Message message, char *topicName,
-                      const std::unordered_map<std::string, long>& vectorClock);
+    ~DDSRecorder() = default;
+
+    void init();
+
+    void setInstanceName(const std::string &name);
+
+    void setPortIdentifier(const std::string &name);
+
+    void recordMessage(DDSMessage::Message message, char *topicName,
+                       const std::unordered_map<std::string, long> &vectorClock);
 };

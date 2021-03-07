@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 #pragma once
+
 #include "lib/loguru.hpp"
 #include <iostream>
 #include <string>
@@ -12,18 +13,19 @@
 
 #include "../montithings-RTE/dds/message-types/DDSRecorderMessageTypeSupportImpl.h"
 
-class RecordProcessor
-{
+class RecordProcessor {
 private:
-  static long long getFirstTimestamp (std::vector<DDSRecorderMessage::Message> debugStorage,
-                                      std::unordered_map<long, long> recordMessageDelays);
-  static std::unordered_map<long, long>
-  collectMessageDelays (const std::vector<DDSRecorderMessage::Message> &debugStorage,
-                        const std::string &identifier);
+    static long long getFirstTimestamp(std::vector<DDSRecorderMessage::Message> debugStorage,
+                                       std::unordered_map<long, long> recordMessageDelays);
+
+    static std::unordered_map<long, long>
+    collectMessageDelays(const std::vector<DDSRecorderMessage::Message> &debugStorage,
+                         const std::string &identifier);
 
 public:
-  RecordProcessor () = default;
-  ~RecordProcessor () = default;
+    RecordProcessor() = default;
 
-  static nlohmann::json process (const std::vector<DDSRecorderMessage::Message> &debugStorage);
+    ~RecordProcessor() = default;
+
+    static nlohmann::json process(const std::vector<DDSRecorderMessage::Message> &debugStorage);
 };
