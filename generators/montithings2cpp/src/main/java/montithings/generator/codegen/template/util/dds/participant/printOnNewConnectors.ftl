@@ -19,7 +19,7 @@ CLOG (DEBUG, "DDS") << "onNewConnectors: " << payload;
       // additional outgoing port for port incoming port ${p.getName()}
       // to forward data to subcomponents
       topic = topic.substr(0, payload.find("/")) + "/out"; 
-      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic));
+      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic, isRecording, false));
       </#if>
     }
   </#if>
