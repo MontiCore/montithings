@@ -7,7 +7,9 @@ PATHCURR="$(pwd)"
 # Build RTE
 mkdir -p build/rte
 cd build/rte || exit
-cmake -G Ninja "../../../../generators/montithings2cpp/src/main/resources/rte/montithings-RTE"
+cmake -D EXCLUDE_MQTT:BOOLEAN=1 \
+      -G Ninja \
+      "../../../../generators/montithings2cpp/src/main/resources/rte/montithings-RTE"
 ninja
 cd ..
 
