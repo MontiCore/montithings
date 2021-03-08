@@ -2,8 +2,6 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTArcParameter;
-import arcbasis._ast.ASTComponentInstance;
-import arcbasis._ast.ASTComponentInstantiation;
 import de.monticore.expressions.expressionsbasis._ast.ASTArguments;
 import de.monticore.types.mcbasictypes._ast.ASTMCPrimitiveType;
 import de.monticore.types.mcbasictypes._ast.MCBasicTypesNodeFactory;
@@ -109,7 +107,6 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // E.g. "Sink sink" becomes "SinkWrapper sink"
         for (String parent : TrafoUtil.findParents(originalModels, targetComp)) {
             ASTMACompilationUnit p = TrafoUtil.getComponentByName(originalModels, targetComp, parent);
-            assert p != null;
             replaceComponentInstantiationType(p, compName, compWrapperName);
 
         }

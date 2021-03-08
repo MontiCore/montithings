@@ -1,18 +1,13 @@
 package montithings.util;
 
 import arcbasis._ast.*;
-import de.monticore.expressions.expressionsbasis._ast.ASTArguments;
-import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpression;
-import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
-import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
-import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
+import genericarc._ast.ASTArcTypeParameter;
+import genericarc._ast.ASTGenericComponentHead;
 import montiarc._ast.ASTMACompilationUnit;
-import montithings._visitor.MontiThingsVisitor;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static montithings.util.GenericBindingUtil.printSimpleType;
 
@@ -33,7 +28,6 @@ public abstract class TrafoUtil {
                 .collect(Collectors.toList());
 
         Optional<ASTMCType> portType = sourcePorts.stream()
-                //.filter(p -> !p.getPortList().isEmpty())
                 //TODO: code smell
                 .filter(p -> p.getPort(0).getName().equals(portName))
                 .map(ASTPortDeclarationTOP::getMCType).findFirst();
@@ -90,7 +84,8 @@ public abstract class TrafoUtil {
      * Searches in the collection of models for the given name
      *
      * @param models      Collection of AST components where is searched in
-     * @param comp
+     * @param comp        Component where the name appears. When there is no such model in the list,
+     *                    the generic types of the given component will be checked.
      * @param qNameSearch Qualified component name
      * @return AST of searched component
      */
@@ -101,57 +96,7 @@ public abstract class TrafoUtil {
                 return model;
             }
         }
-
-        // TODO handle generic types
-
-        /*
-            component Calc<T extends MathExpression> {
-                port in int x;
-                port out int y;
-
-                T t;
-
-                x -> t.x;
-                t.y -> y;
-            }
-
-            component Example {
-                Calc<Doubler> c;
-            }
-
-            how to retrieve generic type parameters with extensions?
-             */
-        // Qualified names can be a generic type such as <T>
-        String compName = qNameSearch.split("\\.")[1];
-        List<ASTArcParameter> arcParameterList = comp.getComponentType().getHead().getArcParameterList();
-        /*
-        List<String> arcParameters = comp.getComponentType().getHead().streamArcParameters()
-                .filter(p -> p.getName().equals(compName))
-                .map(ASTArcParameter::getMCType)
-                .map(Util::mCTypeToString)
-                .collect(Collectors.toList());
-        for (String parameter : arcParameters) {
-            if (parameter.equals(qNameSearch.split("\\.")[1])) {
-
-                //getComponentByName(models,comp,)
-            }
-        }
-        */
-        return null;
-    }
-
-    public static String instanceArgsToString(ASTArguments arguments) {
-        List<String> list = arguments.getExpressionList().stream()
-                .filter(arg -> arg instanceof ASTLiteralExpression)
-                .map(arg -> (ASTLiteralExpression) arg)
-                .map(ASTLiteralExpression::getLiteral)
-                // TODO support other ASTLiteral types
-                .filter(l -> l instanceof ASTNatLiteral)
-                .map(l -> (ASTNatLiteral) l)
-                .map(ASTNatLiteral::getValue)
-                .map(Object::toString)
-                .collect(Collectors.toList());
-        return String.join("_", list);
+        throw new NoSuchElementException("There is no such model named " + qNameSearch);
     }
 
 
@@ -190,5 +135,29 @@ public abstract class TrafoUtil {
         }
 
         return res;
+    }
+
+    /**
+     * @param comp AST of model where the instantiation is declared
+     * @param compName String of instantiated type
+     * @return whether compName is a generic type in comp or not
+     */
+    public static boolean isGeneric(ASTMACompilationUnit comp, String compName) {
+        List<ASTArcTypeParameter> typeParameters =
+                ((ASTGenericComponentHead) comp.getComponentType().getHead()).getArcTypeParameterList();
+
+        return typeParameters.stream().anyMatch(p -> p.getName().equals(compName));
+    }
+
+    public static List<String> getInterfaces(ASTMACompilationUnit comp, String compName) {
+        List<ASTArcTypeParameter> typeParameters =
+                ((ASTGenericComponentHead) comp.getComponentType().getHead()).getArcTypeParameterList();
+
+        return typeParameters.stream()
+                .filter(p -> p.getName().equals(compName))
+                .map(ASTArcTypeParameter::getUpperBoundList)
+                .flatMap(Collection::stream)
+                .map(GenericBindingUtil::printSimpleType)
+                .collect(Collectors.toList());
     }
 }

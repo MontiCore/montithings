@@ -41,14 +41,13 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
 
         Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
-        // TODO always all models in all trafos?
+
         List<ASTMACompilationUnit> allModels = new ArrayList<>();
         allModels.addAll(originalModels);
         allModels.addAll(addedModels);
 
         // external inputs are only defined in the outermost component (or its subcomponents)
         ASTMACompilationUnit mainComp = TrafoUtil.getComponentByName(originalModels, targetComp, this.mainCompName);
-        assert mainComp != null;
 
         // trafos are applied on all original models. this time, however, it should only be applied once
         if (!mainComp.equals(targetComp)) {
@@ -78,7 +77,6 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                 String subCompQName = mainComp.getPackage().getQName() + "." + type;
 
                 ASTMACompilationUnit subComp = TrafoUtil.getComponentByName(allModels, mainComp, subCompQName);
-                assert subComp != null;
 
                 FindPortNamesVisitor visitorPortNames = new FindPortNamesVisitor();
                 subComp.accept(visitorPortNames);

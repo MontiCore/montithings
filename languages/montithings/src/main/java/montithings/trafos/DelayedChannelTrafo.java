@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Transformer for delaying channels.
@@ -68,9 +69,29 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
 
         // Find out the port type. Therefore, first get the component of the source and search for the port.
         // This is only done with the source port as port types have to match anyway
-        ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, comp, comp.getPackage() + "." + sourceTypeName);
-        assert compSource != null;
-        ASTMCType portType = TrafoUtil.getPortTypeByName(compSource, portSource.getPort());
+        // TODO remove null if possible
+        ASTMCType portType = null;
+        try {
+            ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, comp, comp.getPackage() + "." + sourceTypeName);
+            portType = TrafoUtil.getPortTypeByName(compSource, portSource.getPort());
+        } catch (NoSuchElementException e) {
+            // model was not found. it is probably a generic type. in this case search for the port within the interfaces
+            if (TrafoUtil.isGeneric(comp, sourceTypeName)) {
+                for (String iface : TrafoUtil.getInterfaces(comp, sourceTypeName)) {
+                    ASTMACompilationUnit ifaceComp = TrafoUtil.getComponentByName(models, comp, comp.getPackage() + "." + iface);
+
+                    try {
+                        portType = TrafoUtil.getPortTypeByName(ifaceComp, portSource.getPort());
+                    } catch (Exception e1) {
+                        //ignore, check next iface
+                    }
+                }
+            }
+        }
+        if (portType == null) {
+            throw new NoSuchElementException("No such port instance found which is named " + portSource.getPort());
+        }
+
 
         // actually creates the model of the intercepting component
         ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(comp.getPackage(), channelInterceptorComponentName);
