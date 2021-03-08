@@ -55,4 +55,7 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
   LogStatement implements MCStatement =
     "log" StringLiteral ";" ;
     nokeyword "log";
+
+  AgoQualification implements Expression <400> =
+    Expression "@ago" "(" SIUnitLiteral ")";
 }
