@@ -957,6 +957,10 @@ public class ComponentHelper {
     return arcFieldSymbols;
   }
 
+  public static boolean isArcField(VariableSymbol symbol) {
+    return symbol.isPresentAstNode() && symbol.getAstNode() instanceof ASTArcField;
+  }
+
   public static ASTMCJavaBlock getBehavior(ComponentTypeSymbol component) {
     List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class).toList();
     Preconditions.checkArgument(!behaviors.isEmpty(),

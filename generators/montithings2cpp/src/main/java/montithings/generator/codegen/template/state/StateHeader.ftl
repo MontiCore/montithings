@@ -42,6 +42,11 @@ class ${className}
 {
 protected:
 ${Utils.printVariables(comp, config, false)}
+<#list ComponentHelper.getArcFieldVariables(comp) as var>
+  <#assign varName = var.getName()>
+  <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+  std::vector<std::pair <std::chrono::time_point<std::chrono::high_resolution_clock>, ${varType}>> vectorOf__${varName?cap_first};
+</#list>
 public:
 ${className} (${Utils.printConfigurationParametersAsList(comp)})
 <#if comp.getParameters()?has_content>:</#if>
@@ -58,6 +63,11 @@ ${className} (${Utils.printConfigurationParametersAsList(comp)})
   void set${varName?cap_first} (${varType} ${varName});
   ${varType} preSet${varName?cap_first} (${varType} ${varName});
   ${varType} postSet${varName?cap_first} (${varType} ${varName});
+</#list>
+<#list ComponentHelper.getArcFieldVariables(comp) as var>
+  <#assign varName = var.getName()>
+  <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+  ${varType} agoGet${varName?cap_first} (const std::chrono::nanoseconds ago_time);
 </#list>
 
 protected:

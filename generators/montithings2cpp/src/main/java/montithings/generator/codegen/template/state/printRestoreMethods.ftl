@@ -13,6 +13,11 @@ void ${className}${generics}::setup ()
   MqttClient::instance ()->subscribe ("/state/" + instanceNameTopic);
   MqttClient::instance ()->subscribe ("/replayFinished/" + instanceNameTopic);
 </#if>
+<#list ComponentHelper.getArcFieldVariables(comp) as var>
+  <#assign varName = var.getName()>
+  <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+  vectorOf__${varName?cap_first}.push_back(std::make_pair(std::chrono::system_clock::now(), ${Utils.getInitialValue(var)}));
+</#list>
 }
 
 <#if config.getMessageBroker().toString() == "MQTT">
