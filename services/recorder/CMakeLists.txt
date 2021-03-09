@@ -1,4 +1,4 @@
-project(OpenDDS_DevGuide_Messenger CXX)
+project(Recorder CXX)
 cmake_minimum_required(VERSION 3.8.2)
 
 find_package(OpenDDS REQUIRED)
@@ -6,6 +6,8 @@ find_package(OpenDDS REQUIRED)
 set(CMAKE_CXX_COMPILER ${OPENDDS_COMPILER})
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
 #set (CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-3")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -gdwarf-3")
 
 set(opendds_libs
     OpenDDS::Dcps # Core OpenDDS Library
