@@ -19,7 +19,7 @@ ${tc.signature("comp", "config", "className")}
   {
   ${className}${generics}::${varName} = ${varName};
   <#if ComponentHelper.isArcField(var)>
-    vectorOf__${varName?cap_first}.push_back(std::make_pair(std::chrono::system_clock::now(), lastValue));
+    vectorOf__${varName?cap_first}.push_back(std::make_pair(std::chrono::system_clock::now(), ${varName}));
   </#if>
   }
 
