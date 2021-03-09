@@ -56,6 +56,17 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
     "log" StringLiteral ";" ;
     nokeyword "log";
 
+  /**
+   * ASTAgoQualification can be used to access the values of
+   * variables and ports at an earlier point in time.
+   * Using "variable@ago(2s)" accesses the value of "variable"
+   * 2 seconds before the execution of the AgoQualification.
+   *
+   * @attribute Expression
+   *            Variable or port to be accessed
+   * @attribute SIUnitLiteral
+   *            Time at which value is accessed
+   */
   AgoQualification implements Expression <400> =
     Expression "@ago" "(" SIUnitLiteral ")";
 }
