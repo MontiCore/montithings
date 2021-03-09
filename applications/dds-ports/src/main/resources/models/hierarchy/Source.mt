@@ -10,4 +10,6 @@ component Source {
     log "Source: $lastValue";
     value = lastValue++;
   }
+
+  update interval 1s;
 }
