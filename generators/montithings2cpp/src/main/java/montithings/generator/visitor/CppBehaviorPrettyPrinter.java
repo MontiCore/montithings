@@ -10,11 +10,12 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
-import de.se_rwth.commons.logging.Log;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
 import static montithings.util.IdentifierUtils.getPortForName;
@@ -42,9 +43,9 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   }
 
   @Override
-  public void handle (ASTLogStatement node){
-    getPrinter().print("LOG(INFO) ");
-    printLogString(node.getStringLiteral().getValue(), node);
+  public void handle (ASTLogStatement node) {
+    getPrinter().print("LOG(INFO) <<");
+    printLogString(node);
     getPrinter().print(";");
   }
 
@@ -102,7 +103,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
     else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("s")){
       getPrinter().print("seconds");
     }
-    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")){
+    else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")) {
       getPrinter().print("minutes");
     }
     getPrinter().print("{");
@@ -110,46 +111,29 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
     getPrinter().print("}");
   }
 
-  private void printLogString(String s, ASTLogStatement node){
-    if(s.length() > 0){
-      getPrinter().print("<< ");
-      int index = s.indexOf('$');
-      if(index == -1){
-        getPrinter().print("\"");
-        getPrinter().print(s);
-        getPrinter().print("\"");
-      }
-      else {
-        if(index == s.length() - 1){
-          Log.error("Char \'$\' cannot appear without a variable name behind it");
-        }
-        else {
-          if(index != 0){
-            getPrinter().print("\"");
-            getPrinter().print(s.substring(0, index));
-            getPrinter().print("\"");
-            getPrinter().print(" << ");
-          }
-          int varEnd = s.indexOf(' ', index + 1);
-          if(varEnd == -1){
-            ASTNameExpression name = ExpressionsBasisMillForMontiThings
-                    .nameExpressionBuilder()
-                    .setName(s.substring(index + 1))
-                    .build();
-            name.setEnclosingScope(node.getEnclosingScope());
-            name.accept(getRealThis());
-          }
-          else {
-            ASTNameExpression name = ExpressionsBasisMillForMontiThings
-                    .nameExpressionBuilder()
-                    .setName(s.substring(index + 1, varEnd))
-                    .build();
-            name.setEnclosingScope(node.getEnclosingScope());
-            name.accept(getRealThis());
-            printLogString(s.substring(varEnd), node);
-          }
-        }
-      }
+  protected void printLogString(ASTLogStatement node) {
+    String input = node.getStringLiteral().getSource();
+    Matcher m = Pattern.compile("\\$\\w+").matcher(input);
+    int currentPosition = 0;
+    while (m.find()) {
+      getPrinter().print("\"");
+      getPrinter().print(input.substring(currentPosition, m.start()));
+      getPrinter().print("\"");
+
+      getPrinter().print(" << ");
+      ASTNameExpression name = ExpressionsBasisMillForMontiThings
+        .nameExpressionBuilder()
+        .setName(input.substring(m.start() + 1, m.end()))
+        .build();
+      name.setEnclosingScope(node.getEnclosingScope());
+      name.accept(getRealThis());
+      getPrinter().print(" << ");
+
+      currentPosition = m.end();
     }
+
+    getPrinter().print("\"");
+    getPrinter().print(input.substring(currentPosition));
+    getPrinter().print("\"");
   }
 }
