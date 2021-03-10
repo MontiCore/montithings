@@ -101,7 +101,7 @@ include_directories("hwc" ${r"${dir_list}"})
 
 <#if config.getMessageBroker().toString() == "MQTT">
   # Include Mosquitto Library
-  LINK_DIRECTORIES(/usr/local/Cellar/mosquitto/1.6.10/lib)
+  find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto)
 </#if>
 
 <#if test || config.getSplittingMode().toString() == "OFF">
@@ -133,12 +133,12 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
   || config.getTargetPlatform().toString() == "DSA_LAB">
       ${tc.includeArgs("template.util.cmake.dsaLinkLibraries", [comp.getFullName()])}
   <#else>
-    <#if config.getMessageBroker().toString() == "MQTT">
-      target_link_libraries(${comp.getFullName()} mosquitto)
-    <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
-      OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
-      target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
-    </#if>
+      <#if config.getMessageBroker().toString() == "MQTT">
+        target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
+      <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+        OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
+        target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
+      </#if>
     target_link_libraries(${comp.getFullName()} nng::nng)
   </#if>
   set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
