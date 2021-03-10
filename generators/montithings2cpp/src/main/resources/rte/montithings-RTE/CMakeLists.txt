@@ -55,6 +55,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 file(GLOB_RECURSE RTE_SOURCES "./*.cpp" "./*.h")
 include_directories(".")
 
+add_library(MontiThingsRTE ${RTE_SOURCES})
+
 # Exclude DDS files
 if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
@@ -67,6 +69,8 @@ endif ()
 if (EXCLUDE_MQTT)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.cpp")
+else ()
+    target_link_libraries(MontiThingsRTE mosquitto)
 endif ()
 
 if (EXCLUDE_COMM_MANAGER)
@@ -74,8 +78,6 @@ if (EXCLUDE_COMM_MANAGER)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.cpp")
 endif ()
-
-add_library(MontiThingsRTE ${RTE_SOURCES})
 
 if (NOT EXCLUDE_DDS)
     # Generates type support code
