@@ -21,7 +21,7 @@ ${tc.signature("comp", "config", "className")}
   <#if ComponentHelper.isArcField(var) && ComponentHelper.hasAgoQualification(comp, var)>
     auto now = std::chrono::system_clock::now();
     dequeOf__${varName?cap_first}.push_back(std::make_pair(now, ${varName}));
-    std::pair<std::chrono::time_point<std::chrono::system_clock>, int> firstElement = dequeOf__${varName?cap_first}.front();
+    std::pair<std::chrono::time_point<std::chrono::system_clock>, ${type}> firstElement = dequeOf__${varName?cap_first}.front();
     while (firstElement.first < now - highestAgoOf__${varName?cap_first}){
     firstElement = dequeOf__${varName?cap_first}.front();
     dequeOf__${varName?cap_first}.pop_front();

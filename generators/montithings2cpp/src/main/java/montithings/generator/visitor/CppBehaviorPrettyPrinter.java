@@ -59,7 +59,16 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
       ASTNameExpression name = (ASTNameExpression) node.getExpression();
       Optional<PortSymbol> port = getPortForName(name);
       if(port.isPresent()){
-        //TODO: port
+        if(port.get().isIncoming()){
+          getPrinter().print(Identifier.getInputName());
+        }
+        else  {
+          getPrinter().print(Identifier.getResultName());
+        }
+        getPrinter().print(".agoGet");
+        getPrinter().print(capitalize(name.getName()) + "(std::chrono::");
+        printTime(node.getSIUnitLiteral());
+        getPrinter().print(")");
       }
       else {
         Optional<VariableSymbol> symbol = node.getEnclosingScope().resolveVariable(name.getName());
