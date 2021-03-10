@@ -77,6 +77,10 @@ endif ()
 
 add_library(MontiThingsRTE ${RTE_SOURCES})
 
+if (NOT EXCLUDE_MQTT)
+    target_link_libraries(MontiThingsRTE mosquitto)
+endif ()
+
 if (NOT EXCLUDE_DDS)
     # Generates type support code
     OPENDDS_TARGET_SOURCES(MontiThingsRTE "../montithings-RTE/DDSMessage.idl")
