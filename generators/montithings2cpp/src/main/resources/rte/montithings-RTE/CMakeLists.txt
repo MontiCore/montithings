@@ -78,7 +78,9 @@ endif ()
 add_library(MontiThingsRTE ${RTE_SOURCES})
 
 if (NOT EXCLUDE_MQTT)
-    target_link_libraries(MontiThingsRTE mosquitto)
+    # Include Mosquitto Library
+    find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto)
+    target_link_libraries(MontiThingsRTE ${MOSQUITTO_LIB})
 endif ()
 
 if (NOT EXCLUDE_DDS)
