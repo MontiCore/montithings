@@ -16,7 +16,9 @@ void ${className}${generics}::setup ()
 <#list ComponentHelper.getArcFieldVariables(comp) as var>
   <#assign varName = var.getName()>
   <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
-  vectorOf__${varName?cap_first}.push_back(std::make_pair(std::chrono::system_clock::now(), ${Utils.getInitialValue(var)}));
+  <#if ComponentHelper.hasAgoQualification(comp, var)>
+  dequeOf__${varName?cap_first}.push_back(std::make_pair(std::chrono::system_clock::now(), ${Utils.getInitialValue(var)}));
+  </#if>
 </#list>
 }
 

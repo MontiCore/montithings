@@ -46,6 +46,7 @@ import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
+import montithings.generator.visitor.FindAgoQualificationsVisitor;
 import montithings.generator.visitor.FindPublishedPortsVisitor;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
@@ -1150,5 +1151,23 @@ public class ComponentHelper {
 
     //this code should normally not be executed
     return "";
+  }
+
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var){
+    FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
+    if (comp.isPresentAstNode()){
+      comp.getAstNode().accept(visitor);
+    }
+    return visitor.getAgoQualifications().containsKey(var.getName());
+  }
+
+  public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name){
+    FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
+    if (comp.isPresentAstNode()){
+      comp.getAstNode().accept(visitor);
+    }
+    double valueInSeconds = visitor.getAgoQualifications().get(name);
+    //return as nanoseconds
+    return "" + ((long) (valueInSeconds * 1000000000));
   }
 }

@@ -18,8 +18,15 @@ ${tc.signature("comp", "config", "className")}
   void ${className}${generics}::set${varName?cap_first}(${type} ${varName})
   {
   ${className}${generics}::${varName} = ${varName};
-  <#if ComponentHelper.isArcField(var)>
-    vectorOf__${varName?cap_first}.push_back(std::make_pair(std::chrono::system_clock::now(), ${varName}));
+  <#if ComponentHelper.isArcField(var) && ComponentHelper.hasAgoQualification(comp, var)>
+    auto now = std::chrono::system_clock::now();
+    dequeOf__${varName?cap_first}.push_back(std::make_pair(now, ${varName}));
+    std::pair<std::chrono::time_point<std::chrono::system_clock>, int> firstElement = dequeOf__${varName?cap_first}.front();
+    while (firstElement.first < now - highestAgoOf__${varName?cap_first}){
+    firstElement = dequeOf__${varName?cap_first}.front();
+    dequeOf__${varName?cap_first}.pop_front();
+    }
+    dequeOf__${varName?cap_first}.push_front(firstElement);
   </#if>
   }
 
@@ -43,19 +50,21 @@ ${tc.signature("comp", "config", "className")}
   <#assign varName = var.getName()>
   <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
 
+  <#if ComponentHelper.hasAgoQualification(comp, var)>
   ${Utils.printTemplateArguments(comp)}
   ${type} ${className}${generics}::agoGet${varName?cap_first}(const std::chrono::nanoseconds ago_time)
   {
   auto now = std::chrono::system_clock::now();
   int i = 1;
-  while (i <= vectorOf__${varName?cap_first}.size()){
-  if(vectorOf__${varName?cap_first}.at(vectorOf__${varName?cap_first}.size() - i).first < now-ago_time){
-  return vectorOf__${varName?cap_first}.at(vectorOf__${varName?cap_first}.size() - i).second;
+  while (i <= dequeOf__${varName?cap_first}.size()){
+  if(dequeOf__${varName?cap_first}.at(dequeOf__${varName?cap_first}.size() - i).first < now-ago_time){
+  return dequeOf__${varName?cap_first}.at(dequeOf__${varName?cap_first}.size() - i).second;
   }
   i++;
   }
-  return vectorOf__${varName?cap_first}.at(0).second;
+  return dequeOf__${varName?cap_first}.front().second;
   }
+  </#if>
 </#list>
 
 ${Utils.printTemplateArguments(comp)}
