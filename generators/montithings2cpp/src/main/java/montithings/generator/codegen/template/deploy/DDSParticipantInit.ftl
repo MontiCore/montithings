@@ -21,7 +21,22 @@ ${tc.signature("comp", "config")}
     ddsArgv[4] = strdup(dcpsInfoRepoArg.getValue().c_str());
   </#if>
 
-  ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(&cmp, ddsArgc, ddsArgv);
-  ddsParticipant.initializePorts();
-  ddsParticipant.publishConnectors();
+  ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(instanceNameArg.getValue(), ddsArgc, ddsArgv);
+  ddsParticipant.initializeParameterConfigPorts();
+  ddsParticipant.publishParameterConfig();
+
+  LOG(DEBUG) << "Waiting for config...";
+  while (!ddsParticipant.isReceivedParameterConfig()){
+    std::this_thread::yield();
+  }
+
+  json config = ddsParticipant.getParameterConfig();
+
+  <#list comp.getParameters() as variable>
+    <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>
+    ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config[instanceNameArg.getValue()]["${variable.getName()}"]);
+  </#list>
+  <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
+    double ${portName}ConversionFactor = jsonToData${"<"}double${">"}(config["${portName}ConversionFactor"]);
+  </#list>
 </#if>
