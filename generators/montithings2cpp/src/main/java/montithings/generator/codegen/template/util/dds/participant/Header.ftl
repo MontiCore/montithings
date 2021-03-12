@@ -108,24 +108,8 @@ class ${className} : public DDSParticipant
             if (jPayload.contains(instanceName)) {
                 parameterConfig = jPayload;
                 receivedParameterConfig = true;
-                initializeConnectorConfigPorts();
             }
             CLOG(DEBUG, "DDS") << "onNewConfig: " << payload;
-        }
-
-        void initializeConnectorConfigPorts() {
-            // Adds port which publishes connectors
-            std::string topicConnections = "connectorConfig";
-            connectorPortOut = std::unique_ptr<DDSPort < std::string>>(
-                new DDSPort<std::string>(*this, OUTGOING, topicConnections, true));
-
-
-            // Adds port which subscribes to connectors
-            connectorPortIn = std::unique_ptr<DDSPort < std::string>>(
-                new DDSPort<std::string>(*this, INCOMING, topicConnections, true));
-
-            connectorPortIn->addOnDataAvailableCallbackHandler(
-            std::bind(&${className}::onNewConnectors, this, std::placeholders::_1));
         }
 
     public:
@@ -168,6 +152,25 @@ class ${className} : public DDSParticipant
             std::bind(&${className}::onNewConfig, this, std::placeholders::_1));
         }
 
+        void setReceivedParameterConfigTrue(){
+            parameterConfig = json::object();
+            receivedParameterConfig = true;
+        }
+
+        void initializeConnectorConfigPorts() {
+            // Adds port which publishes connectors
+            std::string topicConnections = "connectorConfig";
+            connectorPortOut = std::unique_ptr<DDSPort < std::string>>(
+                new DDSPort<std::string>(*this, OUTGOING, topicConnections, true));
+
+
+            // Adds port which subscribes to connectors
+            connectorPortIn = std::unique_ptr<DDSPort < std::string>>(
+                new DDSPort<std::string>(*this, INCOMING, topicConnections, true));
+
+            connectorPortIn->addOnDataAvailableCallbackHandler(
+                std::bind(&${className}::onNewConnectors, this, std::placeholders::_1));
+        }
     };
 
 ${Utils.printNamespaceEnd(comp)}

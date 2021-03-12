@@ -10,9 +10,3 @@ while (!this->tryInitializeDDS (argc, argv)) {
 CLOG (DEBUG, "DDS") << "Trying again...";
 std::this_thread::sleep_for(std::chrono::seconds(1));
 }
-
-<#if comp.getParameters()?size = 0>
-    parameterConfig = json::object();
-    receivedParameterConfig = true;
-    initializeConnectorConfigPorts();
-</#if>

@@ -25,10 +25,13 @@ ${tc.signature("comp", "config")}
   ddsParticipant.initializeParameterConfigPorts();
   ddsParticipant.publishParameterConfig();
 
+  <#if comp.getParameters()?size = 0>
+    // No parameters expected, skip waiting
+    ddsParticipant.setReceivedParameterConfigTrue();
+  </#if>
+
   LOG(DEBUG) << "Waiting for config...";
-  while (!ddsParticipant.isReceivedParameterConfig()){
-    std::this_thread::yield();
-  }
+  while (!ddsParticipant.isReceivedParameterConfig()){}
 
   json config = ddsParticipant.getParameterConfig();
 
