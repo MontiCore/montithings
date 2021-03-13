@@ -50,6 +50,7 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
       </#list>
     );
     ${tc.includeArgs("template.deploy.DDSParticipantSetCmp", [comp, config])}
+    ${tc.includeArgs("template.deploy.CommunicationManagerInit", [comp, config])}
 
     cmp.setUp(
     <#if ComponentHelper.isTimesync(comp)>
