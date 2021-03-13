@@ -6,6 +6,7 @@
 #include <ace/OS_NS_stdlib.h>
 #include <future>
 #include <iostream>
+#include <utility>
 #include "easyloggingpp/easylogging++.h"
 
 #include "dds/message-types/DDSMessageTypeSupportC.h"
@@ -47,12 +48,12 @@ private:
     std::unique_ptr<DDSRecorder> ddsRecorder;
 
 public:
-    explicit DDSPort(DDSParticipant &participant, Direction direction, const std::string& topicName,
+    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string  topicName,
                       bool isRecordingEnabled, bool setQoSTransientDurability, std::function<void(T)> onDataAvailableCallback)
             : onDataAvailableCallback(onDataAvailableCallback),
               participant(&participant),
               direction(direction),
-              topicName(topicName),
+              topicName(std::move(topicName)),
               isRecordingEnabled(isRecordingEnabled),
               setQoSTransientDurability(setQoSTransientDurability) {
         init();
@@ -62,7 +63,7 @@ public:
                       bool isRecordingEnabled, bool setQoSTransientDurability)
             : participant(&participant),
               direction(direction),
-              topicName(topicName),
+              topicName(std::move(topicName)),
               isRecordingEnabled(isRecordingEnabled),
               setQoSTransientDurability(setQoSTransientDurability) {
         init();
@@ -72,7 +73,7 @@ public:
 
     	if (isRecordingEnabled) {
             ddsRecorder = std::make_unique<DDSRecorder>();
-            ddsRecorder->setInstanceName(participant.getInstanceName());
+            ddsRecorder->setInstanceName(participant->getInstanceName());
             ddsRecorder->setPortIdentifier(topicName);
             ddsRecorder->init();
         }
@@ -90,12 +91,12 @@ public:
         }
     }
 
-    ~DDSPort() = default;
+    ~DDSPort() override = default;
 
 
     DDS::Topic_var createTopic() {
-        DDS::Topic_var topic = participant->getParticipant()->create_topic(
-                // sets unique topic name which is associated with the publishers port
+        DDS::Topic_var topicVar = participant->getParticipant()->create_topic(
+                // sets unique topicVar name which is associated with the publishers port
                 // name
                 topicName.c_str(),
                 // Topics are type-specific
@@ -103,14 +104,14 @@ public:
                 // QoS includes KEEP_LAST_HISTORY_QOS which might be changed
                 // when log traces are inspected
                 TOPIC_QOS_DEFAULT,
-                // no topic listener required
+                // no topicVar listener required
                 nullptr,
                 // default status mask ensures that
                 // all relevant communication status
                 // changes are communicated to the
                 // application
                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-        return topic;
+        return topicVar;
     }
 
     DDSMessage::MessageDataReader_var initReader() {
@@ -151,13 +152,13 @@ public:
 
         // narrows the generic data reader passed into the listener to the
         // type-specific MessageDataReader interface
-        DDSMessage::MessageDataReader_var messageReader =
+        DDSMessage::MessageDataReader_var messageReaderVar =
                 DDSMessage::MessageDataReader::_narrow(reader);
 
-        if (!messageReader) {
+        if (!messageReaderVar) {
             CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS message reader narrowing failed.";
         }
-        return messageReader;
+        return messageReaderVar;
     }
 
     DDSMessage::MessageDataWriter_var initWriter() {
@@ -187,14 +188,14 @@ public:
         }
 
         // narrows the generic DataWriter to the type-specific DataWriter
-        DDSMessage::MessageDataWriter_var messageWriter =
+        DDSMessage::MessageDataWriter_var messageWriterVar =
                 DDSMessage::MessageDataWriter::_narrow(writer);
 
-        if (!messageWriter) {
+        if (!messageWriterVar) {
             CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. ";
         }
 
-        return messageWriter;
+        return messageWriterVar;
     }
 
     void getExternalMessages() override {

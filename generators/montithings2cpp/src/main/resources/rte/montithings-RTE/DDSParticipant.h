@@ -15,7 +15,7 @@
 #include "easyloggingpp/easylogging++.h"
 #include "json/json.hpp"
 
-#include "DDSMessageTypeSupportImpl.h"
+#include "dds/message-types/DDSMessageTypeSupportImpl.h"
 
 using json = nlohmann::json;
 
@@ -35,6 +35,8 @@ public:
     DDS::Subscriber_var getSubscriber() { return subscriber; }
 
     CORBA::String_var getMessageTypeName() { return type_name; }
+
+    virtual std::string getInstanceName() = 0;
 
 };
 
