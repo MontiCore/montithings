@@ -2,6 +2,7 @@
 ${tc.signature("comp","config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 std::string topic = "";
+
 <#list comp.getPorts() as p>
 
     <#if p.isOutgoing()>
