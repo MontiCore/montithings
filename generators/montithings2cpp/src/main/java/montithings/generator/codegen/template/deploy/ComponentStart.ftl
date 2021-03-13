@@ -6,6 +6,8 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
 
 <#-- NO TEMPLATE ARGUMENTS -->
 <#if config.getTypeArguments(comp)?size == 0>
+
+  ${tc.includeArgs("template.deploy.DDSParticipantInit", [comp, config])}
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (
   instanceNameArg.getValue ()
   <#if comp.getParameters()?size gt 0>,</#if>
@@ -13,7 +15,7 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
       ${variable.getName()} <#sep>,</#sep>
   </#list>
   );
-  ${tc.includeArgs("template.deploy.DDSParticipantInit", [comp, config])}
+  ${tc.includeArgs("template.deploy.DDSParticipantSetCmp", [comp, config])}
   ${tc.includeArgs("template.deploy.CommunicationManagerInit", [comp, config])}
 
   <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
@@ -36,6 +38,7 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
 <#else>
   <#-- WITH TEMPLATE ARGUMENTS -->
   <#list config.getTypeArguments(comp) as typeArguments>
+    ${tc.includeArgs("template.deploy.DDSParticipantInit", [comp, config])}
     <#if typeArguments?counter gt 1>else</#if>
     if (_typeArgs == "${typeArguments}")
     {
@@ -46,7 +49,7 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
         ${variable.getName()} <#sep>,</#sep>
       </#list>
     );
-    ${tc.includeArgs("template.deploy.DDSParticipantInit", [comp, config])}
+    ${tc.includeArgs("template.deploy.DDSParticipantSetCmp", [comp, config])}
     ${tc.includeArgs("template.deploy.CommunicationManagerInit", [comp, config])}
 
     cmp.setUp(

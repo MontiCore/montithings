@@ -48,19 +48,34 @@ private:
 
 public:
     explicit DDSPort(DDSParticipant &participant, Direction direction, const std::string& topicName,
-                     bool isRecordingEnabled, bool setQoSTransientDurability)
-            : participant(&participant),
-            direction(direction),
-            topicName(topicName),
+                      bool isRecordingEnabled, bool setQoSTransientDurability, std::function<void(T)> onDataAvailableCallback)
+            : onDataAvailableCallback(onDataAvailableCallback),
+              participant(&participant),
+              direction(direction),
+              topicName(topicName),
               isRecordingEnabled(isRecordingEnabled),
               setQoSTransientDurability(setQoSTransientDurability) {
-        if (isRecordingEnabled) {
+        init();
+    }
+
+    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string topicName,
+                      bool isRecordingEnabled, bool setQoSTransientDurability)
+            : participant(&participant),
+              direction(direction),
+              topicName(topicName),
+              isRecordingEnabled(isRecordingEnabled),
+              setQoSTransientDurability(setQoSTransientDurability) {
+        init();
+    }
+
+    void init() {
+
+    	if (isRecordingEnabled) {
             ddsRecorder = std::make_unique<DDSRecorder>();
             ddsRecorder->setInstanceName(participant.getInstanceName());
             ddsRecorder->setPortIdentifier(topicName);
             ddsRecorder->init();
         }
-
         // independently of the port direction, a topic instance is required
         topic = createTopic();
 
@@ -75,11 +90,8 @@ public:
         }
     }
 
-    ~DDSPort() override = default;
+    ~DDSPort() = default;
 
-    void addOnDataAvailableCallbackHandler(std::function<void(T)> callback) {
-        onDataAvailableCallback = callback;
-    }
 
     DDS::Topic_var createTopic() {
         DDS::Topic_var topic = participant->getParticipant()->create_topic(
@@ -134,7 +146,7 @@ public:
 
         if (!reader) {
             CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS data reader creation failed.";
-            exit (EXIT_FAILURE);
+            return 0;
         }
 
         // narrows the generic data reader passed into the listener to the

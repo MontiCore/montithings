@@ -101,7 +101,7 @@ include_directories("hwc" ${r"${dir_list}"})
 
 <#if config.getMessageBroker().toString() == "MQTT">
   # Include Mosquitto Library
-  LINK_DIRECTORIES(/usr/local/Cellar/mosquitto/1.6.10/lib)
+  find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto)
 </#if>
 
 <#if test || config.getSplittingMode().toString() == "OFF">
