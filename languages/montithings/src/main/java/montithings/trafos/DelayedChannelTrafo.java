@@ -77,13 +77,13 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         // TODO remove null if possible
         ASTMCType portType = null;
         try {
-            ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, comp, comp.getPackage() + "." + sourceTypeName);
+            ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, comp.getPackage() + "." + sourceTypeName);
             portType = TrafoUtil.getPortTypeByName(compSource, portSource.getPort());
         } catch (NoSuchElementException e) {
             // model was not found. it is probably a generic type. in this case search for the port within the interfaces
             if (TrafoUtil.isGeneric(comp, sourceTypeName)) {
                 for (String iface : TrafoUtil.getInterfaces(comp, sourceTypeName)) {
-                    ASTMACompilationUnit ifaceComp = TrafoUtil.getComponentByName(models, comp, comp.getPackage() + "." + iface);
+                    ASTMACompilationUnit ifaceComp = TrafoUtil.getComponentByName(models, comp.getPackage() + "." + iface);
 
                     try {
                         portType = TrafoUtil.getPortTypeByName(ifaceComp, portSource.getPort());

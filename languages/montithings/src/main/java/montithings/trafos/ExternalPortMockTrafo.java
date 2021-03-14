@@ -2,6 +2,7 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTComponentInstantiation;
+import arcbasis._ast.ASTConnector;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
@@ -47,56 +48,37 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         allModels.addAll(originalModels);
         allModels.addAll(addedModels);
 
-        // external inputs are only defined in the outermost component (or its subcomponents)
-        ASTMACompilationUnit mainComp = TrafoUtil.getComponentByName(originalModels, targetComp, this.mainCompName);
+        FindPortNamesVisitor visitorPortNames = new FindPortNamesVisitor();
+        targetComp.accept(visitorPortNames);
 
-        // trafos are applied on all original models. this time, however, it should only be applied once
-        if (!mainComp.equals(targetComp)) {
-            // only apply trafo once
-            return additionalTrafoModels;
-        }
+        // get parent components and see if any of the incoming ports is not connected
+        // if this is the case the port must be externally connected
+        for (String parentName : TrafoUtil.findParents(allModels, targetComp)) {
+            ASTMACompilationUnit parentComp = TrafoUtil.getComponentByName(allModels, parentName);
 
-        FindConnectionsVisitor visitorConn = new FindConnectionsVisitor();
-        mainComp.accept(visitorConn);
-        List<FindConnectionsVisitor.Connection> connections = visitorConn.getConnections();
+            List<ASTComponentInstantiation> instantiations = TrafoUtil.getInstantiationsByType(parentComp, targetComp.getComponentType().getName());
 
-        /* ============================================================ */
-        /* ======================= MAINCOMPONENT PORTS ================ */
-        /* ============================================================ */
+            for (ASTComponentInstantiation instantiation : instantiations) {
+                // for each port check if connection is present
+                for (String instanceName : instantiation.getInstancesNames()) {
+                    // incoming ports
+                    for (String portName : visitorPortNames.getIngoingPorts()) {
+                        String qName = instanceName + "." + portName;
+                        List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingTarget(qName);
 
-        //TODO: not implemented yet, is this even possible?
-
-        /* ============================================================ */
-        /* ======================= SUBCOMPONENT PORTS ================= */
-        /* ============================================================ */
-
-        // in order to find external ports we have to iterate over all subcomponents and
-        // check if their incoming ports are connected somehow
-        for (ASTComponentInstantiation instantiation : mainComp.getComponentType().getSubComponentInstantiations()) {
-            for (String instancesName : instantiation.getInstancesNames()) {
-                String type = printSimpleType(instantiation.getMCType());
-                String subCompQName = mainComp.getPackage().getQName() + "." + type;
-
-                ASTMACompilationUnit subComp = TrafoUtil.getComponentByName(allModels, mainComp, subCompQName);
-
-                FindPortNamesVisitor visitorPortNames = new FindPortNamesVisitor();
-                subComp.accept(visitorPortNames);
-
-                for (String portName : visitorPortNames.getIngoingPorts()) {
-                    String qName = instancesName + "." + portName;
-                    boolean isPortConnected = connections.stream()
-                            .anyMatch(c -> c.target.getQName().equals(qName));
-                    if (!isPortConnected) {
-                        additionalTrafoModels.add(transform(mainComp, subComp, true, portName));
+                        if (connectorsMatchingTarget.size() == 0) {
+                            additionalTrafoModels.add(transform(targetComp, true, portName));
+                        }
                     }
-                }
 
-                for (String portName : visitorPortNames.getOutgoingPorts()) {
-                    String qName = instancesName + "." + portName;
-                    boolean isPortConnected = connections.stream()
-                            .anyMatch(c -> c.source.getQName().equals(qName));
-                    if (!isPortConnected) {
-                        additionalTrafoModels.add(transform(mainComp, subComp, false, portName));
+                    // outgoing ports
+                    for (String portName : visitorPortNames.getOutgoingPorts()) {
+                        String qName = instanceName + "." + portName;
+                        List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingSource(qName);
+
+                        if (connectorsMatchingTarget.size() == 0) {
+                            additionalTrafoModels.add(transform(targetComp, false, portName));
+                        }
                     }
                 }
             }
@@ -105,15 +87,14 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         return additionalTrafoModels;
     }
 
-    public ASTMACompilationUnit transform(ASTMACompilationUnit mainComp,
-                                          ASTMACompilationUnit comp,
+    public ASTMACompilationUnit transform(ASTMACompilationUnit targetComp,
                                           boolean isIngoingPort,
                                           String port) throws Exception {
         // naming convention as follows <Component><Port>Mock, e.g. SourceSensorMock
-        String mockedComponentName = TrafoUtil.capitalize(comp.getComponentType().getName()) + TrafoUtil.capitalize(port) + "Mock";
+        String mockedComponentName = TrafoUtil.capitalize(targetComp.getComponentType().getName()) + TrafoUtil.capitalize(port) + "Mock";
 
         // adds new subcomponent representing the external input
-        ASTMACompilationUnit mockedPort = createCompilationUnit(comp.getPackage(), mockedComponentName);
+        ASTMACompilationUnit mockedPort = createCompilationUnit(targetComp.getPackage(), mockedComponentName);
 
         // TODO add actual behavior
         addEmptyBehavior(mockedPort);
@@ -122,27 +103,20 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         addPort(mockedPort,
                 isIngoingPort ? "out" : "in",
                 isIngoingPort,
-                TrafoUtil.getPortTypeByName(comp, port));
+                TrafoUtil.getPortTypeByName(targetComp, port));
 
-        // find out the instance name
-        List<String> instanceNames = mainComp.getComponentType().getSubComponentInstantiations().stream()
-                .filter(s -> comp.getComponentType().getName().equals(printSimpleType(s.getMCType())))
-                .map(ASTComponentInstantiation::getInstancesNames)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
 
-        ASTMCQualifiedName fullyQName = copyASTMCQualifiedName(comp.getPackage());
+        ASTMCQualifiedName fullyQName = copyASTMCQualifiedName(targetComp.getPackage());
         fullyQName.addParts(mockedComponentName);
-        addSubComponentInstantiation(mainComp, fullyQName, mockedComponentName.toLowerCase(), createEmptyArguments());
+        addSubComponentInstantiation(targetComp, fullyQName, mockedComponentName.toLowerCase(), createEmptyArguments());
 
-        // connects mocked component with templated port
-        for (String instanceName : instanceNames) {
-            if (isIngoingPort) {
-                addConnection(mainComp, mockedComponentName.toLowerCase() + ".out", instanceName + "." + port);
-            } else {
-                addConnection(mainComp, instanceName + "." + port, mockedComponentName.toLowerCase() + ".in");
-            }
+
+        if (isIngoingPort) {
+            addConnection(targetComp, mockedComponentName.toLowerCase() + ".out", port);
+        } else {
+            addConnection(targetComp, port, mockedComponentName.toLowerCase() + ".in");
         }
+
 
         return mockedPort;
     }

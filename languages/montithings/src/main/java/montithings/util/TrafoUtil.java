@@ -84,12 +84,10 @@ public abstract class TrafoUtil {
      * Searches in the collection of models for the given name
      *
      * @param models      Collection of AST components where is searched in
-     * @param comp        Component where the name appears. When there is no such model in the list,
-     *                    the generic types of the given component will be checked.
      * @param qNameSearch Qualified component name
      * @return AST of searched component
      */
-    public static ASTMACompilationUnit getComponentByName(Collection<ASTMACompilationUnit> models, ASTMACompilationUnit comp, String qNameSearch) {
+    public static ASTMACompilationUnit getComponentByName(Collection<ASTMACompilationUnit> models, String qNameSearch) {
         for (ASTMACompilationUnit model : models) {
             String qName = model.getPackage().getQName() + "." + model.getComponentType().getName();
             if (qName.equals(qNameSearch)) {
@@ -137,7 +135,25 @@ public abstract class TrafoUtil {
     }
 
     /**
-     * @param comp AST of model where the instantiation is declared
+     * Returns instantiations equalling the given typeName
+     *
+     * @param comp     Component where instantiations are searched in
+     * @param typeName String of type
+     */
+    public static List<ASTComponentInstantiation> getInstantiationsByType(ASTMACompilationUnit comp, String typeName) {
+        List<ASTComponentInstantiation> res = new ArrayList<>();
+
+        for (ASTComponentInstantiation subComponentInstantiation : comp.getComponentType().getSubComponentInstantiations()) {
+            String subCompType = printSimpleType(subComponentInstantiation.getMCType());
+            if (subCompType.equals(typeName)) {
+                res.add(subComponentInstantiation);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * @param comp     AST of model where the instantiation is declared
      * @param compName String of instantiated type
      * @return whether compName is a generic type in comp or not
      */

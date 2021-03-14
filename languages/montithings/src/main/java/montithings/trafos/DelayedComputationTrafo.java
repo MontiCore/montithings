@@ -113,7 +113,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // wherever the original component was initiated, the declaration has to be changed.
         // E.g. "Sink sink" becomes "SinkWrapper sink"
         for (String parent : TrafoUtil.findParents(originalModels, targetComp)) {
-            ASTMACompilationUnit p = TrafoUtil.getComponentByName(originalModels, targetComp, parent);
+            ASTMACompilationUnit p = TrafoUtil.getComponentByName(originalModels, parent);
             replaceComponentInstantiationType(p, compName, compWrapperName);
 
         }
