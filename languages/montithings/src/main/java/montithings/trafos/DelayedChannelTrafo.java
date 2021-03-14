@@ -2,6 +2,7 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTPortAccess;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
@@ -64,8 +65,12 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
                         + targetTypeName + TrafoUtil.capitalize(portTarget.getPort())
                         + "Delay";
 
+        ASTMCQualifiedName fullyQName = copyASTMCQualifiedName(comp.getPackage());
+        fullyQName.addParts(channelInterceptorComponentName);
+
+
         // Adds instantiation statement, e.g. "SourceValueSinkValueDelay sourcevaluesinkvaluedelay";
-        addSubComponentInstantiation(comp, channelInterceptorComponentName, channelInterceptorComponentName.toLowerCase(), createEmptyArguments());
+        addSubComponentInstantiation(comp, fullyQName, channelInterceptorComponentName.toLowerCase(), createEmptyArguments());
 
         // Find out the port type. Therefore, first get the component of the source and search for the port.
         // This is only done with the source port as port types have to match anyway
@@ -95,6 +100,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
 
         // actually creates the model of the intercepting component
         ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(comp.getPackage(), channelInterceptorComponentName);
+
 
         // TODO
         addEmptyBehavior(channelInterceptorComponent);

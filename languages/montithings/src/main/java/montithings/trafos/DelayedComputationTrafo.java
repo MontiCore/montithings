@@ -4,6 +4,7 @@ package montithings.trafos;
 import arcbasis._ast.ASTArcParameter;
 import de.monticore.expressions.expressionsbasis._ast.ASTArguments;
 import de.monticore.types.mcbasictypes._ast.ASTMCPrimitiveType;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.MCBasicTypesNodeFactory;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
@@ -98,10 +99,16 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
                 .map(ASTArcParameter::getName)
                 .collect(Collectors.toList());
         ASTArguments arguments = createArguments(parameterStringList);
-        addSubComponentInstantiation(compWrapper, compName, compName.toLowerCase(), arguments);
 
-        addSubComponentInstantiation(compWrapper, newCompNames[0], newCompNames[0].toLowerCase(), createEmptyArguments());
-        addSubComponentInstantiation(compWrapper, newCompNames[1], newCompNames[1].toLowerCase(), createEmptyArguments());
+        addSubComponentInstantiation(compWrapper, targetComp.getPackage(), compName.toLowerCase(), arguments);
+
+        ASTMCQualifiedName fullyQName1 = copyASTMCQualifiedName(targetComp.getPackage());
+        fullyQName1.addParts(newCompNames[0]);
+        addSubComponentInstantiation(compWrapper, fullyQName1, newCompNames[0].toLowerCase(), createEmptyArguments());
+
+        ASTMCQualifiedName fullyQName2 = copyASTMCQualifiedName(targetComp.getPackage());
+        fullyQName2.addParts(newCompNames[1]);
+        addSubComponentInstantiation(compWrapper, fullyQName2, newCompNames[1].toLowerCase(), createEmptyArguments());
 
         // wherever the original component was initiated, the declaration has to be changed.
         // E.g. "Sink sink" becomes "SinkWrapper sink"

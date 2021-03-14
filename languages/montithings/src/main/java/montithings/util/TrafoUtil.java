@@ -99,7 +99,6 @@ public abstract class TrafoUtil {
         throw new NoSuchElementException("There is no such model named " + qNameSearch);
     }
 
-
     /**
      * Capitalizes first character of the given string
      *

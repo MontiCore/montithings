@@ -4,9 +4,7 @@ import arcbasis._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTStringLiteralBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
-import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
-import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
-import de.monticore.types.mcbasictypes._ast.ASTMCType;
+import de.monticore.types.mcbasictypes._ast.*;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMACompilationUnitBuilder;
 import montithings.MontiThingsMill;
@@ -102,6 +100,33 @@ public abstract class BasicTransformations {
     }
 
     /**
+     * Adds a given qualified name to the imports of the given component
+     *
+     * @param packageId ASTMCQualifiedName of the imported component
+     * @param comp      Component which should import the packageId
+     */
+    protected void addImportStatement(ASTMCQualifiedName packageId, ASTMACompilationUnit comp) {
+        ASTMCImportStatement importStatement = MontiThingsMill.mCImportStatementBuilder()
+                .setMCQualifiedName(packageId).build();
+
+        comp.addImportStatement(importStatement);
+    }
+
+    /**
+     * Clones ASTMCQualifiedName object which can be used to avoid pass-by-ref situations
+     *
+     * @param qName ASTMCQualifiedName
+     */
+    protected ASTMCQualifiedName copyASTMCQualifiedName(ASTMCQualifiedName qName) {
+        ASTMCQualifiedNameBuilder qualifiedNameBuilder = MontiThingsMill.mCQualifiedNameBuilder();
+        for (String part : qName.getPartsList()) {
+            qualifiedNameBuilder.addParts(part);
+        }
+
+        return qualifiedNameBuilder.build();
+    }
+
+    /**
      * Adds an empty behavior java block to the given component.
      *
      * @param comp AST of component which is modified
@@ -122,15 +147,17 @@ public abstract class BasicTransformations {
      * @param args         Instance arguments
      * @return
      */
-    protected ASTComponentInstantiation addSubComponentInstantiation(ASTMACompilationUnit comp, String typeName, String instanceName, ASTArguments args) {
+    protected ASTComponentInstantiation addSubComponentInstantiation(ASTMACompilationUnit comp, ASTMCQualifiedName qName, String instanceName, ASTArguments args) {
         ASTComponentInstantiationBuilder instantiationBuilder = ComfortableArcMillForMontiThings.componentInstantiationBuilder();
 
         instantiationBuilder.addInstance(instanceName);
         instantiationBuilder.getComponentInstance(0).setArguments(args);
-        instantiationBuilder.setMCType(createCompilationUnitType(typeName));
+        instantiationBuilder.setMCType(createCompilationUnitType(qName.getBaseName()));
 
         ASTComponentInstantiation instantiation = instantiationBuilder.build();
         comp.getComponentType().getBody().addArcElement(instantiation);
+
+        addImportStatement(qName, comp);
 
         return instantiation;
     }

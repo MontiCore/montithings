@@ -2,6 +2,7 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTComponentInstantiation;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._visitor.FindConnectionsVisitor;
@@ -130,7 +131,9 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        addSubComponentInstantiation(mainComp, mockedComponentName, mockedComponentName.toLowerCase(), createEmptyArguments());
+        ASTMCQualifiedName fullyQName = copyASTMCQualifiedName(comp.getPackage());
+        fullyQName.addParts(mockedComponentName);
+        addSubComponentInstantiation(mainComp, fullyQName, mockedComponentName.toLowerCase(), createEmptyArguments());
 
         // connects mocked component with templated port
         for (String instanceName : instanceNames) {
