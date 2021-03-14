@@ -16,7 +16,7 @@ std::string topic = "";
                         // port "${p.getName()}" is target port of a subcomponent
                         topic =  comp->getInstanceName() + ".${connector.getSource().getQName()}" + "/out";
                         CLOG(DEBUG, "DDS") << "Creating additional port for incoming port ${p.getName()} to forward data to subcomponents " << topic;
-                        comp->addInPort${p.getName()?cap_first}(new DDSPort<int>(*this, INCOMING, topic, true, false));
+                        comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, true, false));
                     </#if>
                 </#list>
             </#list>
