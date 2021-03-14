@@ -1161,6 +1161,14 @@ public class ComponentHelper {
     return visitor.getAgoQualifications().containsKey(var.getName());
   }
 
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, PortSymbol port){
+    FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
+    if (comp.isPresentAstNode()){
+      comp.getAstNode().accept(visitor);
+    }
+    return visitor.getAgoQualifications().containsKey(port.getName());
+  }
+
   public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name){
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
     if (comp.isPresentAstNode()){
