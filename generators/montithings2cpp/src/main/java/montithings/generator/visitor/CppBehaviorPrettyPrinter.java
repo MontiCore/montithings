@@ -8,13 +8,9 @@ import behavior._visitor.BehaviorVisitor;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
-import de.monticore.siunits._ast.ASTSIUnit;
-import de.monticore.siunits._ast.ASTSIUnitPrimitive;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
-import montithings._auxiliary.SIUnitLiteralsMillForMontiThings;
-import montithings._auxiliary.SIUnitsMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
 
 import java.util.Optional;
@@ -136,23 +132,12 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
       getPrinter().print(" << ");
 
       String subString = input.substring(m.start() + 1, m.end());
-      if(subString.contains("@ago(")){
-        //TODO: build AgoQualification
-        /*ASTSIUnitLiteral literal = SIUnitLiteralsMillForMontiThings
-                .sIUnitLiteralBuilder()
-                .setNumericLiteral()
-                .setSIUnit()
-                .build();
-        ASTAgoQualification agoQualification =*/
-      }
-      else {
-        ASTNameExpression name = ExpressionsBasisMillForMontiThings
-                .nameExpressionBuilder()
-                .setName(subString)
-                .build();
-        name.setEnclosingScope(node.getEnclosingScope());
-        name.accept(getRealThis());
-      }
+      ASTNameExpression name = ExpressionsBasisMillForMontiThings
+              .nameExpressionBuilder()
+              .setName(subString)
+              .build();
+      name.setEnclosingScope(node.getEnclosingScope());
+      name.accept(getRealThis());
 
       getPrinter().print(" << ");
 
