@@ -22,13 +22,12 @@ class ReplayDataHandler {
         this.data = reader.readObject();
     }
 
-    protected List<JsonObject> getRecordings(String qNameInstance, String portName) {
+    protected List<JsonObject> getRecordings(String qNameComp, String portName) {
         return this.data.getJsonObject("recordings")
-                .getJsonArray(qNameInstance)
+                .getJsonArray(qNameComp + "." + portName)
                 .stream()
                 .filter(record -> record.getValueType() == JsonValue.ValueType.OBJECT)
                 .map(record -> (JsonObject) record)
-                .filter(record -> record.getString("topic").startsWith(qNameInstance + "." + portName))
                 .collect(Collectors.toList());
     }
 }

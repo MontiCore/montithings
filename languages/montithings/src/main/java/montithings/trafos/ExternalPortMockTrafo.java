@@ -3,9 +3,19 @@ package montithings.trafos;
 
 import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._ast.ASTConnector;
+import behavior._ast.ASTAfterStatementBuilder;
+import de.monticore.literals.mccommonliterals._ast.ASTNumericLiteral;
+import de.monticore.literals.mcjavaliterals._ast.ASTLongLiteral;
+import de.monticore.literals.mcjavaliterals._ast.ASTLongLiteralBuilder;
+import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
+import de.monticore.siunitliterals._ast.ASTSIUnitLiteralBuilder;
+import de.monticore.siunits._ast.*;
+import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
+import montithings.MontiThingsMill;
+import montithings._ast.ASTBehaviorBuilder;
 import montithings._visitor.FindPortNamesVisitor;
 import montithings.util.TrafoUtil;
 
@@ -61,14 +71,14 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
             for (ASTComponentInstantiation instantiation : instantiations) {
                 // for each port check if connection is present
                 for (String instanceName : instantiation.getInstancesNames()) {
-                    String qNameInstance = parentName + "." + instanceName;
+                    String qNameComp = targetComp.getPackage().getQName() + "." + targetComp.getComponentType().getName();
                     // incoming ports
                     for (String portName : visitorPortNames.getIngoingPorts()) {
                         String qName = instanceName + "." + portName;
                         List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingTarget(qName);
 
                         if (connectorsMatchingTarget.size() == 0) {
-                            additionalTrafoModels.add(transform(targetComp, true, qNameInstance, portName));
+                            additionalTrafoModels.add(transform(targetComp, true, qNameComp, portName));
                         }
                     }
 
@@ -78,7 +88,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                         List<ASTConnector> connectorsMatchingSource = parentComp.getComponentType().getConnectorsMatchingSource(qName);
 
                         if (connectorsMatchingSource.size() == 0) {
-                            additionalTrafoModels.add(transform(targetComp, false, qNameInstance, portName));
+                            additionalTrafoModels.add(transform(targetComp, false, qNameComp, portName));
                         }
                     }
                 }
@@ -125,12 +135,41 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         return mockedPort;
     }
 
-    void addBehavior(ASTMACompilationUnit compilationUnit, String qNameInstance, String portName) {
-        List<JsonObject> recordings = dataHandler.getRecordings(qNameInstance, portName);
+    void addBehavior(ASTMACompilationUnit compilationUnit, String qNameComp, String portName) {
+        List<JsonObject> recordings = dataHandler.getRecordings(qNameComp, portName);
 
         for (JsonObject recording : recordings) {
-            //addAfterBehaviorBlock(recording.getJsonNumber("timestamp").longValue())
+            long timestamp = recording.getJsonNumber("timestamp").longValue();
+            String value =  recording.getString("msg_content");
+            addAfterBehaviorBlock(timestamp, portName, value);
         }
 
+    }
+
+    private void addAfterBehaviorBlock(long timestamp, String portName, String value) {
+        // Build timestamp number
+        ASTLongLiteralBuilder tsLiternalNumeric = new ASTLongLiteralBuilder();
+        tsLiternalNumeric.setSource(String.valueOf(timestamp));
+/*
+        // Build timestamp unit
+        ASTSIUnitBuilder timestampUnit = MontiThingsMill.sIUnitBuilder();
+        ASTSIUnitPrimitiveBuilder astsiUnitPrimitive = MontiThingsMill.sIUnitPrimitiveBuilder();
+        ASTSIUnitWithPrefixBuilder astsiUnitWithPrefix = MontiThingsMill.sIUnitWithPrefixBuilder();
+        astsiUnitWithPrefix.set
+        astsiUnitPrimitive.setSIUnitWithPrefix(astsiUnitWithPrefix)
+
+
+        timestampUnit.setSIUnitPrimitive(astsiUnitPrimitive)
+        // Build timestamp SI unit literal
+        ASTSIUnitLiteralBuilder tsLiteral = MontiThingsMill.sIUnitLiteralBuilder();
+        tsLiteral.setNumericLiteral(tsLiternalNumeric.build());
+        tsLiteral.setSIUnit(timestampUnit)
+
+        ASTMCJavaBlock javaBlock = MontiThingsMill.mCJavaBlockBuilder().build();
+        ASTAfterStatementBuilder afterBehavior = MontiThingsMill.afterStatementBuilder();
+        afterBehavior.setSIUnitLiteral(tsLiteral)
+        afterBehavior.setMCJavaBlock(javaBlock);
+        comp.getComponentType().getBody().addArcElement(behavior.build());
+*/
     }
 }
