@@ -149,68 +149,67 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
 
     <#-- constructor -->
     public: ${type.getName()}(
-<#list mandatoryFields as mandatoryField>
-    ${java2cppTypeString(mandatoryField.type)} ${mandatoryField.name}
-    <#if !mandatoryField?is_last>,</#if>
-</#list>
-){
-<#list mandatoryFields as mandatoryField>
-  this->${mandatoryField.name} = ${mandatoryField.name};
-</#list>
-}
+    <#list mandatoryFields as mandatoryField>
+        ${java2cppTypeString(mandatoryField.type)} ${mandatoryField.name}
+        <#if !mandatoryField?is_last>,</#if>
+    </#list>
+    ){
+       <#list mandatoryFields as mandatoryField>
+         this->${mandatoryField.name} = ${mandatoryField.name};
+       </#list>
+    }
 
-<#-- stream operator -->
-<#assign thisVar = type.getName()?uncap_first>
-friend std::ostream &
-operator<< (std::ostream &os, const ${type.getName()} &${thisVar})
-{
-os << "{ ";
-<#-- attributes -->
-<#list type.getFieldList() as field>
-  os << "\"${field.getName()}\": \"" << ${thisVar}.${field.getName()} << "\"";
-</#list>
-
-<#-- associations -->
-<#list associations as assoc>
-    <#assign n=AssociationHelper.getDerivedName(assoc, type)>
-    <#if AssociationHelper.getOtherSideCardinality(assoc, type).isMult() >
-    <#-- [*] ASTCDCardMult -->
-      {
-      os << "\"${n}\": [";
-      bool isFirst = true;
-      for (auto entry : ${thisVar}.${n}) {
-      if (!isFirst) {os << ", ";}
-      os << entry;
-      isFirst = false;
-      }
-      os << "]";
-      }
-    <#elseif AssociationHelper.getOtherSideCardinality(assoc, type).isOpt() >
-    <#-- [0..1] ASTCDCardOpt -->
-      if (${thisVar}.${n}.has_value()) {
-      os << "\"${n}\": \"" << ${thisVar}.${n}.value() << "\"";
-      } else
-      {
-      os << "\"${n}\": {}";
-      }
-    <#else>
-    <#-- [1] ASTCDCardOne -->
-      os << "\"${n}\": \"" << ${thisVar}.${n} << "\"";
-    </#if>
-</#list> <#-- /associations -->
-os << " }";
-return os;
-}
-
-<#-- serialization -->
-public:
-template
-<class Archive>
-  void serialize( Archive & ar )
-  {
-  ar(
+    <#-- stream operator -->
+    <#assign thisVar = type.getName()?uncap_first>
+    friend std::ostream &
+    operator<< (std::ostream &os, const ${type.getName()} &${thisVar})
+    {
+    os << "{ ";
+    <#-- attributes -->
     <#list type.getFieldList() as field>
-        ${field.getName()}<#sep>,</#sep>
+      os << "\"${field.getName()}\": \"" << ${thisVar}.${field.getName()} << "\"";
+    </#list>
+
+    <#-- associations -->
+    <#list associations as assoc>
+      <#assign n=AssociationHelper.getDerivedName(assoc, type)>
+      <#if AssociationHelper.getOtherSideCardinality(assoc, type).isMult() >
+        <#-- [*] ASTCDCardMult -->
+        {
+        os << "\"${n}\": [";
+        bool isFirst = true;
+        for (auto entry : ${thisVar}.${n}) {
+          if (!isFirst) {os << ", ";}
+          os << entry;
+          isFirst = false;
+        }
+        os << "]";
+        }
+      <#elseif AssociationHelper.getOtherSideCardinality(assoc, type).isOpt() >
+        <#-- [0..1] ASTCDCardOpt -->
+        if (${thisVar}.${n}.has_value()) {
+          os << "\"${n}\": \"" << ${thisVar}.${n}.value() << "\"";
+        } else
+        {
+          os << "\"${n}\": {}";
+        }
+      <#else>
+        <#-- [1] ASTCDCardOne -->
+        os << "\"${n}\": \"" << ${thisVar}.${n} << "\"";
+      </#if>
+    </#list> <#-- /associations -->
+    os << " }";
+    return os;
+    }
+
+    <#-- serialization -->
+    public:
+    template <class Archive>
+    void serialize( Archive & ar )
+    {
+    ar(
+    <#list type.getFieldList() as field>
+      ${field.getName()}<#sep>,</#sep>
     </#list>
     <#if type.getFieldList()?size gt 0 && associations?size gt 0>,</#if>
     <#list associations as assoc>
