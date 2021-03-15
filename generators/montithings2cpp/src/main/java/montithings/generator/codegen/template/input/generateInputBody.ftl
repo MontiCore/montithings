@@ -22,7 +22,7 @@ ${tc.signature("comp", "compname", "config", "className")}
             this->${port.getName()} = std::move(${port.getName()});
             <#if ComponentHelper.hasAgoQualification(comp, port)>
                auto nowOf__${port.getName()?cap_first} = std::chrono::system_clock::now();
-               dequeOf__${port.getName()?cap_first}.push_back(std::make_pair(nowOf__${port.getName()?cap_first}, value.value()));
+               dequeOf__${port.getName()?cap_first}.push_back(std::make_pair(nowOf__${port.getName()?cap_first}, ${port.getName()}.value()));
                std::pair<std::chrono::time_point<std::chrono::system_clock>, ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> firstElementOf__${port.getName()?cap_first} = dequeOf__${port.getName()?cap_first}.front();
                while (firstElementOf__${port.getName()?cap_first}.first < nowOf__${port.getName()?cap_first} - highestAgoOf__${port.getName()?cap_first}){
                firstElementOf__${port.getName()?cap_first} = dequeOf__${port.getName()?cap_first}.front();

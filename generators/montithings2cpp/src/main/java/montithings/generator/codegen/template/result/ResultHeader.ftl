@@ -16,6 +16,7 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include ${"<vector>"}
 #include ${"<list>"}
 #include ${"<set>"}
+#include ${"<deque>"}
 ${Utils.printIncludes(comp, config)}
 
 ${Utils.printNamespaceStart(comp)}
@@ -35,6 +36,10 @@ class ${className}
 protected:
 <#list comp.getOutgoingPorts() as port >
   tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()};
+  <#if ComponentHelper.hasAgoQualification(comp, port)>
+    static std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>> dequeOf__${port.getName()?cap_first};
+    std::chrono::nanoseconds highestAgoOf__${port.getName()?cap_first} = std::chrono::nanoseconds {${ComponentHelper.getHighestAgoQualification(comp, port.getName())}};
+  </#if>
 </#list>
 public:
 ${className}() = default;
@@ -53,6 +58,9 @@ ${className}() = default;
           void set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()});
         </#if>
     </#if>
+  <#if ComponentHelper.hasAgoQualification(comp, port)>
+    tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> agoGet${port.getName()?cap_first} (const std::chrono::nanoseconds ago_time);
+  </#if>
 </#list>
 };
 

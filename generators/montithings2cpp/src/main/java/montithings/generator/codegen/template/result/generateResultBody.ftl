@@ -14,6 +14,16 @@ ${tc.signature("comp", "compname", "config", "className")}
     </#if>
     <#list comp.getOutgoingPorts() as port >
         this->${port.getName()} = ${port.getName()};
+        <#if ComponentHelper.hasAgoQualification(comp, port)>
+          auto nowOf__${port.getName()?cap_first} = std::chrono::system_clock::now();
+          dequeOf__${port.getName()?cap_first}.push_back(std::make_pair(nowOf__${port.getName()?cap_first}, ${port.getName()}));
+          std::pair<std::chrono::time_point<std::chrono::system_clock>, ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> firstElementOf__${port.getName()?cap_first} = dequeOf__${port.getName()?cap_first}.front();
+          while (firstElementOf__${port.getName()?cap_first}.first < nowOf__${port.getName()?cap_first} - highestAgoOf__${port.getName()?cap_first}){
+          firstElementOf__${port.getName()?cap_first} = dequeOf__${port.getName()?cap_first}.front();
+          dequeOf__${port.getName()?cap_first}.pop_front();
+          }
+          dequeOf__${port.getName()?cap_first}.push_front(firstElementOf__${port.getName()?cap_first});
+        </#if>
     </#list>
     }
 </#if>
@@ -31,6 +41,16 @@ ${tc.signature("comp", "compname", "config", "className")}
     ${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()})
     {
     this->${port.getName()} = ${port.getName()};
+    <#if ComponentHelper.hasAgoQualification(comp, port)>
+      auto now = std::chrono::system_clock::now();
+      dequeOf__${port.getName()?cap_first}.push_back(std::make_pair(now, ${port.getName()}.value()));
+      std::pair<std::chrono::time_point<std::chrono::system_clock>, ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> firstElement = dequeOf__${port.getName()?cap_first}.front();
+      while (firstElement.first < now - highestAgoOf__${port.getName()?cap_first}){
+      firstElement = dequeOf__${port.getName()?cap_first}.front();
+      dequeOf__${port.getName()?cap_first}.pop_front();
+      }
+      dequeOf__${port.getName()?cap_first}.push_front(firstElement);
+    </#if>
     }
     <#if ComponentHelper.portUsesCdType(port)>
         <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
@@ -57,5 +77,24 @@ ${tc.signature("comp", "compname", "config", "className")}
             }
 
         </#if>
+    </#if>
+    <#if ComponentHelper.hasAgoQualification(comp, port)>
+      std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>> ${className}${Utils.printFormalTypeParameters(comp, false)}::dequeOf__${port.getName()?cap_first};
+      ${Utils.printTemplateArguments(comp)}
+      tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${className}${Utils.printFormalTypeParameters(comp, false)}::agoGet${port.getName()?cap_first}(const std::chrono::nanoseconds ago_time)
+      {
+      if(dequeOf__${port.getName()?cap_first}.empty()){
+      return tl::nullopt;
+      }
+      auto now = std::chrono::system_clock::now();
+      int i = 1;
+      while (i <= dequeOf__${port.getName()?cap_first}.size()){
+      if(dequeOf__${port.getName()?cap_first}.at(dequeOf__${port.getName()?cap_first}.size() - i).first < now-ago_time){
+      return tl::make_optional(dequeOf__${port.getName()?cap_first}.at(dequeOf__${port.getName()?cap_first}.size() - i).second);
+      }
+      i++;
+      }
+      return tl::make_optional(dequeOf__${port.getName()?cap_first}.front().second);
+      }
     </#if>
 </#list>
