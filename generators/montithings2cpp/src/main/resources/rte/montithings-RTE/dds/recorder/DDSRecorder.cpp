@@ -150,7 +150,8 @@ DDSRecorder::recordMessage(DDSMessage::Message message, char *topicName,
         recorderMessage.msg_id = message.id;
         recorderMessage.msg_content = content.c_str();
         recorderMessage.timestamp = timestamp;
-        recorderMessage.topic = topicName;
+        std::string topic{topicName};
+        recorderMessage.topic = topic.c_str();
         recorderMessage.message_delays = jUnsentDelays.dump().c_str();
 
         CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << messageId
