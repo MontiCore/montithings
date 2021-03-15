@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.visitor;
 
+import behavior._ast.ASTAgoQualification;
 import de.monticore.expressions.commonexpressions._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
@@ -78,11 +79,18 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
 
   protected void handleInfix(ASTInfixExpression node, String infix) {
     CppExpressionPrettyPrinter expressionPP = new CppExpressionPrettyPrinter(getPrinter());
+    CppBehaviorPrettyPrinter behaviorPP = new CppBehaviorPrettyPrinter(getPrinter());
     CommentPrettyPrinter.printPreComments(node, getPrinter());
-    if (node.getLeft() instanceof ASTNameExpression &&
+    if ((node.getLeft() instanceof ASTNameExpression ||
+      node.getLeft() instanceof ASTAgoQualification) &&
       node.getRight() instanceof ASTNoData) {
       // edge case: we're comparing a name to NoData. Prevent unwrapping optionals
-      expressionPP.handle((ASTNameExpression) node.getLeft(), true);
+      if(node.getLeft() instanceof ASTNameExpression){
+        expressionPP.handle((ASTNameExpression) node.getLeft(), true);
+      }
+      else {
+        behaviorPP.handle((ASTAgoQualification) node.getLeft(), true);
+      }
     }
     else if(tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
             tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit) {
@@ -100,14 +108,34 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       node.getLeft().accept(getRealThis());
     }
     getPrinter().print(infix);
-    if (node.getRight() instanceof ASTNameExpression &&
+    if ((node.getRight() instanceof ASTNameExpression ||
+      node.getRight() instanceof ASTAgoQualification) &&
       node.getLeft() instanceof ASTNoData) {
       // edge case: we're comparing a name to NoData. Prevent unwrapping optionals
-      expressionPP.handle((ASTNameExpression) node.getRight(), true);
+      if(node.getRight() instanceof ASTNameExpression){
+        expressionPP.handle((ASTNameExpression) node.getRight(), true);
+      }
+      else {
+        behaviorPP.handle((ASTAgoQualification) node.getRight(), true);
+      }
     }
     else {
       node.getRight().accept(getRealThis());
     }
     CommentPrettyPrinter.printPostComments(node, getPrinter());
+  }
+
+  @Override
+  public void handle(ASTFieldAccessExpression node){
+    if (node.getExpression() instanceof ASTAgoQualification) {
+      CommentPrettyPrinter.printPreComments(node, this.getPrinter());
+      CppBehaviorPrettyPrinter behaviorPP = new CppBehaviorPrettyPrinter(getPrinter());
+      behaviorPP.handle((ASTAgoQualification) node.getExpression(), true);
+      this.getPrinter().print("." + node.getName());
+      CommentPrettyPrinter.printPostComments(node, this.getPrinter());
+    }
+    else {
+      super.handle(node);
+    }
   }
 }

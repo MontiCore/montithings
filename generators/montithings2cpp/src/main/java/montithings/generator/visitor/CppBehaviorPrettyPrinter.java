@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.visitor;
 
 import arcbasis._symboltable.PortSymbol;
@@ -51,6 +52,10 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
 
   @Override
   public void handle (ASTAgoQualification node){
+    handle(node, false);
+  }
+
+  public void handle (ASTAgoQualification node, boolean isComparedToNoData){
     if(node.getExpression() instanceof ASTNameExpression){
       ASTNameExpression name = (ASTNameExpression) node.getExpression();
       Optional<PortSymbol> port = getPortForName(name);
@@ -65,6 +70,9 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
         getPrinter().print(capitalize(name.getName()) + "(std::chrono::");
         printTime(node.getSIUnitLiteral());
         getPrinter().print(")");
+        if(!isComparedToNoData){
+          getPrinter().print(".value()");
+        }
       }
       else {
         Optional<VariableSymbol> symbol = node.getEnclosingScope().resolveVariable(name.getName());
@@ -80,7 +88,6 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
       }
     }
     else {
-      //TODO: handle cases where expression is not a NameExpression
       node.getExpression().accept(getRealThis());
     }
   }
