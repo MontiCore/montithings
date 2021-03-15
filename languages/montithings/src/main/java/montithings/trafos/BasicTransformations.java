@@ -12,7 +12,10 @@ import montithings._ast.ASTBehaviorBuilder;
 import montithings._ast.ASTMTComponentModifierBuilder;
 import montithings._ast.ASTMTComponentTypeBuilder;
 import montithings._auxiliary.ComfortableArcMillForMontiThings;
+import montithings.util.TrafoUtil;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -113,20 +116,6 @@ public abstract class BasicTransformations {
     }
 
     /**
-     * Clones ASTMCQualifiedName object which can be used to avoid pass-by-ref situations
-     *
-     * @param qName ASTMCQualifiedName
-     */
-    protected ASTMCQualifiedName copyASTMCQualifiedName(ASTMCQualifiedName qName) {
-        ASTMCQualifiedNameBuilder qualifiedNameBuilder = MontiThingsMill.mCQualifiedNameBuilder();
-        for (String part : qName.getPartsList()) {
-            qualifiedNameBuilder.addParts(part);
-        }
-
-        return qualifiedNameBuilder.build();
-    }
-
-    /**
      * Adds an empty behavior java block to the given component.
      *
      * @param comp AST of component which is modified
@@ -142,7 +131,7 @@ public abstract class BasicTransformations {
 
     /**
      * @param comp         AST of component which is modified
-     * @param typeName     Type name
+     * @param qName        Type name
      * @param instanceName Instance name
      * @param args         Instance arguments
      * @return
@@ -165,17 +154,24 @@ public abstract class BasicTransformations {
     /**
      * Searches and replaces the types of matching instantiations
      *
-     * @param comp    AST of component which is modified
-     * @param type    The type which should get replaced
-     * @param newType The new type
+     * @param comp      AST of component which is modified
+     * @param modelPath Path of the models which is used to gather the fully qualified name of components
+     * @param type      The type which should get replaced
+     * @param newType   The new type
      */
-    protected void replaceComponentInstantiationType(ASTMACompilationUnit comp, String type, String newType) {
+    protected void replaceComponentInstantiationType(ASTMACompilationUnit comp, File modelPath, String type, String newType) throws Exception {
         for (ASTComponentInstantiation subComponentInstantiation : comp.getComponentType().getSubComponentInstantiations()) {
             String typeSubComp = printSimpleType(subComponentInstantiation.getMCType());
             if (type.equals(typeSubComp)) {
                 subComponentInstantiation.setMCType(createCompilationUnitType(newType));
             }
         }
+
+        ASTMCQualifiedName qNameOldType = TrafoUtil.getFullyQNameFromImports(modelPath, comp, type);
+        ASTMCQualifiedName qNameNewType = TrafoUtil.copyASTMCQualifiedName(qNameOldType);
+        qNameNewType.removeParts(qNameNewType.sizeParts() - 1);
+        qNameNewType.addParts(newType);
+        addImportStatement(qNameNewType, comp);
     }
 
     /**

@@ -6,7 +6,6 @@ import arcbasis._ast.ASTConnector;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
-import montithings._visitor.FindConnectionsVisitor;
 import montithings._visitor.FindPortNamesVisitor;
 import montithings.util.TrafoUtil;
 
@@ -14,9 +13,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static montithings.util.GenericBindingUtil.printSimpleType;
 
 /**
  * Trafo which replaces templated ports (external inputs).
@@ -31,9 +27,12 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
     private final String mainCompName;
     private final ReplayDataHandler dataHandler;
 
-    public ExternalPortMockTrafo(File replayDataFile, String mainComp) {
+    private final File modelPath;
+
+    public ExternalPortMockTrafo(File modelPath, File replayDataFile, String mainComp) {
         this.mainCompName = mainComp;
         this.dataHandler = new ReplayDataHandler(replayDataFile);
+        this.modelPath = modelPath;
     }
 
     public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
@@ -106,7 +105,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                 TrafoUtil.getPortTypeByName(targetComp, port));
 
 
-        ASTMCQualifiedName fullyQName = copyASTMCQualifiedName(targetComp.getPackage());
+        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
         fullyQName.addParts(mockedComponentName);
         addSubComponentInstantiation(targetComp, fullyQName, mockedComponentName.toLowerCase(), createEmptyArguments());
 

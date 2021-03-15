@@ -95,9 +95,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Log.info("Initializing symboltable", TOOL_NAME);
 
     if (config.getReplayMode() == ConfigParams.ReplayMode.ON) {
-        addTrafo(new ExternalPortMockTrafo(config.getReplayDataFile(), config.getMainComponent()));
-        addTrafo(new DelayedChannelTrafo(config.getReplayDataFile()));
-        addTrafo(new DelayedComputationTrafo(config.getReplayDataFile()));
+        addTrafo(new ExternalPortMockTrafo(modelPath, config.getReplayDataFile(), config.getMainComponent()));
+        addTrafo(new DelayedChannelTrafo(modelPath, config.getReplayDataFile()));
+        addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
     }
 
     ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()

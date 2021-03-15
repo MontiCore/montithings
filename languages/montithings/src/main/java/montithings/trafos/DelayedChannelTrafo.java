@@ -29,8 +29,11 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
 
     private final ReplayDataHandler dataHandler;
 
-    public DelayedChannelTrafo(File replayDataFile) {
+    private final File modelPath;
+
+    public DelayedChannelTrafo(File modelPath, File replayDataFile) {
         this.dataHandler = new ReplayDataHandler(replayDataFile);
+        this.modelPath = modelPath;
     }
 
     public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
@@ -38,14 +41,14 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
                                                       ASTMACompilationUnit targetComp) throws Exception {
         Log.info("Apply transformation: Delayed Channels: " + targetComp.getComponentType().getName(), TOOL_NAME);
 
-        FindConnectionsVisitor visitor = new FindConnectionsVisitor();
-        targetComp.accept(visitor);
-        List<FindConnectionsVisitor.Connection> connections = visitor.getConnections();
-
         this.additionalTrafoModels = new ArrayList<>();
         List<ASTMACompilationUnit> allModels = new ArrayList<>();
         allModels.addAll(originalModels);
         allModels.addAll(addedModels);
+
+        FindConnectionsVisitor visitor = new FindConnectionsVisitor();
+        targetComp.accept(visitor);
+        List<FindConnectionsVisitor.Connection> connections = visitor.getConnections();
 
         for (FindConnectionsVisitor.Connection connection : connections) {
             transform(allModels, targetComp, connection.source, connection.target);
@@ -61,13 +64,12 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
 
         // Name of the added component, e.g. hierarchy.Example.SourceValueSinkValueDelay
         String channelInterceptorComponentName =
-                sourceTypeName + TrafoUtil.capitalize(portSource.getPort())
-                        + targetTypeName + TrafoUtil.capitalize(portTarget.getPort())
-                        + "Delay";
+                TrafoUtil.replaceDotsWithCamelCase(portSource.getQName()) +
+                        TrafoUtil.replaceDotsWithCamelCase(portTarget.getQName()) +
+                        "Delay";
 
-        ASTMCQualifiedName fullyQName = copyASTMCQualifiedName(comp.getPackage());
+        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(comp.getPackage());
         fullyQName.addParts(channelInterceptorComponentName);
-
 
         // Adds instantiation statement, e.g. "SourceValueSinkValueDelay sourcevaluesinkvaluedelay";
         addSubComponentInstantiation(comp, fullyQName, channelInterceptorComponentName.toLowerCase(), createEmptyArguments());
@@ -77,14 +79,17 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         // TODO remove null if possible
         ASTMCType portType = null;
         try {
-            ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, comp.getPackage() + "." + sourceTypeName);
+            String qName = TrafoUtil.getFullyQNameFromImports(modelPath, comp, sourceTypeName).getQName();
+            ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, qName);
             portType = TrafoUtil.getPortTypeByName(compSource, portSource.getPort());
+        } catch (ClassNotFoundException e) {
+            String test = "asd";
+            //TODO
         } catch (NoSuchElementException e) {
             // model was not found. it is probably a generic type. in this case search for the port within the interfaces
             if (TrafoUtil.isGeneric(comp, sourceTypeName)) {
                 for (String iface : TrafoUtil.getInterfaces(comp, sourceTypeName)) {
                     ASTMACompilationUnit ifaceComp = TrafoUtil.getComponentByName(models, comp.getPackage() + "." + iface);
-
                     try {
                         portType = TrafoUtil.getPortTypeByName(ifaceComp, portSource.getPort());
                     } catch (Exception e1) {

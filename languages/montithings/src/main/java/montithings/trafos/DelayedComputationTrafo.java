@@ -36,8 +36,11 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
     private final ReplayDataHandler dataHandler;
 
-    public DelayedComputationTrafo(File replayDataFile) {
+    private final File modelPath;
+
+    public DelayedComputationTrafo(File modelPath, File replayDataFile) {
         this.dataHandler = new ReplayDataHandler(replayDataFile);
+        this.modelPath = modelPath;
     }
 
     public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
@@ -100,13 +103,15 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
                 .collect(Collectors.toList());
         ASTArguments arguments = createArguments(parameterStringList);
 
-        addSubComponentInstantiation(compWrapper, targetComp.getPackage(), compName.toLowerCase(), arguments);
+        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
+        fullyQName.addParts(compName);
+        addSubComponentInstantiation(compWrapper, fullyQName, compName.toLowerCase(), arguments);
 
-        ASTMCQualifiedName fullyQName1 = copyASTMCQualifiedName(targetComp.getPackage());
+        ASTMCQualifiedName fullyQName1 = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
         fullyQName1.addParts(newCompNames[0]);
         addSubComponentInstantiation(compWrapper, fullyQName1, newCompNames[0].toLowerCase(), createEmptyArguments());
 
-        ASTMCQualifiedName fullyQName2 = copyASTMCQualifiedName(targetComp.getPackage());
+        ASTMCQualifiedName fullyQName2 = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
         fullyQName2.addParts(newCompNames[1]);
         addSubComponentInstantiation(compWrapper, fullyQName2, newCompNames[1].toLowerCase(), createEmptyArguments());
 
@@ -114,7 +119,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // E.g. "Sink sink" becomes "SinkWrapper sink"
         for (String parent : TrafoUtil.findParents(originalModels, targetComp)) {
             ASTMACompilationUnit p = TrafoUtil.getComponentByName(originalModels, parent);
-            replaceComponentInstantiationType(p, compName, compWrapperName);
+            replaceComponentInstantiationType(p, modelPath, compName, compWrapperName);
 
         }
 
