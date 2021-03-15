@@ -60,13 +60,14 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
     public void transform(Collection<ASTMACompilationUnit> models, ASTMACompilationUnit comp, ASTPortAccess portSource, ASTPortAccess portTarget) throws Exception {
         // A source or target port can either be declared locally or within a subcomponent.
         String sourceTypeName = TrafoUtil.getPortOwningComponentType(comp, portSource);
-        String targetTypeName = TrafoUtil.getPortOwningComponentType(comp, portTarget);
 
         // Name of the added component, e.g. hierarchy.Example.SourceValueSinkValueDelay
         String channelInterceptorComponentName =
                 TrafoUtil.replaceDotsWithCamelCase(portSource.getQName()) +
                         TrafoUtil.replaceDotsWithCamelCase(portTarget.getQName()) +
                         "Delay";
+
+        channelInterceptorComponentName = TrafoUtil.capitalize(channelInterceptorComponentName);
 
         ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(comp.getPackage());
         fullyQName.addParts(channelInterceptorComponentName);
