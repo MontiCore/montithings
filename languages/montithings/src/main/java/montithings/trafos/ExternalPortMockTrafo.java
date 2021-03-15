@@ -9,6 +9,8 @@ import montiarc._ast.ASTMACompilationUnit;
 import montithings._visitor.FindPortNamesVisitor;
 import montithings.util.TrafoUtil;
 
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,29 +56,29 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         // if this is the case the port must be externally connected
         for (String parentName : TrafoUtil.findParents(allModels, targetComp)) {
             ASTMACompilationUnit parentComp = TrafoUtil.getComponentByName(allModels, parentName);
-
             List<ASTComponentInstantiation> instantiations = TrafoUtil.getInstantiationsByType(parentComp, targetComp.getComponentType().getName());
 
             for (ASTComponentInstantiation instantiation : instantiations) {
                 // for each port check if connection is present
                 for (String instanceName : instantiation.getInstancesNames()) {
+                    String qNameInstance = parentName + "." + instanceName;
                     // incoming ports
                     for (String portName : visitorPortNames.getIngoingPorts()) {
                         String qName = instanceName + "." + portName;
                         List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingTarget(qName);
 
                         if (connectorsMatchingTarget.size() == 0) {
-                            additionalTrafoModels.add(transform(targetComp, true, portName));
+                            additionalTrafoModels.add(transform(targetComp, true, qNameInstance, portName));
                         }
                     }
 
                     // outgoing ports
                     for (String portName : visitorPortNames.getOutgoingPorts()) {
                         String qName = instanceName + "." + portName;
-                        List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingSource(qName);
+                        List<ASTConnector> connectorsMatchingSource = parentComp.getComponentType().getConnectorsMatchingSource(qName);
 
-                        if (connectorsMatchingTarget.size() == 0) {
-                            additionalTrafoModels.add(transform(targetComp, false, portName));
+                        if (connectorsMatchingSource.size() == 0) {
+                            additionalTrafoModels.add(transform(targetComp, false, qNameInstance, portName));
                         }
                     }
                 }
@@ -88,6 +90,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
     public ASTMACompilationUnit transform(ASTMACompilationUnit targetComp,
                                           boolean isIngoingPort,
+                                          String qNameInstance,
                                           String port) throws Exception {
         // naming convention as follows <Component><Port>Mock, e.g. SourceSensorMock
         String mockedComponentName = TrafoUtil.capitalize(targetComp.getComponentType().getName()) + TrafoUtil.capitalize(port) + "Mock";
@@ -96,7 +99,9 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         ASTMACompilationUnit mockedPort = createCompilationUnit(targetComp.getPackage(), mockedComponentName);
 
         // TODO add actual behavior
-        addEmptyBehavior(mockedPort);
+        if (isIngoingPort) {
+            addBehavior(mockedPort, qNameInstance, port);
+        }
 
         // the corresponding connected mocking port has the reversed direction
         addPort(mockedPort,
@@ -118,5 +123,14 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
 
         return mockedPort;
+    }
+
+    void addBehavior(ASTMACompilationUnit compilationUnit, String qNameInstance, String portName) {
+        List<JsonObject> recordings = dataHandler.getRecordings(qNameInstance, portName);
+
+        for (JsonObject recording : recordings) {
+            //addAfterBehaviorBlock(recording.getJsonNumber("timestamp").longValue())
+        }
+
     }
 }
