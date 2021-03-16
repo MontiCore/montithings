@@ -9,6 +9,8 @@ module DDSRecorderMessage {
     MessageType type;
 
     long long timestamp;
+    string serialized_vector_clock;
+
     string topic;
     
     long msg_id;

@@ -28,10 +28,8 @@
 // TAO_IDL - Generated from
 // be/be_codegen.cpp:152
 
-#ifndef _TAO_IDL_DDSMESSAGEC_H_
-#define _TAO_IDL_DDSMESSAGEC_H_
-
-#include /**/ "ace/pre.h"
+#ifndef _TAO_IDL_DDSMESSAGEC_E5D2FY_H_
+#define _TAO_IDL_DDSMESSAGEC_E5D2FY_H_
 
 
 #include /**/ "ace/config-all.h"
@@ -41,6 +39,8 @@
 #endif /* ACE_LACKS_PRAGMA_ONCE */
 
 
+#include "tao/AnyTypeCode/AnyTypeCode_methods.h"
+#include "tao/AnyTypeCode/Any.h"
 #include "tao/ORB.h"
 #include "tao/Basic_Types.h"
 #include "tao/String_Manager_T.h"
@@ -99,10 +99,17 @@ namespace DDSMessage
     
     typedef Message_var _var_type;
     typedef Message_out _out_type;
+
+    static void _tao_any_destructor (void *);
     
     ::CORBA::Long id;
     ::TAO::String_Manager content;
   };
+
+  // TAO_IDL - Generated from
+  // be/be_visitor_typecode/typecode_decl.cpp:37
+
+  extern  ::CORBA::TypeCode_ptr const _tc_Message;
 
 // TAO_IDL - Generated from
 // be/be_visitor_module/module_ch.cpp:67
@@ -127,7 +134,7 @@ namespace TAO
     : public
         Var_Size_Arg_Traits_T<
             ::DDSMessage::Message,
-            TAO::Any_Insert_Policy_Noop
+            TAO::Any_Insert_Policy_Stream
           >
   {
   };
@@ -151,6 +158,36 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 
 
 // TAO_IDL - Generated from
+// be/be_visitor_structure/any_op_ch.cpp:45
+
+
+
+#if defined (ACE_ANY_OPS_USE_NAMESPACE)
+
+namespace DDSMessage
+{
+   void operator<<= (::CORBA::Any &, const ::DDSMessage::Message &); // copying version
+   void operator<<= (::CORBA::Any &, ::DDSMessage::Message*); // noncopying version
+   ::CORBA::Boolean operator>>= (const ::CORBA::Any &, ::DDSMessage::Message *&); // deprecated
+ ::CORBA::Boolean operator>>= (const ::CORBA::Any &, const ::DDSMessage::Message *&);
+}
+
+#else
+
+
+TAO_BEGIN_VERSIONED_NAMESPACE_DECL
+
+ void operator<<= (::CORBA::Any &, const DDSMessage::Message &); // copying version
+ void operator<<= (::CORBA::Any &, DDSMessage::Message*); // noncopying version
+ ::CORBA::Boolean operator>>= (const ::CORBA::Any &, DDSMessage::Message *&); // deprecated
+ ::CORBA::Boolean operator>>= (const ::CORBA::Any &, const DDSMessage::Message *&);
+TAO_END_VERSIONED_NAMESPACE_DECL
+
+
+
+#endif
+
+// TAO_IDL - Generated from
 // be/be_visitor_structure/cdr_op_ch.cpp:46
 
 
@@ -168,8 +205,6 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 #if defined (__ACE_INLINE__)
 #include "DDSMessageC.inl"
 #endif /* defined INLINE */
-
-#include /**/ "ace/post.h"
 
 #endif /* ifndef */
 

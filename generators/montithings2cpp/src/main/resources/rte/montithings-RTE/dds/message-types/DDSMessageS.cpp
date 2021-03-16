@@ -26,3 +26,14 @@
  **/
 
 
+// TAO_IDL - Generated from
+// be/be_codegen.cpp:652
+
+#ifndef _TAO_IDL_DDSMESSAGES_6XY9QR_CPP_
+#define _TAO_IDL_DDSMESSAGES_6XY9QR_CPP_
+
+
+#include "DDSMessageS.h"
+
+#endif /* ifndef */
+
