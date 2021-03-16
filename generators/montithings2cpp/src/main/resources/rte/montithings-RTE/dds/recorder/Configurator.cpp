@@ -7,7 +7,7 @@ Configurator::initConfig() {
     RcHandle<TransportConfig> config = TheTransportRegistry->get_config("recorder_config");
     if (config.is_nil()) {
         cfg = TheTransportRegistry->create_config("recorder_config");
-        inst = TheTransportRegistry->create_inst("tcp_intercepted", // name
+        inst = TheTransportRegistry->create_inst("tcp_config", // name
                                                  "tcp");            // type
 
         // Must cast to TcpInst to get access to transport-specific options

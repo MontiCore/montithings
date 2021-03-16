@@ -20,6 +20,8 @@
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "Configurator.h"
 
+using vclock = std::unordered_map<std::string, long>;
+
 class DDSCommunicator : public Configurator {
 private:
     // increasing message id for acknowledgements

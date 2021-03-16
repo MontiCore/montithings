@@ -2,44 +2,36 @@
 // (c) https://github.com/MontiCore/monticore
 #pragma once
 
-//#include "../../cereal/archives/json.hpp"
-//#include "../../Utils.h"
+#include "../../Utils.h"
 #include <unordered_map>
 
-//#include "../../cereal/types/unordered_map.hpp"
+using vclock = std::unordered_map<std::string, long>;
 
-class VectorClockImpl
-{
-  using clock = std::unordered_map<std::string, long>;
+class VectorClockImpl {
 
 private:
-  clock vectorClock;
+    vclock vectorClock;
 
 public:
-  const clock &
-  getVectorClock () const
-  {
-    return vectorClock;
-  }
+    const vclock &
+    getVectorClock() const {
+        return vectorClock;
+    }
 
-  static const char *
-  getSerializedVectorClock ()
-  {
-    auto dataString = "test"; // dataToJson (vectorClock);
-    return dataString;        //.c_str ();
-  }
+    std::string
+    getSerializedVectorClock() {
+        auto dataString = dataToJson(vectorClock);
+        return dataString;
+    }
 
-  void
-  updateVectorClock (const clock &receivedVectorClock, const std::string& initiator)
-  {
-    for (auto &clock : receivedVectorClock)
-      {
-        if (vectorClock.count (clock.first) == 0 || vectorClock[clock.first] < clock.second)
-          {
-            vectorClock[clock.first] = clock.second;
-          }
-      }
+    void
+    updateVectorClock(const vclock &receivedVectorClock, const std::string &initiator) {
+        for (auto &clock : receivedVectorClock) {
+            if (vectorClock.count(clock.first) == 0 || vectorClock[clock.first] < clock.second) {
+                vectorClock[clock.first] = clock.second;
+            }
+        }
 
-    vectorClock[initiator]++;
-  }
+        vectorClock[initiator]++;
+    }
 };
