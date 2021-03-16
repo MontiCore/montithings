@@ -1,6 +1,13 @@
 package montithings.util;
 
 import arcbasis._ast.*;
+import de.monticore.literals.mccommonliterals._ast.ASTNumericLiteral;
+import de.monticore.literals.mcjavaliterals._ast.ASTLongLiteralBuilder;
+import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
+import de.monticore.siunitliterals._ast.ASTSIUnitLiteralBuilder;
+import de.monticore.siunits._ast.ASTSIUnitBuilder;
+import de.monticore.siunits._ast.ASTSIUnitPrimitiveBuilder;
+import de.monticore.siunits._ast.ASTSIUnitWithPrefixBuilder;
 import de.monticore.types.mcbasictypes._ast.ASTMCImportStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedNameBuilder;
@@ -294,5 +301,25 @@ public abstract class TrafoUtil {
                 .flatMap(Collection::stream)
                 .map(GenericBindingUtil::printSimpleType)
                 .collect(Collectors.toList());
+    }
+
+    public static ASTSIUnitLiteral createSIUnitLiteral(long value, String unit) {
+        ASTLongLiteralBuilder numLiteral = new ASTLongLiteralBuilder();
+        numLiteral.setSource(String.valueOf(value));
+
+        ASTSIUnitWithPrefixBuilder siUnitWithPrefix = MontiThingsMill.sIUnitWithPrefixBuilder();
+        siUnitWithPrefix.setName(unit);
+
+        ASTSIUnitPrimitiveBuilder siUnitPrimitive = MontiThingsMill.sIUnitPrimitiveBuilder();
+        siUnitPrimitive.setSIUnitWithPrefix(siUnitWithPrefix.build());
+
+        ASTSIUnitBuilder siUnit = MontiThingsMill.sIUnitBuilder();
+        siUnit.setSIUnitPrimitive(siUnitPrimitive.build());
+
+        ASTSIUnitLiteralBuilder siUnitLiteral = MontiThingsMill.sIUnitLiteralBuilder();
+        siUnitLiteral.setSIUnit(siUnit.build());
+        siUnitLiteral.setNumericLiteral(numLiteral.build());
+
+        return siUnitLiteral.build();
     }
 }

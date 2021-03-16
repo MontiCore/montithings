@@ -8,6 +8,7 @@ import de.monticore.types.mcbasictypes._ast.*;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMACompilationUnitBuilder;
 import montithings.MontiThingsMill;
+import montithings._ast.ASTBehavior;
 import montithings._ast.ASTBehaviorBuilder;
 import montithings._ast.ASTMTComponentModifierBuilder;
 import montithings._ast.ASTMTComponentTypeBuilder;
@@ -15,7 +16,6 @@ import montithings._auxiliary.ComfortableArcMillForMontiThings;
 import montithings.util.TrafoUtil;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -119,13 +119,17 @@ public abstract class BasicTransformations {
      * Adds an empty behavior java block to the given component.
      *
      * @param comp AST of component which is modified
+     * @return empty behavior block
      */
-    protected void addEmptyBehavior(ASTMACompilationUnit comp) {
+    protected ASTBehavior addEmptyBehavior(ASTMACompilationUnit comp) {
         ASTMCJavaBlock javaBlock = MontiThingsMill.mCJavaBlockBuilder().build();
 
         ASTBehaviorBuilder behavior = MontiThingsMill.behaviorBuilder();
         behavior.setMCJavaBlock(javaBlock);
-        comp.getComponentType().getBody().addArcElement(behavior.build());
+        ASTBehavior build = behavior.build();
+        comp.getComponentType().getBody().addArcElement(build);
+
+        return build;
     }
 
 

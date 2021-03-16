@@ -3,23 +3,25 @@ package montithings.trafos;
 
 import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._ast.ASTConnector;
+import behavior._ast.ASTAfterStatement;
 import behavior._ast.ASTAfterStatementBuilder;
-import de.monticore.literals.mccommonliterals._ast.ASTNumericLiteral;
-import de.monticore.literals.mcjavaliterals._ast.ASTLongLiteral;
-import de.monticore.literals.mcjavaliterals._ast.ASTLongLiteralBuilder;
-import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
-import de.monticore.siunitliterals._ast.ASTSIUnitLiteralBuilder;
-import de.monticore.siunits._ast.*;
-import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
+import behavior._ast.ASTEveryBlockBuilder;
+import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressionBuilder;
+import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpression;
+import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpressionBuilder;
+import de.monticore.expressions.expressionsbasis._ast.ASTNameExpressionBuilder;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
+import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
+import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlockBuilder;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
-import montithings._ast.ASTBehaviorBuilder;
+import montithings._ast.ASTMTEveryBlockBuilder;
 import montithings._visitor.FindPortNamesVisitor;
+import montithings.cocos.MaxOneUpdateInterval;
 import montithings.util.TrafoUtil;
 
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import java.io.File;
 import java.util.ArrayList;
@@ -111,9 +113,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
         // TODO add actual behavior
         if (isIngoingPort) {
-            addEmptyBehavior(mockedPort);
-
-            //addBehavior(mockedPort, qNameInstance, port);
+          //  addBehavior(mockedPort, qNameInstance, port);
         }
 
         // the corresponding connected mocking port has the reversed direction
@@ -139,41 +139,59 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         return mockedPort;
     }
 
-    void addBehavior(ASTMACompilationUnit compilationUnit, String qNameComp, String portName) {
+    void addBehavior(ASTMACompilationUnit comp, String qNameComp, String portName) {
         List<JsonObject> recordings = dataHandler.getRecordings(qNameComp, portName);
 
+        // create "every" block
+        ASTEveryBlockBuilder everyBlock = MontiThingsMill.everyBlockBuilder();
+        everyBlock.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(100, "h"));
+
+        ASTMCJavaBlockBuilder javaBlock = MontiThingsMill.mCJavaBlockBuilder();
+
+        // fill the "every" block with after statements
         for (JsonObject recording : recordings) {
             long timestamp = recording.getJsonNumber("timestamp").longValue();
             String value = recording.getString("msg_content");
-            addAfterBehaviorBlock(timestamp, portName, value);
+            javaBlock.addMCBlockStatement(addAfterBehaviorBlock(timestamp, portName, value));
         }
 
+        everyBlock.setMCJavaBlock(javaBlock.build());
+        ASTMTEveryBlockBuilder mtEveryBlock = MontiThingsMill.mTEveryBlockBuilder();
+        mtEveryBlock.setEveryBlock(everyBlock.build());
+        comp.getComponentType().getBody().addArcElement(mtEveryBlock.build());
     }
 
-    private void addAfterBehaviorBlock(long timestamp, String portName, String value) {
-        // Build timestamp number
-        ASTLongLiteralBuilder tsLiternalNumeric = new ASTLongLiteralBuilder();
-        tsLiternalNumeric.setSource(String.valueOf(timestamp));
-/*
-        // Build timestamp unit
-        ASTSIUnitBuilder timestampUnit = MontiThingsMill.sIUnitBuilder();
-        ASTSIUnitPrimitiveBuilder astsiUnitPrimitive = MontiThingsMill.sIUnitPrimitiveBuilder();
-        ASTSIUnitWithPrefixBuilder astsiUnitWithPrefix = MontiThingsMill.sIUnitWithPrefixBuilder();
-        astsiUnitWithPrefix.set
-        astsiUnitPrimitive.setSIUnitWithPrefix(astsiUnitWithPrefix)
+    private ASTAfterStatement addAfterBehaviorBlock(long timestamp, String portName, String value) {
+        ASTAfterStatementBuilder afterStatement = MontiThingsMill.afterStatementBuilder();
+        afterStatement.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(timestamp, "ns"));
 
+        ASTMCJavaBlockBuilder javaBlock = MontiThingsMill.mCJavaBlockBuilder();
 
-        timestampUnit.setSIUnitPrimitive(astsiUnitPrimitive)
-        // Build timestamp SI unit literal
-        ASTSIUnitLiteralBuilder tsLiteral = MontiThingsMill.sIUnitLiteralBuilder();
-        tsLiteral.setNumericLiteral(tsLiternalNumeric.build());
-        tsLiteral.setSIUnit(timestampUnit)
+        ASTExpressionStatementBuilder astExpressionStatement = MontiThingsMill.expressionStatementBuilder();
+        ASTAssignmentExpressionBuilder assignmentExpression = MontiThingsMill.assignmentExpressionBuilder();
 
-        ASTMCJavaBlock javaBlock = MontiThingsMill.mCJavaBlockBuilder().build();
-        ASTAfterStatementBuilder afterBehavior = MontiThingsMill.afterStatementBuilder();
-        afterBehavior.setSIUnitLiteral(tsLiteral)
-        afterBehavior.setMCJavaBlock(javaBlock);
-        comp.getComponentType().getBody().addArcElement(behavior.build());
-*/
+        // implementing " <port> = <value>
+        // left side
+        ASTNameExpressionBuilder nameExpression = MontiThingsMill.nameExpressionBuilder();
+        nameExpression.setName("out");
+        assignmentExpression.setLeft(nameExpression.build());
+
+        // operator id for "=" is 2
+        assignmentExpression.setOperator(2);
+
+        // right side
+        // TODO depends on the port type
+        ASTLiteralExpressionBuilder literalExpression = MontiThingsMill.literalExpressionBuilder();
+
+        ASTNatLiteralBuilder natLiteral = MontiThingsMill.natLiteralBuilder();
+        natLiteral.setDigits(value);
+
+        literalExpression.setLiteral(natLiteral.build());
+        assignmentExpression.setRight(literalExpression.build());
+
+        astExpressionStatement.setExpression(assignmentExpression.build());
+        javaBlock.addMCBlockStatement(astExpressionStatement.build());
+
+        return afterStatement.build();
     }
 }
