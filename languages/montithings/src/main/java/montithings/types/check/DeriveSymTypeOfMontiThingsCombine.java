@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.types.check;
 
+import behavior.types.check.DeriveSymTypeOfBehavior;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
@@ -32,6 +33,8 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
   private DeriveSymTypeOfMontiThings deriveSymTypeOfMontiThings;
 
   private DeriveSymTypeOfSetDefinitions deriveSymTypeOfSetDefinitions;
+
+  private DeriveSymTypeOfBehavior deriveSymTypeOfBehavior;
 
   private TypeCheckResult typeCheckResult = new TypeCheckResult();
 
@@ -72,6 +75,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfMontiThings.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfOCLExpressions.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfSetDefinitions.setTypeCheckResult(typeCheckResult);
+    deriveSymTypeOfBehavior.setTypeCheckResult(typeCheckResult);
   }
 
   /**
@@ -88,6 +92,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfMontiThings = new DeriveSymTypeOfMontiThings();
     deriveSymTypeOfOCLExpressions = new DeriveSymTypeOfOCLExpressions();
     deriveSymTypeOfSetDefinitions = new DeriveSymTypeOfSetDefinitions();
+    deriveSymTypeOfBehavior = new DeriveSymTypeOfBehavior();
 
     setCommonExpressionsVisitor(deriveSymTypeOfCommonExpressions);
     setAssignmentExpressionsVisitor(deriveSymTypeOfAssignmentExpressions);
@@ -98,6 +103,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     setMontiThingsVisitor(deriveSymTypeOfMontiThings);
     setOCLExpressionsVisitor(deriveSymTypeOfOCLExpressions);
     setSetDefinitionsVisitor(deriveSymTypeOfSetDefinitions);
+    setBehaviorVisitor(deriveSymTypeOfBehavior);
 
     setTypeCheckResult(typeCheckResult);
   }
