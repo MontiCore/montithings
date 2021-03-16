@@ -74,21 +74,21 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                     String qNameComp = targetComp.getPackage().getQName() + "." + targetComp.getComponentType().getName();
                     // incoming ports
                     for (String portName : visitorPortNames.getIngoingPorts()) {
-                        String qName = instanceName + "." + portName;
-                        List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingTarget(qName);
+                        String qNamePort = instanceName + "." + portName;
+                        List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
 
                         if (connectorsMatchingTarget.size() == 0) {
-                            additionalTrafoModels.add(transform(targetComp, true, qNameComp, portName));
+                            additionalTrafoModels.add(transform(parentComp, targetComp, true, qNamePort, portName));
                         }
                     }
 
                     // outgoing ports
                     for (String portName : visitorPortNames.getOutgoingPorts()) {
-                        String qName = instanceName + "." + portName;
-                        List<ASTConnector> connectorsMatchingSource = parentComp.getComponentType().getConnectorsMatchingSource(qName);
+                        String qNamePort = instanceName + "." + portName;
+                        List<ASTConnector> connectorsMatchingSource = parentComp.getComponentType().getConnectorsMatchingSource(qNamePort);
 
                         if (connectorsMatchingSource.size() == 0) {
-                            additionalTrafoModels.add(transform(targetComp, false, qNameComp, portName));
+                            additionalTrafoModels.add(transform(parentComp, targetComp, false, qNamePort, portName));
                         }
                     }
                 }
@@ -98,9 +98,10 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         return additionalTrafoModels;
     }
 
-    public ASTMACompilationUnit transform(ASTMACompilationUnit targetComp,
+    public ASTMACompilationUnit transform(ASTMACompilationUnit parentComp,
+                                          ASTMACompilationUnit targetComp,
                                           boolean isIngoingPort,
-                                          String qNameInstance,
+                                          String qNamePort,
                                           String port) throws Exception {
         // naming convention as follows <Component><Port>Mock, e.g. SourceSensorMock
         String mockedComponentName = TrafoUtil.capitalize(targetComp.getComponentType().getName()) + TrafoUtil.capitalize(port) + "Mock";
@@ -110,7 +111,9 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
         // TODO add actual behavior
         if (isIngoingPort) {
-            addBehavior(mockedPort, qNameInstance, port);
+            addEmptyBehavior(mockedPort);
+
+            //addBehavior(mockedPort, qNameInstance, port);
         }
 
         // the corresponding connected mocking port has the reversed direction
@@ -120,15 +123,16 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                 TrafoUtil.getPortTypeByName(targetComp, port));
 
 
+        // Instantiate the mocked port in the parent component
         ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
         fullyQName.addParts(mockedComponentName);
-        addSubComponentInstantiation(targetComp, fullyQName, mockedComponentName.toLowerCase(), createEmptyArguments());
+        addSubComponentInstantiation(parentComp, fullyQName, mockedComponentName.toLowerCase(), createEmptyArguments());
 
 
         if (isIngoingPort) {
-            addConnection(targetComp, mockedComponentName.toLowerCase() + ".out", port);
+            addConnection(parentComp, mockedComponentName.toLowerCase() + ".out", qNamePort);
         } else {
-            addConnection(targetComp, port, mockedComponentName.toLowerCase() + ".in");
+            addConnection(parentComp, qNamePort, mockedComponentName.toLowerCase() + ".in");
         }
 
 
@@ -140,7 +144,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
         for (JsonObject recording : recordings) {
             long timestamp = recording.getJsonNumber("timestamp").longValue();
-            String value =  recording.getString("msg_content");
+            String value = recording.getString("msg_content");
             addAfterBehaviorBlock(timestamp, portName, value);
         }
 
