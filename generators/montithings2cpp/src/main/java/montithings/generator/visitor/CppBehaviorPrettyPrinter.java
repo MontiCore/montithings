@@ -15,15 +15,19 @@ import java.util.regex.Pattern;
 public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   private BehaviorVisitor realThis;
   private IndentPrinter printer;
+  private int afterStatementIndex;
 
   public CppBehaviorPrettyPrinter(IndentPrinter printer){
     this.printer = printer;
     this.realThis = this;
+    this.afterStatementIndex = 0;
   }
 
   @Override
   public void handle(ASTAfterStatement node){
-    getPrinter().print("std::future<bool> fut = std::async(std::launch::async, [=] () -> bool {");
+    getPrinter().print("std::future<bool> fut");
+    getPrinter().print(afterStatementIndex);
+    getPrinter().print(" = std::async(std::launch::async, [=] () -> bool {");
     getPrinter().print("std::this_thread::sleep_for( std::chrono::");
     printTime(node.getSIUnitLiteral());
     getPrinter().print(");");
@@ -32,6 +36,8 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
 
     getPrinter().print("return true;");
     getPrinter().print("} );");
+
+    this.afterStatementIndex++;
   }
 
   @Override
