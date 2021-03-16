@@ -267,3 +267,10 @@ trigger-hierarchy:
   only:
     - develop
 
+trigger-smart-home:
+  stage: build-applications
+  trigger:
+    project: monticore/montithings/applications/smart-home
+    branch: development
+  only:
+    - develop
