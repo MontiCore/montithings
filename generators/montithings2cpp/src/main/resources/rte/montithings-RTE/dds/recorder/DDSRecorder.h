@@ -18,12 +18,12 @@
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "DDSCommunicator.h"
 #include "HWCInterceptor.h"
-#include "VectorClockImpl.h"
+#include "VectorClock.h"
 #include "utils.h"
 
 #define LOG_ID "RECORDER"
 
-class DDSRecorder : public VectorClockImpl {
+class DDSRecorder {
 private:
     int messageId = 0;
 
@@ -66,6 +66,6 @@ public:
 
     void setPortIdentifier(const std::string &name);
 
-    void recordMessage(DDSMessage::Message message, char *topicName,
+    void recordMessage(DDSMessage::Message message, const char *topicName,
                        const std::unordered_map<std::string, long> &vectorClock);
 };

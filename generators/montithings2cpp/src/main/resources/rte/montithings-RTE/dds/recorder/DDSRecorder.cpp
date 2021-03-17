@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 #include "DDSRecorder.h"
+#include "VectorClock.h"
 
 #include <utility>
 
@@ -110,7 +111,7 @@ DDSRecorder::isOutgoingPort() {
 }
 
 void
-DDSRecorder::recordMessage(DDSMessage::Message message, char *topicName,
+DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
                            const vclock &newVectorClock) {
     // CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | Size of nd storage: " << Recorder::storage.size ()
     //;
@@ -120,11 +121,12 @@ DDSRecorder::recordMessage(DDSMessage::Message message, char *topicName,
 
         // Only send ack if message was received, not sent
         if (!isOutgoingPort()) {
+            CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | before update: received clock=" << dataToJson(newVectorClock) << " clock=" << VectorClock::getSerializedVectorClock();
             std::string sendingInstance = getSendingInstanceNameFromTopic(topicName);
-            updateVectorClock(newVectorClock, sendingInstance);
+            VectorClock::updateVectorClock(newVectorClock, sendingInstance);
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
-                                 << "port=" << portIdentifier << "clock=" << getSerializedVectorClock();
-            ddsCommunicator.sendAck(sendingInstance, message.id, portIdentifier, getSerializedVectorClock());
+                                 << "port=" << portIdentifier << " clock=" << VectorClock::getSerializedVectorClock();
+            ddsCommunicator.sendAck(sendingInstance, message.id, portIdentifier, VectorClock::getSerializedVectorClock());
         } else {
             // message was sent and not received. Thus, add message to the map of unacked messages
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id
@@ -150,9 +152,8 @@ DDSRecorder::recordMessage(DDSMessage::Message message, char *topicName,
         recorderMessage.msg_id = message.id;
         recorderMessage.msg_content = content.c_str();
         recorderMessage.timestamp = timestamp;
-        recorderMessage.serialized_vector_clock = getSerializedVectorClock().c_str();
-        std::string topic{topicName};
-        recorderMessage.topic = topic.c_str();
+        recorderMessage.serialized_vector_clock = VectorClock::getSerializedVectorClock().c_str();
+        recorderMessage.topic = topicName;
         recorderMessage.message_delays = jUnsentDelays.dump().c_str();
 
         CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << messageId

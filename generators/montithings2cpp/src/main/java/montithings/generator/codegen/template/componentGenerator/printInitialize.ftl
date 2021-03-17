@@ -13,14 +13,14 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::initialize(){
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
   <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
     <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-    addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
+    addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>(instanceName));
   </#if>
 </#list>
 <#list comp.outgoingPorts as port >
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
   <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
     <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-    addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
+    addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>(instanceName));
   </#if>
 </#list>
 <#if ComponentHelper.retainState(comp)>

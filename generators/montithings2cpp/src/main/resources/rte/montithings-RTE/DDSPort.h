@@ -13,6 +13,7 @@
 #include "dds/message-types/DDSMessageTypeSupportImpl.h"
 #include "dds/recorder/DDSRecorder.h"
 #include "dds/recorder/MessageWithClockContainer.h"
+#include "dds/recorder/VectorClock.h"
 
 #include "DDSParticipant.h"
 #include "Port.h"
@@ -216,7 +217,7 @@ public:
             if (isRecordingEnabled) {
                 MessageWithClockContainer <T> container;
                 container.message = nextVal.value();
-                container.vectorClock = ddsRecorder->getVectorClock();
+                container.vectorClock = VectorClock::getVectorClock();
                 auto dataString = dataToJson(container);
                 message.content = dataString.c_str();
             } else {
@@ -233,8 +234,10 @@ public:
             }
 
             if (isRecordingEnabled) {
+                // remove vector clock
+                message.content = dataToJson(nextVal).c_str();
                 ddsRecorder->recordMessage(message, messageWriter->get_topic()->get_name(),
-                                          ddsRecorder->getVectorClock());
+                                           VectorClock::getVectorClock());
             }
 
             ++messageId;
@@ -262,18 +265,17 @@ public:
 
         if (error == DDS::RETCODE_OK && info.valid_data) {
             auto msg = message.content.in();
-            int id = message.id;
 
             T result;
             if (isRecordingEnabled) {
-                // using recorderpayload = std::pair<T, std::unordered_map<std::string, long> >;
-                // recorderpayload pl = jsonToData<recorderpayload> (msg);
-
                 MessageWithClockContainer <T> container;
                 container = jsonToData<MessageWithClockContainer < T> > (msg);
 
-                char *topicId = reader_i->get_topicdescription()->get_name();
-                // message.content = container.message;
+                const char *topicId = reader_i->get_topicdescription()->get_name();
+
+                // remove vector clock
+                message.content = dataToJson(container.message).c_str();
+
                 ddsRecorder->recordMessage(message, topicId, container.vectorClock);
 
                 result = container.message;

@@ -1,31 +1,29 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
-#pragma once
+#include "VectorClock.h"
 
-#include "../../Utils.h"
-#include <unordered_map>
-
-using vclock = std::unordered_map<std::string, long>;
-
-class VectorClockImpl {
-
-private:
+namespace VectorClock
+{
+    std::mutex updateClockMutex;
     vclock vectorClock;
 
-public:
     const vclock &
-    getVectorClock() const {
+    getVectorClock() {
         return vectorClock;
     }
 
     std::string
     getSerializedVectorClock() {
-        auto dataString = dataToJson(vectorClock);
-        return dataString;
+        return dataToJson(vectorClock);
     }
 
     void
     updateVectorClock(const vclock &receivedVectorClock, const std::string &initiator) {
+        std::cout << "trying to update clock for  " << initiator << std::endl;
+        // ensure there are no parallel updates
+        std::lock_guard<std::mutex> guard(updateClockMutex);
+
+        std::cout << "after mutex for  " << initiator << std::endl;
         for (auto &clock : receivedVectorClock) {
             if (vectorClock.count(clock.first) == 0 || vectorClock[clock.first] < clock.second) {
                 vectorClock[clock.first] = clock.second;
@@ -33,5 +31,6 @@ public:
         }
 
         vectorClock[initiator]++;
+        std::cout << "finish for  " << initiator << std::endl;
     }
-};
+}
