@@ -24,10 +24,11 @@ class ReplayDataHandler {
 
     protected List<JsonObject> getRecordings(String qNameComp, String portName) {
         return this.data.getJsonObject("recordings")
-                .getJsonArray(qNameComp + "." + portName)
+                .getJsonArray(qNameComp)
                 .stream()
                 .filter(record -> record.getValueType() == JsonValue.ValueType.OBJECT)
                 .map(record -> (JsonObject) record)
+                .filter(record -> record.getString("topic").equals(qNameComp + "." + portName + "/out"))
                 .collect(Collectors.toList());
     }
 }

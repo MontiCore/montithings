@@ -1,6 +1,7 @@
 package montithings.util;
 
 import arcbasis._ast.*;
+import de.monticore.literals.mccommonliterals._ast.ASTBasicLongLiteralBuilder;
 import de.monticore.literals.mccommonliterals._ast.ASTNumericLiteral;
 import de.monticore.literals.mcjavaliterals._ast.ASTLongLiteralBuilder;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
@@ -17,8 +18,12 @@ import genericarc._ast.ASTGenericComponentHead;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -304,8 +309,8 @@ public abstract class TrafoUtil {
     }
 
     public static ASTSIUnitLiteral createSIUnitLiteral(long value, String unit) {
-        ASTLongLiteralBuilder numLiteral = new ASTLongLiteralBuilder();
-        numLiteral.setSource(String.valueOf(value));
+        ASTBasicLongLiteralBuilder numLiteral = MontiThingsMill.basicLongLiteralBuilder();
+        numLiteral.setDigits(String.valueOf(value));
 
         ASTSIUnitWithPrefixBuilder siUnitWithPrefix = MontiThingsMill.sIUnitWithPrefixBuilder();
         siUnitWithPrefix.setName(unit);
@@ -321,5 +326,12 @@ public abstract class TrafoUtil {
         siUnitLiteral.setNumericLiteral(numLiteral.build());
 
         return siUnitLiteral.build();
+    }
+
+    public static JsonObject parseJson(String content) {
+        JsonReader jsonReader = Json.createReader(new StringReader(content));
+        JsonObject object = jsonReader.readObject();
+        jsonReader.close();
+        return object;
     }
 }

@@ -7,7 +7,6 @@ import behavior._ast.ASTAfterStatement;
 import behavior._ast.ASTAfterStatementBuilder;
 import behavior._ast.ASTEveryBlockBuilder;
 import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressionBuilder;
-import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpressionBuilder;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpressionBuilder;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
@@ -73,14 +72,14 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
             for (ASTComponentInstantiation instantiation : instantiations) {
                 // for each port check if connection is present
                 for (String instanceName : instantiation.getInstancesNames()) {
-                    String qNameComp = targetComp.getPackage().getQName() + "." + targetComp.getComponentType().getName();
+                    String qNameInstance = parentName + "." + instanceName;
                     // incoming ports
                     for (String portName : visitorPortNames.getIngoingPorts()) {
                         String qNamePort = instanceName + "." + portName;
                         List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
 
                         if (connectorsMatchingTarget.size() == 0) {
-                            additionalTrafoModels.add(transform(parentComp, targetComp, true, qNamePort, portName));
+                            additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, true, qNameInstance, qNamePort, portName));
                         }
                     }
 
@@ -90,7 +89,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                         List<ASTConnector> connectorsMatchingSource = parentComp.getComponentType().getConnectorsMatchingSource(qNamePort);
 
                         if (connectorsMatchingSource.size() == 0) {
-                            additionalTrafoModels.add(transform(parentComp, targetComp, false, qNamePort, portName));
+                            additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, false, qNameInstance, qNamePort, portName));
                         }
                     }
                 }
@@ -100,41 +99,47 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         return additionalTrafoModels;
     }
 
-    public ASTMACompilationUnit transform(ASTMACompilationUnit parentComp,
+    public ASTMACompilationUnit transform(Collection<ASTMACompilationUnit> additionalTrafoModels,
+                                          ASTMACompilationUnit parentComp,
                                           ASTMACompilationUnit targetComp,
                                           boolean isIngoingPort,
+                                          String qNameInstance,
                                           String qNamePort,
                                           String port) throws Exception {
         // naming convention as follows <Component><Port>Mock, e.g. SourceSensorMock
         String mockedComponentName = TrafoUtil.capitalize(targetComp.getComponentType().getName()) + TrafoUtil.capitalize(port) + "Mock";
 
-        // adds new subcomponent representing the external input
-        ASTMACompilationUnit mockedPort = createCompilationUnit(targetComp.getPackage(), mockedComponentName);
+        ASTMACompilationUnit mockedPort;
 
-        // TODO add actual behavior
-        if (isIngoingPort) {
-          //  addBehavior(mockedPort, qNameInstance, port);
+        boolean isAlreadyCreated = additionalTrafoModels.stream().anyMatch(m -> m.getComponentType().getName().equals(mockedComponentName));
+        if (isAlreadyCreated) {
+            mockedPort = TrafoUtil.getComponentByName(additionalTrafoModels, targetComp.getPackage() + "." + mockedComponentName);
+        } else {
+            // adds new subcomponent representing the external input
+            mockedPort = createCompilationUnit(targetComp.getPackage(), mockedComponentName);
+
+            // TODO add actual behavior
+            if (isIngoingPort) {
+                addBehavior(mockedPort, qNameInstance, port);
+            }
+
+            // the corresponding connected mocking port has the reversed direction
+            addPort(mockedPort,
+                    isIngoingPort ? "out" : "in",
+                    isIngoingPort,
+                    TrafoUtil.getPortTypeByName(targetComp, port));
         }
-
-        // the corresponding connected mocking port has the reversed direction
-        addPort(mockedPort,
-                isIngoingPort ? "out" : "in",
-                isIngoingPort,
-                TrafoUtil.getPortTypeByName(targetComp, port));
-
 
         // Instantiate the mocked port in the parent component
         ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
         fullyQName.addParts(mockedComponentName);
         addSubComponentInstantiation(parentComp, fullyQName, mockedComponentName.toLowerCase(), createEmptyArguments());
 
-
         if (isIngoingPort) {
             addConnection(parentComp, mockedComponentName.toLowerCase() + ".out", qNamePort);
         } else {
             addConnection(parentComp, qNamePort, mockedComponentName.toLowerCase() + ".in");
         }
-
 
         return mockedPort;
     }
@@ -151,7 +156,11 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         // fill the "every" block with after statements
         for (JsonObject recording : recordings) {
             long timestamp = recording.getJsonNumber("timestamp").longValue();
-            String value = recording.getString("msg_content");
+
+            // returns serialized value e.g. { "value0": 726}
+            String valueSerialized = recording.getString("msg_content");
+
+            String value = TrafoUtil.parseJson(valueSerialized).get("value0").toString();
             javaBlock.addMCBlockStatement(addAfterBehaviorBlock(timestamp, portName, value));
         }
 
@@ -191,6 +200,8 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
         astExpressionStatement.setExpression(assignmentExpression.build());
         javaBlock.addMCBlockStatement(astExpressionStatement.build());
+
+        afterStatement.setMCJavaBlock(javaBlock.build());
 
         return afterStatement.build();
     }
