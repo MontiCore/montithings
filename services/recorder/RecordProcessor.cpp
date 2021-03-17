@@ -81,7 +81,7 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &debugSt
 
     LOG_F (INFO, "Sorting records (primary vector clock, secondary timestamp) ...");
     for (auto &instance : records.items()) {
-        LOG_F (INFO, "Sorting records for %s", instance.key().c_str());
+        LOG_F (INFO, "Sorting %d records for %s", records[instance.key()].size(), instance.key().c_str());
         records[instance.key()] = sortRecords(records[instance.key()]);
     }
 
@@ -106,7 +106,7 @@ json RecordProcessor::sortRecords(json records) {
     json sortedRecords = json::array();
     int referenceClockSum = minVClockSum;
 
-    while (referenceClockSum < maxVClockSum) {
+    while (referenceClockSum <= maxVClockSum) {
         // search for all record which have the value as the reference clock
         std::vector<json> sameClockRecords;
 
