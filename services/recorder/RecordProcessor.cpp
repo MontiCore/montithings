@@ -3,70 +3,105 @@
 #include "RecordProcessor.h"
 
 long long
-RecordProcessor::getFirstTimestamp(std::vector<DDSRecorderMessage::Message> debugStorage,
-                                   std::unordered_map<long, long> recordMessageDelays) {
+RecordProcessor::getFirstTimestamp(std::vector<DDSRecorderMessage::Message> messageStorage,
+                                   json recordMessageDelays) {
     LOG_SCOPE_F (1, "Searching for the earliest timestamp...");
-    long long timestamp_start = debugStorage.front().timestamp;
+    long long timestamp_start = messageStorage.front().timestamp;
+    for (auto &messageDelaySet : recordMessageDelays.items()) {
+        for (const auto &record : messageStorage) {
+            long recordTsAdjusted = record.timestamp;
+            std::string recordId = std::to_string(record.id);
+            if (!recordMessageDelays[messageDelaySet.key()][recordId].empty()) {
+                recordTsAdjusted -= recordMessageDelays[messageDelaySet.key()][recordId].get<long>();
+            } else {
+                LOG_F (1, "No delay information found for record id %d ", record.id);
+            }
 
-    for (const auto &record : debugStorage) {
-        long recordTsAdjusted = record.timestamp - recordMessageDelays[record.id];
-        if (recordTsAdjusted < timestamp_start) {
-            timestamp_start = recordTsAdjusted;
-            LOG_SCOPE_F (2, "Current earliest timestamp = %ld", recordTsAdjusted);
+            if (recordTsAdjusted < timestamp_start) {
+                timestamp_start = recordTsAdjusted;
+                LOG_SCOPE_F (2, "Current earliest timestamp = %ld", recordTsAdjusted);
+            }
         }
     }
 
     return timestamp_start;
 }
 
-std::unordered_map<long, long>
-RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Message> &debugStorage,
+json
+RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Message> &messageStorage,
                                       const std::string &identifier) {
     LOG_SCOPE_F (INFO, "Collecting Message Delays (%s)...", identifier.c_str());
-    std::unordered_map<long, long> allMessageDelays;
 
-    for (const auto &record : debugStorage) {
+    json allMessageDelays;
+
+    for (const auto &record : messageStorage) {
         json messageDelays = json::parse(record.message_delays.in());
+
         for (auto &delay : messageDelays[identifier]) {
             long id = delay[0];
             long value = delay[1];
-            allMessageDelays[id] = value;
+            allMessageDelays[record.topic.in()][std::to_string(id)] = value;
         }
+    }
+
+    for (auto &delays : allMessageDelays.items()) {
+        LOG_F (INFO, "Found %ld %s delays for %s.", delays.value().size(), identifier.c_str(), delays.key().c_str());
     }
 
     return allMessageDelays;
 }
 
 json
-RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &debugStorage) {
+RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &messageStorage) {
     LOG_SCOPE_F (INFO, "Processing records...");
     LOG_F (INFO, "Calculating transport delays...");
 
-    std::unordered_map<long, long> messageDelays = collectMessageDelays(debugStorage, "messages");
-    LOG_F (INFO, "Found %ld delays.", messageDelays.size());
+    json messageDelays = collectMessageDelays(messageStorage, "messages");
+    LOG_F (INFO, "messageDelays: %s", messageDelays.dump().c_str());
 
-    std::unordered_map<long, long> recordMessageDelays
-            = collectMessageDelays(debugStorage, "record_messages");
-    LOG_F (INFO, "Found %ld delays.", recordMessageDelays.size());
+    json recordMessageDelays = collectMessageDelays(messageStorage, "record_messages");
+    LOG_F (INFO, "recordMessageDelays: %s", recordMessageDelays.dump().c_str());
 
     LOG_F (INFO, "Adjusting timestamps and adding delays...");
-    long long timestamp_start = getFirstTimestamp(debugStorage, recordMessageDelays);
+    long long timestamp_start = getFirstTimestamp(messageStorage, recordMessageDelays);
 
     json records;
 
-    for (const auto &record : debugStorage) {
-        json jRecord = json::object();
+    for (const auto &record : messageStorage) {
+        std::string id = std::to_string(record.id);
+        std::string msgId = std::to_string(record.msg_id);
 
+        json jRecord = json::object();
+        jRecord["msg_id"] = record.msg_id;
         jRecord["msg_content"] = record.msg_content.in();
 
         // clock skew can lead to negative values
-        long long ts_adjusted = record.timestamp - timestamp_start - recordMessageDelays[record.msg_id];
+        long long ts_adjusted =
+                record.timestamp
+                - timestamp_start;
+
+        if (recordMessageDelays[record.topic.in()][id].size()){
+            // .get<long>() does not work for some reason, workaround= dump & convert
+            ts_adjusted -= std::stol(recordMessageDelays[record.topic.in()][id].dump());
+        } else {
+            LOG_F (1, "No recordMessageDelay for %s (id %s)", record.topic.in(), id.c_str());
+        }
+
         if (ts_adjusted < 0) {
             jRecord["timestamp"] = 0;
         } else {
             jRecord["timestamp"] = ts_adjusted;
         }
-        jRecord["delay"] = messageDelays[record.msg_id]; // what if no entry?
+
+        jRecord["delay"] = 0;
+
+        if (messageDelays[record.topic.in()][msgId].size()) {
+            // .get<long>() does not work for some reason, workaround= dump & convert
+            jRecord["delay"] = std::stol(messageDelays[record.topic.in()][msgId].dump());
+        } else {
+            LOG_F (1, "No messageDelay for %s (id %s)", record.topic.in(), msgId.c_str());
+        }
+
         jRecord["topic"] = record.topic.in();
 
         jRecord["_vclocksum"] = 0;
@@ -81,7 +116,7 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &debugSt
 
     LOG_F (INFO, "Sorting records (primary vector clock, secondary timestamp) ...");
     for (auto &instance : records.items()) {
-        LOG_F (INFO, "Sorting %d records for %s", records[instance.key()].size(), instance.key().c_str());
+        LOG_F (INFO, "Sorting %ld records for %s", records[instance.key()].size(), instance.key().c_str());
         records[instance.key()] = sortRecords(records[instance.key()]);
     }
 

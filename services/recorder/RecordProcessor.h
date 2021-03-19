@@ -23,11 +23,11 @@ using json = nlohmann::json;
 
 class RecordProcessor {
 private:
-    static long long getFirstTimestamp(std::vector<DDSRecorderMessage::Message> debugStorage,
-                                       std::unordered_map<long, long> recordMessageDelays);
+    static long long getFirstTimestamp(std::vector<DDSRecorderMessage::Message> messageStorage,
+                                       json recordMessageDelays);
 
-    static std::unordered_map<long, long>
-    collectMessageDelays(const std::vector<DDSRecorderMessage::Message> &debugStorage,
+    static json
+    collectMessageDelays(const std::vector<DDSRecorderMessage::Message> &messageStorage,
                          const std::string &identifier);
 
     static json sortRecords(json records);
@@ -37,5 +37,5 @@ public:
 
     ~RecordProcessor() = default;
 
-    static json process(const std::vector<DDSRecorderMessage::Message> &debugStorage);
+    static json process(const std::vector<DDSRecorderMessage::Message> &messageStorage);
 };

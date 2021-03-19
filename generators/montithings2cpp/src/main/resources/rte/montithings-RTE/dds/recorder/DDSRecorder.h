@@ -35,7 +35,7 @@ private:
     std::unordered_map<long, long long> unsentMessageDelays;
     std::unordered_map<long, long long> unsentRecordMessageDelays;
 
-    static std::string getSendingInstanceNameFromTopic(const std::string &topicId);
+    static std::string getSendingInstanceNameFromTopic(const std::string topicId);
 
     bool isOutgoingPort();
 

@@ -7,6 +7,8 @@
 #include <thread>
 #include <vector>
 
+#include <csignal>
+
 #include "../montithings-RTE/json/json.hpp"
 #include "lib/loguru.hpp"
 
@@ -41,7 +43,7 @@ private:
     int statsLatenciesAmount = 0;
 
     // event handlers for all types of DDS messages
-    void onDebugMessage(const DDSRecorderMessage::Message &message);
+    void onRecorderMessage(const DDSRecorderMessage::Message &message);
 
     void onCommandReplyMessage(const DDSRecorderMessage::CommandReply &message);
 
