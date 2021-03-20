@@ -208,12 +208,13 @@ DDSCommunicator::commandReplyWaitForAcks() {
 }
 
 void
-DDSCommunicator::sendAck(const std::string &receivingInstance, long ackedId, const std::string &sendingInstance,
+DDSCommunicator::sendAck(const std::string &sendingInstance, long ackedId, const std::string &receivedInstance,
                          const std::string &jVectorClock) {
     DDSRecorderMessage::Acknowledgement ackMessage;
     ackMessage.id = ackId;
-    ackMessage.sending_instance = sendingInstance.c_str();
-    ackMessage.receiving_instance = receivingInstance.c_str();
+    ackMessage.sending_instance = receivedInstance.c_str();
+    // receiving instance is now the previous sending instance
+    ackMessage.receiving_instance = sendingInstance.c_str();
     ackMessage.acked_id = ackedId;
     ackMessage.serialized_vector_clock = jVectorClock.c_str();
     send(ackMessage);

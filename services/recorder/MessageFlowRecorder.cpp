@@ -19,7 +19,7 @@ MessageFlowRecorder::init() {
     ddsCommunicator.initReaderCommandReplyMessage();
     ddsCommunicator.initReaderAcknowledgement(true); // todo check this
 
-    ddsCommunicator.setPortIdentifier("recorder");
+    ddsCommunicator.setTopicName("recorder");
 
     ddsCommunicator.addOnRecorderMessageCallback(
             std::bind(&MessageFlowRecorder::onRecorderMessage, this, std::placeholders::_1));

@@ -39,7 +39,7 @@ protected:
     const char *RECORDER_ACKNOWLEDGE_TOPIC = "Acknowledgements";
 
     std::string dcpsInfoHost;
-    std::string portIdentifier;
+    std::string topicName;
     std::string instanceName;
     bool isVerbose{false};
 
@@ -79,7 +79,7 @@ public:
 
     void setDcpsInfoRepoHost(std::string host);
 
-    void setPortIdentifier(std::string name);
+    void setTopicName(std::string name);
 
     void setInstanceName(std::string name);
 

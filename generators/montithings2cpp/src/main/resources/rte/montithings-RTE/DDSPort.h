@@ -75,7 +75,7 @@ public:
     	if (isRecordingEnabled) {
             ddsRecorder = std::make_unique<DDSRecorder>();
             ddsRecorder->setInstanceName(participant->getInstanceName());
-            ddsRecorder->setPortIdentifier(topicName);
+            ddsRecorder->setTopicName(topicName);
             ddsRecorder->init();
         }
         // independently of the port direction, a topic instance is required

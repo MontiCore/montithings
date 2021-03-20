@@ -69,7 +69,7 @@ private:
     <#if config.getRecordingMode().toString() == "ON">
       ddsRecorder = std::make_unique${"<DDSRecorder>"}();
       ddsRecorder->setInstanceName(instanceName);
-      ddsRecorder->setPortIdentifier(instanceName + ".${portSymbol.getName()}/out");
+      ddsRecorder->setTopicName(instanceName + ".${portSymbol.getName()}/out");
       ddsRecorder->init();
     </#if>
   }

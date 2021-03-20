@@ -11,15 +11,15 @@ RecordProcessor::getFirstTimestamp(std::vector<DDSRecorderMessage::Message> mess
         for (const auto &record : messageStorage) {
             long recordTsAdjusted = record.timestamp;
             std::string recordId = std::to_string(record.id);
-            if (!recordMessageDelays[messageDelaySet.key()][recordId].empty()) {
-                recordTsAdjusted -= recordMessageDelays[messageDelaySet.key()][recordId].get<long>();
+            if (!recordMessageDelays[messageDelaySet.key()][recordId]["recorder"].empty()) {
+                recordTsAdjusted -= recordMessageDelays[messageDelaySet.key()][recordId]["recorder"].get<long>();
             } else {
                 LOG_F (1, "No delay information found for record id %d ", record.id);
             }
 
             if (recordTsAdjusted < timestamp_start) {
                 timestamp_start = recordTsAdjusted;
-                LOG_SCOPE_F (2, "Current earliest timestamp = %ld", recordTsAdjusted);
+                LOG_F (2, "Current earliest timestamp = %ld", recordTsAdjusted);
             }
         }
     }
@@ -38,9 +38,11 @@ RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Mess
         json messageDelays = json::parse(record.message_delays.in());
 
         for (auto &delay : messageDelays[identifier]) {
+            // format: {"messages":[[<message id>,[<received_instance>,<actual delay>]], [...
             long id = delay[0];
-            long value = delay[1];
-            allMessageDelays[record.topic.in()][std::to_string(id)] = value;
+            std::string receivingInstance = delay[1][0];
+            long value = delay[1][1];
+            allMessageDelays[record.topic.in()][std::to_string(id)][receivingInstance] = value;
         }
     }
 
@@ -80,9 +82,10 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
                 record.timestamp
                 - timestamp_start;
 
-        if (recordMessageDelays[record.topic.in()][id].size()){
+
+        if (recordMessageDelays[record.topic.in()][id]["recorder"].size()) {
             // .get<long>() does not work for some reason, workaround= dump & convert
-            ts_adjusted -= std::stol(recordMessageDelays[record.topic.in()][id].dump());
+            ts_adjusted -= std::stol(recordMessageDelays[record.topic.in()][id]["recorder"].dump());
         } else {
             LOG_F (1, "No recordMessageDelay for %s (id %s)", record.topic.in(), id.c_str());
         }
@@ -93,13 +96,12 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
             jRecord["timestamp"] = ts_adjusted;
         }
 
-        jRecord["delay"] = 0;
-
-        if (messageDelays[record.topic.in()][msgId].size()) {
+        LOG_F (1, "1111");
+        LOG_F (1, "sasdasssd %s", messageDelays[record.topic.in()][msgId].dump().c_str());
+        for (auto &item : messageDelays[record.topic.in()][msgId].items()) {
             // .get<long>() does not work for some reason, workaround= dump & convert
-            jRecord["delay"] = std::stol(messageDelays[record.topic.in()][msgId].dump());
-        } else {
-            LOG_F (1, "No messageDelay for %s (id %s)", record.topic.in(), msgId.c_str());
+            LOG_F (1, "%s %s", item.key().c_str(),item.value().dump().c_str());
+            jRecord["delay"][ item.key()] =  item.value();
         }
 
         jRecord["topic"] = record.topic.in();

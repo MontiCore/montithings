@@ -19,11 +19,9 @@ namespace VectorClock
 
     void
     updateVectorClock(const vclock &receivedVectorClock, const std::string &initiator) {
-        std::cout << "trying to update clock for  " << initiator << std::endl;
         // ensure there are no parallel updates
         std::lock_guard<std::mutex> guard(updateClockMutex);
 
-        std::cout << "after mutex for  " << initiator << std::endl;
         for (auto &clock : receivedVectorClock) {
             if (vectorClock.count(clock.first) == 0 || vectorClock[clock.first] < clock.second) {
                 vectorClock[clock.first] = clock.second;
@@ -31,6 +29,5 @@ namespace VectorClock
         }
 
         vectorClock[initiator]++;
-        std::cout << "finish for  " << initiator << std::endl;
     }
 }

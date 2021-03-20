@@ -32,8 +32,8 @@ Configurator::setDcpsInfoRepoHost(std::string host) {
 }
 
 void
-Configurator::setPortIdentifier(std::string name) {
-    portIdentifier = std::move(name);
+Configurator::setTopicName(std::string name) {
+    topicName = std::move(name);
 }
 
 void
@@ -124,15 +124,14 @@ Configurator::initTopics() {
     std::string topicNameFiltered(RECORDER_ACKNOWLEDGE_TOPIC);
     topicNameFiltered.append("-Filtered");
 
-    DDS::StringSeq topicfiltered_params(3);
-    topicfiltered_params.length(3);
-    topicfiltered_params[0] = portIdentifier.c_str();
-    topicfiltered_params[1] = "recorder";
-    topicfiltered_params[2] = instanceName.c_str();
+    DDS::StringSeq topicfiltered_params(2);
+    topicfiltered_params.length(2);
+    topicfiltered_params[0] = "recorder";
+    topicfiltered_params[1] = instanceName.c_str();
 
     topicAcknowledgementFiltered = participant->create_contentfilteredtopic(
             topicNameFiltered.c_str(), topicAcknowledgement,
-            "((sending_instance = %0) OR (sending_instance = %1)) AND (receiving_instance = %2)",
+            "(receiving_instance = %0) OR (receiving_instance = %1)",
             topicfiltered_params);
 
     if (!topicRecorder || !topicCommand || !topicCommandReply || !topicAcknowledgement

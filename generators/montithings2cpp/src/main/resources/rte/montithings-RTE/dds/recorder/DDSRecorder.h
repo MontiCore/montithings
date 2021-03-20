@@ -29,11 +29,17 @@ private:
 
     DDSCommunicator ddsCommunicator;
     std::string instanceName;
-    std::string portIdentifier;
-    std::unordered_map<long, long long> unackedMessageTimestampMap;
-    std::unordered_map<long, long long> unackedRecordedMessageTimestampMap;
-    std::unordered_map<long, long long> unsentMessageDelays;
-    std::unordered_map<long, long long> unsentRecordMessageDelays;
+    std::string topicName;
+
+    // key = <message id>, value = <sent timestamp>
+    using unackedMap = std::unordered_map<long, long long>;
+    unackedMap unackedMessageTimestampMap;
+    unackedMap unackedRecordedMessageTimestampMap;
+
+    // key = <message id>, value = { key = <port instance id>, value = <delay>}
+    using unsentDelayMap = std::unordered_map<long, std::pair<std::string, long long>>;
+    unsentDelayMap unsentMessageDelays;
+    unsentDelayMap unsentRecordMessageDelays;
 
     static std::string getSendingInstanceNameFromTopic(const std::string topicId);
 
@@ -51,8 +57,8 @@ private:
 
     void onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &message);
 
-    static void handleAck(std::unordered_map<long, long long> &unackedMap,
-                          std::unordered_map<long, long long> &unsentDelayMap,
+    static void handleAck(unackedMap &unackedMap,
+                          unsentDelayMap &unsentDelayMap,
                           const char *sendingInstance, long ackedId);
 
 public:
@@ -64,8 +70,7 @@ public:
 
     void setInstanceName(const std::string &name);
 
-    void setPortIdentifier(const std::string &name);
+    void setTopicName(const std::string &name);
 
-    void recordMessage(DDSMessage::Message message, const char *topicName,
-                       const std::unordered_map<std::string, long> &vectorClock);
+    void recordMessage(DDSMessage::Message message, const char *topicName, const vclock &vectorClock);
 };
