@@ -48,6 +48,7 @@ ${Utils.printVariables(comp, config, false)}
   <#if ComponentHelper.hasAgoQualification(comp, var)>
     std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${varType}>> dequeOf__${varName?cap_first};
     std::chrono::nanoseconds highestAgoOf__${varName?cap_first} = std::chrono::nanoseconds {${ComponentHelper.getHighestAgoQualification(comp, varName)}};
+    void cleanDequeOf${varName?cap_first}(std::chrono::time_point<std::chrono::system_clock> now);
   </#if>
 </#list>
 public:
