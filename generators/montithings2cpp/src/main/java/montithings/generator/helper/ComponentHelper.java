@@ -1176,6 +1176,6 @@ public class ComponentHelper {
     }
     double valueInSeconds = visitor.getAgoQualifications().get(name);
     //return as nanoseconds
-    return "" + ((long) ((valueInSeconds * 1000000000)) + 500000000);
+    return "" + ((long) (valueInSeconds * 1000000000));
   }
 }
