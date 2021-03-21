@@ -42,6 +42,15 @@ class ${className}
 {
 protected:
 ${Utils.printVariables(comp, config, false)}
+<#list ComponentHelper.getArcFieldVariables(comp) as var>
+  <#assign varName = var.getName()>
+  <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+  <#if ComponentHelper.hasAgoQualification(comp, var)>
+    std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${varType}>> dequeOf__${varName?cap_first};
+    std::chrono::nanoseconds highestAgoOf__${varName?cap_first} = std::chrono::nanoseconds {${ComponentHelper.getHighestAgoQualification(comp, varName)}};
+    void cleanDequeOf${varName?cap_first}(std::chrono::time_point<std::chrono::system_clock> now);
+  </#if>
+</#list>
 public:
 ${className} (${Utils.printConfigurationParametersAsList(comp)})
 <#if comp.getParameters()?has_content>:</#if>
@@ -58,6 +67,13 @@ ${className} (${Utils.printConfigurationParametersAsList(comp)})
   void set${varName?cap_first} (${varType} ${varName});
   ${varType} preSet${varName?cap_first} (${varType} ${varName});
   ${varType} postSet${varName?cap_first} (${varType} ${varName});
+</#list>
+<#list ComponentHelper.getArcFieldVariables(comp) as var>
+  <#assign varName = var.getName()>
+  <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+  <#if ComponentHelper.hasAgoQualification(comp, var)>
+  ${varType} agoGet${varName?cap_first} (const std::chrono::nanoseconds ago_time);
+  </#if>
 </#list>
 
 protected:
