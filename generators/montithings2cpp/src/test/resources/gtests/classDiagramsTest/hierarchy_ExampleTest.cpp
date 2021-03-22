@@ -19,8 +19,8 @@ struct ExampleTest : testing::Test
 
   ExampleTest() {
     cmp = new montithings::hierarchy::Example ("example");
-    source = new montithings::hierarchy::SourceImpl (sourceState);
-    sink = new montithings::hierarchy::SinkImpl (sinkState);
+    source = new montithings::hierarchy::SourceImpl ("example.source", sourceState source->getInterface());
+    sink = new montithings::hierarchy::SinkImpl ("example.sink", sinkState, sink->getInterface());
   }
   ~ExampleTest () {
       delete cmp;
