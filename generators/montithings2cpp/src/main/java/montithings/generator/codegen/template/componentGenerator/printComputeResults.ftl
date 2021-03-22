@@ -1,6 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","isMonitor","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+
 ${className}Result${Utils.printFormalTypeParameters(comp)} result;
 <#list comp.getAllOutgoingPorts() as outPort>
     if (${Identifier.getInterfaceName()}.getPort${outPort.getName()?cap_first}()->hasValue(<#if isMonitor>portMonitorUuid${outPort.getName()?cap_first}
