@@ -25,6 +25,8 @@ public class Identifier {
 
   String stateName = "state";
 
+  String interfaceName = "interface";
+
   /**
    * Checks whether component parameter, variable, subcomponent instance, or
    * port names contain the identifier given as the parameter.
@@ -72,37 +74,31 @@ public class Identifier {
     if (this.containsIdentifier("behaviorImpl", comp)) {
       behaviorImplName = "r__behaviorImpl";
     }
-
     if (this.containsIdentifier("state", comp)) {
       stateName = "r__state";
     }
+    if (this.containsIdentifier("interface", comp)) {
+      interfaceName = "r__interface";
+    }
   }
 
-  /**
-   * @return behaviorImplName
-   */
-  public static String getBehaviorImplName() {
-    return instance.behaviorImplName;
-  }
-
-  /**
-   * @return resultName
-   */
   public static String getResultName() {
     return instance.resultName;
   }
 
-  /**
-   * @return inputName
-   */
+  public static String getBehaviorImplName() {
+    return instance.behaviorImplName;
+  }
+
   public static String getInputName() {
     return instance.inputName;
   }
 
-  /**
-   * @return currentStateName
-   */
   public static String getStateName() {
     return instance.stateName;
+  }
+
+  public static String getInterfaceName() {
+    return instance.interfaceName;
   }
 }

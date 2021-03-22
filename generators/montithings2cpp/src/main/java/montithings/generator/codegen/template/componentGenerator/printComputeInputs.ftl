@@ -6,18 +6,18 @@ ${tc.signature("comp","compname","isMonitor")}
     <#if !ComponentHelper.usesBatchMode(comp)>
         ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()}<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >
         <#if ComponentHelper.isSIUnitPort(inPort)>
-            tl::make_optional(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
-            .value()  * this->${inPort.getName()}ConversionFactor
+            tl::make_optional(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
+            .value()  * this->${Identifier.getInterfaceName()}.get${inPort.getName()}ConversionFactor
         <#else>
-            getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>
+            ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>
         </#if>
         )<#sep>,</#sep>
     </#list>)</#if>;
     <#else>
         ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()};
         <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
-            while(getPort${inPort.getName()?cap_first}()->hasValue(this->uuid)){
-            ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
+            while(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->hasValue(this->uuid)){
+            ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
 
         <#else>
             this->uuid
@@ -25,7 +25,7 @@ ${tc.signature("comp","compname","isMonitor")}
             }
         </#list>
         <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort >
-            ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
+            ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}
 
         <#else>
             this->uuid

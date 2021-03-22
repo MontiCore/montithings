@@ -3,7 +3,7 @@ ${tc.signature("comp","compname","isMonitor","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 ${className}Result${Utils.printFormalTypeParameters(comp)} result;
 <#list comp.getAllOutgoingPorts() as outPort>
-    if (getPort${outPort.getName()?cap_first}()->hasValue(<#if isMonitor>portMonitorUuid${outPort.getName()?cap_first}
+    if (${Identifier.getInterfaceName()}.getPort${outPort.getName()?cap_first}()->hasValue(<#if isMonitor>portMonitorUuid${outPort.getName()?cap_first}
 <#else>
     this->uuid
 </#if>)) {

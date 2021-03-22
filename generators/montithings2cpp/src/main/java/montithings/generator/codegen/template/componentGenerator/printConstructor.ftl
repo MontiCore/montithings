@@ -34,12 +34,7 @@ this->instanceName = instanceName;
   ${Identifier.getStateName()}.set${param.getName()?cap_first} (${param.getName()});
 </#list>
 <#if comp.isAtomic()>
-  this->${Identifier.getBehaviorImplName()}.setInstanceName (instanceName);
   this->${Identifier.getStateName()}.setInstanceName (instanceName);
-  <#list comp.getOutgoingPorts() as port>
-    <#assign name = port.getName()>
-    this->${Identifier.getBehaviorImplName()}.setPort${name?cap_first} (getPort${name?cap_first}());
-  </#list>
   this->${Identifier.getStateName()}.setup ();
   ${tc.includeArgs("template.prepostconditions.hooks.Constructor", [comp])}
 </#if>

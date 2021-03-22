@@ -36,19 +36,3 @@ ${tc.signature("comp","compname","className")}
     return ${Identifier.getResultName()};
   }
 </#list>
-
-${Utils.printTemplateArguments(comp)}
-void ${className}${generics}::setInstanceName (const std::string &instanceName)
-{
-this->instanceName = instanceName;
-}
-
-<#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
-  <#assign name = port.getName()>
-  ${Utils.printTemplateArguments(comp)}
-  void ${className}${generics}::setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first})
-  {
-    this->port${name?cap_first} = port${name?cap_first};
-  }
-</#list>

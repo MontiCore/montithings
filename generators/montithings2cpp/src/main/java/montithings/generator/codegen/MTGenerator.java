@@ -52,6 +52,10 @@ public class MTGenerator {
       fg.generate(targetPath, compname + "Input", ".cpp",
         "template/input/ImplementationFile.ftl", comp, compname, config);
     }
+    fg.generate(targetPath, compname + "Interface", ".h",
+      "template/interface/Header.ftl", comp, config);
+    fg.generate(targetPath, compname + "Interface", ".cpp",
+      "template/interface/ImplementationFile.ftl", comp, config);
     fg.generate(targetPath, compname + "Result", ".h",
       "template/result/ResultHeader.ftl", comp, compname, config);
     if (!comp.getOutgoingPorts().isEmpty()) {

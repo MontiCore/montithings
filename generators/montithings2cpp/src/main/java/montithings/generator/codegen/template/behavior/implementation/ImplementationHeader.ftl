@@ -14,6 +14,7 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include "${compname}Input.h"
 #include "${compname}Result.h"
 #include "${compname}State.h"
+${tc.includeArgs("template.interface.hooks.Include", [comp])}
 #include "InOutPort.h"
 #include "IComputable.h"
 #include ${"<stdexcept>"}
@@ -30,21 +31,10 @@ class ${className}
 protected:
 std::string instanceName;
 ${compname}State& ${Identifier.getStateName()};
-<#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-  <#assign name = port.getName()>
-  InOutPort<${type}>* port${name?cap_first};
-</#list>
+${compname}Interface& ${Identifier.getInterfaceName()};
 
 public:
-${className}(${compname}State& state) : ${Identifier.getStateName()}(state) {}
-
-void setInstanceName (const std::string &instanceName);
-<#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-  <#assign name = port.getName()>
-  void setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first});
-</#list>
+${className}(std::string instanceName, ${compname}State& state, ${compname}Interface& interface) : instanceName(std::move(instanceName)), ${Identifier.getStateName()}(state), ${Identifier.getInterfaceName()}(interface) {}
 
 <#if ComponentHelper.hasBehavior(comp)>
   ${compname}Result${generics} getInitialValues() override;

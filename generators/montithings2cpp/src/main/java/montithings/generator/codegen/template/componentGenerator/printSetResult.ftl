@@ -9,6 +9,6 @@ ${tc.signature("comp","compname","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result){
 <#list comp.getOutgoingPorts() as portOut >
-  this->getPort${portOut.getName()?cap_first}()->setNextValue(result.get${portOut.getName()?cap_first}());
+  this->${Identifier.getInterfaceName()}.getPort${portOut.getName()?cap_first}()->setNextValue(result.get${portOut.getName()?cap_first}());
 </#list>
 }

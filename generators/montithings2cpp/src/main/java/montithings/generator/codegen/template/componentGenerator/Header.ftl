@@ -38,6 +38,7 @@ ${Identifier.createInstance(comp)}
 </#if>
 ${Utils.printIncludes(comp, config)}
 ${tc.includeArgs("template.prepostconditions.hooks.Include", [comp])}
+${tc.includeArgs("template.interface.hooks.Include", [comp])}
 #include "${compname}State.h"
 
 <#if comp.isDecomposed()>
@@ -66,8 +67,7 @@ class ${className} : public IComponent
 </#if>
 {
 protected:
-${tc.includeArgs("template.util.ports.printVars", [comp, comp.getPorts(), config])}
-
+${tc.includeArgs("template.interface.hooks.Member", [comp])}
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 
 std::vector< std::thread > threads;
@@ -100,7 +100,6 @@ ${compname}State${generics} ${Identifier.getStateName()};
 </#if>
 
 public:
-${tc.includeArgs("template.util.ports.printMethodHeaders", [comp.getPorts(), config])}
 ${className}(std::string instanceName
 <#if comp.getParameters()?has_content>,</#if>
 ${ComponentHelper.printConstructorArguments(comp)});
@@ -116,6 +115,8 @@ ${ComponentHelper.printConstructorArguments(comp)});
         ${tc.includeArgs("template.util.subcomponents.printMethodDeclarations", [comp, config])}
     </#if>
 </#if>
+
+${tc.includeArgs("template.interface.hooks.MethodDeclaration", [comp])}
 
 void setUp(TimeMode enclosingComponentTiming) override;
 void init() override;

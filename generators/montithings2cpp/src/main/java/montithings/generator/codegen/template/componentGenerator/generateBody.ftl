@@ -6,8 +6,6 @@ ${tc.signature("comp","compname","config","className")}
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 
-${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp, compname, config, className])}
-
 <#if comp.isDecomposed()>
     <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
         ${tc.includeArgs("template.util.subcomponents.printMethodDefinitions", [comp, config])}
@@ -31,6 +29,7 @@ ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp
     ${tc.includeArgs("template.componentGenerator.printEveryBlocks", [comp, compname, className])}
 </#if>
 
+${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
 ${tc.includeArgs("template.componentGenerator.printShouldComputeCheck", [comp, compname, className])}
 
 ${tc.includeArgs("template.util.setup.Setup", [comp, compname, config, className])}
