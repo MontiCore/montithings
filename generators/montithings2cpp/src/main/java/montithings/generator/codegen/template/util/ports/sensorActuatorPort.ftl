@@ -59,7 +59,7 @@ private:
       auto dataString = dataToJson(container.message);
       message.content = dataString.c_str();
       ddsRecorder->recordMessage(message, (instanceName + ".${portSymbol.getName()}/out").c_str(),
-      VectorClock::getVectorClock());
+        VectorClock::getVectorClock(), true);
 
       recorderMessageId++;
     }

@@ -25,6 +25,8 @@
 
 class DDSRecorder {
 private:
+    std::mutex sentMutex;
+
     int messageId = 0;
 
     DDSCommunicator ddsCommunicator;
@@ -72,5 +74,5 @@ public:
 
     void setTopicName(const std::string &name);
 
-    void recordMessage(DDSMessage::Message message, const char *topicName, const vclock &vectorClock);
+    void recordMessage(DDSMessage::Message message, const char *topicName, const vclock &vectorClock, bool includeContent);
 };

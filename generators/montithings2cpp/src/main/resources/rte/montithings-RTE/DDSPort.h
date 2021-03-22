@@ -237,7 +237,7 @@ public:
                 // remove vector clock
                 message.content = dataToJson(nextVal).c_str();
                 ddsRecorder->recordMessage(message, messageWriter->get_topic()->get_name(),
-                                           VectorClock::getVectorClock());
+                                           VectorClock::getVectorClock(), false);
             }
 
             ++messageId;
@@ -276,7 +276,7 @@ public:
                 // remove vector clock
                 message.content = dataToJson(container.message).c_str();
 
-                ddsRecorder->recordMessage(message, topicId, container.vectorClock);
+                ddsRecorder->recordMessage(message, topicId, container.vectorClock, false);
 
                 result = container.message;
             } else {

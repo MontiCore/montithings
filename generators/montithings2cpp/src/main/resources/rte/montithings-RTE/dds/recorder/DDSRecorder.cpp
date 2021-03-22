@@ -92,8 +92,6 @@ DDSRecorder::sendInternalRecords() {
     content["calc_latency"] = HWCInterceptor::storageComputationLatency;
     recorderMessage.msg_content = content.dump().c_str();
 
-    // This can be dangerous...
-    // TODO maybe add mutex
     HWCInterceptor::storageCalls.clear();
     HWCInterceptor::storageComputationLatency.clear();
 
@@ -116,9 +114,8 @@ DDSRecorder::isOutgoingPort() {
 
 void
 DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
-                           const vclock &newVectorClock) {
-    // CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | Size of nd storage: " << Recorder::storage.size ()
-    //;
+                           const vclock &newVectorClock, bool includeContent) {
+    std::lock_guard<std::mutex> guard(sentMutex);
 
     if (HWCInterceptor::isRecording) {
         long long timestamp = Util::Time::getCurrentTimestampNano();
@@ -153,11 +150,13 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             recorderMessage.instance_name = instanceName.c_str();
             recorderMessage.type = DDSRecorderMessage::MESSAGE_RECORD;
             recorderMessage.msg_id = message.id;
-            recorderMessage.msg_content = content.c_str();
-            recorderMessage.timestamp = timestamp;
             recorderMessage.serialized_vector_clock = VectorClock::getSerializedVectorClock().c_str();
             recorderMessage.topic = topicName;
             recorderMessage.message_delays = jUnsentDelays.dump().c_str();
+
+            if (includeContent) {
+                recorderMessage.msg_content = content.c_str();
+            }
 
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << messageId
                                  << " topic=" << instanceName.c_str() << " instance_name=" << instanceName.c_str()
