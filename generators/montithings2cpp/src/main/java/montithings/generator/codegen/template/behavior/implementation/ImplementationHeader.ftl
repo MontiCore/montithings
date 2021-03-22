@@ -19,6 +19,9 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include ${"<stdexcept>"}
 #include "easyloggingpp/easylogging++.h"
 ${Utils.printIncludes(comp,config)}
+#include "MTLibrary.h"
+
+using namespace montithings::library;
 
 ${Utils.printNamespaceStart(comp)}
 
