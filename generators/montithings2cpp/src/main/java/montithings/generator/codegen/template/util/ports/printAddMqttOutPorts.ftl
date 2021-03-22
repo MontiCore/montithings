@@ -6,5 +6,5 @@ ${tc.signature("comp","config")}
   <#assign type = ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)>
   // outgoing port ${p.getName()}
   MqttPort<${type}> *${p.getName()} = new MqttPort<${type}>(this->getInstanceName () + "/${p.getName()}");
-  this->addOutPort${p.getName()?cap_first} (${p.getName()});
+  this->interface.addOutPort${p.getName()?cap_first} (${p.getName()});
 </#list>
