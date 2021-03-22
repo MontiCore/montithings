@@ -103,6 +103,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     setMontiThingsVisitor(deriveSymTypeOfMontiThings);
     setOCLExpressionsVisitor(deriveSymTypeOfOCLExpressions);
     setSetDefinitionsVisitor(deriveSymTypeOfSetDefinitions);
+    setSetExpressionsVisitor(deriveSymTypeOfSetDefinitions);
     setBehaviorVisitor(deriveSymTypeOfBehavior);
 
     setTypeCheckResult(typeCheckResult);
