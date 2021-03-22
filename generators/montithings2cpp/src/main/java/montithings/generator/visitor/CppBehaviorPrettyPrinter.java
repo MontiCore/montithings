@@ -36,7 +36,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
   public void handle(ASTAfterStatement node){
     getPrinter().print("std::future<bool> fut");
     getPrinter().print(afterStatementIndex);
-    getPrinter().print(" = std::async(std::launch::async, [=] () -> bool {");
+    getPrinter().print(" = std::async(std::launch::async, [&] () -> bool {");
     getPrinter().print("std::this_thread::sleep_for( std::chrono::");
     printTime(node.getSIUnitLiteral());
     getPrinter().print(");");
