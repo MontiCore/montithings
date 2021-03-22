@@ -206,6 +206,7 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     (strm << _tao_aggregate.id) &&
     (strm << _tao_aggregate.sending_instance.in ()) &&
     (strm << _tao_aggregate.receiving_instance.in ()) &&
+    (strm << _tao_aggregate.port_name.in ()) &&
     (strm << _tao_aggregate.acked_id) &&
     (strm << _tao_aggregate.serialized_vector_clock.in ());
 }
@@ -218,6 +219,7 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     (strm >> _tao_aggregate.id) &&
     (strm >> _tao_aggregate.sending_instance.out ()) &&
     (strm >> _tao_aggregate.receiving_instance.out ()) &&
+    (strm >> _tao_aggregate.port_name.out ()) &&
     (strm >> _tao_aggregate.acked_id) &&
     (strm >> _tao_aggregate.serialized_vector_clock.out ());
 }

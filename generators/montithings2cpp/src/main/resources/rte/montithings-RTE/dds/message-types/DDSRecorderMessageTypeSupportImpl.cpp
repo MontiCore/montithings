@@ -1495,6 +1495,8 @@ void gen_find_size(const DDSRecorderMessage::Acknowledgement& stru, size_t& size
   size += ACE_OS::strlen(stru.sending_instance.in()) + 1;
   find_size_ulong(size, padding);
   size += ACE_OS::strlen(stru.receiving_instance.in()) + 1;
+  find_size_ulong(size, padding);
+  size += ACE_OS::strlen(stru.port_name.in()) + 1;
   if ((size + padding) % 4) {
     padding += 4 - ((size + padding) % 4);
   }
@@ -1510,6 +1512,7 @@ bool operator<<(Serializer& strm, const DDSRecorderMessage::Acknowledgement& str
   return (strm << stru.id)
     && (strm << stru.sending_instance.in())
     && (strm << stru.receiving_instance.in())
+    && (strm << stru.port_name.in())
     && (strm << stru.acked_id)
     && (strm << stru.serialized_vector_clock.in());
 }
@@ -1521,6 +1524,7 @@ bool operator>>(Serializer& strm, DDSRecorderMessage::Acknowledgement& stru)
   return (strm >> stru.id)
     && (strm >> stru.sending_instance.out())
     && (strm >> stru.receiving_instance.out())
+    && (strm >> stru.port_name.out())
     && (strm >> stru.acked_id)
     && (strm >> stru.serialized_vector_clock.out());
 }
@@ -1591,6 +1595,9 @@ void vwrite(OpenDDS::DCPS::ValueWriter& value_writer, const DDSRecorderMessage::
   value_writer.end_field();
   value_writer.begin_field("receiving_instance");
   value_writer.write_string(value.receiving_instance);
+  value_writer.end_field();
+  value_writer.begin_field("port_name");
+  value_writer.write_string(value.port_name);
   value_writer.end_field();
   value_writer.begin_field("acked_id");
   value_writer.write_int32(value.acked_id);
@@ -1703,6 +1710,9 @@ struct MetaStructImpl<DDSRecorderMessage::Acknowledgement> : MetaStruct {
     if (std::strcmp(field, "receiving_instance") == 0) {
       return typed.receiving_instance.in();
     }
+    if (std::strcmp(field, "port_name") == 0) {
+      return typed.port_name.in();
+    }
     if (std::strcmp(field, "acked_id") == 0) {
       return typed.acked_id;
     }
@@ -1755,6 +1765,21 @@ struct MetaStructImpl<DDSRecorderMessage::Acknowledgement> : MetaStruct {
         throw std::runtime_error("String 'receiving_instance' contents could not be skipped");
       }
     }
+    if (std::strcmp(field, "port_name") == 0) {
+      TAO::String_Manager val;
+      if (!(ser >> val.out())) {
+        throw std::runtime_error("Field 'port_name' could not be deserialized");
+      }
+      return val;
+    } else {
+      ACE_CDR::ULong len;
+      if (!(ser >> len)) {
+        throw std::runtime_error("String 'port_name' length could not be deserialized");
+      }
+      if (!ser.skip(static_cast<ACE_UINT16>(len))) {
+        throw std::runtime_error("String 'port_name' contents could not be skipped");
+      }
+    }
     if (std::strcmp(field, "acked_id") == 0) {
       ACE_CDR::Long val;
       if (!(ser >> val)) {
@@ -1799,6 +1824,9 @@ struct MetaStructImpl<DDSRecorderMessage::Acknowledgement> : MetaStruct {
     if (std::strcmp(field, "receiving_instance") == 0) {
       return make_field_cmp(&T::receiving_instance, next);
     }
+    if (std::strcmp(field, "port_name") == 0) {
+      return make_field_cmp(&T::port_name, next);
+    }
     if (std::strcmp(field, "acked_id") == 0) {
       return make_field_cmp(&T::acked_id, next);
     }
@@ -1811,7 +1839,7 @@ struct MetaStructImpl<DDSRecorderMessage::Acknowledgement> : MetaStruct {
 #ifndef OPENDDS_NO_MULTI_TOPIC
   const char** getFieldNames() const
   {
-    static const char* names[] = {"id", "sending_instance", "receiving_instance", "acked_id", "serialized_vector_clock", 0};
+    static const char* names[] = {"id", "sending_instance", "receiving_instance", "port_name", "acked_id", "serialized_vector_clock", 0};
     return names;
   }
 
@@ -1825,6 +1853,9 @@ struct MetaStructImpl<DDSRecorderMessage::Acknowledgement> : MetaStruct {
     }
     if (std::strcmp(field, "receiving_instance") == 0) {
       return &static_cast<const T*>(stru)->receiving_instance;
+    }
+    if (std::strcmp(field, "port_name") == 0) {
+      return &static_cast<const T*>(stru)->port_name;
     }
     if (std::strcmp(field, "acked_id") == 0) {
       return &static_cast<const T*>(stru)->acked_id;
@@ -1855,6 +1886,10 @@ struct MetaStructImpl<DDSRecorderMessage::Acknowledgement> : MetaStruct {
       static_cast<T*>(lhs)->receiving_instance = *static_cast<const TAO::String_Manager*>(rhsMeta.getRawField(rhs, rhsFieldSpec));
       return;
     }
+    if (std::strcmp(field, "port_name") == 0) {
+      static_cast<T*>(lhs)->port_name = *static_cast<const TAO::String_Manager*>(rhsMeta.getRawField(rhs, rhsFieldSpec));
+      return;
+    }
     if (std::strcmp(field, "acked_id") == 0) {
       static_cast<T*>(lhs)->acked_id = *static_cast<const CORBA::Long*>(rhsMeta.getRawField(rhs, rhsFieldSpec));
       return;
@@ -1880,6 +1915,9 @@ struct MetaStructImpl<DDSRecorderMessage::Acknowledgement> : MetaStruct {
     }
     if (std::strcmp(field, "receiving_instance") == 0) {
       return 0 == ACE_OS::strcmp(static_cast<const T*>(lhs)->receiving_instance.in(), static_cast<const T*>(rhs)->receiving_instance.in());
+    }
+    if (std::strcmp(field, "port_name") == 0) {
+      return 0 == ACE_OS::strcmp(static_cast<const T*>(lhs)->port_name.in(), static_cast<const T*>(rhs)->port_name.in());
     }
     if (std::strcmp(field, "acked_id") == 0) {
       return static_cast<const T*>(lhs)->acked_id == static_cast<const T*>(rhs)->acked_id;

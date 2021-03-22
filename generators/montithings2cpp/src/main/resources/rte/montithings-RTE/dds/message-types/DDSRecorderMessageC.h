@@ -239,6 +239,7 @@ namespace DDSRecorderMessage
     ::CORBA::Long id;
     ::TAO::String_Manager sending_instance;
     ::TAO::String_Manager receiving_instance;
+    ::TAO::String_Manager port_name;
     ::CORBA::Long acked_id;
     ::TAO::String_Manager serialized_vector_clock;
   };

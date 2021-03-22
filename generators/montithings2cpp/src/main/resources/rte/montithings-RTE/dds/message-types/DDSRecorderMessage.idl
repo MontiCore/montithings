@@ -44,6 +44,7 @@ module DDSRecorderMessage {
     @key long id;
     @key string sending_instance;
     @key string receiving_instance;
+    string port_name;
     long acked_id;
     string serialized_vector_clock;
   };
