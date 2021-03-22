@@ -148,13 +148,18 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
            message.msg_content.in(), message.msg_id, message.timestamp, message.topic.in(),
            message.message_delays.in());
 
+    DDSRecorderMessage::Message toStore = message;
+
     switch (message.type) {
         case DDSRecorderMessage::MESSAGE_RECORD:
             LOG_F (1, "ACKing: instance_name=%s, id=%d,", message.instance_name.in(), message.id);
             ddsCommunicator.sendAck(message.instance_name.in(), message.id, "recorder", "");
 
+            // Replace timestamp by recorder clock readings
+            toStore.timestamp =  Util::Time::getCurrentTimestampNano();
+
             // store message unprocessed and move on, dont waste time
-            recordedMessages.push_back(message);
+            recordedMessages.push_back(toStore);
             break;
         case DDSRecorderMessage::INTERNAL_RECORDS: {
             nlohmann::json content = nlohmann::json::parse(message.msg_content.in());

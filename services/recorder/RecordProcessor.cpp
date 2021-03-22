@@ -59,10 +59,8 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
     LOG_F (INFO, "Calculating transport delays...");
 
     json messageDelays = collectMessageDelays(messageStorage, "messages");
-    LOG_F (INFO, "messageDelays: %s", messageDelays.dump().c_str());
 
     json recordMessageDelays = collectMessageDelays(messageStorage, "record_messages");
-    LOG_F (INFO, "recordMessageDelays: %s", recordMessageDelays.dump().c_str());
 
     LOG_F (INFO, "Adjusting timestamps and adding delays...");
     long long timestamp_start = getFirstTimestamp(messageStorage, recordMessageDelays);
@@ -74,6 +72,8 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
         std::string msgId = std::to_string(record.msg_id);
 
         json jRecord = json::object();
+
+        jRecord["_recorder_id"] = record.id;
         jRecord["msg_id"] = record.msg_id;
         jRecord["msg_content"] = record.msg_content.in();
 
@@ -96,11 +96,7 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
             jRecord["timestamp"] = ts_adjusted;
         }
 
-        LOG_F (1, "1111");
-        LOG_F (1, "sasdasssd %s", messageDelays[record.topic.in()][msgId].dump().c_str());
         for (auto &item : messageDelays[record.topic.in()][msgId].items()) {
-            // .get<long>() does not work for some reason, workaround= dump & convert
-            LOG_F (1, "%s %s", item.key().c_str(),item.value().dump().c_str());
             jRecord["delay"][ item.key()] =  item.value();
         }
 
