@@ -83,7 +83,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setTargetPlatform(getPlatform());
     configParams.setSplittingMode(getSplittingMode());
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
-    configParams.setMessageBroker(getMessageBroker());
+    configParams.setMessageBroker(getMessageBroker(getSplittingMode()));
     configParams.setReplayMode(getReplayMode());
     configParams.setReplayDataFile(getReplayDataFile());
     configParams.setHwcPath(getHWCPath());
