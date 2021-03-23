@@ -42,6 +42,7 @@ public class MontiThingsConfiguration implements Configuration {
     PLATFORM("platform"),
     SPLITTING("splitting"),
     MESSAGEBROKER("messageBroker"),
+    MESSAGEBROKER_SHORT("broker"),
     REPLAYMODE("replayMode"),
     REPLAYDATAFILE("replayDataPath"),
     MAINCOMP("mainComponent"),
@@ -344,8 +345,11 @@ public class MontiThingsConfiguration implements Configuration {
     return ConfigParams.SplittingMode.OFF;
   }
 
-  public ConfigParams.MessageBroker getMessageBroker() {
+  public ConfigParams.MessageBroker getMessageBroker(ConfigParams.SplittingMode splittingMode) {
     Optional<String> messageBroker = getAsString(Options.MESSAGEBROKER);
+    if (!messageBroker.isPresent()) {
+      messageBroker = getAsString(Options.MESSAGEBROKER_SHORT);
+    }
     if (messageBroker.isPresent()) {
       switch (messageBroker.get()) {
         case "OFF":
@@ -359,8 +363,14 @@ public class MontiThingsConfiguration implements Configuration {
                   "0xMT302 Message broker " + messageBroker + " in pom.xml is unknown");
       }
     }
-    // fallback default is "off"
-    return ConfigParams.MessageBroker.OFF;
+
+    if (splittingMode == ConfigParams.SplittingMode.OFF) {
+      // fallback default if not splitting is disabled is "off"
+      return ConfigParams.MessageBroker.OFF;
+    } else {
+      // fallback default if splitted is enabled "MQTT"
+      return ConfigParams.MessageBroker.MQTT;
+    }
   }
 
   public ConfigParams.ReplayMode getReplayMode() {

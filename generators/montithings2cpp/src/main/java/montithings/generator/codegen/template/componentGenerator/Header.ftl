@@ -112,7 +112,7 @@ ${ComponentHelper.printConstructorArguments(comp)});
 </#if>
 
 <#if comp.isDecomposed()>
-    <#if config.getSplittingMode().toString() != "OFF">
+    <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
         ${tc.includeArgs("template.util.subcomponents.printMethodDeclarations", [comp, config])}
     </#if>
 </#if>

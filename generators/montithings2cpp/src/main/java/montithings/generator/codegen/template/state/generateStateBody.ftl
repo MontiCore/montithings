@@ -18,6 +18,11 @@ ${tc.signature("comp", "config", "className")}
   void ${className}${generics}::set${varName?cap_first}(${type} ${varName})
   {
   ${className}${generics}::${varName} = ${varName};
+  <#if ComponentHelper.isArcField(var) && ComponentHelper.hasAgoQualification(comp, var)>
+    auto now = std::chrono::system_clock::now();
+    dequeOf__${varName?cap_first}.push_back(std::make_pair(now, ${varName}));
+    cleanDequeOf${varName?cap_first}(now);
+  </#if>
   }
 
   ${Utils.printTemplateArguments(comp)}
@@ -34,6 +39,36 @@ ${tc.signature("comp", "config", "className")}
   set${varName?cap_first}(${varName});
   return beforeValue;
   }
+</#list>
+
+<#list ComponentHelper.getArcFieldVariables(comp) as var>
+  <#assign varName = var.getName()>
+  <#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+
+  <#if ComponentHelper.hasAgoQualification(comp, var)>
+  ${Utils.printTemplateArguments(comp)}
+  ${type} ${className}${generics}::agoGet${varName?cap_first}(const std::chrono::nanoseconds ago_time)
+  {
+  auto now = std::chrono::system_clock::now();
+  for (auto it = dequeOf__${varName?cap_first}.crbegin(); it != dequeOf__${varName?cap_first}.crend(); ++it)
+  {
+  if (it->first < now - ago_time)
+  {
+  return it->second;
+  }
+  }
+  return dequeOf__${varName?cap_first}.front().second;
+  }
+
+  ${Utils.printTemplateArguments(comp)}
+  void ${className}${generics}::cleanDequeOf${varName?cap_first}(std::chrono::time_point<std::chrono::system_clock> now)
+  {
+  while (dequeOf__${varName?cap_first}.size() > 1 && dequeOf__${varName?cap_first}.at (1).first < now - highestAgoOf__${varName?cap_first})
+  {
+  dequeOf__${varName?cap_first}.pop_front ();
+  }
+  }
+  </#if>
 </#list>
 
 ${Utils.printTemplateArguments(comp)}

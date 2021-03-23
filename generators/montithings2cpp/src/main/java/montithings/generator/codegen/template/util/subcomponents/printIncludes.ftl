@@ -12,7 +12,7 @@ ${tc.signature("comp","config")}
       </#if>
       ${Utils.printPackageNamespace(comp, subcomponent)}${type} ${subcomponent.getName()};
   </#list>
-<#else>
+<#elseif config.getMessageBroker().toString() == "OFF">
   <#list comp.getSubComponents() as subcomponent >
     std::string subcomp${subcomponent.getName()?cap_first}IP;
   </#list>

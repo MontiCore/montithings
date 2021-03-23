@@ -245,8 +245,11 @@
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
                         <main>hierarchy.Example</main>
-                        <splitting>LOCAL</splitting>
-                        <messageBroker>MQTT</messageBroker>
+                        <splitting>DISTRIBUTED</splitting>
+                        <messageBroker>DDS</messageBroker>
+                        <recording>ON</recording>
+                        <!--<replayDataPath>${basedir}/recordings.json</replayDataPath>
+                        <replayMode>ON</replayMode>-->
                         <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>

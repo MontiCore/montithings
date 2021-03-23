@@ -9,7 +9,7 @@ ${tc.signature("comp","compname","config","className")}
 ${tc.includeArgs("template.util.ports.printMethodBodies", [comp.getPorts(), comp, compname, config, className])}
 
 <#if comp.isDecomposed()>
-    <#if config.getSplittingMode().toString() != "OFF">
+    <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
         ${tc.includeArgs("template.util.subcomponents.printMethodDefinitions", [comp, config])}
     </#if>
 
