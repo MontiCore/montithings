@@ -5,6 +5,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.ocl.setexpressions._ast.ASTSetCollectionItem;
 import de.monticore.ocl.setexpressions._ast.ASTSetEnumeration;
 import de.monticore.ocl.setexpressions._ast.ASTSetValueItem;
+import de.monticore.ocl.setexpressions._visitor.SetExpressionsVisitor;
 import de.monticore.ocl.types.check.DeriveSymTypeOfSetExpressions;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
@@ -14,8 +15,6 @@ import setdefinitions._ast.ASTSetValueRange;
 import setdefinitions._ast.ASTSetValueRegEx;
 import setdefinitions._visitor.SetDefinitionsVisitor;
 
-import java.util.Iterator;
-
 import static de.monticore.ocl.types.check.OCLTypeCheck.compatible;
 
 public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions implements SetDefinitionsVisitor {
@@ -23,12 +22,17 @@ public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions
   private SetDefinitionsVisitor realThis;
 
   public DeriveSymTypeOfSetDefinitions(){
-    realThis = this;
+    this.realThis = this;
   }
 
   @Override
   public void setRealThis(SetDefinitionsVisitor realThis) {
     this.realThis = realThis;
+  }
+
+  @Override
+  public void setRealThis(SetExpressionsVisitor realThis) {
+    this.realThis = (SetDefinitionsVisitor) realThis;
   }
 
   @Override
@@ -125,7 +129,7 @@ public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions
 
   @Override
   public void traverse(ASTSetValueRegEx node){
-    //int is the only type of RegEx which is currently supported in this non-terminal
+    //String is the only type of RegEx which is currently supported in this non-terminal
     this.typeCheckResult.setCurrentResult(SymTypeExpressionFactory.createTypeObject("String", node.getEnclosingScope()));
   }
 }

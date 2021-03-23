@@ -6,6 +6,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
 import de.monticore.ocl.types.check.DeriveSymTypeOfOCLExpressions;
+import de.monticore.ocl.types.check.DeriveSymTypeOfSetExpressions;
 import de.monticore.types.check.*;
 import montithings._visitor.MontiThingsDelegatorVisitor;
 import types.check.DeriveSymTypeOfSetDefinitions;
@@ -33,6 +34,8 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
   private DeriveSymTypeOfMontiThings deriveSymTypeOfMontiThings;
 
   private DeriveSymTypeOfSetDefinitions deriveSymTypeOfSetDefinitions;
+
+  private DeriveSymTypeOfSetExpressions deriveSymTypeOfSetExpressions;
 
   private DeriveSymTypeOfBehavior deriveSymTypeOfBehavior;
 
@@ -75,6 +78,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfMontiThings.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfOCLExpressions.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfSetDefinitions.setTypeCheckResult(typeCheckResult);
+    deriveSymTypeOfSetExpressions.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfBehavior.setTypeCheckResult(typeCheckResult);
   }
 
@@ -92,6 +96,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfMontiThings = new DeriveSymTypeOfMontiThings();
     deriveSymTypeOfOCLExpressions = new DeriveSymTypeOfOCLExpressions();
     deriveSymTypeOfSetDefinitions = new DeriveSymTypeOfSetDefinitions();
+    deriveSymTypeOfSetExpressions = new DeriveSymTypeOfSetExpressions();
     deriveSymTypeOfBehavior = new DeriveSymTypeOfBehavior();
 
     setCommonExpressionsVisitor(deriveSymTypeOfCommonExpressions);
@@ -103,7 +108,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     setMontiThingsVisitor(deriveSymTypeOfMontiThings);
     setOCLExpressionsVisitor(deriveSymTypeOfOCLExpressions);
     setSetDefinitionsVisitor(deriveSymTypeOfSetDefinitions);
-    setSetExpressionsVisitor(deriveSymTypeOfSetDefinitions);
+    setSetExpressionsVisitor(deriveSymTypeOfSetExpressions);
     setBehaviorVisitor(deriveSymTypeOfBehavior);
 
     setTypeCheckResult(typeCheckResult);
@@ -135,5 +140,9 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     }
     typeCheckResult.setCurrentResultAbsent();
     return result;
+  }
+
+  public TypeCheckResult getTypeCheckResult() {
+    return typeCheckResult;
   }
 }
