@@ -35,12 +35,15 @@ namespace Util {
         std::vector<std::string> out;
 
         std::string::size_type beg = 0;
-        for (auto end = 0; (end = topicId.find('/', end)) != std::string::npos; ++end) {
+        for (auto end = 0; (end = topicId.find('.', end)) != std::string::npos; ++end) {
             out.push_back(topicId.substr(beg, end - beg));
             beg = end + 1;
         }
 
         out.push_back(topicId.substr(beg));
-        return out.at(1);
+
+        std::string postfix = out.at(out.size() - 1);
+
+        return postfix.substr(0, topicId.find_last_of('/'));
     }
 } // namespace Util
