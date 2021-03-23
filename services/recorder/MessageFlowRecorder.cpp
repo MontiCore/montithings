@@ -149,11 +149,12 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
            message.message_delays.in());
 
     DDSRecorderMessage::Message toStore = message;
+    std::string pName = Util::Topic::getPortNameFromTopic(message.topic.in());
 
     switch (message.type) {
         case DDSRecorderMessage::MESSAGE_RECORD:
             LOG_F (1, "ACKing: instance_name=%s, id=%d,", message.instance_name.in(), message.id);
-            ddsCommunicator.sendAck(message.instance_name.in(), message.id, "recorder", "");
+            ddsCommunicator.sendAck(message.instance_name.in(), message.id, "recorder", pName, "");
 
             // Replace timestamp by recorder clock readings
             toStore.timestamp =  Util::Time::getCurrentTimestampNano();

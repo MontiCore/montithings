@@ -55,7 +55,7 @@ public:
     bool send(const DDSRecorderMessage::Acknowledgement &message);
 
     void sendAck(const std::string &sendingInstance, long ackedId, const std::string &receivedInstance,
-                 const std::string &jVectorClock);
+                 const std::string &portName, const std::string &jVectorClock);
 
     bool commandWaitForAcks();
 

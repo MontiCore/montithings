@@ -16,13 +16,13 @@ json jPayload = json::parse(payload);
             if (connection.find(instanceName + ".${p.getName()}/in") != std::string::npos) {
                 std::string topic = connection.substr(0, connection.find("->"));
                 CLOG(DEBUG, "DDS") << "New connection! Creating ingoing port which listens on " << topic;
-                comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, true, false));
+                comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, "${p.getName()}", true, false));
 
                 <#if !comp.isAtomic()>
                     // additional outgoing port for port incoming port ${p.getName()}
                     // to forward data to subcomponents
                     topic = instanceName + ".${p.getName()}/out";
-                    comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic, true, false));
+                    comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic, "${p.getName()}", true, false));
                 </#if>
             }
         }

@@ -38,6 +38,11 @@ DDSRecorder::setTopicName(const std::string &name) {
 }
 
 void
+DDSRecorder::setPortName(const std::string &name) {
+    portName = name;
+}
+
+void
 DDSRecorder::start() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | starting recording... ";
     HWCInterceptor::startNondeterministicRecording();
@@ -101,14 +106,9 @@ DDSRecorder::sendInternalRecords() {
     ddsCommunicator.send(recorderMessage);
 }
 
-std::string
-DDSRecorder::getSendingInstanceNameFromTopic(const std::string topicId) {
-    return topicId.substr(0, topicId.find_last_of('.'));
-}
-
 bool
 DDSRecorder::isOutgoingPort() {
-    std::string sendingInstance = getSendingInstanceNameFromTopic(topicName);
+    std::string sendingInstance = Util::Topic::getSendingInstanceNameFromTopic(topicName);
     return sendingInstance == instanceName;
 }
 
@@ -122,11 +122,12 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
 
         // Only send ack if message was received, not sent
         if (!isOutgoingPort()) {
-            std::string sendingInstance = getSendingInstanceNameFromTopic(topicName);
+            std::string sendingInstance = Util::Topic::getSendingInstanceNameFromTopic(topicName);
+            std::string pName = Util::Topic::getPortNameFromTopic(topicName);
             VectorClock::updateVectorClock(newVectorClock, sendingInstance);
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
                                  << " to=" << sendingInstance << " from=" << instanceName;
-            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, VectorClock::getSerializedVectorClock());
+            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName, VectorClock::getSerializedVectorClock());
         } else {
             // message was sent and not received. Thus, add message to the map of unacked messages
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id
@@ -159,7 +160,7 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             }
 
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << messageId
-                                 << " topic=" << instanceName.c_str() << " instance_name=" << instanceName.c_str()
+                                 << " topic=" << topicName << " instance_name=" << instanceName.c_str()
                                  << " #delays (comp<->comp)=" << jUnsentDelays["messages"].size()
                                  << " #delays (comp<->comp)=" << jUnsentDelays["record_messages"].size();
             ddsCommunicator.send(recorderMessage);
@@ -192,19 +193,26 @@ void
 DDSRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &ack) {
     CLOG (DEBUG, LOG_ID) << "Received ACK | id=" << ack.id << ", from=" << ack.sending_instance.in() << ", clock="
                          << ack.serialized_vector_clock.in() << ", receiving_instance=" << ack.receiving_instance.in()
-                         << ", acked_id=" << ack.acked_id;
+                         << ", acked_id=" << ack.acked_id << ", portName=" << ack.port_name;
 
     if (strcmp(ack.sending_instance.in(), "recorder") == 0) {
+
         handleAck(unackedRecordedMessageTimestampMap, unsentRecordMessageDelays, "recorder", ack.acked_id);
-    } else if (isOutgoingPort()) {
-        handleAck(unackedMessageTimestampMap, unsentMessageDelays, ack.sending_instance.in(), ack.acked_id);
+
+    } else if (isOutgoingPort() && strcmp(ack.port_name.in(), portName.c_str()) == 0) {
+
+        std::string portIdentifier = ack.sending_instance.in() + portName;
+        handleAck(unackedMessageTimestampMap, unsentMessageDelays, portIdentifier.c_str(), ack.acked_id);
+
+    } else {
+        CLOG (DEBUG, LOG_ID) << "Received ACK | wasnt for me";
     }
 }
 
 void
 DDSRecorder::handleAck(unackedMap &unackedMap,
                        unsentDelayMap &unsentDelayMap,
-                       const char *sendingInstance, long ackedId) {
+                       const char *portIdentifier, long ackedId) {
     long long timestamp_ack_received = Util::Time::getCurrentTimestampNano();
 
     if (unackedMap.count(ackedId) == 0) {
@@ -220,6 +228,6 @@ DDSRecorder::handleAck(unackedMap &unackedMap,
     // TODO: it would be more preceise to adjust the delay base on the message size
     long delay = (timestamp_ack_received - timestamp_sent) / 2;
 
-    std::pair<std::string, long long> instanceDelay = std::make_pair(sendingInstance, delay);
+    std::pair<std::string, long long> instanceDelay = std::make_pair(portIdentifier, delay);
     unsentDelayMap[ackedId] = instanceDelay;
 }

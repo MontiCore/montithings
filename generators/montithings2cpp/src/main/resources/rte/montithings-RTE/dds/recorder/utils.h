@@ -3,13 +3,23 @@
 #pragma once
 
 #include <chrono>
+#include <string>
+#include <vector>
+#include <algorithm>
 
 namespace Util
 {
-class Time
-{
-public:
-  static long getCurrentTimestampUnix ();
-  static long long getCurrentTimestampNano ();
-};
+    class Time
+    {
+    public:
+        static long getCurrentTimestampUnix ();
+        static long long getCurrentTimestampNano ();
+    };
+
+    class Topic
+    {
+    public:
+        static std::string getSendingInstanceNameFromTopic(const std::string& topicId) ;
+        static std::string getPortNameFromTopic(const std::string& topicId);
+    };
 } // namespace Util

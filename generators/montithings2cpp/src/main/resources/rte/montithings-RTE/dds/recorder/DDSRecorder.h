@@ -32,6 +32,7 @@ private:
     DDSCommunicator ddsCommunicator;
     std::string instanceName;
     std::string topicName;
+    std::string portName;
 
     // key = <message id>, value = <sent timestamp>
     using unackedMap = std::unordered_map<long, long long>;
@@ -42,8 +43,6 @@ private:
     using unsentDelayMap = std::unordered_map<long, std::pair<std::string, long long>>;
     unsentDelayMap unsentMessageDelays;
     unsentDelayMap unsentRecordMessageDelays;
-
-    static std::string getSendingInstanceNameFromTopic(const std::string topicId);
 
     bool isOutgoingPort();
 
@@ -73,6 +72,8 @@ public:
     void setInstanceName(const std::string &name);
 
     void setTopicName(const std::string &name);
+
+    void setPortName(const std::string &name);
 
     void recordMessage(DDSMessage::Message message, const char *topicName, const vclock &vectorClock, bool includeContent);
 };

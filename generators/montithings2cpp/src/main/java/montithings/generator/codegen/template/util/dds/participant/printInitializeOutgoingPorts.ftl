@@ -7,7 +7,7 @@ std::string topic = "";
 
     <#if p.isOutgoing()>
       // outgoing port ${p.getName()}
-      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, comp->getInstanceName() + ".${p.getName()}/out", true, false));
+      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, comp->getInstanceName() + ".${p.getName()}/out", "${p.getName()}", true, false));
 
         <#if !comp.isAtomic()>
             <#list comp.getAstNode().getConnectors() as connector>
@@ -16,7 +16,7 @@ std::string topic = "";
                         // port "${p.getName()}" is target port of a subcomponent
                         topic =  comp->getInstanceName() + ".${connector.getSource().getQName()}" + "/out";
                         CLOG(DEBUG, "DDS") << "Creating additional port for incoming port ${p.getName()} to forward data to subcomponents " << topic;
-                        comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, true, false));
+                        comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, "${p.getName()}", true, false));
                     </#if>
                 </#list>
             </#list>

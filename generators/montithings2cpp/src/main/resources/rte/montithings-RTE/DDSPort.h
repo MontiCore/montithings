@@ -27,6 +27,7 @@ class DDSPort
           public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener> {
 private:
     std::string topicName;
+    std::string portName;
     Direction direction;
 
     // DDS specific variables
@@ -49,22 +50,24 @@ private:
     std::unique_ptr<DDSRecorder> ddsRecorder;
 
 public:
-    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string  topicName,
+    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string  topicName, std::string portName,
                       bool isRecordingEnabled, bool setQoSTransientDurability, std::function<void(T)> onDataAvailableCallback)
             : onDataAvailableCallback(onDataAvailableCallback),
               participant(&participant),
               direction(direction),
               topicName(std::move(topicName)),
+              portName(std::move(portName)),
               isRecordingEnabled(isRecordingEnabled),
               setQoSTransientDurability(setQoSTransientDurability) {
         init();
     }
 
-    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string topicName,
+    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string topicName, std::string portName,
                       bool isRecordingEnabled, bool setQoSTransientDurability)
             : participant(&participant),
               direction(direction),
               topicName(std::move(topicName)),
+              portName(std::move(portName)),
               isRecordingEnabled(isRecordingEnabled),
               setQoSTransientDurability(setQoSTransientDurability) {
         init();
@@ -76,6 +79,7 @@ public:
             ddsRecorder = std::make_unique<DDSRecorder>();
             ddsRecorder->setInstanceName(participant->getInstanceName());
             ddsRecorder->setTopicName(topicName);
+            ddsRecorder->setPortName(portName);
             ddsRecorder->init();
         }
         // independently of the port direction, a topic instance is required

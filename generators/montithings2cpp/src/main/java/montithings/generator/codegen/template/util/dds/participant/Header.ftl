@@ -145,10 +145,10 @@ class ${className} : public DDSParticipant
 
             std::string topicConfig = "parameterConfig";
             configPortOut = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
-                new DDSPort${"<"}std::string>(*this, OUTGOING, topicConfig, false, true));
+                new DDSPort${"<"}std::string>(*this, OUTGOING, topicConfig, "_parametersOut", false, true));
 
             configPortIn = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
-                new DDSPort${"<"}std::string${">"}(*this, INCOMING, topicConfig, false, true, onDataAvailableCallback));
+                new DDSPort${"<"}std::string${">"}(*this, INCOMING, topicConfig, "_parametersIn", false, true, onDataAvailableCallback));
 
         }
 
@@ -163,12 +163,12 @@ class ${className} : public DDSParticipant
             // Adds port which publishes connectors
             std::string topicConnections = "connectorConfig";
             connectorPortOut = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
-                new DDSPort${"<"}std::string${">"}(*this, OUTGOING, topicConnections, false, true));
+                new DDSPort${"<"}std::string${">"}(*this, OUTGOING, topicConnections, "_connectionsOut", false, true));
 
 
             // Adds port which subscribes to connectors
             connectorPortIn = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
-                new DDSPort${"<"}std::string${">"}(*this, INCOMING, topicConnections, false, true, onDataAvailableCallback));
+                new DDSPort${"<"}std::string${">"}(*this, INCOMING, topicConnections, "_connectionsIn", false, true, onDataAvailableCallback));
         }
     };
 

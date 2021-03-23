@@ -75,7 +75,9 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
 
         jRecord["_recorder_id"] = record.id;
         jRecord["msg_id"] = record.msg_id;
+
         jRecord["msg_content"] = record.msg_content.in();
+
 
         // clock skew can lead to negative values
         long long ts_adjusted =

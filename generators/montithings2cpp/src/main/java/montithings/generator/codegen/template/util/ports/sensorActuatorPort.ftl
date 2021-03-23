@@ -6,7 +6,7 @@ ${tc.signature("config", "portSymbol", "portTemeplateName", "existsHWC")}
 #include "Port.h"
 #include "Utils.h"
 
-<#if config.getRecordingMode().toString() == "ON">
+<#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
   #include ${"<dds/recorder/DDSRecorder.h>"}
   #include "dds/recorder/MessageWithClockContainer.h"
   #include "dds/recorder/VectorClock.h"
@@ -15,7 +15,7 @@ ${tc.signature("config", "portSymbol", "portTemeplateName", "existsHWC")}
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
 class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
-<#if config.getRecordingMode().toString() == "ON">
+<#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
 private:
   std::unique_ptr${"<DDSRecorder>"} ddsRecorder;
   int recorderMessageId = 1;
@@ -41,14 +41,14 @@ private:
   }
 
   void setNextValue(T nextVal) override {
-    <#if config.getRecordingMode().toString() == "ON">
+    <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
         recordMessage(nextVal);
     </#if>
 
     Port${"<T>"}::setNextValue(nextVal);
   }
 
-  <#if config.getRecordingMode().toString() == "ON">
+  <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
     void recordMessage(T value) {
       DDSMessage::Message message;
       message.id = recorderMessageId;
@@ -66,7 +66,7 @@ private:
   </#if>
 
   ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName) : instanceName(instanceName) {
-    <#if config.getRecordingMode().toString() == "ON">
+    <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
       ddsRecorder = std::make_unique${"<DDSRecorder>"}();
       ddsRecorder->setInstanceName(instanceName);
       ddsRecorder->setTopicName(instanceName + ".${portSymbol.getName()}/out");
