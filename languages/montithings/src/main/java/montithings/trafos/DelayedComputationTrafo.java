@@ -3,6 +3,7 @@ package montithings.trafos;
 
 import arcbasis._ast.ASTArcParameter;
 import de.monticore.expressions.expressionsbasis._ast.ASTArguments;
+import de.monticore.types.mcbasictypes._ast.ASTConstantsMCBasicTypes;
 import de.monticore.types.mcbasictypes._ast.ASTMCPrimitiveType;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.MCBasicTypesNodeFactory;
@@ -166,7 +167,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // adds additional port for both subcomponents in order to exchange timestamps
         //TODO: is there a better method of getting a primitive type of Long?
         ASTMCPrimitiveType longPrimitiveType = MCBasicTypesNodeFactory.createASTMCPrimitiveType();
-        longPrimitiveType.setPrimitive(7);
+        longPrimitiveType.setPrimitive(ASTConstantsMCBasicTypes.LONG);
 
         // port name is prefixed by "rnr" (record and replay) in order to avoid name clashes
         addPort(newComps[0],

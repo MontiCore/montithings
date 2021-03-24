@@ -2,13 +2,29 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTPortAccess;
+import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressionBuilder;
+import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
+import de.monticore.expressions.commonexpressions._ast.ASTCallExpressionBuilder;
+import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpression;
+import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpressionBuilder;
+import de.monticore.expressions.expressionsbasis._ast.*;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
+import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
+import de.monticore.statements.mccommonstatements._ast.ASTIfStatement;
+import de.monticore.statements.mccommonstatements._ast.ASTIfStatementBuilder;
+import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlockBuilder;
+import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
+import montithings.MontiThingsMill;
+import montithings._ast.ASTBehavior;
 import montithings._visitor.FindConnectionsVisitor;
 import montithings.util.TrafoUtil;
 
+import javax.json.JsonObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,6 +99,32 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
             String qName = TrafoUtil.getFullyQNameFromImports(modelPath, comp, sourceTypeName).getQName();
             ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, qName);
             portType = TrafoUtil.getPortTypeByName(compSource, portSource.getPort());
+
+            // actually creates the model of the intercepting component
+            ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(comp.getPackage(), channelInterceptorComponentName);
+
+            String qCompSourceName = comp.getPackage() + "." + comp.getComponentType().getName() + "." + portSource.getComponent();
+            String qCompTargetName = comp.getPackage() + "." + comp.getComponentType().getName() + "." + portTarget.getComponent();
+            List<Long> delays = dataHandler.getDelays(qCompSourceName, portSource.getPort(), qCompTargetName, portTarget.getPort());
+
+            addBehavior(channelInterceptorComponent, delays);
+
+            addPort(channelInterceptorComponent,
+                    "in",
+                    false,
+                    portType);
+            addPort(channelInterceptorComponent,
+                    "out",
+                    true,
+                    portType);
+
+            this.additionalTrafoModels.add(channelInterceptorComponent);
+
+            // Replaces the old connection
+            removeConnection(comp, portSource, portTarget);
+            addConnection(comp, portSource.getQName(), channelInterceptorComponentName.toLowerCase() + "." + "in");
+            addConnection(comp, channelInterceptorComponentName.toLowerCase() + "." + "out", portTarget.getQName());
+
         } catch (ClassNotFoundException e) {
             String test = "asd";
             //TODO
@@ -102,29 +144,118 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         if (portType == null) {
             throw new NoSuchElementException("No such port instance found which is named " + portSource.getPort());
         }
+    }
+
+    void addBehavior(ASTMACompilationUnit comp, List<Long> delays) {
+        /*
+            int index = 0;
+
+            if (index == 0) {
+                delay(299);
+            }
+            if (index == 1) {
+                delay(762);
+            }
+            if ...
+
+            index = index + 1;
+        */
+        ASTMCJavaBlockBuilder javaBlockBuilder = MontiThingsMill.mCJavaBlockBuilder();
+
+        // Initiate index variable
+        addIntFieldDeclaration(comp, "index", 0);
+
+        int index = 0;
+        for (long delay : delays) {
+            long delayMs = delay / 1000000;
+            javaBlockBuilder.addMCBlockStatement(addDelayIfStatement(index, delayMs));
+            index++;
+        }
+
+        // implement index += 1;
+        javaBlockBuilder.addMCBlockStatement(addIncrementIndexStatement());
+
+        // implement out = in;
+        javaBlockBuilder.addMCBlockStatement(addInOutAssignment());
 
 
-        // actually creates the model of the intercepting component
-        ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(comp.getPackage(), channelInterceptorComponentName);
+        ASTBehavior behavior = addEmptyBehavior(comp);
+        behavior.setMCJavaBlock(javaBlockBuilder.build());
+    }
 
+    private ASTMCBlockStatement addInOutAssignment() {
+        ASTNameExpression inNameExpression = MontiThingsMill.nameExpressionBuilder().setName("in").build();
+        ASTNameExpression outNameExpression = MontiThingsMill.nameExpressionBuilder().setName("out").build();
 
-        // TODO
-        addEmptyBehavior(channelInterceptorComponent);
+        ASTAssignmentExpressionBuilder assignmentBuilder = MontiThingsMill.assignmentExpressionBuilder();
+        assignmentBuilder.setLeft(outNameExpression);
+        assignmentBuilder.setOperator(ASTConstantsAssignmentExpressions.EQUALS);
+        assignmentBuilder.setRight(inNameExpression);
 
-        addPort(channelInterceptorComponent,
-                "in",
-                false,
-                portType);
-        addPort(channelInterceptorComponent,
-                "out",
-                true,
-                portType);
+        ASTExpressionStatementBuilder assignmentExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
+        assignmentExpressionStatementBuilder.setExpression(assignmentBuilder.build());
 
-        this.additionalTrafoModels.add(channelInterceptorComponent);
+        return assignmentExpressionStatementBuilder.build();
+    }
 
-        // Replaces the old connection
-        removeConnection(comp, portSource, portTarget);
-        addConnection(comp, portSource.getQName(), channelInterceptorComponentName.toLowerCase() + "." + "in");
-        addConnection(comp, channelInterceptorComponentName.toLowerCase() + "." + "out", portTarget.getQName());
+    private ASTMCBlockStatement addIncrementIndexStatement() {
+        ASTNameExpression indexNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index").build();
+
+        ASTNatLiteral oneNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits("1").build();
+        ASTLiteralExpressionBuilder incrementIndexExpressionBuilder = MontiThingsMill.literalExpressionBuilder();
+        incrementIndexExpressionBuilder.setLiteral(oneNatLiteral);
+
+        ASTAssignmentExpressionBuilder incrementAssignmentExpressionBuilder = MontiThingsMill.assignmentExpressionBuilder();
+        incrementAssignmentExpressionBuilder.setLeft(indexNameExpression);
+        incrementAssignmentExpressionBuilder.setOperator(ASTConstantsAssignmentExpressions.PLUSEQUALS);
+        incrementAssignmentExpressionBuilder.setRight(incrementIndexExpressionBuilder.build());
+
+        ASTExpressionStatementBuilder incrementExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
+        incrementExpressionStatementBuilder.setExpression(incrementAssignmentExpressionBuilder.build());
+
+        return incrementExpressionStatementBuilder.build();
+    }
+
+    private ASTMCBlockStatement addDelayIfStatement(int index, long delay) {
+        ASTNameExpression indexNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index").build();
+
+        // Building condition
+        ASTNatLiteralBuilder rightNatLiteralBuilder = MontiThingsMill.natLiteralBuilder();
+        rightNatLiteralBuilder.setDigits(String.valueOf(index));
+
+        ASTLiteralExpressionBuilder rightExpressionBuilder = MontiThingsMill.literalExpressionBuilder();
+        rightExpressionBuilder.setLiteral(rightNatLiteralBuilder.build());
+
+        ASTEqualsExpressionBuilder conditionBuilder = MontiThingsMill.equalsExpressionBuilder();
+        conditionBuilder.setLeft(indexNameExpression);
+        conditionBuilder.setOperator("==");
+        conditionBuilder.setRight(rightExpressionBuilder.build());
+
+        // Building then statement
+        ASTNameExpression delayNameExpression = MontiThingsMill.nameExpressionBuilder().setName("delay").build();
+
+        ASTNatLiteral delayNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits(String.valueOf(delay)).build();
+        ASTLiteralExpression delayLiteralExpression = MontiThingsMill.literalExpressionBuilder().setLiteral(delayNatLiteral).build();
+
+        ASTArgumentsBuilder delayArgsBulder = MontiThingsMill.argumentsBuilder();
+        delayArgsBulder.addExpression(delayLiteralExpression);
+
+        ASTCallExpressionBuilder thenCallDelayExpressionBuilder = MontiThingsMill.callExpressionBuilder();
+        thenCallDelayExpressionBuilder.setExpression(delayNameExpression);
+        thenCallDelayExpressionBuilder.setArguments(delayArgsBulder.build());
+        thenCallDelayExpressionBuilder.setName("test");
+
+        ASTExpressionStatementBuilder thenExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
+        thenExpressionStatementBuilder.setExpression(thenCallDelayExpressionBuilder.build());
+
+        ASTMCJavaBlockBuilder thenStatementBuilder = MontiThingsMill.mCJavaBlockBuilder();
+        thenStatementBuilder.addMCBlockStatement(thenExpressionStatementBuilder.build());
+
+        ASTIfStatementBuilder ifStatementBuilder = MontiThingsMill.ifStatementBuilder();
+        ifStatementBuilder.setCondition(conditionBuilder.build());
+        ifStatementBuilder.setThenStatement(thenStatementBuilder.build());
+        ifStatementBuilder.setElseStatementAbsent();
+
+        return ifStatementBuilder.build();
     }
 }

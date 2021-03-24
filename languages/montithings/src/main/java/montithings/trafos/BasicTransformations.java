@@ -2,6 +2,7 @@ package montithings.trafos;
 
 import arcbasis._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.*;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
 import de.monticore.literals.mccommonliterals._ast.ASTStringLiteralBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.types.mcbasictypes._ast.*;
@@ -153,6 +154,23 @@ public abstract class BasicTransformations {
         addImportStatement(qName, comp);
 
         return instantiation;
+    }
+
+    protected void addIntFieldDeclaration(ASTMACompilationUnit comp, String name, int value) {
+        ASTNatLiteralBuilder natLiteralBuilder = MontiThingsMill.natLiteralBuilder();
+        natLiteralBuilder.setDigits(String.valueOf(value));
+
+        ASTLiteralExpressionBuilder literalExpressionBuilder = MontiThingsMill.literalExpressionBuilder();
+        literalExpressionBuilder.setLiteral(natLiteralBuilder.build());
+
+        ASTMCPrimitiveTypeBuilder mcPrimitiveTypeBuilder = MontiThingsMill.mCPrimitiveTypeBuilder();
+        mcPrimitiveTypeBuilder.setPrimitive(ASTConstantsMCBasicTypes.INT);
+
+        ASTArcFieldDeclarationBuilder fieldDeclarationBuilder = MontiThingsMill.arcFieldDeclarationBuilder();
+        fieldDeclarationBuilder.addArcField(name, literalExpressionBuilder.build());
+        fieldDeclarationBuilder.setMCType(mcPrimitiveTypeBuilder.build());
+
+        comp.getComponentType().getBody().addArcElement(fieldDeclarationBuilder.build());
     }
 
     /**
