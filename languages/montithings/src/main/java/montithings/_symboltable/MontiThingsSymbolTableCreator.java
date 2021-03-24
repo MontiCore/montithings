@@ -37,7 +37,11 @@ public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreator
     for (ASTMCImportStatement importStatement : rootNode.getImportStatementList()) {
       imports.add(new ImportStatement(importStatement.getQName(), importStatement.isStar()));
     }
-    IMontiThingsArtifactScope artifactScope = montithings.MontiThingsMill.montiThingsArtifactScopeBuilder().setPackageName(rootNode.getPackage().getQName()).setImportsList(imports).build();
+    IMontiThingsArtifactScope artifactScope = montithings.MontiThingsMill
+      .montiThingsArtifactScopeBuilder()
+      .setPackageName(rootNode.getPackage().getQName())
+      .setImportsList(imports)
+      .build();
     putOnStack(artifactScope);
 
     // for some reason the setLinkBetweenSpannedScopeAndNode doesn't accept
