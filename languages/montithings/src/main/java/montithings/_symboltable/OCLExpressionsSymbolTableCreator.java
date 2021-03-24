@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
 import de.monticore.ocl.oclexpressions._ast.ASTInDeclaration;
@@ -20,7 +21,7 @@ public class OCLExpressionsSymbolTableCreator extends OCLExpressionsSymbolTableC
 
   private TypeCheck typeVisitor;
 
-  public OCLExpressionsSymbolTableCreator(){
+  public OCLExpressionsSymbolTableCreator() {
     super();
     typeVisitor = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
   }
@@ -45,14 +46,14 @@ public class OCLExpressionsSymbolTableCreator extends OCLExpressionsSymbolTableC
   }
 
   @Override
-  public void visit(ASTOCLVariableDeclaration node){
+  public void visit(ASTOCLVariableDeclaration node) {
 
   }
 
   @Override
-  public void endVisit(ASTOCLVariableDeclaration node){
+  public void endVisit(ASTOCLVariableDeclaration node) {
     VariableSymbol symbol = create_OCLVariableDeclaration(node);
-    if(getCurrentScope().isPresent()){
+    if (getCurrentScope().isPresent()) {
       symbol.setEnclosingScope(getCurrentScope().get());
     }
     addToScopeAndLinkWithNode(symbol, node);
@@ -62,13 +63,14 @@ public class OCLExpressionsSymbolTableCreator extends OCLExpressionsSymbolTableC
   @Override
   public void initialize_OCLVariableDeclaration(VariableSymbol symbol, ASTOCLVariableDeclaration ast) {
     symbol.setIsReadOnly(false);
-    if(ast.isPresentMCType()) {
+    if (ast.isPresentMCType()) {
       ast.getMCType().setEnclosingScope(symbol.getEnclosingScope());
       ast.getMCType().accept(getRealThis());
       final SymTypeExpression result = typeVisitor.symTypeFromAST(ast.getMCType());
       symbol.setType(result);
-    } else {
-      if(ast.isPresentExpression()){
+    }
+    else {
+      if (ast.isPresentExpression()) {
         SymTypeExpression result = typeVisitor.typeOf(ast.getExpression());
         symbol.setType(result);
       }
@@ -79,15 +81,15 @@ public class OCLExpressionsSymbolTableCreator extends OCLExpressionsSymbolTableC
   }
 
   @Override
-  public void visit(ASTInDeclaration node){
+  public void visit(ASTInDeclaration node) {
 
   }
 
   @Override
-  public void endVisit(ASTInDeclaration node){
-    for(int i = 0; i < node.getInDeclarationVariableList().size(); i++){
+  public void endVisit(ASTInDeclaration node) {
+    for (int i = 0; i < node.getInDeclarationVariableList().size(); i++) {
       VariableSymbol symbol = create_InDeclarationVariable(node.getInDeclarationVariable(i));
-      if(getCurrentScope().isPresent()){
+      if (getCurrentScope().isPresent()) {
         symbol.setEnclosingScope(getCurrentScope().get());
       }
       addToScopeAndLinkWithNode(symbol, node.getInDeclarationVariable(i));
@@ -96,44 +98,42 @@ public class OCLExpressionsSymbolTableCreator extends OCLExpressionsSymbolTableC
   }
 
   @Override
-  public void visit(ASTInDeclarationVariable node){
+  public void visit(ASTInDeclarationVariable node) {
 
   }
 
   @Override
-  public void endVisit(ASTInDeclarationVariable node){
+  public void endVisit(ASTInDeclarationVariable node) {
 
   }
 
   @Override
-  public void initialize_InDeclarationVariable(VariableSymbol symbol, ASTInDeclarationVariable ast){
+  public void initialize_InDeclarationVariable(VariableSymbol symbol, ASTInDeclarationVariable ast) {
 
   }
 
   public void initialize_InDeclarationVariable(VariableSymbol symbol, ASTInDeclaration ast) {
     symbol.setIsReadOnly(false);
     SymTypeExpression typeResult = null;
-    if(ast.isPresentMCType()){
+    if (ast.isPresentMCType()) {
       ast.getMCType().setEnclosingScope(symbol.getEnclosingScope());
       ast.getMCType().accept(getRealThis());
       typeResult = typeVisitor.symTypeFromAST(ast.getMCType());
       symbol.setType(typeResult);
     }
-    if(ast.isPresentExpression()){
+    if (ast.isPresentExpression()) {
       SymTypeExpression result = typeVisitor.typeOf(ast.getExpression());
       //if MCType present: check that type of expression and MCType are compatible
-      if(ast.isPresentMCType() && !OCLTypeCheck.compatible(typeResult,
-                OCLTypeCheck.unwrapSet(result))){
-        Log.error(String.format("The MCType (%s) and the expression type (%s) in Symbol (%s) are not compatible",
-                  ast.getMCType(), OCLTypeCheck.unwrapSet(result), symbol.getName()));
+      if (ast.isPresentMCType() && !OCLTypeCheck.compatible(typeResult, OCLTypeCheck.unwrapSet(result))) {
+        Log.error(String.format("The MCType (%s) and the expression type (%s) in Symbol (%s) are not compatible", ast.getMCType(), OCLTypeCheck.unwrapSet(result), symbol.getName()));
       }
       //if no MCType present: symbol has type of expression
-      if(!ast.isPresentMCType()){
+      if (!ast.isPresentMCType()) {
         symbol.setType(OCLTypeCheck.unwrapSet(result));
       }
     }
     //node has neither MCType nor expression
-    if(!ast.isPresentMCType() && !ast.isPresentExpression()) {
+    if (!ast.isPresentMCType() && !ast.isPresentExpression()) {
       symbol.setType(SymTypeExpressionFactory.createTypeObject("Object", ast.getEnclosingScope()));
     }
   }

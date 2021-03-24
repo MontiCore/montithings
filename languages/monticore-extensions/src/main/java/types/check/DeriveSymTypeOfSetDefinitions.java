@@ -129,7 +129,7 @@ public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions
 
   @Override
   public void traverse(ASTSetValueRegEx node){
-    //String is the only type of RegEx which is currently supported in this non-terminal
-    this.typeCheckResult.setCurrentResult(SymTypeExpressionFactory.createTypeObject("String", node.getEnclosingScope()));
+    //int is the only type of RegEx which is currently supported in this non-terminal
+    this.typeCheckResult.setCurrentResult(SymTypeExpressionFactory.createTypeConstant("int"));
   }
 }

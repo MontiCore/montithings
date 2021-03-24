@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
-
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cdinterfaceandenum._ast.ASTCDEnumConstant;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
@@ -23,16 +22,14 @@ public class Field2CDFieldResolvingDelegate implements IFieldSymbolResolver {
   }
 
   @Override
-  public List<FieldSymbol> resolveAdaptedFieldSymbol(boolean foundSymbols, String name,
-    AccessModifier modifier, Predicate<FieldSymbol> predicate) {
+  public List<FieldSymbol> resolveAdaptedFieldSymbol(boolean foundSymbols, String name, AccessModifier modifier, Predicate<FieldSymbol> predicate) {
     List<FieldSymbol> result = new ArrayList<>();
     Optional<FieldSymbol> symbol = globalScope.resolveField(name, modifier);
 
     boolean symbolIsPublic = symbol.isPresent() && symbol.get().isIsPublic();
 
     // Enums do not allow modifiers => it's ok to import them without being public
-    boolean symbolIsEnumConstant = symbol.isPresent() &&
-      symbol.get().getAstNode() instanceof ASTCDEnumConstant;
+    boolean symbolIsEnumConstant = symbol.isPresent() && symbol.get().getAstNode() instanceof ASTCDEnumConstant;
 
     if (symbolIsPublic || symbolIsEnumConstant) {
       result.add(symbol.get());

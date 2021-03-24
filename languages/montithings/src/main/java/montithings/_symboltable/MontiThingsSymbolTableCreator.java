@@ -26,8 +26,7 @@ public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreator
     super(enclosingScope);
   }
 
-  public MontiThingsSymbolTableCreator(
-    Deque<? extends IMontiThingsScope> scopeStack) {
+  public MontiThingsSymbolTableCreator(Deque<? extends IMontiThingsScope> scopeStack) {
     super(scopeStack);
   }
 
@@ -38,11 +37,7 @@ public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreator
     for (ASTMCImportStatement importStatement : rootNode.getImportStatementList()) {
       imports.add(new ImportStatement(importStatement.getQName(), importStatement.isStar()));
     }
-    IMontiThingsArtifactScope artifactScope = montithings.MontiThingsMill
-      .montiThingsArtifactScopeBuilder()
-      .setPackageName(rootNode.getPackage().getQName())
-      .setImportsList(imports)
-      .build();
+    IMontiThingsArtifactScope artifactScope = montithings.MontiThingsMill.montiThingsArtifactScopeBuilder().setPackageName(rootNode.getPackage().getQName()).setImportsList(imports).build();
     putOnStack(artifactScope);
 
     // for some reason the setLinkBetweenSpannedScopeAndNode doesn't accept
@@ -59,11 +54,13 @@ public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreator
     return artifactScope;
   }
 
-  @Override public void visit(ASTMTComponentType node) {
+  @Override
+  public void visit(ASTMTComponentType node) {
     getRealThis().visit((ASTComponentType) node);
   }
 
-  @Override public void endVisit(ASTMTComponentType node) {
+  @Override
+  public void endVisit(ASTMTComponentType node) {
     getRealThis().endVisit((ASTComponentType) node);
   }
 }
