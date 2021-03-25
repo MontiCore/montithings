@@ -19,7 +19,8 @@ public class NameExpressionsAreResolvable implements ExpressionsBasisASTNameExpr
     boolean nameExists =
       ((IMontiThingsScope) node.getEnclosingScope()).resolveVariable(referencedName).isPresent()
         || ((IMontiThingsScope) node.getEnclosingScope()).resolveField(referencedName).isPresent()
-        || ((IMontiThingsScope) node.getEnclosingScope()).resolvePort(referencedName).isPresent();
+        || ((IMontiThingsScope) node.getEnclosingScope()).resolvePort(referencedName).isPresent()
+        || ((IMontiThingsScope) node.getEnclosingScope()).resolveFunction(referencedName).isPresent();
 
     if (!nameExists) {
       Log.error(String.format(MontiThingsError.IDENTIFIER_UNKNOWN.toString(), node.getName()),

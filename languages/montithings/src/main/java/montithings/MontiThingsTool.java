@@ -18,15 +18,17 @@ import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._ast.ASTCDPackage;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symbols.basicsymbols._symboltable.BasicSymbolsScope;
+import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.DefsTypeBasic;
+import de.monticore.types.check.SymTypeExpressionFactory;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
+import montithings._auxiliary.BasicSymbolsMillForMontiThings;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
-import montithings._symboltable.IMontiThingsArtifactScope;
-import montithings._symboltable.IMontiThingsGlobalScope;
-import montithings._symboltable.IMontiThingsScope;
-import montithings._symboltable.MontiThingsSymbolTableCreatorDelegator;
+import montithings._symboltable.*;
 import montithings.cocos.MontiThingsCoCos;
 import montithings.util.ParserUtil;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -85,6 +87,7 @@ public class MontiThingsTool {
       .build();
     resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
     addBasicTypes(montiThingsGlobalScope);
+    addLibraryFunctions(montiThingsGlobalScope);
     this.processModels(cd4CGlobalScope);
     this.processModels(montiThingsGlobalScope);
     return montiThingsGlobalScope;
@@ -271,6 +274,7 @@ public class MontiThingsTool {
       .setModelPath(mp).setModelFileExtension(CD_FILE_EXTENSION).build();
     this.resolvingDelegates(montiThingsGlobalScope, cd4CodeGlobalScope);
     this.addBasicTypes(montiThingsGlobalScope);
+    this.addLibraryFunctions(montiThingsGlobalScope);
     isSymTabInitialized = true;
     return montiThingsGlobalScope;
   }
@@ -287,6 +291,48 @@ public class MontiThingsTool {
     DefsTypeBasic.add2scope(scope, DefsTypeBasic._null);
     DefsTypeBasic.add2scope(scope, DefsTypeBasic._Object);
     DefsTypeBasic.add2scope(scope, DefsTypeBasic._array);
+  }
+
+  public void addLibraryFunctions(@NotNull IMontiThingsScope scope) {
+    VariableSymbol message = BasicSymbolsMillForMontiThings
+        .variableSymbolBuilder()
+        .setName("message")
+        .setType(SymTypeExpressionFactory.createTypeObject("String", scope))
+        .build();
+
+    BasicSymbolsScope logParameters = new BasicSymbolsScope();
+
+    logParameters.add(message);
+    message.setEnclosingScope(logParameters);
+
+    FunctionSymbol log = MontiThingsMill
+      .functionSymbolBuilder()
+      .setName("log")
+      .setReturnType(SymTypeExpressionFactory.createTypeVoid())
+      .setEnclosingScope(scope)
+      .build();
+    log.setSpannedScope(logParameters);
+    scope.add(log);
+
+    VariableSymbol milliseconds = BasicSymbolsMillForMontiThings
+        .variableSymbolBuilder()
+        .setName("milliseconds")
+        .setType(SymTypeExpressionFactory.createTypeConstant("int"))
+        .build();
+
+    BasicSymbolsScope delayParameters = new BasicSymbolsScope();
+
+    delayParameters.add(milliseconds);
+    milliseconds.setEnclosingScope(delayParameters);
+
+    FunctionSymbol delay = MontiThingsMill
+        .functionSymbolBuilder()
+        .setName("delay")
+        .setReturnType(SymTypeExpressionFactory.createTypeVoid())
+        .setEnclosingScope(scope)
+        .build();
+    delay.setSpannedScope(delayParameters);
+    scope.add(delay);
   }
 
   /**
