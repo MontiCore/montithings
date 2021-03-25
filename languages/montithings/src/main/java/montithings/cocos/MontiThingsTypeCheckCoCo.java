@@ -1,10 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.cocos;
 
-import arcbasis._ast.*;
-import conditionbasis._ast.ASTCondition;
+import arcbasis._ast.ASTArcField;
+import arcbasis._ast.ASTArcParameter;
 import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpression;
+import de.monticore.expressions.commonexpressions._ast.ASTCallExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.statements.mccommonstatements._ast.*;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTSimpleInit;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
 import de.monticore.types.check.SymTypeExpression;
@@ -19,9 +21,7 @@ import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
 
-import java.util.Optional;
-
-public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
+public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
   /**
    * Creates an instance of TypeCheckCoCo
    *
@@ -29,13 +29,13 @@ public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsAS
    *                  ISynthesize and ITypesCalculator objects of
    *                  the current language
    */
-  public SITypesTypeCheckCoCo(TypeCheck typeCheck) {
+  public MontiThingsTypeCheckCoCo(TypeCheck typeCheck) {
     super(typeCheck);
   }
 
-  public static SITypesTypeCheckCoCo getCoCo() {
+  public static MontiThingsTypeCheckCoCo getCoCo() {
     TypeCheck typeCheck = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
-    return new SITypesTypeCheckCoCo(typeCheck);
+    return new MontiThingsTypeCheckCoCo(typeCheck);
   }
 
   @Override
@@ -70,24 +70,47 @@ public class SITypesTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsAS
   }
 
   @Override
-  public void visit(ASTAssignmentExpression node) {
-    checkExpression(node);
+  public void visit(ASTExpressionStatement node){
+    checkExpression(node.getExpression());
   }
 
   @Override
-  public void visit(ASTPrecondition node){
+  public void visit(ASTPrecondition node) {
     checkCondition(node.getGuard());
   }
 
   @Override
-  public void visit(ASTPostcondition node){
+  public void visit(ASTPostcondition node) {
     checkCondition(node.getGuard());
   }
 
-  private void checkCondition(ASTExpression e){
+  @Override
+  public void visit(ASTIfStatement node) {
+    checkCondition(node.getCondition());
+  }
+
+  @Override
+  public void visit(ASTCommonForControl node) {
+    if (node.isPresentCondition()) {
+      checkCondition(node.getCondition());
+    }
+  }
+
+  @Override
+  public void visit(ASTWhileStatement node) {
+    checkCondition(node.getCondition());
+  }
+
+  @Override
+  public void visit(ASTDoWhileStatement node) {
+    checkCondition(node.getCondition());
+  }
+
+  private void checkCondition(ASTExpression e) {
     SymTypeExpression eType = tc.typeOf(e);
     if (!TypeCheck.isBoolean(eType)) {
-      Log.error("conditions have to be evaluable to boolean, but expression " + e.toString() + " is of type " + eType.getTypeInfo().getName());
+      Log.error("conditions have to be evaluable to boolean, but expression "
+          + e.toString() + " is of type " + eType.getTypeInfo().getName());
     }
   }
 }

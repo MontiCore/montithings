@@ -44,7 +44,7 @@ public class MontiThingsCoCos {
       .addCoCo(new SyncGroupIsNoSubset())
       .addCoCo(new PortsInSyncGroupAreIncoming())
       .addCoCo(new PortsInBatchStatementAreIncoming())
-      .addCoCo(SITypesTypeCheckCoCo.getCoCo())
+      .addCoCo(MontiThingsTypeCheckCoCo.getCoCo())
       .addCoCo(new NameExpressionsAreResolvable())
       .addCoCo(new SIUnitLiteralsDescribeTime())
       .addCoCo(new OCLExpressionsValid())
