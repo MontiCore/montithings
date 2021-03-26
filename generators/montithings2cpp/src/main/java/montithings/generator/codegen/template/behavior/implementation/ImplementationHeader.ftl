@@ -23,6 +23,12 @@ ${Utils.printIncludes(comp,config)}
 
 using namespace montithings::library;
 
+<#if config.getReplayMode().toString() == "ON">
+  #include "dds/replayer/MTReplayLibrary.h"
+
+  using namespace montithings::library::replayer;
+</#if>
+
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}

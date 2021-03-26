@@ -118,7 +118,6 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
             // adds new subcomponent representing the external input
             mockedPort = createCompilationUnit(targetComp.getPackage(), mockedComponentName);
 
-            // TODO add actual behavior
             if (isIngoingPort) {
                 addBehavior(mockedPort, qNameInstance, port);
             }
@@ -200,6 +199,9 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
         astExpressionStatement.setExpression(assignmentExpression.build());
         javaBlock.addMCBlockStatement(astExpressionStatement.build());
+
+
+        javaBlock.addMCBlockStatement(createLogStatement("Sending input=" + value + " on port " + portName));
 
         afterStatement.setMCJavaBlock(javaBlock.build());
 

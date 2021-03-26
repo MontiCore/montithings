@@ -24,6 +24,10 @@ class ReplayDataHandler {
     }
 
     protected List<JsonObject> getRecordings(String qCompName, String qInstancePortName) {
+        if (!this.data.getJsonObject("recordings").containsKey(qCompName)) {
+            return new ArrayList<>();
+        }
+
         return this.data.getJsonObject("recordings")
                 .getJsonArray(qCompName)
                 .stream()

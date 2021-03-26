@@ -2,8 +2,6 @@
 /* (c) https://github.com/MontiCore/monticore */
 
 #include "MTLibrary.h"
-#include <thread>
-#include "easyloggingpp/easylogging++.h"
 
 namespace montithings
 {
@@ -15,6 +13,17 @@ delay (int milliseconds)
 {
   std::this_thread::sleep_for (std::chrono::milliseconds (milliseconds));
 }
+
+long
+now()
+{
+  auto now = std::chrono::high_resolution_clock::now();
+  auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
+  return timestamp.count();
+}
+
+
+
 
 void
 log (const std::string& message)

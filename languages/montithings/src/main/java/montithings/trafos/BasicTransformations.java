@@ -1,10 +1,20 @@
 package montithings.trafos;
 
 import arcbasis._ast.*;
+import behavior._ast.ASTLogStatement;
+import behavior._ast.ASTLogStatementBuilder;
+import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressionBuilder;
+import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
+import de.monticore.expressions.commonexpressions._ast.ASTCallExpression;
+import de.monticore.expressions.commonexpressions._ast.ASTCallExpressionBuilder;
 import de.monticore.expressions.expressionsbasis._ast.*;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
+import de.monticore.literals.mccommonliterals._ast.ASTStringLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTStringLiteralBuilder;
+import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
+import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.types.mcbasictypes._ast.*;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMACompilationUnitBuilder;
@@ -156,7 +166,7 @@ public abstract class BasicTransformations {
         return instantiation;
     }
 
-    protected void addIntFieldDeclaration(ASTMACompilationUnit comp, String name, int value) {
+    protected void addLongFieldDeclaration(ASTMACompilationUnit comp, String name, long value) {
         ASTNatLiteralBuilder natLiteralBuilder = MontiThingsMill.natLiteralBuilder();
         natLiteralBuilder.setDigits(String.valueOf(value));
 
@@ -164,13 +174,21 @@ public abstract class BasicTransformations {
         literalExpressionBuilder.setLiteral(natLiteralBuilder.build());
 
         ASTMCPrimitiveTypeBuilder mcPrimitiveTypeBuilder = MontiThingsMill.mCPrimitiveTypeBuilder();
-        mcPrimitiveTypeBuilder.setPrimitive(ASTConstantsMCBasicTypes.INT);
+        mcPrimitiveTypeBuilder.setPrimitive(ASTConstantsMCBasicTypes.LONG);
 
         ASTArcFieldDeclarationBuilder fieldDeclarationBuilder = MontiThingsMill.arcFieldDeclarationBuilder();
         fieldDeclarationBuilder.addArcField(name, literalExpressionBuilder.build());
         fieldDeclarationBuilder.setMCType(mcPrimitiveTypeBuilder.build());
 
         comp.getComponentType().getBody().addArcElement(fieldDeclarationBuilder.build());
+    }
+
+    protected ASTLogStatement createLogStatement(String content) {
+        ASTStringLiteral stringLiteral = MontiThingsMill.stringLiteralBuilder().setSource(content).build();
+
+        ASTLogStatementBuilder logStatementBuilder = MontiThingsMill.logStatementBuilder();
+        logStatementBuilder.setStringLiteral(stringLiteral);
+        return logStatementBuilder.build();
     }
 
     /**
@@ -229,6 +247,59 @@ public abstract class BasicTransformations {
     }
 
     /**
+     * Implements "varName += 1;"
+     */
+    protected ASTMCBlockStatement createIncrementVariableStatement(String varName) {
+        ASTNameExpression indexNameExpression = MontiThingsMill.nameExpressionBuilder().setName(varName).build();
+
+        ASTNatLiteral oneNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits("1").build();
+        ASTLiteralExpressionBuilder incrementIndexExpressionBuilder = MontiThingsMill.literalExpressionBuilder();
+        incrementIndexExpressionBuilder.setLiteral(oneNatLiteral);
+
+        ASTAssignmentExpressionBuilder incrementAssignmentExpressionBuilder = MontiThingsMill.assignmentExpressionBuilder();
+        incrementAssignmentExpressionBuilder.setLeft(indexNameExpression);
+        incrementAssignmentExpressionBuilder.setOperator(ASTConstantsAssignmentExpressions.PLUSEQUALS);
+        incrementAssignmentExpressionBuilder.setRight(incrementIndexExpressionBuilder.build());
+
+        ASTExpressionStatementBuilder incrementExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
+        incrementExpressionStatementBuilder.setExpression(incrementAssignmentExpressionBuilder.build());
+
+        return incrementExpressionStatementBuilder.build();
+    }
+
+    /**
+     * Implements "varName1 = varName2;"
+     */
+    protected ASTMCBlockStatement createAssignmentStatement(String varName1, String varName2) {
+        ASTNameExpression varName1NameExpression = MontiThingsMill.nameExpressionBuilder().setName(varName1).build();
+        ASTNameExpression varName2NameExpression = MontiThingsMill.nameExpressionBuilder().setName(varName2).build();
+
+        ASTAssignmentExpressionBuilder assignmentExpressionBuilder = MontiThingsMill.assignmentExpressionBuilder();
+        assignmentExpressionBuilder.setLeft(varName1NameExpression);
+        assignmentExpressionBuilder.setOperator(ASTConstantsAssignmentExpressions.EQUALS);
+        assignmentExpressionBuilder.setRight(varName2NameExpression);
+
+        ASTExpressionStatementBuilder expressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
+        expressionStatementBuilder.setExpression(assignmentExpressionBuilder.build());
+
+        return expressionStatementBuilder.build();
+    }
+
+    /**
+     * Implements "methodName(arg1, arg2,...);"
+     */
+    protected ASTCallExpression createCallExpression(String methodName, ASTArguments args) {
+        ASTNameExpression methodNameExpression = MontiThingsMill.nameExpressionBuilder().setName(methodName).build();
+
+        ASTCallExpressionBuilder storeMsgTsCallExpressionBuilder = MontiThingsMill.callExpressionBuilder();
+        storeMsgTsCallExpressionBuilder.setExpression(methodNameExpression);
+        storeMsgTsCallExpressionBuilder.setArguments(args);
+        storeMsgTsCallExpressionBuilder.setName("test"); // TODO <- what does the name mean?
+
+        return storeMsgTsCallExpressionBuilder.build();
+    }
+
+    /**
      * Creates a ASTMCQualifiedType with the given name.
      *
      * @param name Name of the type
@@ -241,5 +312,6 @@ public abstract class BasicTransformations {
         return MontiThingsMill.mCQualifiedTypeBuilder().
                 setMCQualifiedName(astmcQualifiedName).build();
     }
+
 
 }

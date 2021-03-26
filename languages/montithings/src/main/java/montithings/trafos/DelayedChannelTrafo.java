@@ -5,13 +5,11 @@ import arcbasis._ast.ASTPortAccess;
 import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressionBuilder;
 import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
 import de.monticore.expressions.commonexpressions._ast.ASTCallExpressionBuilder;
-import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpression;
 import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpressionBuilder;
 import de.monticore.expressions.expressionsbasis._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
-import de.monticore.statements.mccommonstatements._ast.ASTIfStatement;
 import de.monticore.statements.mccommonstatements._ast.ASTIfStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlockBuilder;
 import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
@@ -24,7 +22,6 @@ import montithings._ast.ASTBehavior;
 import montithings._visitor.FindConnectionsVisitor;
 import montithings.util.TrafoUtil;
 
-import javax.json.JsonObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,7 +90,6 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
 
         // Find out the port type. Therefore, first get the component of the source and search for the port.
         // This is only done with the source port as port types have to match anyway
-        // TODO remove null if possible
         ASTMCType portType = null;
         try {
             String qName = TrafoUtil.getFullyQNameFromImports(modelPath, comp, sourceTypeName).getQName();
@@ -163,57 +159,23 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         ASTMCJavaBlockBuilder javaBlockBuilder = MontiThingsMill.mCJavaBlockBuilder();
 
         // Initiate index variable
-        addIntFieldDeclaration(comp, "index", 0);
+        addLongFieldDeclaration(comp, "index", 0);
 
         int index = 0;
         for (long delay : delays) {
-            long delayMs = delay / 1000000;
-            javaBlockBuilder.addMCBlockStatement(addDelayIfStatement(index, delayMs));
+            javaBlockBuilder.addMCBlockStatement(addDelayIfStatement(index, delay));
             index++;
         }
 
         // implement index += 1;
-        javaBlockBuilder.addMCBlockStatement(addIncrementIndexStatement());
+        javaBlockBuilder.addMCBlockStatement(createIncrementVariableStatement("index"));
 
         // implement out = in;
-        javaBlockBuilder.addMCBlockStatement(addInOutAssignment());
+        javaBlockBuilder.addMCBlockStatement(createAssignmentStatement("out", "in"));
 
 
         ASTBehavior behavior = addEmptyBehavior(comp);
         behavior.setMCJavaBlock(javaBlockBuilder.build());
-    }
-
-    private ASTMCBlockStatement addInOutAssignment() {
-        ASTNameExpression inNameExpression = MontiThingsMill.nameExpressionBuilder().setName("in").build();
-        ASTNameExpression outNameExpression = MontiThingsMill.nameExpressionBuilder().setName("out").build();
-
-        ASTAssignmentExpressionBuilder assignmentBuilder = MontiThingsMill.assignmentExpressionBuilder();
-        assignmentBuilder.setLeft(outNameExpression);
-        assignmentBuilder.setOperator(ASTConstantsAssignmentExpressions.EQUALS);
-        assignmentBuilder.setRight(inNameExpression);
-
-        ASTExpressionStatementBuilder assignmentExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
-        assignmentExpressionStatementBuilder.setExpression(assignmentBuilder.build());
-
-        return assignmentExpressionStatementBuilder.build();
-    }
-
-    private ASTMCBlockStatement addIncrementIndexStatement() {
-        ASTNameExpression indexNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index").build();
-
-        ASTNatLiteral oneNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits("1").build();
-        ASTLiteralExpressionBuilder incrementIndexExpressionBuilder = MontiThingsMill.literalExpressionBuilder();
-        incrementIndexExpressionBuilder.setLiteral(oneNatLiteral);
-
-        ASTAssignmentExpressionBuilder incrementAssignmentExpressionBuilder = MontiThingsMill.assignmentExpressionBuilder();
-        incrementAssignmentExpressionBuilder.setLeft(indexNameExpression);
-        incrementAssignmentExpressionBuilder.setOperator(ASTConstantsAssignmentExpressions.PLUSEQUALS);
-        incrementAssignmentExpressionBuilder.setRight(incrementIndexExpressionBuilder.build());
-
-        ASTExpressionStatementBuilder incrementExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
-        incrementExpressionStatementBuilder.setExpression(incrementAssignmentExpressionBuilder.build());
-
-        return incrementExpressionStatementBuilder.build();
     }
 
     private ASTMCBlockStatement addDelayIfStatement(int index, long delay) {
@@ -232,7 +194,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         conditionBuilder.setRight(rightExpressionBuilder.build());
 
         // Building then statement
-        ASTNameExpression delayNameExpression = MontiThingsMill.nameExpressionBuilder().setName("delay").build();
+        ASTNameExpression delayNameExpression = MontiThingsMill.nameExpressionBuilder().setName("delayNanoseconds").build();
 
         ASTNatLiteral delayNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits(String.valueOf(delay)).build();
         ASTLiteralExpression delayLiteralExpression = MontiThingsMill.literalExpressionBuilder().setLiteral(delayNatLiteral).build();
@@ -243,13 +205,14 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         ASTCallExpressionBuilder thenCallDelayExpressionBuilder = MontiThingsMill.callExpressionBuilder();
         thenCallDelayExpressionBuilder.setExpression(delayNameExpression);
         thenCallDelayExpressionBuilder.setArguments(delayArgsBulder.build());
-        thenCallDelayExpressionBuilder.setName("test");
+        thenCallDelayExpressionBuilder.setName("test"); // TODO <- what does the name mean?
 
         ASTExpressionStatementBuilder thenExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
         thenExpressionStatementBuilder.setExpression(thenCallDelayExpressionBuilder.build());
 
         ASTMCJavaBlockBuilder thenStatementBuilder = MontiThingsMill.mCJavaBlockBuilder();
         thenStatementBuilder.addMCBlockStatement(thenExpressionStatementBuilder.build());
+        thenStatementBuilder.addMCBlockStatement(createLogStatement("index=" + index + " | delaying=" + delay));
 
         ASTIfStatementBuilder ifStatementBuilder = MontiThingsMill.ifStatementBuilder();
         ifStatementBuilder.setCondition(conditionBuilder.build());
