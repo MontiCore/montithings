@@ -261,6 +261,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // add statement to then block
         // 2.2 then statement
         ASTMCJavaBlockBuilder ingoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
+        ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component"));
         ingoingThenBlock.addMCBlockStatement(storeMsgTsCallExpressionStatement);
 
         // 2.4 increase index_msg
@@ -302,6 +303,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
                 .build();
 
         ASTMCJavaBlockBuilder outgoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
+        outgoingThenBlock.addMCBlockStatement(createLogStatement("received message from original component"));
         outgoingThenBlock.addMCBlockStatement(delayNanosecondsExpressionStatement);
 
         // 3.3 index_msg_from_comp+=1;
