@@ -15,7 +15,20 @@ ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 
 <#if config.getSplittingMode().toString() == "OFF">
     <#list comp.subComponents as subcomponent >
-        this->${subcomponent.getName()}.compute();
+        <#if config.getRecordingMode().toString() == "ON">
+            if (HWCInterceptor::isRecording)
+            {
+              auto timeStartCalc = std::chrono::high_resolution_clock::now();
+              this->${subcomponent.getName()}.compute();
+              auto timeEndCalc = std::chrono::high_resolution_clock::now();
+              auto latency = timeEndCalc - timeStartCalc;
+              HWCInterceptor::storeCalculationLatency(latency.count());
+            } else {
+              this->${subcomponent.getName()}.compute();
+            }
+        <#else>
+            this->${subcomponent.getName()}.compute();
+        </#if>
     </#list>
 </#if>
 

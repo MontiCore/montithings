@@ -13,6 +13,11 @@ cmd.add ( instanceNameArg );
   ${tc.includeArgs("template.deploy.DDSParticipantArgs", [comp, config])}
 </#if>
 
+<#if config.getRecordingMode().toString() == "ON">
+    TCLAP::SwitchArg muteRecorder ("", "muteRecorder", "Suppress all logs from the recorder", false);
+    cmd.add (muteRecorder);
+</#if>
+
 cmd.parse ( argc, argv );
 
 <#if config.getMessageBroker().toString() == "MQTT">
@@ -24,5 +29,12 @@ cmd.parse ( argc, argv );
   if (muteDdsLogger.getValue ())
   {
   el::Loggers::reconfigureLogger ("DDS", el::ConfigurationType::Enabled, "false");
+  }
+</#if>
+
+<#if config.getRecordingMode().toString() == "ON">
+  if (muteRecorder.getValue ())
+  {
+    el::Loggers::reconfigureLogger ("RECORDER", el::ConfigurationType::Enabled, "false");
   }
 </#if>

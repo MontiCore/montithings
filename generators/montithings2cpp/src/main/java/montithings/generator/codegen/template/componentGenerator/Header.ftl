@@ -47,6 +47,9 @@ ${tc.includeArgs("template.prepostconditions.hooks.Include", [comp])}
   #include "${compname}Input.h"
   #include "${compname}Result.h"
 </#if>
+<#if config.getRecordingMode().toString() == "ON">
+  #include "dds/recorder/HWCInterceptor.h"
+</#if>
 
 ${Utils.printNamespaceStart(comp)}
 

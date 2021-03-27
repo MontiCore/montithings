@@ -318,7 +318,7 @@ public class MTGenerator {
 
     // Port generation.
     GeneratorEngine engine = new GeneratorEngine(setup);
-    engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, portName, existsHWC);
+    engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, config, portSymbol, portName, existsHWC);
 
   }
 

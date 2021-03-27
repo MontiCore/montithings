@@ -23,6 +23,7 @@ int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 
 el::Loggers::getLogger("MQTT");
 el::Loggers::getLogger("DDS");
+el::Loggers::getLogger("RECORDER");
 
 el::Configurations defaultConf;
 defaultConf.setToDefault();

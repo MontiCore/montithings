@@ -1,0 +1,51 @@
+module DDSRecorderMessage {
+  enum MessageType { MESSAGE_RECORD,
+                     INTERNAL_RECORDS };
+
+  @topic
+  struct Message {
+    @key long id;
+    @key string instance_name;
+    MessageType type;
+
+    long long timestamp;
+    string serialized_vector_clock;
+
+    string topic;
+    
+    long msg_id;
+    string msg_content;
+
+    string message_delays;
+  };
+
+  enum CommandType { RECORDING_START,
+                     RECORDING_STOP,
+                     SEND_INTERNAL_ND_CALLS };
+  @topic
+  struct Command {
+    @key long id;
+    @key string instance_name;
+
+    CommandType cmd;
+  };
+
+  @topic
+  struct CommandReply {
+    @key long id;
+    @key string instance_name;
+    long command_id;
+
+    string content;
+  };
+
+  @topic
+  struct Acknowledgement {
+    @key long id;
+    @key string sending_instance;
+    @key string receiving_instance;
+    string port_name;
+    long acked_id;
+    string serialized_vector_clock;
+  };
+};

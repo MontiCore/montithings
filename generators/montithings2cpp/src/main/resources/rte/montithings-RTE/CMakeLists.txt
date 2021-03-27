@@ -59,7 +59,8 @@ include_directories(".")
 if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.cpp")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "DDSMessage.idl")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/message-types/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")
 endif ()
 
 
@@ -85,7 +86,6 @@ endif ()
 
 if (NOT EXCLUDE_DDS)
     # Generates type support code
-    OPENDDS_TARGET_SOURCES(MontiThingsRTE "../montithings-RTE/DDSMessage.idl")
     target_link_libraries(MontiThingsRTE ${opendds_libs})
 endif ()
 

@@ -41,6 +41,7 @@ public class MontiThingsConfiguration implements Configuration {
     OUT_SHORT("o"),
     PLATFORM("platform"),
     SPLITTING("splitting"),
+    RECORDING("recording"),
     MESSAGEBROKER("messageBroker"),
     MESSAGEBROKER_SHORT("broker"),
     REPLAYMODE("replayMode"),
@@ -82,6 +83,7 @@ public class MontiThingsConfiguration implements Configuration {
       .add(DelegatingConfigurationContributor.with(internal)).build();
     configParams.setTargetPlatform(getPlatform());
     configParams.setSplittingMode(getSplittingMode());
+    configParams.setRecordingMode(getRecordingMode());
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker(getSplittingMode()));
     configParams.setReplayMode(getReplayMode());
@@ -338,7 +340,7 @@ public class MontiThingsConfiguration implements Configuration {
           return ConfigParams.SplittingMode.DISTRIBUTED;
         default:
           throw new IllegalArgumentException(
-            "0xMT301 Splitting mode " + splittingMode + " in pom.xml is unknown");
+                  "0xMT301 Splitting mode " + splittingMode + " in pom.xml is unknown");
       }
     }
     // fallback default is "off"
@@ -418,6 +420,23 @@ public class MontiThingsConfiguration implements Configuration {
     }
 
     return mainComp.orElseGet(mainCompShort::get);
+  }
+
+  public ConfigParams.RecordingMode getRecordingMode() {
+    Optional<String> recordingMode = getAsString(Options.RECORDING);
+    if (recordingMode.isPresent()) {
+      switch (recordingMode.get()) {
+        case "OFF":
+          return ConfigParams.RecordingMode.OFF;
+        case "ON":
+          return ConfigParams.RecordingMode.ON;
+        default:
+          throw new IllegalArgumentException(
+                  "0xMT303 Recording mode " + recordingMode + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "off"
+    return ConfigParams.RecordingMode.OFF;
   }
 
   /**
