@@ -19,14 +19,12 @@ import de.monticore.types.mcbasictypes._ast.*;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMACompilationUnitBuilder;
 import montithings.MontiThingsMill;
-import montithings._ast.ASTBehavior;
-import montithings._ast.ASTBehaviorBuilder;
-import montithings._ast.ASTMTComponentModifierBuilder;
-import montithings._ast.ASTMTComponentTypeBuilder;
+import montithings._ast.*;
 import montithings._auxiliary.ComfortableArcMillForMontiThings;
 import montithings.util.TrafoUtil;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -268,16 +266,20 @@ public abstract class BasicTransformations {
     }
 
     /**
-     * Implements "varName1 = varName2;"
+     * Implements "varName1 = varName2?;"
      */
     protected ASTMCBlockStatement createAssignmentStatement(String varName1, String varName2) {
         ASTNameExpression varName1NameExpression = MontiThingsMill.nameExpressionBuilder().setName(varName1).build();
         ASTNameExpression varName2NameExpression = MontiThingsMill.nameExpressionBuilder().setName(varName2).build();
 
+        ASTIsPresentExpression isPresentExpression = MontiThingsMill.isPresentExpressionBuilder()
+                .setNameExpression(varName2NameExpression)
+                .build();
+
         ASTAssignmentExpressionBuilder assignmentExpressionBuilder = MontiThingsMill.assignmentExpressionBuilder();
         assignmentExpressionBuilder.setLeft(varName1NameExpression);
         assignmentExpressionBuilder.setOperator(ASTConstantsAssignmentExpressions.EQUALS);
-        assignmentExpressionBuilder.setRight(varName2NameExpression);
+        assignmentExpressionBuilder.setRight(isPresentExpression);
 
         ASTExpressionStatementBuilder expressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
         expressionStatementBuilder.setExpression(assignmentExpressionBuilder.build());
