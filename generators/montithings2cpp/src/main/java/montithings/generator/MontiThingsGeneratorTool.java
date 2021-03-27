@@ -166,6 +166,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
 
     if (config.getReplayMode() == ConfigParams.ReplayMode.ON){
+      // clear list of templated ports since they get mocked by a trafo
+      config.getTemplatedPorts().clear();
+
       List<String> allModels = symTab.getSubScopes().stream()
               .map(s -> s.getComponentTypeSymbols().values())
               .flatMap(Collection::stream)
