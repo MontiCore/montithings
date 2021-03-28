@@ -21,6 +21,8 @@ ${tc.signature("comp", "config")}
     ddsArgv[4] = strdup(dcpsInfoRepoArg.getValue().c_str());
   </#if>
 
+  ${tc.includeArgs("template.deploy.DDSInjectRecordedData", [comp, config])}
+
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(instanceNameArg.getValue(), ddsArgc, ddsArgv);
   ddsParticipant.initializeParameterConfigPorts();
   ddsParticipant.publishParameterConfig();

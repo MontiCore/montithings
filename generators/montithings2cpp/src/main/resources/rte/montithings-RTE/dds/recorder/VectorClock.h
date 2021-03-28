@@ -21,7 +21,4 @@ namespace VectorClock
     extern std::string getSerializedVectorClock ();
 
     extern void updateVectorClock(const vclock &receivedVectorClock, const std::string &initiator);
-
-
-
 }

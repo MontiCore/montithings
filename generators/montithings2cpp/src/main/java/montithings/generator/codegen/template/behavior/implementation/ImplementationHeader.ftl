@@ -28,7 +28,7 @@ using namespace montithings::library;
   using namespace montithings::library::replayer;
 
   // is read by the hwc interceptor, if ON, system calls are replayed
-  #define REPLAY_MODE = "ON"
+  #define REPLAY_MODE "ON"
 </#if>
 
 // provides nd() method which can be used to wrap non-deterministic calls

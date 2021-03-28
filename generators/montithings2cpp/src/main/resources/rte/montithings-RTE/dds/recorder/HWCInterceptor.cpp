@@ -2,13 +2,15 @@
 // (c) https://github.com/MontiCore/monticore
 #include "HWCInterceptor.h"
 
+#include <utility>
+
 namespace montithings {
     namespace library {
         namespace hwcinterceptor {
             bool isRecording = false;
-            int counterLatency = 0;
-            int counterNd = 0;
-            int index = 0;
+            int indexLatencyRecording = 0;
+            int indexNDCallsRecording = 0;
+            int indexNDCallsReplaying = 0;
 
             std::unordered_map<int, nlohmann::json> storageCalls;
             std::unordered_map<int, long> storageComputationLatency;
@@ -16,9 +18,8 @@ namespace montithings {
             void
             startNondeterministicRecording() {
                 isRecording = true;
-                counterLatency = 0;
-                counterNd = 0;
-                index = 0;
+                indexLatencyRecording = 0;
+                indexNDCallsRecording = 0;
 
                 storageCalls.clear();
                 storageComputationLatency.clear();
@@ -32,9 +33,14 @@ namespace montithings {
             void
             storeCalculationLatency(long latency) {
                 if (isRecording) {
-                    storageComputationLatency[counterLatency] = latency;
-                    counterLatency++;
+                    storageComputationLatency[indexLatencyRecording] = latency;
+                    indexLatencyRecording++;
                 }
+            }
+
+            void
+            addRecordedCall(int index, nlohmann::json value) {
+                storageCalls[index] = std::move(value);
             }
         }
     }
