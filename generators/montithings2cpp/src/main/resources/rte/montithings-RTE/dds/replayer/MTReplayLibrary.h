@@ -23,9 +23,12 @@ namespace montithings {
 
             unsigned long long getMsgTs(int index);
 
-            template<typename T>
-            T diff(T v1, T v2) {
-                return abs(v1 - v2);
+            template<typename A, typename B>
+            A subtract(A v1, B v2) {
+                if (v1 - v2 < 0) {
+                    return 0;
+                }
+                return v1 - v2;
             }
 
             void

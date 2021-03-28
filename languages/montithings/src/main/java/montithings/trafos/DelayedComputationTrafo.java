@@ -2,9 +2,13 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.ASTComponentInstantiation;
+import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressionBuilder;
+import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
 import de.monticore.expressions.commonexpressions._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
 import de.monticore.statements.mccommonstatements._ast.*;
 import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.types.mcbasictypes._ast.*;
@@ -13,7 +17,6 @@ import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTIsPresentExpression;
-import montithings._ast.ASTIsPresentExpressionBuilder;
 import montithings._visitor.FindPortNamesVisitor;
 import montithings.util.TrafoUtil;
 
@@ -66,24 +69,53 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             return additionalTrafoModels;
         }
 
+        // delay is dependent of the actual instance, hence, for each instance, we need a new component type
+        for (String parentName : TrafoUtil.findParents(originalModels, targetComp)) {
+            ASTMACompilationUnit parentComp = TrafoUtil.getComponentByName(originalModels, parentName);
+            List<ASTComponentInstantiation> instantiations = TrafoUtil.getInstantiationsByType(parentComp, targetComp.getComponentType().getName());
+
+            for (ASTComponentInstantiation instantiation : instantiations) {
+                for (String instanceName : instantiation.getInstancesNames()) {
+                    String qNameInstance = parentName + "." + instanceName;
+                    additionalTrafoModels.addAll(transform(targetComp, qNameInstance, origIngoingPorts, origOutgoingPorts));
+
+                    // wherever the original component was initiated, the declaration has to be changed.
+                    // E.g. "Sink sink" becomes "SinkWrapper sink"
+                    replaceComponentInstantiationType(parentComp, modelPath,
+                            targetComp.getComponentType().getName(),
+                            TrafoUtil.replaceDotsWithCamelCase(qNameInstance) + "Wrapper");
+                }
+            }
+        }
+
+        return additionalTrafoModels;
+    }
+
+
+    private Collection<ASTMACompilationUnit> transform(
+            ASTMACompilationUnit origComp, String origQNameInstance,
+            Set<String> origIngoingPorts, Set<String> origOutgoingPorts) throws Exception {
+
+        Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
+
         /* ============================================================ */
         /* ======================= COMPONENT CREATION ================= */
         /* ============================================================ */
 
-        // creates a wrapping component, e.g. SinkWrapper for component Sink
-        String compName = targetComp.getComponentType().getName();
+        // creates a wrapping component, e.g. SinkWrapper for component instance sink
+        String compName = TrafoUtil.replaceDotsWithCamelCase(origQNameInstance);
         String compWrapperName = compName + "Wrapper";
-        ASTMACompilationUnit compWrapper = createCompilationUnit(targetComp.getPackage(), compWrapperName);
+        ASTMACompilationUnit compWrapper = createCompilationUnit(origComp.getPackage(), compWrapperName);
 
         // copies parameters from original model
-        List<ASTArcParameter> parameterList = targetComp.getComponentType().getHead().getArcParameterList();
+        List<ASTArcParameter> parameterList = origComp.getComponentType().getHead().getArcParameterList();
         compWrapper.getComponentType().getHead().setArcParameterList(parameterList);
 
         // For each wrapping component, a new DELAY component is required
         ASTMACompilationUnit delayComp;
         String delayCompName = compWrapperName + "ComputationDelay";
 
-        delayComp = createCompilationUnit(targetComp.getPackage(), delayCompName);
+        delayComp = createCompilationUnit(origComp.getPackage(), delayCompName);
 
         /* ============================================================ */
         /* ======================= INSTANTIATIONS ===================== */
@@ -97,21 +129,15 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
                 .collect(Collectors.toList());
         ASTArguments arguments = createArguments(parameterStringList);
 
-        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
-        fullyQName.addParts(compName);
-        addSubComponentInstantiation(compWrapper, fullyQName, compName.toLowerCase(), arguments);
+        String origCompName = origComp.getComponentType().getName();
+        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(compWrapper.getPackage());
+        fullyQName.addParts(origCompName);
+        addSubComponentInstantiation(compWrapper, fullyQName, origCompName.toLowerCase(), arguments);
 
         // Instantiation of the delay component within the wrapping one
-        ASTMCQualifiedName fullyQNameDelay = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
+        ASTMCQualifiedName fullyQNameDelay = TrafoUtil.copyASTMCQualifiedName(compWrapper.getPackage());
         fullyQNameDelay.addParts(delayCompName);
         addSubComponentInstantiation(compWrapper, fullyQNameDelay, delayCompName.toLowerCase(), createEmptyArguments());
-
-        // wherever the original component was initiated, the declaration has to be changed.
-        // E.g. "Sink sink" becomes "SinkWrapper sink"
-        for (String parent : TrafoUtil.findParents(originalModels, targetComp)) {
-            ASTMACompilationUnit p = TrafoUtil.getComponentByName(originalModels, parent);
-            replaceComponentInstantiationType(p, modelPath, compName, compWrapperName);
-        }
 
         /* ============================================================ */
         /* ======================= PORT CREATION ====================== */
@@ -120,12 +146,12 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // hence, mirror the port declarations
         for (String port : origIngoingPorts) {
             addPort(compWrapper, port, false,
-                    TrafoUtil.getPortTypeByName(targetComp, port));
+                    TrafoUtil.getPortTypeByName(origComp, port));
         }
 
         for (String port : origOutgoingPorts) {
             addPort(compWrapper, port, true,
-                    TrafoUtil.getPortTypeByName(targetComp, port));
+                    TrafoUtil.getPortTypeByName(origComp, port));
         }
 
         // add ports for the delay component
@@ -134,18 +160,18 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             addPort(delayComp,
                     origIngoingPort + "_before_in",
                     false,
-                    TrafoUtil.getPortTypeByName(targetComp, origIngoingPort));
+                    TrafoUtil.getPortTypeByName(origComp, origIngoingPort));
         }
 
         for (String origOutgoingPort : origOutgoingPorts) {
             addPort(delayComp,
                     origOutgoingPort + "_out",
                     true,
-                    TrafoUtil.getPortTypeByName(targetComp, origOutgoingPort));
+                    TrafoUtil.getPortTypeByName(origComp, origOutgoingPort));
             addPort(delayComp,
                     origOutgoingPort + "_after_in",
                     false,
-                    TrafoUtil.getPortTypeByName(targetComp, origOutgoingPort));
+                    TrafoUtil.getPortTypeByName(origComp, origOutgoingPort));
         }
 
         /* ============================================================ */
@@ -179,7 +205,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
         List<String> origPortsIn = new ArrayList<>(origIngoingPorts);
         List<String> origPortsOut = new ArrayList<>(origOutgoingPorts);
-        addBehaviorDelayComp(delayComp, origPortsIn, origPortsOut);
+        addBehaviorDelayComp(delayComp, origQNameInstance, origPortsIn, origPortsOut);
 
         additionalTrafoModels.add(compWrapper);
         additionalTrafoModels.add(delayComp);
@@ -187,7 +213,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         return additionalTrafoModels;
     }
 
-    private void addBehaviorDelayComp(ASTMACompilationUnit comp, List<String> origPortsIn, List<String> origPortsOut) {
+    private void addBehaviorDelayComp(ASTMACompilationUnit comp, String origQNameInstance, List<String> origPortsIn, List<String> origPortsOut) {
         /*  Behavior looks like the following
         port in int in1_before_in;
         port in int in2_before_in;
@@ -203,6 +229,8 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         int index_msg = 0;
         int index_msg_from_comp = 0;
 
+        inf targetDelay = 0;
+
 
         behavior {
             // Whenever an input from the wrapping component is present, save its arrival timestamp
@@ -211,6 +239,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             // 2.2 then statement
             // 2.3 storeMsgTs
              storeMsgTs(index_msg, getNanoTimestamp());
+
              // 2.4 increase index_msg
              index_msg+=1;
             }
@@ -218,8 +247,16 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             // in case the original components yields an output, lookup its initial arrival time and add a delay if necessary
             // 3.1 Condition
             if (out1_after_in? || out2_after_in?) {
+             if (index_msg_from_comp == 0) {
+                targetDelay = 999;
+             }
+             if (index_msg_from_comp == 1) {
+                targetDelay = 1001;
+             }
+             ...
+
              // 3.2 implement delayNanoseconds()
-             delayNanoseconds(diff(getNanoTimestamp(), getMsgTs(index_msg_from_comp)))
+             delayNanoseconds(subtract(targetDelay, subtract(getNanoTimestamp(), getMsgTs(index_msg_from_comp)))))
              // 3.3 index_msg_from_comp+=1;
              index_msg_from_comp+=1;
              // 3.4 implement assignments()
@@ -232,6 +269,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // 1. Variable initiations
         addLongFieldDeclaration(comp, "index_msg", 0);
         addLongFieldDeclaration(comp, "index_msg_from_comp", 0);
+        addLongFieldDeclaration(comp, "targetDelay", 0);
 
         ASTBehavior behavior = addEmptyBehavior(comp);
 
@@ -261,7 +299,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         // add statement to then block
         // 2.2 then statement
         ASTMCJavaBlockBuilder ingoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
-        ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component"));
+        ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component: $index_msg"));
         ingoingThenBlock.addMCBlockStatement(storeMsgTsCallExpressionStatement);
 
         // 2.4 increase index_msg
@@ -275,36 +313,21 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
         behavior.getMCJavaBlock().addMCBlockStatement(ifStatementIncomingBuilder.build());
 
-
         // 3.1 Condition
         List<String> portsAfterIn = origPortsOut.stream().map(p -> p.concat("_after_in")).collect(Collectors.toList());
         ASTExpression conditionOutgoingPorts = createCondition(portsAfterIn);
 
-        // implement getMsgTs
-        ASTNameExpression indexMsgFromCompNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index_msg_from_comp").build();
-        ASTArgumentsBuilder getMsgTsArgs = MontiThingsMill.argumentsBuilder();
-        getMsgTsArgs.addExpression(indexMsgFromCompNameExpression);
-
-        ASTCallExpression getMsgTsCallExpression = createCallExpression("getMsgTs", getMsgTsArgs.build());
-
-        // implement diff(...)
-        ASTArgumentsBuilder diffArgs = MontiThingsMill.argumentsBuilder();
-        diffArgs.addExpression(getTsCallExpression);
-        diffArgs.addExpression(getMsgTsCallExpression);
-        ASTCallExpression diffCallExpression = createCallExpression("diff", diffArgs.build());
-
-        // 3.2 implement delayNanoseconds(...)
-        ASTArgumentsBuilder delayNanosecondsArgs = MontiThingsMill.argumentsBuilder();
-        delayNanosecondsArgs.addExpression(diffCallExpression);
-        ASTCallExpression delayNanosecondsExpression = createCallExpression("delayNanoseconds", delayNanosecondsArgs.build());
-
-        ASTExpressionStatement delayNanosecondsExpressionStatement = MontiThingsMill.expressionStatementBuilder()
-                .setExpression(delayNanosecondsExpression)
-                .build();
-
         ASTMCJavaBlockBuilder outgoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
-        outgoingThenBlock.addMCBlockStatement(createLogStatement("received message from original component"));
-        outgoingThenBlock.addMCBlockStatement(delayNanosecondsExpressionStatement);
+        outgoingThenBlock.addMCBlockStatement(createLogStatement("received message from original component; index: $index_msg_from_comp"));
+
+        // set targetLatencies
+        HashMap<Integer, Long> computationLatencies = dataHandler.getComputationLatencies(origQNameInstance);
+
+        for (Integer index : computationLatencies.keySet()) {
+            outgoingThenBlock.addMCBlockStatement(addSetTargetDelayIfStatement(index, computationLatencies.get(index)));
+        }
+
+        outgoingThenBlock.addMCBlockStatement(createDelayStatement());
 
         // 3.3 index_msg_from_comp+=1;
         ASTMCBlockStatement incIndexFromCompStatement = createIncrementVariableStatement("index_msg_from_comp");
@@ -322,6 +345,53 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         ifStatementOutgoingBuilder.setElseStatementAbsent();
 
         behavior.getMCJavaBlock().addMCBlockStatement(ifStatementOutgoingBuilder.build());
+    }
+
+    private ASTExpressionStatement createDelayStatement() {
+        // implements delayNanoseconds(subtract(targetDelay, subtract(getNanoTimestamp(), getMsgTs(index_msg_from_comp)))))
+
+        /* INNER SUBTRACT METHOD */
+        // implement first argument getNanoTimestamp()
+        ASTArguments emptyArgs = MontiThingsMill.argumentsBuilder().build();
+        ASTCallExpression getTsCallExpression = createCallExpression("getNanoTimestamp", emptyArgs);
+
+        // implement getMsgTs(index_msg_from_comp)
+        ASTNameExpression indexMsgFromCompNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index_msg_from_comp").build();
+        ASTArgumentsBuilder getMsgTsArgs = MontiThingsMill.argumentsBuilder();
+        getMsgTsArgs.addExpression(indexMsgFromCompNameExpression);
+
+        ASTCallExpression getMsgTsCallExpression = createCallExpression("getMsgTs", getMsgTsArgs.build());
+
+        // create argument list of inner subtract method
+        ASTArgumentsBuilder innerSubtractArgs = MontiThingsMill.argumentsBuilder();
+        innerSubtractArgs.addExpression(getTsCallExpression);
+        innerSubtractArgs.addExpression(getMsgTsCallExpression);
+
+        // build inner subtract method
+        ASTCallExpression innerSubtractCallExpression = createCallExpression("subtract", innerSubtractArgs.build());
+
+        /* OUTER SUBTRACT METHOD */
+        // create the argument list
+        ASTArgumentsBuilder outerSubtractArgs = MontiThingsMill.argumentsBuilder();
+
+        // first argument is simply a name expression
+        ASTNameExpression targetDelayNameExpression = MontiThingsMill.nameExpressionBuilder().setName("targetDelay").build();
+        outerSubtractArgs.addExpression(targetDelayNameExpression);
+
+        // second argument is the inner subtract call expression
+        outerSubtractArgs.addExpression(innerSubtractCallExpression);
+
+        // build outer subtract method
+        ASTCallExpression outerSubtractCallExpression = createCallExpression("subtract", outerSubtractArgs.build());
+
+        // 3.2 finally implement delayNanoseconds(...)
+        ASTArgumentsBuilder delayNanosecondsArgs = MontiThingsMill.argumentsBuilder();
+        delayNanosecondsArgs.addExpression(outerSubtractCallExpression);
+        ASTCallExpression delayNanosecondsExpression = createCallExpression("delayNanoseconds", delayNanosecondsArgs.build());
+
+        return MontiThingsMill.expressionStatementBuilder()
+                .setExpression(delayNanosecondsExpression)
+                .build();
     }
 
     private ASTExpression createCondition(List<String> ports) {
@@ -354,6 +424,52 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         condition.setLeft(createCondition(ports));
 
         return condition.build();
+    }
+
+    private ASTMCBlockStatement addSetTargetDelayIfStatement(int index, long delay) {
+        /* implements
+             if (index_msg_from_comp == <index>) {
+                targetDelay = <delay>;
+             }
+         */
+        ASTNameExpression indexNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index_msg_from_comp").build();
+
+        // Building condition
+        ASTNatLiteralBuilder rightNatLiteralBuilder = MontiThingsMill.natLiteralBuilder();
+        rightNatLiteralBuilder.setDigits(String.valueOf(index));
+
+        ASTLiteralExpressionBuilder rightExpressionBuilder = MontiThingsMill.literalExpressionBuilder();
+        rightExpressionBuilder.setLiteral(rightNatLiteralBuilder.build());
+
+        ASTEqualsExpressionBuilder conditionBuilder = MontiThingsMill.equalsExpressionBuilder();
+        conditionBuilder.setLeft(indexNameExpression);
+        conditionBuilder.setOperator("==");
+        conditionBuilder.setRight(rightExpressionBuilder.build());
+
+        // Building then statement
+        ASTNameExpression delayNameExpression = MontiThingsMill.nameExpressionBuilder().setName("targetDelay").build();
+
+        ASTNatLiteral delayNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits(String.valueOf(delay)).build();
+        ASTLiteralExpression delayLiteralExpression = MontiThingsMill.literalExpressionBuilder().setLiteral(delayNatLiteral).build();
+
+        ASTAssignmentExpressionBuilder assignmentExpressionBuilder = MontiThingsMill.assignmentExpressionBuilder();
+        assignmentExpressionBuilder.setLeft(delayNameExpression);
+        assignmentExpressionBuilder.setOperator(ASTConstantsAssignmentExpressions.EQUALS);
+        assignmentExpressionBuilder.setRight(delayLiteralExpression);
+
+        ASTExpressionStatementBuilder thenExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
+        thenExpressionStatementBuilder.setExpression(assignmentExpressionBuilder.build());
+
+        ASTMCJavaBlockBuilder thenStatementBuilder = MontiThingsMill.mCJavaBlockBuilder();
+        thenStatementBuilder.addMCBlockStatement(thenExpressionStatementBuilder.build());
+        thenStatementBuilder.addMCBlockStatement(createLogStatement("index_msg_from_comp=" + index + " | targetDelay=" + delay));
+
+        ASTIfStatementBuilder ifStatementBuilder = MontiThingsMill.ifStatementBuilder();
+        ifStatementBuilder.setCondition(conditionBuilder.build());
+        ifStatementBuilder.setThenStatement(thenStatementBuilder.build());
+        ifStatementBuilder.setElseStatementAbsent();
+
+        return ifStatementBuilder.build();
     }
 }
 

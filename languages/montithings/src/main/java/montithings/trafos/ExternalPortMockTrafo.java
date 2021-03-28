@@ -10,7 +10,6 @@ import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressi
 import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
 import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpressionBuilder;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.expressions.expressionsbasis._ast.ASTNameExpressionBuilder;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlockBuilder;
@@ -21,7 +20,6 @@ import montithings.MontiThingsMill;
 import montithings._ast.ASTMTEveryBlockBuilder;
 import montithings._ast.ASTPublishPort;
 import montithings._visitor.FindPortNamesVisitor;
-import montithings.cocos.MaxOneUpdateInterval;
 import montithings.util.TrafoUtil;
 
 import javax.json.JsonObject;
@@ -40,15 +38,10 @@ import java.util.List;
 public class ExternalPortMockTrafo extends BasicTransformations implements MontiThingsTrafo {
     protected static final String TOOL_NAME = "ExternalPortMockTrafo";
 
-    private final String mainCompName;
     private final ReplayDataHandler dataHandler;
 
-    private final File modelPath;
-
     public ExternalPortMockTrafo(File modelPath, File replayDataFile, String mainComp) {
-        this.mainCompName = mainComp;
         this.dataHandler = new ReplayDataHandler(replayDataFile);
-        this.modelPath = modelPath;
     }
 
     public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,

@@ -4,8 +4,7 @@ import javax.json.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class ReplayDataHandler {
@@ -37,7 +36,7 @@ class ReplayDataHandler {
                 .collect(Collectors.toList());
     }
 
-    protected List<Long> getDelays(String qCompSourceName, String qInstanceSourcePortName, String qCompTargetName, String qInstanceTargetPortName) {
+    protected List<Long> getNetworkDelays(String qCompSourceName, String qInstanceSourcePortName, String qCompTargetName, String qInstanceTargetPortName) {
         List<Long> delays = new ArrayList<>();
         for (JsonObject recording : getRecordings(qCompSourceName, qInstanceSourcePortName)) {
             if (recording.containsKey("delay")) {
@@ -50,6 +49,24 @@ class ReplayDataHandler {
             } else {
                 delays.add(0L);
             }
+        }
+
+        return delays;
+    }
+
+    protected HashMap<Integer, Long> getComputationLatencies(String qCompName) {
+        HashMap<Integer, Long> delays = new HashMap<Integer, Long>();
+
+        if (!this.data.getJsonObject("computation_latency").containsKey(qCompName)) {
+            return delays;
+        }
+
+        JsonObject computationLatencies = this.data.getJsonObject("computation_latency")
+                .getJsonObject(qCompName);
+
+        for (String key : computationLatencies.keySet()) {
+            delays.put(Integer.parseInt(key),
+                    computationLatencies.getJsonNumber(key).longValue());
         }
 
         return delays;

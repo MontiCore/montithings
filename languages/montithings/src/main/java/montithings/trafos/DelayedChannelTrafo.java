@@ -2,8 +2,6 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTPortAccess;
-import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpressionBuilder;
-import de.monticore.expressions.assignmentexpressions._ast.ASTConstantsAssignmentExpressions;
 import de.monticore.expressions.commonexpressions._ast.ASTCallExpressionBuilder;
 import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpressionBuilder;
 import de.monticore.expressions.expressionsbasis._ast.*;
@@ -101,7 +99,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
 
             String qCompSourceName = comp.getPackage() + "." + comp.getComponentType().getName() + "." + portSource.getComponent();
             String qCompTargetName = comp.getPackage() + "." + comp.getComponentType().getName() + "." + portTarget.getComponent();
-            List<Long> delays = dataHandler.getDelays(qCompSourceName, portSource.getPort(), qCompTargetName, portTarget.getPort());
+            List<Long> delays = dataHandler.getNetworkDelays(qCompSourceName, portSource.getPort(), qCompTargetName, portTarget.getPort());
 
             addBehavior(channelInterceptorComponent, delays);
 
@@ -122,7 +120,6 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
             addConnection(comp, channelInterceptorComponentName.toLowerCase() + "." + "out", portTarget.getQName());
 
         } catch (ClassNotFoundException e) {
-            String test = "asd";
             //TODO
         } catch (NoSuchElementException e) {
             // model was not found. it is probably a generic type. in this case search for the port within the interfaces
