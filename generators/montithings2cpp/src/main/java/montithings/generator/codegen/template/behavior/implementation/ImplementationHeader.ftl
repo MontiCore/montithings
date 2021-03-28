@@ -20,14 +20,20 @@ ${tc.signature("comp", "compname", "config", "existsHWC")}
 #include "easyloggingpp/easylogging++.h"
 ${Utils.printIncludes(comp,config)}
 #include "MTLibrary.h"
-
 using namespace montithings::library;
 
 <#if config.getReplayMode().toString() == "ON">
   #include "dds/replayer/MTReplayLibrary.h"
 
   using namespace montithings::library::replayer;
+
+  // is read by the hwc interceptor, if ON, system calls are replayed
+  #define REPLAY_MODE = "ON"
 </#if>
+
+// provides nd() method which can be used to wrap non-deterministic calls
+#include "dds/recorder/HWCInterceptor.h"
+using namespace montithings::library::hwcinterceptor;
 
 ${Utils.printNamespaceStart(comp)}
 

@@ -17,13 +17,13 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 <#if config.getRecordingMode().toString() == "ON">
-    if (HWCInterceptor::isRecording)
+    if (montithings::library::hwcinterceptor::isRecording)
     {
       auto timeStartCalc = std::chrono::high_resolution_clock::now();
       ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
       auto timeEndCalc = std::chrono::high_resolution_clock::now();
       auto latency = timeEndCalc - timeStartCalc;
-      HWCInterceptor::storeCalculationLatency(latency.count());
+      montithings::library::hwcinterceptor::storeCalculationLatency(latency.count());
     } else {
       ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
     }

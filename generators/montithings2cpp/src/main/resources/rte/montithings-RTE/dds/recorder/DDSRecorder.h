@@ -50,8 +50,6 @@ private:
 
     void stop();
 
-    void sendNDCalls(int commandId);
-
     void sendInternalRecords();
 
     void onCommandMessage(const DDSRecorderMessage::Command &message);

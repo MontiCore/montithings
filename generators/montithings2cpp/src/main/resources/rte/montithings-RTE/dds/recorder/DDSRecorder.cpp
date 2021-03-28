@@ -45,8 +45,7 @@ DDSRecorder::setPortName(const std::string &name) {
 void
 DDSRecorder::start() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | starting recording... ";
-    HWCInterceptor::startNondeterministicRecording();
-    HWCInterceptor::storage["instance"] = instanceName;
+    montithings::library::hwcinterceptor::startNondeterministicRecording();
 
     unsentMessageDelays.clear();
     unsentRecordMessageDelays.clear();
@@ -59,30 +58,8 @@ DDSRecorder::start() {
 void
 DDSRecorder::stop() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | stopping recording... ";
-    HWCInterceptor::stopNondeterministicRecording();
+    montithings::library::hwcinterceptor::stopNondeterministicRecording();
     ddsCommunicator.cleanupRecorderMessageWriter();
-}
-
-void
-DDSRecorder::sendNDCalls(int commandId) {
-    CLOG (DEBUG, LOG_ID) << "DDSRecorder | sendNDCalls";
-    HWCInterceptor::storage["instance"] = instanceName;
-
-    DDSRecorderMessage::CommandReply message;
-    message.command_id = commandId;
-    message.instance_name = instanceName.c_str();
-    message.content = HWCInterceptor::storage.dump().c_str();
-    message.id = 0;
-
-    CLOG (DEBUG, LOG_ID) << "DDSRecorder | sendNDCalls:" << message.content;
-    ddsCommunicator.send(message);
-
-    // CLOG (DEBUG, LOG_ID) << "DDSRecorder | Waiting for ACKs ";
-    // ddsCommunicator.commandReplyWaitForAcks();
-
-    CLOG (DEBUG, LOG_ID) << "DDSRecorder | Cleaning up commandReply writers";
-    ddsCommunicator.cleanupCommandReplyMessageWriter();
-    CLOG (DEBUG, LOG_ID) << "DDSRecorder | Cleaning up commandReply writers done";
 }
 
 void
@@ -93,12 +70,12 @@ DDSRecorder::sendInternalRecords() {
     recorderMessage.type = DDSRecorderMessage::INTERNAL_RECORDS;
 
     nlohmann::json content;
-    content["calls"] = HWCInterceptor::storageCalls;
-    content["calc_latency"] = HWCInterceptor::storageComputationLatency;
+    content["calls"] = montithings::library::hwcinterceptor::storageCalls;
+    content["calc_latency"] = montithings::library::hwcinterceptor::storageComputationLatency;
     recorderMessage.msg_content = content.dump().c_str();
 
-    HWCInterceptor::storageCalls.clear();
-    HWCInterceptor::storageComputationLatency.clear();
+    montithings::library::hwcinterceptor::storageCalls.clear();
+    montithings::library::hwcinterceptor::storageComputationLatency.clear();
 
     messageId++;
 
@@ -117,7 +94,7 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
                            const vclock &newVectorClock, bool includeContent) {
     std::lock_guard<std::mutex> guard(sentMutex);
 
-    if (HWCInterceptor::isRecording) {
+    if (montithings::library::hwcinterceptor::isRecording) {
         long long timestamp = Util::Time::getCurrentTimestampNano();
 
         // Only send ack if message was received, not sent
@@ -182,7 +159,9 @@ DDSRecorder::onCommandMessage(const DDSRecorderMessage::Command &command) {
             stop();
             break;
         case DDSRecorderMessage::SEND_INTERNAL_ND_CALLS:
-            sendNDCalls(command.id);
+            // note that this functionality is not yet supported by the recorder.
+            // nd calls are sent as soon as possible instead of on request
+            sendInternalRecords();
             break;
         default:
             CLOG (ERROR, LOG_ID) << "DDSRecorder | onCommandMessage: unknown command";

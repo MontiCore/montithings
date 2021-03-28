@@ -16,13 +16,13 @@ ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 <#if config.getSplittingMode().toString() == "OFF">
     <#list comp.subComponents as subcomponent >
         <#if config.getRecordingMode().toString() == "ON">
-            if (HWCInterceptor::isRecording)
+            if (montithings::library::hwcinterceptor::isRecording)
             {
               auto timeStartCalc = std::chrono::high_resolution_clock::now();
               this->${subcomponent.getName()}.compute();
               auto timeEndCalc = std::chrono::high_resolution_clock::now();
               auto latency = timeEndCalc - timeStartCalc;
-              HWCInterceptor::storeCalculationLatency(latency.count());
+              montithings::library::hwcinterceptor::storeCalculationLatency(latency.count());
             } else {
               this->${subcomponent.getName()}.compute();
             }

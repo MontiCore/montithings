@@ -2,39 +2,40 @@
 // (c) https://github.com/MontiCore/monticore
 #include "HWCInterceptor.h"
 
-namespace HWCInterceptor {
-    bool isRecording = false;
-    int counterLatency = 0;
-    int counterNd = 0;
-    int index = 0;
-    nlohmann::json storage;
+namespace montithings {
+    namespace library {
+        namespace hwcinterceptor {
+            bool isRecording = false;
+            int counterLatency = 0;
+            int counterNd = 0;
+            int index = 0;
 
-    std::unordered_map<int, nlohmann::json> storageCalls;
-    std::unordered_map<int, long> storageComputationLatency;
+            std::unordered_map<int, nlohmann::json> storageCalls;
+            std::unordered_map<int, long> storageComputationLatency;
 
-    void
-    startNondeterministicRecording() {
-        isRecording = true;
-        counterLatency = 0;
-        counterNd = 0;
-        index = 0;
+            void
+            startNondeterministicRecording() {
+                isRecording = true;
+                counterLatency = 0;
+                counterNd = 0;
+                index = 0;
 
-        storage = nlohmann::json::object();
-        storageCalls.clear();
-        storageComputationLatency.clear();
-    }
+                storageCalls.clear();
+                storageComputationLatency.clear();
+            }
 
-    void
-    stopNondeterministicRecording() {
-        isRecording = false;
-    }
+            void
+            stopNondeterministicRecording() {
+                isRecording = false;
+            }
 
-    void
-    storeCalculationLatency(long latency) {
-        if (RECORDER_MODE == "RECORDING" && isRecording) {
-            storageComputationLatency[counterLatency] = latency;
-            storage["calc_latency"][counterLatency] = latency;
-            counterLatency++;
+            void
+            storeCalculationLatency(long latency) {
+                if (isRecording) {
+                    storageComputationLatency[counterLatency] = latency;
+                    counterLatency++;
+                }
+            }
         }
     }
-} // namespace Recorder
+}
