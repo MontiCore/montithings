@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "../../json/json.hpp"
+#include "../../Utils.h"
 
 
 namespace montithings {
@@ -36,12 +37,12 @@ namespace montithings {
             A
             nd(A value) {
                 if (isRecording) {
-                    storageCalls[indexNDCallsRecording] = nlohmann::json::object({{"v", value}});
+                    storageCalls[indexNDCallsRecording] = dataToJson(value);
                     indexNDCallsRecording++;
                 }
 
 #if defined(REPLAY_MODE)
-                value = storageCalls[indexNDCallsReplaying].get<A>();
+                value = jsonToData<A>(storageCalls[indexNDCallsReplaying]);
                 indexNDCallsReplaying++;
 #endif
 

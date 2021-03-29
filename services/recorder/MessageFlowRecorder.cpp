@@ -168,9 +168,8 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
 
             for (auto call : content["calls"]) {
                 std::string callId = call[0].dump();
-                std::string value = call[1]["v"].dump();
 
-                recordStorage["calls"][instance][callId] = value;
+                recordStorage["calls"][instance][callId] = call[1];
                 statsCallsAmount++;
             }
 
