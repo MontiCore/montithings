@@ -130,12 +130,12 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         ASTArguments arguments = createArguments(parameterStringList);
 
         String origCompName = origComp.getComponentType().getName();
-        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(compWrapper.getPackage());
+        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(origComp.getPackage());
         fullyQName.addParts(origCompName);
         addSubComponentInstantiation(compWrapper, fullyQName, origCompName.toLowerCase(), arguments);
 
         // Instantiation of the delay component within the wrapping one
-        ASTMCQualifiedName fullyQNameDelay = TrafoUtil.copyASTMCQualifiedName(compWrapper.getPackage());
+        ASTMCQualifiedName fullyQNameDelay = TrafoUtil.copyASTMCQualifiedName(origComp.getPackage());
         fullyQNameDelay.addParts(delayCompName);
         addSubComponentInstantiation(compWrapper, fullyQNameDelay, delayCompName.toLowerCase(), createEmptyArguments());
 
@@ -183,7 +183,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             // ... forward it to the original component
             addConnection(compWrapper,
                     port,
-                    compName.toLowerCase() + "." + port);
+                    origCompName.toLowerCase() + "." + port);
             // ... but also to the delay component
             addConnection(compWrapper,
                     port,
@@ -194,7 +194,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         origOutgoingPorts.forEach(port -> {
             // ... forward it to the delay component
             addConnection(compWrapper,
-                    compName.toLowerCase() + "." + port,
+                    origCompName.toLowerCase() + "." + port,
                     delayCompName.toLowerCase() + "." + port + "_after_in");
             // ... and forward the result from the delay component to the outermost port of the wrapping component
             addConnection(compWrapper,
