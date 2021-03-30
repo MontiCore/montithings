@@ -7,7 +7,7 @@ namespace hierarchy
 {
 
 Colors::Color
-ColorsAdapter::convert (uint8_t element)
+ColorsAdapter::convertColor (uint8_t element)
 {
   switch (element)
     {
@@ -25,7 +25,7 @@ ColorsAdapter::convert (uint8_t element)
 }
 
 uint8_t
-ColorsAdapter::convert (Colors::Color element)
+ColorsAdapter::convertColor (Colors::Color element)
 {
   switch (element)
     {
