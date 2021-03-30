@@ -8,12 +8,6 @@ ${tc.signature("packageName", "compname", "config", "existsHWC")}
 
 #include "${className}.h"
 
-namespace montithings {
-<#list packageName as package>
-  namespace ${package} {
-</#list>
+${tc.includeArgs("template.adapter.printNamespaceStart", [packageName])}
 
-<#list packageName as package>
-  } // namespace ${package}
-</#list>
-} // namespace montithings
+${tc.includeArgs("template.adapter.printNamespaceEnd", [packageName])}
