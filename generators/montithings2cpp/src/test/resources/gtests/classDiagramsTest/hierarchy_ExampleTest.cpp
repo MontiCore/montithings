@@ -70,22 +70,22 @@ TEST_F (ExampleTest, AdapterTEST)
   for (int i = 0; i < 4; i++)
     {
       intValue = i;
-      color = adapter.convert (intValue);
-      EXPECT_EQ (adapter.convert (color), intValue);
+      color = adapter.convertColor (intValue);
+      EXPECT_EQ (adapter.convertColor (color), intValue);
     }
   intValue = 5;
-  color = adapter.convert (intValue);
-  EXPECT_EQ (adapter.convert (color), 0);
+  color = adapter.convertColor (intValue);
+  EXPECT_EQ (adapter.convertColor (color), 0);
   color = montithings::Colors::Color::RED;
-  intValue = adapter.convert (color);
-  EXPECT_EQ (adapter.convert (intValue), color);
+  intValue = adapter.convertColor (color);
+  EXPECT_EQ (adapter.convertColor (intValue), color);
   color = montithings::Colors::Color::GREEN;
-  intValue = adapter.convert (color);
-  EXPECT_EQ (adapter.convert (intValue), color);
+  intValue = adapter.convertColor (color);
+  EXPECT_EQ (adapter.convertColor (intValue), color);
   color = montithings::Colors::Color::BLUE;
-  intValue = adapter.convert (color);
-  EXPECT_EQ (adapter.convert (intValue), color);
+  intValue = adapter.convertColor (color);
+  EXPECT_EQ (adapter.convertColor (intValue), color);
   color = montithings::Colors::Color::YELLOW;
-  intValue = adapter.convert (color);
-  EXPECT_EQ (adapter.convert (intValue), color);
+  intValue = adapter.convertColor (color);
+  EXPECT_EQ (adapter.convertColor (intValue), color);
 }
