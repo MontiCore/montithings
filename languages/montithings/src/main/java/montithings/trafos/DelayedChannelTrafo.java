@@ -97,8 +97,15 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
             // actually creates the model of the intercepting component
             ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(comp.getPackage(), channelInterceptorComponentName);
 
-            String qCompSourceName = comp.getPackage() + "." + comp.getComponentType().getName() + "." + portSource.getComponent();
-            String qCompTargetName = comp.getPackage() + "." + comp.getComponentType().getName() + "." + portTarget.getComponent();
+            String qCompSourceName = comp.getPackage() + "." + comp.getComponentType().getName();
+            if (portSource.isPresentComponent()) {
+                qCompSourceName +=  "." + portSource.getComponent();
+            }
+            String qCompTargetName = comp.getPackage() + "." + comp.getComponentType().getName();
+            if (portTarget.isPresentComponent()) {
+                qCompTargetName +=  "." + portTarget.getComponent();
+            }
+
             List<Long> delays = dataHandler.getNetworkDelays(qCompSourceName, portSource.getPort(), qCompTargetName, portTarget.getPort());
 
             addBehavior(channelInterceptorComponent, delays);

@@ -185,7 +185,7 @@ DDSCommunicator::commandWaitForAcks() {
         std::cout << "DDSCommunicator | commandWaitForAcks: " << matches.current_count << " listeners";
     }
 
-    DDS::Duration_t timeout = {10, 0};
+    DDS::Duration_t timeout = {30, 0};
     if (writerCommand->wait_for_acknowledgments(timeout) != DDS::RETCODE_OK) {
         return false;
     }
@@ -200,7 +200,7 @@ DDSCommunicator::commandReplyWaitForAcks() {
         // listeners";
     }
 
-    DDS::Duration_t timeout = {10, 0};
+    DDS::Duration_t timeout = {30, 0};
     if (writerCommandReply->wait_for_acknowledgments(timeout) != DDS::RETCODE_OK) {
         return false;
     }

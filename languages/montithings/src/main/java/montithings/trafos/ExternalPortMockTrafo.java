@@ -156,7 +156,16 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
             String valueSerialized = recording.getString("msg_content");
 
             String value = TrafoUtil.parseJson(valueSerialized).get("value0").toString();
-            javaBlock.addMCBlockStatement(addAfterBehaviorBlock(timestamp, value));
+
+            // Determine if a number or a string is present
+            boolean isNumeric = true;
+            try{
+                Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                isNumeric = false;
+            }
+
+            javaBlock.addMCBlockStatement(addAfterBehaviorBlock(timestamp, value, isNumeric));
         }
 
         everyBlock.setMCJavaBlock(javaBlock.build());
@@ -165,7 +174,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         comp.getComponentType().getBody().addArcElement(mtEveryBlock.build());
     }
 
-    private ASTAfterStatement addAfterBehaviorBlock(long timestamp, String value) {
+    private ASTAfterStatement addAfterBehaviorBlock(long timestamp, String value, boolean isNumeric) {
         ASTAfterStatementBuilder afterStatement = MontiThingsMill.afterStatementBuilder();
         afterStatement.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(timestamp, "ns"));
 
@@ -182,14 +191,18 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         assignmentExpression.setOperator(ASTConstantsAssignmentExpressions.EQUALS);
 
         // right side
-        // TODO depends on the port type
-        ASTLiteralExpressionBuilder literalExpression = MontiThingsMill.literalExpressionBuilder();
+        if (isNumeric) {
+            ASTLiteralExpressionBuilder literalExpression = MontiThingsMill.literalExpressionBuilder();
 
-        ASTNatLiteralBuilder natLiteral = MontiThingsMill.natLiteralBuilder();
-        natLiteral.setDigits(value);
+            ASTNatLiteralBuilder natLiteral = MontiThingsMill.natLiteralBuilder();
+            natLiteral.setDigits(value);
 
-        literalExpression.setLiteral(natLiteral.build());
-        assignmentExpression.setRight(literalExpression.build());
+            literalExpression.setLiteral(natLiteral.build());
+            assignmentExpression.setRight(literalExpression.build());
+        } else {
+            ASTNameExpression rightExpression = MontiThingsMill.nameExpressionBuilder().setName(value).build();
+            assignmentExpression.setRight(rightExpression);
+        }
 
         astExpressionStatement.setExpression(assignmentExpression.build());
         javaBlock.addMCBlockStatement(astExpressionStatement.build());
