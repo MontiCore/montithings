@@ -75,6 +75,9 @@ void vwrite(OpenDDS::DCPS::ValueWriter& value_writer, const DDSRecorderMessage::
   case DDSRecorderMessage::INTERNAL_RECORDS:
     value_writer.write_enum("INTERNAL_RECORDS", DDSRecorderMessage::INTERNAL_RECORDS);
     break;
+  case DDSRecorderMessage::INTERNAL_STATE:
+    value_writer.write_enum("INTERNAL_STATE", DDSRecorderMessage::INTERNAL_STATE);
+    break;
   }
 }
 
@@ -86,9 +89,10 @@ namespace OpenDDS { namespace DCPS {
 
 const char* gen_DDSRecorderMessage_MessageType_names[] = {
   "MESSAGE_RECORD",
-  "INTERNAL_RECORDS"
+  "INTERNAL_RECORDS",
+  "INTERNAL_STATE"
 };
-const size_t gen_DDSRecorderMessage_MessageType_names_size = 2;
+const size_t gen_DDSRecorderMessage_MessageType_names_size = 3;
 }  }
 OPENDDS_END_VERSIONED_NAMESPACE_DECL
 

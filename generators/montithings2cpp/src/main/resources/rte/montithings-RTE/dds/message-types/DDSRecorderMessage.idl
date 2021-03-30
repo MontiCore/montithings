@@ -1,6 +1,7 @@
 module DDSRecorderMessage {
   enum MessageType { MESSAGE_RECORD,
-                     INTERNAL_RECORDS };
+                     INTERNAL_RECORDS,
+                     INTERNAL_STATE };
 
   @topic
   struct Message {
