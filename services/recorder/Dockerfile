@@ -20,5 +20,8 @@ RUN rm -rf build
 # Build our binary/binaries
 RUN ./build.sh
 
+
+RUN mkdir /usr/src/app/services/recorder/recordings
+
 # Run the container
-ENTRYPOINT [ "build/recorder/bin/recorder" ]
+ENTRYPOINT [ "build/recorder/bin/recorder", "--fileRecordings", "/usr/src/app/services/recorder/recordings/recordings.json" ]
