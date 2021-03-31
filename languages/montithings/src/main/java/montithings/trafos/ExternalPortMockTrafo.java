@@ -209,7 +209,8 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
         astExpressionStatement.setExpression(assignmentExpression.build());
         javaBlock.addMCBlockStatement(astExpressionStatement.build());
 
-        javaBlock.addMCBlockStatement(createLogStatement("Sending input=" + value + " on <out> port"));
+        String logContent = "Sending input=" + value.replace("\"","\\\"") + " on <out> port";
+        javaBlock.addMCBlockStatement(createLogStatement(logContent));
 
         // implement publish out;
         ASTPublishPort publishPort = MontiThingsMill.publishPortBuilder()
