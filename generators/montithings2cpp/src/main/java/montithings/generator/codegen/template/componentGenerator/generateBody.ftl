@@ -38,7 +38,6 @@ ${tc.includeArgs("template.util.setup.Setup", [comp, compname, config, className
   ${tc.includeArgs("template.componentGenerator.printRestoreState", [comp, config, className])}
 </#if>
 
-${tc.includeArgs("template.componentGenerator.printGetSerializedState", [comp, className])}
 ${tc.includeArgs("template.componentGenerator.printGetState", [comp, className])}
 
 

@@ -53,7 +53,7 @@ class ${className} : public DDSParticipant
         json parameterConfig;
 
         json getSerializedState() {
-            return comp->getSerializedState();
+            return comp->getState()->serializeState();
         }
 
         bool tryInitializeDDS(int argc, char *argv[]) {
