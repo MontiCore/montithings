@@ -63,6 +63,13 @@ if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")
 endif ()
 
+# Keep hwc interceptor in case of replaying
+set(RTE_SOURCES
+    ${RTE_SOURCES}
+    "dds/recorder/HWCInterceptor.h"
+    "dds/recorder/HWCInterceptor.cpp"
+) 
+
 
 # exclude MQTT related part of the RTE to not require Mosquitto for compiling
 if (EXCLUDE_MQTT)
