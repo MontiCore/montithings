@@ -5,8 +5,8 @@ ${tc.signature("comp","className")}
 <#assign generics = Utils.printFormalTypeParameters(comp)>
 
 ${Utils.printTemplateArguments(comp)}
-json
-${className}${Utils.printFormalTypeParameters(comp)}::getSerializedState ()
+${compname}State${generics}*
+${className}${Utils.printFormalTypeParameters(comp)}::getState ()
 {
-    return ${Identifier.getStateName()}.serializeState ();
+    return &${Identifier.getStateName()};
 }

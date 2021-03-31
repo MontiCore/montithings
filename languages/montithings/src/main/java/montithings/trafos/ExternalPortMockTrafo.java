@@ -136,6 +136,8 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
             addConnection(parentComp, qNamePort, mockedComponentName.toLowerCase() + ".in");
         }
 
+        flagAsGenerated(mockedPortComp);
+
         return mockedPortComp;
     }
 

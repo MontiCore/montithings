@@ -3,6 +3,7 @@ package montithings.generator;
 
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.ComponentTypeSymbolTOP;
 import arcbasis._symboltable.PortSymbol;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
@@ -172,7 +173,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       List<String> allModels = symTab.getSubScopes().stream()
               .map(s -> s.getComponentTypeSymbols().values())
               .flatMap(Collection::stream)
-              .map(m -> m.getFullName())
+              .map(ComponentTypeSymbolTOP::getFullName)
               .collect(Collectors.toList());
       models.setMontithings(allModels);
     }

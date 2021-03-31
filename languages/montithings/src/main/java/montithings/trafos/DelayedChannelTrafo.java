@@ -102,6 +102,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
                 qCompSourceName +=  "." + portSource.getComponent();
             }
             String qCompTargetName = comp.getPackage() + "." + comp.getComponentType().getName();
+
             if (portTarget.isPresentComponent()) {
                 qCompTargetName +=  "." + portTarget.getComponent();
             }
@@ -118,6 +119,8 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
                     "out",
                     true,
                     portType);
+
+            flagAsGenerated(channelInterceptorComponent);
 
             this.additionalTrafoModels.add(channelInterceptorComponent);
 

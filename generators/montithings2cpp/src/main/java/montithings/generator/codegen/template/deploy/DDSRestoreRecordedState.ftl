@@ -4,7 +4,7 @@ ${tc.signature("comp", "config")}
 
 <#if config.getReplayMode().toString() == "ON" && !ComponentHelper.isFlaggedAsGenerated(comp)>
 {
-    // Fill system call replayer with recorded data
+    // Restore internal state
     std::ifstream ifstreamRecordings("recordings.json");
 
     if ( ifstreamRecordings ) {
@@ -15,10 +15,11 @@ ${tc.signature("comp", "config")}
         // thus, remove last qualifying name
         std::string oldInstanceName = instanceNameArg.getValue().substr(0, instanceNameArg.getValue().find_last_of("."));
 
-        if (recordings["calls"].contains(oldInstanceName.c_str())) {
-            for (auto &call : recordings["calls"][oldInstanceName.c_str()].items()) {
-                montithings::library::hwcinterceptor::addRecordedCall(std::stoi(call.key()), call.value());
-            }
+        // restore state
+        if (recordings["states"].contains(oldInstanceName.c_str())
+            && !recordings["states"][oldInstanceName.c_str()].is_null()) {
+            std::string recordedState = recordings["states"][oldInstanceName.c_str()].dump();
+            cmp.getState()->restoreState(recordedState);
         }
     }
     else {

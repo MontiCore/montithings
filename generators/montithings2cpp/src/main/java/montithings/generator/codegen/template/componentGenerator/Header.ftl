@@ -134,6 +134,7 @@ void onEvent () override;
   bool restoreState ();
 </#if>
 json getSerializedState();
+${compname}State${generics}* getState();
 void threadJoin ();
 };
 

@@ -63,11 +63,6 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         Set<String> origIngoingPorts = visitor.getIngoingPorts();
         Set<String> origOutgoingPorts = visitor.getOutgoingPorts();
 
-        if (origIngoingPorts.size() == 0 ||
-                origOutgoingPorts.size() == 0) {
-            // No need to include computation delay
-            return additionalTrafoModels;
-        }
 
         // delay is dependent of the actual instance, hence, for each instance, we need a new component type
         for (String parentName : TrafoUtil.findParents(originalModels, targetComp)) {
@@ -207,6 +202,9 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         List<String> origPortsOut = new ArrayList<>(origOutgoingPorts);
         addBehaviorDelayComp(delayComp, origQNameInstance, origPortsIn, origPortsOut);
 
+        flagAsGenerated(compWrapper);
+        flagAsGenerated(delayComp);
+
         additionalTrafoModels.add(compWrapper);
         additionalTrafoModels.add(delayComp);
 
@@ -273,48 +271,53 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
         ASTBehavior behavior = addEmptyBehavior(comp);
 
-        // First, retrieve all ports
         // 2.1 Condition
         List<String> portsBeforeIn = origPortsIn.stream().map(p -> p.concat("_before_in")).collect(Collectors.toList());
-        ASTExpression conditionIncomingPorts = createCondition(portsBeforeIn);
+        if (!portsBeforeIn.isEmpty()) {
+            ASTExpression conditionIncomingPorts = createCondition(portsBeforeIn);
 
-        // 2.3 storeMsgTs: arguments
-        ASTArgumentsBuilder storeMsgTsArgs = MontiThingsMill.argumentsBuilder();
+            // 2.3 storeMsgTs: arguments
+            ASTArgumentsBuilder storeMsgTsArgs = MontiThingsMill.argumentsBuilder();
 
-        // First argument
-        ASTNameExpression indexMsgNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index_msg").build();
-        storeMsgTsArgs.addExpression(indexMsgNameExpression);
+            // First argument
+            ASTNameExpression indexMsgNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index_msg").build();
+            storeMsgTsArgs.addExpression(indexMsgNameExpression);
 
-        // Second argument
-        ASTArguments emptyArgs = MontiThingsMill.argumentsBuilder().build();
-        ASTCallExpression getTsCallExpression = createCallExpression("getNanoTimestamp", emptyArgs);
-        storeMsgTsArgs.addExpression(getTsCallExpression);
+            // Second argument
+            ASTArguments emptyArgs = MontiThingsMill.argumentsBuilder().build();
+            ASTCallExpression getTsCallExpression = createCallExpression("getNanoTimestamp", emptyArgs);
+            storeMsgTsArgs.addExpression(getTsCallExpression);
 
-        // create storeMsgTs statement
-        ASTCallExpression storeMsgTsCallExpression = createCallExpression("storeMsgTs", storeMsgTsArgs.build());
-        ASTExpressionStatement storeMsgTsCallExpressionStatement = MontiThingsMill.expressionStatementBuilder()
-                .setExpression(storeMsgTsCallExpression)
-                .build();
+            // create storeMsgTs statement
+            ASTCallExpression storeMsgTsCallExpression = createCallExpression("storeMsgTs", storeMsgTsArgs.build());
+            ASTExpressionStatement storeMsgTsCallExpressionStatement = MontiThingsMill.expressionStatementBuilder()
+                    .setExpression(storeMsgTsCallExpression)
+                    .build();
 
-        // add statement to then block
-        // 2.2 then statement
-        ASTMCJavaBlockBuilder ingoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
-        ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component: $index_msg"));
-        ingoingThenBlock.addMCBlockStatement(storeMsgTsCallExpressionStatement);
+            // add statement to then block
+            // 2.2 then statement
+            ASTMCJavaBlockBuilder ingoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
+            ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component: $index_msg"));
+            ingoingThenBlock.addMCBlockStatement(storeMsgTsCallExpressionStatement);
 
-        // 2.4 increase index_msg
-        ASTMCBlockStatement incIndexStatement = createIncrementVariableStatement("index_msg");
-        ingoingThenBlock.addMCBlockStatement(incIndexStatement);
+            // 2.4 increase index_msg
+            ASTMCBlockStatement incIndexStatement = createIncrementVariableStatement("index_msg");
+            ingoingThenBlock.addMCBlockStatement(incIndexStatement);
 
-        ASTIfStatementBuilder ifStatementIncomingBuilder = MontiThingsMill.ifStatementBuilder();
-        ifStatementIncomingBuilder.setCondition(conditionIncomingPorts);
-        ifStatementIncomingBuilder.setThenStatement(ingoingThenBlock.build());
-        ifStatementIncomingBuilder.setElseStatementAbsent();
+            ASTIfStatementBuilder ifStatementIncomingBuilder = MontiThingsMill.ifStatementBuilder();
+            ifStatementIncomingBuilder.setCondition(conditionIncomingPorts);
+            ifStatementIncomingBuilder.setThenStatement(ingoingThenBlock.build());
+            ifStatementIncomingBuilder.setElseStatementAbsent();
 
-        behavior.getMCJavaBlock().addMCBlockStatement(ifStatementIncomingBuilder.build());
+            behavior.getMCJavaBlock().addMCBlockStatement(ifStatementIncomingBuilder.build());
+        }
 
         // 3.1 Condition
         List<String> portsAfterIn = origPortsOut.stream().map(p -> p.concat("_after_in")).collect(Collectors.toList());
+        if (portsAfterIn.isEmpty()) {
+            // There is no outgoing port
+            return;
+        }
         ASTExpression conditionOutgoingPorts = createCondition(portsAfterIn);
 
         ASTMCJavaBlockBuilder outgoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
