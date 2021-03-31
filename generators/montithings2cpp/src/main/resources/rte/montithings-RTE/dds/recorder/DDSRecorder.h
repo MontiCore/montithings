@@ -3,7 +3,6 @@
 #pragma once
 
 #include <ace/OS_NS_stdlib.h>
-#include "../../easyloggingpp/easylogging++.h"
 #include <algorithm>
 #include <dds/DCPS/Marked_Default_Qos.h>
 #include <dds/DCPS/Service_Participant.h>
@@ -14,8 +13,10 @@
 
 #include "../../json/json.hpp"
 #include "../../tl/optional.hpp"
+#include "../../easyloggingpp/easylogging++.h"
 #include "../message-types/DDSMessageTypeSupportImpl.h"
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
+#include "../../DDSParticipant.h"
 #include "DDSCommunicator.h"
 #include "HWCInterceptor.h"
 #include "VectorClock.h"
@@ -30,6 +31,8 @@ private:
     int messageId = 0;
 
     DDSCommunicator ddsCommunicator;
+    DDSParticipant *ddsParticipant;
+
     std::string instanceName;
     std::string topicName;
     std::string portName;
@@ -52,6 +55,8 @@ private:
 
     void sendInternalRecords();
 
+    void sendState(json state);
+
     void onCommandMessage(const DDSRecorderMessage::Command &message);
 
     void onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &message);
@@ -68,6 +73,8 @@ public:
     void init();
 
     void setInstanceName(const std::string &name);
+
+    void setDDSParticipant(DDSParticipant &ddsParticipant);
 
     void setTopicName(const std::string &name);
 

@@ -52,6 +52,9 @@ class ${className} : public DDSParticipant
         bool receivedParameterConfig = false;
         json parameterConfig;
 
+        json getSerializedState() {
+            return comp->getSerializedState();
+        }
 
         bool tryInitializeDDS(int argc, char *argv[]) {
             DDS::DomainParticipantFactory_var dpf = TheParticipantFactoryWithArgs(argc, argv);

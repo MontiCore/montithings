@@ -38,5 +38,7 @@ public:
 
     virtual std::string getInstanceName() = 0;
 
+    virtual json getSerializedState() = 0;
+
 };
 

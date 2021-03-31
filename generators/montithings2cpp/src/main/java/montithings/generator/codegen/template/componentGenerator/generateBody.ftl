@@ -37,6 +37,10 @@ ${tc.includeArgs("template.util.setup.Setup", [comp, compname, config, className
 <#if ComponentHelper.retainState(comp)>
   ${tc.includeArgs("template.componentGenerator.printRestoreState", [comp, config, className])}
 </#if>
+
+${tc.includeArgs("template.componentGenerator.printGetSerializedState", [comp, className])}
+
+
 ${tc.includeArgs("template.util.init.Init", [comp, compname, config, className])}
 
 <#if config.getMessageBroker().toString() == "MQTT">

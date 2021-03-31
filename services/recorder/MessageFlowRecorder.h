@@ -34,8 +34,9 @@ private:
     // stores all incoming messages unprocessed
     std::vector<DDSRecorderMessage::Message> recordedMessages;
 
-    // storages for processed messages, non-deterministic calls, and computation latencies
-    nlohmann::json recordStorage;
+    // storages for processed messages, non-deterministic calls, internal states, and computation latencies
+    nlohmann::json storage;
+
 
     // simple counters which keep track of how many non-deterministic calls and computation latencies
     // have been received; only for logging purposes

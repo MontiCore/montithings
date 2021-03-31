@@ -78,6 +78,7 @@ public:
     	if (isRecordingEnabled) {
             ddsRecorder = std::make_unique<DDSRecorder>();
             ddsRecorder->setInstanceName(participant->getInstanceName());
+            ddsRecorder->setDDSParticipant(*participant);
             ddsRecorder->setTopicName(topicName);
             ddsRecorder->setPortName(portName);
             ddsRecorder->init();

@@ -133,6 +133,7 @@ void onEvent () override;
 <#if ComponentHelper.retainState(comp)>
   bool restoreState ();
 </#if>
+json getSerializedState();
 void threadJoin ();
 };
 

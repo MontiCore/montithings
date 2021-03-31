@@ -31,6 +31,10 @@ DDSRecorder::setInstanceName(const std::string &name) {
     ddsCommunicator.setInstanceName(name);
 }
 
+void DDSRecorder::setDDSParticipant(DDSParticipant &participant) {
+    ddsParticipant = &participant;
+}
+
 void
 DDSRecorder::setTopicName(const std::string &name) {
     topicName = name;
@@ -53,6 +57,8 @@ DDSRecorder::start() {
     unackedRecordedMessageTimestampMap.clear();
     ddsCommunicator.initPublisher();
     ddsCommunicator.initWriter();
+
+    sendState(ddsParticipant->getSerializedState());
 }
 
 void
@@ -60,6 +66,20 @@ DDSRecorder::stop() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | stopping recording... ";
     montithings::library::hwcinterceptor::stopNondeterministicRecording();
     ddsCommunicator.cleanupRecorderMessageWriter();
+}
+
+void
+DDSRecorder::sendState(json state) {
+    DDSRecorderMessage::Message recorderMessage;
+    recorderMessage.id = messageId;
+    recorderMessage.instance_name = instanceName.c_str();
+    recorderMessage.type = DDSRecorderMessage::INTERNAL_STATE;
+    recorderMessage.msg_content = state.dump().c_str();
+
+    messageId++;
+
+    CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending internal state:" << recorderMessage.msg_content;
+    ddsCommunicator.send(recorderMessage);
 }
 
 void
@@ -104,7 +124,8 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             VectorClock::updateVectorClock(newVectorClock, sendingInstance);
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
                                  << " to=" << sendingInstance << " from=" << instanceName;
-            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName, VectorClock::getSerializedVectorClock());
+            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName,
+                                    VectorClock::getSerializedVectorClock());
         } else {
             // message was sent and not received. Thus, add message to the map of unacked messages
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id

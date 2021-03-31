@@ -51,7 +51,7 @@ MessageFlowRecorder::setInstanceAmount(int n) {
 
 void
 MessageFlowRecorder::start() {
-    recordStorage = nlohmann::json::object();
+    storage = nlohmann::json::object();
     statsCallsAmount = 0;
     statsLatenciesAmount = 0;
 
@@ -124,7 +124,7 @@ void
 MessageFlowRecorder::process() {
     RecordProcessor processor;
     if (!recordedMessages.empty()) {
-        recordStorage["recordings"] = processor.process(recordedMessages);
+        storage["recordings"] = processor.process(recordedMessages);
     }
 }
 
@@ -138,7 +138,7 @@ MessageFlowRecorder::saveToFile() {
     LOG_F (INFO, "Flushing recorded data into file %s.", fileRecordingsPath.c_str());
     std::ofstream outfile;
     outfile.open(fileRecordingsPath);
-    outfile << recordStorage.dump();
+    outfile << storage.dump();
     outfile.close();
 }
 
@@ -157,11 +157,18 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
             ddsCommunicator.sendAck(message.instance_name.in(), message.id, "recorder", pName, "");
 
             // Replace timestamp by recorder clock readings
-            toStore.timestamp =  Util::Time::getCurrentTimestampNano();
+            toStore.timestamp = Util::Time::getCurrentTimestampNano();
 
             // store message unprocessed and move on, dont waste time
             recordedMessages.push_back(toStore);
             break;
+        case DDSRecorderMessage::INTERNAL_STATE: {
+            nlohmann::json state = nlohmann::json::parse(message.msg_content.in());
+            std::string instance = message.instance_name.in();
+            storage["states"][instance] = state;
+
+            break;
+        }
         case DDSRecorderMessage::INTERNAL_RECORDS: {
             nlohmann::json content = nlohmann::json::parse(message.msg_content.in());
             std::string instance = message.instance_name.in();
@@ -169,13 +176,13 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
             for (auto call : content["calls"]) {
                 std::string callId = call[0].dump();
 
-                recordStorage["calls"][instance][callId] = call[1];
+                storage["calls"][instance][callId] = call[1];
                 statsCallsAmount++;
             }
 
             for (auto latency : content["calc_latency"]) {
                 std::string latencyId = latency[0].dump();
-                recordStorage["computation_latency"][instance][latencyId] = latency[1];
+                storage["computation_latency"][instance][latencyId] = latency[1];
                 statsLatenciesAmount++;
             }
 
