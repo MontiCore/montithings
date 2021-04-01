@@ -7,6 +7,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 
 rm -f dockerStop.sh
+
+docker network create montithings  || true
+
 <#if config.getSplittingMode().toString() == "OFF">
     ${tc.includeArgs("template.util.scripts.DockerRunCommand", [comp.getFullName(), comp.getFullName()?lower_case, config])}
 <#else>
@@ -17,7 +20,7 @@ rm -f dockerStop.sh
 
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
   # Start DCPSInfoRepo
-  CONTAINER=$(docker run --name dcpsinforepo -d -p 12345:12345 registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
+  CONTAINER=$(docker run --name dcpsinforepo -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
   echo docker stop $CONTAINER >> dockerStop.sh
 </#if>
 chmod +x dockerStop.sh
