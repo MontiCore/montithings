@@ -8,7 +8,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 rm -f dockerStop.sh
 
-docker network create montithings  || true
+docker network ls | grep montithings > /dev/null || docker network create --driver bridge montithings
 
 <#if config.getSplittingMode().toString() == "OFF">
     ${tc.includeArgs("template.util.scripts.DockerRunCommand", [comp.getFullName(), comp.getFullName()?lower_case, config])}
