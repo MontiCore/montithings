@@ -227,6 +227,9 @@ public class MTGenerator {
     fg.generate(targetPath, "dockerBuild", ".sh",
             "template/util/scripts/DockerBuild.ftl", comp, config);
     makeExecutable(targetPath, "dockerBuild", ".sh");
+    fg.generate(targetPath, "dockerRun", ".sh",
+      "template/util/scripts/DockerRun.ftl", comp, config);
+    makeExecutable(targetPath, "dockerRun", ".sh");
   }
 
   public void generateDDSDCPSConfig(File targetPath) {
