@@ -58,7 +58,10 @@ DDSRecorder::start() {
     ddsCommunicator.initPublisher();
     ddsCommunicator.initWriter();
 
-    sendState(ddsParticipant->getSerializedState());
+    // ddsParticipant is not present in sensor-actuator-ports
+    if(ddsParticipant) {
+        sendState(ddsParticipant->getSerializedState());
+    }
 }
 
 void
