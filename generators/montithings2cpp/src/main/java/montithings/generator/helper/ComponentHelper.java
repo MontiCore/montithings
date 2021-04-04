@@ -50,6 +50,10 @@ import montithings.generator.visitor.FindPublishedPortsVisitor;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.util.GenericBindingUtil;
+import mtconfig._ast.ASTCompConfig;
+import mtconfig._ast.ASTSeparationHint;
+import mtconfig._symboltable.CompConfigSymbol;
+import mtconfig._symboltable.IMTConfigGlobalScope;
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
@@ -62,7 +66,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
-
 import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
@@ -888,6 +891,19 @@ public class ComponentHelper {
 
   public static boolean retainState(ComponentTypeSymbol component) {
     return !elementsOf(component).filter(ASTMTRetainState.class).isEmpty();
+  }
+  
+  public static boolean shouldIncludeSubcomponents(ComponentTypeSymbol component, ConfigParams config) {
+    IMTConfigGlobalScope cscope = config.getMtConfigScope();
+    if (cscope != null) {
+      Optional<CompConfigSymbol> cfg = cscope.resolveCompConfig(config.getTargetPlatform().toString(), component);
+      if (cfg.isPresent()) {
+        CompConfigSymbol cc = cfg.get();
+        ASTCompConfig acc = cc.getAstNode();
+        return !FluentIterable.from(acc.getMTCFGTagList()).filter(ASTSeparationHint.class).isEmpty();
+      }
+    }
+    return false;
   }
 
   public static List<montiarc._ast.ASTArcTiming> getTiming(

@@ -445,9 +445,14 @@ public class Utils {
             + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
             + ".h\"");
         } else {
-          compIncludes.add("#include <"
-            + subcomponent.getType().getFullName().replaceAll("\\.", "/")
-            + ".h>");
+          if(ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
+            /*compIncludes.add("#include <"
+                + subcomponent.getType().getFullName().replaceAll("\\.", "/")
+                + ".h>");*/
+            compIncludes.add("#include <"
+                + subcomponent.getType().getName().replaceAll("\\.", "/")
+                + ".h>");
+          }
         }
       }
       Set<String> genericIncludes = ComponentHelper.includeGenericComponent(comp, subcomponent);

@@ -3,7 +3,7 @@ ${tc.signature("comp","config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
-<#if config.getSplittingMode().toString() == "OFF">
+<#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp, config)>
   <#list comp.getSubComponents() as subcomponent>
       <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
         <#assign type = subcomponent.getGenericType().getName()>
@@ -12,6 +12,11 @@ ${tc.signature("comp","config")}
       </#if>
       ${Utils.printPackageNamespace(comp, subcomponent)}${type} ${subcomponent.getName()};
   </#list>
+  <#if ComponentHelper.shouldIncludeSubcomponents(comp, config)>
+    <#list comp.getSubComponents() as subcomponent >
+      std::string subcomp${subcomponent.getName()?cap_first}IP;
+    </#list>
+  </#if>
 <#else>
   <#list comp.getSubComponents() as subcomponent >
     std::string subcomp${subcomponent.getName()?cap_first}IP;

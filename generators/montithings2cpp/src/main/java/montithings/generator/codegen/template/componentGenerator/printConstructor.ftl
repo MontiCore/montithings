@@ -3,7 +3,7 @@ ${tc.signature("comp","compname","config","className")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
-<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF")>
+<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp, config))>
 
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp)}::${className}
