@@ -90,8 +90,8 @@ include_directories("${commonCodePrefix}${libraryPath?replace("\\","/")}")
 # Include Subcomponent Headers
 <#list ComponentHelper.getSubcompTypesRecursive(comp) as subcomp>
   <#assign subcompName = subcomp.getFullName()>
-  HEADER_DIRECTORIES("../${subcompName}" ${subcompName?replace(".","_")}_HEADER)
-  include_directories("../${subcompName}" ${"$"}{${subcompName?replace(".","_")}_HEADER})
+  # HEADER_DIRECTORIES("../${subcompName}" ${subcompName?replace(".","_")}_HEADER)
+  # include_directories("../${subcompName}" ${"$"}{${subcompName?replace(".","_")}_HEADER})
 </#list>
 
 # Include HWC
