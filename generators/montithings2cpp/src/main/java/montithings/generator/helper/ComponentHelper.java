@@ -104,7 +104,7 @@ public class ComponentHelper {
     String typeName = expression.print();
     // Workaround for MontiCore Bug that adds component type to variable types
     if (expression.print().startsWith(comp.getFullName())) {
-      typeName = typeName.substring(comp.getFullName().length());
+      typeName = typeName.substring(comp.getFullName().length() + 1);
     }
     return java2cppTypeString(typeName);
   }
