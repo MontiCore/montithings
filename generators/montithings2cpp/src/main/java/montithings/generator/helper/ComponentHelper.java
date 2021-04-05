@@ -85,7 +85,12 @@ public class ComponentHelper {
     if (expression instanceof SymTypeOfNumericWithSIUnit) {
       expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
     }
-    return java2cppTypeString(expression.print());
+    String typeName = expression.print();
+    // Workaround for MontiCore Bug that adds component type to variable types
+    if (expression.print().endsWith("String")) {
+      typeName = "String";
+    }
+    return java2cppTypeString(typeName);
   }
 
   public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp,
@@ -99,7 +104,7 @@ public class ComponentHelper {
     String typeName = expression.print();
     // Workaround for MontiCore Bug that adds component type to variable types
     if (expression.print().startsWith(comp.getFullName())) {
-      typeName = typeName.substring(comp.getFullName().length() + 1);
+      typeName = typeName.substring(comp.getFullName().length());
     }
     return java2cppTypeString(typeName);
   }
