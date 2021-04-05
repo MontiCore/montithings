@@ -85,7 +85,12 @@ public class ComponentHelper {
     if (expression instanceof SymTypeOfNumericWithSIUnit) {
       expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
     }
-    return java2cppTypeString(expression.print());
+    String typeName = expression.print();
+    // Workaround for MontiCore Bug that adds component type to variable types
+    if (expression.print().endsWith("String")) {
+      typeName = "String";
+    }
+    return java2cppTypeString(typeName);
   }
 
   public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp,
@@ -96,7 +101,12 @@ public class ComponentHelper {
     if (expression instanceof SymTypeOfNumericWithSIUnit) {
       expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
     }
-    return java2cppTypeString(expression.print());
+    String typeName = expression.print();
+    // Workaround for MontiCore Bug that adds component type to variable types
+    if (expression.print().startsWith(comp.getFullName())) {
+      typeName = typeName.substring(comp.getFullName().length() + 1);
+    }
+    return java2cppTypeString(typeName);
   }
 
   /**
@@ -589,7 +599,7 @@ public class ComponentHelper {
    * @param comp
    * @return CPP duration
    */
-  public static String getExecutionIntervalMethod(arcbasis._symboltable.ComponentTypeSymbol comp) {
+  public static String getExecutionIntervalMethod(ComponentTypeSymbol comp) {
     ASTCalculationInterval interval = elementsOf(comp)
       .filter(ASTCalculationInterval.class)
       .first().orNull();
@@ -598,7 +608,7 @@ public class ComponentHelper {
     return method;
   }
 
-  public static String getExecutionIntervalMethod(arcbasis._symboltable.ComponentTypeSymbol comp,
+  public static String getExecutionIntervalMethod(ComponentTypeSymbol comp,
     ASTEveryBlock everyBlock) {
     String method = "std::chrono::";
     method += printTime(everyBlock.getSIUnitLiteral());
@@ -658,7 +668,7 @@ public class ComponentHelper {
       time = "minutes";
     }
     SIUnitLiteralDecoder decoder = new SIUnitLiteralDecoder();
-    double value = decoder.getValue(lit);
+    double value = decoder.getDouble(lit);
     time += "(" + (int) value + ")";
     return time;
   }
@@ -1153,25 +1163,25 @@ public class ComponentHelper {
     return "";
   }
 
-  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var){
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
-    if (comp.isPresentAstNode()){
+    if (comp.isPresentAstNode()) {
       comp.getAstNode().accept(visitor);
     }
     return visitor.getAgoQualifications().containsKey(var.getName());
   }
 
-  public static boolean hasAgoQualification(ComponentTypeSymbol comp, PortSymbol port){
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, PortSymbol port) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
-    if (comp.isPresentAstNode()){
+    if (comp.isPresentAstNode()) {
       comp.getAstNode().accept(visitor);
     }
     return visitor.getAgoQualifications().containsKey(port.getName());
   }
 
-  public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name){
+  public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
-    if (comp.isPresentAstNode()){
+    if (comp.isPresentAstNode()) {
       comp.getAstNode().accept(visitor);
     }
     double valueInSeconds = visitor.getAgoQualifications().get(name);
