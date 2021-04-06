@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.types.check;
 
 import arcbasis._symboltable.PortSymbol;
