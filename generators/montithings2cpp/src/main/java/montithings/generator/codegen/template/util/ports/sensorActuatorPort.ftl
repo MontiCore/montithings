@@ -70,6 +70,7 @@ private:
       ddsRecorder = std::make_unique${"<DDSRecorder>"}();
       ddsRecorder->setInstanceName(instanceName);
       ddsRecorder->setTopicName(instanceName + ".${portSymbol.getName()}/out");
+      ddsRecorder->setPortName("${portSymbol.getName()}");
       ddsRecorder->init();
     </#if>
   }

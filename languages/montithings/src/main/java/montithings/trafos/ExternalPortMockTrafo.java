@@ -150,7 +150,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
         // create "every" block
         ASTEveryBlockBuilder everyBlock = MontiThingsMill.everyBlockBuilder();
-        everyBlock.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(999, "h"));
+        everyBlock.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(100, "h"));
 
         ASTMCJavaBlockBuilder javaBlock = MontiThingsMill.mCJavaBlockBuilder();
 

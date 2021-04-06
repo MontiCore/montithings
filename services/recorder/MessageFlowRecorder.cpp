@@ -144,7 +144,8 @@ MessageFlowRecorder::saveToFile() {
 
 void
 MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &message) {
-    LOG_F (1, "onRecorderMessage:%d,%s,%s,%d,%ld,%s,%s.", message.id, message.instance_name.in(),
+    LOG_F (1, "onRecorderMessage: id=%d,instance=%s,content=%s,msg_id=%d,ts=%ld,topic=%s,delays=%s.", message.id,
+           message.instance_name.in(),
            message.msg_content.in(), message.msg_id, message.timestamp, message.topic.in(),
            message.message_delays.in());
 
@@ -153,7 +154,8 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
 
     switch (message.type) {
         case DDSRecorderMessage::MESSAGE_RECORD:
-            LOG_F (1, "ACKing: instance_name=%s, id=%d,", message.instance_name.in(), message.id);
+            LOG_F (1, "ACKing: instance_name=%s, id=%d, port=%s,", message.instance_name.in(), message.id,
+                   pName.c_str());
             ddsCommunicator.sendAck(message.instance_name.in(), message.id, "recorder", pName, "");
 
             // Replace timestamp by recorder clock readings
@@ -166,6 +168,7 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
             nlohmann::json state = nlohmann::json::parse(message.msg_content.in());
             std::string instance = message.instance_name.in();
             storage["states"][instance] = state;
+            LOG_F (1, "Received internal state from %s.", instance.c_str());
 
             break;
         }
@@ -199,13 +202,14 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
 
 void
 MessageFlowRecorder::onCommandReplyMessage(const DDSRecorderMessage::CommandReply &message) {
-    LOG_F (1, "onCommandReplyMessage:%d,%s,%d.", message.id, message.content.in(),
+    LOG_F (1, "onCommandReplyMessage:id=%d,content=%s,command_id=%d.", message.id, message.content.in(),
            message.command_id);
 }
 
 void
 MessageFlowRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &ack) {
-    LOG_F (1, "onAcknowledgementMessage:%d,%s,%s,%d,%s.", ack.id, ack.sending_instance.in(), ack.sending_instance.in(),
+    LOG_F (1, "onAcknowledgementMessage: id=%d,sending_instance=%s,receiving_instance%s,acked_id=%d,vc=%s.", ack.id,
+           ack.sending_instance.in(), ack.receiving_instance.in(),
            ack.acked_id,
            ack.serialized_vector_clock.in());
 }
