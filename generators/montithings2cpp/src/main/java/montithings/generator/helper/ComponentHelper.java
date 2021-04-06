@@ -667,6 +667,9 @@ public class ComponentHelper {
     else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")) {
       time = "minutes";
     }
+    else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("h")) {
+      time = "hours";
+    }
     SIUnitLiteralDecoder decoder = new SIUnitLiteralDecoder();
     double value = decoder.getDouble(lit);
     time += "(" + (int) value + ")";
