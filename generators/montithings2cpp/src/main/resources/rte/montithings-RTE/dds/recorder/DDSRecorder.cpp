@@ -97,6 +97,9 @@ DDSRecorder::sendInternalRecords() {
     content["calc_latency"] = montithings::library::hwcinterceptor::storageComputationLatency;
     recorderMessage.msg_content = content.dump().c_str();
 
+    // arbitrary msg_id
+    recorderMessage.msg_id = 0;
+
     montithings::library::hwcinterceptor::storageCalls.clear();
     montithings::library::hwcinterceptor::storageComputationLatency.clear();
 
@@ -156,6 +159,9 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             recorderMessage.topic = topicName;
             recorderMessage.message_delays = jUnsentDelays.dump().c_str();
 
+
+            recorderMessage.timestamp = timestamp;
+
             if (includeContent) {
                 recorderMessage.msg_content = content.c_str();
             }
@@ -198,17 +204,12 @@ DDSRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement 
                          << ack.serialized_vector_clock.in() << ", receiving_instance=" << ack.receiving_instance.in()
                          << ", acked_id=" << ack.acked_id << ", portName=" << ack.port_name;
 
-    if (strcmp(ack.sending_instance.in(), "recorder") == 0) {
-
+    std::string portIdentifier = portName + "/out";
+    if (strcmp(ack.sending_instance.in(), "recorder") == 0 && strcmp(ack.port_name.in(), portIdentifier.c_str()) == 0) {
         handleAck(unackedRecordedMessageTimestampMap, unsentRecordMessageDelays, "recorder", ack.acked_id);
 
-    } else if (isOutgoingPort() && strcmp(ack.port_name.in(), portName.c_str()) == 0) {
-
-        std::string portIdentifier = ack.sending_instance.in() + portName;
-        handleAck(unackedMessageTimestampMap, unsentMessageDelays, portIdentifier.c_str(), ack.acked_id);
-
-    } else {
-        CLOG (DEBUG, LOG_ID) << "Received ACK | wasnt for me";
+    } else if (isOutgoingPort() && strcmp(ack.port_name.in(), portIdentifier.c_str()) == 0) {
+        handleAck(unackedMessageTimestampMap, unsentMessageDelays, topicName.c_str(), ack.acked_id);
     }
 }
 
