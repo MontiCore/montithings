@@ -72,9 +72,12 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                     // incoming ports
                     for (String portName : visitorPortNames.getIngoingPorts()) {
                         String qNamePort = instanceName + "." + portName;
-                        List<ASTConnector> connectorsMatchingTarget = parentComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
+                        List<ASTConnector> connectorsMatchingTargetAtParent = parentComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
 
-                        if (connectorsMatchingTarget.size() == 0) {
+                        // if no target defined in the parent, however, there could be still a connection within the own model
+                        List<ASTConnector> connectorsMatchingTargetAtOwnComp = targetComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
+
+                        if (connectorsMatchingTargetAtParent.size() == 0 && connectorsMatchingTargetAtOwnComp.size() == 0) {
                             additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, true, qNameInstance, qNamePort, portName));
                         }
                     }
@@ -82,9 +85,10 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                     // outgoing ports
                     for (String portName : visitorPortNames.getOutgoingPorts()) {
                         String qNamePort = instanceName + "." + portName;
-                        List<ASTConnector> connectorsMatchingSource = parentComp.getComponentType().getConnectorsMatchingSource(qNamePort);
+                        List<ASTConnector> connectorsMatchingSourceAtParent = parentComp.getComponentType().getConnectorsMatchingSource(qNamePort);
+                        List<ASTConnector> connectorsMatchingSourceAtOwnComp = targetComp.getComponentType().getConnectorsMatchingSource(qNamePort);
 
-                        if (connectorsMatchingSource.size() == 0) {
+                        if (connectorsMatchingSourceAtParent.size() == 0 && connectorsMatchingSourceAtOwnComp.size() == 0) {
                             additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, false, qNameInstance, qNamePort, portName));
                         }
                     }
@@ -146,7 +150,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
 
         // create "every" block
         ASTEveryBlockBuilder everyBlock = MontiThingsMill.everyBlockBuilder();
-        everyBlock.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(100, "h"));
+        everyBlock.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(999, "h"));
 
         ASTMCJavaBlockBuilder javaBlock = MontiThingsMill.mCJavaBlockBuilder();
 

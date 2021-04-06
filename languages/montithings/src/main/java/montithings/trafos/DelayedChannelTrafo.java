@@ -169,7 +169,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         addLongFieldDeclaration(comp, "index", 0);
 
 
-        javaBlockBuilder.addMCBlockStatement(createLogStatement("in: $in"));
+        //javaBlockBuilder.addMCBlockStatement(createLogStatement("in: $in"));
         int index = 0;
         for (long delay : delays) {
             javaBlockBuilder.addMCBlockStatement(addDelayIfStatement(index, delay));

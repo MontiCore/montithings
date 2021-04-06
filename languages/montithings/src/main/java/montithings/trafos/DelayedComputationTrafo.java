@@ -297,7 +297,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             // add statement to then block
             // 2.2 then statement
             ASTMCJavaBlockBuilder ingoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
-            ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component: $index_msg"));
+            //ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component: $index_msg"));
             ingoingThenBlock.addMCBlockStatement(storeMsgTsCallExpressionStatement);
 
             // 2.4 increase index_msg
@@ -321,7 +321,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         ASTExpression conditionOutgoingPorts = createCondition(portsAfterIn);
 
         ASTMCJavaBlockBuilder outgoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
-        outgoingThenBlock.addMCBlockStatement(createLogStatement("received message from original component; index: $index_msg_from_comp"));
+        //outgoingThenBlock.addMCBlockStatement(createLogStatement("received message from original component; index: $index_msg_from_comp"));
 
         // set targetLatencies
         HashMap<Integer, Long> computationLatencies = dataHandler.getComputationLatencies(origQNameInstance);
@@ -465,7 +465,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
         ASTMCJavaBlockBuilder thenStatementBuilder = MontiThingsMill.mCJavaBlockBuilder();
         thenStatementBuilder.addMCBlockStatement(thenExpressionStatementBuilder.build());
-        thenStatementBuilder.addMCBlockStatement(createLogStatement("index_msg_from_comp=" + index + " | targetDelay=" + delay));
+        //thenStatementBuilder.addMCBlockStatement(createLogStatement("index_msg_from_comp=" + index + " | targetDelay=" + delay));
 
         ASTIfStatementBuilder ifStatementBuilder = MontiThingsMill.ifStatementBuilder();
         ifStatementBuilder.setCondition(conditionBuilder.build());
