@@ -235,8 +235,8 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
             // 2.1 Condition
             if (in1_before_in? || (in2_before_in? || in3_before_in?)) {
             // 2.2 then statement
-            // 2.3 storeMsgTs
-             storeMsgTs(index_msg, getNanoTimestamp());
+            // 2.3 storeNsInMap
+             storeNsInMap(index_msg, getNanoTimestamp());
 
              // 2.4 increase index_msg
              index_msg+=1;
@@ -254,7 +254,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
              ...
 
              // 3.2 implement delayNanoseconds()
-             delayNanoseconds(subtract(targetDelay, subtract(getNanoTimestamp(), getMsgTs(index_msg_from_comp)))))
+             delayNanoseconds(subtract(targetDelay, subtract(getNanoTimestamp(), getNsFromMap(index_msg_from_comp)))))
              // 3.3 index_msg_from_comp+=1;
              index_msg_from_comp+=1;
              // 3.4 implement assignments()
@@ -276,29 +276,29 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
         if (!portsBeforeIn.isEmpty()) {
             ASTExpression conditionIncomingPorts = createCondition(portsBeforeIn);
 
-            // 2.3 storeMsgTs: arguments
-            ASTArgumentsBuilder storeMsgTsArgs = MontiThingsMill.argumentsBuilder();
+            // 2.3 storeNsInMap: arguments
+            ASTArgumentsBuilder storeNsInMapArgs = MontiThingsMill.argumentsBuilder();
 
             // First argument
             ASTNameExpression indexMsgNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index_msg").build();
-            storeMsgTsArgs.addExpression(indexMsgNameExpression);
+            storeNsInMapArgs.addExpression(indexMsgNameExpression);
 
             // Second argument
             ASTArguments emptyArgs = MontiThingsMill.argumentsBuilder().build();
             ASTCallExpression getTsCallExpression = createCallExpression("getNanoTimestamp", emptyArgs);
-            storeMsgTsArgs.addExpression(getTsCallExpression);
+            storeNsInMapArgs.addExpression(getTsCallExpression);
 
-            // create storeMsgTs statement
-            ASTCallExpression storeMsgTsCallExpression = createCallExpression("storeMsgTs", storeMsgTsArgs.build());
-            ASTExpressionStatement storeMsgTsCallExpressionStatement = MontiThingsMill.expressionStatementBuilder()
-                    .setExpression(storeMsgTsCallExpression)
+            // create storeNsInMap statement
+            ASTCallExpression storeNsInMapCallExpression = createCallExpression("storeNsInMap", storeNsInMapArgs.build());
+            ASTExpressionStatement storeNsInMapCallExpressionStatement = MontiThingsMill.expressionStatementBuilder()
+                    .setExpression(storeNsInMapCallExpression)
                     .build();
 
             // add statement to then block
             // 2.2 then statement
             ASTMCJavaBlockBuilder ingoingThenBlock = MontiThingsMill.mCJavaBlockBuilder();
             //ingoingThenBlock.addMCBlockStatement(createLogStatement("received message from wrapping component: $index_msg"));
-            ingoingThenBlock.addMCBlockStatement(storeMsgTsCallExpressionStatement);
+            ingoingThenBlock.addMCBlockStatement(storeNsInMapCallExpressionStatement);
 
             // 2.4 increase index_msg
             ASTMCBlockStatement incIndexStatement = createIncrementVariableStatement("index_msg");
@@ -351,24 +351,24 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
     }
 
     private ASTExpressionStatement createDelayStatement() {
-        // implements delayNanoseconds(subtract(targetDelay, subtract(getNanoTimestamp(), getMsgTs(index_msg_from_comp)))))
+        // implements delayNanoseconds(subtract(targetDelay, subtract(getNanoTimestamp(), getNsFromMap(index_msg_from_comp)))))
 
         /* INNER SUBTRACT METHOD */
         // implement first argument getNanoTimestamp()
         ASTArguments emptyArgs = MontiThingsMill.argumentsBuilder().build();
         ASTCallExpression getTsCallExpression = createCallExpression("getNanoTimestamp", emptyArgs);
 
-        // implement getMsgTs(index_msg_from_comp)
+        // implement getNsFromMap(index_msg_from_comp)
         ASTNameExpression indexMsgFromCompNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index_msg_from_comp").build();
-        ASTArgumentsBuilder getMsgTsArgs = MontiThingsMill.argumentsBuilder();
-        getMsgTsArgs.addExpression(indexMsgFromCompNameExpression);
+        ASTArgumentsBuilder getNsFromMapArgs = MontiThingsMill.argumentsBuilder();
+        getNsFromMapArgs.addExpression(indexMsgFromCompNameExpression);
 
-        ASTCallExpression getMsgTsCallExpression = createCallExpression("getMsgTs", getMsgTsArgs.build());
+        ASTCallExpression getNsFromMapCallExpression = createCallExpression("getNsFromMap", getNsFromMapArgs.build());
 
         // create argument list of inner subtract method
         ASTArgumentsBuilder innerSubtractArgs = MontiThingsMill.argumentsBuilder();
         innerSubtractArgs.addExpression(getTsCallExpression);
-        innerSubtractArgs.addExpression(getMsgTsCallExpression);
+        innerSubtractArgs.addExpression(getNsFromMapCallExpression);
 
         // build inner subtract method
         ASTCallExpression innerSubtractCallExpression = createCallExpression("subtract", innerSubtractArgs.build());
