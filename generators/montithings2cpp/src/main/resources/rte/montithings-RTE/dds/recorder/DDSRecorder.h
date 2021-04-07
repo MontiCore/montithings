@@ -63,7 +63,8 @@ private:
 
     static void handleAck(unackedMap &unackedMap,
                           unsentDelayMap &unsentDelayMap,
-                          const char *sendingInstance, long ackedId);
+                          const char *sendingInstance,
+                          long ackedId);
 
 public:
     DDSRecorder() = default;

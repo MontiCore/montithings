@@ -206,17 +206,23 @@ DDSRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement 
 
     std::string portIdentifier = portName + "/out";
     if (strcmp(ack.sending_instance.in(), "recorder") == 0 && strcmp(ack.port_name.in(), portIdentifier.c_str()) == 0) {
-        handleAck(unackedRecordedMessageTimestampMap, unsentRecordMessageDelays, "recorder", ack.acked_id);
+        handleAck(unackedRecordedMessageTimestampMap,
+                  unsentRecordMessageDelays,
+                  ack.sending_instance.in(),
+                  ack.acked_id);
 
     } else if (isOutgoingPort() && strcmp(ack.port_name.in(), portIdentifier.c_str()) == 0) {
-        handleAck(unackedMessageTimestampMap, unsentMessageDelays, topicName.c_str(), ack.acked_id);
+        handleAck(unackedMessageTimestampMap,
+                  unsentMessageDelays,
+                  ack.sending_instance.in(),
+                  ack.acked_id);
     }
 }
 
 void
 DDSRecorder::handleAck(unackedMap &unackedMap,
                        unsentDelayMap &unsentDelayMap,
-                       const char *portIdentifier, long ackedId) {
+                       const char *sendingInstance, long ackedId) {
     long long timestamp_ack_received = Util::Time::getCurrentTimestampNano();
 
     if (unackedMap.count(ackedId) == 0) {
@@ -232,6 +238,6 @@ DDSRecorder::handleAck(unackedMap &unackedMap,
     // TODO: it would be more preceise to adjust the delay base on the message size
     long delay = (timestamp_ack_received - timestamp_sent) / 2;
 
-    std::pair<std::string, long long> instanceDelay = std::make_pair(portIdentifier, delay);
+    std::pair<std::string, long long> instanceDelay = std::make_pair(sendingInstance, delay);
     unsentDelayMap[ackedId] = instanceDelay;
 }
