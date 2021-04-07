@@ -2,11 +2,13 @@
 package montithings.trafos;
 
 import arcbasis._ast.ASTPortAccess;
+import de.monticore.expressions.commonexpressions._ast.ASTCallExpression;
 import de.monticore.expressions.commonexpressions._ast.ASTCallExpressionBuilder;
 import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpressionBuilder;
 import de.monticore.expressions.expressionsbasis._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
+import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatement;
 import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTIfStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlockBuilder;
@@ -68,74 +70,38 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         return this.additionalTrafoModels;
     }
 
-    public void transform(Collection<ASTMACompilationUnit> models, ASTMACompilationUnit comp, ASTPortAccess portSource, ASTPortAccess portTarget) throws Exception {
+    public void transform(Collection<ASTMACompilationUnit> models, ASTMACompilationUnit targetComp, ASTPortAccess portSource, ASTPortAccess portTarget) throws Exception {
         // A source or target port can either be declared locally or within a subcomponent.
-        String sourceTypeName = TrafoUtil.getPortOwningComponentType(comp, portSource);
+        String sourceTypeName = TrafoUtil.getPortOwningComponentType(targetComp, portSource);
 
         // Name of the added component, e.g. hierarchy.Example.SourceValueSinkValueDelay
-        String channelInterceptorComponentName =
-                TrafoUtil.replaceDotsWithCamelCase(portSource.getQName()) +
+        String channelInterceptorComponentName = "ChannelDelay";
+
+        String channelInterceptorComponentInstanceName =
+                (TrafoUtil.replaceDotsWithCamelCase(portSource.getQName()) +
                         TrafoUtil.replaceDotsWithCamelCase(portTarget.getQName()) +
-                        "Delay";
+                        "delay").toLowerCase();
 
-        channelInterceptorComponentName = TrafoUtil.capitalize(channelInterceptorComponentName);
-
-        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(comp.getPackage());
+        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(targetComp.getPackage());
         fullyQName.addParts(channelInterceptorComponentName);
 
-        // Adds instantiation statement, e.g. "SourceValueSinkValueDelay sourcevaluesinkvaluedelay";
-        addSubComponentInstantiation(comp, fullyQName, channelInterceptorComponentName.toLowerCase(), createEmptyArguments());
+        // Adds instantiation statement, e.g. "ChannelDelay sourcevaluesinkvaluedelay";
+        addSubComponentInstantiation(targetComp, fullyQName, channelInterceptorComponentInstanceName, createEmptyArguments());
 
         // Find out the port type. Therefore, first get the component of the source and search for the port.
         // This is only done with the source port as port types have to match anyway
         ASTMCType portType = null;
         try {
-            String qName = TrafoUtil.getFullyQNameFromImports(modelPath, comp, sourceTypeName).getQName();
+            String qName = TrafoUtil.getFullyQNameFromImports(modelPath, targetComp, sourceTypeName).getQName();
             ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, qName);
             portType = TrafoUtil.getPortTypeByName(compSource, portSource.getPort());
-
-            // actually creates the model of the intercepting component
-            ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(comp.getPackage(), channelInterceptorComponentName);
-
-            String qCompSourceName = comp.getPackage() + "." + comp.getComponentType().getName();
-            if (portSource.isPresentComponent()) {
-                qCompSourceName +=  "." + portSource.getComponent();
-            }
-            String qCompTargetName = comp.getPackage() + "." + comp.getComponentType().getName();
-
-            if (portTarget.isPresentComponent()) {
-                qCompTargetName +=  "." + portTarget.getComponent();
-            }
-
-            List<Long> delays = dataHandler.getNetworkDelays(qCompSourceName, portSource.getPort(), qCompTargetName, portTarget.getPort());
-
-            addBehavior(channelInterceptorComponent, delays);
-
-            addPort(channelInterceptorComponent,
-                    "in",
-                    false,
-                    portType);
-            addPort(channelInterceptorComponent,
-                    "out",
-                    true,
-                    portType);
-
-            flagAsGenerated(channelInterceptorComponent);
-
-            this.additionalTrafoModels.add(channelInterceptorComponent);
-
-            // Replaces the old connection
-            removeConnection(comp, portSource, portTarget);
-            addConnection(comp, portSource.getQName(), channelInterceptorComponentName.toLowerCase() + "." + "in");
-            addConnection(comp, channelInterceptorComponentName.toLowerCase() + "." + "out", portTarget.getQName());
-
         } catch (ClassNotFoundException e) {
             //TODO
         } catch (NoSuchElementException e) {
             // model was not found. it is probably a generic type. in this case search for the port within the interfaces
-            if (TrafoUtil.isGeneric(comp, sourceTypeName)) {
-                for (String iface : TrafoUtil.getInterfaces(comp, sourceTypeName)) {
-                    ASTMACompilationUnit ifaceComp = TrafoUtil.getComponentByName(models, comp.getPackage() + "." + iface);
+            if (TrafoUtil.isGeneric(targetComp, sourceTypeName)) {
+                for (String iface : TrafoUtil.getInterfaces(targetComp, sourceTypeName)) {
+                    ASTMACompilationUnit ifaceComp = TrafoUtil.getComponentByName(models, targetComp.getPackage() + "." + iface);
                     try {
                         portType = TrafoUtil.getPortTypeByName(ifaceComp, portSource.getPort());
                     } catch (Exception e1) {
@@ -147,34 +113,70 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         if (portType == null) {
             throw new NoSuchElementException("No such port instance found which is named " + portSource.getPort());
         }
+
+        boolean isAlreadyCreated = models.stream()
+                .filter(m -> m.getPackage().equals(targetComp.getPackage()))
+                .anyMatch(m -> m.getComponentType().getName().equals(channelInterceptorComponentName));
+
+        if (!isAlreadyCreated) {
+            // actually creates the model of the intercepting component
+            ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(targetComp.getPackage(), channelInterceptorComponentName);
+
+            addPort(channelInterceptorComponent,
+                    "in",
+                    false,
+                    portType);
+            addPort(channelInterceptorComponent,
+                    "out",
+                    true,
+                    portType);
+
+            addBehavior(channelInterceptorComponent);
+
+            flagAsGenerated(channelInterceptorComponent);
+
+            this.additionalTrafoModels.add(channelInterceptorComponent);
+            models.add(channelInterceptorComponent);
+        }
+
+        // Replaces the old connection
+        removeConnection(targetComp, portSource, portTarget);
+        addConnection(targetComp, portSource.getQName(), channelInterceptorComponentInstanceName + "." + "in");
+        addConnection(targetComp, channelInterceptorComponentInstanceName + "." + "out", portTarget.getQName());
     }
 
-    void addBehavior(ASTMACompilationUnit comp, List<Long> delays) {
+    void addBehavior(ASTMACompilationUnit targetComp) {
         /*
             int index = 0;
 
-            if (index == 0) {
-                delay(299);
+            behavior {
+                delayNanoseconds(getChannelDelay(index));
+                index = index + 1;
             }
-            if (index == 1) {
-                delay(762);
-            }
-            if ...
-
-            index = index + 1;
         */
         ASTMCJavaBlockBuilder javaBlockBuilder = MontiThingsMill.mCJavaBlockBuilder();
 
         // Initiate index variable
-        addLongFieldDeclaration(comp, "index", 0);
+        addLongFieldDeclaration(targetComp, "index", 0);
 
 
-        //javaBlockBuilder.addMCBlockStatement(createLogStatement("in: $in"));
-        int index = 0;
-        for (long delay : delays) {
-            javaBlockBuilder.addMCBlockStatement(addDelayIfStatement(index, delay));
-            index++;
-        }
+        // implement delayNanoseconds(getNsFromMap(index));
+        ASTNameExpression indexNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index").build();
+
+        ASTArgumentsBuilder getNsFromMapArgs = MontiThingsMill.argumentsBuilder();
+        getNsFromMapArgs.addExpression(indexNameExpression);
+
+        ASTCallExpression getNsFromMapExpression = createCallExpression("getNsFromMap", getNsFromMapArgs.build());
+
+        ASTArgumentsBuilder delayNanosecondsArgs = MontiThingsMill.argumentsBuilder();
+        delayNanosecondsArgs.addExpression(getNsFromMapExpression);
+
+        ASTCallExpression delayNanosecondsExpression = createCallExpression("delayNanoseconds", delayNanosecondsArgs.build());
+
+        ASTExpressionStatement delayStatement = MontiThingsMill.expressionStatementBuilder()
+                .setExpression(delayNanosecondsExpression)
+                .build();
+        javaBlockBuilder.addMCBlockStatement(delayStatement);
 
         // implement index += 1;
         javaBlockBuilder.addMCBlockStatement(createIncrementVariableStatement("index"));
@@ -183,51 +185,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         javaBlockBuilder.addMCBlockStatement(createAssignmentStatement("out", "in"));
 
 
-        ASTBehavior behavior = addEmptyBehavior(comp);
+        ASTBehavior behavior = addEmptyBehavior(targetComp);
         behavior.setMCJavaBlock(javaBlockBuilder.build());
-    }
-
-    private ASTMCBlockStatement addDelayIfStatement(int index, long delay) {
-        ASTNameExpression indexNameExpression = MontiThingsMill.nameExpressionBuilder().setName("index").build();
-
-        // Building condition
-        ASTNatLiteralBuilder rightNatLiteralBuilder = MontiThingsMill.natLiteralBuilder();
-        rightNatLiteralBuilder.setDigits(String.valueOf(index));
-
-        ASTLiteralExpressionBuilder rightExpressionBuilder = MontiThingsMill.literalExpressionBuilder();
-        rightExpressionBuilder.setLiteral(rightNatLiteralBuilder.build());
-
-        ASTEqualsExpressionBuilder conditionBuilder = MontiThingsMill.equalsExpressionBuilder();
-        conditionBuilder.setLeft(indexNameExpression);
-        conditionBuilder.setOperator("==");
-        conditionBuilder.setRight(rightExpressionBuilder.build());
-
-        // Building then statement
-        ASTNameExpression delayNameExpression = MontiThingsMill.nameExpressionBuilder().setName("delayNanoseconds").build();
-
-        ASTNatLiteral delayNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits(String.valueOf(delay)).build();
-        ASTLiteralExpression delayLiteralExpression = MontiThingsMill.literalExpressionBuilder().setLiteral(delayNatLiteral).build();
-
-        ASTArgumentsBuilder delayArgsBulder = MontiThingsMill.argumentsBuilder();
-        delayArgsBulder.addExpression(delayLiteralExpression);
-
-        ASTCallExpressionBuilder thenCallDelayExpressionBuilder = MontiThingsMill.callExpressionBuilder();
-        thenCallDelayExpressionBuilder.setExpression(delayNameExpression);
-        thenCallDelayExpressionBuilder.setArguments(delayArgsBulder.build());
-        thenCallDelayExpressionBuilder.setName("test"); // TODO <- what does the name mean?
-
-        ASTExpressionStatementBuilder thenExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
-        thenExpressionStatementBuilder.setExpression(thenCallDelayExpressionBuilder.build());
-
-        ASTMCJavaBlockBuilder thenStatementBuilder = MontiThingsMill.mCJavaBlockBuilder();
-        thenStatementBuilder.addMCBlockStatement(thenExpressionStatementBuilder.build());
-        thenStatementBuilder.addMCBlockStatement(createLogStatement("index=" + index + " | delaying=" + delay));
-
-        ASTIfStatementBuilder ifStatementBuilder = MontiThingsMill.ifStatementBuilder();
-        ifStatementBuilder.setCondition(conditionBuilder.build());
-        ifStatementBuilder.setThenStatement(thenStatementBuilder.build());
-        ifStatementBuilder.setElseStatementAbsent();
-
-        return ifStatementBuilder.build();
     }
 }
