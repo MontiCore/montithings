@@ -6,18 +6,18 @@
 namespace montithings {
     namespace library {
         namespace replayer {
-            std::unordered_map<int, unsigned long long> messageTsMap;
+            std::unordered_map<int, unsigned long long> nsMap;
 
-            void storeMsgTs(int index, unsigned long long ts) {
-                messageTsMap[index] = ts;
+            void storeNsInMap(int index, unsigned long long ts) {
+                nsMap[index] = ts;
             }
 
-            unsigned long long getMsgTs(int index) {
-                if (messageTsMap.find(index) == messageTsMap.end()) {
+            unsigned long long getNsFromMap(int index) {
+                if (nsMap.find(index) == nsMap.end()) {
                     // no such key, return 0
                     return 0;
                 }
-                return messageTsMap[index];
+                return nsMap[index];
             }
 
             void

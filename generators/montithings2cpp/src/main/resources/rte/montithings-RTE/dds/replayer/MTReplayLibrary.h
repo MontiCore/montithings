@@ -17,11 +17,12 @@
 namespace montithings {
     namespace library {
         namespace replayer {
-            extern std::unordered_map<int, unsigned long long> messageTsMap;
+            // used to store indexed timestamps or delay information in nanoseconds
+            extern std::unordered_map<int, unsigned long long> nsMap;
 
-            void storeMsgTs(int index, unsigned long long ts);
+            void storeNsInMap(int index, unsigned long long ts);
 
-            unsigned long long getMsgTs(int index);
+            unsigned long long getNsFromMap(int index);
 
             template<typename A, typename B>
             A subtract(A v1, B v2) {
