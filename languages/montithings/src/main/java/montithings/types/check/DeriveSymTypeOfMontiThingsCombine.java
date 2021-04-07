@@ -17,7 +17,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
 
   private MontiThingsDelegatorVisitor realThis;
 
-  private DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes deriveSymTypeOfAssignmentExpressions;
+  private DeriveSymTypeOfAssignmentExpressionsForMT deriveSymTypeOfAssignmentExpressions;
 
   private DeriveSymTypeOfCommonExpressionsForMT deriveSymTypeOfCommonExpressions;
 
@@ -88,7 +88,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
   @Override
   public void init() {
     deriveSymTypeOfCommonExpressions = new DeriveSymTypeOfCommonExpressionsForMT();
-    deriveSymTypeOfAssignmentExpressions = new DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes();
+    deriveSymTypeOfAssignmentExpressions = new DeriveSymTypeOfAssignmentExpressionsForMT();
     deriveSymTypeOfMCCommonLiterals = new DeriveSymTypeOfMCCommonLiterals();
     deriveSymTypeOfExpression = new DeriveSymTypeOfExpression();
     deriveSymTypeOfLiterals = new DeriveSymTypeOfLiterals();

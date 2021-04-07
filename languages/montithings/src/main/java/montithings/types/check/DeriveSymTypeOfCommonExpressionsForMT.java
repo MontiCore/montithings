@@ -1,9 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.types.check;
 
-import de.monticore.expressions.commonexpressions._ast.ASTCallExpression;
-import de.monticore.expressions.commonexpressions._ast.ASTConditionalExpression;
-import de.monticore.expressions.commonexpressions._ast.ASTInfixExpression;
+import de.monticore.expressions.commonexpressions._ast.*;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.types.check.*;
 
@@ -17,10 +16,11 @@ import static de.monticore.ocl.types.check.OCLTypeCheck.*;
 public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommonExpressionsWithSIUnitTypes {
 
   /**
-   * All methods in this class are identical to the methods in
+   * All methods in this class are alomst identical to the methods in
    * de.monticore.types.check.DeriveSymTypeOfCommonExpressions.
-   * This class is used to ensure that OCLTypeCheck methods are
-   * used instead of the normal TypeCheck methods.
+   * This class is used to ensure that OCLTypeCheck methods are used
+   * used instead of the normal TypeCheck methods and that the condition
+   * flag is properly set when working with IsPresentExpressions.
    */
 
   @Override
@@ -42,6 +42,54 @@ public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommon
       }
     }
     return wholeResult;
+  }
+
+  @Override
+  protected Optional<SymTypeExpression> calculateEqualsExpression(ASTEqualsExpression expr) {
+    return calculateTypeLogical(expr, expr.getRight(), expr.getLeft());
+  }
+
+  @Override
+  protected Optional<SymTypeExpression> calculateNotEqualsExpression(ASTNotEqualsExpression expr) {
+    return calculateTypeLogical(expr, expr.getRight(), expr.getLeft());
+  }
+
+  @Override
+  protected Optional<SymTypeExpression> calculateLessEqualExpression(ASTLessEqualExpression expr) {
+    return calculateTypeCompare(expr, expr.getRight(), expr.getLeft());
+  }
+
+  @Override
+  protected Optional<SymTypeExpression> calculateGreaterEqualExpression(ASTGreaterEqualExpression expr) {
+    return calculateTypeCompare(expr, expr.getRight(), expr.getLeft());
+  }
+
+  @Override
+  protected Optional<SymTypeExpression> calculateLessThanExpression(ASTLessThanExpression expr) {
+    return calculateTypeCompare(expr, expr.getRight(), expr.getLeft());
+  }
+
+  @Override
+  protected Optional<SymTypeExpression> calculateGreaterThanExpression(ASTGreaterThanExpression expr) {
+    return calculateTypeCompare(expr, expr.getRight(), expr.getLeft());
+  }
+
+  private Optional<SymTypeExpression> calculateTypeCompare(ASTInfixExpression expr, ASTExpression right, ASTExpression left) {
+    boolean b = DeriveSymTypeOfMontiThings.isCondition();
+    DeriveSymTypeOfMontiThings.setCondition(false);
+    SymTypeExpression leftResult = acceptThisAndReturnSymTypeExpressionOrLogError(left, "0xA0241");
+    SymTypeExpression rightResult = acceptThisAndReturnSymTypeExpressionOrLogError(right, "0xA0242");
+    DeriveSymTypeOfMontiThings.setCondition(b);
+    return calculateTypeCompare(expr, rightResult, leftResult);
+  }
+
+  private Optional<SymTypeExpression> calculateTypeLogical(ASTInfixExpression expr, ASTExpression right, ASTExpression left) {
+    boolean b = DeriveSymTypeOfMontiThings.isCondition();
+    DeriveSymTypeOfMontiThings.setCondition(false);
+    SymTypeExpression leftResult = acceptThisAndReturnSymTypeExpressionOrLogError(left, "0xA0244");
+    SymTypeExpression rightResult = acceptThisAndReturnSymTypeExpressionOrLogError(right, "0xA0245");
+    DeriveSymTypeOfMontiThings.setCondition(b);
+    return calculateTypeLogical(expr, rightResult, leftResult);
   }
 
   @Override

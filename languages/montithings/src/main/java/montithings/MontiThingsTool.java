@@ -294,6 +294,7 @@ public class MontiThingsTool {
   }
 
   public void addLibraryFunctions(@NotNull IMontiThingsScope scope) {
+    //log function
     VariableSymbol message = BasicSymbolsMillForMontiThings
         .variableSymbolBuilder()
         .setName("message")
@@ -314,6 +315,7 @@ public class MontiThingsTool {
     log.setSpannedScope(logParameters);
     scope.add(log);
 
+    //delay function
     VariableSymbol milliseconds = BasicSymbolsMillForMontiThings
         .variableSymbolBuilder()
         .setName("milliseconds")
@@ -333,6 +335,18 @@ public class MontiThingsTool {
         .build();
     delay.setSpannedScope(delayParameters);
     scope.add(delay);
+
+    //now_ns function
+    BasicSymbolsScope nowParameters = new BasicSymbolsScope();
+
+    FunctionSymbol now_ns = MontiThingsMill
+        .functionSymbolBuilder()
+        .setName("now_ns")
+        .setReturnType(SymTypeExpressionFactory.createTypeObject("String", scope))
+        .setEnclosingScope(scope)
+        .build();
+    now_ns.setSpannedScope(nowParameters);
+    scope.add(now_ns);
   }
 
   /**

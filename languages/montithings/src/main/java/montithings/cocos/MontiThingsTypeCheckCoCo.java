@@ -3,12 +3,13 @@ package montithings.cocos;
 
 import arcbasis._ast.ASTArcField;
 import arcbasis._ast.ASTArcParameter;
-import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpression;
-import de.monticore.expressions.commonexpressions._ast.ASTCallExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.ocl.types.check.OCLTypeCheck;
 import de.monticore.statements.mccommonstatements._ast.*;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTSimpleInit;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
+import de.monticore.symbols.basicsymbols._ast.ASTFunction;
+import de.monticore.symbols.basicsymbols._ast.ASTVariable;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.check.cocos.TypeCheckCoCo;
@@ -17,6 +18,7 @@ import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
 import montithings._visitor.MontiThingsVisitor;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
@@ -34,7 +36,7 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   }
 
   public static MontiThingsTypeCheckCoCo getCoCo() {
-    TypeCheck typeCheck = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    TypeCheck typeCheck = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
     return new MontiThingsTypeCheckCoCo(typeCheck);
   }
 
@@ -107,10 +109,46 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   }
 
   private void checkCondition(ASTExpression e) {
+    if(tc instanceof MontiThingsTypeCheck) {
+      ((MontiThingsTypeCheck) tc).setCondition(true);
+    }
     SymTypeExpression eType = tc.typeOf(e);
-    if (!TypeCheck.isBoolean(eType)) {
+    if (!MontiThingsTypeCheck.isBoolean(eType)) {
       Log.error("conditions have to be evaluable to boolean, but expression "
           + e.toString() + " is of type " + eType.getTypeInfo().getName());
+    }
+    if(tc instanceof MontiThingsTypeCheck) {
+      ((MontiThingsTypeCheck) tc).setCondition(false);
+    }
+  }
+
+  @Override
+  protected void checkFieldOrVariable(ASTVariable node, SymTypeExpression assignmentType) {
+    if (!node.isPresentSymbol())
+      logError(node, "Variable symbol not present");
+    else if (node.getSymbol().getType() == null)
+      logError(node, "Variable symbol has no type");
+    else if (assignmentType != null && !OCLTypeCheck.compatible(node.getSymbol().getType(), assignmentType))
+      logError(node, String.format("Variable type %s incompatible to assigned type %s",
+          node.getSymbol().getType().print(), assignmentType.print()));
+  }
+
+  @Override
+  protected void checkMethodOrFunction(ASTFunction node, SymTypeExpression returnType) {
+    if (!node.isPresentSymbol())
+      logError(node, "Function symbol not present");
+    else if (node.getSymbol().getReturnType() == null)
+      logError(node, "Function symbol has no return type");
+    else {
+      if (node.getSymbol().getReturnType().isVoidType()) {
+        if (returnType != null && !returnType.isVoidType())
+          logError(node, String.format("Return type void incompatible to actual return type %s",
+              returnType.print()));
+      } else if (returnType == null)
+        logError(node, "No return type given");
+      else if (!OCLTypeCheck.compatible(node.getSymbol().getReturnType(), returnType))
+        logError(node, String.format("Return type %s incompatible to actual return type %s",
+            node.getSymbol().getReturnType().print(), returnType.print()));
     }
   }
 }
