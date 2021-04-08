@@ -11,4 +11,5 @@ ${tc.signature("comp", "config", "existsHWC")}
   void addOutPort${name?cap_first}(Port<${type}>* ${name});
   void removeOutPort${name?cap_first}(Port<${type}>* ${name});
   void setPort${name?cap_first}ConversionFactor(double ${name}ConversionFactor);
+  double getPort${name?cap_first}ConversionFactor();
 </#list>

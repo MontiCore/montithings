@@ -17,7 +17,7 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
   ${tc.includeArgs("template.deploy.CommunicationManagerInit", [comp, config])}
 
   <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
-    cmp.setPort${portName?cap_first}ConversionFactor(${portName}ConversionFactor);
+    cmp.getInterface()->setPort${portName?cap_first}ConversionFactor(${portName}ConversionFactor);
   </#list>
 
   cmp.setUp(

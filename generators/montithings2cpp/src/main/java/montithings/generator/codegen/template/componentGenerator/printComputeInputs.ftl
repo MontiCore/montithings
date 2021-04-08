@@ -7,7 +7,7 @@ ${tc.signature("comp","compname","isMonitor")}
         ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()}<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >
         <#if ComponentHelper.isSIUnitPort(inPort)>
             tl::make_optional(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
-            .value()  * this->${Identifier.getInterfaceName()}.get${inPort.getName()}ConversionFactor
+            .value()  * this->${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}ConversionFactor()
         <#else>
             ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>
         </#if>
