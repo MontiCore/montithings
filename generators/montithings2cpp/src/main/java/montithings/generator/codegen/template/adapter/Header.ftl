@@ -28,8 +28,10 @@ protected:
 public:
 ${className}() = default;
 <#list ComponentHelper.getImportStatements(compname,config) as importStatement >
-  virtual ${Utils.printCDType(importStatement)} convert(${importStatement.getImportClass()} element) = 0;
-  virtual ${importStatement.getImportClass()} convert(${Utils.printCDType(importStatement)} element) = 0;
+  <#assign cdFullName = Utils.printCDType(importStatement)>
+  <#assign cdSimpleName = cdFullName?keep_after_last("::")>
+  virtual ${cdFullName} convert${cdSimpleName}(${importStatement.getImportClass()} element) = 0;
+  virtual ${importStatement.getImportClass()} convert${cdSimpleName}(${cdFullName} element) = 0;
 </#list>
 };
 ${tc.includeArgs("template.adapter.printNamespaceEnd", [packageName])}
