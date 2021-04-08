@@ -172,17 +172,6 @@ public class MTGenerator {
     generateDDSDCPSConfig(targetPath);
   }
 
-  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp) {
-    fg.generate(targetPath, "Dockerfile", "",
-      "template/util/scripts/DockerfileScript.ftl", comp, config);
-    fg.generate(targetPath, "dockerBuild", ".sh",
-      "template/util/scripts/DockerBuild.ftl", comp, config);
-    makeExecutable(targetPath, "dockerBuild", ".sh");
-    fg.generate(targetPath, "dockerRun", ".sh",
-      "template/util/scripts/DockerRun.ftl", comp, config);
-    makeExecutable(targetPath, "dockerRun", ".sh");
-  }
-
   public void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File libraryPath,
     File[] subPackagesPath) {
     fg.generate(targetPath, "CMakeLists", ".txt",
@@ -229,6 +218,22 @@ public class MTGenerator {
     fg.generate(targetPath, "kill", ".sh",
       "template/util/scripts/KillScript.ftl", sortedDirs, config);
     makeExecutable(targetPath, "kill", ".sh");
+
+    // Docker scripts
+    fg.generate(targetPath, "dockerRun", ".sh",
+            "template/util/scripts/DockerRun.ftl", comp, config);
+    makeExecutable(targetPath, "dockerRun", ".sh");
+  }
+
+  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp) {
+    fg.generate(targetPath, "Dockerfile", "",
+            "template/util/scripts/DockerfileScript.ftl", comp, config);
+    fg.generate(targetPath, "dockerBuild", ".sh",
+            "template/util/scripts/DockerBuild.ftl", comp, config);
+    makeExecutable(targetPath, "dockerBuild", ".sh");
+    fg.generate(targetPath, "dockerRun", ".sh",
+      "template/util/scripts/DockerRun.ftl", comp, config);
+    makeExecutable(targetPath, "dockerRun", ".sh");
   }
 
   public void generateDDSDCPSConfig(File targetPath) {

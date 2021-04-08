@@ -12,8 +12,8 @@ class ColorsAdapter : public ColorsAdapterTOP
   private:
   public:
   ColorsAdapter () = default;
-  Colors::Color convert (uint8_t element) override;
-  uint8_t convert (Colors::Color element) override;
+  Colors::Color convertColor (uint8_t element) override;
+  uint8_t convertColor (Colors::Color element) override;
 };
 
 } // namespace hierarchy

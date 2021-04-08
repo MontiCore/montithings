@@ -5,7 +5,7 @@ ${tc.signature("typeName", "instanceName", "config")}
 <#else>
     <#assign lineBreak = ")">
 </#if>
-CONTAINER=$(docker run -d --rm --net=host \
+CONTAINER=$(docker run -d --rm --net montithings \
 <#if config.getMessageBroker().toString() == "DDS">
   -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini \
 </#if>
@@ -17,7 +17,7 @@ CONTAINER=$(docker run -d --rm --net=host \
   --brokerHostname host.docker.internal --brokerPort 1883)
 </#if>
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
-  --DCPSInfoRepo localhost:12345 --DCPSConfigFile dcpsconfig.ini)
+  --DCPSInfoRepo dcpsinforepo:12345 --DCPSConfigFile dcpsconfig.ini)
 </#if>
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() != "DISTRIBUTED">
   --DCPSConfigFile dcpsconfig.ini)

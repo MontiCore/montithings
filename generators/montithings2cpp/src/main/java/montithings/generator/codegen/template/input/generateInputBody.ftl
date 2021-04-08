@@ -83,6 +83,7 @@ ${tc.signature("comp", "compname", "config", "className")}
             <#if cdeImportStatementOpt.isPresent()>
                 <#assign fullImportStatemantName = cdeImportStatementOpt.get().getSymbol().getFullName()?split(".")>
                 <#assign adapterName = fullImportStatemantName[0]+"Adapter">
+                <#assign cdSimpleName = cdeImportStatementOpt.get().getSymbol().getFullName()?keep_after_last(".")>
 
                 tl::optional<${cdeImportStatementOpt.get().getImportClass().toString()}>
                 ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Adap() const
@@ -92,14 +93,14 @@ ${tc.signature("comp", "compname", "config", "className")}
                 }
 
                 ${adapterName?cap_first} ${adapterName?uncap_first};
-                return ${adapterName?uncap_first}.convert(*get${port.getName()?cap_first}());
+                return ${adapterName?uncap_first}.convert${cdSimpleName}(*get${port.getName()?cap_first}());
                 }
 
                 void
                 ${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()} element)
                 {
                 ${adapterName?cap_first} ${adapterName?uncap_first};
-                this->${port.getName()} = ${adapterName?uncap_first}.convert(element);
+                this->${port.getName()} = ${adapterName?uncap_first}.convert${cdSimpleName}(element);
                 }
 
             </#if>

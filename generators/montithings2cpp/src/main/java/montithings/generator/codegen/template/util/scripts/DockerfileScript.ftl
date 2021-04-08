@@ -54,29 +54,36 @@ RUN ./build.sh ${comp.getFullName()}
     ENTRYPOINT [ "sh", "entrypoint.sh" ]
 
 <#else>
+    <#-- helper list to detect duplicated keys -->
+    <#assign processedInstances = [] />
+
     <#list instances as pair >
-        # COMPONENT: ${pair.getKey().fullName}
-        <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
-        <#if config.getMessageBroker().toString() == "DDS">
-        FROM debian:buster AS ${pair.getKey().fullName}
-        <#else>
-        FROM alpine AS ${pair.getKey().fullName}
+        <#if ! processedInstances?seq_contains(pair.getKey().fullName)>
+            <#assign processedInstances = processedInstances + [pair.getKey().fullName] />
 
-        RUN apk add --update-cache g++ 
+            # COMPONENT: ${pair.getKey().fullName}
+            <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
+            <#if config.getMessageBroker().toString() == "DDS">
+            FROM debian:buster AS ${pair.getKey().fullName}
+            <#else>
+            FROM alpine AS ${pair.getKey().fullName}
+
+            RUN apk add --update-cache g++
+            </#if>
+
+            <#if config.getMessageBroker().toString() == "MQTT">
+            RUN apk add --update-cache mosquitto
+            </#if>
+
+
+            COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
+
+            WORKDIR /usr/src/app/build/bin
+
+            RUN echo './${pair.getKey().fullName} "$@"' > entrypoint.sh
+
+            # Run our binary on container startup
+            ENTRYPOINT [ "sh", "entrypoint.sh" ]
         </#if>
-
-        <#if config.getMessageBroker().toString() == "MQTT">
-        RUN apk add --update-cache mosquitto
-        </#if>
-
-
-        COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
-
-        WORKDIR /usr/src/app/build/bin
-
-        RUN echo './${pair.getKey().fullName} "$@"' > entrypoint.sh
-
-        # Run our binary on container startup
-        ENTRYPOINT [ "sh", "entrypoint.sh" ]
     </#list>
 </#if>
