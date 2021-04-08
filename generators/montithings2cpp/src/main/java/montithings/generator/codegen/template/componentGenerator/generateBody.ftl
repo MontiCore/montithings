@@ -29,7 +29,9 @@ ${tc.signature("comp","compname","config","className")}
     ${tc.includeArgs("template.componentGenerator.printEveryBlocks", [comp, compname, className])}
 </#if>
 
-${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
+<#if !(comp.getPorts()?size == 0)>
+  ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
+</#if>
 ${tc.includeArgs("template.componentGenerator.printShouldComputeCheck", [comp, compname, className])}
 
 ${tc.includeArgs("template.util.setup.Setup", [comp, compname, config, className])}

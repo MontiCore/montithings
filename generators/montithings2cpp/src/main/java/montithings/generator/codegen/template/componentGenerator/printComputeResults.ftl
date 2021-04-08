@@ -9,7 +9,7 @@ ${className}Result${Utils.printFormalTypeParameters(comp)} result;
 <#else>
     this->uuid
 </#if>)) {
-    result.set${outPort.getName()?cap_first}(getPort${outPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${outPort.getName()?cap_first}
+    result.set${outPort.getName()?cap_first}(${Identifier.getInterfaceName()}.getPort${outPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${outPort.getName()?cap_first}
 
 <#else>
     this->uuid
