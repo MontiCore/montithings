@@ -27,5 +27,9 @@ now();
 void
 log (const std::string& message);
 
+// nano timestamps cannot be stored in type long
+// unfortunately MC does not support types like "unsigned long long"
+std::string
+now_ns();
 }
 }
