@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp")}
 <#include "/template/interface/helper/GeneralPreamble.ftl">
-${className}* getInterface();
+<#assign generics = Utils.printFormalTypeParameters(comp)>
+${className}${generics}* getInterface();
