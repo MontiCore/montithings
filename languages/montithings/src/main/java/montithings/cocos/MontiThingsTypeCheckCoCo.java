@@ -96,6 +96,21 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
     if (node.isPresentCondition()) {
       checkCondition(node.getCondition());
     }
+    for (ASTExpression e : node.getExpressionList()) {
+      checkExpression(e);
+    }
+  }
+
+  @Override
+  public void visit (ASTForInitByExpressions node) {
+    for (ASTExpression e : node.getExpressionList()) {
+      checkExpression(e);
+    }
+  }
+
+  @Override
+  public void visit (ASTEnhancedForControl node) {
+    checkExpression(node.getExpression());
   }
 
   @Override
@@ -106,6 +121,16 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   @Override
   public void visit(ASTDoWhileStatement node) {
     checkCondition(node.getCondition());
+  }
+
+  @Override
+  public void visit(ASTSwitchStatement node) {
+    checkExpression(node.getExpression());
+  }
+
+  @Override
+  public void visit(ASTConstantExpressionSwitchLabel node) {
+    checkExpression(node.getConstant());
   }
 
   private void checkCondition(ASTExpression e) {
