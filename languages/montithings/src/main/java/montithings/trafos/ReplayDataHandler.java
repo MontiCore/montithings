@@ -41,8 +41,8 @@ class ReplayDataHandler {
         for (JsonObject recording : getRecordings(qCompSourceName, qInstanceSourcePortName)) {
             if (recording.containsKey("delay")) {
                 JsonObject delay = (JsonObject) recording.get("delay");
-                if (delay.containsKey(qCompTargetName + qInstanceTargetPortName)) {
-                    delays.add(delay.getJsonNumber(qCompTargetName + qInstanceTargetPortName).longValue());
+                if (delay.containsKey(qCompTargetName)) {
+                    delays.add(delay.getJsonNumber(qCompTargetName).longValue());
                 } else {
                     delays.add(0L);
                 }
