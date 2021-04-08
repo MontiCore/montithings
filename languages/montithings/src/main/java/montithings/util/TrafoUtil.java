@@ -2,8 +2,6 @@ package montithings.util;
 
 import arcbasis._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTBasicLongLiteralBuilder;
-import de.monticore.literals.mccommonliterals._ast.ASTNumericLiteral;
-import de.monticore.literals.mcjavaliterals._ast.ASTLongLiteralBuilder;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteralBuilder;
 import de.monticore.siunits._ast.ASTSIUnitBuilder;
@@ -22,14 +20,11 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static montithings.util.GenericBindingUtil.printSimpleType;
 
@@ -185,12 +180,36 @@ public abstract class TrafoUtil {
         return qualifiedNameBuilder.build();
     }
 
-    public static ASTMCQualifiedName getFullyQNameFromImports(File modelPath, ASTMACompilationUnit comp, String typeName) throws Exception {
+    public static List<String> getFullyQInstanceName(Collection<ASTMACompilationUnit> models, ASTMACompilationUnit comp, String instanceName) {
+        List<String> instanceNames = new ArrayList<>();
+        Collection<String> parents = findParents(models, comp);
+
+        if (parents.isEmpty()) {
+            instanceNames.add(comp.getPackage() + "." + comp.getComponentType().getName() + "." + instanceName);
+        }
+
+        for (String parentName :parents) {
+            ASTMACompilationUnit parentComp = getComponentByName(models, parentName);
+
+            List<ASTComponentInstantiation> instantiation = getInstantiationsByType(parentComp, comp.getComponentType().getName());
+
+            for (ASTComponentInstantiation componentInstantiation : instantiation) {
+                for (String subInstanceName : componentInstantiation.getInstancesNames()) {
+                    instanceNames.addAll(getFullyQInstanceName(models, parentComp, subInstanceName + "." + instanceName));
+                }
+            }
+
+        }
+
+        return instanceNames;
+    }
+
+    public static ASTMCQualifiedName getFullyQNameFromImports(File modelPath, ASTMACompilationUnit comp, String compTypeName) throws Exception {
         ASTMCQualifiedName qNameComp = TrafoUtil.copyASTMCQualifiedName(comp.getPackage());
-        qNameComp.addParts(typeName);
+        qNameComp.addParts(compTypeName);
 
         // case 1: it equals comp
-        if (comp.getComponentType().getName().equals(typeName)) {
+        if (comp.getComponentType().getName().equals(compTypeName)) {
             return qNameComp;
         }
 
@@ -224,9 +243,9 @@ public abstract class TrafoUtil {
                     if (modelName.contains(".")) {
                         modelName = modelName.split("\\.")[0];
 
-                        if (modelName.equals(typeName)) {
+                        if (modelName.equals(compTypeName)) {
                             ASTMCQualifiedName qName = TrafoUtil.copyASTMCQualifiedName(mcQualifiedName);
-                            qName.addParts(typeName);
+                            qName.addParts(compTypeName);
                             return qName;
                         }
                     }
@@ -235,7 +254,7 @@ public abstract class TrafoUtil {
             } else {
                 String baseName = mcQualifiedName.getBaseName();
 
-                if (typeName.equals(baseName)) {
+                if (compTypeName.equals(baseName)) {
                     return mcQualifiedName;
                 }
             }
@@ -253,13 +272,13 @@ public abstract class TrafoUtil {
             if (modelName.contains(".")) {
                 modelName = modelName.split("\\.")[0];
 
-                if (modelName.equals(typeName)) {
+                if (modelName.equals(compTypeName)) {
                     return qNameComp;
                 }
             }
         }
 
-        throw new ClassNotFoundException("Package for " + typeName + " not found.");
+        throw new ClassNotFoundException("Package for " + compTypeName + " not found.");
 
     }
 

@@ -68,28 +68,29 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
             for (ASTComponentInstantiation instantiation : instantiations) {
                 // for each port check if connection is present
                 for (String instanceName : instantiation.getInstancesNames()) {
-                    String qNameInstance = parentName + "." + instanceName;
-                    // incoming ports
-                    for (String portName : visitorPortNames.getIngoingPorts()) {
-                        String qNamePort = instanceName + "." + portName;
-                        List<ASTConnector> connectorsMatchingTargetAtParent = parentComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
+                    for (String qNameInstance : TrafoUtil.getFullyQInstanceName(allModels, parentComp, instanceName)) {
+                        // incoming ports
+                        for (String portName : visitorPortNames.getIngoingPorts()) {
+                            String qNamePort = instanceName + "." + portName;
+                            List<ASTConnector> connectorsMatchingTargetAtParent = parentComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
 
-                        // if no target defined in the parent, however, there could be still a connection within the own model
-                        List<ASTConnector> connectorsMatchingTargetAtOwnComp = targetComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
+                            // if no target defined in the parent, however, there could be still a connection within the own model
+                            List<ASTConnector> connectorsMatchingTargetAtOwnComp = targetComp.getComponentType().getConnectorsMatchingTarget(qNamePort);
 
-                        if (connectorsMatchingTargetAtParent.size() == 0 && connectorsMatchingTargetAtOwnComp.size() == 0) {
-                            additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, true, qNameInstance, qNamePort, portName));
+                            if (connectorsMatchingTargetAtParent.size() == 0 && connectorsMatchingTargetAtOwnComp.size() == 0) {
+                                additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, true, qNameInstance, qNamePort, portName));
+                            }
                         }
-                    }
 
-                    // outgoing ports
-                    for (String portName : visitorPortNames.getOutgoingPorts()) {
-                        String qNamePort = instanceName + "." + portName;
-                        List<ASTConnector> connectorsMatchingSourceAtParent = parentComp.getComponentType().getConnectorsMatchingSource(qNamePort);
-                        List<ASTConnector> connectorsMatchingSourceAtOwnComp = targetComp.getComponentType().getConnectorsMatchingSource(qNamePort);
+                        // outgoing ports
+                        for (String portName : visitorPortNames.getOutgoingPorts()) {
+                            String qNamePort = instanceName + "." + portName;
+                            List<ASTConnector> connectorsMatchingSourceAtParent = parentComp.getComponentType().getConnectorsMatchingSource(qNamePort);
+                            List<ASTConnector> connectorsMatchingSourceAtOwnComp = targetComp.getComponentType().getConnectorsMatchingSource(qNamePort);
 
-                        if (connectorsMatchingSourceAtParent.size() == 0 && connectorsMatchingSourceAtOwnComp.size() == 0) {
-                            additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, false, qNameInstance, qNamePort, portName));
+                            if (connectorsMatchingSourceAtParent.size() == 0 && connectorsMatchingSourceAtOwnComp.size() == 0) {
+                                additionalTrafoModels.add(transform(additionalTrafoModels, parentComp, targetComp, false, qNameInstance, qNamePort, portName));
+                            }
                         }
                     }
                 }
