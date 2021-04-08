@@ -6,6 +6,7 @@ ${tc.signature("typeName", "instanceName", "config")}
     <#assign lineBreak = ")">
 </#if>
 CONTAINER=$(docker run -d --rm --net montithings \
+--cap-add=NET_ADMIN <#-- allows simulating network delay-->
 <#if config.getMessageBroker().toString() == "DDS">
   -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini \
 </#if>
