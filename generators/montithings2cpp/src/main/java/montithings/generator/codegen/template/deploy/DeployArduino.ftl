@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+${tc.signature("comp", "existsHWC")}
+<#include "/template/deploy/helper/GeneralPreamble.ftl">
+<#include "/template/Copyright.ftl">
 
 #include "${compname}.h"
 

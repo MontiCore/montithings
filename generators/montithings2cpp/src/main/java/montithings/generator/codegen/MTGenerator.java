@@ -47,10 +47,10 @@ public class MTGenerator {
       && generateDeploy);
 
     fg.generate(targetPath, compname + "Input", ".h",
-      "template/input/InputHeader.ftl", comp, compname, config);
+      "template/input/Header.ftl", comp, config);
     if (!comp.getIncomingPorts().isEmpty()) {
       fg.generate(targetPath, compname + "Input", ".cpp",
-        "template/input/ImplementationFile.ftl", comp, compname, config);
+        "template/input/ImplementationFile.ftl", comp, config);
     }
     fg.generate(targetPath, compname + "Interface", ".h",
       "template/interface/Header.ftl", comp, config);
@@ -59,19 +59,19 @@ public class MTGenerator {
         "template/interface/ImplementationFile.ftl", comp, config);
     }
     fg.generate(targetPath, compname + "Result", ".h",
-      "template/result/ResultHeader.ftl", comp, compname, config);
+      "template/result/Header.ftl", comp, config);
     if (!comp.getOutgoingPorts().isEmpty()) {
       fg.generate(targetPath, compname + "Result", ".cpp",
-        "template/result/ImplementationFile.ftl", comp, compname, config);
+        "template/result/ImplementationFile.ftl", comp, config);
     }
     fg.generate(targetPath, compname + "State", ".h",
-      "template/state/StateHeader.ftl", comp, config);
+      "template/state/Header.ftl", comp, config);
     fg.generate(targetPath, compname + "State", ".cpp",
       "template/state/ImplementationFile.ftl", comp, config);
     fg.generate(targetPath, compname, ".h",
-      "template/componentGenerator/Header.ftl", comp, compname, config, useWsPorts);
+      "template/component/Header.ftl", comp, config, useWsPorts);
     fg.generate(targetPath, compname, ".cpp",
-      "template/componentGenerator/ImplementationFile.ftl", comp, compname, config, useWsPorts);
+      "template/component/ImplementationFile.ftl", comp, config, useWsPorts);
     fg.generate(targetPath, compname + "Precondition", ".h",
       "template/prepostconditions/GeneralHeader.ftl", comp, config, true);
     fg.generate(targetPath, compname + "Precondition", ".cpp",
@@ -102,14 +102,14 @@ public class MTGenerator {
           targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
         sketchDirectory.mkdir();
         fg.generate(sketchDirectory, "Deploy" + compname, ".ino",
-          "template/deploy/DeployArduino.ftl", comp, compname);
+          "template/deploy/DeployArduino.ftl", comp);
         fg.generate(targetPath.getParentFile(),
           "README", ".txt", "template/util/arduinoReadme/ArduinoReadme.ftl", targetPath.getName(),
           compname);
       }
       else {
         fg.generate(targetPath, "Deploy" + compname, ".cpp", "template/deploy/Deploy.ftl",
-          comp, compname, config);
+          comp, config);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
           if (config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
             fg.generate(targetPath, compname + "Manager", ".h", "template/util/comm/Header.ftl",
@@ -145,9 +145,9 @@ public class MTGenerator {
 
   public void generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath) {
     fg.generate(targetPath, comp.getName() + "Impl", ".h",
-        "template/behavior/implementation/ImplementationHeader.ftl", comp, comp.getName(), config);
+        "template/impl/Header.ftl", comp, config);
     fg.generate(targetPath, comp.getName() + "Impl", ".cpp",
-        "template/behavior/implementation/ImplementationFile.ftl", comp, comp.getName(), config);
+        "template/impl/ImplementationFile.ftl", comp, config);
   }
 
   protected void makeExecutable(File targetPath, String name, String fileExtension) {
@@ -356,7 +356,7 @@ public class MTGenerator {
    * @param config     Configuration of the generator. Mainly, the platform and port configuration is used.
    * @param portSymbol Port that may have specific templates configured for usage.
    */
-  private static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates,
+  protected static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates,
     String hookpoint, ConfigParams config, PortSymbol portSymbol) {
     hookpoint = StringUtils.capitalize(hookpoint);
     // Get specified template for the port.

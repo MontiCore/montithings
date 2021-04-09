@@ -22,9 +22,9 @@ import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
 import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
-  private BehaviorVisitor realThis;
-  private IndentPrinter printer;
-  private int afterStatementIndex;
+  protected BehaviorVisitor realThis;
+  protected IndentPrinter printer;
+  protected int afterStatementIndex;
 
   public CppBehaviorPrettyPrinter(IndentPrinter printer){
     this.printer = printer;
@@ -98,7 +98,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
     }
   }
 
-  private IndentPrinter getPrinter() {
+  protected IndentPrinter getPrinter() {
     return printer;
   }
 
@@ -112,7 +112,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
     this.realThis = realThis;
   }
 
-  private void printTime(ASTSIUnitLiteral lit){
+  protected void printTime(ASTSIUnitLiteral lit){
     if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")){
       getPrinter().print("nanoseconds");
     }
