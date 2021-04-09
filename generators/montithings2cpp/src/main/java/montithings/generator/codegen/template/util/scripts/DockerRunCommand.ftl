@@ -10,7 +10,7 @@ CONTAINER=$(docker run -d --rm --net montithings \
 <#if config.getMessageBroker().toString() == "DDS">
   -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini \
 </#if>
---name ${instanceName} ${typeName?lower_case}:latest --name ${instanceName} ${lineBreak}
+--name ${instanceName} -h ${instanceName} ${typeName?lower_case}:latest --name ${instanceName} ${lineBreak}
 <#if config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF">
   --managementPort 30006 --dataPortArg 30007)
 </#if>

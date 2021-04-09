@@ -20,7 +20,7 @@ docker network ls | grep montithings > /dev/null || docker network create --driv
 
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
   # Start DCPSInfoRepo
-  CONTAINER=$(docker run --name dcpsinforepo --rm -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
+  CONTAINER=$(docker run --name dcpsinforepo  -h dcpsinforepo --rm -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
   echo docker stop $CONTAINER >> dockerStop.sh
 </#if>
 chmod +x dockerStop.sh
