@@ -1,5 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","subcomponent")}
+<#include "/template/util/comm/helper/GeneralPreamble.ftl">
+
+
 if (comp->get${subcomponent.getName()?cap_first}IP().length() == 0
 <#list  comp.getAstNode().getConnectors() as connector>
     <#list connector.targetList as target>
