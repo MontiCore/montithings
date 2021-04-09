@@ -266,7 +266,7 @@ public class ComponentHelper {
     return namespace.toString();
   }
 
-  private static final HashMap<String, String> PRIMITIVE_TYPES = new HashMap<String, String>() {
+  protected static final HashMap<String, String> PRIMITIVE_TYPES = new HashMap<String, String>() {
     {
       put("int", "Integer");
       put("double", "Double");
@@ -297,7 +297,7 @@ public class ComponentHelper {
     return sb.toString();
   }
 
-  private static String autoboxType(String datatype) {
+  protected static String autoboxType(String datatype) {
     String autoBoxedTypeName = datatype;
     if (PRIMITIVE_TYPES.containsKey(datatype)) {
       autoBoxedTypeName = PRIMITIVE_TYPES.get(datatype);
@@ -637,14 +637,14 @@ public class ComponentHelper {
     return "50";
   }
 
-  private static String printTime(ASTCalculationInterval calculationInterval) {
+  protected static String printTime(ASTCalculationInterval calculationInterval) {
     if (calculationInterval == null) {
       return "milliseconds(50)";
     }
     return printTime(calculationInterval.getInterval());
   }
 
-  private static String printTime(ASTSIUnitLiteral lit) {
+  protected static String printTime(ASTSIUnitLiteral lit) {
     String time = "milliseconds";
     if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")) {
       time = "nanoseconds";
@@ -1078,7 +1078,7 @@ public class ComponentHelper {
     return result.get();
   }
 
-  private static String printNumericType(SymTypeExpression symTypeExpression) {
+  protected static String printNumericType(SymTypeExpression symTypeExpression) {
     if (symTypeExpression instanceof SymTypeOfNumericWithSIUnit)
       return ((SymTypeOfNumericWithSIUnit) symTypeExpression)
         .getNumericType().print();

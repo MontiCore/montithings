@@ -356,7 +356,7 @@ public class MTGenerator {
    * @param config     Configuration of the generator. Mainly, the platform and port configuration is used.
    * @param portSymbol Port that may have specific templates configured for usage.
    */
-  private static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates,
+  protected static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates,
     String hookpoint, ConfigParams config, PortSymbol portSymbol) {
     hookpoint = StringUtils.capitalize(hookpoint);
     // Get specified template for the port.
