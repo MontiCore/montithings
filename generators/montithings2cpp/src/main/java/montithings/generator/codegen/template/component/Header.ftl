@@ -28,32 +28,13 @@ protected:
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.Member", [comp])}
 </#if>
+
+${tc.includeArgs("template.component.declarations.PortMonitorUuid", [comp, config])}
+${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, config])}
+${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
+
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
-
-<#if comp.isDecomposed()>
-  // Internal monitoring of ports (for pre- and postconditions of composed components)
-  <#list comp.getPorts() as port>
-    <#assign name = port.getName()>
-    sole::uuid portMonitorUuid${name?cap_first} = sole::uuid4 ();
-  </#list>
-</#if>
-
-std::vector< std::thread > threads;
-
-std::mutex computeMutex;
-<#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
-  <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
-  std::mutex compute${everyBlockName}Mutex;
-</#list>
-
-TimeMode timeMode = 
-<#if ComponentHelper.isTimesync(comp)>
-  TIMESYNC
-<#else>
-  EVENTBASED
-</#if>;
-
-${compname}State${generics} ${Identifier.getStateName()};
+${tc.includeArgs("template.state.hooks.Member", [comp])}
 
 <#if comp.isDecomposed()>
   <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
