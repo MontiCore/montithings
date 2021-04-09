@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.8)
 
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
-    ${tc.includeArgs("template.util.cmake.dsaParameters", [config])}
+    ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
 
 <#if config.getTargetPlatform().toString() != "DSA_VCG"
