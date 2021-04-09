@@ -1,7 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","className")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
+
+
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::start(){
 threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::run, this});

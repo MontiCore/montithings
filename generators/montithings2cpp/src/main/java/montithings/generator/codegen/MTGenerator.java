@@ -69,9 +69,9 @@ public class MTGenerator {
     fg.generate(targetPath, compname + "State", ".cpp",
       "template/state/ImplementationFile.ftl", comp, config);
     fg.generate(targetPath, compname, ".h",
-      "template/componentGenerator/Header.ftl", comp, compname, config, useWsPorts);
+      "template/component/Header.ftl", comp, config, useWsPorts);
     fg.generate(targetPath, compname, ".cpp",
-      "template/componentGenerator/ImplementationFile.ftl", comp, compname, config, useWsPorts);
+      "template/component/ImplementationFile.ftl", comp, config, useWsPorts);
     fg.generate(targetPath, compname + "Precondition", ".h",
       "template/prepostconditions/GeneralHeader.ftl", comp, config, true);
     fg.generate(targetPath, compname + "Precondition", ".cpp",

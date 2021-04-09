@@ -1,8 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","config","className")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
 <#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF")>
 
 ${Utils.printTemplateArguments(comp)}
@@ -23,7 +21,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
 </#if>
 <#if comp.isAtomic()>
-  ${tc.includeArgs("template.componentGenerator.printBehaviorInitializerListEntry", [comp, compname])}
+  ${tc.includeArgs("template.component.helper.BehaviorInitializerListEntry", [comp, compname])}
 </#if>
 <#if shouldPrintSubcomponents>
   ${tc.includeArgs("template.util.subcomponents.printInitializerList", [comp, config])}

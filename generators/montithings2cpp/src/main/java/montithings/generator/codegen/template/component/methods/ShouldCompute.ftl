@@ -1,8 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","className")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
+
+
 ${Utils.printTemplateArguments(comp)}
 bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute() {
 <#if comp.getAllIncomingPorts()?size gt 0 && !ComponentHelper.hasSyncGroups(comp)>
