@@ -3,6 +3,7 @@
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
+#include <future>
 
 #include "../montithings-RTE/easyloggingpp/easylogging++.h"
 
@@ -55,6 +56,8 @@ main(int argc, char **argv) {
     cxxopts::Options options("MessageFlowRecorder", "A brief description");
     options.add_options()("i,DCPSInfoRepo", "DCPSInfoRepo host",
                           cxxopts::value<std::string>()->default_value(""))
+            ("stopAfter", "Stop recording after given minutes",
+             cxxopts::value<int>())
             ("fileRecordings", "File name where recordings are saved",
              cxxopts::value<std::string>()->default_value("recordings.json"))(
             "n",
@@ -73,13 +76,31 @@ main(int argc, char **argv) {
     }
 
     LOG_F (INFO, "Initializing...");
-
     std::string fileRecordingsPath = result["fileRecordings"].as<std::string>();
     std::string dcpsInfoHost = result["DCPSInfoRepo"].as<std::string>();
 
     if (dcpsInfoHost.empty()) {
         std::cout << "Please provide the following argument: --DCPSInfoRepo" << std::endl;
         exit(EXIT_FAILURE);
+    }
+
+    std::future<void> future;
+    if (result.count("stopAfter")) {
+        int stopAfter = result["stopAfter"].as<int>();
+
+        future = std::async(std::launch::async, [&](){
+            LOG_F (INFO, "Stopping recording in %d minutes", stopAfter);
+
+            std::chrono::minutes dura(stopAfter);
+            std::this_thread::sleep_for(dura);
+
+            LOG_F (INFO, "%d minutes elapsed, stopping recording...", stopAfter);
+            recorder.stop();
+            recorder.process();
+            recorder.cleanup();
+            recorder.saveToFile();
+            exit(EXIT_SUCCESS);
+        });
     }
 
     int appInstancesAmount = result["n"].as<int>();
