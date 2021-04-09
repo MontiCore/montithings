@@ -22,11 +22,9 @@ ${tc.signature("comp", "config", "className")}
     ${tc.includeArgs("template.input.methods.GetPort", [port, comp, config, existsHWC])}
     ${tc.includeArgs("template.input.methods.SetPort", [port, comp, config, existsHWC])}
 
-    <#if ComponentHelper.portUsesCdType(port)>
-      <#if ComponentHelper.getCDEReplacement(port, config).isPresent()>
-        ${tc.includeArgs("template.input.methods.GetPortAdap", [port, comp, config, existsHWC])}
-        ${tc.includeArgs("template.input.methods.SetPortAdap", [port, comp, config, existsHWC])}
-      </#if>
+    <#if ComponentHelper.getCDEReplacement(port, config).isPresent()>
+      ${tc.includeArgs("template.input.methods.GetPortAdap", [port, comp, config, existsHWC])}
+      ${tc.includeArgs("template.input.methods.SetPortAdap", [port, comp, config, existsHWC])}
     </#if>
 
     <#if ComponentHelper.hasAgoQualification(comp, port)>
