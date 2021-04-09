@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","isMonitor","className")}
+${tc.signature("comp","config","isMonitor","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${className}Result${Utils.printFormalTypeParameters(comp)} result;

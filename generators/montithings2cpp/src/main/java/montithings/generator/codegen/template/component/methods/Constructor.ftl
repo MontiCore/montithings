@@ -21,7 +21,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
 </#if>
 <#if comp.isAtomic()>
-  ${tc.includeArgs("template.component.helper.BehaviorInitializerListEntry", [comp, compname])}
+  ${tc.includeArgs("template.component.helper.BehaviorInitializerListEntry", [comp, config])}
 </#if>
 <#if shouldPrintSubcomponents>
   ${tc.includeArgs("template.component.helper.SubcompInitializerList", [comp, config])}

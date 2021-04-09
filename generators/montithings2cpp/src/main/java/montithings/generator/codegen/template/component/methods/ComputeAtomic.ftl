@@ -9,7 +9,7 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
 if (shouldCompute())
 {
-${tc.includeArgs("template.component.helper.ComputeInputs", [comp, compname, false])}
+${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 

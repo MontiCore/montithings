@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","isMonitor")}
+${tc.signature("comp","config","isMonitor")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if !ComponentHelper.usesBatchMode(comp)>
