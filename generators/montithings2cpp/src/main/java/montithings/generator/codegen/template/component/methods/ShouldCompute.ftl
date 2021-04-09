@@ -15,12 +15,12 @@ bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute() {
     if (
     <#list ComponentHelper.getSyncGroups(comp) as syncGroup >
         (<#list syncGroup as port >
-        getPort${port?cap_first}()->hasValue(this->uuid)<#sep>&&</#sep>
+        ${Identifier.getInterfaceName()}.getPort${port?cap_first}()->hasValue(this->uuid)<#sep>&&</#sep>
     </#list>)
         <#sep>||</#sep>
     </#list>
     <#if ComponentHelper.getPortsNotInSyncGroup(comp)?size gt 0>
-        || <#list ComponentHelper.getPortsNotInSyncGroup(comp) as port > getPort${port.getName()?cap_first}
+        || <#list ComponentHelper.getPortsNotInSyncGroup(comp) as port > ${Identifier.getInterfaceName()}.getPort${port.getName()?cap_first}
         ()->hasValue(this->uuid)<#sep>||</#sep>
     </#list>
         <</#if>
