@@ -45,7 +45,7 @@ ${tc.includeArgs("template.interface.hooks.Include", [comp])}
   ${Utils.printIncludes(comp, compname, config)}
 <#else>
   #include "${compname}Impl.h"
-  #include "${compname}Input.h"
+  ${tc.includeArgs("template.input.hooks.Include", [comp])}
   #include "${compname}Result.h"
 </#if>
 

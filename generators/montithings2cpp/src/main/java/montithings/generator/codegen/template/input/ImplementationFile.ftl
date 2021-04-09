@@ -1,15 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign className = compname + "Input">
-<#if existsHWC>
-    <#assign className += "TOP">
-</#if>
+${tc.signature("comp", "config", "existsHWC")}
+<#include "/template/input/helper/GeneralPreamble.ftl">
+<#include "/template/Copyright.ftl">
 
 #include "${className}.h"
 ${Utils.printNamespaceStart(comp)}
 <#if !Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.input.generateInputBody", [comp, compname, config, className])}
+  ${tc.includeArgs("template.input.Body", [comp, config, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

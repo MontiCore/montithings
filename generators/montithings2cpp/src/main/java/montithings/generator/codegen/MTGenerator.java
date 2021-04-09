@@ -47,10 +47,10 @@ public class MTGenerator {
       && generateDeploy);
 
     fg.generate(targetPath, compname + "Input", ".h",
-      "template/input/InputHeader.ftl", comp, compname, config);
+      "template/input/Header.ftl", comp, config);
     if (!comp.getIncomingPorts().isEmpty()) {
       fg.generate(targetPath, compname + "Input", ".cpp",
-        "template/input/ImplementationFile.ftl", comp, compname, config);
+        "template/input/ImplementationFile.ftl", comp, config);
     }
     fg.generate(targetPath, compname + "Interface", ".h",
       "template/interface/Header.ftl", comp, config);
