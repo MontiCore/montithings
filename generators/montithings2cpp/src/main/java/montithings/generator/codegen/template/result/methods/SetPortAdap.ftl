@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("port", "comp", "config", "existsHWC")}
-<#include "/template/result/helper/GeneralPreamble.ftl">
+<#include "/template/result/helper/AdapterPreamble.ftl">
 
 void
 ${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()} element)

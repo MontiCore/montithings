@@ -39,14 +39,14 @@ ${Identifier.createInstance(comp)}
 ${Utils.printIncludes(comp, config)}
 ${tc.includeArgs("template.prepostconditions.hooks.Include", [comp])}
 ${tc.includeArgs("template.interface.hooks.Include", [comp])}
-#include "${compname}State.h"
+${tc.includeArgs("template.state.hooks.Include", [comp])}
 
 <#if comp.isDecomposed()>
   ${Utils.printIncludes(comp, compname, config)}
 <#else>
   #include "${compname}Impl.h"
   ${tc.includeArgs("template.input.hooks.Include", [comp])}
-  #include "${compname}Result.h"
+  ${tc.includeArgs("template.result.hooks.Include", [comp])}
 </#if>
 
 ${Utils.printNamespaceStart(comp)}

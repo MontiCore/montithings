@@ -1,12 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign isBatch = ComponentHelper.usesBatchMode(comp)>
-<#assign className = comp.getName() + "State">
-<#if existsHWC>
-    <#assign className += "TOP">
-</#if>
+<#include "/template/state/helper/GeneralPreamble.ftl">
+<#include "/template/Copyright.ftl">
 
 #pragma once
 ${Utils.printIncludes(comp,config)}
@@ -20,7 +15,6 @@ ${Utils.printIncludes(comp,config)}
 </#if>
 
 using json = nlohmann::json;
-
 
 ${Utils.printNamespaceStart(comp)}
 
@@ -43,37 +37,16 @@ class ${className}
 protected:
 ${Utils.printVariables(comp, config, false)}
 <#list ComponentHelper.getArcFieldVariables(comp) as var>
-  <#assign varName = var.getName()>
-  <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
-  <#if ComponentHelper.hasAgoQualification(comp, var)>
-    std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${varType}>> dequeOf__${varName?cap_first};
-    std::chrono::nanoseconds highestAgoOf__${varName?cap_first} = std::chrono::nanoseconds {${ComponentHelper.getHighestAgoQualification(comp, varName)}};
-    void cleanDequeOf${varName?cap_first}(std::chrono::time_point<std::chrono::system_clock> now);
-  </#if>
+  ${tc.includeArgs("template.state.declarations.VariableVariables", [var, comp, config, existsHWC])}
 </#list>
 public:
-${className} (${Utils.printConfigurationParametersAsList(comp)})
-<#if comp.getParameters()?has_content>:</#if>
-<#list comp.getParameters() as param >
-  ${param.getName()} (${param.getName()})
-  <#sep>,</#sep>
-</#list>
-{}
+${tc.includeArgs("template.state.methods.Constructor", [comp, config, existsHWC])}
 
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>
-  <#assign varName = var.getName()>
-  <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
-  ${varType} get${varName?cap_first} () const;
-  void set${varName?cap_first} (${varType} ${varName});
-  ${varType} preSet${varName?cap_first} (${varType} ${varName});
-  ${varType} postSet${varName?cap_first} (${varType} ${varName});
+  ${tc.includeArgs("template.state.declarations.VariableMethods", [var, comp, config, existsHWC])}
 </#list>
 <#list ComponentHelper.getArcFieldVariables(comp) as var>
-  <#assign varName = var.getName()>
-  <#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
-  <#if ComponentHelper.hasAgoQualification(comp, var)>
-  ${varType} agoGet${varName?cap_first} (const std::chrono::nanoseconds ago_time);
-  </#if>
+  ${tc.includeArgs("template.state.declarations.FieldMethods", [var, comp, config, existsHWC])}
 </#list>
 
 protected:
@@ -107,6 +80,6 @@ bool isRestoredState () const;
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.state.generateStateBody", [comp, config, className])}
+    ${tc.includeArgs("template.state.Body", [comp, config, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

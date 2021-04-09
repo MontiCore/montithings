@@ -65,7 +65,7 @@ public class MTGenerator {
         "template/result/ImplementationFile.ftl", comp, config);
     }
     fg.generate(targetPath, compname + "State", ".h",
-      "template/state/StateHeader.ftl", comp, config);
+      "template/state/Header.ftl", comp, config);
     fg.generate(targetPath, compname + "State", ".cpp",
       "template/state/ImplementationFile.ftl", comp, config);
     fg.generate(targetPath, compname, ".h",
