@@ -143,16 +143,18 @@ class ${className} : public DDSParticipant
             return instanceName;
         }
 
-        void initializeParameterConfigPorts() {
-            std::function${"<"}void (std::string)${">"} onDataAvailableCallback = std::bind(&${className}::onNewConfig, this, std::placeholders::_1);
-
+        void initializeParameterConfigPortPub() {
             std::string topicConfig = "parameterConfig";
             configPortOut = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
                 new DDSPort${"<"}std::string>(*this, OUTGOING, topicConfig, "_parametersOut", false, true));
+        }
 
+        void initializeParameterConfigPortSub() {
+            std::function${"<"}void (std::string)${">"} onDataAvailableCallback = std::bind(&${className}::onNewConfig, this, std::placeholders::_1);
+
+            std::string topicConfig = "parameterConfig";
             configPortIn = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
                 new DDSPort${"<"}std::string${">"}(*this, INCOMING, topicConfig, "_parametersIn", false, true, onDataAvailableCallback));
-
         }
 
         void setReceivedParameterConfigTrue(){
@@ -160,18 +162,17 @@ class ${className} : public DDSParticipant
             receivedParameterConfig = true;
         }
 
-        void initializeConnectorConfigPorts() {
-            std::function${"<"}void (std::string)${">"} onDataAvailableCallback = std::bind(&${className}::onNewConnectors, this, std::placeholders::_1);
-
-            // Adds port which publishes connectors
+        void initializeConnectorConfigPortPub() {
             std::string topicConnections = "connectorConfig";
             connectorPortOut = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
                 new DDSPort${"<"}std::string${">"}(*this, OUTGOING, topicConnections, "_connectionsOut", false, true));
+        }
 
-
-            // Adds port which subscribes to connectors
+        void initializeConnectorConfigPortSub() {
+            std::function${"<"}void (std::string)${">"} onDataAvailableCallback = std::bind(&${className}::onNewConnectors, this, std::placeholders::_1);
+            std::string topicConnections = "connectorConfig";
             connectorPortIn = std::unique_ptr${"<"}DDSPort ${"<"} std::string${">>"}(
-                new DDSPort${"<"}std::string${">"}(*this, INCOMING, topicConnections, "_connectionsIn", false, true, onDataAvailableCallback));
+            new DDSPort${"<"}std::string${">"}(*this, INCOMING, topicConnections, "_connectionsIn", false, true, onDataAvailableCallback));
         }
     };
 

@@ -6,7 +6,7 @@ ${tc.signature("comp", "config")}
   ddsParticipant.setComp(&cmp);
 
   ddsParticipant.initializeOutgoingPorts();
-  ddsParticipant.initializeConnectorConfigPorts();
+  ddsParticipant.initializeConnectorConfigPortSub();
   ddsParticipant.publishConnectorConfig();
 </#if>
 

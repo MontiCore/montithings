@@ -24,7 +24,10 @@ ${tc.signature("comp", "config")}
   ${tc.includeArgs("template.deploy.DDSInjectRecordedData", [comp, config])}
 
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(instanceNameArg.getValue(), ddsArgc, ddsArgv);
-  ddsParticipant.initializeParameterConfigPorts();
+  <#if (comp.getParameters()?size > 0)>
+    ddsParticipant.initializeParameterConfigPortSub();
+  </#if>
+
   ddsParticipant.publishParameterConfig();
 
   <#if comp.getParameters()?size = 0>

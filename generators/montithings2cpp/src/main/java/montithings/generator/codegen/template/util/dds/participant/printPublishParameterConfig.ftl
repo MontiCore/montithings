@@ -19,11 +19,11 @@ json config;
 
 if (!config.empty())
 {
+    initializeParameterConfigPortPub();
     std::string configJson = config.dump();
     configPortOut->sendToExternal(configJson);
 
-    CLOG(DEBUG, "DDS")  << "Published parameter config: "
-    << configJson;
+    CLOG(DEBUG, "DDS")  << "Published parameter config: " << configJson;
 } else {
     CLOG(DEBUG, "DDS") << "No parameter config to publish. ";
 }

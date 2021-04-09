@@ -13,6 +13,7 @@ json config = json::array({
 
 if (!config.empty())
 {
+    initializeConnectorConfigPortPub();
     std::string configJson = config.dump();
     connectorPortOut->sendToExternal(configJson);
 
