@@ -1,19 +1,12 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config", "existsHWC")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#import "/template/behavior/implementation/ImplementationFile.ftl" as ImplementationFile>
-<#assign generics = Utils.printFormalTypeParameters(comp)>
-<#assign className = compname + "Impl">
-<#if existsHWC>
-    <#assign className += "TOP">
-</#if>
+${tc.signature("comp", "config", "existsHWC")}
+<#include "/template/impl/helper/GeneralPreamble.ftl">
+<#include "/template/Copyright.ftl">
 
 #pragma once
-#include "${compname}Input.h"
-#include "${compname}Result.h"
-#include "${compname}State.h"
+${tc.includeArgs("template.input.hooks.Include", [comp])}
+${tc.includeArgs("template.result.hooks.Include", [comp])}
+${tc.includeArgs("template.state.hooks.Include", [comp])}
 ${tc.includeArgs("template.interface.hooks.Include", [comp])}
 #include "InOutPort.h"
 #include "IComputable.h"
@@ -49,11 +42,11 @@ ${className}(std::string instanceName, ${compname}State& state, ${compname}Inter
 
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
-    ${compname}Result${generics} compute${everyBlockName}(${compname}Input${generics} input);
+  ${compname}Result${generics} compute${everyBlockName}(${compname}Input${generics} input);
 </#list>
 };
 
 <#if Utils.hasTypeParameter(comp)>
-  ${tc.includeArgs("template.behavior.implementation.generateImplementationBody", [comp, compname, className])}
+  ${tc.includeArgs("template.impl.Body", [comp, config, existsHWC])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

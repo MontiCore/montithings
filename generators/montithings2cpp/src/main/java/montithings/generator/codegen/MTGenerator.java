@@ -145,9 +145,9 @@ public class MTGenerator {
 
   public void generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath) {
     fg.generate(targetPath, comp.getName() + "Impl", ".h",
-        "template/behavior/implementation/ImplementationHeader.ftl", comp, comp.getName(), config);
+        "template/impl/Header.ftl", comp, config);
     fg.generate(targetPath, comp.getName() + "Impl", ".cpp",
-        "template/behavior/implementation/ImplementationFile.ftl", comp, comp.getName(), config);
+        "template/impl/ImplementationFile.ftl", comp, config);
   }
 
   protected void makeExecutable(File targetPath, String name, String fileExtension) {
