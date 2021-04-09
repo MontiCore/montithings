@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
-${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
+${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
 
 <#-- NO TEMPLATE ARGUMENTS -->
 <#if config.getTypeArguments(comp)?size == 0>
@@ -13,8 +13,8 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
       ${variable.getName()} <#sep>,</#sep>
   </#list>
   );
-  ${tc.includeArgs("template.deploy.DDSParticipantInit", [comp, config])}
-  ${tc.includeArgs("template.deploy.CommunicationManagerInit", [comp, config])}
+  ${tc.includeArgs("template.deploy.helper.DDSParticipantInit", [comp, config])}
+  ${tc.includeArgs("template.deploy.helper.CommunicationManagerInit", [comp, config])}
 
   <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
     cmp.getInterface()->setPort${portName?cap_first}ConversionFactor(${portName}ConversionFactor);
@@ -31,7 +31,7 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
   <#if !ComponentHelper.isTimesync(comp)>
     cmp.start();
   </#if>
-  ${tc.includeArgs("template.deploy.KeepAlive", [comp, config])}
+  ${tc.includeArgs("template.deploy.helper.KeepAlive", [comp, config])}
 
 <#else>
   <#-- WITH TEMPLATE ARGUMENTS -->
@@ -46,8 +46,8 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
         ${variable.getName()} <#sep>,</#sep>
       </#list>
     );
-    ${tc.includeArgs("template.deploy.DDSParticipantInit", [comp, config])}
-    ${tc.includeArgs("template.deploy.CommunicationManagerInit", [comp, config])}
+    ${tc.includeArgs("template.deploy.helper.DDSParticipantInit", [comp, config])}
+    ${tc.includeArgs("template.deploy.helper.CommunicationManagerInit", [comp, config])}
 
     cmp.setUp(
     <#if ComponentHelper.isTimesync(comp)>
@@ -60,7 +60,7 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
     <#if !ComponentHelper.isTimesync(comp)>
       cmp.start();
     </#if>
-    ${tc.includeArgs("template.deploy.KeepAlive", [comp, config])}
+    ${tc.includeArgs("template.deploy.helper.KeepAlive", [comp, config])}
     }
   </#list>
 </#if>

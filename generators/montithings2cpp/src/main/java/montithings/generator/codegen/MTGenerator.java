@@ -102,14 +102,14 @@ public class MTGenerator {
           targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
         sketchDirectory.mkdir();
         fg.generate(sketchDirectory, "Deploy" + compname, ".ino",
-          "template/deploy/DeployArduino.ftl", comp, compname);
+          "template/deploy/DeployArduino.ftl", comp);
         fg.generate(targetPath.getParentFile(),
           "README", ".txt", "template/util/arduinoReadme/ArduinoReadme.ftl", targetPath.getName(),
           compname);
       }
       else {
         fg.generate(targetPath, "Deploy" + compname, ".cpp", "template/deploy/Deploy.ftl",
-          comp, compname, config);
+          comp, config);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
           if (config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
             fg.generate(targetPath, compname + "Manager", ".h", "template/util/comm/Header.ftl",
