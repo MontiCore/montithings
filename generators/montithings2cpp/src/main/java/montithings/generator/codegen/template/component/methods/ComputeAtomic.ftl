@@ -1,8 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","className", "computeName")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::compute${computeName}() {
@@ -11,7 +9,7 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
 if (shouldCompute())
 {
-${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
+${tc.includeArgs("template.component.helper.ComputeInputs", [comp, compname, false])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 

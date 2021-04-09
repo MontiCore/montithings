@@ -1,53 +1,12 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config", "useWsPorts", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign GeneratorHelper = tc.instantiate("montithings.generator.helper.GeneratorHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
-<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
-<#assign generics = Utils.printFormalTypeParameters(comp)>
-<#assign className = compname>
-<#if existsHWC>
-    <#assign className += "TOP">
-</#if>
+${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
+<#include "/template/component/helper/GeneralPreamble.ftl">
+<#include "/template/Copyright.ftl">
+
 ${Identifier.createInstance(comp)}
 
 #pragma once
-#include "IComponent.h"
-#include "Port.h"
-#include "InOutPort.h"
-<#list comp.getPorts() as port>
-    <#assign addPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
-    <#if config.getTemplatedPorts()?seq_contains(port) && addPort!="Optional.empty">
-        #include "${Names.getSimpleName(addPort.get())?cap_first}.h"
-    </#if>
-</#list>
-#include ${"<string>"}
-#include ${"<map>"}
-#include ${"<vector>"}
-#include ${"<list>"}
-#include ${"<set>"}
-#include ${"<thread>"}
-#include "sole/sole.hpp"
-#include "easyloggingpp/easylogging++.h"
-#include ${"<iostream>"}
-<#if config.getMessageBroker().toString() == "MQTT">
-  #include "MqttClient.h"
-  #include "MqttPort.h"
-  #include "Utils.h"
-</#if>
-${Utils.printIncludes(comp, config)}
-${tc.includeArgs("template.prepostconditions.hooks.Include", [comp])}
-${tc.includeArgs("template.interface.hooks.Include", [comp])}
-${tc.includeArgs("template.state.hooks.Include", [comp])}
-
-<#if comp.isDecomposed()>
-  ${Utils.printIncludes(comp, compname, config)}
-<#else>
-  #include "${compname}Impl.h"
-  ${tc.includeArgs("template.input.hooks.Include", [comp])}
-  ${tc.includeArgs("template.result.hooks.Include", [comp])}
-</#if>
+${tc.includeArgs("template.component.helper.Includes", [comp, config, useWsPorts, existsHWC])}
 
 ${Utils.printNamespaceStart(comp)}
 
@@ -63,7 +22,6 @@ class ${className} : public IComponent
     scTypeParams<#sep>,</#sep>
   </#list>>
   </#if>
-
 </#if>
 {
 protected:
@@ -74,30 +32,34 @@ ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 
 <#if comp.isDecomposed()>
   // Internal monitoring of ports (for pre- and postconditions of composed components)
-    <#list comp.getPorts() as port>
-        <#assign name = port.getName()>
-      sole::uuid portMonitorUuid${name?cap_first} = sole::uuid4 ();
-    </#list>
+  <#list comp.getPorts() as port>
+    <#assign name = port.getName()>
+    sole::uuid portMonitorUuid${name?cap_first} = sole::uuid4 ();
+  </#list>
 </#if>
 
 std::vector< std::thread > threads;
+
 std::mutex computeMutex;
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
   std::mutex compute${everyBlockName}Mutex;
 </#list>
+
 TimeMode timeMode = 
 <#if ComponentHelper.isTimesync(comp)>
   TIMESYNC
 <#else>
   EVENTBASED
 </#if>;
+
 ${compname}State${generics} ${Identifier.getStateName()};
+
 <#if comp.isDecomposed()>
-    <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
-      void run();
-    </#if>
-    ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}
+  <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
+    void run();
+  </#if>
+  ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}
 <#else>
   ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
@@ -147,7 +109,7 @@ void threadJoin ();
 };
 
 <#if Utils.hasTypeParameter(comp)>
-  ${tc.includeArgs("template.componentGenerator.generateBody", [comp, compname, config, className])}
+  ${tc.includeArgs("template.component.Body", [comp, config, className])}
 </#if>
 
 ${Utils.printNamespaceEnd(comp)}

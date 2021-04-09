@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","compname","isMonitor","className")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${className}Result${Utils.printFormalTypeParameters(comp)} result;
 <#list comp.getAllOutgoingPorts() as outPort>
