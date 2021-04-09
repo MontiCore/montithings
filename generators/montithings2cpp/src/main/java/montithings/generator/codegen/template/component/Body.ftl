@@ -4,7 +4,7 @@ ${tc.signature("comp","config","className")}
 
 <#if comp.isDecomposed()>
   <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
-    ${tc.includeArgs("template.util.subcomponents.printMethodDefinitions", [comp, config])}
+    ${tc.includeArgs("template.component.helper.SubcompMethodDefinitions", [comp, config])}
   </#if>
 
   <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
@@ -12,6 +12,8 @@ ${tc.signature("comp","config","className")}
   </#if>
   ${tc.includeArgs("template.component.methods.ComputeDecomposed", [comp, compname, config, className])}
   ${tc.includeArgs("template.component.methods.StartDecomposed", [comp, compname, config, className])}
+  ${tc.includeArgs("template.component.methods.SetupComposed", [comp, config, className])}
+  ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
 <#else>
   ${tc.includeArgs("template.component.methods.ComputeAtomic", [comp, compname, className, ""])}
   <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
@@ -20,6 +22,8 @@ ${tc.signature("comp","config","className")}
   </#list>
   ${tc.includeArgs("template.component.methods.StartAtomic", [comp, compname, className])}
   ${tc.includeArgs("template.component.methods.Run", [comp, compname, className])}
+  ${tc.includeArgs("template.component.methods.SetupAtomic", [comp, config, className])}
+  ${tc.includeArgs("template.component.methods.InitAtomic", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.Initialize", [comp, compname, config, className])}
   ${tc.includeArgs("template.component.methods.SetResult", [comp, compname, config, className])}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, compname, className])}
@@ -30,11 +34,9 @@ ${tc.signature("comp","config","className")}
 </#if>
 ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, compname, className])}
 
-${tc.includeArgs("template.util.setup.Setup", [comp, compname, config, className])}
 <#if ComponentHelper.retainState(comp)>
   ${tc.includeArgs("template.component.methods.RestoreState", [comp, config, className])}
 </#if>
-${tc.includeArgs("template.util.init.Init", [comp, compname, config, className])}
 
 <#if config.getMessageBroker().toString() == "MQTT">
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}

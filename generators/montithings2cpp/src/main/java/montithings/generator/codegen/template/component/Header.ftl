@@ -59,7 +59,7 @@ ${compname}State${generics} ${Identifier.getStateName()};
   <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
     void run();
   </#if>
-  ${tc.includeArgs("template.util.subcomponents.printIncludes", [comp, config])}
+  ${tc.includeArgs("template.component.helper.SubcompIncludes", [comp, config])}
 <#else>
   ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
@@ -84,7 +84,7 @@ ${ComponentHelper.printConstructorArguments(comp)});
 
 <#if comp.isDecomposed()>
     <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
-        ${tc.includeArgs("template.util.subcomponents.printMethodDeclarations", [comp, config])}
+        ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
     </#if>
 </#if>
 

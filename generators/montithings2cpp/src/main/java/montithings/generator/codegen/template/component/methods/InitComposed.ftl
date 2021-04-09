@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","config","className")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+${tc.signature("comp","config","className")}
+<#include "/template/component/helper/GeneralPreamble.ftl">
+
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp, false)}::init(){
 <#if comp.isPresentParentComponent()>

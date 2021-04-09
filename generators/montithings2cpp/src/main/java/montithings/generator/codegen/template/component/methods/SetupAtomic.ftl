@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp","compname","config", "className")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+${tc.signature("comp","config","className")}
+<#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
@@ -11,7 +10,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 <#if config.getMessageBroker().toString() == "MQTT">
-  ${tc.includeArgs("template.util.ports.printAddMqttInPorts", [comp, config])}
+  ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
 </#if>
 
 <#if ComponentHelper.retainState(comp)>
@@ -19,7 +18,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 <#if config.getMessageBroker().toString() == "MQTT">
-  ${tc.includeArgs("template.util.ports.printAddMqttOutPorts", [comp, config])}
+  ${tc.includeArgs("template.component.helper.AddMqttOutPorts", [comp, config])}
 
   MqttClient::instance ()->addUser (this);
   MqttClient::instance ()->publish (replaceDotsBySlashes ("/components"),

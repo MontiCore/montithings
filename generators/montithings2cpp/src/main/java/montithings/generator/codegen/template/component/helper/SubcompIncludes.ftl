@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if config.getSplittingMode().toString() == "OFF">
   <#list comp.getSubComponents() as subcomponent>

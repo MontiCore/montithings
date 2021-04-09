@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
 
 // Adds port which publishes connectors
 std::string topicConnections = "/connectors";

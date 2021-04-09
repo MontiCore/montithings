@@ -24,7 +24,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   ${tc.includeArgs("template.component.helper.BehaviorInitializerListEntry", [comp, compname])}
 </#if>
 <#if shouldPrintSubcomponents>
-  ${tc.includeArgs("template.util.subcomponents.printInitializerList", [comp, config])}
+  ${tc.includeArgs("template.component.helper.SubcompInitializerList", [comp, config])}
 </#if>
 {
 this->instanceName = instanceName;

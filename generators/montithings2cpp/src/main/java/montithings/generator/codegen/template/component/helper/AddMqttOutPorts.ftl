@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#list comp.getOutgoingPorts() as p>
   <#assign type = ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)>
