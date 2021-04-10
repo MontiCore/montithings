@@ -135,9 +135,9 @@ public class MTGenerator {
     List<ASTPrePostConditionNode> conditions, String name) {
     int number = 1;
     for (ASTPrePostConditionNode condition : conditions) {
-      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".h",
+      fg.generate(targetPath, comp.getName() + name + number, ".h",
         "template/prepostconditions/SpecificHeader.ftl", comp, condition, config, number, true);
-      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".cpp",
+      fg.generate(targetPath, comp.getName() + name + number, ".cpp",
         "template/prepostconditions/SpecificImplementationFile.ftl", comp, condition, config, number, true);
       number++;
     }
