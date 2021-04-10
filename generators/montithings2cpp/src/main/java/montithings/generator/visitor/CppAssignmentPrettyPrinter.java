@@ -99,6 +99,8 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
     if (port.isPresent() || isStateVariable(nameExpression)) {
       CommentPrettyPrinter.printPreComments(node, getPrinter());
 
+      getPrinter().print("{");
+
       String prefix;
       if (isStateVariable(nameExpression)) {
         prefix = Identifier.getStateName();
@@ -191,9 +193,10 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
           .println("component.checkPostconditions(" + Identifier.getInputName()
             + ", result, state, state__at__pre);");
         getPrinter().print(
-          "interface.getPort" + portname + "()->setNextValue(result.get" + portname + "())");
+          "interface.getPort" + portname + "()->setNextValue(result.get" + portname + "());");
 
       }
+      getPrinter().print("}");
     }
     else {
       if (tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
