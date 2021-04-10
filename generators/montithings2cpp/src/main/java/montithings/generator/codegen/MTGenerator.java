@@ -81,8 +81,8 @@ public class MTGenerator {
     fg.generate(targetPath, compname + "Postcondition", ".cpp",
       "template/prepostconditions/GeneralImplementationFile.ftl", comp, config, false);
 
-    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPreconditions(comp)), "Precondition");
-    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPostconditions(comp)), "Postcondition");
+    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPreconditions(comp)), true);
+    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPostconditions(comp)), false);
 
     if (comp.isAtomic()) {
       generateBehaviorImplementation(comp, targetPath);
@@ -132,13 +132,14 @@ public class MTGenerator {
   }
 
   protected void generatePrePostcondition(File targetPath, ComponentTypeSymbol comp,
-    List<ASTPrePostConditionNode> conditions, String name) {
+    List<ASTPrePostConditionNode> conditions, boolean isPrecondition) {
+    String name = isPrecondition ? "Precondition" : "Postcondition";
     int number = 1;
     for (ASTPrePostConditionNode condition : conditions) {
-      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".h",
-        "template/prepostconditions/SpecificHeader.ftl", comp, condition, config, number, true);
-      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".cpp",
-        "template/prepostconditions/SpecificImplementationFile.ftl", comp, condition, config, number, true);
+      fg.generate(targetPath, comp.getName() + name + number, ".h",
+        "template/prepostconditions/SpecificHeader.ftl", comp, condition, config, number, isPrecondition);
+      fg.generate(targetPath, comp.getName() + name + number, ".cpp",
+        "template/prepostconditions/SpecificImplementationFile.ftl", comp, condition, config, number, isPrecondition);
       number++;
     }
   }
