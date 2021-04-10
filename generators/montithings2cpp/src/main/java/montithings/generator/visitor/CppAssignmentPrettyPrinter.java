@@ -183,7 +183,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       }
       getPrinter().print(" )");
 
-      if (port.get().isOutgoing()) {
+      if (port.isPresent() && port.get().isOutgoing()) {
         // check postconditions and send value
         String portname = capitalize(nameExpression.getName());
         getPrinter().println(";");
