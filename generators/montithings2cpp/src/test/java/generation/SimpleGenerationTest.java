@@ -20,14 +20,14 @@ import java.nio.file.Paths;
 @RunWith(Theories.class)
 public class SimpleGenerationTest {
 
-  private static final Path MODELPATH = Paths.get("src/test/resources/models/hierarchy/");
+  protected static final Path MODELPATH = Paths.get("src/test/resources/models/hierarchy/");
 
-  private static final Path HWCPATH = Paths.get("src/test/resources/hwc/hierarchy/");
+  protected static final Path HWCPATH = Paths.get("src/test/resources/hwc/hierarchy/");
 
-  private static final Path TARGETPATH = Paths
+  protected static final Path TARGETPATH = Paths
     .get("target/generated-test-sources/SimpleGenerationTest");
 
-  private static final Path RTEPATH = Paths.get("src/main/resources/rte/montithings-RTE");
+  protected static final Path RTEPATH = Paths.get("src/main/resources/rte/montithings-RTE");
 
   @Before
   public void setup() {

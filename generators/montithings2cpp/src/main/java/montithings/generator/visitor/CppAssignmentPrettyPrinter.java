@@ -26,7 +26,7 @@ import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrinter {
 
-  private TypeCheck tc;
+  protected TypeCheck tc;
 
   public CppAssignmentPrettyPrinter(IndentPrinter printer) {
     super(printer);

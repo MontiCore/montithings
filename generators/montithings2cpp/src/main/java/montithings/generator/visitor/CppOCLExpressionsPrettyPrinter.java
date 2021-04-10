@@ -354,7 +354,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     }
   }
 
-  private void printSetComprehensionExpressions(ASTSetComprehension setComprehension) {
+  protected void printSetComprehensionExpressions(ASTSetComprehension setComprehension) {
     String varName = setComprehension.getLeft().getGeneratorDeclaration().getName();
     String varType = printCPPTypeName(setComprehension.getLeft().getGeneratorDeclaration().getSymbol().getType());
     getPrinter().print("[&] (" + varType + " " + varName + ") { return ");
