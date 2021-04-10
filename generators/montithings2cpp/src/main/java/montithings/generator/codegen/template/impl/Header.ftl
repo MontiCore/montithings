@@ -20,17 +20,21 @@ using namespace montithings::library;
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
+class ${compname}; // forward declaration to avoid cyclic include
+
+${Utils.printTemplateArguments(comp)}
 class ${className}
 : public IComputable<${compname}Input${generics},${compname}Result${generics}>
 {
 
 protected:
 std::string instanceName;
-${compname}State& ${Identifier.getStateName()};
-${compname}Interface& ${Identifier.getInterfaceName()};
+${compname}${generics}& component;
+${compname}State${generics}& ${Identifier.getStateName()};
+${compname}Interface${generics}& ${Identifier.getInterfaceName()};
 
 public:
-${className}(std::string instanceName, ${compname}State& state, ${compname}Interface& interface) : instanceName(std::move(instanceName)), ${Identifier.getStateName()}(state), ${Identifier.getInterfaceName()}(interface) {}
+${className}(std::string instanceName, ${compname}${generics}& component, ${compname}State${generics}& state, ${compname}Interface${generics}& interface) : instanceName(std::move(instanceName)), component(component), ${Identifier.getStateName()}(state), ${Identifier.getInterfaceName()}(interface) {}
 
 <#if ComponentHelper.hasBehavior(comp)>
   ${compname}Result${generics} getInitialValues() override;

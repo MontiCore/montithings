@@ -182,6 +182,18 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
         node.getRight().accept(getRealThis());
       }
       getPrinter().print(" )");
+
+      if (port.get().isOutgoing()) {
+        // check postconditions and send value
+        String portname = capitalize(nameExpression.getName());
+        getPrinter().println(";");
+        getPrinter()
+          .println("component.checkPostconditions(" + Identifier.getInputName()
+            + ", result, state, state__at__pre);");
+        getPrinter().print(
+          "interface.getPort" + portname + "()->setNextValue(result.get" + portname + "())");
+
+      }
     }
     else {
       if (tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&

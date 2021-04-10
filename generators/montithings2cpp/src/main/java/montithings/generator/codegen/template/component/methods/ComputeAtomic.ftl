@@ -15,9 +15,12 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
 
+if (timeMode == TIMESYNC) {
+${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
 setResult(${Identifier.getResultName()});
+}
+
 <#if ComponentHelper.retainState(comp)>
   json json__state = ${Identifier.getStateName()}.serializeState ();
   <#if config.getMessageBroker().toString() == "MQTT">

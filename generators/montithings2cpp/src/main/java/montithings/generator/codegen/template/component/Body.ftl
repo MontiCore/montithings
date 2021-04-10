@@ -46,5 +46,6 @@ ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, config, clas
 
 ${tc.includeArgs("template.component.methods.OnEvent", [comp, config, className])}
 ${tc.includeArgs("template.component.methods.ThreadJoin", [comp, config, className])}
+${tc.includeArgs("template.component.methods.CheckPostconditions", [comp, config, className])}
 
 ${tc.includeArgs("template.component.methods.Constructor", [comp, config, className])}

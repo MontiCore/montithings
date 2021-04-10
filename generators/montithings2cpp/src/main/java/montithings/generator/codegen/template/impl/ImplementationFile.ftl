@@ -4,6 +4,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#include "/template/Copyright.ftl">
 
 #include "${className}.h"
+#include "${compname}.h"
 
 ${Utils.printNamespaceStart(comp)}
 <#if !Utils.hasTypeParameter(comp)>

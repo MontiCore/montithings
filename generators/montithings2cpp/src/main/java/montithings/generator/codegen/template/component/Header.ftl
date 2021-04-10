@@ -87,6 +87,7 @@ void onEvent () override;
   bool restoreState ();
 </#if>
 void threadJoin ();
+void checkPostconditions(${compname}Input${generics}& input, ${compname}Result${generics}& result, ${compname}State${generics}& state, ${compname}State${generics}& state__at__pre);
 };
 
 <#if Utils.hasTypeParameter(comp)>
