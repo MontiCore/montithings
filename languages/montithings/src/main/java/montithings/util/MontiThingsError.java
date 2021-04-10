@@ -39,6 +39,7 @@ public enum MontiThingsError implements montithings.util.Error {
   PUBLISH_IDENTIFIER_UNKNOWN("0xMT1511", "The identifier '%s' is published but does not refer to a port."),
   LOG_IDENTIFIER_UNKNOWN("0xMT1515", "Identifier '%s' is unknown. It cannot be logged."),
   UNSUPPORTED_OPERATOR("0xMT1600", "The operator '%s' is not supported."),
+  POSTCONDITION_MULTIPLE_OUTPORTS("0xMT1610", "Postcondition '%s' references multiple outgoing ports (%s), but only one is allowed."),
 
   GENERATOR_ONLY_ONE_MAIN("0xMT2001", "Configured both '%s' (as 'mainComponent') and '%s' (as 'main') as main components using generator parameters. Only use of them."),
   GENERATOR_MAIN_REQUIRED("0xMT2002", "You did not configure generator parameter 'mainComponent'."),

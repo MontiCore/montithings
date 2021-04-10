@@ -52,6 +52,7 @@ public class MontiThingsCoCos {
       .addCoCo(new NoIncomingPortsInEveryBlocks())
       .addCoCo(new LoggedVariablesAreResolvable())
       .addCoCo(new PublishReferencesPort())
+      .addCoCo(new PostcondUsesOnlyOneOutport())
       ;
   }
 }
