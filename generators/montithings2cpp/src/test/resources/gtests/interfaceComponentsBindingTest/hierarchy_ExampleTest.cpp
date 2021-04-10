@@ -24,10 +24,10 @@ struct ExampleTest : testing::Test
     cmp = new montithings::hierarchy::Example ("example");
     source = new montithings::hierarchy::Source ("example.source");
     sink = new montithings::hierarchy::Sink ("example.sink");
-    sourceImpl = new montithings::hierarchy::SourceImpl ("example.source", sourceState,
+    sourceImpl = new montithings::hierarchy::SourceImpl ("example.source", *source, sourceState,
                                                          *source->getInterface ());
-    sinkImpl
-        = new montithings::hierarchy::SinkImpl ("example.sink", sinkState, *sink->getInterface ());
+    sinkImpl = new montithings::hierarchy::SinkImpl ("example.sink", *sink, sinkState,
+                                                     *sink->getInterface ());
   }
   ~ExampleTest ()
   {
