@@ -1,10 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.types.check;
 
+import behavior.types.check.DeriveSymTypeOfBehavior;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
 import de.monticore.ocl.types.check.DeriveSymTypeOfOCLExpressions;
+import de.monticore.ocl.types.check.DeriveSymTypeOfSetExpressions;
 import de.monticore.types.check.*;
 import montithings._visitor.MontiThingsDelegatorVisitor;
 import types.check.DeriveSymTypeOfSetDefinitions;
@@ -15,9 +17,9 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
 
   private MontiThingsDelegatorVisitor realThis;
 
-  private DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes deriveSymTypeOfAssignmentExpressions;
+  private DeriveSymTypeOfAssignmentExpressionsForMT deriveSymTypeOfAssignmentExpressions;
 
-  private DeriveSymTypeOfCommonExpressionsWithSIUnitTypes deriveSymTypeOfCommonExpressions;
+  private DeriveSymTypeOfCommonExpressionsForMT deriveSymTypeOfCommonExpressions;
 
   private DeriveSymTypeOfOCLExpressions deriveSymTypeOfOCLExpressions;
 
@@ -32,6 +34,10 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
   private DeriveSymTypeOfMontiThings deriveSymTypeOfMontiThings;
 
   private DeriveSymTypeOfSetDefinitions deriveSymTypeOfSetDefinitions;
+
+  private DeriveSymTypeOfSetExpressions deriveSymTypeOfSetExpressions;
+
+  private DeriveSymTypeOfBehavior deriveSymTypeOfBehavior;
 
   private TypeCheckResult typeCheckResult = new TypeCheckResult();
 
@@ -72,6 +78,8 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfMontiThings.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfOCLExpressions.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfSetDefinitions.setTypeCheckResult(typeCheckResult);
+    deriveSymTypeOfSetExpressions.setTypeCheckResult(typeCheckResult);
+    deriveSymTypeOfBehavior.setTypeCheckResult(typeCheckResult);
   }
 
   /**
@@ -79,8 +87,8 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
    */
   @Override
   public void init() {
-    deriveSymTypeOfCommonExpressions = new DeriveSymTypeOfCommonExpressionsWithSIUnitTypes();
-    deriveSymTypeOfAssignmentExpressions = new DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes();
+    deriveSymTypeOfCommonExpressions = new DeriveSymTypeOfCommonExpressionsForMT();
+    deriveSymTypeOfAssignmentExpressions = new DeriveSymTypeOfAssignmentExpressionsForMT();
     deriveSymTypeOfMCCommonLiterals = new DeriveSymTypeOfMCCommonLiterals();
     deriveSymTypeOfExpression = new DeriveSymTypeOfExpression();
     deriveSymTypeOfLiterals = new DeriveSymTypeOfLiterals();
@@ -88,6 +96,8 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfMontiThings = new DeriveSymTypeOfMontiThings();
     deriveSymTypeOfOCLExpressions = new DeriveSymTypeOfOCLExpressions();
     deriveSymTypeOfSetDefinitions = new DeriveSymTypeOfSetDefinitions();
+    deriveSymTypeOfSetExpressions = new DeriveSymTypeOfSetExpressions();
+    deriveSymTypeOfBehavior = new DeriveSymTypeOfBehavior();
 
     setCommonExpressionsVisitor(deriveSymTypeOfCommonExpressions);
     setAssignmentExpressionsVisitor(deriveSymTypeOfAssignmentExpressions);
@@ -98,6 +108,8 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     setMontiThingsVisitor(deriveSymTypeOfMontiThings);
     setOCLExpressionsVisitor(deriveSymTypeOfOCLExpressions);
     setSetDefinitionsVisitor(deriveSymTypeOfSetDefinitions);
+    setSetExpressionsVisitor(deriveSymTypeOfSetExpressions);
+    setBehaviorVisitor(deriveSymTypeOfBehavior);
 
     setTypeCheckResult(typeCheckResult);
   }
@@ -128,5 +140,9 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     }
     typeCheckResult.setCurrentResultAbsent();
     return result;
+  }
+
+  public TypeCheckResult getTypeCheckResult() {
+    return typeCheckResult;
   }
 }

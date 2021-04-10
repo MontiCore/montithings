@@ -99,6 +99,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .build();
     resolvingDelegates(symTab, cd4CGlobalScope);
     addBasicTypes(symTab);
+    addLibraryFunctions(symTab);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);
