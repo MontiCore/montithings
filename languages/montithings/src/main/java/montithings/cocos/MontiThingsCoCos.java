@@ -41,7 +41,6 @@ public class MontiThingsCoCos {
       .addCoCo(new PrimitiveIsNumericType())
 
       // MONTITHINGS
-      .addCoCo(new TimeSyncInSubComponents())
       .addCoCo(new MaxOneUpdateInterval())
       .addCoCo(new SyncGroupIsNoSubset())
       .addCoCo(new PortsInSyncGroupAreIncoming())
