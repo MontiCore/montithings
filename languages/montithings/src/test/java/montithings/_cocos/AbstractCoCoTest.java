@@ -133,7 +133,7 @@ public abstract class AbstractCoCoTest {
   public ComponentTypeSymbol getSymbol(String componentName) {
     MontiThingsTool tool = new MontiThingsTool(new MontiThingsCoCoChecker(),
       new CD4CodeCoCoChecker());
-    Path p = Paths.get("src", "test", "resources", "models");
+    Path p = Paths.get("src", "test", "resources", "models", "cocoTest");
     IMontiThingsGlobalScope scope = tool.processModels(p);
     ComponentTypeSymbol typeSymbol = scope.resolveComponentType(componentName).get();
     Log.init();
