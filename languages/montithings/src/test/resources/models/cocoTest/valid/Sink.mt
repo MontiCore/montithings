@@ -1,6 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.nameExpressionsAreResolvableTest.valid;
+package cocoTest.valid;
 
 component Sink {
+
   port in int value;
+
+  behavior {
+    log "Sink: $value";
+  }
+
 }

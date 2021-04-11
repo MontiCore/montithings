@@ -1,12 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.nameExpressionsAreResolvableTest.valid;
+package cocoTest.dontReadOutports.invalidBehavior;
 
-component Source (int start) {
+component Source {
   port out int value;
 
-  int lastValue = start;
+  int lastValue = 0;
 
   behavior {
+    lastValue = value;
     value = lastValue++;
   }
 

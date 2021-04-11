@@ -1,8 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
-package cocoTest.nameExpressionsAreResolvableTest.valid;
+package cocoTest.dontReadOutports.invalidBehavior;
 
 component Example {
-  Source source (0);
+  Source source;
   Sink sink;
 
   source.value -> sink.value;

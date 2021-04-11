@@ -1,19 +1,21 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._cocos;
 
-import montithings.cocos.InterfaceExists;
-import montithings.cocos.NameExpressionsAreResolvable;
+import montithings.cocos.UnsupportedOperator;
 import montithings.util.MontiThingsError;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.stream.Stream;
 
-public class NameExpressionsAreResolvableTest extends AbstractCoCoTest {
+public class UnsupportedOperatorTest extends AbstractCoCoTest {
 
   protected static MontiThingsCoCoChecker getChecker() {
     return new MontiThingsCoCoChecker()
-      .addCoCo(new InterfaceExists())
-      .addCoCo(new NameExpressionsAreResolvable());
+      .addCoCo(new UnsupportedOperator());
+  }
+
+  protected static MontiThingsError[] getExpectedErrors() {
+    return new MontiThingsError[] { MontiThingsError.UNSUPPORTED_OPERATOR };
   }
 
   protected static Stream<Arguments> validInput() {
@@ -25,14 +27,14 @@ public class NameExpressionsAreResolvableTest extends AbstractCoCoTest {
   protected static Stream<Arguments> invalidInput() {
     return Stream.of(
       Arguments.of(getChecker(),
-        "cocoTest.nameExpressionsAreResolvableTest.unknownVariable.Source",
+        "cocoTest.unsupportedOperator.invalidSimilar.Source",
         1,
-        new MontiThingsError[] { MontiThingsError.IDENTIFIER_UNKNOWN }
+        getExpectedErrors()
       ),
       Arguments.of(getChecker(),
-        "cocoTest.nameExpressionsAreResolvableTest.variableDefaultUnknown.Source",
+        "cocoTest.unsupportedOperator.invalidNotSimilar.Source",
         1,
-        new MontiThingsError[] { MontiThingsError.IDENTIFIER_UNKNOWN }
+        getExpectedErrors()
       )
     );
   }
