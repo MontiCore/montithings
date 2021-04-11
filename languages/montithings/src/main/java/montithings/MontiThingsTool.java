@@ -14,14 +14,11 @@ import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._ast.ASTCDPackage;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.symbols.basicsymbols._symboltable.BasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
-import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.DefsTypeBasic;
 import de.monticore.types.check.SymTypeExpressionFactory;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
-import montithings._auxiliary.BasicSymbolsMillForMontiThings;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
 import montithings._symboltable.IMontiThingsArtifactScope;
@@ -37,6 +34,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
+
+import static montithings.util.SymbolUtil.addParam;
+import static montithings.util.SymbolUtil.createFunction;
 
 public class MontiThingsTool {
 
@@ -197,58 +197,12 @@ public class MontiThingsTool {
   }
 
   public void addLibraryFunctions(@NotNull IMontiThingsScope scope) {
-    //log function
-    VariableSymbol message = BasicSymbolsMillForMontiThings
-        .variableSymbolBuilder()
-        .setName("message")
-        .setType(SymTypeExpressionFactory.createTypeObject("String", scope))
-        .build();
+    FunctionSymbol log = createFunction("log", scope);
+    addParam(log, "message", SymTypeExpressionFactory.createTypeObject("String", scope));
 
-    BasicSymbolsScope logParameters = new BasicSymbolsScope();
+    FunctionSymbol delay = createFunction("delay", scope);
+    addParam(delay, "milliseconds", SymTypeExpressionFactory.createTypeConstant("int"));
 
-    logParameters.add(message);
-    message.setEnclosingScope(logParameters);
-
-    FunctionSymbol log = MontiThingsMill
-      .functionSymbolBuilder()
-      .setName("log")
-      .setReturnType(SymTypeExpressionFactory.createTypeVoid())
-      .setEnclosingScope(scope)
-      .build();
-    log.setSpannedScope(logParameters);
-    scope.add(log);
-
-    //delay function
-    VariableSymbol milliseconds = BasicSymbolsMillForMontiThings
-        .variableSymbolBuilder()
-        .setName("milliseconds")
-        .setType(SymTypeExpressionFactory.createTypeConstant("int"))
-        .build();
-
-    BasicSymbolsScope delayParameters = new BasicSymbolsScope();
-
-    delayParameters.add(milliseconds);
-    milliseconds.setEnclosingScope(delayParameters);
-
-    FunctionSymbol delay = MontiThingsMill
-        .functionSymbolBuilder()
-        .setName("delay")
-        .setReturnType(SymTypeExpressionFactory.createTypeVoid())
-        .setEnclosingScope(scope)
-        .build();
-    delay.setSpannedScope(delayParameters);
-    scope.add(delay);
-
-    //now_ns function
-    BasicSymbolsScope nowParameters = new BasicSymbolsScope();
-
-    FunctionSymbol now_ns = MontiThingsMill
-        .functionSymbolBuilder()
-        .setName("now_ns")
-        .setReturnType(SymTypeExpressionFactory.createTypeObject("String", scope))
-        .setEnclosingScope(scope)
-        .build();
-    now_ns.setSpannedScope(nowParameters);
-    scope.add(now_ns);
+    createFunction("now_ns", SymTypeExpressionFactory.createTypeObject("String", scope), scope);
   }
 }
