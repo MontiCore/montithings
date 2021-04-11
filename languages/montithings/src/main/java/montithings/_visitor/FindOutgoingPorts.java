@@ -12,12 +12,15 @@ import java.util.Set;
 public class FindOutgoingPorts implements MontiThingsVisitor {
   protected Set<PortSymbol> referencedPorts = new HashSet<>();
 
+  protected Set<ASTNameExpression> referencedPortsAstNodes = new HashSet<>();
+
   @Override public void visit(ASTNameExpression node) {
     IMontiThingsScope scope = (IMontiThingsScope) node.getEnclosingScope();
     Optional<PortSymbol> port = scope.resolvePort(node.getName());
 
     if (port.isPresent() && port.get().isOutgoing()) {
       referencedPorts.add(port.get());
+      referencedPortsAstNodes.add(node);
     }
   }
 
@@ -27,5 +30,9 @@ public class FindOutgoingPorts implements MontiThingsVisitor {
 
   public Set<PortSymbol> getReferencedPorts() {
     return referencedPorts;
+  }
+
+  public Set<ASTNameExpression> getReferencedPortsAstNodes() {
+    return referencedPortsAstNodes;
   }
 }
