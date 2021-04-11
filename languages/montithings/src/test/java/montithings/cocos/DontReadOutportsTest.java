@@ -1,6 +1,8 @@
-package montithings._cocos;
+package montithings.cocos;
 
-import montithings.cocos.DontReadOutports;
+import montithings._cocos.MontiThingsASTBehaviorCoCo;
+import montithings._cocos.MontiThingsASTMTEveryBlockCoCo;
+import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.util.MontiThingsError;
 import org.junit.jupiter.params.provider.Arguments;
 

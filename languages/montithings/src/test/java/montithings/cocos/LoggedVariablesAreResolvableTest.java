@@ -1,21 +1,19 @@
-// (c) https://github.com/MontiCore/monticore
-package montithings._cocos;
+package montithings.cocos;
 
-import montithings.cocos.UnsupportedOperator;
+import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.util.MontiThingsError;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.stream.Stream;
 
-public class UnsupportedOperatorTest extends AbstractCoCoTest {
-
+class LoggedVariablesAreResolvableTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
     return new MontiThingsCoCoChecker()
-      .addCoCo(new UnsupportedOperator());
+      .addCoCo(new LoggedVariablesAreResolvable());
   }
 
   protected static MontiThingsError[] getExpectedErrors() {
-    return new MontiThingsError[] { MontiThingsError.UNSUPPORTED_OPERATOR };
+    return new MontiThingsError[] { MontiThingsError.LOG_IDENTIFIER_UNKNOWN };
   }
 
   protected static Stream<Arguments> validInput() {
@@ -27,12 +25,7 @@ public class UnsupportedOperatorTest extends AbstractCoCoTest {
   protected static Stream<Arguments> invalidInput() {
     return Stream.of(
       Arguments.of(getChecker(),
-        "cocoTest.unsupportedOperator.invalidSimilar.Source",
-        1,
-        getExpectedErrors()
-      ),
-      Arguments.of(getChecker(),
-        "cocoTest.unsupportedOperator.invalidNotSimilar.Source",
+        "cocoTest.loggedVariablesAreResolvable.invalid.Source",
         1,
         getExpectedErrors()
       )
