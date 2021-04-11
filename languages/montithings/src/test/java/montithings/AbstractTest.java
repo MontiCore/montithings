@@ -4,7 +4,7 @@ package montithings;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
-import montiarc.util.Error;
+import montithings.util.MontiThingsError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ public abstract class AbstractTest {
   }
 
   protected void checkExpectedErrorsPresent(List<Finding> findings,
-    Error[] expErrors) {
+    MontiThingsError[] expErrors) {
     List<String> actualErrorCodes = collectErrorCodes(findings);
     List<String> expErrorCodes = collectErrorCodes(expErrors);
 
@@ -53,7 +53,7 @@ public abstract class AbstractTest {
   }
 
   protected void checkNoAdditionalErrorsPresent(List<Finding> findings,
-    Error[] expErrors) {
+    MontiThingsError[] expErrors) {
     List<String> actualErrorCodes = collectErrorCodes(findings);
     List<String> expErrorCodes = collectErrorCodes(expErrors);
 
@@ -63,14 +63,14 @@ public abstract class AbstractTest {
   }
 
   protected void checkOnlyExpectedErrorsPresent(List<Finding> findings,
-    Error[] expErrors) {
+    MontiThingsError[] expErrors) {
     checkExpectedErrorsPresent(findings, expErrors);
     checkNoAdditionalErrorsPresent(findings, expErrors);
   }
 
-  protected List<String> collectErrorCodes(Error[] errors) {
+  protected List<String> collectErrorCodes(MontiThingsError[] errors) {
     return Arrays.stream(errors)
-      .map(Error::getErrorCode)
+      .map(MontiThingsError::getErrorCode)
       .collect(Collectors.toList());
   }
 
