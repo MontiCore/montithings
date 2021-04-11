@@ -10,7 +10,7 @@ class DontReadOutportsTest extends AbstractCoCoTest {
 
   protected static Stream<Arguments> validInput() {
     return Stream.of(
-      Arguments.of("cocoTest.dontReadOutports.valid.Source")
+      Arguments.of("cocoTest.valid.Source")
     );
   }
 

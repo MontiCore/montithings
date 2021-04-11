@@ -20,7 +20,7 @@ public class UnsupportedOperatorTest extends AbstractCoCoTest {
 
   protected static Stream<Arguments> validInput() {
     return Stream.of(
-      Arguments.of("cocoTest.unsupportedOperator.valid.Source")
+      Arguments.of("cocoTest.valid.Source")
     );
   }
 
