@@ -25,7 +25,7 @@ class MaxOneUpdateIntervalTest extends AbstractCoCoTest {
   protected static Stream<Arguments> invalidInput() {
     return Stream.of(
       Arguments.of(getChecker(),
-        "cocoTest.maxOneUpdateIntervalTest.invalid.Source",
+        "cocoTest.maxOneUpdateInterval.invalid.Source",
         1,
         getExpectedErrors()
       )
