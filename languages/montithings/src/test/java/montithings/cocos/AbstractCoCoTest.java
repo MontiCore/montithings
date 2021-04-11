@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings._cocos;
+package montithings.cocos;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.cd4code._cocos.CD4CodeCoCoChecker;
@@ -7,8 +7,8 @@ import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
 import montithings.MontiThingsTool;
+import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._symboltable.IMontiThingsGlobalScope;
-import montithings.cocos.MontiThingsCoCos;
 import montithings.util.Error;
 import montithings.util.MontiThingsError;
 import org.junit.jupiter.api.Assertions;

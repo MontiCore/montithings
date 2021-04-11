@@ -1,8 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings._cocos;
+package montithings.cocos;
 
-import montithings.cocos.ImplementationFitsInterface;
-import montithings.cocos.InterfaceExists;
+import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.util.MontiThingsError;
 import org.junit.jupiter.params.provider.Arguments;
 
