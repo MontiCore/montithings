@@ -26,7 +26,7 @@ namespace library {
     std::string
     now_ns() {
         auto now = std::chrono::high_resolution_clock::now();
-        auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch());
+        auto timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
         return std::to_string(timestamp.count());
     }
 }
