@@ -7,8 +7,10 @@ component Source {
   int lastValue = 0;
 
   behavior {
+    log("Source: " + lastValue);
     value = lastValue++;
   }
 
-  update interval 50 ms;
+  update interval 1s;
 }
+
