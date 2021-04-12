@@ -137,7 +137,8 @@ void MessageFlowRecorder::createRunScript() {
         std::string lastInstanceName = instanceName.substr(instanceName.find_last_of('.') + 1, instanceName.length());
 
         std::string instanceNameAfterTrafo = instanceName + "." + lastInstanceName;
-        script.append(" --startDelay " + instanceNameAfterTrafo + "=" + std::to_string(delayEntry.value().get<long>()));
+        // convert to ms from ns as well
+        script.append(" --delayStart " + instanceNameAfterTrafo + "=" + std::to_string(delayEntry.value().get<long>()/1000000));
     }
     LOG_F (INFO, "Script %s.", script.c_str());
     storage["start_script"] = script.c_str();
