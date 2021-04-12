@@ -126,6 +126,21 @@ MessageFlowRecorder::process() {
     if (!recordedMessages.empty()) {
         storage["recordings"] = processor.process(recordedMessages);
     }
+
+    createRunScript();
+}
+
+void MessageFlowRecorder::createRunScript() {
+    std::string script;
+    for (const auto &delayEntry : storage["start_delay"].items()) {
+        std::string instanceName = std::string(delayEntry.key());
+        std::string lastInstanceName = instanceName.substr(instanceName.find_last_of('.') + 1, instanceName.length());
+
+        std::string instanceNameAfterTrafo = instanceName + "." + lastInstanceName;
+        script.append(" --startDelay " + instanceNameAfterTrafo + "=" + std::to_string(delayEntry.value().get<long>()));
+    }
+    LOG_F (INFO, "Script %s.", script.c_str());
+    storage["start_script"] = script.c_str();
 }
 
 void
@@ -187,6 +202,17 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
                 std::string latencyId = latency[0].dump();
                 storage["computation_latency"][instance][latencyId] = latency[1];
                 statsLatenciesAmount++;
+            }
+
+            if (content.contains("start_delay")) {
+                LOG_F (1,"Received start_delay %s: %s",
+                       instance.c_str(), content["start_delay"].dump().c_str());
+                if (!storage["start_delay"].contains(instance)) {
+                    // TODO fix negative sendings
+                    if (content["start_delay"].get<long>() >= 0) {
+                        storage["start_delay"][instance] = content["start_delay"];
+                    }
+                }
             }
 
             LOG_F (1,

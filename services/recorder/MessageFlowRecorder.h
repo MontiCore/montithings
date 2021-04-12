@@ -52,6 +52,8 @@ private:
 
     void logProgress();
 
+    void createRunScript();
+
 public:
     MessageFlowRecorder() = default;
 
