@@ -37,11 +37,18 @@ you'll most likely want the native installation - it will save you time in the l
 - [OpenDDS][opendds] (only for DDS communication)
 - A `settings.xml` file from the SE chair (for accessing the dependencies of this project)
 
+On Linux, you can use our script for installing everything except OpenDDS:
+```
+git clone git@git.rwth-aachen.de:monticore/montithings/core.git
+cd core
+./installLinux.sh
+```
+
 ## Installation
 
 Place the `settings.xml` file in a folder called `.m2` within your home folder; 
-for example this folder might look like this `/home/kirchhof/.m2` (on Linux), `/Users/kirchhof/.m2` (on macOS), 
-`C:\Users\Kirchhof\.m2` (on Windows).
+for example this folder might look like this `/home/kirchhof/.m2` (on Linux), 
+`/Users/kirchhof/.m2` (on macOS), `C:\Users\Kirchhof\.m2` (on Windows).
 
 ```
 git clone git@git.rwth-aachen.de:monticore/montithings/core.git
