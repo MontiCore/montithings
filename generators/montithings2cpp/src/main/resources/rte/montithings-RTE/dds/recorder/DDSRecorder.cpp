@@ -51,6 +51,7 @@ DDSRecorder::start() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | starting recording... ";
     timestampStart = Util::Time::getCurrentTimestampNano();
     startDelay = 0;
+    isStartDelaySent = false;
 
     montithings::library::hwcinterceptor::startNondeterministicRecording();
 
