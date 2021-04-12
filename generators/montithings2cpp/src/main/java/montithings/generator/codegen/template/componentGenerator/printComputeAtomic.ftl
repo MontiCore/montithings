@@ -11,6 +11,11 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
 if (shouldCompute())
 {
+    if (!this->wasStartDelayApplied) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(this->startDelay));
+        this->wasStartDelayApplied = true;
+    }
+
 ${tc.includeArgs("template.componentGenerator.printComputeInputs", [comp, compname, false])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
@@ -20,6 +25,7 @@ ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
     if (montithings::library::hwcinterceptor::isRecording)
     {
       auto timeStartCalc = std::chrono::high_resolution_clock::now();
+      montithings::library::hwcinterceptor::setLastComputeTs(timeStartCalc.time_since_epoch().count());
       ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
       auto timeEndCalc = std::chrono::high_resolution_clock::now();
       auto latency = timeEndCalc - timeStartCalc;

@@ -5,6 +5,10 @@ ${tc.signature("comp", "config")}
 TCLAP::ValueArg${"<"}std::string${">"} instanceNameArg ("n", "name","Fully qualified instance name of the component",true,"","string");
 cmd.add ( instanceNameArg );
 
+TCLAP::MultiArg${"<"}std::string${">"} delayStartArgs("d", "delayStart", "Start delay in ms. Format: 'fully_qualified_instance_name=x'",
+false, "string");
+cmd.add(delayStartArgs);
+
 <#if config.getSplittingMode().toString() == "LOCAL" && config.getMessageBroker().toString() == "OFF">
   ${tc.includeArgs("template.deploy.CommunicationManagerArgs", [comp, config])}
 <#elseif config.getMessageBroker().toString() == "MQTT">

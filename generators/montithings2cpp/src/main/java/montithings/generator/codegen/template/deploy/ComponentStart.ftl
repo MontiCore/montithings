@@ -9,7 +9,8 @@ ${tc.includeArgs("template.deploy.MqttInit", [comp, config])}
 
   ${tc.includeArgs("template.deploy.DDSParticipantInit", [comp, config])}
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (
-  instanceNameArg.getValue ()
+  instanceNameArg.getValue (),
+  delayStartArgs.getValue()
   <#if comp.getParameters()?size gt 0>,</#if>
   <#list comp.getParameters() as variable>
       ${variable.getName()} <#sep>,</#sep>

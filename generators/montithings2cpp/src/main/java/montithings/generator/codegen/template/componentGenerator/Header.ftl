@@ -86,6 +86,9 @@ TimeMode timeMode =
   EVENTBASED
 </#if>;
 ${compname}State${generics} ${Identifier.getStateName()};
+long startDelay;
+bool wasStartDelayApplied = false;
+
 <#if comp.isDecomposed()>
     <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
       void run();
@@ -104,7 +107,8 @@ ${compname}State${generics} ${Identifier.getStateName()};
 
 public:
 ${tc.includeArgs("template.util.ports.printMethodHeaders", [comp.getPorts(), config])}
-${className}(std::string instanceName
+${className}(std::string instanceName,
+std::vector${"<"}std::string${">"} startDelays
 <#if comp.getParameters()?has_content>,</#if>
 ${ComponentHelper.printConstructorArguments(comp)});
 

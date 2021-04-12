@@ -8,6 +8,11 @@ ${tc.signature("comp","compname","config","className")}
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::initialize(){
+
+${tc.includeArgs("template.componentGenerator.DDSRestoreRecordedState", [comp, config])}
+${tc.includeArgs("template.componentGenerator.DDSInjectRecordedData", [comp, config])}
+
+
 <#list comp.incomingPorts as port >
   getPort${port.getName()?cap_first} ()->attach (this);
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>

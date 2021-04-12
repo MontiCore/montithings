@@ -7,7 +7,8 @@ ${tc.signature("comp","compname","config","className")}
 
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp)}::${className}
-(std::string instanceName
+(std::string instanceName,
+std::vector${"<"}std::string${">"} startDelays
 <#if comp.getParameters()?has_content>
   , ${Utils.printConfigurationParametersAsList(comp)}
 </#if>
@@ -30,6 +31,17 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
 </#if>
 {
 this->instanceName = instanceName;
+
+this->startDelay = 0;
+for (const auto &delay: startDelays) {
+  std::string::size_type posSeparator = delay.find_first_of('=');
+  std::string instance = delay.substr(0, posSeparator);
+  if (instanceName.compare(instance) == 0) {
+    std::string delayValue = delay.substr(posSeparator + 1, delay.length());
+    this->startDelay = std::stol(delayValue);
+  }
+}
+
 <#list comp.getParameters() as param >
   ${Identifier.getStateName()}.set${param.getName()?cap_first} (${param.getName()});
 </#list>

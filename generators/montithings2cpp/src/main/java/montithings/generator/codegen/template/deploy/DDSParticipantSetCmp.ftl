@@ -9,5 +9,3 @@ ${tc.signature("comp", "config")}
   ddsParticipant.initializeConnectorConfigPortSub();
   ddsParticipant.publishConnectorConfig();
 </#if>
-
-${tc.includeArgs("template.deploy.DDSRestoreRecordedState", [comp, config])}
