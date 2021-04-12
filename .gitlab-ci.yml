@@ -1,4 +1,4 @@
-# Build JAVA applications using Apache Maven (http://maven.apache.org)
+# (c) https://github.com/MontiCore/monticore
 
 # Cache downloaded dependencies and plugins between builds.
 # To keep cache across branches add 'key: "$CI_JOB_NAME"'
