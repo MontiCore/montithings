@@ -37,6 +37,14 @@ private:
     std::string topicName;
     std::string portName;
 
+    // storing timestamp upon starting recording
+    // the hwc interceptor will store the timestamp of the first computation execution
+    // the difference has to be delayed within the replay mode since all components are started simultaneous
+    unsigned long long timestampStart;
+    bool isStartDelaySent = false;
+    long startDelay = 0;
+
+
     // key = <message id>, value = <sent timestamp>
     using unackedMap = std::unordered_map<long, long long>;
     unackedMap unackedMessageTimestampMap;

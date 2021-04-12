@@ -49,6 +49,9 @@ DDSRecorder::setPortName(const std::string &name) {
 void
 DDSRecorder::start() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | starting recording... ";
+    timestampStart = Util::Time::getCurrentTimestampNano();
+    startDelay = 0;
+
     montithings::library::hwcinterceptor::startNondeterministicRecording();
 
     unsentMessageDelays.clear();
@@ -95,6 +98,12 @@ DDSRecorder::sendInternalRecords() {
     nlohmann::json content;
     content["calls"] = montithings::library::hwcinterceptor::storageCalls;
     content["calc_latency"] = montithings::library::hwcinterceptor::storageComputationLatency;
+
+    if(!isStartDelaySent) {
+        isStartDelaySent = true;
+        content["start_delay"] = startDelay;
+    }
+
     recorderMessage.msg_content = content.dump().c_str();
 
     // arbitrary msg_id
@@ -121,6 +130,12 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
     std::lock_guard<std::mutex> guard(sentMutex);
 
     if (montithings::library::hwcinterceptor::isRecording) {
+        if (startDelay == 0){
+            startDelay = montithings::library::hwcinterceptor::timestampFirstComputation - timestampStart;
+            CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | comp delay="
+                                 << startDelay;
+        }
+
         long long timestamp = Util::Time::getCurrentTimestampNano();
 
         // Only send ack if message was received, not sent
@@ -130,8 +145,7 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             VectorClock::updateVectorClock(newVectorClock, sendingInstance);
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
                                  << " to=" << sendingInstance << " from=" << instanceName;
-            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName,
-                                    VectorClock::getSerializedVectorClock());
+            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName, VectorClock::getSerializedVectorClock());
         } else {
             // message was sent and not received. Thus, add message to the map of unacked messages
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id

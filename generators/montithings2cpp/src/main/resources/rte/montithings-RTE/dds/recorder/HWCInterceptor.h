@@ -22,6 +22,8 @@ namespace montithings {
             extern int indexNDCallsRecording;
             extern int indexNDCallsReplaying;
 
+            extern unsigned long long timestampFirstComputation;
+
             extern std::unordered_map<int, nlohmann::json> storageCalls;
             extern std::unordered_map<int, long> storageComputationLatency;
 
@@ -32,6 +34,8 @@ namespace montithings {
             extern void storeCalculationLatency(long latency);
 
             extern void addRecordedCall(int index, nlohmann::json value);
+
+            extern void setLastComputeTs(unsigned long long ts);
 
             template<typename A>
             A
