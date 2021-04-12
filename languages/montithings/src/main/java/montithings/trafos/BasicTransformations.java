@@ -23,11 +23,9 @@ import montiarc._ast.ASTMACompilationUnitBuilder;
 import montithings.MontiThingsMill;
 import montithings._ast.*;
 import montithings._auxiliary.ComfortableArcMillForMontiThings;
-import montithings._auxiliary.MontiArcMillForMontiThings;
 import montithings.util.TrafoUtil;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -324,5 +322,18 @@ public abstract class BasicTransformations {
     protected void flagAsGenerated(ASTMACompilationUnit comp) {
         Comment comment = new CommentBuilder().setText("RECORD_AND_REPLAY_GENERATED").build();
         comp.getComponentType().getHead().add_PreComment(0, comment);
+    }
+
+    /**
+     * Flag component as wrapped
+     */
+    protected void flagAsWrapped(ASTMACompilationUnit comp) {
+        Comment comment = new CommentBuilder().setText("RECORD_AND_REPLAY_WRAPPED").build();
+        comp.getComponentType().getHead().add_PreComment(0, comment);
+    }
+
+    protected boolean wasWrapped(ASTMACompilationUnit comp) {
+        return comp.getComponentType().getHead().get_PreCommentList()
+                .stream().anyMatch(c -> c.getText().equals("RECORD_AND_REPLAY_WRAPPED"));
     }
 }

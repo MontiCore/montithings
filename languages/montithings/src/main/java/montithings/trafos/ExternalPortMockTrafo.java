@@ -24,9 +24,8 @@ import montithings.util.TrafoUtil;
 
 import javax.json.JsonObject;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Trafo which replaces templated ports (external inputs).
@@ -69,6 +68,18 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
                 // for each port check if connection is present
                 for (String instanceName : instantiation.getInstancesNames()) {
                     for (String qNameInstance : TrafoUtil.getFullyQInstanceName(allModels, parentComp, instanceName)) {
+                        // workaround: sometimes the parent component was wrapped during a computation delay transformation
+                        // if this is the case the instance name has to be adjusted.
+                        // e.g. smartHome.thermostat.thermostat.ui should be smartHome.thermostat.ui
+                        if (wasWrapped(parentComp)) {
+                            List<String> tokens = Collections.list(new StringTokenizer(qNameInstance, ".")).stream()
+                                    .map(token -> (String) token)
+                                    .collect(Collectors.toList());
+                            tokens.remove(tokens.size()-2);
+
+                            qNameInstance = String.join(".", tokens);
+                        }
+
                         // incoming ports
                         for (String portName : visitorPortNames.getIngoingPorts()) {
                             String qNamePort = instanceName + "." + portName;

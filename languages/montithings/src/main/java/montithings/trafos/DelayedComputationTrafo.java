@@ -204,6 +204,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
         flagAsGenerated(compWrapper);
         flagAsGenerated(delayComp);
+        flagAsWrapped(origComp);
 
         additionalTrafoModels.add(compWrapper);
         additionalTrafoModels.add(delayComp);
