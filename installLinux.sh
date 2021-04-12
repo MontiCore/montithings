@@ -21,7 +21,7 @@ sudo apt-get update
 sudo apt-get install -y g++ git make cmake ninja-build mosquitto-dev libmosquitto-dev curl maven openjdk-11-jdk
 
 # Install Docker 
-if [ ! "$(command -v docker >/dev/null 2>&1)" ]
+if [ "$(command -v docker >/dev/null 2>&1)" ]
 then
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
