@@ -2,8 +2,14 @@
 package hierarchy;
 
 component Source {
+  port out int value;
 
-  port
-    out int value;
+  int lastValue = 0;
 
+  behavior {
+    log("Source: " + lastValue);
+    value = lastValue++;
+  }
+
+  update interval 1s;
 }
