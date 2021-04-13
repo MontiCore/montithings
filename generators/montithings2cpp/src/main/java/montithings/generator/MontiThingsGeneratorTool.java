@@ -388,7 +388,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     File hwcPath, ConfigParams config, boolean generateDeploy) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
     Log.info("Generate MT model: " + comp.getFullName(), TOOL_NAME);
-    Log.initWARN();
 
     // check if component is implementation
     if (comp.getAstNode() instanceof ASTMTComponentType &&
