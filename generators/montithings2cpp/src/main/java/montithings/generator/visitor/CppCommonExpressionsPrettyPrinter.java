@@ -78,6 +78,8 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
   }
 
   protected void handleInfix(ASTInfixExpression node, String infix) {
+    boolean isStringConcat =
+      tc.typeOf(node.getLeft()).getTypeInfo().getName().equals("String") && infix.equals("+");
     CppExpressionPrettyPrinter expressionPP = new CppExpressionPrettyPrinter(getPrinter());
     CppBehaviorPrettyPrinter behaviorPP = new CppBehaviorPrettyPrinter(getPrinter());
     CommentPrettyPrinter.printPreComments(node, getPrinter());
@@ -97,22 +99,32 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       //SIUnit Types are used - conversion might be necessary
       node.getLeft().accept(getRealThis());
       getPrinter().print(infix);
-      UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()), tc.typeOf(node.getRight()));
+      UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()),
+        tc.typeOf(node.getRight()));
       getPrinter().print(factorStart(converter));
       node.getRight().accept(getRealThis());
       getPrinter().print(factorEnd(converter));
       CommentPrettyPrinter.printPostComments(node, this.getPrinter());
       return;
     }
+    else if (isStringConcat) {
+      getPrinter().print("concat(");
+      node.getLeft().accept(getRealThis());
+    }
     else {
       node.getLeft().accept(getRealThis());
     }
-    getPrinter().print(infix);
+    if (isStringConcat) {
+      getPrinter().print(", ");
+    }
+    else {
+      getPrinter().print(infix);
+    }
     if ((node.getRight() instanceof ASTNameExpression ||
       node.getRight() instanceof ASTAgoQualification) &&
       node.getLeft() instanceof ASTNoData) {
       // edge case: we're comparing a name to NoData. Prevent unwrapping optionals
-      if(node.getRight() instanceof ASTNameExpression){
+      if (node.getRight() instanceof ASTNameExpression) {
         expressionPP.handle((ASTNameExpression) node.getRight(), true);
       }
       else {
@@ -122,6 +134,11 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
     else {
       node.getRight().accept(getRealThis());
     }
+
+    if (isStringConcat) {
+      getPrinter().print(")");
+    }
+
     CommentPrettyPrinter.printPostComments(node, getPrinter());
   }
 
