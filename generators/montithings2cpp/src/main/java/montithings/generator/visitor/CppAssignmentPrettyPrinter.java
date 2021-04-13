@@ -28,11 +28,16 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
 
   protected TypeCheck tc;
 
-  public CppAssignmentPrettyPrinter(IndentPrinter printer) {
+  // In some code parts postconditions should not be checked, e.g. within the
+  // catch condition of a postcondition
+  protected boolean suppressPostconditionCheck = false;
+
+  public CppAssignmentPrettyPrinter(IndentPrinter printer, boolean suppressPostconditionCheck) {
     super(printer);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
       new DeriveSymTypeOfMontiThingsCombine());
     this.realThis = this;
+    this.suppressPostconditionCheck = suppressPostconditionCheck;
   }
 
   @Override public void handle(ASTIncSuffixExpression node) {
@@ -185,8 +190,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       }
       getPrinter().println(" );");
 
-
-      if (port.isPresent() && port.get().isOutgoing()) {
+      if (port.isPresent() && port.get().isOutgoing() && !suppressPostconditionCheck) {
         // check postconditions and send value
         String portname = capitalize(nameExpression.getName());
         getPrinter()

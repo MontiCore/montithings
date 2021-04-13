@@ -814,7 +814,11 @@ public class ComponentHelper {
   }
 
   public static String printJavaBlock(ASTMCJavaBlock block) {
-    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
+    return printJavaBlock(block, false);
+  }
+
+  public static String printJavaBlock(ASTMCJavaBlock block, boolean suppressPostconditions) {
+    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter(suppressPostconditions);
     return printer.prettyprint(block);
   }
 

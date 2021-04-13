@@ -12,6 +12,6 @@ ${compname}Input${generics} &${Identifier.getInputName()}
 </#if>)
 {
 <#if catch.isPresent()>
-    ${ComponentHelper.printJavaBlock(catch.get().handler)}
+    ${ComponentHelper.printJavaBlock(catch.get().handler, true)}
 </#if>
 }
