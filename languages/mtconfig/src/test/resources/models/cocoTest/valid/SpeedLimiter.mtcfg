@@ -14,4 +14,6 @@ config SpeedLimiter for GENERIC {
     include  = "template3.ftl" (testArg);
     init     = "template4.ftl";
   }
+
+  separate none;
 }
