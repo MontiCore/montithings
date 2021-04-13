@@ -13,7 +13,7 @@ ${tc.signature("comp", "config")}
 
         // the instance name differs from the original model, as it is wrapped by a new component
         // thus, remove last qualifying name
-        std::string oldInstanceName = instanceNameArg.getValue().substr(0, instanceNameArg.getValue().find_last_of("."));
+        std::string oldInstanceName = getInstanceName().substr(0, getInstanceName().find_last_of("."));
 
         if (recordings["calls"].contains(oldInstanceName.c_str())) {
             for (auto &call : recordings["calls"][oldInstanceName.c_str()].items()) {
