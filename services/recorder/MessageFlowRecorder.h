@@ -48,8 +48,6 @@ private:
 
     void onCommandReplyMessage(const DDSRecorderMessage::CommandReply &message);
 
-    void onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &message);
-
     void logProgress();
 
     void createRunScript();

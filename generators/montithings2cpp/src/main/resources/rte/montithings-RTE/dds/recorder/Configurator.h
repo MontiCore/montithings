@@ -101,7 +101,7 @@ public:
 
     void initReaderCommandReplyMessage();
 
-    void initReaderAcknowledgement(bool isFiltered);
+    void initReaderAcknowledgement();
 
     void initWriter();
 };

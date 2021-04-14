@@ -124,14 +124,13 @@ Configurator::initTopics() {
     std::string topicNameFiltered(RECORDER_ACKNOWLEDGE_TOPIC);
     topicNameFiltered.append("-Filtered");
 
-    DDS::StringSeq topicfiltered_params(2);
-    topicfiltered_params.length(2);
-    topicfiltered_params[0] = "recorder";
-    topicfiltered_params[1] = instanceName.c_str();
+    DDS::StringSeq topicfiltered_params(1);
+    topicfiltered_params.length(1);
+    topicfiltered_params[0] = instanceName.c_str();
 
     topicAcknowledgementFiltered = participant->create_contentfilteredtopic(
             topicNameFiltered.c_str(), topicAcknowledgement,
-            "(receiving_instance = %0) OR (receiving_instance = %1)",
+            "(receiving_instance = %0)",
             topicfiltered_params);
 
     if (!topicRecorder || !topicCommand || !topicCommandReply || !topicAcknowledgement
@@ -196,7 +195,7 @@ Configurator::initReaderRecorderMessage() {
 }
 
 void
-Configurator::initReaderAcknowledgement(bool isFiltered) {
+Configurator::initReaderAcknowledgement() {
     DDS::DataReaderListener_var listener(new MessageListener(isVerbose));
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
@@ -205,16 +204,9 @@ Configurator::initReaderAcknowledgement(bool isFiltered) {
     subscriber->get_default_datareader_qos(dataReaderQos);
     dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
-    DDS::DataReader_var dataReaderAcknowledgement;
-
-    if (isFiltered) {
-        dataReaderAcknowledgement
-                = subscriber->create_datareader(topicAcknowledgementFiltered, dataReaderQos, listener,
-                                                OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-    } else {
-        dataReaderAcknowledgement = subscriber->create_datareader(
-                topicAcknowledgement, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-    }
+    DDS::DataReader_var dataReaderAcknowledgement
+            = subscriber->create_datareader(topicAcknowledgementFiltered, dataReaderQos, listener,
+                                            OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataReaderAcknowledgement) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | ERROR: initReader() - OpenDDS data reader creation failed.";

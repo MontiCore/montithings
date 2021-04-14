@@ -17,7 +17,6 @@ MessageFlowRecorder::init() {
     ddsCommunicator.initWriter();
     ddsCommunicator.initReaderRecorderMessage();
     ddsCommunicator.initReaderCommandReplyMessage();
-    ddsCommunicator.initReaderAcknowledgement(true); // todo check this
 
     ddsCommunicator.setTopicName("recorder");
 
@@ -25,8 +24,6 @@ MessageFlowRecorder::init() {
             std::bind(&MessageFlowRecorder::onRecorderMessage, this, std::placeholders::_1));
     ddsCommunicator.addOnCommandReplyMessageCallback(
             std::bind(&MessageFlowRecorder::onCommandReplyMessage, this, std::placeholders::_1));
-    ddsCommunicator.addOnAcknowledgementMessageCallback(
-            std::bind(&MessageFlowRecorder::onAcknowledgementMessage, this, std::placeholders::_1));
 }
 
 void
@@ -140,7 +137,6 @@ void MessageFlowRecorder::createRunScript() {
         // convert to ms from ns as well
         script.append(" --delayStart " + instanceNameAfterTrafo + "=" + std::to_string(delayEntry.value().get<long>()/1000000));
     }
-    LOG_F (INFO, "Script %s.", script.c_str());
     storage["start_script"] = script.c_str();
 }
 
@@ -231,14 +227,6 @@ void
 MessageFlowRecorder::onCommandReplyMessage(const DDSRecorderMessage::CommandReply &message) {
     LOG_F (1, "onCommandReplyMessage:id=%d,content=%s,command_id=%d.", message.id, message.content.in(),
            message.command_id);
-}
-
-void
-MessageFlowRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &ack) {
-    LOG_F (1, "onAcknowledgementMessage: id=%d,sending_instance=%s,receiving_instance%s,acked_id=%d,vc=%s.", ack.id,
-           ack.sending_instance.in(), ack.receiving_instance.in(),
-           ack.acked_id,
-           ack.serialized_vector_clock.in());
 }
 
 void

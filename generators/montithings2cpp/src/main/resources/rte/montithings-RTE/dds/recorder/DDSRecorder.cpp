@@ -16,7 +16,7 @@ DDSRecorder::init() {
     ddsCommunicator.initSubscriber();
     ddsCommunicator.initReaderCommandMessage();
     if (isOutgoingPort()) {
-        ddsCommunicator.initReaderAcknowledgement(true);
+        ddsCommunicator.initReaderAcknowledgement();
         ddsCommunicator.addOnAcknowledgementMessageCallback(
                 std::bind(&DDSRecorder::onAcknowledgementMessage, this, std::placeholders::_1));
     }
