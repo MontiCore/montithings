@@ -5,7 +5,12 @@ ${tc.signature("typeName", "instanceName", "config")}
 <#else>
     <#assign lineBreak = ")">
 </#if>
-CONTAINER=$(docker run -d --rm --net montithings \
+CONTAINER=$(docker run -d --rm \
+<#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
+--net montithings \
+<#else>
+--net=host \<#--use host network for multicast support-->
+</#if>
 --cap-add=NET_ADMIN \<#-- allows simulating network delay-->
 <#if config.getMessageBroker().toString() == "DDS">
   -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini \
