@@ -58,6 +58,8 @@ main(int argc, char **argv) {
                           cxxopts::value<std::string>()->default_value(""))
             ("stopAfter", "Stop recording after given minutes",
              cxxopts::value<int>())
+            ("minSpacing", "Minimum spacing in ms between each message sent to the same component.",
+             cxxopts::value<int>()->default_value("0"))
             ("fileRecordings", "File name where recordings are saved",
              cxxopts::value<std::string>()->default_value("recordings.json"))(
             "n",
@@ -78,6 +80,7 @@ main(int argc, char **argv) {
     LOG_F (INFO, "Initializing...");
     std::string fileRecordingsPath = result["fileRecordings"].as<std::string>();
     std::string dcpsInfoHost = result["DCPSInfoRepo"].as<std::string>();
+    int minSpacing = result["minSpacing"].as<int>();
 
     if (dcpsInfoHost.empty()) {
         std::cout << "Please provide the following argument: --DCPSInfoRepo" << std::endl;
@@ -109,6 +112,7 @@ main(int argc, char **argv) {
 
     recorder.setDcpsInfoRepoHost(dcpsInfoHost);
     recorder.setInstanceAmount(appInstancesAmount);
+    recorder.setMinSpacing(minSpacing);
     recorder.init();
     recorder.setFileRecordings(fileRecordingsPath);
     recorder.setVerbose(verbose);
