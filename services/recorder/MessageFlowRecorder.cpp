@@ -47,6 +47,11 @@ MessageFlowRecorder::setInstanceAmount(int n) {
 }
 
 void
+MessageFlowRecorder::setMinSpacing(int &spacing) {
+    minSpacing = spacing;
+}
+
+void
 MessageFlowRecorder::start() {
     storage = nlohmann::json::object();
     statsCallsAmount = 0;
@@ -85,6 +90,8 @@ MessageFlowRecorder::start() {
     // recording is done event-based. However, the program should not exit at this point, hence the
     // endless loop.
     while (true) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::yield();
     }
 }
 
@@ -121,7 +128,7 @@ void
 MessageFlowRecorder::process() {
     RecordProcessor processor;
     if (!recordedMessages.empty()) {
-        storage["recordings"] = processor.process(recordedMessages);
+        storage["recordings"] = processor.process(recordedMessages, minSpacing);
     }
 
     createRunScript();

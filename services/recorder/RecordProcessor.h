@@ -30,12 +30,12 @@ private:
     collectMessageDelays(const std::vector<DDSRecorderMessage::Message> &messageStorage,
                          const std::string &identifier);
 
-    static json sortRecords(json records);
+    static json sortRecords(json records, int minSpacing);
 
 public:
     RecordProcessor() = default;
 
     ~RecordProcessor() = default;
 
-    static json process(const std::vector<DDSRecorderMessage::Message> &messageStorage);
+    static json process(const std::vector<DDSRecorderMessage::Message> &messageStorage, int minSpacing);
 };

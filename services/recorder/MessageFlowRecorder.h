@@ -43,6 +43,8 @@ private:
     int statsCallsAmount = 0;
     int statsLatenciesAmount = 0;
 
+    int minSpacing = 0;
+
     // event handlers for all types of DDS messages
     void onRecorderMessage(const DDSRecorderMessage::Message &message);
 
@@ -61,6 +63,8 @@ public:
     void setFileRecordings(std::string &filePath);
 
     void setDcpsInfoRepoHost(std::string &host);
+
+    void setMinSpacing(int &spacing);
 
     void setVerbose(bool verbose);
 

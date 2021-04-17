@@ -54,7 +54,7 @@ RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Mess
 }
 
 json
-RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &messageStorage) {
+RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &messageStorage, int minSpacing) {
     LOG_SCOPE_F (INFO, "Processing records...");
     LOG_F (INFO, "Calculating transport delays...");
 
@@ -117,13 +117,13 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
     LOG_F (INFO, "Sorting records (primary vector clock, secondary timestamp) ...");
     for (auto &instance : records.items()) {
         LOG_F (INFO, "Sorting %ld records for %s", records[instance.key()].size(), instance.key().c_str());
-        records[instance.key()] = sortRecords(records[instance.key()]);
+        records[instance.key()] = sortRecords(records[instance.key()], minSpacing);
     }
 
     return records;
 }
 
-json RecordProcessor::sortRecords(json records) {
+json RecordProcessor::sortRecords(json records, int minSpacing) {
     int minVClockSum = INT_MAX;
     int maxVClockSum = 0;
 
@@ -172,9 +172,15 @@ json RecordProcessor::sortRecords(json records) {
     if (sortedRecords.size() > 0) {
         long long lastTimestamp = sortedRecords[0]["timestamp"].get<long long>();
         for (auto record : sortedRecords) {
-            if (record["timestamp"] < lastTimestamp) {
+            if (record["timestamp"].get<long long>() < lastTimestamp) {
                 LOG_F (INFO, "Adjusted timestamp: %lld -> %lld", record["timestamp"].get<long long>(), lastTimestamp);
                 record["timestamp"] = lastTimestamp;
+            }
+            if (minSpacing > 0) {
+                if (record["timestamp"].get<long long>() - lastTimestamp < minSpacing * 1000000) {
+                    LOG_F (INFO, "Adjusted timestamp: %lld, adding %d ms, as its too close to previous timestamp", record["timestamp"].get<long long>(), minSpacing);
+                    record["timestamp"] = record["timestamp"].get<long long>() + minSpacing * 1000000;
+                }
             }
             lastTimestamp = record["timestamp"];
         }
