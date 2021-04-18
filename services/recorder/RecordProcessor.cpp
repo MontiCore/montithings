@@ -169,22 +169,45 @@ json RecordProcessor::sortRecords(json records, int minSpacing) {
     }
 
     LOG_F (INFO, "Adjusting timestamps if necessary...");
+    json adjustedRecords = json::array();
     if (sortedRecords.size() > 0) {
+        bool isFirst = true;
+        long long spacing = (long long)minSpacing * 1000000;
         long long lastTimestamp = sortedRecords[0]["timestamp"].get<long long>();
+
         for (auto record : sortedRecords) {
             if (record["timestamp"].get<long long>() < lastTimestamp) {
                 LOG_F (INFO, "Adjusted timestamp: %lld -> %lld", record["timestamp"].get<long long>(), lastTimestamp);
                 record["timestamp"] = lastTimestamp;
             }
             if (minSpacing > 0) {
-                if (record["timestamp"].get<long long>() - lastTimestamp < minSpacing * 1000000) {
-                    LOG_F (INFO, "Adjusted timestamp: %lld, adding %d ms, as its too close to previous timestamp", record["timestamp"].get<long long>(), minSpacing);
-                    record["timestamp"] = record["timestamp"].get<long long>() + minSpacing * 1000000;
+                LOG_F (INFO, "last:%lld, curr:%lld, diff=%lld, change=%d",
+                       lastTimestamp,
+                       record["timestamp"].get<long long>(),
+                       record["timestamp"].get<long long>()-lastTimestamp,
+                       record["timestamp"].get<long long>() != lastTimestamp &&
+                       record["timestamp"].get<long long>() - lastTimestamp < spacing);
+
+                if (!isFirst &&
+                    record["timestamp"].get<long long>() - lastTimestamp < spacing) {
+                    LOG_F (INFO, "%lld + %d*1000000 = %lld",
+                           lastTimestamp, minSpacing,
+                           lastTimestamp + spacing);
+
+                    LOG_F (INFO, "Adjusted timestamp: %lld -> %lld, adding %d ms, as its too close to previous timestamp",
+                           record["timestamp"].get<long long>(),
+                           lastTimestamp + spacing,
+                           minSpacing);
+                    record["timestamp"] = lastTimestamp + spacing;
+                    LOG_F (INFO, "Adjusted after transfor: %lld",
+                           record["timestamp"].get<long long>());
                 }
             }
             lastTimestamp = record["timestamp"];
+            adjustedRecords.push_back(record);
+            isFirst = false;
         }
 
     }
-    return sortedRecords;
+    return adjustedRecords;
 }
