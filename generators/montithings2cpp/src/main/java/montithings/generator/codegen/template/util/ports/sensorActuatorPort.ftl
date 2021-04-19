@@ -26,5 +26,7 @@ class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if
   ${defineHookPoint("<CppBlock>?portTemplate:consume")}
   }
 
-  ${Names.getSimpleName(portTemeplateName)?cap_first} (){}
+  ${Names.getSimpleName(portTemeplateName)?cap_first} () {
+    ${defineHookPoint("<CppBlock>?portTemplate:init")}
+  }
 };
