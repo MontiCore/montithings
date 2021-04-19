@@ -29,6 +29,7 @@ public class SymbolUtil {
       .build();
     func.setSpannedScope(new BasicSymbolsScope());
     enclosingScope.add(func);
+    returnType.getTypeInfo().addFunctionSymbol(func);
     return func;
   }
 

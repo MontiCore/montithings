@@ -4,6 +4,7 @@ package montithings.types.check;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisVisitor;
+import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import static de.monticore.types.check.SymTypeExpressionFactory.createTypeExpression;
 import static montithings.util.IdentifierUtils.getPortForName;
 
-public class DeriveSymTypeOfExpression extends de.monticore.types.check.DeriveSymTypeOfExpression {
+public class DeriveSymTypeOfExpressionForMT extends de.monticore.types.check.DeriveSymTypeOfExpression {
 
   private ExpressionsBasisVisitor realThis;
 
@@ -30,7 +31,7 @@ public class DeriveSymTypeOfExpression extends de.monticore.types.check.DeriveSy
     return realThis;
   }
 
-  public DeriveSymTypeOfExpression() {
+  public DeriveSymTypeOfExpressionForMT() {
     realThis = this;
   }
 
@@ -40,6 +41,7 @@ public class DeriveSymTypeOfExpression extends de.monticore.types.check.DeriveSy
     Optional<PortSymbol> optPort = getPortForName(expr);
     Optional<VariableSymbol> optVar = scope.resolveVariable(expr.getName());
     Optional<TypeSymbol> optType = scope.resolveType(expr.getName());
+    Optional<FunctionSymbol> optFunction = scope.resolveFunction(expr.getName());
     Optional<FieldSymbol> optField = Optional.empty();
     if(scope instanceof IOOSymbolsScope){
       optField = ((IOOSymbolsScope) scope).resolveField(expr.getName());
@@ -60,6 +62,11 @@ public class DeriveSymTypeOfExpression extends de.monticore.types.check.DeriveSy
     } else if (optPort.isPresent()) {
       PortSymbol port = optPort.get();
       SymTypeExpression res = port.getType().deepClone();
+      typeCheckResult.setField();
+      return Optional.of(res);
+    } else if (optFunction.isPresent()) {
+      FunctionSymbol function = optFunction.get();
+      SymTypeExpression res = function.getReturnType().deepClone();
       typeCheckResult.setField();
       return Optional.of(res);
     } else if (optField.isPresent()) {
