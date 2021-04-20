@@ -316,7 +316,7 @@ public class MTGenerator {
       Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
 
     // Set of templates that follow a defined naming scheme that will be used if no specific template for a port is given.
-    // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume"].ftl,
+    // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume|Init"].ftl,
     // if the portName equals a.b.c.ComponentnamePortnamePort.
     Set<File> templates = FileHelper.getPortImplementation(Paths
         .get(templatePath.toFile().getAbsolutePath(),
@@ -327,6 +327,7 @@ public class MTGenerator {
     bindSAPortTemplate(portName, setup, templates, "body", config, portSymbol);
     bindSAPortTemplate(portName, setup, templates, "provide", config, portSymbol);
     bindSAPortTemplate(portName, setup, templates, "consume", config, portSymbol);
+    bindSAPortTemplate(portName, setup, templates, "init", config, portSymbol);
 
     // Port generation.
     GeneratorEngine engine = new GeneratorEngine(setup);

@@ -23,7 +23,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
 
   private DeriveSymTypeOfOCLExpressions deriveSymTypeOfOCLExpressions;
 
-  private DeriveSymTypeOfExpression deriveSymTypeOfExpression;
+  private DeriveSymTypeOfExpressionForMT deriveSymTypeOfExpression;
 
   private DeriveSymTypeOfLiterals deriveSymTypeOfLiterals;
 
@@ -90,7 +90,7 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfCommonExpressions = new DeriveSymTypeOfCommonExpressionsForMT();
     deriveSymTypeOfAssignmentExpressions = new DeriveSymTypeOfAssignmentExpressionsForMT();
     deriveSymTypeOfMCCommonLiterals = new DeriveSymTypeOfMCCommonLiterals();
-    deriveSymTypeOfExpression = new DeriveSymTypeOfExpression();
+    deriveSymTypeOfExpression = new DeriveSymTypeOfExpressionForMT();
     deriveSymTypeOfLiterals = new DeriveSymTypeOfLiterals();
     deriveSymTypeOfSIUnitLiterals = new DeriveSymTypeOfSIUnitLiterals();
     deriveSymTypeOfMontiThings = new DeriveSymTypeOfMontiThings();
