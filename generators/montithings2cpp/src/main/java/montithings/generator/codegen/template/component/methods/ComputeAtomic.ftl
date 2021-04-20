@@ -22,9 +22,9 @@ ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${Com
 }
 <#sep>else </#sep>
 </#list>
-else {
+<#if ComponentHelper.hasPortSpecificBehavior(comp)>else {</#if>
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-}
+<#if ComponentHelper.hasPortSpecificBehavior(comp)>}</#if>
 
 if (timeMode == TIMESYNC) {
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}

@@ -1178,6 +1178,10 @@ public class ComponentHelper {
     return name;
   }
 
+  public static boolean hasPortSpecificBehavior(ComponentTypeSymbol comp) {
+    return !getPortSpecificBehaviors(comp).isEmpty();
+  }
+
   public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
     if (comp.isPresentAstNode()) {
