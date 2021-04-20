@@ -913,7 +913,7 @@ public class ComponentHelper {
   }
 
   public static boolean hasBehavior(ComponentTypeSymbol component) {
-    return !elementsOf(component).filter(ASTBehavior.class).isEmpty();
+    return !elementsOf(component).filter(ASTBehavior.class).filter(e -> e.isEmptyNames()).isEmpty();
   }
 
   public static boolean isApplication(ComponentTypeSymbol component, ConfigParams config) {
@@ -1161,6 +1161,21 @@ public class ComponentHelper {
 
     //this code should normally not be executed
     return "";
+  }
+
+  public static List<ASTBehavior> getPortSpecificBehaviors(ComponentTypeSymbol comp) {
+    List<ASTBehavior> behaviorList = elementsOf(comp).filter(ASTBehavior.class)
+        .filter(e -> !e.isEmptyNames()).toList();
+    return behaviorList;
+  }
+
+  public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTBehavior ast) {
+    String name = "";
+    for (String s : ast.getNameList()) {
+      name += s;
+      name += "__";
+    }
+    return name;
   }
 
   public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {

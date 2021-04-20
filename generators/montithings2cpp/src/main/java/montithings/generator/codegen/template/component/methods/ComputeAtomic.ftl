@@ -14,7 +14,17 @@ ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResult
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+
+<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
+{
+${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+}
+<#sep>else </#sep>
+</#list>
+else {
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+}
 
 if (timeMode == TIMESYNC) {
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
