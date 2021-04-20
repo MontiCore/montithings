@@ -16,7 +16,7 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
-if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
+if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()}))
 {
 ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
 }

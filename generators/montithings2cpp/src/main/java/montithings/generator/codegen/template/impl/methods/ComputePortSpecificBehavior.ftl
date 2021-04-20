@@ -8,6 +8,7 @@ ${className}${generics}::compute${ComponentHelper.getPortSpecificBehaviorName(co
 (${compname}Input${generics} ${Identifier.getInputName()})
 {
 ${compname}Result${generics} ${Identifier.getResultName()};
+${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 ${ComponentHelper.printJavaBlock(behavior.getMCJavaBlock())}
 <#list ComponentHelper.getPublishedPorts(comp, behavior.getMCJavaBlock()) as port>
     ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
