@@ -35,7 +35,7 @@ ${tc.signature("comp","config","className")}
 ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, config, className])}
 
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
-${tc.includeArgs("template.component.methods.ShouldComputePortSpecificBehavior", [comp, config, className, behavior])}
+${tc.includeArgs("template.component.methods.ShouldComputePortSpecificBehavior", [behavior, comp, config, className])}
 </#list>
 
 <#if ComponentHelper.retainState(comp)>

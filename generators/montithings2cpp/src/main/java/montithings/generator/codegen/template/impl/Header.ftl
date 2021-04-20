@@ -50,7 +50,7 @@ ${className}(std::string instanceName, ${compname}${generics}& component, ${comp
 </#list>
 
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
-  <#assign b = ComponentHelper.getBehaviorName(comp, behavior)>
+  <#assign behaviorName = ComponentHelper.getPortSpecificBehaviorName(comp, behavior)>
   ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input);
 </#list>
 };

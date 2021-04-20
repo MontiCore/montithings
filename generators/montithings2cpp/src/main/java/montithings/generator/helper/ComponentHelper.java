@@ -973,7 +973,7 @@ public class ComponentHelper {
   }
 
   public static ASTMCJavaBlock getBehavior(ComponentTypeSymbol component) {
-    List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class).toList();
+    List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class).filter(e -> e.isEmptyNames()).toList();
     Preconditions.checkArgument(!behaviors.isEmpty(),
       "0xMT800 Trying to print behavior of component \"" + component.getName()
         + "\" that has no behavior.");
