@@ -154,6 +154,7 @@ public class FileHelper {
     fileEndings.add("Body.ftl");
     fileEndings.add("Provide.ftl");
     fileEndings.add("Consume.ftl");
+    fileEndings.add("Init.ftl");
 
     for (String ending : fileEndings) {
       File hwcFile = Paths.get(hwcPath.toString() + File.separator
