@@ -1172,8 +1172,8 @@ public class ComponentHelper {
   public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTBehavior ast) {
     String name = "";
     for (String s : ast.getNameList()) {
-      name += s;
       name += "__";
+      name += StringTransformations.capitalize(s);
     }
     return name;
   }
