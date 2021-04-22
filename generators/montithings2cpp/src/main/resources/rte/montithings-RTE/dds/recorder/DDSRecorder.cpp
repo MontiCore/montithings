@@ -78,12 +78,12 @@ DDSRecorder::stop() {
 void
 DDSRecorder::sendState(json state) {
     DDSRecorderMessage::Message recorderMessage;
-    recorderMessage.id = messageId;
+    recorderMessage.id = recorderMessageId;
     recorderMessage.instance_name = instanceName.c_str();
     recorderMessage.type = DDSRecorderMessage::INTERNAL_STATE;
     recorderMessage.msg_content = state.dump().c_str();
 
-    messageId++;
+    recorderMessageId++;
 
     CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending internal state:" << recorderMessage.msg_content;
     ddsCommunicator.send(recorderMessage);
@@ -92,7 +92,7 @@ DDSRecorder::sendState(json state) {
 void
 DDSRecorder::sendInternalRecords() {
     DDSRecorderMessage::Message recorderMessage;
-    recorderMessage.id = messageId;
+    recorderMessage.id = recorderMessageId;
     recorderMessage.instance_name = instanceName.c_str();
     recorderMessage.type = DDSRecorderMessage::INTERNAL_RECORDS;
 
@@ -113,7 +113,7 @@ DDSRecorder::sendInternalRecords() {
     montithings::library::hwcinterceptor::storageCalls.clear();
     montithings::library::hwcinterceptor::storageComputationLatency.clear();
 
-    messageId++;
+    recorderMessageId++;
 
     CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending internal records:" << recorderMessage.msg_content;
     ddsCommunicator.send(recorderMessage);
@@ -146,14 +146,14 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             VectorClock::updateVectorClock(newVectorClock, sendingInstance);
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
                                  << " to=" << sendingInstance << " from=" << instanceName;
-            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName, VectorClock::getSerializedVectorClock());
+            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName, "");//VectorClock::getSerializedVectorClock());
         } else {
             // message was sent and not received. Thus, add message to the map of unacked messages
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id
                                  << " to unackedMessageTimestampMap and unackedRecordedMessageTimestampMap";
 
             unackedMessageTimestampMap[message.id] = timestamp;
-            unackedRecordedMessageTimestampMap[messageId] = timestamp;
+            unackedRecordedMessageTimestampMap[recorderMessageId] = timestamp;
 
             // Remove new lines from content
             std::string content{message.content.in()};
@@ -166,14 +166,13 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             unsentRecordMessageDelays.clear();
 
             DDSRecorderMessage::Message recorderMessage;
-            recorderMessage.id = messageId;
+            recorderMessage.id = recorderMessageId;
             recorderMessage.instance_name = instanceName.c_str();
             recorderMessage.type = DDSRecorderMessage::MESSAGE_RECORD;
             recorderMessage.msg_id = message.id;
-            recorderMessage.serialized_vector_clock = VectorClock::getSerializedVectorClock().c_str();
+            recorderMessage.serialized_vector_clock = "";//VectorClock::getSerializedVectorClock().c_str();
             recorderMessage.topic = topicName;
             recorderMessage.message_delays = jUnsentDelays.dump().c_str();
-
 
             recorderMessage.timestamp = timestamp;
 
@@ -181,13 +180,13 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
                 recorderMessage.msg_content = content.c_str();
             }
 
-            CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << messageId
+            CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << recorderMessageId
                                  << " topic=" << topicName << " instance_name=" << instanceName.c_str()
                                  << " #delays (comp<->comp)=" << jUnsentDelays["messages"].size()
                                  << " #delays (comp<->comp)=" << jUnsentDelays["record_messages"].size();
             ddsCommunicator.send(recorderMessage);
 
-            ++messageId;
+            ++recorderMessageId;
         }
 
         sendInternalRecords();
@@ -215,7 +214,7 @@ DDSRecorder::onCommandMessage(const DDSRecorderMessage::Command &command) {
 
 void
 DDSRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &ack) {
-    CLOG (DEBUG, LOG_ID) << "Received ACK | id=" << ack.id << ", from=" << ack.sending_instance.in() << ", clock="
+    CLOG (DEBUG, LOG_ID) << "Received ACK | from=" << ack.sending_instance.in() << ", clock="
                          << ack.serialized_vector_clock.in() << ", receiving_instance=" << ack.receiving_instance.in()
                          << ", acked_id=" << ack.acked_id << ", portName=" << ack.port_name;
 

@@ -28,9 +28,10 @@
 // TAO_IDL - Generated from
 // be/be_codegen.cpp:461
 
-#ifndef _TAO_IDL_DDSMESSAGES_6XY9QR_H_
-#define _TAO_IDL_DDSMESSAGES_6XY9QR_H_
+#ifndef _TAO_IDL_DDSMESSAGES_H_
+#define _TAO_IDL_DDSMESSAGES_H_
 
+#include /**/ "ace/pre.h"
 
 #include "DDSMessageC.h"
 #include "tao/PortableServer/Basic_SArguments.h"
@@ -39,10 +40,7 @@
 #include "tao/PortableServer/Var_Size_SArgument_T.h"
 #include "tao/PortableServer/UB_String_SArguments.h"
 
-#if !defined (ACE_LACKS_PRAGMA_ONCE)
-# pragma once
-#endif /* ACE_LACKS_PRAGMA_ONCE */
-
+// Skeleton file generation suppressed with command line option -SS
 
 // TAO_IDL - Generated from
 // be/be_visitor_arg_traits.cpp:68
@@ -62,7 +60,7 @@ namespace TAO
     : public
         Var_Size_SArg_Traits_T<
             ::DDSMessage::Message,
-            TAO::Any_Insert_Policy_Stream
+            TAO::Any_Insert_Policy_Noop
           >
   {
   };
@@ -72,17 +70,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 
 
 
-// TAO_IDL - Generated from
-// be/be_visitor_module/module_sh.cpp:38
-
-namespace POA_DDSMessage
-{
-  
-
-// TAO_IDL - Generated from
-// be/be_visitor_module/module_sh.cpp:69
-
-} // module DDSMessage
+#include /**/ "ace/post.h"
 
 #endif /* ifndef */
 

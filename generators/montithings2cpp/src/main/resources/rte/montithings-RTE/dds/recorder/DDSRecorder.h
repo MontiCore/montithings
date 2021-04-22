@@ -28,7 +28,7 @@ class DDSRecorder {
 private:
     std::mutex sentMutex;
 
-    int messageId = 0;
+    int recorderMessageId = 0;
 
     DDSCommunicator ddsCommunicator;
     DDSParticipant *ddsParticipant;

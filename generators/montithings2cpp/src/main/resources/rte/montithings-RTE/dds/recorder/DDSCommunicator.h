@@ -23,9 +23,6 @@
 using vclock = std::unordered_map<std::string, long>;
 
 class DDSCommunicator : public Configurator {
-private:
-    // increasing message id for acknowledgements
-    int ackId = 0;
 
 public:
     DDSCommunicator() = default;

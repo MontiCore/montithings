@@ -166,7 +166,6 @@ namespace DDSRecorderMessage
     typedef Command_var _var_type;
     typedef Command_out _out_type;
     
-    ::CORBA::Long id;
     ::TAO::String_Manager instance_name;
     DDSRecorderMessage::CommandType cmd;
   };
@@ -201,7 +200,6 @@ namespace DDSRecorderMessage
     typedef CommandReply_var _var_type;
     typedef CommandReply_out _out_type;
     
-    ::CORBA::Long id;
     ::TAO::String_Manager instance_name;
     ::CORBA::Long command_id;
     ::TAO::String_Manager content;
@@ -237,7 +235,6 @@ namespace DDSRecorderMessage
     typedef Acknowledgement_var _var_type;
     typedef Acknowledgement_out _out_type;
     
-    ::CORBA::Long id;
     ::TAO::String_Manager sending_instance;
     ::TAO::String_Manager receiving_instance;
     ::TAO::String_Manager port_name;

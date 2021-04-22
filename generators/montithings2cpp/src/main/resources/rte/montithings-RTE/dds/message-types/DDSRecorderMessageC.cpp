@@ -143,7 +143,6 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     const DDSRecorderMessage::Command &_tao_aggregate)
 {
   return
-    (strm << _tao_aggregate.id) &&
     (strm << _tao_aggregate.instance_name.in ()) &&
     (strm << _tao_aggregate.cmd);
 }
@@ -153,7 +152,6 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     DDSRecorderMessage::Command &_tao_aggregate)
 {
   return
-    (strm >> _tao_aggregate.id) &&
     (strm >> _tao_aggregate.instance_name.out ()) &&
     (strm >> _tao_aggregate.cmd);
 }
@@ -172,7 +170,6 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     const DDSRecorderMessage::CommandReply &_tao_aggregate)
 {
   return
-    (strm << _tao_aggregate.id) &&
     (strm << _tao_aggregate.instance_name.in ()) &&
     (strm << _tao_aggregate.command_id) &&
     (strm << _tao_aggregate.content.in ());
@@ -183,7 +180,6 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     DDSRecorderMessage::CommandReply &_tao_aggregate)
 {
   return
-    (strm >> _tao_aggregate.id) &&
     (strm >> _tao_aggregate.instance_name.out ()) &&
     (strm >> _tao_aggregate.command_id) &&
     (strm >> _tao_aggregate.content.out ());
@@ -203,7 +199,6 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     const DDSRecorderMessage::Acknowledgement &_tao_aggregate)
 {
   return
-    (strm << _tao_aggregate.id) &&
     (strm << _tao_aggregate.sending_instance.in ()) &&
     (strm << _tao_aggregate.receiving_instance.in ()) &&
     (strm << _tao_aggregate.port_name.in ()) &&
@@ -216,7 +211,6 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     DDSRecorderMessage::Acknowledgement &_tao_aggregate)
 {
   return
-    (strm >> _tao_aggregate.id) &&
     (strm >> _tao_aggregate.sending_instance.out ()) &&
     (strm >> _tao_aggregate.receiving_instance.out ()) &&
     (strm >> _tao_aggregate.port_name.out ()) &&

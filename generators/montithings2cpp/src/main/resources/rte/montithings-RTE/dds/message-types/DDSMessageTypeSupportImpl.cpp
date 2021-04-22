@@ -79,7 +79,7 @@ size_t gen_max_marshaled_size(KeyOnly<const DDSMessage::Message> stru, bool alig
 {
   ACE_UNUSED_ARG(stru);
   ACE_UNUSED_ARG(align);
-  return 4;
+  return 0;
 }
 
 void gen_find_size(KeyOnly<const DDSMessage::Message> stru, size_t& size, size_t& padding)
@@ -87,24 +87,20 @@ void gen_find_size(KeyOnly<const DDSMessage::Message> stru, size_t& size, size_t
   ACE_UNUSED_ARG(stru);
   ACE_UNUSED_ARG(size);
   ACE_UNUSED_ARG(padding);
-  if ((size + padding) % 4) {
-    padding += 4 - ((size + padding) % 4);
-  }
-  size += gen_max_marshaled_size(stru.t.id);
 }
 
 bool operator<<(Serializer& strm, KeyOnly<const DDSMessage::Message> stru)
 {
   ACE_UNUSED_ARG(strm);
   ACE_UNUSED_ARG(stru);
-  return (strm << stru.t.id);
+  return true;
 }
 
 bool operator>>(Serializer& strm, KeyOnly<DDSMessage::Message> stru)
 {
   ACE_UNUSED_ARG(strm);
   ACE_UNUSED_ARG(stru);
-  return (strm >> stru.t.id);
+  return true;
 }
 
 }  }
@@ -198,15 +194,13 @@ struct MetaStructImpl<DDSMessage::Message> : MetaStruct {
 
   void deallocate(void* stru) const { delete static_cast<T*>(stru); }
 
-  size_t numDcpsKeys() const { return 1; }
+  size_t numDcpsKeys() const { return 0; }
 
 #endif /* OPENDDS_NO_MULTI_TOPIC */
 
   bool isDcpsKey(const char* field) const
   {
-    if (!ACE_OS::strcmp(field, "id")) {
-      return true;
-    }
+    ACE_UNUSED_ARG(field);
     return false;
   }
 

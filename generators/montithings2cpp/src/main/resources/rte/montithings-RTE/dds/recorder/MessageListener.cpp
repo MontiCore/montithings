@@ -155,7 +155,7 @@ MessageListener::on_data_available (const DDSRecorderMessage::Command& message)
 {
   if (isVerbose)
     {
-      CLOG (DEBUG, LOG_ID) << message.id << " | " << message.cmd;
+      CLOG (DEBUG, LOG_ID) << message.cmd;
     }
   if (onCommandMessageCallback)
     {
@@ -168,8 +168,7 @@ MessageListener::on_data_available (const DDSRecorderMessage::CommandReply& mess
 {
   if (isVerbose)
     {
-      CLOG (DEBUG, LOG_ID) << message.id << " | " << message.content << " | " << message.command_id
-               ;
+      CLOG (DEBUG, LOG_ID) <<  message.content << " | " << message.command_id;
     }
   if (onCommandReplyMessageCallback)
     {
