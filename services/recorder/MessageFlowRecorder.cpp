@@ -73,7 +73,6 @@ MessageFlowRecorder::start() {
 
     LOG_F (INFO, "Sending command: RECORDING_START");
     DDSRecorderMessage::Command startCommand;
-    startCommand.id = Util::Time::getCurrentTimestampUnix();
     startCommand.cmd = DDSRecorderMessage::RECORDING_START;
     ddsCommunicator.send(startCommand);
 
@@ -89,10 +88,14 @@ MessageFlowRecorder::start() {
 
     // recording is done event-based. However, the program should not exit at this point, hence the
     // endless loop.
-    while (true) {
+    while (isRecording) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         std::this_thread::yield();
     }
+
+    cleanup();
+    process();
+    saveToFile();
 }
 
 void
@@ -103,11 +106,9 @@ MessageFlowRecorder::stop() {
         cleanup();
         exit(EXIT_SUCCESS);
     }
-
     isRecording = false;
     LOG_SCOPE_F (INFO, "Sending command: RECORDING_STOP");
     DDSRecorderMessage::Command stopCommand;
-    stopCommand.id = Util::Time::getCurrentTimestampUnix();
     stopCommand.cmd = DDSRecorderMessage::RECORDING_STOP;
     ddsCommunicator.send(stopCommand);
 
@@ -232,7 +233,7 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
 
 void
 MessageFlowRecorder::onCommandReplyMessage(const DDSRecorderMessage::CommandReply &message) {
-    LOG_F (1, "onCommandReplyMessage:id=%d,content=%s,command_id=%d.", message.id, message.content.in(),
+    LOG_F (1, "onCommandReplyMessage:content=%s,command_id=%d." , message.content.in(),
            message.command_id);
 }
 
@@ -244,8 +245,6 @@ MessageFlowRecorder::logProgress() {
         if (isRecording) {
             LOG_F (INFO, "Messages: %lu, Calls: %u, Computation Latencies: %u",
                    recordedMessages.size(), statsCallsAmount, statsLatenciesAmount);
-            //process();
-            //saveToFile();
         }
     }
 }

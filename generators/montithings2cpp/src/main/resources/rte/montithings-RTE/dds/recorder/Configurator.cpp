@@ -234,7 +234,8 @@ Configurator::initReaderCommandMessage() {
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
     dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-
+    dataReaderQos.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
+    
     DDS::DataReader_var dataReaderCommand
             = subscriber->create_datareader(topicCommand, dataReaderQos, listener,
                     // default status mask ensures that
@@ -293,6 +294,17 @@ Configurator::initWriter() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
+
+    DDS::DataWriter_var dataWriterCommandReply = publisher->create_datawriter(
+            topicCommandReply, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+    DDS::DataWriter_var dataWriterAcknowledge = publisher->create_datawriter(
+            topicAcknowledgement, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+    dataWriterQoS.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
+    dataWriterQoS.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+    dataWriterQoS.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
+
     DDS::DataWriter_var dataWriterCommand
             = publisher->create_datawriter(topicCommand, dataWriterQoS,
                     // no listener required
@@ -302,17 +314,6 @@ Configurator::initWriter() {
                     // changes are communicated to the
                     // application
                                            OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-
-    DDS::DataWriter_var dataWriterCommandReply = publisher->create_datawriter(
-            topicCommandReply, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-
-
-    DDS::DataWriter_var dataWriterAcknowledge = publisher->create_datawriter(
-            topicAcknowledgement, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-
-    dataWriterQoS.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
-    dataWriterQoS.resource_limits.max_samples_per_instance = DDS::LENGTH_UNLIMITED;
-    dataWriterQoS.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
 
     DDS::DataWriter_var dataWriterRecorder = publisher->create_datawriter(
             topicRecorder, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);

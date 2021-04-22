@@ -54,6 +54,8 @@ DDSCommunicator::waitUntilCommandReadersConnected(int amount) {
         if (matches.current_count >= amount) {
             break;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds (100));
+        std::this_thread::yield();
     }
 
     ws->detach_condition(condition);
@@ -76,6 +78,8 @@ DDSCommunicator::waitForRecorderReaders() {
         if (matches.current_count >= 2) {
             break;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds (100));
+        std::this_thread::yield();
     }
 
     ws->detach_condition(condition);
@@ -97,6 +101,8 @@ DDSCommunicator::waitUntilRecorderWritersDisconnect() {
         if (matches.current_count == 1) {
             break;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds (100));
+        std::this_thread::yield();
     }
 
     ws->detach_condition(condition);
@@ -104,7 +110,6 @@ DDSCommunicator::waitUntilRecorderWritersDisconnect() {
 
 void
 DDSCommunicator::cleanup() {
-    //TODO hangs sometimes
     participant->delete_contained_entities();
     dpf->delete_participant(participant);
     TheServiceParticipant->shutdown();
@@ -211,7 +216,6 @@ void
 DDSCommunicator::sendAck(const std::string &sendingInstance, long ackedId, const std::string &receivedInstance,
                          const std::string &pName, const std::string &jVectorClock) {
     DDSRecorderMessage::Acknowledgement ackMessage;
-    ackMessage.id = ackId;
     ackMessage.sending_instance = receivedInstance.c_str();
     // receiving instance is now the previous sending instance
     ackMessage.receiving_instance = sendingInstance.c_str();
@@ -219,6 +223,4 @@ DDSCommunicator::sendAck(const std::string &sendingInstance, long ackedId, const
     ackMessage.serialized_vector_clock = jVectorClock.c_str();
     ackMessage.port_name = pName.c_str();
     send(ackMessage);
-
-    ackId++;
 }

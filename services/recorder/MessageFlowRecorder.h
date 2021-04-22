@@ -22,7 +22,7 @@ private:
     DDSCommunicator ddsCommunicator;
 
     // determines current mode
-    bool isRecording{};
+    bool isRecording = false;
 
     // amount of instances the recorder should wait for to connect until the actual recording is
     // started

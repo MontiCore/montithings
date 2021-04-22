@@ -21,10 +21,6 @@ void
 signalHandler(int s) {
     LOG_F (INFO, "Caught signal %d, stopping..", s);
     recorder.stop();
-    recorder.process();
-    recorder.cleanup();
-    recorder.saveToFile();
-    exit(EXIT_SUCCESS);
 }
 
 int
@@ -99,10 +95,6 @@ main(int argc, char **argv) {
 
             LOG_F (INFO, "%d minutes elapsed, stopping recording...", stopAfter);
             recorder.stop();
-            recorder.process();
-            recorder.cleanup();
-            recorder.saveToFile();
-            exit(EXIT_SUCCESS);
         });
     }
 
