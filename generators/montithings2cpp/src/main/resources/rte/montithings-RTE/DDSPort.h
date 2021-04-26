@@ -35,6 +35,7 @@ private:
     DDS::Topic_var topic;
     DDSMessage::MessageDataWriter_var messageWriter;
     DDSMessage::MessageDataReader_var messageReader;
+    DDS::InstanceHandle_t instanceHandle;
     bool setQoSTransientDurability;
     bool isRecordingEnabled;
 
@@ -230,9 +231,10 @@ public:
                 message.content = dataString.c_str();
             }
 
-            // Passing a DDS::HANDLE_NIL value indicates that the data writer should
-            // determine the instance by inspecting the key of the sample.
-            DDS::ReturnCode_t error = messageWriter->write(message, DDS::HANDLE_NIL);
+            if (!instanceHandle) {
+                instanceHandle = messageWriter->register_instance(message);
+            }
+            DDS::ReturnCode_t error = messageWriter->write(message, instanceHandle);
 
             if (error != DDS::RETCODE_OK) {
                 CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - write returned " << error;
@@ -314,7 +316,7 @@ public:
 
     void on_requested_incompatible_qos(
             DDS::DataReader_ptr /*reader*/,
-            const DDS::RequestedIncompatibleQosStatus & /*status*/) override {
+            const DDS::RequestedIncompatibleQosStatus & status) override {
         CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_requested_incompatible_qos";
     }
 
