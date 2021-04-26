@@ -30,7 +30,7 @@ RecordProcessor::getFirstTimestamp(std::vector<DDSRecorderMessage::Message> mess
 json
 RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Message> &messageStorage,
                                       const std::string &identifier) {
-    LOG_SCOPE_F (INFO, "Collecting Message Delays (%s)...", identifier.c_str());
+    LOG_SCOPE_F (1, "Collecting Message Delays (%s)...", identifier.c_str());
 
     json allMessageDelays;
 
@@ -47,7 +47,7 @@ RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Mess
     }
 
     for (auto &delays : allMessageDelays.items()) {
-        LOG_F (INFO, "Found %ld %s delays for %s.", delays.value().size(), identifier.c_str(), delays.key().c_str());
+        LOG_F (1, "Found %ld %s delays for %s.", delays.value().size(), identifier.c_str(), delays.key().c_str());
     }
 
     return allMessageDelays;
@@ -56,13 +56,13 @@ RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Mess
 json
 RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &messageStorage, int minSpacing) {
     LOG_SCOPE_F (INFO, "Processing records...");
-    LOG_F (INFO, "Calculating transport delays...");
+    LOG_F (1, "Calculating transport delays...");
 
     json messageDelays = collectMessageDelays(messageStorage, "messages");
 
     json recordMessageDelays = collectMessageDelays(messageStorage, "record_messages");
 
-    LOG_F (INFO, "Adjusting timestamps and adding delays...");
+    LOG_F (1, "Adjusting timestamps and adding delays...");
     long long timestamp_start = getFirstTimestamp(messageStorage, recordMessageDelays);
 
     json records;
@@ -114,9 +114,9 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
         records[record.instance_name.in()].push_back(jRecord);
     }
 
-    LOG_F (INFO, "Sorting records (primary vector clock, secondary timestamp) ...");
+    LOG_F (1, "Sorting records (primary vector clock, secondary timestamp) ...");
     for (auto &instance : records.items()) {
-        LOG_F (INFO, "Sorting %ld records for %s", records[instance.key()].size(), instance.key().c_str());
+        LOG_F (1, "Sorting %ld records for %s", records[instance.key()].size(), instance.key().c_str());
         records[instance.key()] = sortRecords(records[instance.key()], minSpacing);
     }
 
@@ -168,39 +168,31 @@ json RecordProcessor::sortRecords(json records, int minSpacing) {
         referenceClockSum++;
     }
 
-    LOG_F (INFO, "Adjusting timestamps if necessary...");
+    LOG_F (1, "Adjusting timestamps if necessary...");
     json adjustedRecords = json::array();
     if (sortedRecords.size() > 0) {
+        // dont adjust first timestamp
         bool isFirst = true;
+
+        // spacing is given in ms, not ns
         long long spacing = (long long)minSpacing * 1000000;
+
         long long lastTimestamp = sortedRecords[0]["timestamp"].get<long long>();
 
         for (auto record : sortedRecords) {
             if (record["timestamp"].get<long long>() < lastTimestamp) {
-                LOG_F (INFO, "Adjusted timestamp: %lld -> %lld", record["timestamp"].get<long long>(), lastTimestamp);
+                LOG_F (1, "Adjusted timestamp: %lld -> %lld", record["timestamp"].get<long long>(), lastTimestamp);
                 record["timestamp"] = lastTimestamp;
             }
             if (minSpacing > 0) {
-                LOG_F (INFO, "last:%lld, curr:%lld, diff=%lld, change=%d",
-                       lastTimestamp,
-                       record["timestamp"].get<long long>(),
-                       record["timestamp"].get<long long>()-lastTimestamp,
-                       record["timestamp"].get<long long>() != lastTimestamp &&
-                       record["timestamp"].get<long long>() - lastTimestamp < spacing);
-
                 if (!isFirst &&
                     record["timestamp"].get<long long>() - lastTimestamp < spacing) {
-                    LOG_F (INFO, "%lld + %d*1000000 = %lld",
-                           lastTimestamp, minSpacing,
-                           lastTimestamp + spacing);
 
-                    LOG_F (INFO, "Adjusted timestamp: %lld -> %lld, adding %d ms, as its too close to previous timestamp",
+                    LOG_F (1, "Adjusted timestamp: %lld -> %lld, adding %d ms, as its too close to previous timestamp",
                            record["timestamp"].get<long long>(),
                            lastTimestamp + spacing,
                            minSpacing);
                     record["timestamp"] = lastTimestamp + spacing;
-                    LOG_F (INFO, "Adjusted after transfor: %lld",
-                           record["timestamp"].get<long long>());
                 }
             }
             lastTimestamp = record["timestamp"];

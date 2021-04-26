@@ -50,21 +50,14 @@ main(int argc, char **argv) {
     signal(SIGINT, signalHandler);
 
     cxxopts::Options options("MessageFlowRecorder", "A brief description");
-    options.add_options()("i,DCPSInfoRepo", "DCPSInfoRepo host",
-                          cxxopts::value<std::string>()->default_value(""))
-            ("stopAfter", "Stop recording after given minutes",
-             cxxopts::value<int>())
-            ("minSpacing", "Minimum spacing in ms between each message sent to the same component.",
-             cxxopts::value<int>()->default_value("0"))
-            ("fileRecordings", "File name where recordings are saved",
-             cxxopts::value<std::string>()->default_value("recordings.json"))(
-            "n",
-            "Amount of outgoing ports of the application. When defined, the recorder will wait until all "
-            "of these ports are connected to the recorder. Otherwise the recording will start after at "
-            "least one port connected.",
-            cxxopts::value<int>()->default_value("1"))(
-            "v,verbose", "Verbose output -v n {OFF,FATAL,ERROR,WARNING,INFO,0-9}",
-            cxxopts::value<bool>()->default_value("false"))("h,help", "Print usage");
+    options.add_options()
+        ("i,DCPSInfoRepo", "DCPSInfoRepo host", cxxopts::value<std::string>()->default_value(""))
+        ("stopAfter", "Stop recording after given minutes", cxxopts::value<int>())
+        ("minSpacing", "Minimum spacing in ms between each message sent to the same component.", cxxopts::value<int>()->default_value("0"))
+        ("fileRecordings", "File name where recordings are saved", cxxopts::value<std::string>()->default_value("recordings.json"))
+        ("n", "Amount of outgoing ports of the application. When defined, the recorder will wait until all of these ports are connected to the recorder. "
+              "Otherwise the recording will start after at least one port connected.", cxxopts::value<int>()->default_value("1"))
+        ("v,verbose", "Verbose output -v n {OFF,FATAL,ERROR,WARNING,INFO,0-9}", cxxopts::value<bool>()->default_value("false"))("h,help", "Print usage");
 
     auto result = options.parse(argc, argv);
 
@@ -87,7 +80,7 @@ main(int argc, char **argv) {
     if (result.count("stopAfter")) {
         int stopAfter = result["stopAfter"].as<int>();
 
-        future = std::async(std::launch::async, [&](){
+        future = std::async(std::launch::async, [&]() {
             LOG_F (INFO, "Stopping recording in %d minutes", stopAfter);
 
             std::chrono::minutes dura(stopAfter);

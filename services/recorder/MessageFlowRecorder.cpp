@@ -73,6 +73,7 @@ MessageFlowRecorder::start() {
 
     LOG_F (INFO, "Sending command: RECORDING_START");
     DDSRecorderMessage::Command startCommand;
+    startCommand.instance_name = "recorder";
     startCommand.cmd = DDSRecorderMessage::RECORDING_START;
     ddsCommunicator.send(startCommand);
 
@@ -86,10 +87,9 @@ MessageFlowRecorder::start() {
     LOG_F (INFO, "Recording...");
     isRecording = true;
 
-    // recording is done event-based. However, the program should not exit at this point, hence the
-    // endless loop.
+    // recording is done event-based
     while (isRecording) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds (10));
         std::this_thread::yield();
     }
 
@@ -131,21 +131,6 @@ MessageFlowRecorder::process() {
     if (!recordedMessages.empty()) {
         storage["recordings"] = processor.process(recordedMessages, minSpacing);
     }
-
-    createRunScript();
-}
-
-void MessageFlowRecorder::createRunScript() {
-    std::string script;
-    for (const auto &delayEntry : storage["start_delay"].items()) {
-        std::string instanceName = std::string(delayEntry.key());
-        std::string lastInstanceName = instanceName.substr(instanceName.find_last_of('.') + 1, instanceName.length());
-
-        std::string instanceNameAfterTrafo = instanceName + "." + lastInstanceName;
-        // convert to ms from ns as well
-        script.append(" --delayStart " + instanceNameAfterTrafo + "=" + std::to_string(delayEntry.value().get<long>()/1000000));
-    }
-    storage["start_script"] = script.c_str();
 }
 
 void

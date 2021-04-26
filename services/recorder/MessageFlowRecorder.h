@@ -21,11 +21,10 @@ private:
     // maintains DDS entities such as the participant, subscriber, data readers, ...
     DDSCommunicator ddsCommunicator;
 
-    // determines current mode
     bool isRecording = false;
 
     // amount of instances the recorder should wait for to connect until the actual recording is
-    // started
+    // started; can be overwritten by passing "-n"
     int instanceAmount = 1;
 
     // output file path for recordings
@@ -37,22 +36,19 @@ private:
     // storages for processed messages, non-deterministic calls, internal states, and computation latencies
     nlohmann::json storage;
 
-
     // simple counters which keep track of how many non-deterministic calls and computation latencies
     // have been received; only for logging purposes
     int statsCallsAmount = 0;
     int statsLatenciesAmount = 0;
 
+    // spacing; overwritten by passing "--minSpacing"
     int minSpacing = 0;
 
-    // event handlers for all types of DDS messages
     void onRecorderMessage(const DDSRecorderMessage::Message &message);
 
     void onCommandReplyMessage(const DDSRecorderMessage::CommandReply &message);
 
     void logProgress();
-
-    void createRunScript();
 
 public:
     MessageFlowRecorder() = default;
