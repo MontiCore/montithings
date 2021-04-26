@@ -7,14 +7,15 @@
 
 void
 DDSRecorder::init() {
-    ddsCommunicator.setVerbose(false);
     ddsCommunicator.setTopicName(topicName);
     ddsCommunicator.initConfig();
     ddsCommunicator.initParticipant();
     ddsCommunicator.initMessageTypes();
     ddsCommunicator.initTopics();
+    ddsCommunicator.initPublisher();
     ddsCommunicator.initSubscriber();
     ddsCommunicator.initReaderCommandMessage();
+
     if (isOutgoingPort()) {
         ddsCommunicator.initReaderAcknowledgement();
         ddsCommunicator.addOnAcknowledgementMessageCallback(
@@ -59,11 +60,11 @@ DDSRecorder::start() {
     unsentRecordMessageDelays.clear();
     unackedMessageTimestampMap.clear();
     unackedRecordedMessageTimestampMap.clear();
-    ddsCommunicator.initPublisher();
+
     ddsCommunicator.initWriter();
 
     // ddsParticipant is not present in sensor-actuator-ports
-    if(ddsParticipant) {
+    if (ddsParticipant) {
         sendState(ddsParticipant->getSerializedState());
     }
 }
@@ -73,6 +74,7 @@ DDSRecorder::stop() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | stopping recording... ";
     montithings::library::hwcinterceptor::stopNondeterministicRecording();
     ddsCommunicator.cleanupRecorderMessageWriter();
+    ddsCommunicator.reset();
 }
 
 void
@@ -100,7 +102,7 @@ DDSRecorder::sendInternalRecords() {
     content["calls"] = montithings::library::hwcinterceptor::storageCalls;
     content["calc_latency"] = montithings::library::hwcinterceptor::storageComputationLatency;
 
-    if(!isStartDelaySent) {
+    if (!isStartDelaySent) {
         isStartDelaySent = true;
         content["start_delay"] = startDelay;
     }
@@ -131,7 +133,7 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
     std::lock_guard<std::mutex> guard(sentMutex);
 
     if (montithings::library::hwcinterceptor::isRecording) {
-        if (startDelay == 0){
+        if (startDelay == 0) {
             startDelay = montithings::library::hwcinterceptor::timestampFirstComputation - timestampStart;
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | comp delay="
                                  << startDelay;
@@ -146,7 +148,8 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             VectorClock::updateVectorClock(newVectorClock, sendingInstance);
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
                                  << " to=" << sendingInstance << " from=" << instanceName;
-            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName, "");//VectorClock::getSerializedVectorClock());
+            ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName,
+                                    VectorClock::getSerializedVectorClock());
         } else {
             // message was sent and not received. Thus, add message to the map of unacked messages
             CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id
@@ -170,7 +173,7 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             recorderMessage.instance_name = instanceName.c_str();
             recorderMessage.type = DDSRecorderMessage::MESSAGE_RECORD;
             recorderMessage.msg_id = message.id;
-            recorderMessage.serialized_vector_clock = "";//VectorClock::getSerializedVectorClock().c_str();
+            recorderMessage.serialized_vector_clock = VectorClock::getSerializedVectorClock().c_str();
             recorderMessage.topic = topicName;
             recorderMessage.message_delays = jUnsentDelays.dump().c_str();
 

@@ -25,7 +25,7 @@ private:
 
     // amount of instances the recorder should wait for to connect until the actual recording is
     // started; can be overwritten by passing "-n"
-    int instanceAmount = 1;
+    int instanceNumber = 1;
 
     // output file path for recordings
     std::string fileRecordingsPath;
@@ -62,9 +62,7 @@ public:
 
     void setMinSpacing(int &spacing);
 
-    void setVerbose(bool verbose);
-
-    void setInstanceAmount(int n);
+    void setInstanceNumber(int n);
 
     void init();
 

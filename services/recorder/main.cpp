@@ -55,9 +55,9 @@ main(int argc, char **argv) {
         ("stopAfter", "Stop recording after given minutes", cxxopts::value<int>())
         ("minSpacing", "Minimum spacing in ms between each message sent to the same component.", cxxopts::value<int>()->default_value("0"))
         ("fileRecordings", "File name where recordings are saved", cxxopts::value<std::string>()->default_value("recordings.json"))
-        ("n", "Amount of outgoing ports of the application. When defined, the recorder will wait until all of these ports are connected to the recorder. "
+        ("n", "Number of outgoing ports of the application. When defined, the recorder will wait until all of these ports are connected to the recorder. "
               "Otherwise the recording will start after at least one port connected.", cxxopts::value<int>()->default_value("1"))
-        ("v,verbose", "Verbose output -v n {OFF,FATAL,ERROR,WARNING,INFO,0-9}", cxxopts::value<bool>()->default_value("false"))("h,help", "Print usage");
+        ("h,help", "Print usage");
 
     auto result = options.parse(argc, argv);
 
@@ -91,16 +91,14 @@ main(int argc, char **argv) {
         });
     }
 
-    int appInstancesAmount = result["n"].as<int>();
-    bool verbose = result["verbose"].as<bool>();
+    int appInstancesNumber = result["n"].as<int>();
     LOG_F (INFO, "Storing Records in %s", fileRecordingsPath.c_str());
 
     recorder.setDcpsInfoRepoHost(dcpsInfoHost);
-    recorder.setInstanceAmount(appInstancesAmount);
+    recorder.setInstanceNumber(appInstancesNumber);
     recorder.setMinSpacing(minSpacing);
     recorder.init();
     recorder.setFileRecordings(fileRecordingsPath);
-    recorder.setVerbose(verbose);
 
     recorder.start();
 }

@@ -37,7 +37,7 @@ DDSCommunicator::addOnAcknowledgementMessageCallback(
 }
 
 void
-DDSCommunicator::waitUntilCommandReadersConnected(int amount) {
+DDSCommunicator::waitUntilCommandReadersConnected(int number) {
     DDS::StatusCondition_var condition = writerCommand->get_statuscondition();
     condition->set_enabled_statuses(DDS::SUBSCRIPTION_MATCHED_STATUS);
 
@@ -51,7 +51,7 @@ DDSCommunicator::waitUntilCommandReadersConnected(int amount) {
             exit(EXIT_FAILURE);
         }
 
-        if (matches.current_count >= amount) {
+        if (matches.current_count >= number) {
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds (100));
@@ -61,7 +61,6 @@ DDSCommunicator::waitUntilCommandReadersConnected(int amount) {
     ws->detach_condition(condition);
 }
 
-// TODO refactor
 void
 DDSCommunicator::waitForRecorderReaders() {
     DDS::StatusCondition_var condition = writerRecorder->get_statuscondition();
@@ -116,6 +115,12 @@ DDSCommunicator::cleanup() {
 }
 
 void
+DDSCommunicator::reset() {
+    //invalidate instance handles
+    resetInstanceHandles = true;
+}
+
+void
 DDSCommunicator::cleanupRecorderMessageWriter() {
     if (!CORBA::is_nil(writerRecorder)) {
         publisher->delete_datawriter(writerRecorder);
@@ -137,7 +142,8 @@ DDSCommunicator::cleanupPublisher() {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::Command &command) {
-    if(!handleCommand) {
+    if(!handleCommand || resetInstanceHandles) {
+        resetInstanceHandles = false;
         handleCommand = writerCommand->register_instance(command);
     }
     DDS::ReturnCode_t error = writerCommand->write(command, handleCommand);
@@ -152,7 +158,8 @@ DDSCommunicator::send(const DDSRecorderMessage::Command &command) {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::CommandReply &command) {
-    if(!handleCommandReply) {
+    if(!handleCommandReply || resetInstanceHandles) {
+        resetInstanceHandles = false;
         handleCommandReply = writerCommandReply->register_instance(command);
     }
 
@@ -168,7 +175,8 @@ DDSCommunicator::send(const DDSRecorderMessage::CommandReply &command) {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::Message &message) {
-    if(!handleRecordMessage) {
+    if(!handleRecordMessage || resetInstanceHandles) {
+        resetInstanceHandles = false;
         handleRecordMessage = writerRecorder->register_instance(message);
     }
 
@@ -184,7 +192,8 @@ DDSCommunicator::send(const DDSRecorderMessage::Message &message) {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::Acknowledgement &message) {
-    if(!handleAcknowledgement) {
+    if(!handleAcknowledgement || resetInstanceHandles) {
+        resetInstanceHandles = false;
         handleAcknowledgement = writerAcknowledgement->register_instance(message);
     }
 
@@ -200,11 +209,6 @@ DDSCommunicator::send(const DDSRecorderMessage::Acknowledgement &message) {
 
 bool
 DDSCommunicator::commandWaitForAcks() {
-    DDS::PublicationMatchedStatus matches{};
-    if (writerCommand->get_publication_matched_status(matches) == DDS::RETCODE_OK) {
-        std::cout << "DDSCommunicator | commandWaitForAcks: " << matches.current_count << " listeners";
-    }
-
     DDS::Duration_t timeout = {30, 0};
     if (writerCommand->wait_for_acknowledgments(timeout) != DDS::RETCODE_OK) {
         return false;
@@ -214,12 +218,6 @@ DDSCommunicator::commandWaitForAcks() {
 
 bool
 DDSCommunicator::commandReplyWaitForAcks() {
-    DDS::PublicationMatchedStatus matches{};
-    if (writerCommandReply->get_publication_matched_status(matches) == DDS::RETCODE_OK) {
-        // std::cout << "DDSCommunicator | commandWaitForAcks: " << matches.current_count << "
-        // listeners";
-    }
-
     DDS::Duration_t timeout = {30, 0};
     if (writerCommandReply->wait_for_acknowledgments(timeout) != DDS::RETCODE_OK) {
         return false;

@@ -34,7 +34,6 @@ private:
     const char* RECORDER_ACKNOWLEDGE_TYPE = "Acknowledge Type";
     const char* RECORDER_ACKNOWLEDGE_TOPIC = "Acknowledgements";
 
-    bool isVerbose{false};
 
     // Allow setting a callback function which is triggered whenever new data arrives
     std::function<void(DDSRecorderMessage::Message)> onRecorderMessageCallback;
@@ -56,7 +55,6 @@ private:
 
 public:
     MessageListener() = default;
-    explicit MessageListener(bool verbose) : isVerbose(verbose) {};
     ~MessageListener() = default;
 
     void addOnRecorderMessageCallback (std::function<void(DDSRecorderMessage::Message)> callback);

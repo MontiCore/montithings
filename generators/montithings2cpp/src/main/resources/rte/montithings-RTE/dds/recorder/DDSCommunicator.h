@@ -31,11 +31,13 @@ public:
 
     void waitForRecorderReaders();
 
-    void waitUntilCommandReadersConnected(int amount);
+    void waitUntilCommandReadersConnected(int number);
 
     void waitUntilRecorderWritersDisconnect();
 
     void cleanup();
+
+    void reset();
 
     void cleanupPublisher();
 

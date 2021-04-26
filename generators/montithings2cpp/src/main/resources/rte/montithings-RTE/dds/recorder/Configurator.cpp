@@ -8,7 +8,7 @@ Configurator::initConfig() {
     if (config.is_nil()) {
         cfg = TheTransportRegistry->create_config("recorder_config");
         inst = TheTransportRegistry->create_inst("tcp_config", // name
-                                                 "tcp");            // type
+                                                 "tcp");       // type
 
         // Must cast to TcpInst to get access to transport-specific options
         TcpInst_rch tcp_inst = dynamic_rchandle_cast<TcpInst>(inst);
@@ -19,11 +19,6 @@ Configurator::initConfig() {
         // set as the global transport configuration
         TheTransportRegistry->global_config(cfg);
     }
-}
-
-void
-Configurator::setVerbose(bool verbose) {
-    isVerbose = verbose;
 }
 
 void
@@ -164,15 +159,13 @@ Configurator::initPublisher() {
 
 void
 Configurator::initReaderRecorderMessage() {
-    DDS::DataReaderListener_var listener(new MessageListener(isVerbose));
+    DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
 
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
     dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-    dataReaderQos.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
-    dataReaderQos.resource_limits.max_samples_per_instance = DDS::LENGTH_UNLIMITED;
     dataReaderQos.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
 
     DDS::DataReader_var dataReaderRecorder = subscriber->create_datareader(
@@ -196,7 +189,7 @@ Configurator::initReaderRecorderMessage() {
 
 void
 Configurator::initReaderAcknowledgement() {
-    DDS::DataReaderListener_var listener(new MessageListener(isVerbose));
+    DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
 
@@ -227,15 +220,13 @@ Configurator::initReaderAcknowledgement() {
 
 void
 Configurator::initReaderCommandMessage() {
-    DDS::DataReaderListener_var listener(new MessageListener(isVerbose));
+    DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
 
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
-    dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-    dataReaderQos.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
-    
+
     DDS::DataReader_var dataReaderCommand
             = subscriber->create_datareader(topicCommand, dataReaderQos, listener,
                     // default status mask ensures that
@@ -262,13 +253,12 @@ Configurator::initReaderCommandMessage() {
 
 void
 Configurator::initReaderCommandReplyMessage() {
-    DDS::DataReaderListener_var listener(new MessageListener(isVerbose));
+    DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
 
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
-    dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataReader_var dataReaderCommandReply = subscriber->create_datareader(
             topicCommandReply, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);

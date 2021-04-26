@@ -37,13 +37,8 @@ MessageFlowRecorder::setDcpsInfoRepoHost(std::string &host) {
 }
 
 void
-MessageFlowRecorder::setVerbose(bool verbose) {
-    ddsCommunicator.setVerbose(verbose);
-}
-
-void
-MessageFlowRecorder::setInstanceAmount(int n) {
-    instanceAmount = n;
+MessageFlowRecorder::setInstanceNumber(int n) {
+    instanceNumber = n;
 }
 
 void
@@ -58,13 +53,13 @@ MessageFlowRecorder::start() {
     statsLatenciesAmount = 0;
 
     LOG_F (INFO, "Waiting until application is started... ");
-    ddsCommunicator.waitUntilCommandReadersConnected(instanceAmount);
-    if (instanceAmount == 1) {
+    ddsCommunicator.waitUntilCommandReadersConnected(instanceNumber);
+    if (instanceNumber == 1) {
         LOG_F (INFO, "At least one entity listens for commands. Waiting 2 seconds for others.");
         std::this_thread::sleep_for(std::chrono::seconds(2));
         LOG_F (INFO, "We can probably start.");
     } else {
-        LOG_F (INFO, "%d entities listen for commands. We can start.", instanceAmount);
+        LOG_F (INFO, "%d entities listen for commands. We can start.", instanceNumber);
     }
 
     // starts thread which logs the current amount of recorded data each 5 seconds

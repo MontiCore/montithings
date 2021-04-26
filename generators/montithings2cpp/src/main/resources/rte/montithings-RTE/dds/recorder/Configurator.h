@@ -41,7 +41,7 @@ protected:
     std::string dcpsInfoHost;
     std::string topicName;
     std::string instanceName;
-    bool isVerbose{false};
+    bool resetInstanceHandles{false};
 
     DDS::DomainParticipantFactory_var dpf;
 
@@ -67,6 +67,11 @@ protected:
     DDS::Topic_var topicAcknowledgement;
     DDS::ContentFilteredTopic_var topicAcknowledgementFiltered;
 
+    DDS::InstanceHandle_t handleRecordMessage;
+    DDS::InstanceHandle_t handleCommand;
+    DDS::InstanceHandle_t handleCommandReply;
+    DDS::InstanceHandle_t handleAcknowledgement;
+
     DDS::Subscriber_var subscriber;
     DDS::Publisher_var publisher;
 
@@ -74,8 +79,6 @@ public:
     Configurator() = default;
 
     ~Configurator() = default;
-
-    void setVerbose(bool verbose);
 
     void setDcpsInfoRepoHost(std::string host);
 
