@@ -113,8 +113,8 @@ namespace DDSRecorderMessage
     typedef Message_var _var_type;
     typedef Message_out _out_type;
     
-    ::CORBA::Long id;
     ::TAO::String_Manager instance_name;
+    ::CORBA::Long id;
     DDSRecorderMessage::MessageType type;
     ::CORBA::LongLong timestamp;
     ::TAO::String_Manager serialized_vector_clock;

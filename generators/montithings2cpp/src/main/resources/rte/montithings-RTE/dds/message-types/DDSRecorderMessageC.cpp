@@ -74,8 +74,8 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     const DDSRecorderMessage::Message &_tao_aggregate)
 {
   return
-    (strm << _tao_aggregate.id) &&
     (strm << _tao_aggregate.instance_name.in ()) &&
+    (strm << _tao_aggregate.id) &&
     (strm << _tao_aggregate.type) &&
     (strm << _tao_aggregate.timestamp) &&
     (strm << _tao_aggregate.serialized_vector_clock.in ()) &&
@@ -90,8 +90,8 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     DDSRecorderMessage::Message &_tao_aggregate)
 {
   return
-    (strm >> _tao_aggregate.id) &&
     (strm >> _tao_aggregate.instance_name.out ()) &&
+    (strm >> _tao_aggregate.id) &&
     (strm >> _tao_aggregate.type) &&
     (strm >> _tao_aggregate.timestamp) &&
     (strm >> _tao_aggregate.serialized_vector_clock.out ()) &&

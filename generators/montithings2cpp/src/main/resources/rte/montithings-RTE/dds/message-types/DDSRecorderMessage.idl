@@ -5,8 +5,9 @@ module DDSRecorderMessage {
 
   @topic
   struct Message {
+    @key string instance_name;
+
     long id;
-    string instance_name;
     MessageType type;
 
     long long timestamp;
@@ -25,14 +26,14 @@ module DDSRecorderMessage {
                      SEND_INTERNAL_ND_CALLS };
   @topic
   struct Command {
-    string instance_name;
+    @key string instance_name;
 
     CommandType cmd;
   };
 
   @topic
   struct CommandReply {
-    string instance_name;
+    @key string instance_name;
     long command_id;
 
     string content;
@@ -40,7 +41,7 @@ module DDSRecorderMessage {
 
   @topic
   struct Acknowledgement {
-    string sending_instance;
+    @key string sending_instance;
     string receiving_instance;
     string port_name;
     long acked_id;
