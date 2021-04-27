@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GuardExpressionVisitor implements MontiThingsVisitor {
 
-  private MontiThingsVisitor realThis = this;
+  protected MontiThingsVisitor realThis = this;
 
   @Override public MontiThingsVisitor getRealThis() {
     return realThis;

@@ -36,13 +36,19 @@ public enum MontiThingsError implements montithings.util.Error {
     "Port '%s' of component '%s' may not be referenced by an every block (including log statements)"),
   ONLY_ONE_UPDATE_INTERVAL("0xMT1500", "Update intervals should only be defined once in '%s'"),
   IDENTIFIER_UNKNOWN("0xMT1510", "The identifier '%s' cannot be resolved."),
-  PUBLISH_IDENTIFIER_UNKNOWN("0xMT1511", "The identifier '%s' is published but does not refer to a port."),
+  PUBLISH_IDENTIFIER_UNKNOWN("0xMT1511",
+    "The identifier '%s' is published but does not refer to a port."),
   LOG_IDENTIFIER_UNKNOWN("0xMT1515", "Identifier '%s' is unknown. It cannot be logged."),
   UNSUPPORTED_OPERATOR("0xMT1600", "The operator '%s' is not supported."),
+  POSTCONDITION_MULTIPLE_OUTPORTS("0xMT1610",
+    "Postcondition '%s' references multiple outgoing ports (%s), but only one is allowed."),
+  OUTPORT_WRITE_ONLY("0xMT1620", "Port '%s' is read. Outgoing ports are write-only."),
 
-  GENERATOR_ONLY_ONE_MAIN("0xMT2001", "Configured both '%s' (as 'mainComponent') and '%s' (as 'main') as main components using generator parameters. Only use of them."),
+  GENERATOR_ONLY_ONE_MAIN("0xMT2001",
+    "Configured both '%s' (as 'mainComponent') and '%s' (as 'main') as main components using generator parameters. Only use of them."),
   GENERATOR_MAIN_REQUIRED("0xMT2002", "You did not configure generator parameter 'mainComponent'."),
-  GENERATOR_MAIN_UNKNOWN("0xMT2003", "Component '%s' which is set as 'mainComponent' is unknown. Possible choices are: %s"),
+  GENERATOR_MAIN_UNKNOWN("0xMT2003",
+    "Component '%s' which is set as 'mainComponent' is unknown. Possible choices are: %s"),
 
   GENERATOR_REPLAYDATA_REQUIRED("0xMT2004", "Replay mode is enabled but no data is provided. Add 'replayDataPath' option."),
 

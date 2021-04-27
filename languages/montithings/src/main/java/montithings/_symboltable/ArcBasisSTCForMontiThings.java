@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
 import arcbasis.ArcBasisMill;
@@ -22,29 +23,29 @@ import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.Deque;
 
-public class ArcBasisSTCForMontiThings extends ArcBasisSTCForMontiThingsTOP{
+public class ArcBasisSTCForMontiThings extends ArcBasisSTCForMontiThingsTOP {
 
   TypeCheck tc;
 
-  public ArcBasisSTCForMontiThings(Deque<? extends IArcBasisScope> scopeStack, MCBasicTypesPrettyPrinter typePrinter){
+  public ArcBasisSTCForMontiThings(Deque<? extends IArcBasisScope> scopeStack, MCBasicTypesPrettyPrinter typePrinter) {
     super(scopeStack);
     setTypePrinter(typePrinter);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
   }
 
-  public ArcBasisSTCForMontiThings(Deque<? extends arcbasis._symboltable.IArcBasisScope> scopeStack)  {
+  public ArcBasisSTCForMontiThings(Deque<? extends arcbasis._symboltable.IArcBasisScope> scopeStack) {
     super(scopeStack);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
   }
 
-  public void setTypeVisitor(MCBasicTypesPrettyPrinter typePrinter){
+  public void setTypeVisitor(MCBasicTypesPrettyPrinter typePrinter) {
     setTypePrinter(typePrinter);
   }
 
   @Override
   protected String printType(@NotNull ASTMCType type) {
     assert type != null;
-    if (!(type instanceof ASTSIUnitType)){
+    if (!(type instanceof ASTSIUnitType)) {
       return type.printType(this.getTypePrinter());
     }
     return SIUnitTypes4MathPrettyPrinter.prettyprint((ASTSIUnitType) type);
@@ -66,12 +67,12 @@ public class ArcBasisSTCForMontiThings extends ArcBasisSTCForMontiThingsTOP{
   }
 
   @Override
-  public void visit(ASTArcParameter node){
+  public void visit(ASTArcParameter node) {
 
   }
 
   @Override
-  public void endVisit(ASTArcParameter node){
+  public void endVisit(ASTArcParameter node) {
     Preconditions.checkArgument(node != null);
     Preconditions.checkState(this.getCurrentScope().isPresent());
     Preconditions.checkState(this.getCurrentComponent().isPresent());

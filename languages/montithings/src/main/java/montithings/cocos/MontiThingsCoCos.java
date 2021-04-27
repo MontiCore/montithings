@@ -4,6 +4,8 @@ package montithings.cocos;
 import arcbasis._cocos.*;
 import behavior.cocos.SIUnitLiteralsDescribeTime;
 import de.monticore.siunittypes4computing._cocos.PrimitiveIsNumericType;
+import montithings._cocos.MontiThingsASTBehaviorCoCo;
+import montithings._cocos.MontiThingsASTMTEveryBlockCoCo;
 import montithings._cocos.MontiThingsCoCoChecker;
 import portextensions.cocos.PortsInBatchStatementAreIncoming;
 import portextensions.cocos.PortsInSyncGroupAreIncoming;
@@ -39,12 +41,11 @@ public class MontiThingsCoCos {
       .addCoCo(new PrimitiveIsNumericType())
 
       // MONTITHINGS
-      .addCoCo(new TimeSyncInSubComponents())
       .addCoCo(new MaxOneUpdateInterval())
       .addCoCo(new SyncGroupIsNoSubset())
       .addCoCo(new PortsInSyncGroupAreIncoming())
       .addCoCo(new PortsInBatchStatementAreIncoming())
-      .addCoCo(SITypesTypeCheckCoCo.getCoCo())
+      .addCoCo(MontiThingsTypeCheckCoCo.getCoCo())
       .addCoCo(new NameExpressionsAreResolvable())
       .addCoCo(new SIUnitLiteralsDescribeTime())
       .addCoCo(new OCLExpressionsValid())
@@ -52,6 +53,9 @@ public class MontiThingsCoCos {
       .addCoCo(new NoIncomingPortsInEveryBlocks())
       .addCoCo(new LoggedVariablesAreResolvable())
       .addCoCo(new PublishReferencesPort())
+      .addCoCo(new PostcondUsesOnlyOneOutport())
+      .addCoCo((MontiThingsASTBehaviorCoCo) new DontReadOutports())
+      .addCoCo((MontiThingsASTMTEveryBlockCoCo) new DontReadOutports())
       ;
   }
 }

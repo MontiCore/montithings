@@ -16,17 +16,17 @@ import java.nio.file.Paths;
 
 public class CppCodeTest {
 
-  private static final Path MODELPATH = Paths.get("src/test/resources/models/CPPTests/");
+  protected static final Path MODELPATH = Paths.get("src/test/resources/models/CPPTests/");
 
-  private static final Path HWCPATH = Paths.get("src/test/resources/hwc/CPPTests/");
+  protected static final Path HWCPATH = Paths.get("src/test/resources/hwc/CPPTests/");
 
-  private static final Path TARGETPATH = Paths.get("target/generated-test-sources/");
+  protected static final Path TARGETPATH = Paths.get("target/generated-test-sources/");
 
-  private static final Path RTEPATH = Paths.get("src/main/resources/rte/montithings-RTE");
+  protected static final Path RTEPATH = Paths.get("src/main/resources/rte/montithings-RTE");
 
-  private static final Path TESTLIBPATH = Paths.get("src/main/resources/test");
+  protected static final Path TESTLIBPATH = Paths.get("src/main/resources/test");
 
-  private static final Path TESTPATH = Paths.get("src/test/resources/gtests/");
+  protected static final Path TESTPATH = Paths.get("src/test/resources/gtests/");
 
   public ConfigParams setup(String packageName) {
     Log.enableFailQuick(false);

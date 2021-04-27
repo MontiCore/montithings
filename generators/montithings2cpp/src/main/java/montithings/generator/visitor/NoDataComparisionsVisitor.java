@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class NoDataComparisionsVisitor implements MontiThingsVisitor {
 
-  private MontiThingsVisitor realThis = this;
+  protected MontiThingsVisitor realThis = this;
 
   @Override
   public void setRealThis(MontiThingsVisitor realThis) {
@@ -30,7 +30,7 @@ public class NoDataComparisionsVisitor implements MontiThingsVisitor {
   /**
    * All connections during traversing the AST
    */
-  private final List<ASTNameExpression> foundExpressions = new ArrayList<>();
+  protected final List<ASTNameExpression> foundExpressions = new ArrayList<>();
 
   public void visit(ASTEqualsExpression identityExpression) {
 

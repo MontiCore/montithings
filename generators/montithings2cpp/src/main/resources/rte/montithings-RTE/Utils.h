@@ -46,6 +46,14 @@ jsonToData (char *json)
   return jsonToData<T>((std::string(json)));
 }
 
+template<typename T>
+std::string
+concat(const std::string& first, T second) {
+  std::stringstream ss;
+  ss << first << second;
+  return ss.str();
+}
+
 /**
  * Replaces dots in the string with slashes
  * This is useful when fully qualified names should be used in MQTT topics

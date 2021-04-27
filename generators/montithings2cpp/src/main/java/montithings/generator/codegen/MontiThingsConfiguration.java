@@ -66,7 +66,7 @@ public class MontiThingsConfiguration implements Configuration {
 
   }
 
-  private final Configuration configuration;
+  protected final Configuration configuration;
 
   /**
    * Factory method for {@link TemplateClassGeneratorConfiguration}.
@@ -78,7 +78,7 @@ public class MontiThingsConfiguration implements Configuration {
   /**
    * Constructor for {@link TemplateClassGeneratorConfiguration}
    */
-  private MontiThingsConfiguration(Configuration internal) {
+  protected MontiThingsConfiguration(Configuration internal) {
     this.configuration = ConfigurationContributorChainBuilder.newChain()
       .add(DelegatingConfigurationContributor.with(internal)).build();
     configParams.setTargetPlatform(getPlatform());

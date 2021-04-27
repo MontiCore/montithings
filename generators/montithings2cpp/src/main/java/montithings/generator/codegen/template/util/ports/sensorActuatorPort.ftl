@@ -40,6 +40,7 @@ private:
   ${defineHookPoint("<CppBlock>?portTemplate:consume")}
   }
 
+<<<<<<< HEAD
   void setNextValue(T nextVal) override {
     <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
         recordMessage(nextVal);
@@ -75,5 +76,9 @@ private:
       ddsRecorder->setPortName("${portSymbol.getName()}");
       ddsRecorder->init();
     </#if>
+=======
+  ${Names.getSimpleName(portTemeplateName)?cap_first} () {
+    ${defineHookPoint("<CppBlock>?portTemplate:init")}
+>>>>>>> develop
   }
 };

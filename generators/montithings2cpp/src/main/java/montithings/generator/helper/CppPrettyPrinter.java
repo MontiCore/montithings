@@ -17,15 +17,26 @@ public class CppPrettyPrinter {
   }
 
   public static MontiThingsPrettyPrinterDelegator getPrinter() {
+    return getPrinter(false);
+  }
+
+  public static MontiThingsPrettyPrinterDelegator getPrinter(boolean suppressPostConditionCheck) {
     MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator();
     printer.setExpressionsBasisVisitor(new CppExpressionPrettyPrinter(printer.getPrinter()));
-    printer.setCommonExpressionsVisitor(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
-    printer.setAssignmentExpressionsVisitor(new CppAssignmentPrettyPrinter(printer.getPrinter()));
+    printer
+      .setCommonExpressionsVisitor(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
+    printer.setAssignmentExpressionsVisitor(
+      new CppAssignmentPrettyPrinter(printer.getPrinter(), suppressPostConditionCheck));
     printer.setOCLExpressionsVisitor(new CppOCLExpressionsPrettyPrinter(printer.getPrinter()));
-    printer.setOptionalOperatorsVisitor(new CppOptionalOperatorsPrettyPrinter(printer.getPrinter()));
-    printer.setSIUnitLiteralsVisitor(new MontiThingsSIUnitLiteralsPrettyPrinter(printer.getPrinter()));
-    printer.setMCVarDeclarationStatementsVisitor(new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
+    printer
+      .setOptionalOperatorsVisitor(new CppOptionalOperatorsPrettyPrinter(printer.getPrinter()));
+    printer
+      .setSIUnitLiteralsVisitor(new MontiThingsSIUnitLiteralsPrettyPrinter(printer.getPrinter()));
+    printer.setMCVarDeclarationStatementsVisitor(
+      new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
     printer.setBehaviorVisitor(new CppBehaviorPrettyPrinter(printer.getPrinter()));
+    printer
+      .setMCCommonStatementsVisitor(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
     printer.setSetDefinitionsVisitor(setPrinter);
     printer.setSetExpressionsVisitor(setPrinter);

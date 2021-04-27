@@ -1,11 +1,7 @@
 /* (c) https://github.com/MontiCore/monticore */
 package montithings;
 
-import arcbasis._ast.ASTArcBasisNode;
-import arcbasis._ast.ASTComponentType;
-import arcbasis._symboltable.ComponentTypeSymbol;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._cocos.CD4CodeCoCoChecker;
 import de.monticore.cd4code._parser.CD4CodeParser;
@@ -18,7 +14,9 @@ import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._ast.ASTCDPackage;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.types.check.DefsTypeBasic;
+import de.monticore.types.check.SymTypeExpressionFactory;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -35,8 +33,13 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+
+import static montithings.util.SymbolUtil.addParam;
+import static montithings.util.SymbolUtil.createFunction;
 
 public class MontiThingsTool {
 

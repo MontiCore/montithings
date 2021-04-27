@@ -11,21 +11,31 @@ INITIALIZE_EASYLOGGINGPP
 
 struct ExampleTest : testing::Test
 {
-  montithings::hierarchy::Example* cmp;
-  montithings::hierarchy::SourceImpl* source;
-  montithings::hierarchy::SinkImpl* sink;
+  montithings::hierarchy::Example *cmp;
+  montithings::hierarchy::Source *source;
+  montithings::hierarchy::Sink *sink;
+  montithings::hierarchy::SourceImpl *sourceImpl;
+  montithings::hierarchy::SinkImpl *sinkImpl;
   montithings::hierarchy::SourceState sourceState;
   montithings::hierarchy::SinkState sinkState;
 
-  ExampleTest() {
+  ExampleTest ()
+  {
     cmp = new montithings::hierarchy::Example ("example");
-    source = new montithings::hierarchy::SourceImpl (sourceState);
-    sink = new montithings::hierarchy::SinkImpl (sinkState);
+    source = new montithings::hierarchy::Source ("example.source");
+    sink = new montithings::hierarchy::Sink ("example.sink");
+    sourceImpl = new montithings::hierarchy::SourceImpl ("example.source", *source, sourceState,
+                                                         *source->getInterface ());
+    sinkImpl = new montithings::hierarchy::SinkImpl ("example.sink", *sink, sinkState,
+                                                     *sink->getInterface ());
   }
-  ~ExampleTest () {
-      delete cmp;
-      delete source;
-      delete sink;
+  ~ExampleTest ()
+  {
+    delete cmp;
+    delete source;
+    delete sink;
+    delete sourceImpl;
+    delete sinkImpl;
   }
 };
 

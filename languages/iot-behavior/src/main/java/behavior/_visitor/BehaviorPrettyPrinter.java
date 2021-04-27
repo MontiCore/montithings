@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package behavior._visitor;
 
 import behavior._ast.ASTAfterStatement;
@@ -61,6 +62,7 @@ public class BehaviorPrettyPrinter implements BehaviorVisitor {
   public void handle (ASTLogStatement node){
     getPrinter().print("log ");
     node.getStringLiteral().accept(getRealThis());
+    getPrinter().println(";");
   }
 
   @Override

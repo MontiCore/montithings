@@ -6,6 +6,8 @@ import de.monticore.statements.mcvardeclarationstatements._ast.ASTLocalVariableD
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
+import montithings.generator.helper.TypesHelper;
 
 import java.util.Iterator;
 
@@ -28,7 +30,17 @@ public class CppVarDeclarationStatementsPrettyPrinter extends MCVarDeclarationSt
       this.getPrinter().print("double");
     }
     else {
-      a.getMCType().accept(this.getRealThis());
+      if (a.getMCType() instanceof ASTMCQualifiedType) {
+        ASTMCQualifiedType type = (ASTMCQualifiedType) a.getMCType();
+        if (!type.getMCQualifiedName().getQName().contains(".")) {
+          // This fixes java types that are printed as different c++ types
+          String typeName = TypesHelper.java2cppTypeString(type.getMCQualifiedName().getQName());
+          getPrinter().print(typeName);
+        }
+      }
+      else {
+        a.getMCType().accept(this.getRealThis());
+      }
     }
     this.getPrinter().print(" ");
     String sep = "";
