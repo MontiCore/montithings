@@ -88,9 +88,12 @@ MqttClient::subscribe (std::string topic)
     case MOSQ_ERR_MALFORMED_UTF8:
       CLOG (DEBUG, MQTT_LOG_ID) << "Topic is not UTF-8. Could not connect to MQTT topic " << topic;
       break;
+    /*
+    // Not available on Raspberry Pi
     case MOSQ_ERR_OVERSIZE_PACKET:
       CLOG (DEBUG, MQTT_LOG_ID) << "Packet too large. Could not connect to MQTT topic " << topic;
       break;
+    */
     }
   MqttClient::instance ()->subscriptions.emplace (topic);
 }
