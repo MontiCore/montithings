@@ -1,6 +1,10 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+
+<#-- This is part of the initialization of the component if replaying is activated.
+     Hereby, the variable state is restored based on the recordings. -->
+
 ${tc.signature("comp", "config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if config.getReplayMode().toString() == "ON" && !ComponentHelper.isFlaggedAsGenerated(comp)>
 {

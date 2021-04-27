@@ -38,6 +38,11 @@ ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, config, clas
   ${tc.includeArgs("template.component.methods.RestoreState", [comp, config, className])}
 </#if>
 
+${tc.includeArgs("template.componentGenerator.printGetState", [comp, className])}
+
+
+${tc.includeArgs("template.util.init.Init", [comp, compname, config, className])}
+
 <#if config.getMessageBroker().toString() == "MQTT">
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.PublishConnectors", [comp, config, className])}
