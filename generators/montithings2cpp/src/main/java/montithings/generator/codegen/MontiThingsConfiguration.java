@@ -313,6 +313,10 @@ public class MontiThingsConfiguration implements Configuration {
         case "ARDUINO":
         case "ESP32":
           return ConfigParams.TargetPlatform.ARDUINO;
+        case "RASPBERRY":
+        case "RASPBERRYPI":
+        case "RASPI":
+          return ConfigParams.TargetPlatform.RASPBERRY;
         default:
           throw new IllegalArgumentException(
             "0xMT300 Platform " + platform + " in pom.xml is unknown");
