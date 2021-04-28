@@ -59,4 +59,6 @@ grammar MontiThings extends MontiArc,
      */
     IsPresentExpression implements Expression <400>
         = NameExpression "?";
+
+    nokeyword "behavior";
 }
