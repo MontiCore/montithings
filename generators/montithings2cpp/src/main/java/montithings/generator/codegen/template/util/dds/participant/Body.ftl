@@ -1,8 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
+<#include "/template/Preamble.ftl">
 <#assign className = compname + "DDSParticipant">
-
-${Utils.printNamespaceStart(comp)}
 
 ${className}::${className}
 (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
@@ -33,5 +32,3 @@ ${className}::publishParameterConfig ()
 {
   ${tc.includeArgs("template.util.dds.participant.methods.printPublishParameterConfig", [comp, config])}
 }
-
-${Utils.printNamespaceEnd(comp)}

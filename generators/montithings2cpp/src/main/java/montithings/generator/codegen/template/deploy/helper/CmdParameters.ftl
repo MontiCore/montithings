@@ -13,6 +13,11 @@ cmd.add ( instanceNameArg );
   ${tc.includeArgs("template.deploy.helper.DDSParticipantArgs", [comp, config])}
 </#if>
 
+<#if config.getRecordingMode().toString() == "ON">
+    TCLAP::SwitchArg muteRecorder ("", "muteRecorder", "Suppress all logs from the recorder", false);
+    cmd.add (muteRecorder);
+</#if>
+
 cmd.parse ( argc, argv );
 
 <#if config.getMessageBroker().toString() == "MQTT">
