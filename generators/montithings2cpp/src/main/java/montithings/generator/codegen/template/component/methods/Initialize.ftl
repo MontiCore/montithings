@@ -5,8 +5,8 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::initialize(){
 
-${tc.includeArgs("template.componentGenerator.DDSRestoreRecordedState", [comp, config])}
-${tc.includeArgs("template.componentGenerator.DDSInjectRecordedData", [comp, config])}
+${tc.includeArgs("template.component.helper.DDSRestoreRecordedState", [comp, config])}
+${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, config])}
 
 
 <#list comp.incomingPorts as port >
@@ -14,14 +14,14 @@ ${tc.includeArgs("template.componentGenerator.DDSInjectRecordedData", [comp, con
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
   <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
     <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-    ${Identifier.getInterfaceName()}.addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
+    ${Identifier.getInterfaceName()}.addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>(instanceName));
   </#if>
 </#list>
 <#list comp.outgoingPorts as port >
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
   <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
     <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-    ${Identifier.getInterfaceName()}.addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>());
+    ${Identifier.getInterfaceName()}.addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>(instanceName));
   </#if>
 </#list>
 <#if ComponentHelper.retainState(comp)>

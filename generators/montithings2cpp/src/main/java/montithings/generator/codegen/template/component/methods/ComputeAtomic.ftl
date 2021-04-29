@@ -11,7 +11,7 @@ if (shouldCompute())
 {
 
 ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false])}
->>>>>>> develop:generators/montithings2cpp/src/main/java/montithings/generator/codegen/template/component/methods/ComputeAtomic.ftl${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
+${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
