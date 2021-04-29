@@ -4,8 +4,7 @@ ${tc.signature("comp","config")}
 
 
 <#list comp.subComponents as subcomponent>
-    ${subcomponent.getName()}( instanceName + ".${subcomponent.getName()}",
-    startDelays
+    ${subcomponent.getName()}( instanceName + ".${subcomponent.getName()}"
     <#if config.getSplittingMode().toString() == "OFF">
         <#list ComponentHelper.getParamValues(subcomponent) as param >
             <#if param?index==0>,</#if>

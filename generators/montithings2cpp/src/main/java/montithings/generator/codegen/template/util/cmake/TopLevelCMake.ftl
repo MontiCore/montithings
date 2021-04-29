@@ -134,7 +134,7 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
       ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [comp.getFullName()])}
   <#else>
     <#if config.getMessageBroker().toString() == "MQTT">
-      target_link_libraries(${comp.getFullName()} mosquitto)
+      target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
     <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
       target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
     </#if>
