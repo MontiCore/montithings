@@ -245,5 +245,29 @@ public class MontiThingsTool {
     addParam(delay, "milliseconds", SymTypeExpressionFactory.createTypeConstant("int"));
 
     createFunction("now_ns", SymTypeExpressionFactory.createTypeObject("String", scope), scope);
+
+    createFunction("now", SymTypeExpressionFactory.createTypeObject("long", scope), scope);
+  
+
+    // Library functions added by dds/replayer/MTReplayLibrary
+    // assume long = unsigned long long since Monticore does not support all types
+    createFunction("getNanoTimestamp", SymTypeExpressionFactory.createTypeObject("long", scope), scope);
+  
+    FunctionSymbol delayNanoseconds = createFunction("delayNanoseconds", scope);
+    addParam(delayNanoseconds, "nanoseconds", SymTypeExpressionFactory.createTypeConstant("long"));
+
+    FunctionSymbol subtract = createFunction("subtract", scope);
+    addParam(subtract, "v1", SymTypeExpressionFactory.createTypeConstant("long"));
+    addParam(subtract, "v2", SymTypeExpressionFactory.createTypeConstant("long"));
+
+    FunctionSymbol getNsFromMap = createFunction("getNsFromMap", scope);
+    addParam(getNsFromMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
+
+    FunctionSymbol storeNsInMap = createFunction("storeNsInMap", scope);
+    addParam(storeNsInMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
+    addParam(storeNsInMap, "ts", SymTypeExpressionFactory.createTypeConstant("long"));
+
+
+  
   }
 }
