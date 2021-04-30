@@ -37,8 +37,6 @@ public:
 
     void cleanup();
 
-    void reset();
-
     void cleanupPublisher();
 
     void cleanupRecorderMessageWriter();

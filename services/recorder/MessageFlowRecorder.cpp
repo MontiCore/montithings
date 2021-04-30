@@ -14,7 +14,12 @@ MessageFlowRecorder::init() {
     ddsCommunicator.initTopics();
     ddsCommunicator.initSubscriber();
     ddsCommunicator.initPublisher();
-    ddsCommunicator.initWriter();
+
+    ddsCommunicator.initWriterAcknowledgement();
+    ddsCommunicator.initWriterCommand();
+    ddsCommunicator.initWriterCommandReply();
+    ddsCommunicator.initWriterRecorder();
+
     ddsCommunicator.initReaderRecorderMessage();
     ddsCommunicator.initReaderCommandReplyMessage();
 
@@ -24,6 +29,7 @@ MessageFlowRecorder::init() {
             std::bind(&MessageFlowRecorder::onRecorderMessage, this, std::placeholders::_1));
     ddsCommunicator.addOnCommandReplyMessageCallback(
             std::bind(&MessageFlowRecorder::onCommandReplyMessage, this, std::placeholders::_1));
+
 }
 
 void
@@ -107,6 +113,7 @@ MessageFlowRecorder::stop() {
     stopCommand.cmd = DDSRecorderMessage::RECORDING_STOP;
     ddsCommunicator.send(stopCommand);
 
+
     LOG_F (INFO, "Waiting for ACKs...");
     if (!ddsCommunicator.commandWaitForAcks()) {
         LOG_F (ERROR, "RECORDING_STOP command was not ACKed by all components, exiting.");
@@ -187,17 +194,6 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
                 std::string latencyId = latency[0].dump();
                 storage["computation_latency"][instance][latencyId] = latency[1];
                 statsLatenciesAmount++;
-            }
-
-            if (content.contains("start_delay")) {
-                LOG_F (1,"Received start_delay %s: %s",
-                       instance.c_str(), content["start_delay"].dump().c_str());
-                if (!storage["start_delay"].contains(instance)) {
-                    // TODO fix negative sendings
-                    if (content["start_delay"].get<long>() >= 0) {
-                        storage["start_delay"][instance] = content["start_delay"];
-                    }
-                }
             }
 
             LOG_F (1,

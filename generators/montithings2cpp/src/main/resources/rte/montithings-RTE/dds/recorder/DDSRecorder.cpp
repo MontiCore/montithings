@@ -16,6 +16,11 @@ DDSRecorder::init() {
     ddsCommunicator.initSubscriber();
     ddsCommunicator.initReaderCommandMessage();
 
+    ddsCommunicator.initWriterAcknowledgement();
+    ddsCommunicator.initWriterCommand();
+    ddsCommunicator.initWriterCommandReply();
+    ddsCommunicator.initWriterRecorder();
+
     if (isOutgoingPort()) {
         ddsCommunicator.initReaderAcknowledgement();
         ddsCommunicator.addOnAcknowledgementMessageCallback(
@@ -50,9 +55,7 @@ DDSRecorder::setPortName(const std::string &name) {
 void
 DDSRecorder::start() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | starting recording... ";
-    timestampStart = Util::Time::getCurrentTimestampNano();
-    startDelay = 0;
-    isStartDelaySent = false;
+
 
     montithings::library::hwcinterceptor::startNondeterministicRecording();
 
@@ -60,8 +63,6 @@ DDSRecorder::start() {
     unsentRecordMessageDelays.clear();
     unackedMessageTimestampMap.clear();
     unackedRecordedMessageTimestampMap.clear();
-
-    ddsCommunicator.initWriter();
 
     // ddsParticipant is not present in sensor-actuator-ports
     if (ddsParticipant) {
@@ -74,7 +75,6 @@ DDSRecorder::stop() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | stopping recording... ";
     montithings::library::hwcinterceptor::stopNondeterministicRecording();
     ddsCommunicator.cleanupRecorderMessageWriter();
-    ddsCommunicator.reset();
 }
 
 void
@@ -102,11 +102,6 @@ DDSRecorder::sendInternalRecords() {
     content["calls"] = montithings::library::hwcinterceptor::storageCalls;
     content["calc_latency"] = montithings::library::hwcinterceptor::storageComputationLatency;
 
-    if (!isStartDelaySent) {
-        isStartDelaySent = true;
-        content["start_delay"] = startDelay;
-    }
-
     recorderMessage.msg_content = content.dump().c_str();
 
     // arbitrary msg_id
@@ -133,12 +128,6 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
     std::lock_guard<std::mutex> guard(sentMutex);
 
     if (montithings::library::hwcinterceptor::isRecording) {
-        if (startDelay == 0) {
-            startDelay = montithings::library::hwcinterceptor::timestampFirstComputation - timestampStart;
-            CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | comp delay="
-                                 << startDelay;
-        }
-
         long long timestamp = Util::Time::getCurrentTimestampNano();
 
         // Only send ack if message was received, not sent

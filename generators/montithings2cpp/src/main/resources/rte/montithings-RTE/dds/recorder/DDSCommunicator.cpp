@@ -115,12 +115,6 @@ DDSCommunicator::cleanup() {
 }
 
 void
-DDSCommunicator::reset() {
-    //invalidate instance handles
-    resetInstanceHandles = true;
-}
-
-void
 DDSCommunicator::cleanupRecorderMessageWriter() {
     if (!CORBA::is_nil(writerRecorder)) {
         publisher->delete_datawriter(writerRecorder);
@@ -142,11 +136,7 @@ DDSCommunicator::cleanupPublisher() {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::Command &command) {
-    if(!handleCommand || resetInstanceHandles) {
-        resetInstanceHandles = false;
-        handleCommand = writerCommand->register_instance(command);
-    }
-    DDS::ReturnCode_t error = writerCommand->write(command, handleCommand);
+    DDS::ReturnCode_t error = writerCommand->write(command, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | send() write returned " << error;
@@ -158,12 +148,7 @@ DDSCommunicator::send(const DDSRecorderMessage::Command &command) {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::CommandReply &command) {
-    if(!handleCommandReply || resetInstanceHandles) {
-        resetInstanceHandles = false;
-        handleCommandReply = writerCommandReply->register_instance(command);
-    }
-
-    DDS::ReturnCode_t error = writerCommandReply->write(command, handleCommandReply);
+    DDS::ReturnCode_t error = writerCommandReply->write(command, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | send() write returned " << error;
@@ -175,12 +160,7 @@ DDSCommunicator::send(const DDSRecorderMessage::CommandReply &command) {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::Message &message) {
-    if(!handleRecordMessage || resetInstanceHandles) {
-        resetInstanceHandles = false;
-        handleRecordMessage = writerRecorder->register_instance(message);
-    }
-
-    DDS::ReturnCode_t error = writerRecorder->write(message, handleRecordMessage);
+    DDS::ReturnCode_t error = writerRecorder->write(message, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | send() write returned " << error;
@@ -192,12 +172,8 @@ DDSCommunicator::send(const DDSRecorderMessage::Message &message) {
 
 bool
 DDSCommunicator::send(const DDSRecorderMessage::Acknowledgement &message) {
-    if(!handleAcknowledgement || resetInstanceHandles) {
-        resetInstanceHandles = false;
-        handleAcknowledgement = writerAcknowledgement->register_instance(message);
-    }
 
-    DDS::ReturnCode_t error = writerAcknowledgement->write(message, handleAcknowledgement);
+    DDS::ReturnCode_t error = writerAcknowledgement->write(message, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | send() write returned " << error;

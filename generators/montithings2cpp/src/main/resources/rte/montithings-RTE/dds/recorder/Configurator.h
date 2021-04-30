@@ -41,7 +41,6 @@ protected:
     std::string dcpsInfoHost;
     std::string topicName;
     std::string instanceName;
-    bool resetInstanceHandles{false};
 
     DDS::DomainParticipantFactory_var dpf;
 
@@ -66,11 +65,6 @@ protected:
     DDS::Topic_var topicCommandReply;
     DDS::Topic_var topicAcknowledgement;
     DDS::ContentFilteredTopic_var topicAcknowledgementFiltered;
-
-    DDS::InstanceHandle_t handleRecordMessage;
-    DDS::InstanceHandle_t handleCommand;
-    DDS::InstanceHandle_t handleCommandReply;
-    DDS::InstanceHandle_t handleAcknowledgement;
 
     DDS::Subscriber_var subscriber;
     DDS::Publisher_var publisher;
@@ -106,5 +100,11 @@ public:
 
     void initReaderAcknowledgement();
 
-    void initWriter();
+    void initWriterRecorder();
+
+    void initWriterCommand();
+
+    void initWriterCommandReply();
+
+    void initWriterAcknowledgement();
 };
