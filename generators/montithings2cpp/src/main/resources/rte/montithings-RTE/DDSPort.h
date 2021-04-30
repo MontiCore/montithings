@@ -35,7 +35,6 @@ private:
     DDS::Topic_var topic;
     DDSMessage::MessageDataWriter_var messageWriter;
     DDSMessage::MessageDataReader_var messageReader;
-    DDS::InstanceHandle_t instanceHandle;
     bool setQoSTransientDurability;
     bool isRecordingEnabled;
 
@@ -231,10 +230,7 @@ public:
                 message.content = dataString.c_str();
             }
 
-            if (!instanceHandle) {
-                instanceHandle = messageWriter->register_instance(message);
-            }
-            DDS::ReturnCode_t error = messageWriter->write(message, instanceHandle);
+            DDS::ReturnCode_t error = messageWriter->write(message, DDS::HANDLE_NIL);
 
             if (error != DDS::RETCODE_OK) {
                 CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - write returned " << error;
