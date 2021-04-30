@@ -204,8 +204,5 @@ public class MontiThingsTool {
     addParam(delay, "milliseconds", SymTypeExpressionFactory.createTypeConstant("int"));
 
     createFunction("now_ns", SymTypeExpressionFactory.createTypeObject("String", scope), scope);
-
-    FunctionSymbol behavior = createFunction("behavior", scope);
-    addParam(behavior, "portNames", SymTypeExpressionFactory.createTypeObject("String", scope));
   }
 }

@@ -2,17 +2,13 @@
 package montithings.generator.visitor;
 
 import behavior._ast.ASTAgoQualification;
-import de.monticore.MCCommonLiteralsPrettyPrinter;
 import de.monticore.expressions.commonexpressions._ast.*;
-import de.monticore.expressions.expressionsbasis._ast.ASTLiteralExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
-import de.monticore.literals.mccommonliterals._ast.ASTMCCommonLiteralsNode;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
-import de.se_rwth.commons.StringTransformations;
 import montithings.generator.helper.ASTNoData;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
@@ -156,32 +152,6 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       CommentPrettyPrinter.printPostComments(node, this.getPrinter());
     }
     else {
-      super.handle(node);
-    }
-  }
-
-  @Override
-  public void handle(ASTCallExpression node) {
-    if (node.getName().equals("behavior")) {
-      if(node.getArguments().getExpression(0) instanceof ASTLiteralExpression){
-        ASTLiteralExpression e = (ASTLiteralExpression) node.getArguments().getExpression(0);
-        CommentPrettyPrinter.printPreComments(node, getPrinter());
-        getPrinter().print("compute");
-        String portNames = new MCCommonLiteralsPrettyPrinter(new IndentPrinter()).
-                prettyprint((ASTMCCommonLiteralsNode) e.getLiteral());
-        portNames = portNames.replace("\"", "");
-        String[] portNameArray = portNames.split(",");
-        for (String s : portNameArray) {
-          getPrinter().print("__");
-          s = s.replace(" ", "");
-          getPrinter().print(StringTransformations.capitalize(s));
-        }
-        getPrinter().print("(input)");
-        CommentPrettyPrinter.printPostComments(node, getPrinter());
-      } else {
-        super.handle(node);
-      }
-    } else {
       super.handle(node);
     }
   }
