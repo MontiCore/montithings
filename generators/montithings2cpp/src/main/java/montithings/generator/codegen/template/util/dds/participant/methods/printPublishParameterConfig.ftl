@@ -12,18 +12,18 @@ json config;
     <#list subcomponent.getType().getParameters() as parameter>
         config[instanceName + ".${subcomponent.getName()}"]${Utils.printSerializeParameters(subcomponent)?replace('config','')}
         <#assign parameter_index = parameter_index + 1>
-
-
     </#list>
 </#list>
 
 if (!config.empty())
 {
     initializeParameterConfigPortPub();
-    std::string configJson = config.dump();
-    configPortOut->sendToExternal(configJson);
 
-    CLOG(DEBUG, "DDS")  << "Published parameter config: " << configJson;
+    for (auto &paraConfig : config.items()) {
+        configPortOut->sendToExternal(config[paraConfig.key()].dump());
+    }
+
+    CLOG(DEBUG, "DDS")  << "Published parameter config: " << config.dump();
 } else {
     CLOG(DEBUG, "DDS") << "No parameter config to publish. ";
 }

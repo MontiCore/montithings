@@ -14,11 +14,12 @@ json config = json::array({
 if (!config.empty())
 {
     initializeConnectorConfigPortPub();
-    std::string configJson = config.dump();
-    connectorPortOut->sendToExternal(configJson);
+    for (auto &connector : config) {
+        connectorPortOut->sendToExternal(connector);
+    }
 
     CLOG(DEBUG, "DDS")  << "Published connector config: "
-                        << configJson;
+                        << config.dump();
 } else {
     CLOG(DEBUG, "DDS") << "No connector config to publish. ";
 }
