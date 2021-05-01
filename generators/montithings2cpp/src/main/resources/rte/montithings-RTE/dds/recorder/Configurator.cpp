@@ -142,7 +142,7 @@ Configurator::initReaderRecorderMessage() {
 
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
-    dataReaderQos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataReader_var dataReaderRecorder = subscriber->create_datareader(
             topicRecorder, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -171,7 +171,7 @@ Configurator::initReaderAcknowledgement() {
 
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
-    dataReaderQos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataReader_var dataReaderAcknowledgement
             = subscriber->create_datareader(topicAcknowledgementFiltered, dataReaderQos, listener,
@@ -202,7 +202,7 @@ Configurator::initReaderCommandMessage() {
 
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
-    dataReaderQos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataReader_var dataReaderCommand
             = subscriber->create_datareader(topicCommand, dataReaderQos, listener,
@@ -236,7 +236,7 @@ Configurator::initReaderCommandReplyMessage() {
 
     // Applies default qos settings
     subscriber->get_default_datareader_qos(dataReaderQos);
-    dataReaderQos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataReader_var dataReaderCommandReply = subscriber->create_datareader(
             topicCommandReply, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -263,7 +263,7 @@ Configurator::initWriterRecorder() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
-    dataWriterQoS.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataWriterQoS.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataWriter_var dataWriterRecorder = publisher->create_datawriter(
             topicRecorder, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -290,7 +290,7 @@ Configurator::initWriterCommand() {
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
     dataWriterQoS.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
-    dataWriterQoS.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataWriterQoS.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
     dataWriterQoS.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
 
     DDS::DataWriter_var dataWriterCommand
@@ -324,7 +324,7 @@ Configurator::initWriterCommandReply() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
-    dataWriterQoS.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataWriterQoS.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataWriter_var dataWriterCommandReply = publisher->create_datawriter(
             topicCommandReply, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -351,7 +351,7 @@ Configurator::initWriterAcknowledgement() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
-    dataWriterQoS.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dataWriterQoS.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataWriter_var dataWriterAcknowledge = publisher->create_datawriter(
             topicAcknowledgement, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);

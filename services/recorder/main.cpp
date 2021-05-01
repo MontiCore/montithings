@@ -78,12 +78,12 @@ main(int argc, char **argv) {
     int minSpacing = result["minSpacing"].as<int>();
 
     if (dcpsInfoHost.empty()) {
-        std::cout << "Please provide the following argument: -DCPSInfoRepo" << std::endl;
+        std::cout << "Please provide the following argument: --DCPSInfoRepo" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     if (dcpsConfigFile.empty()) {
-        std::cout << "Please provide the following argument: -dcpsConfigFile" << std::endl;
+        std::cout << "Please provide the following argument: --DCPSConfigFile" << std::endl;
         exit(EXIT_FAILURE);
     }
 

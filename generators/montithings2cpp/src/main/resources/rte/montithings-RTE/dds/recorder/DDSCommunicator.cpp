@@ -109,6 +109,7 @@ DDSCommunicator::waitUntilRecorderWritersDisconnect() {
 
 void
 DDSCommunicator::cleanup() {
+    cleanupPublisher();
     participant->delete_contained_entities();
     dpf->delete_participant(participant);
     TheServiceParticipant->shutdown();
