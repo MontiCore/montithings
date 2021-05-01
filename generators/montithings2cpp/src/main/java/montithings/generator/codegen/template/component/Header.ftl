@@ -82,7 +82,7 @@ void compute() override;
 </#list>
 bool shouldCompute();
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
-  bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${compname}Input ${Identifier.getInputName()});
+  bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}();
 </#list>
 void start() override;
 void onEvent () override;

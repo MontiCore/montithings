@@ -1163,6 +1163,15 @@ public class ComponentHelper {
     return "";
   }
 
+  public static boolean isEveryBlock(String name, ComponentTypeSymbol comp) {
+    for (ASTEveryBlock everyBlock : getEveryBlocks(comp)) {
+      if (getEveryBlockName(comp, everyBlock).equals(name)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public static List<ASTBehavior> getPortSpecificBehaviors(ComponentTypeSymbol comp) {
     List<ASTBehavior> behaviorList = elementsOf(comp).filter(ASTBehavior.class)
         .filter(e -> !e.isEmptyNames()).toList();
@@ -1180,6 +1189,24 @@ public class ComponentHelper {
 
   public static boolean hasPortSpecificBehavior(ComponentTypeSymbol comp) {
     return !getPortSpecificBehaviors(comp).isEmpty();
+  }
+
+  public static boolean usesPort(ASTBehavior behavior, PortSymbol port) {
+    if (behavior.isEmptyNames()) {
+      //standard behavior consumes all ports
+      return true;
+    }
+    return behavior.getNamesSymbolList().contains(Optional.of(port));
+  }
+
+  public static boolean hasGeneralBehavior(ComponentTypeSymbol comp) {
+    return !elementsOf(comp).filter(ASTBehavior.class)
+            .filter(e -> e.isEmptyNames()).toList().isEmpty();
+  }
+
+  public static ASTBehavior getGeneralBehavior (ComponentTypeSymbol comp) {
+    return elementsOf(comp).filter(ASTBehavior.class)
+            .filter(e -> e.isEmptyNames()).toList().get(0);
   }
 
   public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
