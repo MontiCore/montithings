@@ -24,9 +24,11 @@ if (NOT EXCLUDE_DDS)
         OpenDDS::Dcps # Core OpenDDS Library
         OpenDDS::InfoRepoDiscovery
         OpenDDS::Tcp
-        OpenDDS::Rtps #RTPS Discovery
+        OpenDDS::Rtps
         OpenDDS::Udp
         OpenDDS::Rtps_Udp
+        OpenDDS::Multicast
+        OpenDDS::Shmem
     )
 endif ()
 

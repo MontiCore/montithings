@@ -14,8 +14,17 @@
 #include <dds/DCPS/transport/framework/TransportRegistry.h>
 #include <dds/DCPS/transport/framework/TransportConfig.h>
 #include <dds/DCPS/transport/framework/TransportInst.h>
+
 #include <dds/DCPS/transport/tcp/TcpInst.h>
 #include <dds/DCPS/transport/tcp/Tcp.h>
+#include <dds/DCPS/transport/rtps_udp/RtpsUdpInst.h>
+#include <dds/DCPS/transport/rtps_udp/RtpsUdp.h>
+#include <dds/DCPS/transport/shmem/ShmemInst.h>
+#include <dds/DCPS/transport/shmem/Shmem.h>
+#include <dds/DCPS/transport/udp/UdpInst.h>
+#include <dds/DCPS/transport/udp/Udp.h>
+#include <dds/DCPS/transport/multicast/MulticastInst.h>
+#include <dds/DCPS/transport/multicast/Multicast.h>
 
 #include "MessageListener.h"
 
