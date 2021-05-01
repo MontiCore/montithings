@@ -67,12 +67,18 @@ private:
     }
   </#if>
 
-  ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName) : instanceName(instanceName) {
+  <#if config.getRecordingMode().toString() == "ON">
+    ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
+  <#else>
+    ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)
+  </#if>
+  {
     <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
       ddsRecorder = std::make_unique${"<DDSRecorder>"}();
       ddsRecorder->setInstanceName(instanceName);
       ddsRecorder->setTopicName(instanceName + ".${portSymbol.getName()}/out");
       ddsRecorder->setPortName("${portSymbol.getName()}");
+      ddsRecorder->initParticipant(argc, argv);
       ddsRecorder->init();
     </#if>
     ${defineHookPoint("<CppBlock>?portTemplate:init")}

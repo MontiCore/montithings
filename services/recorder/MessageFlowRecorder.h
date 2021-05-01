@@ -21,6 +21,8 @@ private:
     // maintains DDS entities such as the participant, subscriber, data readers, ...
     DDSCommunicator ddsCommunicator;
 
+    DDS::DomainParticipant_var participant;
+
     bool isRecording = false;
 
     // amount of instances the recorder should wait for to connect until the actual recording is
@@ -55,7 +57,6 @@ public:
 
     ~MessageFlowRecorder() = default;
 
-    // setter
     void setFileRecordings(std::string &filePath);
 
     void setDcpsInfoRepoHost(std::string &host);
@@ -64,7 +65,9 @@ public:
 
     void setInstanceNumber(int n);
 
-    void init();
+    bool initDDSParticipant(int argc, char *argv[]);
+
+    void init(int argc, char *argv[]);
 
     void start();
 

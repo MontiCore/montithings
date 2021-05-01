@@ -8,7 +8,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
   #include "${compname}Manager.h"
 <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
-  #include "${compname}DDSParticipant.h"
+  #include "${compname}DDSClient.h"
 </#if>
 #include "tclap/CmdLine.h"
 #include "easyloggingpp/easylogging++.h"
@@ -44,7 +44,7 @@ TCLAP::CmdLine cmd("${compname} MontiThings component", ' ', "${config.getProjec
 ${tc.includeArgs("template.deploy.helper.CmdParameters", [comp, config])}
 ${tc.includeArgs("template.deploy.helper.ComponentStart", [comp, config])}
 <#if config.getMessageBroker().toString() == "DDS">
-  ${tc.includeArgs("template.deploy.helper.DDSParticipantCleanup", [comp, config])}
+  ${tc.includeArgs("template.deploy.helper.DDSCleanup", [comp, config])}
 </#if>
 }
 catch (TCLAP::ArgException &e) // catch exceptions

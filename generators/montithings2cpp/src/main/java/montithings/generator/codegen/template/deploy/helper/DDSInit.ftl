@@ -21,22 +21,22 @@ ${tc.signature("comp", "config")}
     ddsArgv[4] = strdup(dcpsInfoRepoArg.getValue().c_str());
   </#if>
 
-  ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSParticipant ddsParticipant(instanceNameArg.getValue(), ddsArgc, ddsArgv);
+  ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}DDSClient ddsClient(instanceNameArg.getValue(), ddsArgc, ddsArgv);
   <#if (comp.getParameters()?size > 0)>
-    ddsParticipant.initializeParameterConfigPortSub();
+    ddsClient.initializeParameterConfigPortSub();
   </#if>
 
-  ddsParticipant.publishParameterConfig();
+  ddsClient.publishParameterConfig();
 
   <#if comp.getParameters()?size = 0>
     // No parameters expected, skip waiting
-    ddsParticipant.setReceivedParameterConfigTrue();
+    ddsClient.setReceivedParameterConfigTrue();
   </#if>
 
   LOG(DEBUG) << "Waiting for config...";
-  while (!ddsParticipant.isReceivedParameterConfig()){}
+  while (!ddsClient.isReceivedParameterConfig()){}
 
-  json config = ddsParticipant.getParameterConfig();
+  json config = ddsClient.getParameterConfig();
 
   <#list comp.getParameters() as variable>
     <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>

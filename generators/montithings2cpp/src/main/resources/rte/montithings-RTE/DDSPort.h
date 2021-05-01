@@ -15,7 +15,7 @@
 #include "dds/recorder/MessageWithClockContainer.h"
 #include "dds/recorder/VectorClock.h"
 
-#include "DDSParticipant.h"
+#include "DDSClient.h"
 #include "Port.h"
 #include "Utils.h"
 
@@ -31,7 +31,7 @@ private:
     Direction direction;
 
     // DDS specific variables
-    DDSParticipant *participant;
+    DDSClient *client;
     DDS::Topic_var topic;
     DDSMessage::MessageDataWriter_var messageWriter;
     DDSMessage::MessageDataReader_var messageReader;
@@ -50,10 +50,10 @@ private:
     std::unique_ptr<DDSRecorder> ddsRecorder;
 
 public:
-    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string  topicName, std::string portName,
-                      bool isRecordingEnabled, bool setQoSTransientDurability, std::function<void(T)> onDataAvailableCallback)
+    explicit DDSPort(DDSClient &participant, Direction direction, std::string  topicName, std::string portName,
+                     bool isRecordingEnabled, bool setQoSTransientDurability, std::function<void(T)> onDataAvailableCallback)
             : onDataAvailableCallback(onDataAvailableCallback),
-              participant(&participant),
+              client(&participant),
               direction(direction),
               topicName(std::move(topicName)),
               portName(std::move(portName)),
@@ -62,9 +62,9 @@ public:
         init();
     }
 
-    explicit DDSPort(DDSParticipant &participant, Direction direction, std::string topicName, std::string portName,
-                      bool isRecordingEnabled, bool setQoSTransientDurability)
-            : participant(&participant),
+    explicit DDSPort(DDSClient &participant, Direction direction, std::string topicName, std::string portName,
+                     bool isRecordingEnabled, bool setQoSTransientDurability)
+            : client(&participant),
               direction(direction),
               topicName(std::move(topicName)),
               portName(std::move(portName)),
@@ -77,8 +77,8 @@ public:
 
     	if (isRecordingEnabled) {
             ddsRecorder = std::make_unique<DDSRecorder>();
-            ddsRecorder->setInstanceName(participant->getInstanceName());
-            ddsRecorder->setDDSParticipant(*participant);
+            ddsRecorder->setInstanceName(client->getInstanceName());
+            ddsRecorder->setDDSClient(*client);
             ddsRecorder->setTopicName(topicName);
             ddsRecorder->setPortName(portName);
             ddsRecorder->init();
@@ -101,12 +101,12 @@ public:
 
 
     DDS::Topic_var createTopic() {
-        DDS::Topic_var topicVar = participant->getParticipant()->create_topic(
+        DDS::Topic_var topicVar = client->getParticipant()->create_topic(
                 // sets unique topicVar name which is associated with the publishers port
                 // name
                 topicName.c_str(),
                 // Topics are type-specific
-                participant->getMessageTypeName(),
+                client->getMessageTypeName(),
                 // QoS includes KEEP_LAST_HISTORY_QOS which might be changed
                 // when log traces are inspected
                 TOPIC_QOS_DEFAULT,
@@ -130,7 +130,7 @@ public:
         DDS::DataReaderQos dataReaderQos;
 
         // Applies default qos settings
-        participant->getSubscriber()->get_default_datareader_qos(dataReaderQos);
+        client->getSubscriber()->get_default_datareader_qos(dataReaderQos);
         // Default reliability is best effort. Thus, its changed to reliable
         // communication
         dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
@@ -143,7 +143,7 @@ public:
         }
 
         DDS::DataReader_var reader =
-                participant->getSubscriber()->create_datareader(
+                client->getSubscriber()->create_datareader(
                         topic, dataReaderQos, listener,
                         // default status mask ensures that
                         // all relevant communication status
@@ -169,7 +169,7 @@ public:
 
     DDSMessage::MessageDataWriter_var initWriter() {
         DDS::DataWriterQos dataWriterQoS;
-        participant->getPublisher()->get_default_datawriter_qos(dataWriterQoS);
+        client->getPublisher()->get_default_datawriter_qos(dataWriterQoS);
 
         if (setQoSTransientDurability) {
             dataWriterQoS.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
@@ -178,7 +178,7 @@ public:
             dataWriterQoS.durability.kind = DDS::TRANSIENT_DURABILITY_QOS;
         }
 
-        DDS::DataWriter_var writer = participant->getPublisher()->create_datawriter(
+        DDS::DataWriter_var writer = client->getPublisher()->create_datawriter(
                 topic, dataWriterQoS,
                 // no listener required
                 nullptr,

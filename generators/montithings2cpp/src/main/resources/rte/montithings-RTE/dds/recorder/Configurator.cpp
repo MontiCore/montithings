@@ -60,26 +60,19 @@ Configurator::initMessageTypes() {
     }
 }
 
+
+void Configurator::setParticipant(const DDS::DomainParticipant_var& p) {
+    participant = p;
+}
+
 void
-Configurator::initParticipant() {
-    int argc = 2;
-
-    // conversion from const char* to char*
-    ACE_TCHAR *arg = strdup("-DCPSInfoRepo");
-    ACE_TCHAR *host = strdup(dcpsInfoHost.c_str());
-
-    ACE_TCHAR *args[2] = {arg, host};
-
+Configurator::initParticipant(int argc, char *argv[]) {
     // Initialize DomainParticipantFactory
-    dpf = TheParticipantFactoryWithArgs (argc, args);
+    dpf = TheParticipantFactoryWithArgs (argc, argv);
 
     // Create DomainParticipant
     participant = dpf->create_participant(
             42, PARTICIPANT_QOS_DEFAULT, nullptr,
-            /* Use of the OpenDDS default status mask ensures
-              all relevant communication status changes (e.g., data available, liveliness lost) in the
-              middleware are communicated to the application (e.g., via callbacks on listeners).
-            */
             OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!participant) {
@@ -117,7 +110,8 @@ Configurator::initTopics() {
                                         TOPIC_QOS_DEFAULT, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     std::string topicNameFiltered(RECORDER_ACKNOWLEDGE_TOPIC);
-    topicNameFiltered.append("-Filtered");
+    topicNameFiltered.append("-filtered-");
+    topicNameFiltered.append(topicName);
 
     DDS::StringSeq topicfiltered_params(1);
     topicfiltered_params.length(1);

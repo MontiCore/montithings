@@ -46,6 +46,10 @@ ${tc.includeArgs("template.component.methods.printGetState", [comp, className])}
   ${tc.includeArgs("template.component.methods.OnMessage", [comp, config, className])}
 </#if>
 
+<#if config.getMessageBroker().toString() == "DDS">
+  ${tc.includeArgs("template.component.methods.SetDDSCmdArgs", [comp, config, className])}
+</#if>
+
 ${tc.includeArgs("template.component.methods.OnEvent", [comp, config, className])}
 ${tc.includeArgs("template.component.methods.ThreadJoin", [comp, config, className])}
 ${tc.includeArgs("template.component.methods.CheckPostconditions", [comp, config, className])}

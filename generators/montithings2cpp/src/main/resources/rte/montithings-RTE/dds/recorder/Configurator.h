@@ -80,6 +80,8 @@ public:
 
     void setInstanceName(std::string name);
 
+    void setParticipant(const DDS::DomainParticipant_var& participant);
+
     void initConfig();
 
     void initMessageTypes();
@@ -90,7 +92,7 @@ public:
 
     void initTopics();
 
-    void initParticipant();
+    void initParticipant(int argc, char *argv[]);
 
     void initReaderRecorderMessage();
 

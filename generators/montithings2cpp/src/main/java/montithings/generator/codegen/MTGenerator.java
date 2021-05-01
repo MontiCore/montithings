@@ -120,11 +120,11 @@ public class MTGenerator {
           }
           else if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
             fg.generate(targetPath,
-              compname + "DDSParticipant", ".h", "template/util/dds/participant/Header.ftl", comp,
+              compname + "DDSClient", ".h", "template/util/dds/client/Header.ftl", comp,
               config);
             fg.generate(targetPath,
-              compname + "DDSParticipant", ".cpp",
-              "template/util/dds/participant/ImplementationFile.ftl", comp, config);
+              compname + "DDSClient", ".cpp",
+              "template/util/dds/client/ImplementationFile.ftl", comp, config);
           }
         }
       }

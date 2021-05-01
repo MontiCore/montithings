@@ -10,7 +10,7 @@ cmd.add ( instanceNameArg );
 <#elseif config.getMessageBroker().toString() == "MQTT">
   ${tc.includeArgs("template.deploy.helper.MqttArgs", [comp, config])}
 <#elseif config.getMessageBroker().toString() == "DDS">
-  ${tc.includeArgs("template.deploy.helper.DDSParticipantArgs", [comp, config])}
+  ${tc.includeArgs("template.deploy.helper.DDSArgs", [comp, config])}
 </#if>
 
 <#if config.getRecordingMode().toString() == "ON">

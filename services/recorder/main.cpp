@@ -51,7 +51,7 @@ main(int argc, char **argv) {
 
     cxxopts::Options options("MessageFlowRecorder", "A brief description");
     options.add_options()
-        ("i,DCPSInfoRepo", "DCPSInfoRepo host", cxxopts::value<std::string>()->default_value(""))
+        ("DCPSInfoRepo", "DCPSInfoRepo host", cxxopts::value<std::string>()->default_value(""))
         ("stopAfter", "Stop recording after given minutes", cxxopts::value<int>())
         ("minSpacing", "Minimum spacing in ms between each message sent to the same component.", cxxopts::value<int>()->default_value("0"))
         ("fileRecordings", "File name where recordings are saved", cxxopts::value<std::string>()->default_value("recordings.json"))
@@ -97,7 +97,7 @@ main(int argc, char **argv) {
     recorder.setDcpsInfoRepoHost(dcpsInfoHost);
     recorder.setInstanceNumber(appInstancesNumber);
     recorder.setMinSpacing(minSpacing);
-    recorder.init();
+    recorder.init(argc, argv);
     recorder.setFileRecordings(fileRecordingsPath);
 
     recorder.start();

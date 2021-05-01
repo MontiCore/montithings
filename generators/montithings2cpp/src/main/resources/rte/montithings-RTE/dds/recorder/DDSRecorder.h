@@ -16,7 +16,7 @@
 #include "../../easyloggingpp/easylogging++.h"
 #include "../message-types/DDSMessageTypeSupportImpl.h"
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
-#include "../../DDSParticipant.h"
+#include "../../DDSClient.h"
 #include "DDSCommunicator.h"
 #include "HWCInterceptor.h"
 #include "VectorClock.h"
@@ -31,7 +31,7 @@ private:
     int recorderMessageId = 0;
 
     DDSCommunicator ddsCommunicator;
-    DDSParticipant *ddsParticipant;
+    DDSClient *ddsClient;
 
     std::string instanceName;
     std::string topicName;
@@ -76,7 +76,9 @@ public:
 
     void setInstanceName(const std::string &name);
 
-    void setDDSParticipant(DDSParticipant &ddsParticipant);
+    void setDDSClient(DDSClient &client);
+
+    void initParticipant(int argc, char *argv[]);
 
     void setTopicName(const std::string &name);
 

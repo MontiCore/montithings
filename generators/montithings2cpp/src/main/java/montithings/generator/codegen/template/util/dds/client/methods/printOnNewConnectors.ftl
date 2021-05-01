@@ -2,7 +2,7 @@
 ${tc.signature("comp","config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
-CLOG(DEBUG, "DDS") << "DDSParticipant | Received connection configuration: " << payload;
+CLOG(DEBUG, "DDS") << "DDSClient | Received connection configuration: " << payload;
 std::string connection = payload;
 
 // check if this message informs us about new component instances

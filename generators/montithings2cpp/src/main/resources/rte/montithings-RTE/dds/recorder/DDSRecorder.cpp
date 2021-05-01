@@ -7,9 +7,18 @@
 
 void
 DDSRecorder::init() {
+
     ddsCommunicator.setTopicName(topicName);
-    ddsCommunicator.initConfig();
-    ddsCommunicator.initParticipant();
+    // check if a ddsClient is present, as this is not the case with sensor actuator ports
+    // instead, sensor actuator ports directly initialize the participant, no further action required at this point
+    if (ddsClient) {
+        // wait until participant is initialized
+        while (!ddsClient->getParticipant()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        ddsCommunicator.setParticipant(ddsClient->getParticipant());
+    }
+
     ddsCommunicator.initMessageTypes();
     ddsCommunicator.initTopics();
     ddsCommunicator.initPublisher();
@@ -37,8 +46,8 @@ DDSRecorder::setInstanceName(const std::string &name) {
     ddsCommunicator.setInstanceName(name);
 }
 
-void DDSRecorder::setDDSParticipant(DDSParticipant &participant) {
-    ddsParticipant = &participant;
+void DDSRecorder::setDDSClient(DDSClient &client) {
+    ddsClient = &client;
 }
 
 void
@@ -50,6 +59,10 @@ DDSRecorder::setTopicName(const std::string &name) {
 void
 DDSRecorder::setPortName(const std::string &name) {
     portName = name;
+}
+
+void DDSRecorder::initParticipant(int argc, char *argv[]) {
+    ddsCommunicator.initParticipant(argc, argv);
 }
 
 void
@@ -64,9 +77,9 @@ DDSRecorder::start() {
     unackedMessageTimestampMap.clear();
     unackedRecordedMessageTimestampMap.clear();
 
-    // ddsParticipant is not present in sensor-actuator-ports
-    if (ddsParticipant) {
-        sendState(ddsParticipant->getSerializedState());
+    // ddsClient is not present in sensor-actuator-ports
+    if (ddsClient) {
+        sendState(ddsClient->getSerializedState());
     }
 }
 

@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config", "existsHWC")}
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign className = comp.getName() + "DDSParticipant">
+<#assign className = comp.getName() + "DDSClient">
 
 
 #pragma once
@@ -27,12 +27,12 @@ ${tc.signature("comp", "config", "existsHWC")}
 </#if>
 
 #include "DDSPort.h"
-#include "DDSParticipant.h"
+#include "DDSClient.h"
 #include "${comp.getName()}.h"
 
 ${Utils.printNamespaceStart(comp)}
 
-class ${className} : public DDSParticipant
+class ${className} : public DDSClient
 {
     private:
         ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}* comp;
@@ -106,7 +106,7 @@ class ${className} : public DDSParticipant
         }
 
         void onNewConfig(std::string payload) {
-            CLOG(DEBUG, "DDS") << "DDSParticipant | Received parameter configuration: " << payload;
+            CLOG(DEBUG, "DDS") << "DDSClient | Received parameter configuration: " << payload;
             json jPayload = json::parse(payload);
             if (jPayload.contains(instanceName)) {
                 parameterConfig = jPayload;

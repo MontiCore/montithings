@@ -7,9 +7,14 @@
 #pragma ide diagnostic ignored "EndlessLoop"
 
 void
-MessageFlowRecorder::init() {
-    ddsCommunicator.initConfig();
-    ddsCommunicator.initParticipant();
+MessageFlowRecorder::init(int argc, char *argv[]) {
+    //ddsCommunicator.initConfig();
+    //ddsCommunicator.initParticipant();
+    while (!initDDSParticipant(argc, argv)) {
+        LOG_F (ERROR, "Is the DCPSInfoRepo service running or multicast enabled/allowed? Trying again...");
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
     ddsCommunicator.initMessageTypes();
     ddsCommunicator.initTopics();
     ddsCommunicator.initSubscriber();
@@ -30,6 +35,22 @@ MessageFlowRecorder::init() {
     ddsCommunicator.addOnCommandReplyMessageCallback(
             std::bind(&MessageFlowRecorder::onCommandReplyMessage, this, std::placeholders::_1));
 
+}
+
+bool MessageFlowRecorder::initDDSParticipant(int argc, char *argv[]) {
+    DDS::DomainParticipantFactory_var dpf = TheParticipantFactoryWithArgs(argc, argv);
+    // We do not make use of multiple DDS domains yet, arbitrary but fixed id will do it
+    int domainId = 42;
+    if (!participant) {
+        participant = dpf->create_participant(domainId, PARTICIPANT_QOS_DEFAULT, 0, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+    }
+
+    if (!participant) {
+        LOG_F (ERROR, "Is the DCPSInfoRepo service running or multicast enabled/allowed? Trying again...");
+        return false;
+    }
+
+    return true;
 }
 
 void
@@ -90,7 +111,7 @@ MessageFlowRecorder::start() {
 
     // recording is done event-based
     while (isRecording) {
-        std::this_thread::sleep_for(std::chrono::milliseconds (10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
         std::this_thread::yield();
     }
 
@@ -209,7 +230,7 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
 
 void
 MessageFlowRecorder::onCommandReplyMessage(const DDSRecorderMessage::CommandReply &message) {
-    LOG_F (1, "onCommandReplyMessage:content=%s,command_id=%d." , message.content.in(),
+    LOG_F (1, "onCommandReplyMessage:content=%s,command_id=%d.", message.content.in(),
            message.command_id);
 }
 

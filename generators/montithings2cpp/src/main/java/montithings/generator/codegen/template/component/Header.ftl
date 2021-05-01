@@ -32,6 +32,7 @@ protected:
 ${tc.includeArgs("template.component.declarations.PortMonitorUuid", [comp, config])}
 ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, config])}
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
+${tc.includeArgs("template.component.declarations.DDS", [config])}
 
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 ${tc.includeArgs("template.state.hooks.Member", [comp])}
@@ -61,6 +62,11 @@ ${ComponentHelper.printConstructorArguments(comp)});
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
   void publishConnectors();
   void publishConfigForSubcomponent (std::string instanceName);
+</#if>
+
+<#if config.getMessageBroker().toString() == "DDS">
+  // sensor actuator ports require cmd args in order to set up their DDS clients
+  void setDDSCmdArgs (int argc, char *argv[]);
 </#if>
 
 <#if comp.isDecomposed()>

@@ -19,9 +19,8 @@
 
 using json = nlohmann::json;
 
-class DDSParticipant {
+class DDSClient {
 protected:
-    // OpenDDS specific
     DDS::DomainParticipant_var participant;
     DDS::Publisher_var publisher;
     DDS::Subscriber_var subscriber;
