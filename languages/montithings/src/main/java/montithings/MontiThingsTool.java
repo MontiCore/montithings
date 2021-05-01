@@ -247,7 +247,6 @@ public class MontiThingsTool {
     createFunction("now_ns", SymTypeExpressionFactory.createTypeObject("String", scope), scope);
 
     createFunction("now", SymTypeExpressionFactory.createTypeObject("long", scope), scope);
-  
 
     // Library functions added by dds/replayer/MTReplayLibrary
     // assume long = unsigned long long since Monticore does not support all types
@@ -267,7 +266,8 @@ public class MontiThingsTool {
     addParam(storeNsInMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
     addParam(storeNsInMap, "ts", SymTypeExpressionFactory.createTypeConstant("long"));
 
-
-  
+    // TODO: Allow method overloading
+    FunctionSymbol nondeterminismLong = createFunction("nd", SymTypeExpressionFactory.createTypeObject("long", scope), scope);
+    addParam(nondeterminismLong, "value", SymTypeExpressionFactory.createTypeConstant("long"));
   }
 }
