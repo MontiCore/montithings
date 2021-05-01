@@ -3,25 +3,6 @@
 #include "Configurator.h"
 
 void
-Configurator::initConfig() {
-    RcHandle<TransportConfig> config = TheTransportRegistry->get_config("recorder_config");
-    if (config.is_nil()) {
-        cfg = TheTransportRegistry->create_config("recorder_config");
-        inst = TheTransportRegistry->create_inst("tcp_config", // name
-                                                 "tcp");       // type
-
-        // Must cast to TcpInst to get access to transport-specific options
-        TcpInst_rch tcp_inst = dynamic_rchandle_cast<TcpInst>(inst);
-        tcp_inst->enable_nagle_algorithm_ = false;
-        cfg->instances_.clear();
-        cfg->instances_.insert(cfg->instances_.begin(), inst);
-
-        // set as the global transport configuration
-        TheTransportRegistry->global_config(cfg);
-    }
-}
-
-void
 Configurator::setDcpsInfoRepoHost(std::string host) {
     this->dcpsInfoHost = std::move(host);
 }
@@ -65,7 +46,7 @@ void Configurator::setParticipant(const DDS::DomainParticipant_var& p) {
     participant = p;
 }
 
-void
+bool
 Configurator::initParticipant(int argc, char *argv[]) {
     // Initialize DomainParticipantFactory
     dpf = TheParticipantFactoryWithArgs (argc, argv);
@@ -77,8 +58,10 @@ Configurator::initParticipant(int argc, char *argv[]) {
 
     if (!participant) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | createParticipant failed.";
-        exit(EXIT_FAILURE);
+        return false;
     }
+
+    return true;
 }
 
 void

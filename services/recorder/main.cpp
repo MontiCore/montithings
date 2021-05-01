@@ -51,13 +51,18 @@ main(int argc, char **argv) {
 
     cxxopts::Options options("MessageFlowRecorder", "A brief description");
     options.add_options()
-        ("DCPSInfoRepo", "DCPSInfoRepo host", cxxopts::value<std::string>()->default_value(""))
-        ("stopAfter", "Stop recording after given minutes", cxxopts::value<int>())
-        ("minSpacing", "Minimum spacing in ms between each message sent to the same component.", cxxopts::value<int>()->default_value("0"))
-        ("fileRecordings", "File name where recordings are saved", cxxopts::value<std::string>()->default_value("recordings.json"))
-        ("n", "Number of outgoing ports of the application. When defined, the recorder will wait until all of these ports are connected to the recorder. "
-              "Otherwise the recording will start after at least one port connected.", cxxopts::value<int>()->default_value("1"))
-        ("h,help", "Print usage");
+            ("DCPSConfigFile", "DCPSConfigFile", cxxopts::value<std::string>()->default_value("dcpsconfig.ini"))
+            ("DCPSInfoRepo", "DCPSInfoRepo host", cxxopts::value<std::string>()->default_value(""))
+            ("stopAfter", "Stop recording after given minutes", cxxopts::value<int>())
+            ("minSpacing", "Minimum spacing in ms between each message sent to the same component.",
+             cxxopts::value<int>()->default_value("0"))
+            ("fileRecordings", "File name where recordings are saved",
+             cxxopts::value<std::string>()->default_value("recordings.json"))
+            ("n",
+             "Number of outgoing ports of the application. When defined, the recorder will wait until all of these ports are connected to the recorder. "
+             "Otherwise the recording will start after at least one port connected.",
+             cxxopts::value<int>()->default_value("1"))
+            ("h,help", "Print usage");
 
     auto result = options.parse(argc, argv);
 
@@ -68,11 +73,17 @@ main(int argc, char **argv) {
 
     LOG_F (INFO, "Initializing...");
     std::string fileRecordingsPath = result["fileRecordings"].as<std::string>();
+    std::string dcpsConfigFile = result["DCPSConfigFile"].as<std::string>();
     std::string dcpsInfoHost = result["DCPSInfoRepo"].as<std::string>();
     int minSpacing = result["minSpacing"].as<int>();
 
     if (dcpsInfoHost.empty()) {
-        std::cout << "Please provide the following argument: --DCPSInfoRepo" << std::endl;
+        std::cout << "Please provide the following argument: -DCPSInfoRepo" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    if (dcpsConfigFile.empty()) {
+        std::cout << "Please provide the following argument: -dcpsConfigFile" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -97,6 +108,18 @@ main(int argc, char **argv) {
     recorder.setDcpsInfoRepoHost(dcpsInfoHost);
     recorder.setInstanceNumber(appInstancesNumber);
     recorder.setMinSpacing(minSpacing);
+
+    // Rename named arguments since cxxopts does not allow a single "-" in front of multiple characters
+    // Unfortunately this is what OpenDDS expects
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (!arg.compare("--DCPSInfoRepo")) {
+            argv[i] = strdup("-DCPSInfoRepo");
+        } else if (!arg.compare("--DCPSConfigFile")) {
+            argv[i] = strdup("-DCPSConfigFile");
+        }
+    }
+
     recorder.init(argc, argv);
     recorder.setFileRecordings(fileRecordingsPath);
 

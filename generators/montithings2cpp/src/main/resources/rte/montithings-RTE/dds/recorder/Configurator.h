@@ -82,8 +82,6 @@ public:
 
     void setParticipant(const DDS::DomainParticipant_var& participant);
 
-    void initConfig();
-
     void initMessageTypes();
 
     void initSubscriber();
@@ -92,7 +90,7 @@ public:
 
     void initTopics();
 
-    void initParticipant(int argc, char *argv[]);
+    bool initParticipant(int argc, char *argv[]);
 
     void initReaderRecorderMessage();
 

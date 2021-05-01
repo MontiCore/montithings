@@ -10,6 +10,10 @@ transports=mytcp
 
 [transport/mytcp]
 transport_type=tcp
+
+[transport/myrtpsudp]
+transport_type=rtps_udp
+
 <#else>
 DCPSDefaultDiscovery=DEFAULT_RTPS
 </#if>

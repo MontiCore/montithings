@@ -8,9 +8,7 @@
 
 void
 MessageFlowRecorder::init(int argc, char *argv[]) {
-    //ddsCommunicator.initConfig();
-    //ddsCommunicator.initParticipant();
-    while (!initDDSParticipant(argc, argv)) {
+    while (!ddsCommunicator.initParticipant(argc, argv)) {
         LOG_F (ERROR, "Is the DCPSInfoRepo service running or multicast enabled/allowed? Trying again...");
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
