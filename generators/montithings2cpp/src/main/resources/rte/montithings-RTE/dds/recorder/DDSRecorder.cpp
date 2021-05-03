@@ -26,7 +26,6 @@ DDSRecorder::init() {
     ddsCommunicator.initReaderCommandMessage();
 
     ddsCommunicator.initWriterAcknowledgement();
-    ddsCommunicator.initWriterCommand();
     ddsCommunicator.initWriterCommandReply();
     ddsCommunicator.initWriterRecorder();
 

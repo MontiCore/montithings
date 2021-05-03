@@ -67,7 +67,7 @@ private:
     }
   </#if>
 
-  <#if config.getRecordingMode().toString() == "ON">
+  <#if config.getMessageBroker().toString() == "DDS">
     ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
   <#else>
     ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)

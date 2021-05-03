@@ -5,6 +5,11 @@ ${tc.signature("comp","config")}
 CLOG(DEBUG, "DDS") << "DDSClient | Received connection configuration: " << payload;
 std::string connection = payload;
 
+bool isRecordingEnabled = false;
+<#if config.getRecordingMode().toString() == "ON">
+    isRecordingEnabled = true;
+</#if>
+
 // check if this message informs us about new component instances
 <#list comp.getPorts() as p>
     <#if p.isIncoming()>
@@ -14,13 +19,13 @@ std::string connection = payload;
         if (connection.find(instanceName + ".${p.getName()}/in") != std::string::npos) {
             std::string topic = connection.substr(0, connection.find("->"));
             CLOG(DEBUG, "DDS") << "New connection! Creating ingoing port which listens on " << topic;
-            comp->getInterface()->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, "${p.getName()}", true, false));
+            comp->getInterface()->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic, "${p.getName()}", isRecordingEnabled, false));
 
             <#if !comp.isAtomic()>
                 // additional outgoing port for port incoming port ${p.getName()}
                 // to forward data to subcomponents
                 topic = instanceName + ".${p.getName()}/out";
-                comp->getInterface()->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic, "${p.getName()}", true, false));
+                comp->getInterface()->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic, "${p.getName()}", isRecordingEnabled, false));
             </#if>
         }
     </#if>

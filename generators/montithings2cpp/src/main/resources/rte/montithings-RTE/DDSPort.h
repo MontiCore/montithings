@@ -50,10 +50,10 @@ private:
     std::unique_ptr<DDSRecorder> ddsRecorder;
 
 public:
-    explicit DDSPort(DDSClient &participant, Direction direction, std::string  topicName, std::string portName,
+    explicit DDSPort(DDSClient &client, Direction direction, std::string  topicName, std::string portName,
                      bool isRecordingEnabled, bool setQoSTransientDurability, std::function<void(T)> onDataAvailableCallback)
             : onDataAvailableCallback(onDataAvailableCallback),
-              client(&participant),
+              client(&client),
               direction(direction),
               topicName(std::move(topicName)),
               portName(std::move(portName)),
@@ -62,9 +62,9 @@ public:
         init();
     }
 
-    explicit DDSPort(DDSClient &participant, Direction direction, std::string topicName, std::string portName,
+    explicit DDSPort(DDSClient &client, Direction direction, std::string topicName, std::string portName,
                      bool isRecordingEnabled, bool setQoSTransientDurability)
-            : client(&participant),
+            : client(&client),
               direction(direction),
               topicName(std::move(topicName)),
               portName(std::move(portName)),
