@@ -34,7 +34,7 @@ setResult(${Identifier.getResultName()});
 }
 <#sep>else </#sep>
 </#list>
-<#if ComponentHelper.hasGeneralBehavior(comp)>
+<#if ComponentHelper.hasGeneralBehavior(comp) || !ComponentHelper.hasPortSpecificBehavior(comp)>
 <#if ComponentHelper.hasPortSpecificBehavior(comp)>else {</#if>
 ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
