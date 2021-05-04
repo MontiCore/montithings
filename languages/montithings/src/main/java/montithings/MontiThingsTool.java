@@ -52,7 +52,7 @@ public class MontiThingsTool {
 
   protected static final String TOOL_NAME = "MontiThingsTool";
 
-  private List<MontiThingsTrafo> trafos;
+  protected List<MontiThingsTrafo> trafos;
 
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());
