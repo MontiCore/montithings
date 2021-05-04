@@ -68,13 +68,14 @@ void
 DDSRecorder::start() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | starting recording... ";
 
-
     montithings::library::hwcinterceptor::startNondeterministicRecording();
 
     unsentMessageDelays.clear();
     unsentRecordMessageDelays.clear();
     unackedMessageTimestampMap.clear();
     unackedRecordedMessageTimestampMap.clear();
+    
+    ddsCommunicator.initWriterRecorder();
 
     // ddsClient is not present in sensor-actuator-ports
     if (ddsClient) {
@@ -86,6 +87,12 @@ void
 DDSRecorder::stop() {
     CLOG (INFO, LOG_ID) << "DDSRecorder | stopping recording... ";
     montithings::library::hwcinterceptor::stopNondeterministicRecording();
+
+    CLOG (INFO, LOG_ID) << "DDSRecorder | sending queue of unsent internal data (system calls, network delay, ...)";
+    DDSMessage::Message emptyMessage;
+    recordMessage(emptyMessage, "NOTOPIC", VectorClock::getVectorClock(), false);
+
+    CLOG (INFO, LOG_ID) << "DDSRecorder | Cleaning up... ";
     ddsCommunicator.cleanupRecorderMessageWriter();
 }
 

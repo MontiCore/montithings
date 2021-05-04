@@ -97,7 +97,8 @@ DDSCommunicator::waitUntilRecorderWritersDisconnect() {
             CLOG (ERROR, DDS_LOG_ID) << "DDSCommunicator | subscription_matched_status failed!";
             exit(1);
         }
-        if (matches.current_count == 1) {
+        std::cout << "DDSCommunicator | left: " << matches.current_count;
+        if (matches.current_count <= 1) {
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds (100));

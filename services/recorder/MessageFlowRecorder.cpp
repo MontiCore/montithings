@@ -182,7 +182,9 @@ MessageFlowRecorder::onRecorderMessage(const DDSRecorderMessage::Message &messag
         case DDSRecorderMessage::MESSAGE_RECORD:
             LOG_F (1, "ACKing: instance_name=%s, id=%d, port=%s,", message.instance_name.in(), message.id,
                    pName.c_str());
-            ddsCommunicator.sendAck(message.instance_name.in(), message.id, "recorder", pName, "");
+            if(strcmp(message.topic.in(), "NOTOPIC") != 0 ){
+                ddsCommunicator.sendAck(message.instance_name.in(), message.id, "recorder", pName, "");
+            }
 
             // Replace timestamp by recorder clock readings
             toStore.timestamp = Util::Time::getCurrentTimestampNano();
