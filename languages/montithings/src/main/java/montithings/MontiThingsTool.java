@@ -275,6 +275,7 @@ public class MontiThingsTool {
                 .build();
 
         SymTypeVariable returnType = SymTypeExpressionFactory.createTypeVariable(returnNd);
+        returnType.getTypeInfo().setSpannedScope(MontiThingsMill.montiThingsScope());
         FunctionSymbol nd = createFunction("nd", returnType, scope);
         addParam(nd, "value", SymTypeExpressionFactory.createTypeVariable(returnNd));
     }
