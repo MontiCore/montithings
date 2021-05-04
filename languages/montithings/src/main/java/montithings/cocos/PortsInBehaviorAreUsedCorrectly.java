@@ -11,6 +11,7 @@ import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
 import montithings._visitor.FindIncomingPorts;
+import montithings.util.MontiThingsError;
 
 import java.util.*;
 
@@ -35,38 +36,44 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
               }
             } else {
               //shouldn't happen if symbol table is built properly
-              Log.error("Coco2");
+              Log.error(String.format(MontiThingsError.BEHAVIOR_REFERENCES_INVALID_PORT.toString(),
+                behavior.getNameList().toString(), node.getSymbol().getName(), "invalid port"));
             }
           }
           if (!found) {
-            Log.error("Coco1");
+            Log.error(String.format(MontiThingsError.BEHAVIOR_USES_UNDECLARED_PORT.toString(),
+              behavior.getNameList().toString(), node.getSymbol().getName(), portSymbolInBehavior.getName()));
           }
         }
         Set<PortSymbol> setOfPorts = new HashSet<>();
         for (Optional<PortSymbol> portSymbol : behavior.getNamesSymbolList()) {
           if (portSymbol.isPresent()) {
             if (!incomingPorts.contains(portSymbol.get())) {
-              Log.error("Coco2");
+              Log.error(String.format(MontiThingsError.BEHAVIOR_REFERENCES_INVALID_PORT.toString(),
+                behavior.getNameList().toString(), node.getSymbol().getName(), portSymbol.get().getName()));
             }
             if (!nonPortSpecificBehaviorExists(node.getSymbol())) {
               unusedIncomingPorts.remove(portSymbol.get());
             }
             if (setOfPorts.contains(portSymbol.get())) {
-              Log.error("Port used twice in port specific behavior");
+              Log.error("Port " + portSymbol.get().getName() + " declared twice in port-specific behavior with" +
+                "ports " + behavior.getNameList());
             }
             setOfPorts.add(portSymbol.get());
           } else {
             //shouldn't happen if symbol table is built properly
-            Log.error("Coco2");
+            Log.error(String.format(MontiThingsError.BEHAVIOR_REFERENCES_INVALID_PORT.toString(),
+              behavior.getNameList().toString(), node.getSymbol().getName(), "invalid port"));
           }
         }
         for (Set<PortSymbol> portSymbolSet : setsOfPorts) {
           if (setOfPorts.containsAll(portSymbolSet)) {
             if (portSymbolSet.containsAll(setOfPorts)) {
-              Log.error("Coco4");
+              Log.error(String.format(MontiThingsError.MULTIPLE_BEHAVIORS_SAME_PORTS.toString(),
+                behavior.getNameList().toString(), node.getSymbol().getName()));
             } else {
-              //TODO: change to warning
-              Log.error("Coco5");
+              Log.warn(String.format(MontiThingsError.BEHAVIOR_PORTS_USED_ALREADY.toString(),
+                node.getSymbol().getName(), behavior.getNameList().toString()));
             }
           }
         }
@@ -74,8 +81,12 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
       }
       if (!nonPortSpecificBehaviorExists(node.getSymbol()) &&
               portSpecificBehaviorExists(node.getSymbol()) && !unusedIncomingPorts.isEmpty()) {
-        //TODO: change to warning
-        Log.error("Coco3");
+        List<String> unusedIncomingPortsNames = new ArrayList<>();
+        for (PortSymbol portSymbol : unusedIncomingPorts) {
+          unusedIncomingPortsNames.add(portSymbol.getName());
+        }
+        Log.warn(String.format(MontiThingsError.INCOMING_PORTS_NOT_USED.toString(),
+                unusedIncomingPortsNames.toString(), node.getSymbol().getName()));
       }
     }
   }
