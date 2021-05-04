@@ -466,7 +466,6 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
         ASTMCJavaBlockBuilder thenStatementBuilder = MontiThingsMill.mCJavaBlockBuilder();
         thenStatementBuilder.addMCBlockStatement(thenExpressionStatementBuilder.build());
-        //thenStatementBuilder.addMCBlockStatement(createLogStatement("index_msg_from_comp=" + index + " | targetDelay=" + delay));
 
         ASTIfStatementBuilder ifStatementBuilder = MontiThingsMill.ifStatementBuilder();
         ifStatementBuilder.setCondition(conditionBuilder.build());

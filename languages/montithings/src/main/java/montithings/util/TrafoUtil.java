@@ -45,7 +45,7 @@ public abstract class TrafoUtil {
                 .collect(Collectors.toList());
 
         Optional<ASTMCType> portType = sourcePorts.stream()
-                //TODO: code smell
+                // code smell!
                 .filter(p -> p.getPort(0).getName().equals(portName))
                 .map(ASTPortDeclarationTOP::getMCType).findFirst();
 
@@ -91,7 +91,6 @@ public abstract class TrafoUtil {
             }
         }
 
-        // TODO avoid returning null
         return null;
     }
 

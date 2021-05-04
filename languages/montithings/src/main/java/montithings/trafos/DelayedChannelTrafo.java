@@ -136,7 +136,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
             ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, qName);
             portType = TrafoUtil.getPortTypeByName(compSource, portSource.getPort());
         } catch (ClassNotFoundException e) {
-            //TODO
+            // portType will be null which is caught later on
         } catch (NoSuchElementException e) {
             // model was not found. it is probably a generic type. in this case search for the port within the interfaces
             if (TrafoUtil.isGeneric(comp, sourceTypeName)) {
@@ -245,7 +245,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
         ASTCallExpressionBuilder thenCallDelayExpressionBuilder = MontiThingsMill.callExpressionBuilder();
         thenCallDelayExpressionBuilder.setExpression(delayNameExpression);
         thenCallDelayExpressionBuilder.setArguments(delayArgsBulder.build());
-        thenCallDelayExpressionBuilder.setName("test"); // TODO <- what does the name mean?
+        thenCallDelayExpressionBuilder.setName("ABC"); // arbitrary value; unclear what this is about
 
         ASTExpressionStatementBuilder thenExpressionStatementBuilder = MontiThingsMill.expressionStatementBuilder();
         thenExpressionStatementBuilder.setExpression(thenCallDelayExpressionBuilder.build());

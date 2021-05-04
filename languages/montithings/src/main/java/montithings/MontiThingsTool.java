@@ -266,8 +266,9 @@ public class MontiThingsTool {
     addParam(storeNsInMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
     addParam(storeNsInMap, "ts", SymTypeExpressionFactory.createTypeConstant("long"));
 
-    // TODO: Allow method overloading
-    FunctionSymbol nondeterminismLong = createFunction("nd", SymTypeExpressionFactory.createTypeObject("long", scope), scope);
-    addParam(nondeterminismLong, "value", SymTypeExpressionFactory.createTypeConstant("long"));
+    TypeVarSymbol returnNd = MontiThingsMill.typeVarSymbolBuilder().setName("ND_ARG_TYPE").build();
+    FunctionSymbol nd = createFunction("nd", scope);
+    nd.setReturnType(SymTypeExpressionFactory.createTypeVariable(returnNd));
+    addParam(nd, "input", SymTypeExpressionFactory.createTypeVariable(returnNd));
   }
 }
