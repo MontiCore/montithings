@@ -15,21 +15,11 @@ ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResult
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
-<#if config.getRecordingMode().toString() == "ON">
-    if (montithings::library::hwcinterceptor::isRecording)
-    {
-      auto timeStartCalc = std::chrono::high_resolution_clock::now();
-      montithings::library::hwcinterceptor::setLastComputeTs(timeStartCalc.time_since_epoch().count());
-      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-      auto timeEndCalc = std::chrono::high_resolution_clock::now();
-      auto latency = timeEndCalc - timeStartCalc;
-      montithings::library::hwcinterceptor::storeCalculationLatency(latency.count());
-    } else {
-      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-    }
-<#else>
-    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-</#if>
+
+
+${tc.includeArgs("template.component.helper.RecorderComputationMeasurementStart", [comp, config])}
+${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+${tc.includeArgs("template.component.helper.RecorderComputationMeasurementEnd", [comp, config])}
 
 if (timeMode == TIMESYNC) {
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
