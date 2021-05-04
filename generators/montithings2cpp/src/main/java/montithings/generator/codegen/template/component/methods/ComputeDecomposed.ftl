@@ -15,7 +15,7 @@ ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 
 <#if config.getSplittingMode().toString() == "OFF">
     <#list comp.subComponents as subcomponent >
-            this->${subcomponent.getName()}.compute();
+        this->${subcomponent.getName()}.compute();
     </#list>
 </#if>
 

@@ -6,20 +6,14 @@ ${tc.signature("config", "portSymbol", "portTemeplateName", "existsHWC")}
 #include "Port.h"
 #include "Utils.h"
 
-<#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
-  #include ${"<dds/recorder/DDSRecorder.h>"}
-  #include "dds/recorder/MessageWithClockContainer.h"
-  #include "dds/recorder/VectorClock.h"
-</#if>
+${tc.includeArgs("template.util.ports.helper.DDSRecorderIncludes", [config, portSymbol])}
 
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
 class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
-<#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
 private:
-  std::unique_ptr${"<DDSRecorder>"} ddsRecorder;
-  int recorderMessageId = 1;
-</#if>
+
+  ${tc.includeArgs("template.util.ports.helper.DDSRecorderDeclarations", [config, portSymbol])}
   std::string instanceName;
 
   ${defineHookPoint("<CppBlock>?portTemplate:body")}
@@ -48,24 +42,7 @@ private:
     Port${"<T>"}::setNextValue(nextVal);
   }
 
-  <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
-    void recordMessage(T value) {
-
-      DDSMessage::Message message;
-      message.id = recorderMessageId;
-      MessageWithClockContainer ${"<T>"} container;
-      container.message = value;
-
-      VectorClock::updateVectorClock(VectorClock::getVectorClock(), instanceName);
-      container.vectorClock = VectorClock::getVectorClock();
-      auto dataString = dataToJson(container.message);
-      message.content = dataString.c_str();
-      ddsRecorder->recordMessage(message, (instanceName + ".${portSymbol.getName()}/out").c_str(),
-        VectorClock::getVectorClock(), true);
-
-      recorderMessageId++;
-    }
-  </#if>
+  ${tc.includeArgs("template.util.ports.methods.DDSRecorderRecord", [config, portSymbol])}
 
   <#if config.getMessageBroker().toString() == "DDS">
     ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
@@ -73,14 +50,8 @@ private:
     ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)
   </#if>
   {
-    <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
-      ddsRecorder = std::make_unique${"<DDSRecorder>"}();
-      ddsRecorder->setInstanceName(instanceName);
-      ddsRecorder->setTopicName(instanceName + ".${portSymbol.getName()}/out");
-      ddsRecorder->setPortName("${portSymbol.getName()}");
-      ddsRecorder->initParticipant(argc, argv);
-      ddsRecorder->init();
-    </#if>
+    ${tc.includeArgs("template.util.ports.helper.DDSRecorderInit", [config, portSymbol])}
+
     ${defineHookPoint("<CppBlock>?portTemplate:init")}
   }
 };

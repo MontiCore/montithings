@@ -8,7 +8,6 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::initialize(){
 ${tc.includeArgs("template.component.helper.DDSRestoreRecordedState", [comp, config])}
 ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, config])}
 
-
 <#list comp.incomingPorts as port >
   ${Identifier.getInterfaceName()}.getPort${port.getName()?cap_first} ()->attach (this);
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
