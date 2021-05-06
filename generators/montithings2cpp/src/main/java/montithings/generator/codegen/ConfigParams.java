@@ -94,8 +94,30 @@ public class ConfigParams {
     }
   }
 
+  public enum LogTracing {
+    OFF("OFF"),
+    ON("ON");
+
+    String value;
+
+    LogTracing(String value) {
+      this.value = value;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
   /** property for message brokers */
   protected MessageBroker messageBroker = MessageBroker.OFF;
+
+  /** property for log tracing */
+  protected LogTracing logTracing = LogTracing.OFF;
 
   /** property for target platform */
   protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
@@ -296,6 +318,14 @@ public class ConfigParams {
 
   public void setSplittingMode(SplittingMode splittingMode) {
     this.splittingMode = splittingMode;
+  }
+
+  public LogTracing getLogTracing() {
+    return logTracing;
+  }
+
+  public void setLogTracing(LogTracing logTracing) {
+    this.logTracing = logTracing;
   }
 
   public Multimap<ComponentTypeSymbol, String> getTypeArguments() {
