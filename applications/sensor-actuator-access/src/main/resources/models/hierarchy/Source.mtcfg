@@ -1,0 +1,7 @@
+package hierarchy;
+
+config Source for GENERIC {
+  sensor {
+    mqtt = "example-sensor-topic";
+  }
+}

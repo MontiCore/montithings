@@ -25,3 +25,6 @@ echo "Starting components..."
   ./${pair.getKey().fullName} --name ${pair.getValue()} --managementPort ${config.getComponentPortMap().getManagementPort(pair.getValue())} --dataPort ${config.getComponentPortMap().getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
   </#if>
 </#list>
+
+# Run Python Ports
+find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "$0" > "$0.log" 2>&1 &' '{}' \;
