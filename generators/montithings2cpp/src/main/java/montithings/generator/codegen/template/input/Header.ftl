@@ -12,6 +12,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<set>"}
 #include ${"<utility>"}
 #include ${"<deque>"}
+#include ${"<cereal/access.hpp>"}
 #include "tl/optional.hpp"
 ${Utils.printIncludes(comp,config)}
 
@@ -31,6 +32,7 @@ class ${className}
 {
 protected:
 ${tc.includeArgs("template.input.declarations.PortVariables", [comp, config, existsHWC])}
+${tc.includeArgs("template.input.methods.Serialize", [comp, config, existsHWC])}
 
 public:
 ${tc.includeArgs("template.input.declarations.Constructor", [comp, config, existsHWC])}

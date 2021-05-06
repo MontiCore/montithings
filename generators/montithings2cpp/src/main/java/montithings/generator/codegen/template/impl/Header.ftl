@@ -13,7 +13,7 @@ ${tc.includeArgs("template.interface.hooks.Include", [comp])}
 #include ${"<stdexcept>"}
 #include "easyloggingpp/easylogging++.h"
 ${Utils.printIncludes(comp,config)}
-#include "MTLibrary.h"
+#include "mtlibrary/MTLibrary.h"
 
 using namespace montithings::library;
 
