@@ -12,6 +12,9 @@ project ("MontiThings Application")
 <#if (config.getSplittingMode().toString() != "OFF") && (config.getMessageBroker().toString() != "OFF")>
   set(EXCLUDE_COMM_MANAGER 1)
 </#if>
+<#if (config.getLogTracing().toString() == "ON")>
+  set(ENABLE_LOG_TRACING 1)
+</#if>
 add_subdirectory ("montithings-RTE")
 <#list subdirectories as subdir >
   add_subdirectory ("${subdir}")

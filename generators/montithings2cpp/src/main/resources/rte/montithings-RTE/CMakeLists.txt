@@ -55,6 +55,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 file(GLOB_RECURSE RTE_SOURCES "./*.cpp" "./*.h")
 include_directories(".")
 
+# swap out log() method from MTLibrary if log tracing is enabled
+list(FILTER RTE_SOURCES EXCLUDE REGEX "Log.cpp")
+if (ENABLE_LOG_TRACING)
+    list(APPEND RTE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/logtracing/mtlibrary/Log.cpp")
+else ()
+    list(APPEND RTE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/mtlibrary/Log.cpp")
+endif ()
+
 # Exclude DDS files
 if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
