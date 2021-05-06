@@ -11,3 +11,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   ${tc.includeArgs("template.impl.methods.ComputeEveryBlock", [everyBlock, comp, config, existsHWC])}
 </#list>
+
+<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+  ${tc.includeArgs("template.impl.methods.ComputePortSpecificBehavior", [behavior, comp, config, existsHWC])}
+</#list>

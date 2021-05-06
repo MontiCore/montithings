@@ -48,6 +48,11 @@ ${className}(std::string instanceName, ${compname}${generics}& component, ${comp
   <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
   ${compname}Result${generics} compute${everyBlockName}(${compname}Input${generics} input);
 </#list>
+
+<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+  <#assign behaviorName = ComponentHelper.getPortSpecificBehaviorName(comp, behavior)>
+  ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input);
+</#list>
 };
 
 <#if Utils.hasTypeParameter(comp)>
