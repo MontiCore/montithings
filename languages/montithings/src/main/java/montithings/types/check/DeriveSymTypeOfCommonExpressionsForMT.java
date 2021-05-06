@@ -11,9 +11,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static de.monticore.ocl.types.check.OCLTypeCheck.*;
+import static de.monticore.ocl.types.check.OCLTypeCheck.compatible;
+import static de.monticore.ocl.types.check.OCLTypeCheck.isBoolean;
 
-public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommonExpressionsWithSIUnitTypes {
+public class DeriveSymTypeOfCommonExpressionsForMT
+  extends DeriveSymTypeOfCommonExpressionsWithSIUnitTypes {
 
   /**
    * All methods in this class are alomst identical to the methods in
@@ -24,19 +26,22 @@ public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommon
    */
 
   @Override
-  protected Optional<SymTypeExpression> calculateConditionalExpressionType(ASTConditionalExpression expr,
-      SymTypeExpression conditionResult,
-      SymTypeExpression trueResult,
-      SymTypeExpression falseResult) {
+  protected Optional<SymTypeExpression> calculateConditionalExpressionType(
+    ASTConditionalExpression expr,
+    SymTypeExpression conditionResult,
+    SymTypeExpression trueResult,
+    SymTypeExpression falseResult) {
     Optional<SymTypeExpression> wholeResult = Optional.empty();
     //condition has to be boolean
     if (isBoolean(conditionResult)) {
       //check if "then" and "else" are either from the same type or are in sub-supertype relation
       if (compatible(trueResult, falseResult)) {
         wholeResult = Optional.of(trueResult);
-      } else if (compatible(falseResult, trueResult)) {
+      }
+      else if (compatible(falseResult, trueResult)) {
         wholeResult = Optional.of(falseResult);
-      } else {
+      }
+      else {
         // first argument can be null since it should not be relevant to the type calculation
         wholeResult = getBinaryNumericPromotion(trueResult, falseResult);
       }
@@ -60,7 +65,8 @@ public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommon
   }
 
   @Override
-  protected Optional<SymTypeExpression> calculateGreaterEqualExpression(ASTGreaterEqualExpression expr) {
+  protected Optional<SymTypeExpression> calculateGreaterEqualExpression(
+    ASTGreaterEqualExpression expr) {
     return calculateTypeCompare(expr, expr.getRight(), expr.getLeft());
   }
 
@@ -70,47 +76,55 @@ public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommon
   }
 
   @Override
-  protected Optional<SymTypeExpression> calculateGreaterThanExpression(ASTGreaterThanExpression expr) {
+  protected Optional<SymTypeExpression> calculateGreaterThanExpression(
+    ASTGreaterThanExpression expr) {
     return calculateTypeCompare(expr, expr.getRight(), expr.getLeft());
   }
 
-  private Optional<SymTypeExpression> calculateTypeCompare(ASTInfixExpression expr, ASTExpression right, ASTExpression left) {
+  private Optional<SymTypeExpression> calculateTypeCompare(ASTInfixExpression expr,
+    ASTExpression right, ASTExpression left) {
     boolean b = DeriveSymTypeOfMontiThings.isCondition();
     DeriveSymTypeOfMontiThings.setCondition(false);
     SymTypeExpression leftResult = acceptThisAndReturnSymTypeExpressionOrLogError(left, "0xA0241");
-    SymTypeExpression rightResult = acceptThisAndReturnSymTypeExpressionOrLogError(right, "0xA0242");
+    SymTypeExpression rightResult = acceptThisAndReturnSymTypeExpressionOrLogError(right,
+      "0xA0242");
     DeriveSymTypeOfMontiThings.setCondition(b);
     return calculateTypeCompare(expr, rightResult, leftResult);
   }
 
-  private Optional<SymTypeExpression> calculateTypeLogical(ASTInfixExpression expr, ASTExpression right, ASTExpression left) {
+  private Optional<SymTypeExpression> calculateTypeLogical(ASTInfixExpression expr,
+    ASTExpression right, ASTExpression left) {
     boolean b = DeriveSymTypeOfMontiThings.isCondition();
     DeriveSymTypeOfMontiThings.setCondition(false);
     SymTypeExpression leftResult = acceptThisAndReturnSymTypeExpressionOrLogError(left, "0xA0244");
-    SymTypeExpression rightResult = acceptThisAndReturnSymTypeExpressionOrLogError(right, "0xA0245");
+    SymTypeExpression rightResult = acceptThisAndReturnSymTypeExpressionOrLogError(right,
+      "0xA0245");
     DeriveSymTypeOfMontiThings.setCondition(b);
     return calculateTypeLogical(expr, rightResult, leftResult);
   }
 
   @Override
-  protected Optional<SymTypeExpression> calculateTypeLogical(ASTInfixExpression expr, SymTypeExpression rightResult, SymTypeExpression leftResult) {
+  protected Optional<SymTypeExpression> calculateTypeLogical(ASTInfixExpression expr,
+    SymTypeExpression rightResult, SymTypeExpression leftResult) {
     if (isSIUnitType(leftResult) && isSIUnitType(rightResult)) {
       return Optional.of(SymTypeExpressionFactory.createTypeConstant("boolean"));
-    } else if (isNumericWithSIUnitType(leftResult) && isNumericWithSIUnitType(rightResult)) {
+    }
+    else if (isNumericWithSIUnitType(leftResult) && isNumericWithSIUnitType(rightResult)) {
       return Optional.of(SymTypeExpressionFactory.createTypeConstant("boolean"));
     }
     return calculateTypeLogicalWithoutSIUnits(expr, leftResult, rightResult);
   }
 
-  protected Optional<SymTypeExpression> calculateTypeLogicalWithoutSIUnits(ASTInfixExpression expr, SymTypeExpression rightResult, SymTypeExpression leftResult) {
+  protected Optional<SymTypeExpression> calculateTypeLogicalWithoutSIUnits(ASTInfixExpression expr,
+    SymTypeExpression rightResult, SymTypeExpression leftResult) {
     //Option one: they are both numeric types
     if (isNumericType(leftResult) && isNumericType(rightResult)
-        || isBoolean(leftResult) && isBoolean(rightResult)) {
+      || isBoolean(leftResult) && isBoolean(rightResult)) {
       return Optional.of(SymTypeExpressionFactory.createTypeConstant("boolean"));
     }
     //Option two: none of them is a primitive type and they are either the same type or in a super/sub type relation
     if (!leftResult.isTypeConstant() && !rightResult.isTypeConstant() &&
-        (compatible(leftResult, rightResult) || compatible(rightResult, leftResult))
+      (compatible(leftResult, rightResult) || compatible(rightResult, leftResult))
     ) {
       return Optional.of(SymTypeExpressionFactory.createTypeConstant("boolean"));
     }
@@ -130,11 +144,12 @@ public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommon
     if (typeCheckResult.isPresentCurrentResult()) {
       innerResult = typeCheckResult.getCurrentResult();
       //resolve methods with name of the inner expression
-      List<FunctionSymbol> methodlist = innerResult.getMethodList(expr.getName(), typeCheckResult.isType());
+      List<FunctionSymbol> methodlist = innerResult
+        .getMethodList(expr.getName(), typeCheckResult.isType());
       //count how many methods can be found with the correct arguments and return type
-      List<FunctionSymbol> fittingMethods = getFittingMethods(methodlist,expr);
+      List<FunctionSymbol> fittingMethods = getFittingMethods(methodlist, expr);
       //if the last result is static then filter for static methods
-      if(typeCheckResult.isType()){
+      if (typeCheckResult.isType()) {
         fittingMethods = filterStaticMethodSymbols(fittingMethods);
       }
       //there can only be one method with the correct arguments and return type
@@ -150,28 +165,34 @@ public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommon
         SymTypeExpression result = fittingMethods.get(0).getReturnType();
         typeCheckResult.setMethod();
         typeCheckResult.setCurrentResult(result);
-      } else {
+      }
+      else {
         typeCheckResult.reset();
         logError("0xA0239", expr.get_SourcePositionStart());
       }
-    } else {
-      Collection<FunctionSymbol> methodcollection = getScope(expr.getEnclosingScope()).resolveFunctionMany(expr.getName());
+    }
+    else {
+      Collection<FunctionSymbol> methodcollection = getScope(expr.getEnclosingScope())
+        .resolveFunctionMany(expr.getName());
       List<FunctionSymbol> methodlist = new ArrayList<>(methodcollection);
       //count how many methods can be found with the correct arguments and return type
-      List<FunctionSymbol> fittingMethods = getFittingMethods(methodlist,expr);
+      List<FunctionSymbol> fittingMethods = getFittingMethods(methodlist, expr);
       //there can only be one method with the correct arguments and return type
       if (fittingMethods.size() == 1) {
-        Optional<SymTypeExpression> wholeResult = Optional.of(fittingMethods.get(0).getReturnType());
+        Optional<SymTypeExpression> wholeResult = Optional
+          .of(fittingMethods.get(0).getReturnType());
         typeCheckResult.setMethod();
         typeCheckResult.setCurrentResult(wholeResult.get());
-      } else {
+      }
+      else {
         typeCheckResult.reset();
         logError("0xA0240", expr.get_SourcePositionStart());
       }
     }
   }
 
-  private List<FunctionSymbol> getFittingMethods(List<FunctionSymbol> methodlist, ASTCallExpression expr){
+  private List<FunctionSymbol> getFittingMethods(List<FunctionSymbol> methodlist,
+    ASTCallExpression expr) {
     List<FunctionSymbol> fittingMethods = new ArrayList<>();
     for (FunctionSymbol method : methodlist) {
       //for every method found check if the arguments are correct
@@ -180,8 +201,12 @@ public class DeriveSymTypeOfCommonExpressionsForMT extends DeriveSymTypeOfCommon
         for (int i = 0; i < method.getParameterList().size(); i++) {
           expr.getArguments().getExpression(i).accept(getRealThis());
           //test if every single argument is correct
-          if (!method.getParameterList().get(i).getType().deepEquals(typeCheckResult.getCurrentResult()) &&
-              !compatible(method.getParameterList().get(i).getType(), typeCheckResult.getCurrentResult())) {
+          if (!method.getParameterList().get(i).getType()
+            .deepEquals(typeCheckResult.getCurrentResult()) &&
+            !compatible(method.getParameterList().get(i).getType(),
+              typeCheckResult.getCurrentResult()) &&
+            !method.getParameterList().get(i).getType().isTypeVariable()
+          ) {
             success = false;
           }
         }

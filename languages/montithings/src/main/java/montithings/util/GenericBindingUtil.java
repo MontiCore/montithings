@@ -7,8 +7,6 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.siunits._ast.ASTSIUnit;
-import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrettyPrinter;
 import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
@@ -34,20 +32,23 @@ import java.util.Optional;
  */
 public class GenericBindingUtil {
 
-  protected GenericBindingUtil(){
+  protected GenericBindingUtil() {
 
   }
 
   /**
    * Returns mapping between the generic name and the interface component.
+   *
    * @param node component with generic parameters
    * @return mapping of generic type to its upper bound.
    * Component xy<T extends InterfaceComponent> results in mapping T->InterfaceComponent.
    */
-  public static Map<String, String> getGenericBindings(ASTComponentType node){
-    Map<String,String> genericToInterface = new HashMap<>();
-    if (node.getHead() instanceof ASTGenericComponentHead && ((ASTGenericComponentHead)node.getHead()).getArcTypeParameterList().size()>0) {
-      List<ASTArcTypeParameter> generics = ((ASTGenericComponentHead)node.getHead()).getArcTypeParameterList();
+  public static Map<String, String> getGenericBindings(ASTComponentType node) {
+    Map<String, String> genericToInterface = new HashMap<>();
+    if (node.getHead() instanceof ASTGenericComponentHead
+      && ((ASTGenericComponentHead) node.getHead()).getArcTypeParameterList().size() > 0) {
+      List<ASTArcTypeParameter> generics = ((ASTGenericComponentHead) node.getHead())
+        .getArcTypeParameterList();
       for (ASTArcTypeParameter generic : generics) {
         genericToInterface.putAll(linkGenericWithInterface(generic));
       }
@@ -57,37 +58,42 @@ public class GenericBindingUtil {
 
   /**
    * Converts generic with upper bound list to a mapping generic name -> upper bounds.
+   *
    * @param generic name and upper bounds that will be returned as mapping
    * @return mapping between generic and its upper bounds if upper bounds are present, otherwise an empty mapping
    */
   protected static Map<String, String> linkGenericWithInterface(ASTArcTypeParameter generic) {
-    Map<String,String> genericToInterface = new HashMap<>();
+    Map<String, String> genericToInterface = new HashMap<>();
     String typeName = generic.getName();
     for (ASTMCType type : generic.getUpperBoundList()) {
-        genericToInterface.put(typeName, printSimpleType(type));
+      genericToInterface.put(typeName, printSimpleType(type));
     }
     return genericToInterface;
   }
 
   /**
    * Get component by includes and name.
+   *
    * @param compWithIncludes component containing include statements that are used for name resolve.
-   * @param componentToGet component name.
+   * @param componentToGet   component name.
    * @return component symbol with given simple name if found, else null.
    */
-  public static ComponentTypeSymbol getComponentFromString(MontiThingsArtifactScope compWithIncludes, String componentToGet){
+  public static ComponentTypeSymbol getComponentFromString(
+    MontiThingsArtifactScope compWithIncludes, String componentToGet) {
     Optional<ComponentTypeSymbol> componentTypeSymbol;
     MontiThingsScope globalScope = getGlobalScope(compWithIncludes);
     if (globalScope == null)
       return null;
-    componentTypeSymbol = globalScope.resolveComponentType(compWithIncludes.getPackageName()+ "." + componentToGet);
+    componentTypeSymbol = globalScope
+      .resolveComponentType(compWithIncludes.getPackageName() + "." + componentToGet);
     if (componentTypeSymbol.isPresent())
       return componentTypeSymbol.get();
     for (ImportStatement i : compWithIncludes.getImportsList()) {
-      if(i.isStar()) {
-        componentTypeSymbol = globalScope.resolveComponentType(i.getStatement() + "." + componentToGet);
+      if (i.isStar()) {
+        componentTypeSymbol = globalScope
+          .resolveComponentType(i.getStatement() + "." + componentToGet);
       }
-      else if(i.getStatement().endsWith("."+componentToGet)){
+      else if (i.getStatement().endsWith("." + componentToGet)) {
         componentTypeSymbol = globalScope.resolveComponentType(i.getStatement());
       }
       else {
@@ -107,18 +113,21 @@ public class GenericBindingUtil {
    * @param interfaceComp interface component.
    * @return if all ports match.
    */
-  public static boolean canImplementInterface(ComponentTypeSymbol implementComp, ComponentTypeSymbol interfaceComp) {
-    return portsMatch(implementComp,interfaceComp) && portsMatch(interfaceComp,implementComp);
+  public static boolean canImplementInterface(ComponentTypeSymbol implementComp,
+    ComponentTypeSymbol interfaceComp) {
+    return portsMatch(implementComp, interfaceComp) && portsMatch(interfaceComp, implementComp);
   }
 
   /**
    * Checks if each port of componentSymbol1 is similar to any port of componentSymbol2.
    * Note that the check is unidirectional, so if all ports should match between both component,
    * checkIfPortsMatch has to be called a second time with swapped arguments.
+   *
    * @param componentSymbol1 first component containing ports, that all need to match any port in componentSymbol2 by name.
    * @param componentSymbol2 second component containing ports, that are used for matching by name.
    */
-  public static boolean portsMatch(ComponentTypeSymbol componentSymbol1, ComponentTypeSymbol componentSymbol2) {
+  public static boolean portsMatch(ComponentTypeSymbol componentSymbol1,
+    ComponentTypeSymbol componentSymbol2) {
     List<PortSymbol> interfacePortSymbols = componentSymbol1.getAllPorts();
     for (PortSymbol s : interfacePortSymbols) {
       Optional<PortSymbol> similarS = componentSymbol2.getPort(s.getName());
@@ -134,7 +143,7 @@ public class GenericBindingUtil {
        * fully qualified name
        */
       //else if (!s.getType().print().equals(similarS.get().getType().print())){
-      else if (!s.getTypeInfo().getName().equals(similarS.get().getTypeInfo().getName())){
+      else if (!s.getTypeInfo().getName().equals(similarS.get().getTypeInfo().getName())) {
         return false;
       }
     }
@@ -143,12 +152,13 @@ public class GenericBindingUtil {
 
   /**
    * Get enclosing GlobalScope.
+   *
    * @param s subscope of a GlobalScope.
    * @return GlobalScope if present, or else null.
    */
   protected static MontiThingsGlobalScope getGlobalScope(MontiThingsScope s) {
-    while(!(s instanceof MontiThingsGlobalScope)){
-      if(s.getEnclosingScope()==null){
+    while (!(s instanceof MontiThingsGlobalScope)) {
+      if (s.getEnclosingScope() == null) {
         return null;
       }
       s = (MontiThingsScope) s.getEnclosingScope();
@@ -158,17 +168,18 @@ public class GenericBindingUtil {
 
   /**
    * Get enclosing MontiArcArtifactScope.
+   *
    * @param s subscope of a MontiArcArtifactScope.
    * @return MontiArcArtifactScope if present, or else null.
    */
-  public static MontiThingsArtifactScope getEnclosingMontiArcArtifactScope(MontiThingsScope s){
-    while(!(s instanceof MontiThingsArtifactScope)){
-      if(s.getEnclosingScope()==null){
+  public static MontiThingsArtifactScope getEnclosingMontiArcArtifactScope(MontiThingsScope s) {
+    while (!(s instanceof MontiThingsArtifactScope)) {
+      if (s.getEnclosingScope() == null) {
         return null;
       }
       s = (MontiThingsScope) s.getEnclosingScope();
     }
-    return (MontiThingsArtifactScope)s;
+    return (MontiThingsArtifactScope) s;
   }
 
   /**
@@ -178,25 +189,26 @@ public class GenericBindingUtil {
    * @param name SubComponent instance, that identifies the subComponent by Name.
    * @return The Type of the AST subComponent that uses given instance name if present. Otherwise null.
    */
-  public static String getSubComponentType(ASTComponentType comp, ComponentInstanceSymbol name){
+  public static String getSubComponentType(ASTComponentType comp, ComponentInstanceSymbol name) {
     for (ASTComponentInstantiation subComponent : comp.getSubComponentInstantiations()) {
-        if(subComponent.getInstancesNames().stream().anyMatch(a ->name.getName().equals(a))) {
-          return printSimpleType(subComponent.getMCType());
-        }
+      if (subComponent.getInstancesNames().stream().anyMatch(a -> name.getName().equals(a))) {
+        return printSimpleType(subComponent.getMCType());
+      }
     }
     return null;
   }
 
-  public static String printSimpleType(ASTMCType type){
-    if (type instanceof ASTMCGenericType){
-      return ((ASTMCGenericType)type).printWithoutTypeArguments();
+  public static String printSimpleType(ASTMCType type) {
+    if (type instanceof ASTMCGenericType) {
+      return ((ASTMCGenericType) type).printWithoutTypeArguments();
     }
-    else if (type instanceof ASTSIUnitType){
+    else if (type instanceof ASTSIUnitType) {
       // TODO go with a more generic way, dont know if this holds true for all situations
-      return ((ASTSIUnitType) type).getSIUnit().getSIUnitPrimitive().getSIUnitWithPrefix().getName();
+      return ((ASTSIUnitType) type).getSIUnit().getSIUnitPrimitive().getSIUnitWithPrefix()
+        .getName();
       //return type.printType(new SIUnitTypes4ComputingPrettyPrinter(new IndentPrinter()));
     }
-    else{
+    else {
       return type.printType(new MCBasicTypesPrettyPrinter(new IndentPrinter()));
     }
   }

@@ -26,7 +26,6 @@ public class MontiThingsParser extends MontiThingsParserTOP {
    * The parsed file content is returned as an abstract syntax tree with an {@code
    * ASTMACompilationUnit} as its root wrapped by an {@code Optional}. An empty {@code Optional} is
    * returned if a parse error is raised.
-   *
    * <p> An exception of type {@code IOException} is thrown if an I/O exception of some sort
    * occurs. Error {@code COMPONENT_AND_FILE_NAME_DIFFER} is raised if component name and file root
    * differ. Error {@code COMPONENT_AND_FILE_PACKAGE_DIFFER} is raised if component package and file
@@ -38,29 +37,31 @@ public class MontiThingsParser extends MontiThingsParserTOP {
    */
   @Override
   public Optional<ASTMACompilationUnit> parseMACompilationUnit(@NotNull String relativeFilePath)
-      throws IOException {
+    throws IOException {
     Preconditions.checkArgument(relativeFilePath != null);
     Optional<ASTMACompilationUnit> optAst = super.parseMACompilationUnit(relativeFilePath);
     if (optAst.isPresent()) {
       String fileRoot = Files.getNameWithoutExtension(relativeFilePath);
       String modelName = optAst.get().getComponentType().getName();
       String packageOfFile;
-      if(relativeFilePath.lastIndexOf(File.separator)!=-1) {
+      if (relativeFilePath.lastIndexOf(File.separator) != -1) {
         packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath));
       }
       else {
-        packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath, "/"),"/");
+        packageOfFile = Names
+          .getPackageFromPath(Names.getPathFromFilename(relativeFilePath, "/"), "/");
       }
       String packageOfModel = Names.getQualifiedName(optAst.get().getPackage().getPartsList());
       if (!modelName.equals(fileRoot)) {
         Log.error(String
-            .format(MontiArcError.COMPONENT_AND_FILE_NAME_DIFFER.toString(), modelName, fileRoot));
+          .format(MontiArcError.COMPONENT_AND_FILE_NAME_DIFFER.toString(), modelName, fileRoot));
         setError(true);
       }
       if (!packageOfFile.endsWith(packageOfModel)) {
         Log.error(String
-            .format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(), packageOfModel, modelName,
-                packageOfFile));
+          .format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(), packageOfModel,
+            modelName,
+            packageOfFile));
         setError(true);
       }
     }
