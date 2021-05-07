@@ -4,10 +4,14 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 
 <#assign name = port.getName()?cap_first>
 <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+<#assign typeWrapped = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
 <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
 
 tl::optional<${type}> get${name}() const;
 void set${name}(tl::optional<${type}>);
+<#if config.getLogTracing().toString() == "ON">
+  tl::optional<${typeWrapped}> get${name}Wrapped() const;
+</#if>
 
 <#if cdeImportStatementOpt.isPresent()>
   <#assign cdType = cdeImportStatementOpt.get().getImportClass().toString()>

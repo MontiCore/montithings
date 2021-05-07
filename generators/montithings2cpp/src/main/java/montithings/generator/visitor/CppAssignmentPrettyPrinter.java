@@ -32,12 +32,17 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
   // catch condition of a postcondition
   protected boolean suppressPostconditionCheck = false;
 
-  public CppAssignmentPrettyPrinter(IndentPrinter printer, boolean suppressPostconditionCheck) {
+  // When log tracing is enabled the exchanged messages are wrapped into a Pair type which holds the corresponding ID
+  // Therefore, the argument of setNextValue() has to be adapted accordingly
+  protected boolean isLogTracingEnabled = false;
+
+  public CppAssignmentPrettyPrinter(IndentPrinter printer, boolean isLogTracingEnabled, boolean suppressPostconditionCheck) {
     super(printer);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
       new DeriveSymTypeOfMontiThingsCombine());
     this.realThis = this;
     this.suppressPostconditionCheck = suppressPostconditionCheck;
+    this.isLogTracingEnabled = isLogTracingEnabled;
   }
 
   @Override public void handle(ASTIncSuffixExpression node) {
@@ -198,7 +203,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
             + ", " + Identifier.getResultName() + ", state, state__at__pre);");
         getPrinter().print(
           "interface.getPort" + portname + "()->setNextValue(" + Identifier.getResultName() +
-            ".get" + portname + "());");
+            ".get" + portname + (isLogTracingEnabled ? "Wrapped" : "" ) + "());");
 
       }
       getPrinter().print("}");

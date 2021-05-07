@@ -17,16 +17,16 @@ public class CppPrettyPrinter {
   }
 
   public static MontiThingsPrettyPrinterDelegator getPrinter() {
-    return getPrinter(false);
+    return getPrinter(false, false);
   }
 
-  public static MontiThingsPrettyPrinterDelegator getPrinter(boolean suppressPostConditionCheck) {
+  public static MontiThingsPrettyPrinterDelegator getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck) {
     MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator();
     printer.setExpressionsBasisVisitor(new CppExpressionPrettyPrinter(printer.getPrinter()));
     printer
       .setCommonExpressionsVisitor(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
     printer.setAssignmentExpressionsVisitor(
-      new CppAssignmentPrettyPrinter(printer.getPrinter(), suppressPostConditionCheck));
+      new CppAssignmentPrettyPrinter(printer.getPrinter(), isLogTracingEnabled, suppressPostConditionCheck));
     printer.setOCLExpressionsVisitor(new CppOCLExpressionsPrettyPrinter(printer.getPrinter()));
     printer
       .setOptionalOperatorsVisitor(new CppOptionalOperatorsPrettyPrinter(printer.getPrinter()));

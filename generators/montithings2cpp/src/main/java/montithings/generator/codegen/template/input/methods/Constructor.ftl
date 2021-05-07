@@ -5,7 +5,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
 <#list comp.getAllIncomingPorts() as port>
-  tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
+  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+  <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
+  tl::optional<${type}> ${port.getName()}
   <#sep>,</#sep>
 </#list>){
 <#if comp.isPresentParentComponent()>

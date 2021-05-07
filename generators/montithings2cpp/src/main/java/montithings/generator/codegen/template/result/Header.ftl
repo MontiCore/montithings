@@ -11,6 +11,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<list>"}
 #include ${"<set>"}
 #include ${"<deque>"}
+
+${tc.includeArgs("template.logtracing.hooks.Include", [config, comp])}
+
 ${Utils.printIncludes(comp, config)}
 
 ${Utils.printNamespaceStart(comp)}
