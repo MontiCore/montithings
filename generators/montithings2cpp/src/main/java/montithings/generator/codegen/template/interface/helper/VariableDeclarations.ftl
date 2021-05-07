@@ -4,6 +4,8 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 <#list comp.getPorts() as port>
   <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
+
   <#assign name = port.getName()>
   InOutPort<${type}>* ${name} = new InOutPort<${type}>();
   double ${name}ConversionFactor = 1;
