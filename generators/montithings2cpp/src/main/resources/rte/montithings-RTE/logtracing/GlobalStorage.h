@@ -10,15 +10,16 @@
 
 #include "sole/sole.hpp"
 
-#include "Collector.h"
+#include "LogTracer.h"
+#include "data/LogEntry.h"
 
 namespace montithings {
-namespace logtracer {
-namespace utils {
-    template<typename T>
-    std::pair<sole::uuid, T> piggypackId(T value){
-        return std::make_pair(montithings::logtracer::collector::currOutputLogsId, value);
-    }
-}
-}
+    // forward declaring
+    class LogTracer;
+
+    extern std::vector<LogTracer*> subscribers;
+
+    void subscribe(LogTracer* logTracer);
+    void handleLogEntry(const std::string &message);
+
 }

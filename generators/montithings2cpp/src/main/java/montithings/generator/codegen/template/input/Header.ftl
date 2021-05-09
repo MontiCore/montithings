@@ -13,6 +13,8 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<utility>"}
 #include ${"<deque>"}
 #include ${"<cereal/access.hpp>"}
+#include ${"<cereal/types/string.hpp>"}
+
 #include "tl/optional.hpp"
 ${Utils.printIncludes(comp,config)}
 

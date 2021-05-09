@@ -4,10 +4,8 @@
 #pragma once
 #include "string"
 
-namespace montithings
-{
-namespace library
-{
+namespace montithings {
+namespace library {
 
 void
 delay (int milliseconds);

@@ -8,10 +8,10 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
 
 tl::optional<${type}> get${name}() const;
+${tc.includeArgs("template.logtracing.hooks.GetPortWrappedDeclaration", [comp, config, port])}
+
 void set${name}(tl::optional<${type}>);
-<#if config.getLogTracing().toString() == "ON">
-  tl::optional<${typeWrapped}> get${name}Wrapped() const;
-</#if>
+
 
 <#if cdeImportStatementOpt.isPresent()>
   <#assign cdType = cdeImportStatementOpt.get().getImportClass().toString()>

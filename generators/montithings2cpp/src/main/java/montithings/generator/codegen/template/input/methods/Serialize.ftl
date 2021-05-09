@@ -8,10 +8,17 @@ friend class cereal::access;
 template<class Archive>
 void serialize(Archive & archive)
 {
-archive(
-    <#list comp.getAllIncomingPorts() as port>
-      ${port.getName()}
-      <#sep>,</#sep>
-    </#list>
-);
+<#if comp.getAllIncomingPorts()?has_content>
+    archive(
+        <#list comp.getAllIncomingPorts() as port>
+          ${port.getName()}
+
+          <#if config.getLogTracing().toString() == "ON">
+            ->second.value()
+          </#if>
+
+          <#sep>,</#sep>
+        </#list>
+    );
+</#if>
 }

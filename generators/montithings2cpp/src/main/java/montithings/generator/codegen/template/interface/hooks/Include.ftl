@@ -2,6 +2,6 @@
 ${tc.signature("comp")}
 <#include "/template/interface/helper/GeneralPreamble.ftl">
 
-${tc.includeArgs("template.logtracing.hooks.Include", [config, comp])}
+${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
 
 #include "${compname}Interface.h"

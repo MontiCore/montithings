@@ -12,7 +12,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<set>"}
 #include ${"<deque>"}
 
-${tc.includeArgs("template.logtracing.hooks.Include", [config, comp])}
+${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
 
 ${Utils.printIncludes(comp, config)}
 

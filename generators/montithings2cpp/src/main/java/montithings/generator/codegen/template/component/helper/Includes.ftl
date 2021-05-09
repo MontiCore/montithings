@@ -29,7 +29,7 @@ ${Utils.printIncludes(comp, config)}
 ${tc.includeArgs("template.prepostconditions.hooks.Include", [comp])}
 ${tc.includeArgs("template.interface.hooks.Include", [comp])}
 ${tc.includeArgs("template.state.hooks.Include", [comp])}
-${tc.includeArgs("template.logtracing.hooks.Include", [config, comp])}
+${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
 
 <#if comp.isDecomposed()>
     ${Utils.printIncludes(comp, compname, config)}

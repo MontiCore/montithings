@@ -36,6 +36,9 @@ this->instanceName = instanceName;
   this->${Identifier.getStateName()}.setup ();
   ${tc.includeArgs("template.prepostconditions.hooks.Constructor", [comp])}
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.VariableInstantiation", [comp, config])}
+
 <#if comp.isPresentParentComponent()>
   super(<#list getInheritedParams(comp) as inhParam >
   inhParam<#sep>,</#sep>

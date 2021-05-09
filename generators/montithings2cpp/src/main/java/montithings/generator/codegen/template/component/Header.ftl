@@ -33,6 +33,8 @@ ${tc.includeArgs("template.component.declarations.PortMonitorUuid", [comp, confi
 ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, config])}
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
 
+${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config])}
+
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 ${tc.includeArgs("template.state.hooks.Member", [comp])}
 
@@ -72,6 +74,8 @@ ${ComponentHelper.printConstructorArguments(comp)});
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDeclaration", [comp])}
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.GetterDeclaration", [comp, config])}
 
 void setUp(TimeMode enclosingComponentTiming) override;
 void init() override;

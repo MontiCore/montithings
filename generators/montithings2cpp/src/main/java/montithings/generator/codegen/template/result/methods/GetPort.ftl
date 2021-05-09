@@ -13,11 +13,4 @@ ${className}${Utils.printFormalTypeParameters(comp, false)}::get${name?cap_first
 return ${name};
 }
 
-<#if config.getLogTracing().toString() == "ON">
-    tl::optional<${typeWrapped}>
-    ${className}${Utils.printFormalTypeParameters(comp, false)}::get${name?cap_first}Wrapped() const
-    {
-        ${tc.includeArgs("template.logtracing.hooks.PrepareResult", [comp, config, port])}
-        return ${name}Wrapped;
-    }
-</#if>
+${tc.includeArgs("template.logtracing.hooks.GetPortWrappedDefinition", [comp, config, port])}

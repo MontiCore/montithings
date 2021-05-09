@@ -32,6 +32,9 @@ ${tc.signature("comp","config","className")}
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.GetterDefinition", [comp, config, className])}
+
 ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, config, className])}
 
 <#if ComponentHelper.retainState(comp)>

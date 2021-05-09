@@ -6,7 +6,7 @@
 #include "easyloggingpp/easylogging++.h"
 
 #include "../../mtlibrary/MTLibrary.h"
-#include "../Collector.h"
+#include "../LogTracer.h"
 
 namespace montithings
 {
@@ -16,8 +16,8 @@ namespace library
 void
 log (const std::string& message)
 {
-  LOG(INFO) << message;
-  montithings::logtracer::collector::handleLogEntry(message);
+    LOG(INFO) << message;
+    montithings::handleLogEntry(message);
 }
 
 }

@@ -33,3 +33,5 @@ ${tc.signature("comp","config","isMonitor")}
     </#if>));
   </#list>
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.HandleInput", [comp, config])}
