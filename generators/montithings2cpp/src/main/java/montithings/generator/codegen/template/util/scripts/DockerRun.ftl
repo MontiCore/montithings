@@ -2,7 +2,7 @@
 #!/bin/sh
 ${tc.signature("comp", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign instances = ComponentHelper.getInstances(comp)>
+<#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
 
 
