@@ -186,8 +186,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
       
       // If this component does not need its own executable, then we can just
-      // ignore it right here.
-      if (executableComponents.contains(comp)) {
+      // ignore it right here. If splitting is turned of, we will generate
+      // everything due to compatibility reasons.
+      if (executableComponents.contains(comp) || config.getSplittingMode() == SplittingMode.OFF) {
         // aggregate all of the components that should be packed with this
         // component
         Set<ComponentTypeSymbol> includeModels = new HashSet<>();
