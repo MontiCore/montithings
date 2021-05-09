@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.visitor;
 
+import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.assignmentexpressions._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
@@ -8,19 +9,22 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
+import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.codegen.util.Identifier;
+import montithings.generator.helper.ComponentHelper;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import javax.measure.converter.UnitConverter;
+import java.util.List;
 import java.util.Optional;
 
-import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
-import static montithings.generator.visitor.CppPrettyPrinterUtils.isStateVariable;
+import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
 import static montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter.*;
 import static montithings.util.IdentifierUtils.getPortForName;
 
@@ -92,6 +96,8 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       getPrinter().print(")");
     }
   }
+
+
 
   @Override
   public void handle(ASTAssignmentExpression node) {
@@ -194,6 +200,23 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
         node.getRight().accept(getRealThis());
       }
       getPrinter().println(" );");
+
+      if (isLogTracingEnabled) {
+        IMontiThingsScope componentScope = getScopeOfEnclosingComponent(node);
+        ComponentTypeSymbol component = (ComponentTypeSymbol) componentScope.getSpanningSymbol();
+        List<VariableSymbol> stateVariables = ComponentHelper.getVariablesAndParameters(component);
+
+        for (VariableSymbol stateVariable : stateVariables) {
+          getPrinter().print("component.getLogTracer()->handleVariableStateChange(\"");
+          getPrinter().print(stateVariable.getName() + "\",");
+          // state before
+          getPrinter().print(Identifier.getStateName() + "__at__pre.");
+          getPrinter().print("get" + capitalize(stateVariable.getName()) + "(),");
+          // state after
+          getPrinter().print(Identifier.getStateName() + ".");
+          getPrinter().print("get" + capitalize(stateVariable.getName()) + "());");
+        }
+      }
 
       if (port.isPresent() && port.get().isOutgoing() && !suppressPostconditionCheck) {
         // check postconditions and send value

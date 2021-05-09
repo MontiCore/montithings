@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include <ctime>
+#include <map>
 
 #include "sole/sole.hpp"
 #include "Utils.h"
@@ -38,6 +39,11 @@ private:
     sole::uuid currOutputLogsId{};
     std::map<sole::uuid, std::vector<sole::uuid>> allOutputLogs;
 
+    // in order to store variable states, a map (key=variable name) holds a map where the variable value is keyed by the timestamp which indicates when it was changed
+    // the variable value is stored as a string to avoid type clashes
+    using vSnapshot = std::map<time_t, std::string>;
+    std::map<std::string, vSnapshot> variableSnapshots;
+
     // creates new UUID
     sole::uuid uuid();
 
@@ -51,7 +57,14 @@ public:
     void handleLogEntry(const std::string& content);
 
     template <typename T>
-    void handleInput(T input) {
+    void handleVariableStateChange(const std::string& variableName, const T& valueBefore, const T& valueAfter) {
+        if (valueBefore != valueAfter) {
+            variableSnapshots[variableName][time(nullptr)] = std::to_string(valueAfter);
+        }
+    }
+
+    template <typename T>
+    void handleInput(const T& input) {
         // stores the log entries which are grouped to the previous input
         allInputLogs[currInputLogsId] = currInputLogs;
 
