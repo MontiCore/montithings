@@ -6,6 +6,9 @@
 #include <string>
 #include "tl/optional.hpp"
 #include "cereal/archives/json.hpp"
+#include "cereal/types/string.hpp"
+#include "cereal/types/utility.hpp"
+#include "sole/sole.hpp"
 
 template<typename T>
 std::string
@@ -69,3 +72,55 @@ std::string replaceDotsBySlashes (std::string input);
  * \return the fully qualified name of the enclosing component
  */
 std::string getEnclosingComponentName (const std::string& input);
+
+/* Additional serialization functions for cereal */
+namespace cereal
+{
+    // for type sole::uuid
+    template<class Archive>
+    std::string
+    save_minimal(Archive & archive,
+                 sole::uuid const & uuid)
+    {
+        return uuid.str();
+    }
+
+    template<class Archive>
+    void
+    load_minimal(Archive & archive,
+                 sole::uuid & uuid,
+                 std::string const & value)
+    {
+        uuid = sole::rebuild(value);
+    }
+
+    // for type tl::optional (adapted from cereal/types/optional.hpp)
+    template <class Archive, typename T> inline
+    void save(Archive & archive,
+              tl::optional<T> const & optional)
+    {
+        if(!optional) {
+            archive(CEREAL_NVP_("nullopt", true));
+        } else {
+            archive(CEREAL_NVP_("nullopt", false),
+                    CEREAL_NVP_("data", *optional));
+        }
+    }
+
+    template <class Archive, typename T> inline
+    void load(Archive & archive,
+              tl::optional<T> & optional)
+    {
+        bool nullopt;
+        archive(CEREAL_NVP_("nullopt", nullopt));
+
+        if (nullopt) {
+            optional = tl::nullopt;
+        } else {
+            T value;
+            archive(CEREAL_NVP_("data", value));
+            optional = std::move(value);
+        }
+    }
+
+}
