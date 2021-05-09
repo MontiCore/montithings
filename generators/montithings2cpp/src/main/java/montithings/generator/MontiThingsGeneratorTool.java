@@ -20,7 +20,11 @@ import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symboltable.serialization.json.JsonArray;
+import de.monticore.symboltable.serialization.json.JsonObject;
+import de.monticore.symboltable.serialization.json.JsonString;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
@@ -269,6 +273,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         mtg.generateDockerfileScript(target, comp);
       }
     }
+    
+    generateDeployInfo(target, config, instances);
 
     if (testPath != null && !testPath.toString().equals("")) {
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
@@ -552,6 +558,27 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
   }
+  
+  protected void generateDeployInfo(File target, ConfigParams config, List<Pair<ComponentTypeSymbol, String>> executableInstances) {
+    JsonObject jsonBase = new JsonObject();
+    
+    // collect instances
+    JsonArray jsonInstances = new JsonArray();
+    for (Pair<ComponentTypeSymbol, String> instance : executableInstances) {
+      ComponentTypeSymbol comp = instance.getKey();
+      JsonObject jsonInstance = new JsonObject();
+      jsonInstance.putMember("component", new JsonString(comp.getFullName()));
+      jsonInstance.putMember("name", new JsonString(instance.getValue()));
+      jsonInstances.add(jsonInstance);
+    }
+    jsonBase.putMember("instances", jsonInstances);
+    
+    // serialize JSON and write it to a file
+    String jsonString = jsonBase.toString();
+    File jsonFile = new File(target, "deployment-info.json");
+    FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
+  }
+  
 
   protected ComponentTypeSymbol modelToSymbol(String model, IMontiThingsScope symTab) {
     String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
