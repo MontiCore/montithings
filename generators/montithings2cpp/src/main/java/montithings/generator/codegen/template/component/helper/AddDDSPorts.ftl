@@ -13,8 +13,11 @@ connectorPortIn = std::unique_ptr${"<DDSPort<std::string>>"}(new DDSPort${"<std:
 connectorPortIn->addOnDataAvailableCallbackHandler(std::bind(&${comp.getName()}DDSParticipant::onNewConnectors, this, std::placeholders::_1));
 
 <#list comp.getPorts() as p>
+    <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
+    <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
+
     <#if p.isOutgoing()>
       // outgoing port ${p.getName()}
-      comp->interface.addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, comp->getInstanceName() + ".value/out"));
+      comp->getInterface()->addOutPort${p.getName()?cap_first}(new DDSPort<${type}>(*this, OUTGOING, comp->getInstanceName() + ".value/out"));
     </#if>
 </#list>

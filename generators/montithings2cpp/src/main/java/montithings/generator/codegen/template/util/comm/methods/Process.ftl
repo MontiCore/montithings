@@ -9,13 +9,16 @@ ${className}::process (std::string msg)
 PortToSocket message(msg);
 
 <#list comp.getPorts() as p>
+  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
+  <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
+
   <#if !p.isOutgoing()>
     if (message.getLocalPort() == "${p.getName()}")
     {
     // connection information for port ${p.getName()} was received
     std::string ${p.getName()}_uri = "ws://" + message.getIpAndPort() + message.getRemotePort();
     LOG(DEBUG) << "Received connection: " << ${p.getName()}_uri ;
-    comp->getInterface()->addInPort${p.getName()?cap_first}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(INCOMING, ${p.getName()}_uri));
+    comp->getInterface()->addInPort${p.getName()?cap_first}(new WSPort<${type}>(INCOMING, ${p.getName()}_uri));
     }
   </#if>
 </#list>
