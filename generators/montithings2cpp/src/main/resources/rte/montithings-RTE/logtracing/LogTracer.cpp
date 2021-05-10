@@ -21,16 +21,16 @@ namespace montithings {
 
     sole::uuid
     LogTracer::newOutput() {
-        allOutputLogs[currOutputLogsId] = currOutputLogs;
+        allOutputLogs[currOutputId] = currOutputLogs;
         currOutputLogs.clear();
-        currOutputLogsId = uuid();
+        currOutputId = uuid();
 
-        return currOutputLogsId;
+        return currOutputId;
     }
 
     LogTracer::LogTracer(std::string instanceName) : instanceName(std::move(instanceName)) {
-        currInputLogsId = uuid();
-        currOutputLogsId = uuid();
+        currInputId = uuid();
+        currOutputId = uuid();
         montithings::subscribe(this);
     }
 

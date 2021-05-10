@@ -10,6 +10,8 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 tl::optional<${type}> get${name}() const;
 void set${name}(tl::optional<${typeWrapped}>);
 
+${tc.includeArgs("template.logtracing.hooks.GetInputUUIDDeclaration", [comp, config, port])}
+
 <#if cdeImportStatementOpt.isPresent()>
   <#assign cdType = cdeImportStatementOpt.get().getImportClass().toString()>
   tl::optional<${cdType}> get${name}Adap() const;

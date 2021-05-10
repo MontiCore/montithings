@@ -9,3 +9,6 @@ ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()
 {
 return ${port.getName()}<#if config.getLogTracing().toString() == "ON">->second</#if>;
 }
+
+
+${tc.includeArgs("template.logtracing.hooks.GetInputUUIDDefinition", [comp, config, port])}

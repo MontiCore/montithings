@@ -3,5 +3,13 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if config.getLogTracing().toString() == "ON">
-this->logTracer->handleInput(input);
+
+    std::vector<sole::uuid> traceUUIDs = {
+         <#list comp.getAllIncomingPorts() as inPort>
+             input.get${inPort.getName()?cap_first}TraceUUID()
+             <#sep>,</#sep>
+         </#list>
+    };
+
+    this->logTracer->handleInput(input, traceUUIDs);
 </#if>
