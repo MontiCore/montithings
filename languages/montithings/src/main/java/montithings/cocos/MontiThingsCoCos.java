@@ -56,6 +56,7 @@ public class MontiThingsCoCos {
       .addCoCo(new PostcondUsesOnlyOneOutport())
       .addCoCo((MontiThingsASTBehaviorCoCo) new DontReadOutports())
       .addCoCo((MontiThingsASTMTEveryBlockCoCo) new DontReadOutports())
+      .addCoCo(new PortsInBehaviorAreUsedCorrectly())
       ;
   }
 }

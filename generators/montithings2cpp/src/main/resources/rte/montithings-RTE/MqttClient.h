@@ -13,12 +13,16 @@
 
 class MqttClient
 {
-  public:
+public:
   /// Singleton getter
   static MqttClient *instance (const std::string& brokerHostname = "localhost",
                                int brokerPort = 1883);
 
-  protected:
+  /// Singleton getter for broker on local device
+  static MqttClient *localInstance (const std::string& brokerHostname = "localhost",
+                                    int brokerPort = 1883);
+
+protected:
   /**
    * Mosquitto instance used to connect to MQTT broker
    */
@@ -65,7 +69,7 @@ class MqttClient
    */
   ~MqttClient ();
 
-  public:
+public:
   /**
    * Register a user to receive messages from this MQTT client
    * \param user the user to send the messages received by this client to

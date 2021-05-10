@@ -87,6 +87,9 @@ void compute() override;
   void compute${everyBlockName} ();
 </#list>
 bool shouldCompute();
+<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+  bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}();
+</#list>
 void start() override;
 void onEvent () override;
 <#if ComponentHelper.retainState(comp)>

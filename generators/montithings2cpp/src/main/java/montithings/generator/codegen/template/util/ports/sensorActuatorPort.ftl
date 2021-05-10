@@ -2,6 +2,7 @@
 ${tc.signature("config", "portSymbol", "portTemeplateName", "existsHWC")}
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 #pragma once
+#include "easyloggingpp/easylogging++.h"
 #include "tl/optional.hpp"
 #include "Port.h"
 #include "Utils.h"

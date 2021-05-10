@@ -43,6 +43,18 @@ public enum MontiThingsError implements montithings.util.Error {
   POSTCONDITION_MULTIPLE_OUTPORTS("0xMT1610",
     "Postcondition '%s' references multiple outgoing ports (%s), but only one is allowed."),
   OUTPORT_WRITE_ONLY("0xMT1620", "Port '%s' is read. Outgoing ports are write-only."),
+  BEHAVIOR_USES_UNDECLARED_PORT("0xMT1630",
+          "Port-specific behavior for ports '%s' of component '%s' uses port '%s' without referencing it in its definition"),
+  BEHAVIOR_REFERENCES_INVALID_PORT("0xMT1631",
+          "Port-specific behavior for ports '%s' of component '%s' refers to port '%s' which is either an "
+            + "outgoing port or does not exist in the scope of this component."),
+  INCOMING_PORTS_NOT_USED("0xMT1632",
+          "Incoming Ports '%s' of component '%s' are not being used by any behavior."),
+  MULTIPLE_BEHAVIORS_SAME_PORTS("0xMT1633",
+          "Multiple port-specific behaviors exist for the set of ports '%s' in component '%s'."),
+  BEHAVIOR_PORTS_USED_ALREADY("0xMT1634",
+          "Port-specific behavior for ports in component '%s' which works on the ports '%s' can never be executed, " +
+                  "as another port-specific behavior uses a subset of these ports."),
 
   GENERATOR_ONLY_ONE_MAIN("0xMT2001",
     "Configured both '%s' (as 'mainComponent') and '%s' (as 'main') as main components using generator parameters. Only use of them."),

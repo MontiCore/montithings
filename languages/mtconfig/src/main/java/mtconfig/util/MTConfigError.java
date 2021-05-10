@@ -11,7 +11,8 @@ public enum MTConfigError implements mtconfig.util.Error {
   MULTIPLE_COMPONENTS("0xMTCFG1033", "Config references multiple component types: %s"),
   FILENAME_MATCHES_CONFIG("0xMTCFG1034", "Config '%s' does not match its filename"),
   PACKAGENAME_MATCHES_CONFIG("0xMTCFG1035", "Package '%s' does not match its relative filepath '%s'"),
-  HOOKPOINT_EXISTS("0xMTCFG1036", "Hookpoint '%s' does not exist (use one of these: %s)")
+  HOOKPOINT_EXISTS("0xMTCFG1036", "Hookpoint '%s' does not exist (use one of these: %s)"),
+  MQTT_NO_ARGS("0xMTCFG1037", "MQTT Hookpoint '%s' must not take arguements.")
 ;
 
   protected final String errorCode;

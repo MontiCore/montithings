@@ -72,7 +72,16 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
 
   @Override
   public void handle(@NotNull ASTBehavior node) {
-    this.getPrinter().print("behavior ");
+    this.getPrinter().print("behavior");
+    List<String> ports = node.getNameList();
+    for (int i = 0; i < ports.size(); i++) {
+      if (i != 0) {
+        getPrinter().print(",");
+      }
+      getPrinter().print(" ");
+      getPrinter().print(ports.get(i));
+    }
+    getPrinter().print(" ");
     node.getMCJavaBlock().accept(this.getRealThis());
   }
 
