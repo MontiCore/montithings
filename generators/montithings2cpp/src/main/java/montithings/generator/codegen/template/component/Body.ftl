@@ -42,7 +42,7 @@ ${tc.includeArgs("template.component.methods.ShouldComputePortSpecificBehavior",
   ${tc.includeArgs("template.component.methods.RestoreState", [comp, config, className])}
 </#if>
 
-${tc.includeArgs("template.component.methods.printGetState", [comp, className])}
+${tc.includeArgs("template.component.methods.GetState", [comp, className])}
 
 <#if config.getMessageBroker().toString() == "MQTT">
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}
