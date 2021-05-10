@@ -8,7 +8,7 @@ ${tc.signature("comp","config")}
   interface.getPort${p.getName()?cap_first} ()->attach (this);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign topicName = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
-    ${p.getName()}->setSensorActuatorName ("${topicName}");
+    ${p.getName()}->setSensorActuatorName ("${topicName}", true);
   </#if>
   this->interface.addInPort${p.getName()?cap_first} (${p.getName()});
 
