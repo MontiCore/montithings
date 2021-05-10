@@ -1,0 +1,173 @@
+{
+  "types" :
+    [
+      {
+        "kind" : "alias",
+        "name" : "IDL:DDSRecorderMessage/MessageType:1.0",
+        "type" :
+          {
+            "kind" : "int",
+            "bits" : 32,
+            "unsigned" : true,
+            "constrained" : true,
+            "values" : {"MESSAGE_RECORD" : "0", "INTERNAL_RECORDS" : "1", "INTERNAL_STATE" : "2"}
+          }
+      }
+    ,
+      {
+        "kind" : "alias",
+        "name" : "IDL:DDSRecorderMessage/Message:1.0",
+        "note" : { "is_dcps_data_type" : true },
+        "type" :
+          {
+            "kind" : "record",
+            "fields" :
+              [
+                {
+                  "name" : "id",
+                  "type" : { "kind" : "int", "bits" : 32 }
+                }
+              ,
+                {
+                  "name" : "instance_name",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "type",
+                  "type" : "IDL:DDSRecorderMessage/MessageType:1.0"
+                }
+              ,
+                {
+                  "name" : "timestamp",
+                  "type" : { "kind" : "int", "bits" : 64 }
+                }
+              ,
+                {
+                  "name" : "serialized_vector_clock",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "topic",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "msg_id",
+                  "type" : { "kind" : "int", "bits" : 32 }
+                }
+              ,
+                {
+                  "name" : "msg_content",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "message_delays",
+                  "type" : { "kind" : "string" }
+                }
+              ]
+          }
+      }
+    ,
+      {
+        "kind" : "alias",
+        "name" : "IDL:DDSRecorderMessage/CommandType:1.0",
+        "type" :
+          {
+            "kind" : "int",
+            "bits" : 32,
+            "unsigned" : true,
+            "constrained" : true,
+            "values" : {"RECORDING_START" : "0", "RECORDING_STOP" : "1", "SEND_INTERNAL_ND_CALLS" : "2"}
+          }
+      }
+    ,
+      {
+        "kind" : "alias",
+        "name" : "IDL:DDSRecorderMessage/Command:1.0",
+        "note" : { "is_dcps_data_type" : true },
+        "type" :
+          {
+            "kind" : "record",
+            "fields" :
+              [
+                {
+                  "name" : "instance_name",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "cmd",
+                  "type" : "IDL:DDSRecorderMessage/CommandType:1.0"
+                }
+              ]
+          }
+      }
+    ,
+      {
+        "kind" : "alias",
+        "name" : "IDL:DDSRecorderMessage/CommandReply:1.0",
+        "note" : { "is_dcps_data_type" : true },
+        "type" :
+          {
+            "kind" : "record",
+            "fields" :
+              [
+                {
+                  "name" : "instance_name",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "command_id",
+                  "type" : { "kind" : "int", "bits" : 32 }
+                }
+              ,
+                {
+                  "name" : "content",
+                  "type" : { "kind" : "string" }
+                }
+              ]
+          }
+      }
+    ,
+      {
+        "kind" : "alias",
+        "name" : "IDL:DDSRecorderMessage/Acknowledgement:1.0",
+        "note" : { "is_dcps_data_type" : true },
+        "type" :
+          {
+            "kind" : "record",
+            "fields" :
+              [
+                {
+                  "name" : "sending_instance",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "receiving_instance",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "port_name",
+                  "type" : { "kind" : "string" }
+                }
+              ,
+                {
+                  "name" : "acked_id",
+                  "type" : { "kind" : "int", "bits" : 32 }
+                }
+              ,
+                {
+                  "name" : "serialized_vector_clock",
+                  "type" : { "kind" : "string" }
+                }
+              ]
+          }
+      }
+    ]
+}

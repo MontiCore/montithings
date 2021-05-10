@@ -10,10 +10,12 @@ import java.util.Optional;
 public class IdentifierUtils {
 
   // Util class prevent instantiation
-  private IdentifierUtils() { }
+  private IdentifierUtils() {
+  }
 
   /**
    * Finds the Port for a NameExpression
+   *
    * @param node the node to search the portsymbol for
    * @return PortSymbol if found, Optional.empty if name is not inside an IMontiArcScope
    */

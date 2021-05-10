@@ -10,6 +10,12 @@ rm -f dockerStop.sh
 
 docker network ls | grep montithings > /dev/null || docker network create --driver bridge montithings
 
+<#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
+  # Start DCPSInfoRepo
+  CONTAINER=$(docker run --name dcpsinforepo -h dcpsinforepo --rm -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
+  echo docker stop $CONTAINER >> dockerStop.sh
+</#if>
+
 <#if config.getSplittingMode().toString() == "OFF">
     ${tc.includeArgs("template.util.scripts.DockerRunCommand", [comp.getFullName(), comp.getFullName()?lower_case, config])}
 <#else>
@@ -18,9 +24,4 @@ docker network ls | grep montithings > /dev/null || docker network create --driv
   </#list>
 </#if>
 
-<#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
-  # Start DCPSInfoRepo
-  CONTAINER=$(docker run --name dcpsinforepo -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
-  echo docker stop $CONTAINER >> dockerStop.sh
-</#if>
 chmod +x dockerStop.sh

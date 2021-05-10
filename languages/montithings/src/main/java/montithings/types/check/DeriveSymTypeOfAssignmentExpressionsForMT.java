@@ -8,9 +8,10 @@ import de.monticore.types.check.SymTypeExpressionFactory;
 
 import java.util.Optional;
 
-import static de.monticore.ocl.types.check.OCLTypeCheck.*;
+import static de.monticore.ocl.types.check.OCLTypeCheck.compatible;
 
-public class DeriveSymTypeOfAssignmentExpressionsForMT extends DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes {
+public class DeriveSymTypeOfAssignmentExpressionsForMT
+  extends DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes {
   /**
    * All methods in this class are identical to the methods in
    * de.monticore.types.check.DeriveSymTypeOfCommonExpressions.
@@ -19,12 +20,15 @@ public class DeriveSymTypeOfAssignmentExpressionsForMT extends DeriveSymTypeOfAs
    */
 
   @Override
-  protected Optional<SymTypeExpression> calculateRegularAssignment(ASTAssignmentExpression expr, SymTypeExpression leftResult, SymTypeExpression rightResult) {
+  protected Optional<SymTypeExpression> calculateRegularAssignment(ASTAssignmentExpression expr,
+    SymTypeExpression leftResult, SymTypeExpression rightResult) {
     //option one: both are numeric types and are assignable
     Optional<SymTypeExpression> wholeResult = Optional.empty();
-    if (isNumericType(leftResult) && isNumericType(rightResult) && compatible(leftResult, rightResult)) {
+    if (isNumericType(leftResult) && isNumericType(rightResult) && compatible(leftResult,
+      rightResult)) {
       wholeResult = Optional.of(SymTypeExpressionFactory.createTypeConstant(leftResult.print()));
-    } else if (compatible(leftResult, rightResult)) {
+    }
+    else if (compatible(leftResult, rightResult)) {
       //option two: none of them are primitive types and they are either from the same class or stand in a super/subtype relation with the supertype on the left side
       wholeResult = Optional.of(leftResult);
     }

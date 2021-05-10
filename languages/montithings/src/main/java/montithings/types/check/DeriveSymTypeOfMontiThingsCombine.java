@@ -13,7 +13,8 @@ import types.check.DeriveSymTypeOfSetDefinitions;
 
 import java.util.Optional;
 
-public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisitor implements ITypesCalculator {
+public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisitor
+  implements ITypesCalculator {
 
   private MontiThingsDelegatorVisitor realThis;
 
@@ -40,7 +41,6 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
   private DeriveSymTypeOfBehavior deriveSymTypeOfBehavior;
 
   private TypeCheckResult typeCheckResult = new TypeCheckResult();
-
 
   public DeriveSymTypeOfMontiThingsCombine() {
     this.realThis = this;

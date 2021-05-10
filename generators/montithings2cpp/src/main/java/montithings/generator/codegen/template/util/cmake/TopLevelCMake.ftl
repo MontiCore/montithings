@@ -143,12 +143,11 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
   <#elseif config.getTargetPlatform().toString() == "RASPBERRY">
       ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [comp.getFullName()])}
   <#else>
-      <#if config.getMessageBroker().toString() == "MQTT">
-        target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
-      <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
-        OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
-        target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
-      </#if>
+    <#if config.getMessageBroker().toString() == "MQTT">
+      target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
+    <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+      target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
+    </#if>
     target_link_libraries(${comp.getFullName()} nng::nng)
   </#if>
   set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)

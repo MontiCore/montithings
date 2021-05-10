@@ -6,6 +6,7 @@
 #include <string>
 #include "tl/optional.hpp"
 #include "cereal/archives/json.hpp"
+#include "cereal/types/unordered_map.hpp"
 
 template<typename T>
 std::string
