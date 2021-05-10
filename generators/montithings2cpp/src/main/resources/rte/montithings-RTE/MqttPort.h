@@ -26,6 +26,11 @@ protected:
   bool isSensorActuator = false;
 
   /**
+   * Topic of the sensor / actuator
+   */
+  std::string sensorActuatorTopic;
+
+  /**
    * Subscribed MQTT topics of other ports
    */
   std::set<std::string> subscriptions;
@@ -45,7 +50,7 @@ public:
    * Set the name of the local sensor / actuator to connect to
    * \param sensorName topic name without "/sensorActuator/" prefix
    */
-  void setSensorActuatorName (std::string sensorName);
+  void setSensorActuatorName (std::string sensorName, bool shouldSubscribe);
 
   /* ============================================================ */
   /* ======================== Port Methods ====================== */
@@ -99,15 +104,18 @@ MqttPort<T>::subscribe (std::string portFqn)
 
 template <typename T>
 void
-MqttPort<T>::setSensorActuatorName (std::string sensorName)
+MqttPort<T>::setSensorActuatorName (std::string sensorName, bool shouldSubscribe)
 {
-  LOG (DEBUG) << "Set sensor actuator name";
+  LOG (DEBUG) << "Set sensor actuator name '" << sensorName << "'";
   MqttClient::localInstance ()->addUser (this);
-  std::string topic = "/sensorActuator/" + replaceDotsBySlashes (sensorName);
-  MqttClient::localInstance ()->subscribe (topic);
-  subscriptions.emplace (topic);
+  sensorActuatorTopic = "/sensorActuator/" + replaceDotsBySlashes (sensorName);
   isSensorActuator = true;
-  LOG (DEBUG) << "Subscribe to sensor '" << topic << "'";
+  if (shouldSubscribe)
+    {
+      MqttClient::localInstance ()->subscribe (sensorActuatorTopic);
+      subscriptions.emplace (sensorActuatorTopic);
+      LOG (DEBUG) << "Subscribe to sensor '" << sensorActuatorTopic << "'";
+    }
 }
 
 template <typename T>
@@ -134,7 +142,7 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
                 }
               catch (...)
                 {
-                  std::string portName = replaceDotsBySlashes(fullyQualifiedName);
+                  std::string portName = replaceDotsBySlashes (fullyQualifiedName);
                   LOG (WARNING) << "Port '" << portName << "' could not parse incoming message '"
                                 << payload << "'";
                 }
@@ -160,19 +168,13 @@ template <typename T>
 void
 MqttPort<T>::sendToExternal (tl::optional<T> nextVal)
 {
-  std::string prefix = "/ports/";
-  if (isSensorActuator)
-    {
-      prefix = "/sensorActuator/";
-    }
-
   if (nextVal)
     {
       std::string payload = dataToJson (nextVal);
-      std::string topic = prefix + replaceDotsBySlashes (fullyQualifiedName);
+      std::string topic = "/ports/" + replaceDotsBySlashes (fullyQualifiedName);
       if (isSensorActuator)
         {
-          MqttClient::localInstance ()->publish (topic, payload);
+          MqttClient::localInstance ()->publish (sensorActuatorTopic, payload);
         }
       else
         {
