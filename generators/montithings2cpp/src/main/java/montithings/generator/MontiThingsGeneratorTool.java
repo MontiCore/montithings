@@ -36,6 +36,8 @@ import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.MTGenerator;
+import montithings.generator.codegen.ConfigParams.MessageBroker;
+import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
@@ -56,10 +58,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import static montithings.generator.helper.FileHelper.*;
 
@@ -176,17 +186,69 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       models.setMontithings(allModels);
     }
 
+    
+    // Collect all the instances of the executable components (Some components
+    // may only be included in other components and thus do not need an own
+    // executable).
+    ComponentTypeSymbol mainCompSymbol = modelToSymbol(config.getMainComponent(), symTab);
+    List<Pair<ComponentTypeSymbol, String>> instances = ComponentHelper.getExecutableInstances(mainCompSymbol, config);
+    HashSet<ComponentTypeSymbol> executableComponents = new HashSet<>();
+    for(Pair<ComponentTypeSymbol, String> instance : instances) {
+      executableComponents.add(instance.getKey());
+    }
+    
+    // Aggregate all the target folders for the components.
+    List<String> executableSubdirs = new ArrayList<>(instances.size());
+    for(ComponentTypeSymbol comp : executableComponents) {
+      executableSubdirs.add(comp.getFullName());
+    }
+    
+    // determine the packs of components for each (base) model
+    Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks = new HashMap<>();
+
     for (String model : models.getMontithings()) {
+      ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+      
+      // If this component does not need its own executable, then we can just
+      // ignore it right here. If splitting is turned of, we will generate
+      // everything due to compatibility reasons.
+      if (executableComponents.contains(comp) || config.getSplittingMode() == SplittingMode.OFF) {
+        // aggregate all of the components that should be packed with this
+        // component
+        Set<ComponentTypeSymbol> includeModels = new HashSet<>();
+        modelPacks.put(comp, includeModels);
+        
+        // the component itself should obviously be part of the deployment
+        includeModels.add(comp);
+        
+        // all (in-)direct sub-components should be part of the deployment if
+        // component should be deployed with its subcomponents
+        if (ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
+          for (ComponentTypeSymbol sub : ComponentHelper.getSubcompTypesRecursive(comp)) {
+            Log.debug("Including model \"" + sub.getFullName() + "\" with deployment of \"" + comp.getFullName() + "\"", TOOL_NAME);
+            includeModels.add(sub);
+          }
+        }
+      }
+    }
+    
+    if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+      mtg.generateMakeFileForSubdirs(target, executableSubdirs, config);
+    }
+
+    for (Entry<ComponentTypeSymbol, Set<ComponentTypeSymbol>> e : modelPacks.entrySet()) {
+      String baseModel = e.getKey().getFullName();
+      Set<ComponentTypeSymbol> enclosingModels = e.getValue();
+      
+
       File compTarget = target;
 
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-        mtg.generateMakeFileForSubdirs(target, models.getMontithings(), config);
-
-        compTarget = Paths.get(target.getAbsolutePath(), model).toFile();
+        compTarget = Paths.get(target.getAbsolutePath(), baseModel).toFile();
         mtg = new MTGenerator(compTarget, hwcPath, config);
 
         if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
-          ComponentTypeSymbol comp = modelToSymbol(model, symTab);
+          ComponentTypeSymbol comp = modelToSymbol(baseModel, symTab);
           mtg.generatePortJson(compTarget, comp);
         }
 
@@ -196,8 +258,27 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         mtg.generateDDSDCPSConfig(compTarget);
       }
 
-      generateCppForComponent(model, symTab, compTarget, hwcPath, config);
-      generateCMakeForComponent(model, symTab, modelPath, compTarget, hwcPath, config, models);
+      // Save splitting mode and message broker for overriding it for subcomponents that should be included in the same binary.
+      SplittingMode orgSplit = config.getSplittingMode();
+      MessageBroker orgBroker = config.getMessageBroker();
+      
+      for (ComponentTypeSymbol symModel : enclosingModels) {
+        String model = symModel.getFullName();
+        boolean genDeploy = model.equals(baseModel);
+        
+        // Only the deployed component should communicate directly with the 'outer world'.
+        // All the other enclosed components should communicate using native ports. 
+        config.setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
+        config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
+        
+        generateCppForComponent(model, symTab, compTarget, hwcPath, config, genDeploy);
+      }
+      // reset splitting mode and message broker
+      config.setSplittingMode(orgSplit);
+      config.setMessageBroker(orgBroker);
+      
+      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, hwcPath, config, models, executableSubdirs);
+      
       mtg = new MTGenerator(target, hwcPath, config);
     }
 
@@ -400,7 +481,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
-    File target, File hwcPath, ConfigParams config, Models models) {
+    File target, File hwcPath, ConfigParams config, Models models, List<String> executableInstanceNames) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
 
     if (ComponentHelper.isApplication(comp, config)
@@ -415,7 +496,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
         mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          mtg.generateScripts(target, comp, models.getMontithings());
+          mtg.generateScripts(target, comp, executableInstanceNames);
         }
       }
     }

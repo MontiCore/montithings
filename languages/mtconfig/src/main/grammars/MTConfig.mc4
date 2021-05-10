@@ -68,4 +68,6 @@ grammar MTConfig extends MontiThings  {
     (
       stringValue:StringLiteral | numericValue:SignedNumericLiteral
     ) ";";
+
+  SeparationHint implements MTCFGTag = "separate" "none" ";";
 }

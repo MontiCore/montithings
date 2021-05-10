@@ -8,7 +8,7 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::init(){
     super.init();
 </#if>
 
-<#if config.getSplittingMode().toString() == "OFF">
+<#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp,config)>
     <#list comp.getAstNode().getConnectors() as connector>
         <#list connector.getTargetList() as target>
             <#if ComponentHelper.isIncomingPort(comp, target)>

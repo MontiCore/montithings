@@ -10,7 +10,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 
-<#if config.getSplittingMode().toString() == "OFF">
+<#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp,config)>
   <#list comp.getSubComponents() as subcomponent >
     ${subcomponent.getName()}.setUp(enclosingComponentTiming);
   </#list>

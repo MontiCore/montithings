@@ -5,7 +5,7 @@
 namespace montithings {
 namespace hierarchy {
 
-class SumImpl : SumImplTOP {
+class SumImpl : public SumImplTOP {
 	
 private:  
     

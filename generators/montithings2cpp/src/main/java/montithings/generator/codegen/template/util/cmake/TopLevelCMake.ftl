@@ -93,8 +93,8 @@ include_directories("${commonCodePrefix}${libraryPath?replace("\\","/")}")
 # Include Subcomponent Headers
 <#list ComponentHelper.getSubcompTypesRecursive(comp) as subcomp>
   <#assign subcompName = subcomp.getFullName()>
-  HEADER_DIRECTORIES("../${subcompName}" ${subcompName?replace(".","_")}_HEADER)
-  include_directories("../${subcompName}" ${"$"}{${subcompName?replace(".","_")}_HEADER})
+  # HEADER_DIRECTORIES("../${subcompName}" ${subcompName?replace(".","_")}_HEADER)
+  # include_directories("../${subcompName}" ${"$"}{${subcompName?replace(".","_")}_HEADER})
 </#list>
 
 # Include HWC
@@ -104,7 +104,12 @@ include_directories("hwc" ${r"${dir_list}"})
 
 <#if config.getMessageBroker().toString() == "MQTT">
   # Include Mosquitto Library
+  if(APPLE)
   find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto)
+  else()
+  find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
+  include_directories(/snap/mosquitto/current/usr/include)
+  endif()
 </#if>
 
 <#if test || config.getSplittingMode().toString() == "OFF">

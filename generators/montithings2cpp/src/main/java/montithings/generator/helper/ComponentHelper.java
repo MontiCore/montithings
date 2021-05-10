@@ -45,12 +45,17 @@ import montithings._ast.*;
 import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsPrettyPrinterDelegator;
 import montithings.generator.codegen.ConfigParams;
+import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.visitor.FindAgoQualificationsVisitor;
 import montithings.generator.visitor.FindPublishedPortsVisitor;
 import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.util.GenericBindingUtil;
+import mtconfig._ast.ASTCompConfig;
+import mtconfig._ast.ASTSeparationHint;
+import mtconfig._symboltable.CompConfigSymbol;
+import mtconfig._symboltable.IMTConfigGlobalScope;
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
@@ -61,9 +66,9 @@ import prepostcondition._ast.ASTPrecondition;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
-
 import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
@@ -900,6 +905,19 @@ public class ComponentHelper {
   public static boolean retainState(ComponentTypeSymbol component) {
     return !elementsOf(component).filter(ASTMTRetainState.class).isEmpty();
   }
+  
+  public static boolean shouldIncludeSubcomponents(ComponentTypeSymbol component, ConfigParams config) {
+    IMTConfigGlobalScope cscope = config.getMtConfigScope();
+    if (cscope != null) {
+      Optional<CompConfigSymbol> cfg = cscope.resolveCompConfig(config.getTargetPlatform().toString(), component);
+      if (cfg.isPresent()) {
+        CompConfigSymbol cc = cfg.get();
+        ASTCompConfig acc = cc.getAstNode();
+        return !FluentIterable.from(acc.getMTCFGTagList()).filter(ASTSeparationHint.class).isEmpty();
+      }
+    }
+    return false;
+  }
 
   public static List<montiarc._ast.ASTArcTiming> getTiming(
     ComponentTypeSymbol component) {
@@ -1052,20 +1070,45 @@ public class ComponentHelper {
     ComponentTypeSymbol topComponent) {
     return getInstances(topComponent, topComponent.getFullName());
   }
-
+  
   protected static List<Pair<ComponentTypeSymbol, String>> getInstances(
-    ComponentTypeSymbol component, String packageName) {
+      ComponentTypeSymbol component, String packageName) {
+    return getInstances(component, packageName, (ComponentTypeSymbol symbol)->true);
+  }
+
+  /**
+   * Collects all instances of components recursively. Subcomponents are only
+   * considered if {@code recursionPredicate} returns true for the given
+   * component.
+   * @param recursionPredicate Returns whether to consider the sub components.
+   */
+  protected static List<Pair<ComponentTypeSymbol, String>> getInstances(
+    ComponentTypeSymbol component, String packageName, Predicate<ComponentTypeSymbol> recursionPredicate) {
     List<Pair<ComponentTypeSymbol, String>> instances = new ArrayList<>();
     instances.add(Pair.of(component, packageName));
 
-    for (ComponentInstanceSymbol subcomp : component.getSubComponents()) {
-      instances.addAll(
-        getInstances(subcomp.getType(), packageName + "." + subcomp.getName()));
+    if(recursionPredicate.test(component)) {
+      for (ComponentInstanceSymbol subcomp : component.getSubComponents()) {
+        instances.addAll(
+          getInstances(subcomp.getType(), packageName + "." + subcomp.getName(), recursionPredicate));
+      }
     }
 
     return instances;
   }
-
+  
+  public static List<Pair<ComponentTypeSymbol, String>> getExecutableInstances(ComponentTypeSymbol topComponent, ConfigParams config) {
+    if(config.getSplittingMode() == SplittingMode.OFF) {
+      // If splitting is turned off, splitting hints are ignored.
+      return getInstances(topComponent);
+    } else {
+      // If the component includes its subcomponent (recursively), its
+      // subcomponents do not need to be executed individually.
+      return getInstances(topComponent, topComponent.getFullName(), 
+          (ComponentTypeSymbol component) -> !ComponentHelper.shouldIncludeSubcomponents(component, config));
+    }
+  }
+  
   public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance) {
     ASTNode node = instance.getEnclosingScope().getSpanningSymbol().getAstNode();
     if (!(node instanceof ASTComponentType)) {

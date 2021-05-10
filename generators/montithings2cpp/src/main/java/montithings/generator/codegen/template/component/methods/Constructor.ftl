@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
-<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF")>
+<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp, config))>
 
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp)}::${className}
