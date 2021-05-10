@@ -7,11 +7,15 @@ import montithings._visitor.MontiThingsVisitor;
 
 import java.util.Optional;
 
-public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisitor implements ISynthesize {
+public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisitor
+  implements ISynthesize {
 
   private SynthesizeSymTypeFromMCBasicTypes symTypeFromMCBasicTypes;
+
   private SynthesizeSymTypeFromMCSimpleGenericTypes symTypeFromMCSimpleGenericTypes;
+
   private SynthesizeSymTypeFromSIUnitTypes4Math symTypeFromSIUnitTypes4Math;
+
   private SynthesizeSymTypeFromSIUnitTypes4Computing symTypeFromSIUnitTypes4Computing;
 
   public void init() {

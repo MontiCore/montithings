@@ -62,6 +62,9 @@ public enum MontiThingsError implements montithings.util.Error {
   GENERATOR_MAIN_UNKNOWN("0xMT2003",
     "Component '%s' which is set as 'mainComponent' is unknown. Possible choices are: %s"),
 
+  GENERATOR_REPLAYDATA_REQUIRED("0xMT2004",
+    "Replay mode is enabled but no data is provided. Add 'replayDataPath' option."),
+
   ;
 
   protected final String errorCode;

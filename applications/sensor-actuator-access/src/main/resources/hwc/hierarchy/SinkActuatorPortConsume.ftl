@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 if (nextVal)
   {
     std::cout << "Sink: " << nextVal.value () << std::endl;

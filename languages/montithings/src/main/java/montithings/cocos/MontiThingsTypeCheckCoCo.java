@@ -23,7 +23,8 @@ import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
 
-public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
+public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo
+  implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
   /**
    * Creates an instance of TypeCheckCoCo
    *
@@ -36,7 +37,8 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   }
 
   public static MontiThingsTypeCheckCoCo getCoCo() {
-    TypeCheck typeCheck = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    TypeCheck typeCheck = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(),
+      new DeriveSymTypeOfMontiThingsCombine());
     return new MontiThingsTypeCheckCoCo(typeCheck);
   }
 
@@ -64,7 +66,8 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   public void visit(ASTVariableDeclarator node) {
     //check if VariableInit is an expression, otherwise initiation cannot be checked here
     if (node.isPresentVariableInit() && node.getVariableInit() instanceof ASTSimpleInit) {
-      checkFieldOrVariable(node.getDeclarator(), ((ASTSimpleInit) node.getVariableInit()).getExpression());
+      checkFieldOrVariable(node.getDeclarator(),
+        ((ASTSimpleInit) node.getVariableInit()).getExpression());
     }
     else {
       checkFieldOrVariable(node.getDeclarator(), (ASTExpression) null);
@@ -72,7 +75,7 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   }
 
   @Override
-  public void visit(ASTExpressionStatement node){
+  public void visit(ASTExpressionStatement node) {
     checkExpression(node.getExpression());
   }
 
@@ -102,14 +105,14 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   }
 
   @Override
-  public void visit (ASTForInitByExpressions node) {
+  public void visit(ASTForInitByExpressions node) {
     for (ASTExpression e : node.getExpressionList()) {
       checkExpression(e);
     }
   }
 
   @Override
-  public void visit (ASTEnhancedForControl node) {
+  public void visit(ASTEnhancedForControl node) {
     checkExpression(node.getExpression());
   }
 
@@ -134,15 +137,15 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
   }
 
   private void checkCondition(ASTExpression e) {
-    if(tc instanceof MontiThingsTypeCheck) {
+    if (tc instanceof MontiThingsTypeCheck) {
       ((MontiThingsTypeCheck) tc).setCondition(true);
     }
     SymTypeExpression eType = tc.typeOf(e);
     if (!MontiThingsTypeCheck.isBoolean(eType)) {
       Log.error("conditions have to be evaluable to boolean, but expression "
-          + e.toString() + " is of type " + eType.getTypeInfo().getName());
+        + e.toString() + " is of type " + eType.getTypeInfo().getName());
     }
-    if(tc instanceof MontiThingsTypeCheck) {
+    if (tc instanceof MontiThingsTypeCheck) {
       ((MontiThingsTypeCheck) tc).setCondition(false);
     }
   }
@@ -153,9 +156,10 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
       logError(node, "Variable symbol not present");
     else if (node.getSymbol().getType() == null)
       logError(node, "Variable symbol has no type");
-    else if (assignmentType != null && !OCLTypeCheck.compatible(node.getSymbol().getType(), assignmentType))
+    else if (assignmentType != null && !OCLTypeCheck
+      .compatible(node.getSymbol().getType(), assignmentType))
       logError(node, String.format("Variable type %s incompatible to assigned type %s",
-          node.getSymbol().getType().print(), assignmentType.print()));
+        node.getSymbol().getType().print(), assignmentType.print()));
   }
 
   @Override
@@ -168,12 +172,13 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo implements MontiThin
       if (node.getSymbol().getReturnType().isVoidType()) {
         if (returnType != null && !returnType.isVoidType())
           logError(node, String.format("Return type void incompatible to actual return type %s",
-              returnType.print()));
-      } else if (returnType == null)
+            returnType.print()));
+      }
+      else if (returnType == null)
         logError(node, "No return type given");
       else if (!OCLTypeCheck.compatible(node.getSymbol().getReturnType(), returnType))
         logError(node, String.format("Return type %s incompatible to actual return type %s",
-            node.getSymbol().getReturnType().print(), returnType.print()));
+          node.getSymbol().getReturnType().print(), returnType.print()));
     }
   }
 }

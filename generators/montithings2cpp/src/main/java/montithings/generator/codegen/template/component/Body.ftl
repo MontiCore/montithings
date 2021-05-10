@@ -42,10 +42,16 @@ ${tc.includeArgs("template.component.methods.ShouldComputePortSpecificBehavior",
   ${tc.includeArgs("template.component.methods.RestoreState", [comp, config, className])}
 </#if>
 
+${tc.includeArgs("template.component.methods.printGetState", [comp, className])}
+
 <#if config.getMessageBroker().toString() == "MQTT">
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.PublishConnectors", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.OnMessage", [comp, config, className])}
+</#if>
+
+<#if config.getMessageBroker().toString() == "DDS">
+  ${tc.includeArgs("template.component.methods.SetDDSCmdArgs", [comp, config, className])}
 </#if>
 
 ${tc.includeArgs("template.component.methods.OnEvent", [comp, config, className])}

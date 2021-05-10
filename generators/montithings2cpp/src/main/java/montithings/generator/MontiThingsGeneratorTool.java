@@ -3,6 +3,7 @@ package montithings.generator;
 
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.ComponentTypeSymbolTOP;
 import arcbasis._symboltable.PortSymbol;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
@@ -40,6 +41,9 @@ import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
+import montithings.trafos.DelayedChannelTrafo;
+import montithings.trafos.DelayedComputationTrafo;
+import montithings.trafos.ExternalPortMockTrafo;
 import montithings.util.MontiThingsError;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
@@ -48,9 +52,11 @@ import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,6 +91,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ===================== Set up Symbol Tabs =================== */
     /* ============================================================ */
     Log.info("Initializing symboltable", TOOL_NAME);
+
+    if (config.getReplayMode() == ConfigParams.ReplayMode.ON) {
+        addTrafo(new ExternalPortMockTrafo(modelPath, config.getReplayDataFile(), config.getMainComponent()));
+        addTrafo(new DelayedChannelTrafo(modelPath, config.getReplayDataFile()));
+        addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
+    }
 
     ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
       .setModelPath(mp)
@@ -152,6 +164,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ====================== Generate Code ======================= */
     /* ============================================================ */
 
+    if (config.getReplayMode() == ConfigParams.ReplayMode.ON){
+      // clear list of templated ports since they get mocked by a trafo
+      config.getTemplatedPorts().clear();
+
+      List<String> allModels = symTab.getSubScopes().stream()
+              .map(s -> s.getComponentTypeSymbols().values())
+              .flatMap(Collection::stream)
+              .map(ComponentTypeSymbolTOP::getFullName)
+              .collect(Collectors.toList());
+      models.setMontithings(allModels);
+    }
+
     for (String model : models.getMontithings()) {
       File compTarget = target;
 
@@ -211,7 +235,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
   }
-
 
   /* ============================================================ */
   /* ====================== Check Models ======================== */

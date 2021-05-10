@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings._visitor;
 
 import montiarc._ast.ASTMACompilationUnit;

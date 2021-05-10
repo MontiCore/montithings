@@ -1234,4 +1234,13 @@ public class ComponentHelper {
     //return as nanoseconds
     return "" + ((long) (valueInSeconds * 1000000000));
   }
+
+  public static boolean isFlaggedAsGenerated(ComponentTypeSymbol comp){
+    // the record and replay trafos will include a specific pre comment in all newly generated components
+    if (comp.getAstNode().getHead().get_PreCommentList().isEmpty()) {
+      return false;
+    }
+
+    return comp.getAstNode().getHead().get_PreCommentList().get(0).getText().equals("RECORD_AND_REPLAY_GENERATED");
+  }
 }

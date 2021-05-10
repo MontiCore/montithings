@@ -28,6 +28,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
 </#if>
 {
 this->instanceName = instanceName;
+
 <#list comp.getParameters() as param >
   ${Identifier.getStateName()}.set${param.getName()?cap_first} (${param.getName()});
 </#list>

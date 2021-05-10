@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 protected:
 int counter = 0;
 
