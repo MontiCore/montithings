@@ -24,6 +24,7 @@ LOG(DEBUG) << "Started.";
   <#if config.getMessageBroker().toString() == "DDS">
       while(true) {
           std::this_thread::yield();
+          std::this_thread::sleep_for(std::chrono::seconds(1));
       }
   </#if>
 </#if>

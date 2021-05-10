@@ -17,6 +17,19 @@ ${Utils.printIncludes(comp,config)}
 
 using namespace montithings::library;
 
+<#if config.getReplayMode().toString() == "ON">
+  #include "dds/replayer/MTReplayLibrary.h"
+
+  using namespace montithings::library::replayer;
+
+  // is read by the hwc interceptor, if ON, system calls are replayed
+  #define REPLAY_MODE "ON"
+</#if>
+
+// provides nd() method which can be used to wrap non-deterministic calls
+#include "dds/recorder/HWCInterceptor.h"
+using namespace montithings::library::hwcinterceptor;
+
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
@@ -33,8 +46,22 @@ ${compname}${generics}& component;
 ${compname}State${generics}& ${Identifier.getStateName()};
 ${compname}Interface${generics}& ${Identifier.getInterfaceName()};
 
+<#list comp.getOutgoingPorts() as port>
+  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign name = port.getName()>
+  InOutPort<${type}>* port${name?cap_first};
+</#list>
+
 public:
 ${className}(std::string instanceName, ${compname}${generics}& component, ${compname}State${generics}& state, ${compname}Interface${generics}& interface) : instanceName(std::move(instanceName)), component(component), ${Identifier.getStateName()}(state), ${Identifier.getInterfaceName()}(interface) {}
+
+
+void setInstanceName (const std::string &instanceName);
+<#list comp.getOutgoingPorts() as port>
+  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign name = port.getName()>
+  void setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first});
+</#list>
 
 <#if ComponentHelper.hasBehavior(comp)>
   ${compname}Result${generics} getInitialValues() override;
@@ -47,6 +74,11 @@ ${className}(std::string instanceName, ${compname}${generics}& component, ${comp
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
   ${compname}Result${generics} compute${everyBlockName}(${compname}Input${generics} input);
+</#list>
+
+<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+  <#assign behaviorName = ComponentHelper.getPortSpecificBehaviorName(comp, behavior)>
+  ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input);
 </#list>
 };
 

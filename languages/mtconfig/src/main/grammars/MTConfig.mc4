@@ -34,18 +34,20 @@ grammar MTConfig extends MontiThings  {
    * @attribute Name Name of the MontiThings component.
    * @attribute platform Deployment platform. E.g. GENERIC, Windows, Arduino etc.
    */
-  scope symbol CompConfig implements Element = "config" componentType:Name "for" platform:Name /*TODO set appropriate reference when possible */
-  "{"
+  scope symbol CompConfig implements Element =
+    "config" componentType:Name "for" platform:Name /*TODO set appropriate reference when possible */
+    "{"
     MTCFGTag*
-  "}";
+    "}";
 
   /**
    * PortTemplateTag specifies the templates that are used for processing of the specified port.
    * @attribute Name Name of the MontiThings port.
    */
-  scope symbol PortTemplateTag implements MTCFGTag = port:Name "{"
-        Hookpoint+
-  "}";
+  scope symbol PortTemplateTag implements MTCFGTag =
+    port:Name "{"
+    Hookpoint+
+    "}";
 
   /**
    * Hookpoint specifies the template and the arguments that should be supplied to the template.
@@ -66,4 +68,6 @@ grammar MTConfig extends MontiThings  {
     (
       stringValue:StringLiteral | numericValue:SignedNumericLiteral
     ) ";";
+
+  SeparationHint implements MTCFGTag = "separate" "none" ";";
 }

@@ -7,4 +7,6 @@ component Source {
     out int value;
 
   //guarantee : value < 3;
+  
+  update interval 1s;
 }

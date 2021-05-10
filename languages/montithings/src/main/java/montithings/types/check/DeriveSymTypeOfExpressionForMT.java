@@ -17,7 +17,8 @@ import java.util.Optional;
 import static de.monticore.types.check.SymTypeExpressionFactory.createTypeExpression;
 import static montithings.util.IdentifierUtils.getPortForName;
 
-public class DeriveSymTypeOfExpressionForMT extends de.monticore.types.check.DeriveSymTypeOfExpression {
+public class DeriveSymTypeOfExpressionForMT
+  extends de.monticore.types.check.DeriveSymTypeOfExpression {
 
   private ExpressionsBasisVisitor realThis;
 
@@ -36,14 +37,13 @@ public class DeriveSymTypeOfExpressionForMT extends de.monticore.types.check.Der
   }
 
   @Override
-  protected Optional<SymTypeExpression> calculateNameExpression(ASTNameExpression expr){
+  protected Optional<SymTypeExpression> calculateNameExpression(ASTNameExpression expr) {
     IBasicSymbolsScope scope = getScope(expr.getEnclosingScope());
     Optional<PortSymbol> optPort = getPortForName(expr);
     Optional<VariableSymbol> optVar = scope.resolveVariable(expr.getName());
     Optional<TypeSymbol> optType = scope.resolveType(expr.getName());
-    Optional<FunctionSymbol> optFunction = scope.resolveFunction(expr.getName());
     Optional<FieldSymbol> optField = Optional.empty();
-    if(scope instanceof IOOSymbolsScope){
+    if (scope instanceof IOOSymbolsScope) {
       optField = ((IOOSymbolsScope) scope).resolveField(expr.getName());
     }
     if (optVar.isPresent()) {
@@ -53,23 +53,21 @@ public class DeriveSymTypeOfExpressionForMT extends de.monticore.types.check.Der
       SymTypeExpression res = var.getType().deepClone();
       typeCheckResult.setField();
       return Optional.of(res);
-    } else if (optType.isPresent()) {
+    }
+    else if (optType.isPresent()) {
       //no variable found, test if name is type
       TypeSymbol type = optType.get();
       SymTypeExpression res = createTypeExpression(type.getName(), type.getEnclosingScope());
       typeCheckResult.setType();
       return Optional.of(res);
-    } else if (optPort.isPresent()) {
+    }
+    else if (optPort.isPresent()) {
       PortSymbol port = optPort.get();
       SymTypeExpression res = port.getType().deepClone();
       typeCheckResult.setField();
       return Optional.of(res);
-    } else if (optFunction.isPresent()) {
-      FunctionSymbol function = optFunction.get();
-      SymTypeExpression res = function.getReturnType().deepClone();
-      typeCheckResult.setField();
-      return Optional.of(res);
-    } else if (optField.isPresent()) {
+    }
+    else if (optField.isPresent()) {
       FieldSymbol field = optField.get();
       SymTypeExpression res = field.getType().deepClone();
       typeCheckResult.setField();

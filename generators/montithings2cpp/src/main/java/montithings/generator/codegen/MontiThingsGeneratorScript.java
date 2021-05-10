@@ -46,6 +46,8 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
     builder.addVariable(MontiThingsConfiguration.Options.LOGTRACING.toString(), config.getLogTracing());
     builder.addVariable(MontiThingsConfiguration.Options.VERSION.toString(), config.getVersion());
     builder.addVariable(MontiThingsConfiguration.Options.MAINCOMP.toString(), config.getMainComponent());
+    builder.addVariable(MontiThingsConfiguration.Options.REPLAYMODE.toString(), config.getReplayMode());
+    builder.addVariable(MontiThingsConfiguration.Options.REPLAYDATAFILE.toString(), config.getReplayDataFile());
 
     GroovyInterpreter g = builder.build();
     g.evaluate(script);

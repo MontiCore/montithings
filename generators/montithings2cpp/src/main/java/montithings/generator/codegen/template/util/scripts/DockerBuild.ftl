@@ -2,12 +2,19 @@
 #!/bin/sh
 ${tc.signature("comp", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign instances = ComponentHelper.getInstances(comp)>
+<#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
 <#if config.getSplittingMode().toString() == "OFF">
   docker build -t ${comp.getFullName()?lower_case}:latest .
 <#else>
+  <#-- helper list to detect duplicated keys -->
+  <#assign processedInstances = [] />
+
   <#list instances as pair >
-    docker build --target ${pair.getKey().fullName} -t ${pair.getKey().fullName?lower_case}:latest .
+    <#if ! processedInstances?seq_contains(pair.getKey().fullName)>
+      <#assign processedInstances = processedInstances + [pair.getKey().fullName] />
+
+      docker build --target ${pair.getKey().fullName} -t ${pair.getKey().fullName?lower_case}:latest .
+    </#if>
   </#list>
 </#if>

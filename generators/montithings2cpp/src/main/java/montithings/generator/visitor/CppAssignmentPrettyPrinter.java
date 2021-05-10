@@ -223,7 +223,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
         String portname = capitalize(nameExpression.getName());
         getPrinter()
           .println("component.checkPostconditions(" + Identifier.getInputName()
-            + ", " + Identifier.getResultName() + ", state, state__at__pre);");
+            + ", " + Identifier.getResultName() + ", " + Identifier.getStateName() + ", state__at__pre);");
         getPrinter().print(
           "interface.getPort" + portname + "()->setNextValue(" + Identifier.getResultName() +
             ".get" + portname + (isLogTracingEnabled ? "Wrapped(component.getLogTracer()->newOutput())" : "()" ) + ");");

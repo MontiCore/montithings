@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package montithings;
 
 import com.google.common.base.Preconditions;
@@ -15,8 +15,10 @@ import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._ast.ASTCDPackage;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.types.check.DefsTypeBasic;
 import de.monticore.types.check.SymTypeExpressionFactory;
+import de.monticore.types.check.SymTypeVariable;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -26,14 +28,12 @@ import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsSymbolTableCreatorDelegator;
 import montithings.cocos.MontiThingsCoCos;
+import montithings.trafos.MontiThingsTrafo;
 import montithings.util.ParserUtil;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 import static montithings.util.SymbolUtil.addParam;
 import static montithings.util.SymbolUtil.createFunction;
@@ -52,6 +52,8 @@ public class MontiThingsTool {
 
   protected static final String TOOL_NAME = "MontiThingsTool";
 
+  protected List<MontiThingsTrafo> trafos;
+
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());
   }
@@ -63,6 +65,20 @@ public class MontiThingsTool {
     this.mtChecker = mtChecker;
     this.cdChecker = cdChecker;
     this.isSymTabInitialized = false;
+
+    this.trafos = new ArrayList<>();
+  }
+
+  public List<MontiThingsTrafo> getTrafos() {
+    return trafos;
+  }
+
+  public void setTrafos(List<MontiThingsTrafo> trafos) {
+    this.trafos = trafos;
+  }
+
+  public void addTrafo(MontiThingsTrafo trafo) {
+    this.trafos.add(trafo);
   }
 
   protected MontiThingsCoCoChecker getMTChecker() {
@@ -136,11 +152,32 @@ public class MontiThingsTool {
     @NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
     Collection<IMontiThingsArtifactScope> result = new HashSet<>();
-    for (ASTMACompilationUnit ast : parseModels(scope)) {
+    Collection<ASTMACompilationUnit> models = parseModels(scope);
+
+    Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
+
+    // iterate with an iterator in order to avoid ConcurrentModificationException, as models are transformed
+    for (Iterator<ASTMACompilationUnit> iterator = models.iterator(); iterator.hasNext(); ) {
+      ASTMACompilationUnit ast = iterator.next();
+
+      for (MontiThingsTrafo trafo : trafos) {
+        try {
+          additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
+        }
+        catch (Exception e) {
+          Log.error(e.getCause().getMessage());
+          e.printStackTrace();
+        }
+      }
+    }
+    models.addAll(additionalTrafoModels);
+
+    for (ASTMACompilationUnit ast : models) {
       MontiThingsSymbolTableCreatorDelegator symTab = new MontiThingsSymbolTableCreatorDelegator(
         scope);
       result.add(symTab.createFromAST(ast));
     }
+
     return result;
   }
 
@@ -204,5 +241,39 @@ public class MontiThingsTool {
     addParam(delay, "milliseconds", SymTypeExpressionFactory.createTypeConstant("int"));
 
     createFunction("now_ns", SymTypeExpressionFactory.createTypeObject("String", scope), scope);
+
+    createFunction("now", SymTypeExpressionFactory.createTypeObject("long", scope), scope);
+
+    // Library functions added by dds/replayer/MTReplayLibrary
+    // assume long = unsigned long long since Monticore does not support all types
+    createFunction("getNanoTimestamp", SymTypeExpressionFactory.createTypeObject("long", scope),
+      scope);
+
+    FunctionSymbol delayNanoseconds = createFunction("delayNanoseconds", scope);
+    addParam(delayNanoseconds, "nanoseconds", SymTypeExpressionFactory.createTypeConstant("long"));
+
+    FunctionSymbol subtract = createFunction("subtract", scope);
+    addParam(subtract, "v1", SymTypeExpressionFactory.createTypeConstant("long"));
+    addParam(subtract, "v2", SymTypeExpressionFactory.createTypeConstant("long"));
+
+    FunctionSymbol getNsFromMap = createFunction("getNsFromMap", scope);
+    addParam(getNsFromMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
+
+    FunctionSymbol storeNsInMap = createFunction("storeNsInMap", scope);
+    addParam(storeNsInMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
+    addParam(storeNsInMap, "ts", SymTypeExpressionFactory.createTypeConstant("long"));
+
+    TypeVarSymbol returnNd = MontiThingsMill
+      .typeVarSymbolBuilder()
+      .setName("T")
+      .build();
+
+    returnNd.setSpannedScope(MontiThingsMill.montiThingsScope());
+    returnNd.setEnclosingScope(scope);
+    SymTypeVariable returnType = SymTypeExpressionFactory.createTypeVariable(returnNd);
+
+
+    FunctionSymbol nd = createFunction("nd", returnType, scope);
+    addParam(nd, "value", SymTypeExpressionFactory.createTypeVariable(returnNd));
   }
 }

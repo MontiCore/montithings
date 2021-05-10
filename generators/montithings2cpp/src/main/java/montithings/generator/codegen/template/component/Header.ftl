@@ -13,11 +13,11 @@ ${Utils.printNamespaceStart(comp)}
 ${Utils.printTemplateArguments(comp)}
 class ${className} : public IComponent
 <#if config.getMessageBroker().toString() == "MQTT">
-    , public MqttUser
+  , public MqttUser
 </#if>
 <#if comp.isPresentParentComponent()>
   , ${Utils.printSuperClassFQ(comp)}
-  <#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
+<#-- TODO Check if comp.parent().loadedSymbol.hasTypeParameter is operational -->
   <#if comp.parent().loadedSymbol.hasTypeParameter><<#list helper.superCompActualTypeArguments as scTypeParams >
     scTypeParams<#sep>,</#sep>
   </#list>>
@@ -32,6 +32,7 @@ protected:
 ${tc.includeArgs("template.component.declarations.PortMonitorUuid", [comp, config])}
 ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, config])}
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
+${tc.includeArgs("template.component.declarations.DDS", [config])}
 
 ${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config])}
 
@@ -65,10 +66,15 @@ ${ComponentHelper.printConstructorArguments(comp)});
   void publishConfigForSubcomponent (std::string instanceName);
 </#if>
 
+<#if config.getMessageBroker().toString() == "DDS">
+  // sensor actuator ports require cmd args in order to set up their DDS clients
+  void setDDSCmdArgs (int argc, char *argv[]);
+</#if>
+
 <#if comp.isDecomposed()>
-    <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
-        ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
-    </#if>
+  <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
+    ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
+  </#if>
 </#if>
 
 <#if !(comp.getPorts()?size == 0)>
@@ -85,11 +91,15 @@ void compute() override;
   void compute${everyBlockName} ();
 </#list>
 bool shouldCompute();
+<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+  bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}();
+</#list>
 void start() override;
 void onEvent () override;
 <#if ComponentHelper.retainState(comp)>
   bool restoreState ();
 </#if>
+${compname}State${generics}* getState();
 void threadJoin ();
 void checkPostconditions(${compname}Input${generics}& input, ${compname}Result${generics}& result, ${compname}State${generics}& state, ${compname}State${generics}& state__at__pre);
 };

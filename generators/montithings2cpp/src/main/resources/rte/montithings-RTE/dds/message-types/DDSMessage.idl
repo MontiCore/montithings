@@ -1,0 +1,7 @@
+module DDSMessage {
+  @topic
+  struct Message {
+    long id;
+    string content;
+  };
+};

@@ -93,8 +93,8 @@ include_directories("${commonCodePrefix}${libraryPath?replace("\\","/")}")
 # Include Subcomponent Headers
 <#list ComponentHelper.getSubcompTypesRecursive(comp) as subcomp>
   <#assign subcompName = subcomp.getFullName()>
-  HEADER_DIRECTORIES("../${subcompName}" ${subcompName?replace(".","_")}_HEADER)
-  include_directories("../${subcompName}" ${"$"}{${subcompName?replace(".","_")}_HEADER})
+  # HEADER_DIRECTORIES("../${subcompName}" ${subcompName?replace(".","_")}_HEADER)
+  # include_directories("../${subcompName}" ${"$"}{${subcompName?replace(".","_")}_HEADER})
 </#list>
 
 # Include HWC
@@ -104,7 +104,12 @@ include_directories("hwc" ${r"${dir_list}"})
 
 <#if config.getMessageBroker().toString() == "MQTT">
   # Include Mosquitto Library
+  if(APPLE)
   find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto)
+  else()
+  find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
+  include_directories(/snap/mosquitto/current/usr/include)
+  endif()
 </#if>
 
 <#if test || config.getSplittingMode().toString() == "OFF">
@@ -141,12 +146,11 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
   <#elseif config.getTargetPlatform().toString() == "RASPBERRY">
       ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [comp.getFullName()])}
   <#else>
-      <#if config.getMessageBroker().toString() == "MQTT">
-        target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
-      <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
-        OPENDDS_TARGET_SOURCES(${comp.getFullName()} "../montithings-RTE/DDSMessage.idl")
-        target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
-      </#if>
+    <#if config.getMessageBroker().toString() == "MQTT">
+      target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
+    <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+      target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
+    </#if>
     target_link_libraries(${comp.getFullName()} nng::nng)
   </#if>
   set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)

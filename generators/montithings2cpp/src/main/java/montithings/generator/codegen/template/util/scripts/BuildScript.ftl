@@ -32,7 +32,9 @@ fi
 
 <#if config.getSplittingMode().toString() != "OFF">
 echo Copy Scripts for "$1"
-cd bin
+cd ..
+find hwc -name "*.py" | cpio -pdm build/bin/ > /dev/null 2>&1
+cd build/bin
 cp ../../"$1"/*.sh .
 <#if config.getMessageBroker().toString() == "DDS">
 cp ../../"$1"/*.ini .
@@ -40,6 +42,11 @@ cp ../../"$1"/*.ini .
 <#if config.getSplittingMode().toString() == "LOCAL">
 cp -r ../../"$1"/ports .
 </#if>
+<#if config.getReplayMode().toString() == "ON">
+cp ../../../../recordings.json .
+</#if>
+
 chmod +x *.sh
 cd ../..
 </#if>
+

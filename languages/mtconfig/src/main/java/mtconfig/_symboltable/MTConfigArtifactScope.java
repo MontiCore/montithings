@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package mtconfig._symboltable;
 
 import de.monticore.symboltable.ImportStatement;

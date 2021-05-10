@@ -1,5 +1,5 @@
-/* (c) https://github.com/MontiCore/monticore */
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+// (c) https://github.com/MontiCore/monticore
 
 #include "MqttClient.h"
 #include "easyloggingpp/easylogging++.h"
@@ -7,6 +7,13 @@
 
 MqttClient *
 MqttClient::instance (const std::string &brokerHostname, int brokerPort)
+{
+  static MqttClient *_instance = new MqttClient (brokerHostname, brokerPort);
+  return _instance;
+}
+
+MqttClient *
+MqttClient::localInstance (const std::string &brokerHostname, int brokerPort)
 {
   static MqttClient *_instance = new MqttClient (brokerHostname, brokerPort);
   return _instance;
@@ -23,7 +30,7 @@ MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort)
   mosquitto_lib_init ();
 
   // Create instance
-  mosq = mosquitto_new (nullptr, true, nullptr);
+  mosq = mosquitto_new (nullptr, true, this);
   if (!mosq)
     {
       throw std::runtime_error ("Failed to initialize libmosquitto");
@@ -31,15 +38,23 @@ MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort)
 
   // Set callbacks
   mosquitto_connect_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, int result) {
-    MqttClient::instance ()->onConnect (mosquitto, obj, result);
+    if (MqttClient *currentInstance = static_cast<MqttClient *> (obj))
+      {
+        currentInstance->onConnect (mosquitto, obj, result);
+      }
   });
   mosquitto_disconnect_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, int result) {
-    MqttClient::instance ()->onDisconnect (mosquitto, obj, result);
+    if (MqttClient *currentInstance = static_cast<MqttClient *> (obj))
+      {
+        currentInstance->onDisconnect (mosquitto, obj, result);
+      }
   });
-  mosquitto_message_callback_set (
-      mosq, [] (struct mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) {
-        MqttClient::instance ()->onMessage (mosquitto, obj, message);
-      });
+  mosquitto_message_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) {
+    if (MqttClient *currentInstance = static_cast<MqttClient *> (obj))
+      {
+        currentInstance->onMessage (mosquitto, obj, message);
+      }
+  });
 
   // Connect to MQTT broker
   int keepalive = 60;
@@ -88,12 +103,12 @@ MqttClient::subscribe (std::string topic)
     case MOSQ_ERR_MALFORMED_UTF8:
       CLOG (DEBUG, MQTT_LOG_ID) << "Topic is not UTF-8. Could not connect to MQTT topic " << topic;
       break;
-    /*
-    // Not available on Raspberry Pi
-    case MOSQ_ERR_OVERSIZE_PACKET:
-      CLOG (DEBUG, MQTT_LOG_ID) << "Packet too large. Could not connect to MQTT topic " << topic;
-      break;
-    */
+      /*
+      // Not available on Raspberry Pi
+      case MOSQ_ERR_OVERSIZE_PACKET:
+        CLOG (DEBUG, MQTT_LOG_ID) << "Packet too large. Could not connect to MQTT topic " << topic;
+        break;
+      */
     }
   MqttClient::instance ()->subscriptions.emplace (topic);
 }
@@ -101,7 +116,7 @@ MqttClient::subscribe (std::string topic)
 void
 MqttClient::onConnect (mosquitto *mosquitto, void *obj, int result)
 {
-  CLOG (DEBUG, MQTT_LOG_ID) << "Connected to MQTT broker";
+  CLOG (DEBUG, MQTT_LOG_ID) << "Connected to MQTT broker " << mosquitto;
   connected = true;
 
   // (re)subscribe topics

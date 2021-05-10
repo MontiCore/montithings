@@ -103,6 +103,7 @@ public class ConfigParams {
     LogTracing(String value) {
       this.value = value;
     }
+    
 
     /**
      * @see java.lang.Enum#toString()
@@ -113,11 +114,54 @@ public class ConfigParams {
     }
   }
 
+   public enum ReplayMode {
+    OFF("OFF"),
+    ON("ON");
+
+    String name;
+
+    ReplayMode(String name) {
+      this.name = name;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.name;
+    }
+  }
+
+  public enum RecordingMode {
+    OFF("OFF"),
+    ON("ON");
+
+    String mode;
+
+    RecordingMode(String mode) {
+      this.mode = mode;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.mode;
+    }
+   }
+
   /** property for message brokers */
   protected MessageBroker messageBroker = MessageBroker.OFF;
 
   /** property for log tracing */
   protected LogTracing logTracing = LogTracing.OFF;
+
+  /** property for replay mode */
+  protected ReplayMode replayMode = ReplayMode.OFF;
+
+  protected RecordingMode recordingMode = RecordingMode.OFF;
 
   /** property for target platform */
   protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
@@ -152,6 +196,9 @@ public class ConfigParams {
 
   /** fully qualified name of the component that acts as the main (outermost) component */
   protected String mainComponent;
+
+  /** path of file containing recordings */
+  protected File replayDataFile;
 
   /**
    * Gets the implementing component of given interface component, if the component is bound by componentBindings.
@@ -256,6 +303,14 @@ public class ConfigParams {
     this.messageBroker = messageBroker;
   }
 
+  public ReplayMode getReplayMode() {
+    return replayMode;
+  }
+
+  public void setReplayMode(ReplayMode replayMode) {
+    this.replayMode = replayMode;
+  }
+
   public File getHwcPath() {
     return hwcPath;
   }
@@ -328,6 +383,14 @@ public class ConfigParams {
     this.logTracing = logTracing;
   }
 
+  public RecordingMode getRecordingMode() {
+    return recordingMode;
+  }
+
+  public void setRecordingMode(RecordingMode recordingMode) {
+    this.recordingMode = recordingMode;
+  }
+
   public Multimap<ComponentTypeSymbol, String> getTypeArguments() {
     return typeArguments;
   }
@@ -352,4 +415,8 @@ public class ConfigParams {
   public void setMainComponent(String mainComponent) {
     this.mainComponent = mainComponent;
   }
+
+  public File getReplayDataFile() { return replayDataFile; }
+
+  public void setReplayDataFile(File replayDataFile) { this.replayDataFile = replayDataFile; }
 }

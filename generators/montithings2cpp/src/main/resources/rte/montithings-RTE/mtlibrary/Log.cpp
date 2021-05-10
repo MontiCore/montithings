@@ -1,14 +1,12 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* (c) https://github.com/MontiCore/monticore */
 
-#include "mtlibrary/MTLibrary.h"
+#include "MTLibrary.h"
 #include <thread>
 #include "easyloggingpp/easylogging++.h"
 
-namespace montithings
-{
-namespace library
-{
+namespace montithings {
+namespace library {
 
 void
 log (const std::string& message)

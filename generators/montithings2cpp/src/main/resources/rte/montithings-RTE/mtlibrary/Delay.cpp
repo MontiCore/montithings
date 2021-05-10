@@ -1,13 +1,12 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 
-#include "mtlibrary/MTLibrary.h"
+#include "MTLibrary.h"
 #include <thread>
 
-namespace montithings
-{
-namespace library
-{
+
+namespace montithings {
+namespace library {
 
 void
 delay (int milliseconds)
