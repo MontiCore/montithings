@@ -1,15 +1,17 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.types.check;
 
+import com.google.common.collect.Maps;
 import de.monticore.expressions.commonexpressions._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.*;
+import de.se_rwth.commons.logging.Log;
+import org.assertj.core.util.Lists;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.monticore.ocl.types.check.OCLTypeCheck.compatible;
 import static de.monticore.ocl.types.check.OCLTypeCheck.isBoolean;
@@ -198,13 +200,22 @@ public class DeriveSymTypeOfCommonExpressionsForMT
       //for every method found check if the arguments are correct
       if (expr.getArguments().getExpressionList().size() == method.getParameterList().size()) {
         boolean success = true;
-        for (int i = 0; i < method.getParameterList().size(); i++) {
+        List<SymTypeExpression> dynamicParamTypes = Lists.newArrayList();
+        for(int i = 0; i<method.getParameterList().size(); i++){
           expr.getArguments().getExpression(i).accept(getRealThis());
+          dynamicParamTypes.add(typeCheckResult.getCurrentResult());
+        }
+        SymTypeExpression ret = calculateReturnType(method, dynamicParamTypes);
+        if(!ret.equals(method.getReturnType())){
+          method = method.deepClone();
+          method.setReturnType(ret);
+        }
+        for (int i = 0; i < method.getParameterList().size(); i++) {
           //test if every single argument is correct
           if (!method.getParameterList().get(i).getType()
-            .deepEquals(typeCheckResult.getCurrentResult()) &&
+            .deepEquals(dynamicParamTypes.get(i)) &&
             !compatible(method.getParameterList().get(i).getType(),
-              typeCheckResult.getCurrentResult()) &&
+              dynamicParamTypes.get(i)) &&
             !method.getParameterList().get(i).getType().isTypeVariable()
           ) {
             success = false;
@@ -217,6 +228,89 @@ public class DeriveSymTypeOfCommonExpressionsForMT
       }
     }
     return fittingMethods;
+  }
+
+  protected SymTypeExpression calculateReturnType(FunctionSymbol function, List<SymTypeExpression> dynamicTypes){
+    List<SymTypeExpression> typeVars = getTypeVariables(function.getReturnType());
+    if(typeVars.isEmpty()){
+      return function.getReturnType();
+    }
+    Map<String, SymTypeExpression> replacements = Maps.newHashMap();
+    List<SymTypeExpression> parameterTypes = function.getParameterList()
+      .stream()
+      .map(VariableSymbol::getType)
+      .collect(Collectors.toList());
+    for(int i = 0; i<parameterTypes.size(); i++){
+      List<SymTypeExpression> paramTypeVars = getTypeVariables(parameterTypes.get(i));
+      List<String> returnTypeVars = typeVars.stream().map(s -> s.getTypeInfo().getName()).collect(Collectors.toList());
+      for(SymTypeExpression paramTypeVar: paramTypeVars){
+        if(returnTypeVars.contains(paramTypeVar.getTypeInfo().getName())){
+          SymTypeExpression replacement = calculateReplacement(paramTypeVar.getTypeInfo().getName(), parameterTypes.get(i), dynamicTypes.get(i));
+          SymTypeExpression otherRep = replacements.get(paramTypeVar.getTypeInfo().getName());
+          if(otherRep != null && !otherRep.getTypeInfo().getName().equals(replacement.getTypeInfo().getName())){
+            Log.error("Two different replacements are given for the type variable " + paramTypeVar.getTypeInfo().getName());
+          }else{
+            replacements.put(paramTypeVar.getTypeInfo().getName(), replacement);
+          }
+        }
+      }
+    }
+    return replaceAll(function.getReturnType().deepClone(), replacements);
+  }
+
+  protected SymTypeExpression calculateReplacement(String typeName, SymTypeExpression paramType, SymTypeExpression dynamicType){
+    if(paramType.getTypeInfo().getName().equals(typeName)){
+      return dynamicType;
+    }
+    if(paramType.isGenericType() && dynamicType.isGenericType()){
+      SymTypeOfGenerics param = (SymTypeOfGenerics) paramType;
+      SymTypeOfGenerics dynamic = (SymTypeOfGenerics) dynamicType;
+      for(int i = 0; i<param.getArgumentList().size(); i++){
+        SymTypeExpression replacement = calculateReplacement(typeName, param.getArgument(i), dynamic.getArgument(i));
+        if (replacement != null){
+          param.setArgument(i, replacement);
+        }
+      }
+    }else{
+      Log.error("The dynamic type of a generic type must be a generic type as well");
+    }
+    return null;
+  }
+
+  protected SymTypeExpression replaceAll(SymTypeExpression returnType, Map<String, SymTypeExpression> replacements){
+    if(returnType.isTypeVariable()){
+      return replacements.get(returnType.getTypeInfo().getName());
+    }else if(returnType.isGenericType()){
+      SymTypeOfGenerics genReturnType = (SymTypeOfGenerics) returnType;
+      List<SymTypeExpression> args = genReturnType.getArgumentList();
+      List<SymTypeExpression> newArgs = Lists.newArrayList();
+      for(SymTypeExpression arg : args){
+        newArgs.add(replaceAll(arg, replacements));
+      }
+      genReturnType.setArgumentList(newArgs);
+      return genReturnType;
+    }else if(returnType.isArrayType()){
+      SymTypeArray arrayType = (SymTypeArray) returnType;
+      arrayType.setArgument(replaceAll(arrayType.getArgument(), replacements));
+      return arrayType;
+    }else{
+      return returnType;
+    }
+  }
+
+  protected List<SymTypeExpression> getTypeVariables(SymTypeExpression type){
+    List<SymTypeExpression> typeVars = Lists.newArrayList();
+    if(type.isTypeVariable()){
+      typeVars.add(type);
+    }else if(type.isArrayType()){
+      typeVars.addAll(getTypeVariables(((SymTypeArray) type).getArgument()));
+    }else if(type.isGenericType()){
+      SymTypeOfGenerics genType = (SymTypeOfGenerics) type;
+      for(SymTypeExpression arg : genType.getArgumentList()){
+        typeVars.addAll(getTypeVariables(arg));
+      }
+    }
+    return typeVars;
   }
 
   private boolean isNumericWithSIUnitType(SymTypeExpression type) {
