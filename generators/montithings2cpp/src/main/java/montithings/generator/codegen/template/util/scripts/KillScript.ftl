@@ -6,7 +6,9 @@ ${tc.signature("components", "config", "existsHWC")}
   killall ${comp}
 </#list>
 
+if [ -d "hwc" ]; then
 find hwc -name "*.py" -exec pkill -f '{}' \;
+fi
 
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
   docker stop dcpsinforepo
