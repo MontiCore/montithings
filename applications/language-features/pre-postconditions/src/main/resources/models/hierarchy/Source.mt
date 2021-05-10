@@ -5,6 +5,15 @@ component Source {
 
   port out int value;
 
+  int lastValue = 0;
+
+  behavior {
+    log("Source: " + lastValue);
+    value = lastValue++;
+  }
+
+  update interval 1s;
+
   // Check if a value is within a certain range.
   // Only allow values between 0 and 5,
   // default to 3 if actual value not between 0 and 5

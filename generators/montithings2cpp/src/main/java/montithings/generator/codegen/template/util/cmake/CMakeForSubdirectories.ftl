@@ -9,7 +9,7 @@ project ("MontiThings Application")
 <#if !(config.getMessageBroker().toString() == "MQTT")>
   set(EXCLUDE_MQTT 1)
 </#if>
-<#if !(config.getSplittingMode().toString() == "OFF")>
+<#if (config.getSplittingMode().toString() != "OFF") && (config.getMessageBroker().toString() != "OFF")>
   set(EXCLUDE_COMM_MANAGER 1)
 </#if>
 add_subdirectory ("montithings-RTE")

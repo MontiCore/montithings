@@ -82,9 +82,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   public void generate(File modelPath, File target, File hwcPath, File testPath,
     ConfigParams config) {
 
-    //Log.initWARN();
-    Log.enableFailQuick(false);
-
     ModelPath mp = new ModelPath(modelPath.toPath());
     mtg = new MTGenerator(target, hwcPath, config);
 
@@ -113,6 +110,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .build();
     resolvingDelegates(symTab, cd4CGlobalScope);
     addBasicTypes(symTab);
+    addLibraryFunctions(symTab);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);

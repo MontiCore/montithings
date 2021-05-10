@@ -339,6 +339,7 @@ public class Utils {
     else {
       s.append("this->");
     }
+    s.append("getInterface ()->");
     s.append("getPort" + StringUtils.capitalize(access.getPort()) + "()");
     return s.toString();
   }

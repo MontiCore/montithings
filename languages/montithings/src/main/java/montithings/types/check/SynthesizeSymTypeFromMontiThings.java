@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.types.check;
 
 import de.monticore.types.check.*;
@@ -45,14 +46,13 @@ public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisito
     this.realThis = realThis;
   }
 
-
   public TypeCheckResult typeCheckResult;
 
   public Optional<SymTypeExpression> getResult() {
     return Optional.of(typeCheckResult.getCurrentResult());
   }
 
-  public void setTypeCheckResult(TypeCheckResult typeCheckResult){
+  public void setTypeCheckResult(TypeCheckResult typeCheckResult) {
     this.typeCheckResult = typeCheckResult;
     this.symTypeFromMCBasicTypes.setTypeCheckResult(typeCheckResult);
     this.symTypeFromMCSimpleGenericTypes.setTypeCheckResult(typeCheckResult);

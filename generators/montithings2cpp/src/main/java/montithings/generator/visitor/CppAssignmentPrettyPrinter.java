@@ -26,13 +26,18 @@ import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrinter {
 
-  private TypeCheck tc;
+  protected TypeCheck tc;
 
-  public CppAssignmentPrettyPrinter(IndentPrinter printer) {
+  // In some code parts postconditions should not be checked, e.g. within the
+  // catch condition of a postcondition
+  protected boolean suppressPostconditionCheck = false;
+
+  public CppAssignmentPrettyPrinter(IndentPrinter printer, boolean suppressPostconditionCheck) {
     super(printer);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
       new DeriveSymTypeOfMontiThingsCombine());
     this.realThis = this;
+    this.suppressPostconditionCheck = suppressPostconditionCheck;
   }
 
   @Override public void handle(ASTIncSuffixExpression node) {
@@ -98,6 +103,8 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
 
     if (port.isPresent() || isStateVariable(nameExpression)) {
       CommentPrettyPrinter.printPreComments(node, getPrinter());
+
+      getPrinter().print("{");
 
       String prefix;
       if (isStateVariable(nameExpression)) {
@@ -181,7 +188,20 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       else {
         node.getRight().accept(getRealThis());
       }
-      getPrinter().print(" )");
+      getPrinter().println(" );");
+
+      if (port.isPresent() && port.get().isOutgoing() && !suppressPostconditionCheck) {
+        // check postconditions and send value
+        String portname = capitalize(nameExpression.getName());
+        getPrinter()
+          .println("component.checkPostconditions(" + Identifier.getInputName()
+            + ", " + Identifier.getResultName() + ", state, state__at__pre);");
+        getPrinter().print(
+          "interface.getPort" + portname + "()->setNextValue(" + Identifier.getResultName() +
+            ".get" + portname + "());");
+
+      }
+      getPrinter().print("}");
     }
     else {
       if (tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&

@@ -92,7 +92,7 @@ void ${className}::onNewConnectors(std::string payload)
 void
 ${className}::initializePorts ()
 {
-  ${tc.includeArgs("template.util.ports.printAddDDSPorts", [comp, config])}
+  ${tc.includeArgs("template.component.helper.AddDDSPorts", [comp, config])}
 }
 
 void

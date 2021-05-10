@@ -8,6 +8,8 @@ component Source {
 
   behavior {
     value = lastValue++;
+    delay(500);
+    log("Source: " + lastValue);
   }
 
   update interval 1s;

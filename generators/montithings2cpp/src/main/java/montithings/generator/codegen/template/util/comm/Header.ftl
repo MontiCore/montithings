@@ -1,11 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign className = comp.getName() + "Manager">
-<#if existsHWC>
- <#assign className += "TOP">
-</#if>
+<#include "/template/util/comm/helper/GeneralPreamble.ftl">
+<#include "/template/Copyright.ftl">
 
 #pragma once
 #include "${comp.getName()}.h"

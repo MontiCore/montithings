@@ -12,13 +12,13 @@ CLOG (DEBUG, "DDS") << "onNewConnectors: " << payload;
     {
       std::string topic = payload.substr(0, payload.find("->"));
       CLOG (DEBUG, "DDS") << "New connection! Creating INCOMING PORT: " << topic;
-      comp->addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic));
+      comp->interface.addInPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, INCOMING, topic));
 
       <#if !comp.isAtomic()>
       // additional outgoing port for port incoming port ${p.getName()}
       // to forward data to subcomponents
       topic = topic.substr(0, payload.find("/")) + "/out"; 
-      comp->addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic));
+      comp->interface.addOutPort${p.getName()?cap_first}(new DDSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(*this, OUTGOING, topic));
       </#if>
     }
   </#if>

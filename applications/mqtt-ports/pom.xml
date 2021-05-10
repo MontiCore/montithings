@@ -135,7 +135,7 @@
                                     <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${basedir}/target/generated-sources/lib</outputDirectory>
+                            <outputDirectory>${basedir}/target/generated-sources</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>

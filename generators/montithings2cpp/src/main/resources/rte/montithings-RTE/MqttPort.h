@@ -5,29 +5,39 @@
 #include "MqttClient.h"
 #include "MqttUser.h"
 #include "Port.h"
+#include "Utils.h"
 #include <iostream>
 #include <mosquitto.h>
 #include <string>
 #include <thread>
 #include <utility>
-#include "Utils.h"
 
-template<typename T>
-class MqttPort : public Port<T>, public MqttUser
+template <typename T> class MqttPort : public Port<T>, public MqttUser
 {
-  protected:
+protected:
   /**
    * Fully qualified name of the port (with slashes instead of dots)
    */
   std::string fullyQualifiedName;
 
   /**
+   * True if this is a sensor / actuator port
+   */
+  bool isSensorActuator = false;
+
+  /**
+   * Topic of the sensor / actuator
+   */
+  std::string sensorActuatorTopic;
+
+  /**
    * Subscribed MQTT topics of other ports
    */
   std::set<std::string> subscriptions;
 
-  public:
-  explicit MqttPort (std::string name, bool shouldSubscribe = true);
+public:
+  explicit MqttPort (std::string name, bool shouldSubscribe = true,
+                     MqttClient *client = MqttClient::instance ());
   ~MqttPort () = default;
 
   /**
@@ -35,6 +45,12 @@ class MqttPort : public Port<T>, public MqttUser
    * \param portFqn fully qualified name of the port to subscribe to
    */
   void subscribe (std::string portFqn);
+
+  /**
+   * Set the name of the local sensor / actuator to connect to
+   * \param sensorName topic name without "/sensorActuator/" prefix
+   */
+  void setSensorActuatorName (std::string sensorName, bool shouldSubscribe);
 
   /* ============================================================ */
   /* ======================== Port Methods ====================== */
@@ -60,8 +76,9 @@ class MqttPort : public Port<T>, public MqttUser
                   const struct mosquitto_message *message) override;
 };
 
-template<typename T>
-MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe) : fullyQualifiedName (std::move (name))
+template <typename T>
+MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe, MqttClient *client)
+    : fullyQualifiedName (std::move (name))
 {
   MqttClient::instance ()->addUser (this);
 
@@ -76,7 +93,7 @@ MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe) : fullyQualifiedN
     }
 }
 
-template<typename T>
+template <typename T>
 void
 MqttPort<T>::subscribe (std::string portFqn)
 {
@@ -85,12 +102,28 @@ MqttPort<T>::subscribe (std::string portFqn)
   subscriptions.emplace (topic);
 }
 
-template<typename T>
+template <typename T>
+void
+MqttPort<T>::setSensorActuatorName (std::string sensorName, bool shouldSubscribe)
+{
+  LOG (DEBUG) << "Set sensor actuator name '" << sensorName << "'";
+  MqttClient::localInstance ()->addUser (this);
+  sensorActuatorTopic = "/sensorActuator/" + replaceDotsBySlashes (sensorName);
+  isSensorActuator = true;
+  if (shouldSubscribe)
+    {
+      MqttClient::localInstance ()->subscribe (sensorActuatorTopic);
+      subscriptions.emplace (sensorActuatorTopic);
+      LOG (DEBUG) << "Subscribe to sensor '" << sensorActuatorTopic << "'";
+    }
+}
+
+template <typename T>
 void
 MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message)
 {
-  std::string topic = std::string ((char *) message->topic);
-  std::string payload = std::string ((char *) message->payload, message->payloadlen);
+  std::string topic = std::string ((char *)message->topic);
+  std::string payload = std::string ((char *)message->payload, message->payloadlen);
 
   for (std::string subscription : subscriptions)
     {
@@ -98,30 +131,40 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
       if (topic.find (subscription) != std::string::npos)
         {
           // check if this message informs us about new data
-          if (topic.find ("/ports/") != std::string::npos ||
-              topic.find ("/portsInject/") != std::string::npos)
+          if (topic.find ("/ports/") != std::string::npos
+              || topic.find ("/portsInject/") != std::string::npos
+              || (isSensorActuator && topic.find ("/sensorActuator/") != std::string::npos))
             {
-              T result = jsonToData<T> (payload);
-              this->setNextValue (result);
+              try
+                {
+                  T result = jsonToData<T> (payload);
+                  this->setNextValue (result);
+                }
+              catch (...)
+                {
+                  std::string portName = replaceDotsBySlashes (fullyQualifiedName);
+                  LOG (WARNING) << "Port '" << portName << "' could not parse incoming message '"
+                                << payload << "'";
+                }
             }
 
           // check if this message informs us about a connector
           if (topic.find ("/connectors/") != std::string::npos)
             {
-              subscribe(payload);
+              subscribe (payload);
             }
         }
     }
 }
 
-template<typename T>
+template <typename T>
 void
 MqttPort<T>::getExternalMessages ()
 {
   // nothing to do here. Message are received via onMessage() callback
 }
 
-template<typename T>
+template <typename T>
 void
 MqttPort<T>::sendToExternal (tl::optional<T> nextVal)
 {
@@ -129,6 +172,13 @@ MqttPort<T>::sendToExternal (tl::optional<T> nextVal)
     {
       std::string payload = dataToJson (nextVal);
       std::string topic = "/ports/" + replaceDotsBySlashes (fullyQualifiedName);
-      MqttClient::instance ()->publish (topic, payload);
+      if (isSensorActuator)
+        {
+          MqttClient::localInstance ()->publish (sensorActuatorTopic, payload);
+        }
+      else
+        {
+          MqttClient::instance ()->publish (topic, payload);
+        }
     }
 }
