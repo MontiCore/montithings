@@ -47,25 +47,31 @@ public class MTGenerator {
       && generateDeploy);
 
     fg.generate(targetPath, compname + "Input", ".h",
-      "template/input/InputHeader.ftl", comp, compname, config);
+      "template/input/Header.ftl", comp, config);
     if (!comp.getIncomingPorts().isEmpty()) {
       fg.generate(targetPath, compname + "Input", ".cpp",
-        "template/input/ImplementationFile.ftl", comp, compname, config);
+        "template/input/ImplementationFile.ftl", comp, config);
+    }
+    fg.generate(targetPath, compname + "Interface", ".h",
+      "template/interface/Header.ftl", comp, config);
+    if (!comp.getPorts().isEmpty()) {
+      fg.generate(targetPath, compname + "Interface", ".cpp",
+        "template/interface/ImplementationFile.ftl", comp, config);
     }
     fg.generate(targetPath, compname + "Result", ".h",
-      "template/result/ResultHeader.ftl", comp, compname, config);
+      "template/result/Header.ftl", comp, config);
     if (!comp.getOutgoingPorts().isEmpty()) {
       fg.generate(targetPath, compname + "Result", ".cpp",
-        "template/result/ImplementationFile.ftl", comp, compname, config);
+        "template/result/ImplementationFile.ftl", comp, config);
     }
     fg.generate(targetPath, compname + "State", ".h",
-      "template/state/StateHeader.ftl", comp, config);
+      "template/state/Header.ftl", comp, config);
     fg.generate(targetPath, compname + "State", ".cpp",
       "template/state/ImplementationFile.ftl", comp, config);
     fg.generate(targetPath, compname, ".h",
-      "template/componentGenerator/Header.ftl", comp, compname, config, useWsPorts);
+      "template/component/Header.ftl", comp, config, useWsPorts);
     fg.generate(targetPath, compname, ".cpp",
-      "template/componentGenerator/ImplementationFile.ftl", comp, compname, config, useWsPorts);
+      "template/component/ImplementationFile.ftl", comp, config, useWsPorts);
     fg.generate(targetPath, compname + "Precondition", ".h",
       "template/prepostconditions/GeneralHeader.ftl", comp, config, true);
     fg.generate(targetPath, compname + "Precondition", ".cpp",
@@ -75,8 +81,8 @@ public class MTGenerator {
     fg.generate(targetPath, compname + "Postcondition", ".cpp",
       "template/prepostconditions/GeneralImplementationFile.ftl", comp, config, false);
 
-    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPreconditions(comp)), "Precondition");
-    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPostconditions(comp)), "Postcondition");
+    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPreconditions(comp)), true);
+    generatePrePostcondition(targetPath, comp, new ArrayList<>(ComponentHelper.getPostconditions(comp)), false);
 
     if (comp.isAtomic()) {
       generateBehaviorImplementation(comp, targetPath);
@@ -96,14 +102,14 @@ public class MTGenerator {
           targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
         sketchDirectory.mkdir();
         fg.generate(sketchDirectory, "Deploy" + compname, ".ino",
-          "template/deploy/DeployArduino.ftl", comp, compname);
+          "template/deploy/DeployArduino.ftl", comp);
         fg.generate(targetPath.getParentFile(),
           "README", ".txt", "template/util/arduinoReadme/ArduinoReadme.ftl", targetPath.getName(),
           compname);
       }
       else {
         fg.generate(targetPath, "Deploy" + compname, ".cpp", "template/deploy/Deploy.ftl",
-          comp, compname, config);
+          comp, config);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
           if (config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
             fg.generate(targetPath, compname + "Manager", ".h", "template/util/comm/Header.ftl",
@@ -126,22 +132,23 @@ public class MTGenerator {
   }
 
   protected void generatePrePostcondition(File targetPath, ComponentTypeSymbol comp,
-    List<ASTPrePostConditionNode> conditions, String name) {
+    List<ASTPrePostConditionNode> conditions, boolean isPrecondition) {
+    String name = isPrecondition ? "Precondition" : "Postcondition";
     int number = 1;
     for (ASTPrePostConditionNode condition : conditions) {
-      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".h",
-        "template/prepostconditions/SpecificHeader.ftl", comp, condition, config, number, true);
-      fg.generate(targetPath, comp.getName() + "Precondition" + number, ".cpp",
-        "template/prepostconditions/SpecificImplementationFile.ftl", comp, condition, config, number, true);
+      fg.generate(targetPath, comp.getName() + name + number, ".h",
+        "template/prepostconditions/SpecificHeader.ftl", comp, condition, config, number, isPrecondition);
+      fg.generate(targetPath, comp.getName() + name + number, ".cpp",
+        "template/prepostconditions/SpecificImplementationFile.ftl", comp, condition, config, number, isPrecondition);
       number++;
     }
   }
 
   public void generateBehaviorImplementation(ComponentTypeSymbol comp, File targetPath) {
     fg.generate(targetPath, comp.getName() + "Impl", ".h",
-        "template/behavior/implementation/ImplementationHeader.ftl", comp, comp.getName(), config);
+        "template/impl/Header.ftl", comp, config);
     fg.generate(targetPath, comp.getName() + "Impl", ".cpp",
-        "template/behavior/implementation/ImplementationFile.ftl", comp, comp.getName(), config);
+        "template/impl/ImplementationFile.ftl", comp, config);
   }
 
   protected void makeExecutable(File targetPath, String name, String fileExtension) {
@@ -166,17 +173,6 @@ public class MTGenerator {
       "template/util/scripts/ClangFormat.ftl");
 
     generateDDSDCPSConfig(targetPath);
-  }
-
-  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp) {
-    fg.generate(targetPath, "Dockerfile", "",
-      "template/util/scripts/DockerfileScript.ftl", comp, config);
-    fg.generate(targetPath, "dockerBuild", ".sh",
-      "template/util/scripts/DockerBuild.ftl", comp, config);
-    makeExecutable(targetPath, "dockerBuild", ".sh");
-    fg.generate(targetPath, "dockerRun", ".sh",
-      "template/util/scripts/DockerRun.ftl", comp, config);
-    makeExecutable(targetPath, "dockerRun", ".sh");
   }
 
   public void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File libraryPath,
@@ -225,6 +221,22 @@ public class MTGenerator {
     fg.generate(targetPath, "kill", ".sh",
       "template/util/scripts/KillScript.ftl", sortedDirs, config);
     makeExecutable(targetPath, "kill", ".sh");
+
+    // Docker scripts
+    fg.generate(targetPath, "dockerRun", ".sh",
+            "template/util/scripts/DockerRun.ftl", comp, config);
+    makeExecutable(targetPath, "dockerRun", ".sh");
+  }
+
+  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp) {
+    fg.generate(targetPath, "Dockerfile", "",
+            "template/util/scripts/DockerfileScript.ftl", comp, config);
+    fg.generate(targetPath, "dockerBuild", ".sh",
+            "template/util/scripts/DockerBuild.ftl", comp, config);
+    makeExecutable(targetPath, "dockerBuild", ".sh");
+    fg.generate(targetPath, "dockerRun", ".sh",
+      "template/util/scripts/DockerRun.ftl", comp, config);
+    makeExecutable(targetPath, "dockerRun", ".sh");
   }
 
   public void generateDDSDCPSConfig(File targetPath) {
@@ -304,7 +316,7 @@ public class MTGenerator {
       Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
 
     // Set of templates that follow a defined naming scheme that will be used if no specific template for a port is given.
-    // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume"].ftl,
+    // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume|Init"].ftl,
     // if the portName equals a.b.c.ComponentnamePortnamePort.
     Set<File> templates = FileHelper.getPortImplementation(Paths
         .get(templatePath.toFile().getAbsolutePath(),
@@ -315,6 +327,7 @@ public class MTGenerator {
     bindSAPortTemplate(portName, setup, templates, "body", config, portSymbol);
     bindSAPortTemplate(portName, setup, templates, "provide", config, portSymbol);
     bindSAPortTemplate(portName, setup, templates, "consume", config, portSymbol);
+    bindSAPortTemplate(portName, setup, templates, "init", config, portSymbol);
 
     // Port generation.
     GeneratorEngine engine = new GeneratorEngine(setup);
@@ -345,7 +358,7 @@ public class MTGenerator {
    * @param config     Configuration of the generator. Mainly, the platform and port configuration is used.
    * @param portSymbol Port that may have specific templates configured for usage.
    */
-  private static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates,
+  protected static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates,
     String hookpoint, ConfigParams config, PortSymbol portSymbol) {
     hookpoint = StringUtils.capitalize(hookpoint);
     // Get specified template for the port.

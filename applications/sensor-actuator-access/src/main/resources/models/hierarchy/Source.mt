@@ -5,9 +5,7 @@ component Source {
   port in int sensor;
   port out int value;
 
-  behavior {
-    value = sensor?;
+  behavior sensor {
+    value = sensor;
   }
-
-  update interval 1s;
 }

@@ -21,27 +21,27 @@ public class Models {
   /**
    * MontiThings Models
    */
-  private List<String> montithings = new ArrayList<>();
+  protected List<String> montithings = new ArrayList<>();
 
   /**
    * Bindings
    */
-  private List<String> bindings = new ArrayList<>();
+  protected List<String> bindings = new ArrayList<>();
 
   /**
    * Class diagrams
    */
-  private List<String> classdiagrams = new ArrayList<>();
+  protected List<String> classdiagrams = new ArrayList<>();
 
   /**
    * MontiThings Configuration models
    */
-  private List<String> mtConfig = new ArrayList<>();
+  protected List<String> mtConfig = new ArrayList<>();
 
   /**
    * CD Lang Extension models
    */
-  private List<String> cdextensions = new ArrayList<>();
+  protected List<String> cdextensions = new ArrayList<>();
 
   public Models(File modelPath) {
     findModels(modelPath);

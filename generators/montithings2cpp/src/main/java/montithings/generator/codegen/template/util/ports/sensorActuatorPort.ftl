@@ -2,6 +2,7 @@
 ${tc.signature("portTemeplateName", "existsHWC")}
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 #pragma once
+#include "easyloggingpp/easylogging++.h"
 #include "tl/optional.hpp"
 #include "Port.h"
 #include "Utils.h"
@@ -26,5 +27,7 @@ class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if
   ${defineHookPoint("<CppBlock>?portTemplate:consume")}
   }
 
-  ${Names.getSimpleName(portTemeplateName)?cap_first} (){}
+  ${Names.getSimpleName(portTemeplateName)?cap_first} () {
+    ${defineHookPoint("<CppBlock>?portTemplate:init")}
+  }
 };

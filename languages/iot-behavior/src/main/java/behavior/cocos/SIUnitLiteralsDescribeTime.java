@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package behavior.cocos;
 
 import behavior._ast.ASTAfterStatement;

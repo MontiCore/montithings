@@ -51,11 +51,17 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.li
       | CDEQualifiedDoubleColonName
     ;
 
+  fragment token AngledStringCharacters
+    = (AngledStringCharacter)+;
+
+  fragment token AngledStringCharacter
+    = ~ ('"' | '\\' | '<' | '>') | EscapeSequence;
+
   /**
    * AngledString is a String surrounded by '<' and '>'.
    */
   token AngledString
-    = '<' (StringCharacters)? '>'
+    = '<' (AngledStringCharacters)? '>'
     : {setText(getText().substring(1, getText().length() - 1));};
 
   /**

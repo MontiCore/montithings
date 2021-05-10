@@ -3,7 +3,7 @@ package valid;
 
 component SetExpressions {
   port in int a, b;
-  port in String c;
+  port in int c;
 
   pre a isin {1 : 5};
   pre b isin {1, 5, 7};

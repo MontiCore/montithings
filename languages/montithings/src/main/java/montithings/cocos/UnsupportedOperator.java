@@ -8,11 +8,6 @@ import de.monticore.ocl.optionaloperators._ast.ASTOptionalSimilarExpression;
 import de.se_rwth.commons.logging.Log;
 import montithings.util.MontiThingsError;
 
-/**
- * TODO
- *
- * @since 16.02.21
- */
 public class UnsupportedOperator implements ExpressionsBasisASTExpressionCoCo {
 
   @Override public void check(ASTExpression node) {

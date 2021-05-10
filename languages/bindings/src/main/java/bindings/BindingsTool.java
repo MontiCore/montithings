@@ -90,6 +90,7 @@ public class BindingsTool {
         .build();
       MontiThingsTool tool = new MontiThingsTool();
       tool.addBasicTypes(mtGlobalScope);
+      tool.addLibraryFunctions(mtGlobalScope);
       tool.processModels(this.mtGlobalScope);
     }
     componentTypeResolvingDelegate =

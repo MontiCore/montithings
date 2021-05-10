@@ -36,7 +36,7 @@ import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
 import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
-  private MontiThingsVisitor realThis;
+  protected MontiThingsVisitor realThis;
 
   public CppMontiThingsPrettyPrinter(IndentPrinter printer) {
     super(printer);
@@ -208,7 +208,7 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
     }
   }
 
-  private void printSetComprehensionExpressionsForSetInExpression(
+  protected void printSetComprehensionExpressionsForSetInExpression(
     ASTSetComprehension setComprehension, VariableSymbol symbol) {
     String varName = symbol.getName();
     String varType = symbol.getType().getTypeInfo().getName();

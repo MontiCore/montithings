@@ -50,7 +50,10 @@ SET(dir_list "")
 
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
-    ${tc.includeArgs("template.util.cmake.dsaParameters", [config])}
+    ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
+</#if>
+<#if config.getTargetPlatform().toString() == "RASPBERRY">
+    ${tc.includeArgs("template.util.cmake.platform.raspberrypi.Parameters", [config])}
 </#if>
 
 <#if config.getTargetPlatform().toString() != "DSA_VCG"
@@ -136,7 +139,9 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
   target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
   <#if config.getTargetPlatform().toString() == "DSA_VCG"
   || config.getTargetPlatform().toString() == "DSA_LAB">
-      ${tc.includeArgs("template.util.cmake.dsaLinkLibraries", [comp.getFullName()])}
+      ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [comp.getFullName()])}
+  <#elseif config.getTargetPlatform().toString() == "RASPBERRY">
+      ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [comp.getFullName()])}
   <#else>
       <#if config.getMessageBroker().toString() == "MQTT">
         target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})

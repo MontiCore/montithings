@@ -8,7 +8,7 @@ component SIUnits (km<float> meter, mm^2/kVA^2h test = 20 m^2/mVA^2h){
 
   behavior {
     mm^2/kVA^2h testVariable = 23 m^2/mVA^2h;
-    if(lastValue == 20) testOutPort = 65m;
+    if(lastValue == 20m^2/VA^2h) testOutPort = 65m;
     else testOutPort = 12m;
   }
 }

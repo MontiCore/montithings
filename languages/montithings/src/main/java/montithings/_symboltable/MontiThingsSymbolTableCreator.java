@@ -26,8 +26,7 @@ public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreator
     super(enclosingScope);
   }
 
-  public MontiThingsSymbolTableCreator(
-    Deque<? extends IMontiThingsScope> scopeStack) {
+  public MontiThingsSymbolTableCreator(Deque<? extends IMontiThingsScope> scopeStack) {
     super(scopeStack);
   }
 
@@ -59,11 +58,13 @@ public class MontiThingsSymbolTableCreator extends MontiThingsSymbolTableCreator
     return artifactScope;
   }
 
-  @Override public void visit(ASTMTComponentType node) {
+  @Override
+  public void visit(ASTMTComponentType node) {
     getRealThis().visit((ASTComponentType) node);
   }
 
-  @Override public void endVisit(ASTMTComponentType node) {
+  @Override
+  public void endVisit(ASTMTComponentType node) {
     getRealThis().endVisit((ASTComponentType) node);
   }
 }

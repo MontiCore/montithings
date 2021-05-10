@@ -1,6 +1,8 @@
+// (c) https://github.com/MontiCore/monticore
 package behavior._visitor;
 
 import behavior._ast.ASTAfterStatement;
+import behavior._ast.ASTAgoQualification;
 import behavior._ast.ASTEveryBlock;
 import behavior._ast.ASTLogStatement;
 import com.google.common.base.Preconditions;
@@ -60,5 +62,15 @@ public class BehaviorPrettyPrinter implements BehaviorVisitor {
   public void handle (ASTLogStatement node){
     getPrinter().print("log ");
     node.getStringLiteral().accept(getRealThis());
+    getPrinter().println(";");
+  }
+
+  @Override
+  public void handle (ASTAgoQualification node){
+    node.getExpression().accept(getRealThis());
+    getPrinter().print("@ago");
+    getPrinter().print("(");
+    node.getSIUnitLiteral().accept(getRealThis());
+    getPrinter().print(")");
   }
 }

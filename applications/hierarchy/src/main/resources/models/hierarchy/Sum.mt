@@ -7,4 +7,8 @@ component Sum {
   sync in1, in2;
 
   port out int result;
+
+  behavior {
+    result = in1 + in2;
+  }
 }

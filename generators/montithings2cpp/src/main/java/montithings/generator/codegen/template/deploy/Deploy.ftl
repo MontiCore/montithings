@@ -1,6 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "compname", "config", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+${tc.signature("comp", "config", "existsHWC")}
+<#include "/template/deploy/helper/GeneralPreamble.ftl">
+<#include "/template/Copyright.ftl">
+
 
 #include "${compname}.h"
 <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
@@ -38,10 +40,10 @@ el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
 try
 {
 TCLAP::CmdLine cmd("${compname} MontiThings component", ' ', "${config.getProjectVersion()}");
-${tc.includeArgs("template.deploy.CmdParameters", [comp, config])}
-${tc.includeArgs("template.deploy.ComponentStart", [comp, config])}
+${tc.includeArgs("template.deploy.helper.CmdParameters", [comp, config])}
+${tc.includeArgs("template.deploy.helper.ComponentStart", [comp, config])}
 <#if config.getMessageBroker().toString() == "DDS">
-  ${tc.includeArgs("template.deploy.DDSParticipantCleanup", [comp, config])}
+  ${tc.includeArgs("template.deploy.helper.DDSParticipantCleanup", [comp, config])}
 </#if>
 }
 catch (TCLAP::ArgException &e) // catch exceptions

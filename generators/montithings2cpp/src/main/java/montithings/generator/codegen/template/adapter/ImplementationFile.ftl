@@ -1,19 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("packageName", "compname", "config", "existsHWC")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign className = compname + "Adapter">
-<#if existsHWC>
-    <#assign className += "TOP">
-</#if>
+<#include "/template/adapter/helper/GeneralPreamble.ftl">
 
 #include "${className}.h"
 
-namespace montithings {
-<#list packageName as package>
-  namespace ${package} {
-</#list>
+${tc.includeArgs("template.adapter.helper.NamespaceStart", [packageName])}
 
-<#list packageName as package>
-  } // namespace ${package}
-</#list>
-} // namespace montithings
+// intentionally left empty - all methods need to implemented with hand-written code using TOP mechanism
+
+${tc.includeArgs("template.adapter.helper.NamespaceEnd", [packageName])}

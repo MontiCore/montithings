@@ -191,6 +191,9 @@
 							<classesDirectory>
 								${basedir}/src/main/resources/rte
 							</classesDirectory>
+							<excludes>
+								<exclude>README.md</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 					<execution>
@@ -213,8 +216,12 @@
 						<configuration>
 							<classifier>${montithings-libs.classifier}</classifier>
 							<classesDirectory>
-								${basedir}/src/main/resources/lib
+								${basedir}/src/main/resources
 							</classesDirectory>
+							<includes>
+								<include>lib/**</include>
+								<include>python/**</include>
+							</includes>
 						</configuration>
 					</execution>
 					<execution>

@@ -43,7 +43,7 @@ grammar MontiThings extends MontiArc,
     /* ========================= Behavior ========================= */
     /* ============================================================ */
 
-    Behavior implements ArcElement = "behavior" MCJavaBlock;
+    Behavior implements ArcElement = "behavior" (Name@Port || ",")* MCJavaBlock;
 
     PublishPort implements MCStatement =
         "publish" publishedPorts:(Name@Port || ",")+ ";";
