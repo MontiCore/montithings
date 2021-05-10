@@ -2,19 +2,17 @@
 /* (c) https://github.com/MontiCore/monticore */
 
 #include "MTLibrary.h"
-#include <thread>
+#include <chrono>
 
-namespace montithings
-{
-namespace library
-{
+namespace montithings {
+namespace library {
 
-    long
-    now() {
-        auto now = std::chrono::high_resolution_clock::now();
-        auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
-        return timestamp.count();
-    }
+std::string
+now_ns() {
+    auto now = std::chrono::high_resolution_clock::now();
+    auto timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+    return std::to_string(timestamp.count());
+}
 
 }
 }
