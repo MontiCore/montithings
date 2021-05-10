@@ -56,8 +56,6 @@ import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTSeparationHint;
 import mtconfig._symboltable.CompConfigSymbol;
 import mtconfig._symboltable.IMTConfigGlobalScope;
-import mtconfig._symboltable.MTConfigScope;
-
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
@@ -1104,11 +1102,10 @@ public class ComponentHelper {
       // If splitting is turned off, splitting hints are ignored.
       return getInstances(topComponent);
     } else {
-      return getInstances(topComponent, topComponent.getFullName(), (ComponentTypeSymbol component)->{
-        // If the component includes its subcomponent (recursively), its
-        // subcomponents do not need to be executed individually.
-        return !ComponentHelper.shouldIncludeSubcomponents(component, config);
-      });
+      // If the component includes its subcomponent (recursively), its
+      // subcomponents do not need to be executed individually.
+      return getInstances(topComponent, topComponent.getFullName(), 
+          (ComponentTypeSymbol component) -> !ComponentHelper.shouldIncludeSubcomponents(component, config));
     }
   }
   
