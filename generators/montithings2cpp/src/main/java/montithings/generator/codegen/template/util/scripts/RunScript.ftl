@@ -27,4 +27,6 @@ echo "Starting components..."
 </#list>
 
 # Run Python Ports
+if [ -d "hwc" ]; then
 find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "$0" > "$0.log" 2>&1 &' '{}' \;
+fi
