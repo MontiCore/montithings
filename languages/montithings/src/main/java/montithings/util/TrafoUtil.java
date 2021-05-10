@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.util;
 
 import arcbasis._ast.*;

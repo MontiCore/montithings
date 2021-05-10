@@ -1,5 +1,5 @@
 #!/bin/bash
-# (c) https://github.com/MontiCore/monticore 
+# (c) https://github.com/MontiCore/monticore
 
 # Stop on first error
 set -e
