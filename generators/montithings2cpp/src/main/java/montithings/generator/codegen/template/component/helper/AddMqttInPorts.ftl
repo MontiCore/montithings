@@ -4,10 +4,9 @@ ${tc.signature("comp","config")}
 
 <#list comp.getIncomingPorts() as p>
   <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
-  <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
 
   // incoming port ${p.getName()}
-  MqttPort<${type}> *${p.getName()} = new MqttPort<${type}>(this->getInstanceName () + "/${p.getName()}");
+  MqttPort<Message<${type}>> *${p.getName()} = new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}");
   interface.getPort${p.getName()?cap_first} ()->attach (this);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign topicName = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
@@ -18,6 +17,6 @@ ${tc.signature("comp","config")}
   <#if !comp.isAtomic()>
     // additional outgoing port for port incoming port ${p.getName()}
     // to forward data to subcomponents
-    this->interface.addOutPort${p.getName()?cap_first}(new MqttPort<${type}>(this->getInstanceName () + "/${p.getName()}", false));
+    this->interface.addOutPort${p.getName()?cap_first}(new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", false));
   </#if>
 </#list>

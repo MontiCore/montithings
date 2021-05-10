@@ -4,11 +4,10 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 
 <#assign name = port.getName()?cap_first>
 <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
-<#assign typeWrapped = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
 <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
 
 tl::optional<${type}> get${name}() const;
-${tc.includeArgs("template.logtracing.hooks.GetPortWrappedDeclaration", [comp, config, port])}
+Message<${type}> get${name}Message(sole::uuid id) const;
 
 void set${name}(tl::optional<${type}>);
 

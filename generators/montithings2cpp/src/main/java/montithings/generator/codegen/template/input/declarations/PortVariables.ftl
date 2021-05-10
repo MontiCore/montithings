@@ -4,10 +4,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port >
   <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
-  <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
-  tl::optional<${type}> ${port.getName()};
+  tl::optional<Message<${type}>> ${port.getName()};
   <#if ComponentHelper.hasAgoQualification(comp, port)>
-    static std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${type}>> dequeOf__${port.getName()?cap_first};
+    static std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, Message<${type}>>> dequeOf__${port.getName()?cap_first};
     std::chrono::nanoseconds highestAgoOf__${port.getName()?cap_first} = std::chrono::nanoseconds {${ComponentHelper.getHighestAgoQualification(comp, port.getName())}};
     void cleanDequeOf${port.getName()?cap_first}(std::chrono::time_point<std::chrono::system_clock> now);
   </#if>
@@ -15,6 +14,5 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 <#list ComponentHelper.getPortsInBatchStatement(comp) as port >
   <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
-  <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
-  std::vector<${type}> ${port.getName()} = {};
+  std::vector<Message<${type}>> ${port.getName()} = {};
 </#list>

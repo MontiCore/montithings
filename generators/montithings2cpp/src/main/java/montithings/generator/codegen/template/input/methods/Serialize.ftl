@@ -11,10 +11,7 @@ void serialize(Archive & archive)
 <#if comp.getAllIncomingPorts()?has_content>
     archive(
         <#list comp.getAllIncomingPorts() as port>
-            CEREAL_NVP_("${port.getName()}", ${port.getName()}
-                <#if config.getLogTracing().toString() == "ON">
-                    ->second.value()
-                </#if>
+            CEREAL_NVP_("${port.getName()}", ${port.getName()}->getPayload().value()
             )
           <#sep>,</#sep>
         </#list>

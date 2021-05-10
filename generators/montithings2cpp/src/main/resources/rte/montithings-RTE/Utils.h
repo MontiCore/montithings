@@ -7,9 +7,10 @@
 #include "tl/optional.hpp"
 #include "cereal/archives/json.hpp"
 #include "cereal/types/string.hpp"
-#include "cereal/types/utility.hpp"
 #include "cereal/types/unordered_map.hpp"
 #include "sole/sole.hpp"
+
+#include "Message.h"
 
 template<typename T>
 std::string
@@ -77,6 +78,29 @@ std::string getEnclosingComponentName (const std::string& input);
 /* Additional serialization functions for cereal */
 namespace cereal
 {
+    // for type Message.h
+    template <class Archive, typename T>
+    void
+    save(Archive & archive, Message<T> const & msg)
+    {
+        archive(CEREAL_NVP_("payload", msg.getPayload()),
+                CEREAL_NVP_("uuid", msg.getUuid()));
+    }
+
+    template <class Archive, typename T>
+    void
+    load(Archive & archive,
+         Message<T> & msg)
+    {
+        sole::uuid msgUuid{};
+        T msgPayload;
+
+        archive(CEREAL_NVP_("payload", msgPayload),
+                CEREAL_NVP_("uuid", msgUuid));
+
+        msg = Message<T>(msgPayload, msgUuid);
+    }
+
     // for type sole::uuid
     template<class Archive>
     std::string

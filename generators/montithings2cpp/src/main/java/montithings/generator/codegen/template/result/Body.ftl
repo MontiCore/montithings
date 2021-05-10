@@ -9,6 +9,7 @@ ${tc.includeArgs("template.result.methods.Constructor", [comp, config, existsHWC
   <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
 
   ${tc.includeArgs("template.result.methods.GetPort", [port, comp, config, existsHWC])}
+  ${tc.includeArgs("template.result.methods.GetPortMessage", [port, comp, config, existsHWC])}
   ${tc.includeArgs("template.result.methods.SetPort", [port, comp, config, existsHWC])}
 
   <#if ComponentHelper.getCDEReplacement(port, config).isPresent()>

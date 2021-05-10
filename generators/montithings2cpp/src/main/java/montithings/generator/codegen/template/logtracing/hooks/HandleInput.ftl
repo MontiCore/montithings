@@ -6,7 +6,7 @@ ${tc.signature("comp", "config")}
 
     std::vector<sole::uuid> traceUUIDs = {
          <#list comp.getAllIncomingPorts() as inPort>
-             input.get${inPort.getName()?cap_first}TraceUUID()
+             input.get${inPort.getName()?cap_first}Uuid()
              <#sep>,</#sep>
          </#list>
     };

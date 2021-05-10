@@ -14,7 +14,7 @@ ${className}Result${Utils.printFormalTypeParameters(comp)} result;
     this->uuid
 </#if>).value()
 <#if config.getLogTracing().toString() == "ON">
-    .second.value()
+    .getPayload().value()
 </#if>
     );
     }

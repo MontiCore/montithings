@@ -226,7 +226,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
             + ", " + Identifier.getResultName() + ", " + Identifier.getStateName() + ", state__at__pre);");
         getPrinter().print(
           "interface.getPort" + portname + "()->setNextValue(" + Identifier.getResultName() +
-            ".get" + portname + (isLogTracingEnabled ? "Wrapped(component.getLogTracer()->newOutput())" : "()" ) + ");");
+            ".get" + portname + (isLogTracingEnabled ? "Message(component.getLogTracer()->newOutput())" : "()" ) + ");");
       }
       getPrinter().print("}");
     }

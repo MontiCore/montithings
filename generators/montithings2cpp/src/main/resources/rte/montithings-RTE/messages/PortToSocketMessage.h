@@ -3,7 +3,7 @@
 #pragma once
 #include <iostream>
 
-class Message
+class PortToSocketMessage
 {
   public:
   virtual std::string toString () = 0;

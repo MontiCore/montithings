@@ -34,7 +34,6 @@ ${className}::searchSubcomponents ()
           <#if !target.isPresentComponent() && subcomponent.getName() == connector.getSource().getComponent()>
             <#list subcomponentSymbol.ports as p>
               <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
-              <#assign type = tc.includeArgs("template.logtracing.hooks.ReplaceTypeIfEnabled", [comp, config, type])>
 
               <#if p.getName() == connector.getSource().port>
                 // set receiver
@@ -42,7 +41,7 @@ ${className}::searchSubcomponents ()
                 std::string ${subcomponent.getName()}_uri = "ws://" + ${subcomponent.getName()}_ip + ":" + communicationPort + "/" + comp->getInstanceName () + ".${subcomponent.getName()}/out/${p.getName()}";
 
                 // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
-                comp->getInterface()->addInPort${target.port?cap_first}(new WSPort<${type}>(INCOMING, ${subcomponent.getName()}_uri));
+                comp->getInterface()->addInPort${target.port?cap_first}(new WSPort<Message<${type}>>(INCOMING, ${subcomponent.getName()}_uri));
 
               </#if>
             </#list>

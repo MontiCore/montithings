@@ -7,8 +7,11 @@ ${Utils.printTemplateArguments(comp)}
 tl::optional<${type}>
 ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}() const
 {
-return ${port.getName()}<#if config.getLogTracing().toString() == "ON">->second</#if>;
+return ${port.getName()}->getPayload();
 }
 
-
-${tc.includeArgs("template.logtracing.hooks.GetInputUUIDDefinition", [comp, config, port])}
+sole::uuid
+${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Uuid()
+{
+  return ${port.getName()}->getUuid();
+}

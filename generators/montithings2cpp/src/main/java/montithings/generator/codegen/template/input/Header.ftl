@@ -16,6 +16,8 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<cereal/types/string.hpp>"}
 
 #include "tl/optional.hpp"
+#include "Message.h"
+
 ${Utils.printIncludes(comp,config)}
 
 ${Utils.printNamespaceStart(comp)}
