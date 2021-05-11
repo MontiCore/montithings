@@ -19,7 +19,7 @@ namespace montithings {
 
     extern std::vector<LogTracer*> subscribers;
 
-    void subscribe(LogTracer* logTracer);
+    void subscribeLogTracer(LogTracer* logTracer);
     void handleLogEntry(const std::string &message);
 
 }

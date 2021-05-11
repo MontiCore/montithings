@@ -12,13 +12,17 @@
 #include "sole/sole.hpp"
 #include "Utils.h"
 
+#include "interface/LogTracerInterface.h"
 #include "data/LogEntry.h"
-#include "GlobalStorage.h"
+#include "Externals.h"
+
 
 namespace montithings {
 
 class LogTracer {
 private:
+    LogTracerInterface *interface;
+
     std::string instanceName;
 
     // stores all log messages with their timestamp, referenced by a sole::uuid
@@ -49,16 +53,20 @@ private:
     std::map<std::string, vSnapshot> variableSnapshots;
 
     // creates new UUID
-    sole::uuid uuid();
+    static sole::uuid uuid();
 
 public:
-    explicit LogTracer(std::string instanceName);
+    explicit LogTracer(std::string instanceName, LogTracerInterface &interface);
 
     ~LogTracer() = default;
+
+    LogTracerInterface *getInterface() const;
 
     sole::uuid newOutput();
 
     void handleLogEntry(const std::string& content);
+
+    void onRequest(sole::uuid reqUuid, sole::uuid traceUuid, LogTracerInterface::Request reqType, long fromTimestamp);
 
     template <typename T>
     void handleVariableStateChange(const std::string& variableName, const T& valueBefore, const T& valueAfter) {
@@ -68,7 +76,7 @@ public:
     }
 
     template <typename T>
-    void handleInput(const T& input, std::vector<sole::uuid> traceUUIDs) {
+    void handleInput(const T& input, const std::vector<sole::uuid>& traceUUIDs) {
         // stores the log entries which are grouped to the previous input
         allInputLogs[currInputId] = currInputLogs;
 

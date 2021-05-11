@@ -7,3 +7,7 @@ ${tc.signature("comp", "config")}
 
   #include "logtracing/LogTracer.h"
 </#if>
+
+<#if config.getMessageBroker().toString() == "DDS">
+  #include "logtracing/interface/dds/LogTracerDDSClient.h"
+</#if>

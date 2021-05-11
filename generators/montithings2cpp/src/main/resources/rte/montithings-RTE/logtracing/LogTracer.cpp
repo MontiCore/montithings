@@ -6,6 +6,17 @@
 #include <utility>
 
 namespace montithings {
+    LogTracer::LogTracer(std::string instanceName, LogTracerInterface &interface)
+        : instanceName(std::move(instanceName)), interface(&interface) {
+        currInputId = uuid();
+        currOutputId = uuid();
+        montithings::subscribeLogTracer(this);
+
+        interface.addOnRequestCallback(std::bind(&LogTracer::onRequest, this, std::placeholders::_1,
+                                                 std::placeholders::_2,
+                                                 std::placeholders::_3,
+                                                 std::placeholders::_4));
+    }
 
     sole::uuid
     LogTracer::uuid() {
@@ -28,11 +39,13 @@ namespace montithings {
         return currOutputId;
     }
 
-    LogTracer::LogTracer(std::string instanceName) : instanceName(std::move(instanceName)) {
-        currInputId = uuid();
-        currOutputId = uuid();
-        montithings::subscribe(this);
+    LogTracerInterface *LogTracer::getInterface() const {
+        return interface;
     }
 
+    void
+    LogTracer::onRequest(sole::uuid reqUuid, sole::uuid traceUuid, LogTracerInterface::Request reqType, long fromTimestamp) {
+        std::cout << "got something!" << std::endl;
+    }
 
 }

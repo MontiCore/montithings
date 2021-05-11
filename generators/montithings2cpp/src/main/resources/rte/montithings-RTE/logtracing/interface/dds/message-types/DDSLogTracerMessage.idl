@@ -1,0 +1,21 @@
+module DDSLogTracerMessage {
+  enum RequestData { LOG_ENTRIES,
+                     INTERNAL_DATA };
+
+    @topic
+    struct Request {
+        string req_uuid;
+        string trace_uuid;
+
+        long from_timestamp;
+        RequestData req_data;
+    };
+
+    @topic
+    struct Response {
+        string req_uuid;
+        RequestData req_data;
+
+        string content;
+    };
+};
