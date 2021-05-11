@@ -12,10 +12,8 @@ ${className}Result${Utils.printFormalTypeParameters(comp)} result;
 
 <#else>
     this->uuid
-</#if>).value()
-<#if config.getLogTracing().toString() == "ON">
-    .getPayload().value()
-</#if>
+</#if>)->getPayload().value()
+
     );
     }
 </#list>
