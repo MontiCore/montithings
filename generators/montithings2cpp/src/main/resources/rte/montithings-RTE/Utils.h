@@ -93,12 +93,14 @@ namespace cereal
          Message<T> & msg)
     {
         sole::uuid msgUuid{};
-        T msgPayload;
+        tl::optional<T> msgPayload;
 
         archive(CEREAL_NVP_("payload", msgPayload),
                 CEREAL_NVP_("uuid", msgUuid));
 
-        msg = Message<T>(msgPayload, msgUuid);
+        if (msgPayload.has_value()) {
+            msg = Message<T>(msgPayload.value(), msgUuid);
+        }
     }
 
     // for type sole::uuid
