@@ -4,9 +4,9 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "../montithings-RTE/easyloggingpp/easylogging++.h"
-#include "../montithings-RTE/logtracing/interface/LogTracerInterface.h"
-#include "../montithings-RTE/logtracing/interface/dds/LogTracerDDSClient.h"
+#include "easyloggingpp/easylogging++.h"
+#include "logtracing/interface/LogTracerInterface.h"
+#include "logtracing/interface/dds/LogTracerDDSClient.h"
 
 #include "lib/cxxopts.hpp"
 #include "lib/loguru.hpp"
@@ -18,6 +18,8 @@ void onResponse(sole::uuid reqUuid, std::string content);
 
 int
 main(int argc, char **argv) {
+    el::Loggers::getLogger("DDS");
+
     // only show most relevant things on stderr:
     loguru::g_internal_verbosity = false;
     loguru::g_stderr_verbosity = 0;
@@ -40,9 +42,10 @@ main(int argc, char **argv) {
     loguru::add_file("latest_readable.log", loguru::Truncate, loguru::Verbosity_INFO);
 
 
-    cxxopts::Options options("MessageFlowRecorder", "A brief description");
+    cxxopts::Options options("LogTracer", "A brief description");
     options.add_options()
-            ("message-broker", "The used MessageBroker (MQTT or DDS). Defaults to DDS.", cxxopts::value<std::string>()->default_value("DDS"))
+            ("message-broker", "The used MessageBroker (MQTT or DDS). Defaults to DDS.",
+             cxxopts::value<std::string>()->default_value("DDS"))
             ("DCPSConfigFile", "DCPSConfigFile", cxxopts::value<std::string>()->default_value("dcpsconfig.ini"))
             ("DCPSInfoRepo", "DCPSInfoRepo host", cxxopts::value<std::string>()->default_value(""))
             ("h,help", "Print usage");
@@ -59,7 +62,7 @@ main(int argc, char **argv) {
 
     std::string dcpsConfigFile = result["DCPSConfigFile"].as<std::string>();
     std::string dcpsInfoHost = result["DCPSInfoRepo"].as<std::string>();
-    
+
 
     // Rename named arguments since cxxopts does not allow a single "-" in front of multiple characters
     // Unfortunately this is what OpenDDS expects
@@ -72,9 +75,13 @@ main(int argc, char **argv) {
         }
     }
 
-    LogTracerInterface* interface;
+    LogTracerInterface *interface;
     if (messageBroker == "DDS") {
-        interface = new LogTracerDDSClient(argc, argv);
+        interface = new LogTracerDDSClient(argc, argv,
+                                           true,
+                                           false,
+                                           false,
+                                           true);
     } else if (messageBroker == "MQTT") {
 
     } else {
@@ -86,10 +93,17 @@ main(int argc, char **argv) {
     time_t fromDatetime = time(nullptr);
 
     interface->addOnResponseCallback(std::bind(&onResponse, std::placeholders::_1, std::placeholders::_2));
+
+    interface->waitUntilReadersConnected(1);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
     interface->request(instanceName, LogTracerInterface::Request::LOG_ENTRIES, fromDatetime);
     interface->request(instanceName, LogTracerInterface::Request::INTERNAL_DATA, fromDatetime);
 
-    std::this_thread::sleep_for(std::chrono::seconds (3));
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
+    interface->cleanup();
 }
 
 void onResponse(sole::uuid reqUuid, std::string content) {

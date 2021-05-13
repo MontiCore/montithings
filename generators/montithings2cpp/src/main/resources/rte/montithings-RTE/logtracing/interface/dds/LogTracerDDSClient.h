@@ -14,7 +14,11 @@ private:
     std::function<void(sole::uuid, sole::uuid, Request, long)> onRequest;
 
 public:
-    LogTracerDDSClient(int argc, char *argv[]);
+    LogTracerDDSClient(int argc, char *argv[],
+                       bool initReqWriter,
+                       bool initReqReader,
+                       bool initResWriter,
+                       bool initResReader);
 
     ~LogTracerDDSClient() override = default;
 
@@ -31,4 +35,9 @@ public:
     void addOnResponseCallback(std::function<void(sole::uuid, std::string)> callback) override;
 
     void addOnRequestCallback(std::function<void(sole::uuid, sole::uuid, Request, long)> callback) override;
+
+    void cleanup() override;
+
+    void waitUntilReadersConnected(int number) override;
+
 };

@@ -39,7 +39,7 @@ namespace montithings {
         return currOutputId;
     }
 
-    LogTracerInterface *LogTracer::getInterface() const {
+    LogTracerInterface * LogTracer::getInterface() {
         return interface;
     }
 

@@ -24,4 +24,8 @@ public:
 
     virtual void addOnRequestCallback(std::function<void(sole::uuid reqUuid, sole::uuid traceUuid, Request reqType,
                                                          long from_timestamp)> callback) = 0;
+
+    virtual void cleanup() = 0;
+
+    virtual void waitUntilReadersConnected(int number) = 0;
 };

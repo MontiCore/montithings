@@ -15,13 +15,14 @@
 #include "interface/LogTracerInterface.h"
 #include "data/LogEntry.h"
 #include "Externals.h"
+#include "interface/dds/LogTracerDDSClient.h"
 
 
 namespace montithings {
 
 class LogTracer {
 private:
-    LogTracerInterface *interface;
+    LogTracerInterface* interface;
 
     std::string instanceName;
 
@@ -60,7 +61,7 @@ public:
 
     ~LogTracer() = default;
 
-    LogTracerInterface *getInterface() const;
+    LogTracerInterface * getInterface();
 
     sole::uuid newOutput();
 

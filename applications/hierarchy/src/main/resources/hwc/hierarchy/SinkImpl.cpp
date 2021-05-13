@@ -16,7 +16,7 @@ SinkImpl::compute (SinkInput input)
 {
   if (input.getValue ())
     {
-      std::cout << input.getValue ().value () << std::endl;
+      log("Sink | in: " +  input.getValue ().value ());
     }
   else
     { std::cout << "No data." << std::endl; }

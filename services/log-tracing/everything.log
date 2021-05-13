@@ -1,0 +1,180 @@
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:18:50.692 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:18:50.692 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:18:50.693 (   0.007s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:19:07.494 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:19:07.494 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:19:07.495 (   0.007s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:20:41.680 (   0.005s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:20:41.680 (   0.005s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:20:41.680 (   0.006s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:22:29.815 (   0.005s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:22:29.815 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:22:29.816 (   0.006s) | Initializing...
+Stack trace:
+6       0x56001363392e /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x9a92e) [0x56001363392e]
+5       0x7f1f346950b3 __libc_start_main + 243
+4       0x5600136c26f9 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1296f9) [0x5600136c26f9]
+3       0x560013748d99 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1afd99) [0x560013748d99]
+2       0x56001374e6c2 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1b56c2) [0x56001374e6c2]
+1       0x7f1f348753c0 /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0) [0x7f1f348753c0]
+0       0x560013641e15 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0xa8e15) [0x560013641e15]
+20:22:33.912 (   4.102s) | Signal: SIGSEGV
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:23:55.321 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:23:55.321 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:23:55.322 (   0.006s) | Initializing...
+Stack trace:
+6       0x55ffc25a892e /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x9a92e) [0x55ffc25a892e]
+5       0x7fe3c470e0b3 __libc_start_main + 243
+4       0x55ffc26376f9 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1296f9) [0x55ffc26376f9]
+3       0x55ffc26bdd99 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1afd99) [0x55ffc26bdd99]
+2       0x55ffc26c36c2 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1b56c2) [0x55ffc26c36c2]
+1       0x7fe3c48ee3c0 /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0) [0x7fe3c48ee3c0]
+0       0x55ffc25b6e15 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0xa8e15) [0x55ffc25b6e15]
+20:24:02.925 (   7.610s) | Signal: SIGSEGV
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:25:07.037 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:25:07.037 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:25:07.038 (   0.006s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:27:41.017 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:27:41.017 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:27:41.018 (   0.006s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:34:53.527 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:34:53.527 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:34:53.528 (   0.007s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+20:51:55.067 (   0.005s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+20:51:55.068 (   0.005s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+20:51:55.068 (   0.006s) | Initializing...
+Stack trace:
+6       0x55dfc157b92e /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x9a92e) [0x55dfc157b92e]
+5       0x7fc9ba0490b3 __libc_start_main + 243
+4       0x55dfc160a6f9 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1296f9) [0x55dfc160a6f9]
+3       0x55dfc1690dae /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1afdae) [0x55dfc1690dae]
+2       0x55dfc1696b9b /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1b5b9b) [0x55dfc1696b9b]
+1       0x7fc9ba2293c0 /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0) [0x7fc9ba2293c0]
+0       0x55dfc1589e15 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0xa8e15) [0x55dfc1589e15]
+20:52:00.547 (   5.485s) | Signal: SIGSEGV
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+21:00:22.027 (   0.009s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+21:00:22.027 (   0.009s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+21:00:22.028 (   0.010s) | Initializing...
+Stack trace:
+6       0x558c125dd92e /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x9a92e) [0x558c125dd92e]
+5       0x7fb8fdb5b0b3 __libc_start_main + 243
+4       0x558c1266c6f9 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1296f9) [0x558c1266c6f9]
+3       0x558c126f2dae /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1afdae) [0x558c126f2dae]
+2       0x558c126f8b59 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x1b5b59) [0x558c126f8b59]
+1       0x7fb8fdd3b3c0 /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0) [0x7fb8fdd3b3c0]
+0       0x558c125ebe15 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0xa8e15) [0x558c125ebe15]
+21:00:44.388 (  22.370s) | Signal: SIGSEGV
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+21:10:50.355 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+21:10:50.355 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+21:10:50.356 (   0.007s) | Initializing...
+21:10:57.100 (   6.751s) | atexit
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+23:22:18.914 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+23:22:18.915 (   0.007s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+23:22:18.915 (   0.007s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+23:26:57.838 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+23:26:57.838 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+23:26:57.838 (   0.007s) | Initializing...

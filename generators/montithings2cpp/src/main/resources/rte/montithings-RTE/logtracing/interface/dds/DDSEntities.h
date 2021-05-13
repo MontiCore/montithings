@@ -18,7 +18,6 @@
 #include <dds/DCPS/transport/multicast/MulticastInst.h>
 #include <dds/DCPS/transport/multicast/Multicast.h>
 
-
 #include "message-types/DDSLogTracerMessageTypeSupportImpl.h"
 
 #define DDS_LOG_ID "DDS"
@@ -73,9 +72,18 @@ protected:
 
     void initResponseDataWriter();
 
+    void waitUntilReadersConnected(int number);
+
     void send(DDSLogTracerMessage::Request req);
 
     void send(DDSLogTracerMessage::Response res);
 
     void addResponseCallback(std::function<void(DDSLogTracerMessage::Response)> callback);
+
+    void addRequestCallback(std::function<void(DDSLogTracerMessage::Request)> callback);
+
+    void cleanup();
+
+public:
+
 };

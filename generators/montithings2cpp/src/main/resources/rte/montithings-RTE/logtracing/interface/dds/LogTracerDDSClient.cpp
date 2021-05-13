@@ -13,18 +13,34 @@ void LogTracerDDSClient::response(sole::uuid reqUuid, const std::string &content
     send(res);
 }
 
-LogTracerDDSClient::LogTracerDDSClient(int argc, char *argv[]) {
+LogTracerDDSClient::LogTracerDDSClient(int argc, char *argv[],
+                                       bool initReqWriter,
+                                       bool initReqReader,
+                                       bool initResWriter,
+                                       bool initResReader) {
     initParticipant(argc, argv);
     initPublisher();
     initSubscriber();
     initMessageType();
     initTopic();
-    initRequestDataWriter();
-    initRequestDataReader();
-    initResponseDataWriter();
-    initResponseDataReader();
 
-    addResponseCallback(std::bind(&LogTracerDDSClient::onResponseCallback, this, std::placeholders::_1));
+    if (initReqWriter) {
+        initRequestDataWriter();
+    }
+
+    if (initReqReader) {
+        initRequestDataReader();
+        addRequestCallback(std::bind(&LogTracerDDSClient::onRequestCallback, this, std::placeholders::_1));
+    }
+
+    if (initResWriter) {
+        initResponseDataWriter();
+    }
+
+    if (initResReader) {
+        initResponseDataReader();
+        addResponseCallback(std::bind(&LogTracerDDSClient::onResponseCallback, this, std::placeholders::_1));
+    }
 }
 
 void
@@ -52,10 +68,13 @@ void LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::R
 
 void
 LogTracerDDSClient::onResponseCallback(const DDSLogTracerMessage::Response &res) {
-    onResponse(sole::rebuild(res.req_uuid.in()), res.content.in());
+    if(onResponse) {
+        onResponse(sole::rebuild(res.req_uuid.in()), res.content.in());
+    }
 }
 
-void LogTracerDDSClient::onRequestCallback(const DDSLogTracerMessage::Request &res) {
+void
+LogTracerDDSClient::onRequestCallback(const DDSLogTracerMessage::Request &res) {
     sole::uuid reqUuid = sole::rebuild(res.req_uuid.in());
     sole::uuid traceUuid = sole::rebuild(res.trace_uuid.in());
 
@@ -65,7 +84,9 @@ void LogTracerDDSClient::onRequestCallback(const DDSLogTracerMessage::Request &r
         reqType = LogTracerInterface::INTERNAL_DATA;
     }
 
-    onRequest(reqUuid, traceUuid, reqType, res.from_timestamp);
+    if(onRequest) {
+        onRequest(reqUuid, traceUuid, reqType, res.from_timestamp);
+    }
 }
 
 void LogTracerDDSClient::addOnResponseCallback(std::function<void(sole::uuid, std::string)> callback) {
@@ -74,4 +95,12 @@ void LogTracerDDSClient::addOnResponseCallback(std::function<void(sole::uuid, st
 
 void LogTracerDDSClient::addOnRequestCallback(std::function<void(sole::uuid, sole::uuid, Request, long)> callback) {
     onRequest = std::move(callback);
+}
+
+void LogTracerDDSClient::cleanup() {
+    DDSEntities::cleanup();
+}
+
+void LogTracerDDSClient::waitUntilReadersConnected(int number) {
+    DDSEntities::waitUntilReadersConnected(number);
 }

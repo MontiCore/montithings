@@ -1,0 +1,5 @@
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 0
+23:26:57.838 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+23:26:57.838 (   0.007s) | Initializing...

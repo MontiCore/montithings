@@ -92,8 +92,9 @@ ReqResMessageListener::on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
 }
 
 void
-ReqResMessageListener::on_subscription_matched(DDS::DataReader_ptr /*reader*/,
-                                         const DDS::SubscriptionMatchedStatus & /*status*/) {
+ReqResMessageListener::on_subscription_matched(DDS::DataReader_ptr reader,
+                                         const DDS::SubscriptionMatchedStatus & status) {
+    std::cout << "DDSEntities | on_subscription_matched... " << std::endl;
 }
 
 void

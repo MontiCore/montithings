@@ -3,5 +3,6 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if config.getLogTracing().toString() == "ON">
+LogTracerDDSClient* logTracerInterface;
 LogTracer* logTracer;
 </#if>

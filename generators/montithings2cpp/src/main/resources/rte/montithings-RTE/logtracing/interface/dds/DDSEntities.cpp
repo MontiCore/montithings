@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* (c) https://github.com/MontiCore/monticore */
 
+#include <dds/DCPS/WaitSet.h>
 #include "DDSEntities.h"
 #include "ReqResMessageListener.h"
 
@@ -178,6 +179,8 @@ void DDSEntities::initRequestDataWriter() {
 }
 
 void DDSEntities::send(DDSLogTracerMessage::Response res) {
+    CLOG (INFO, DDS_LOG_ID) << "DDSEntities | sending response... ";
+
     DDS::ReturnCode_t error = responseDataWriter->write(res, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
@@ -187,6 +190,8 @@ void DDSEntities::send(DDSLogTracerMessage::Response res) {
 }
 
 void DDSEntities::send(DDSLogTracerMessage::Request req) {
+    CLOG (INFO, DDS_LOG_ID) << "DDSEntities | sending request... ";
+
     DDS::ReturnCode_t error = requestDataWriter->write(req, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
@@ -195,9 +200,47 @@ void DDSEntities::send(DDSLogTracerMessage::Request req) {
     }
 }
 
+void
+DDSEntities::waitUntilReadersConnected(int number) {
+    DDS::StatusCondition_var condition = requestDataWriter->get_statuscondition();
+    condition->set_enabled_statuses(DDS::SUBSCRIPTION_MATCHED_STATUS);
+
+    DDS::WaitSet_var ws = new DDS::WaitSet;
+    ws->attach_condition(condition);
+
+    while (true) {
+        DDS::PublicationMatchedStatus matches{};
+        if (requestDataWriter->get_publication_matched_status(matches) != DDS::RETCODE_OK) {
+            CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | subscription_matched_status failed!";
+            exit(EXIT_FAILURE);
+        }
+
+        if (matches.current_count >= number) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds (100));
+        std::this_thread::yield();
+    }
+
+    ws->detach_condition(condition);
+}
+
+
 void DDSEntities::addResponseCallback(std::function<void(DDSLogTracerMessage::Response)> callback) {
     // downcast while inheritance is virtual
     auto *listener = dynamic_cast<ReqResMessageListener *> (responseDataReader->get_listener());
     listener->addOnResponseCallback(std::move(callback));
+}
 
+void DDSEntities::addRequestCallback(std::function<void(DDSLogTracerMessage::Request)> callback) {
+    // downcast while inheritance is virtual
+    auto *listener = dynamic_cast<ReqResMessageListener *> (requestDataReader->get_listener());
+    listener->addOnRequestCallback(std::move(callback));
+}
+
+void
+DDSEntities::cleanup() {
+    participant->delete_contained_entities();
+    dpf->delete_participant(participant);
+    TheServiceParticipant->shutdown();
 }
