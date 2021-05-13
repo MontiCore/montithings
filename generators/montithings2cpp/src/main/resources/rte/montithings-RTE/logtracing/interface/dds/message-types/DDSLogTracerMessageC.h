@@ -112,6 +112,7 @@ namespace DDSLogTracerMessage
     typedef Request_var _var_type;
     typedef Request_out _out_type;
     
+    ::TAO::String_Manager target_instance;
     ::TAO::String_Manager req_uuid;
     ::TAO::String_Manager trace_uuid;
     ::CORBA::Long from_timestamp;

@@ -7,7 +7,7 @@
 
 namespace montithings {
     LogTracer::LogTracer(std::string instanceName, LogTracerInterface &interface)
-        : instanceName(std::move(instanceName)), interface(&interface) {
+            : instanceName(std::move(instanceName)), interface(&interface) {
         currInputId = uuid();
         currOutputId = uuid();
         montithings::subscribeLogTracer(this);
@@ -39,13 +39,29 @@ namespace montithings {
         return currOutputId;
     }
 
-    LogTracerInterface * LogTracer::getInterface() {
+    LogTracerInterface *LogTracer::getInterface() {
         return interface;
     }
 
     void
-    LogTracer::onRequest(sole::uuid reqUuid, sole::uuid traceUuid, LogTracerInterface::Request reqType, long fromTimestamp) {
+    LogTracer::onRequest(sole::uuid reqUuid, sole::uuid traceUuid, LogTracerInterface::Request reqType,
+                         long fromTimestamp) {
+        if (reqType == LogTracerInterface::INTERNAL_DATA) {
+            sendInternalData(reqUuid, traceUuid);
+        } else if (reqType == LogTracerInterface::LOG_ENTRIES) {
+            sendLogEntries(reqUuid, fromTimestamp);
+        }
+
         std::cout << "got something!" << std::endl;
+    }
+
+    void LogTracer::sendLogEntries(sole::uuid reqUuid, long fromTimestamp) {
+        std::string payload = dataToJson(logEntries);
+        interface->response(reqUuid, payload);
+    }
+
+    void LogTracer::sendInternalData(sole::uuid reqUuid, sole::uuid traceUuid) {
+
     }
 
 }

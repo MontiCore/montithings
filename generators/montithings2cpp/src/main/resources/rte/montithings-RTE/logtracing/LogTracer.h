@@ -69,6 +69,11 @@ public:
 
     void onRequest(sole::uuid reqUuid, sole::uuid traceUuid, LogTracerInterface::Request reqType, long fromTimestamp);
 
+    void sendLogEntries(sole::uuid reqUuid, long fromTimestamp);
+
+    void sendInternalData(sole::uuid reqUuid, sole::uuid traceUuid);
+
+
     template <typename T>
     void handleVariableStateChange(const std::string& variableName, const T& valueBefore, const T& valueAfter) {
         if (valueBefore != valueAfter) {

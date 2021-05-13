@@ -15,6 +15,7 @@ private:
 
 public:
     LogTracerDDSClient(int argc, char *argv[],
+                       std::string instanceName,
                        bool initReqWriter,
                        bool initReqReader,
                        bool initResWriter,

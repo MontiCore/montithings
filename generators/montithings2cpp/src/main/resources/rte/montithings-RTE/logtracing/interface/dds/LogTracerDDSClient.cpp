@@ -14,10 +14,12 @@ void LogTracerDDSClient::response(sole::uuid reqUuid, const std::string &content
 }
 
 LogTracerDDSClient::LogTracerDDSClient(int argc, char *argv[],
+                                       std::string instanceName,
                                        bool initReqWriter,
                                        bool initReqReader,
                                        bool initResWriter,
                                        bool initResReader) {
+    setInstanceName(instanceName);
     initParticipant(argc, argv);
     initPublisher();
     initSubscriber();
@@ -50,9 +52,8 @@ LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Reques
 
 void LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Request requestData, time_t fromDatetime,
                                  sole::uuid traceUuid) {
-    std::string topic = "/request/" + instanceName;
-
     DDSLogTracerMessage::Request req;
+    req.target_instance = instanceName.c_str();
     req.from_timestamp = (long) fromDatetime;
     req.req_uuid = sole::uuid4().str().c_str();
 

@@ -74,6 +74,7 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     const DDSLogTracerMessage::Request &_tao_aggregate)
 {
   return
+    (strm << _tao_aggregate.target_instance.in ()) &&
     (strm << _tao_aggregate.req_uuid.in ()) &&
     (strm << _tao_aggregate.trace_uuid.in ()) &&
     (strm << _tao_aggregate.from_timestamp) &&
@@ -85,6 +86,7 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
     DDSLogTracerMessage::Request &_tao_aggregate)
 {
   return
+    (strm >> _tao_aggregate.target_instance.out ()) &&
     (strm >> _tao_aggregate.req_uuid.out ()) &&
     (strm >> _tao_aggregate.trace_uuid.out ()) &&
     (strm >> _tao_aggregate.from_timestamp) &&

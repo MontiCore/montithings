@@ -107,6 +107,8 @@ void gen_find_size(const DDSLogTracerMessage::Request& stru, size_t& size, size_
   ACE_UNUSED_ARG(size);
   ACE_UNUSED_ARG(padding);
   find_size_ulong(size, padding);
+  size += ACE_OS::strlen(stru.target_instance.in()) + 1;
+  find_size_ulong(size, padding);
   size += ACE_OS::strlen(stru.req_uuid.in()) + 1;
   find_size_ulong(size, padding);
   size += ACE_OS::strlen(stru.trace_uuid.in()) + 1;
@@ -121,7 +123,8 @@ bool operator<<(Serializer& strm, const DDSLogTracerMessage::Request& stru)
 {
   ACE_UNUSED_ARG(strm);
   ACE_UNUSED_ARG(stru);
-  return (strm << stru.req_uuid.in())
+  return (strm << stru.target_instance.in())
+    && (strm << stru.req_uuid.in())
     && (strm << stru.trace_uuid.in())
     && (strm << stru.from_timestamp)
     && (strm << stru.req_data);
@@ -131,7 +134,8 @@ bool operator>>(Serializer& strm, DDSLogTracerMessage::Request& stru)
 {
   ACE_UNUSED_ARG(strm);
   ACE_UNUSED_ARG(stru);
-  return (strm >> stru.req_uuid.out())
+  return (strm >> stru.target_instance.out())
+    && (strm >> stru.req_uuid.out())
     && (strm >> stru.trace_uuid.out())
     && (strm >> stru.from_timestamp)
     && (strm >> stru.req_data);
@@ -156,20 +160,22 @@ void gen_find_size(KeyOnly<const DDSLogTracerMessage::Request> stru, size_t& siz
   ACE_UNUSED_ARG(stru);
   ACE_UNUSED_ARG(size);
   ACE_UNUSED_ARG(padding);
+  find_size_ulong(size, padding);
+  size += ACE_OS::strlen(stru.t.target_instance.in()) + 1;
 }
 
 bool operator<<(Serializer& strm, KeyOnly<const DDSLogTracerMessage::Request> stru)
 {
   ACE_UNUSED_ARG(strm);
   ACE_UNUSED_ARG(stru);
-  return true;
+  return (strm << stru.t.target_instance.in());
 }
 
 bool operator>>(Serializer& strm, KeyOnly<DDSLogTracerMessage::Request> stru)
 {
   ACE_UNUSED_ARG(strm);
   ACE_UNUSED_ARG(stru);
-  return true;
+  return (strm >> stru.t.target_instance.out());
 }
 
 }  }
@@ -183,6 +189,9 @@ void vwrite(OpenDDS::DCPS::ValueWriter& value_writer, const DDSLogTracerMessage:
   ACE_UNUSED_ARG(value_writer);
   ACE_UNUSED_ARG(value);
   value_writer.begin_struct();
+  value_writer.begin_field("target_instance");
+  value_writer.write_string(value.target_instance);
+  value_writer.end_field();
   value_writer.begin_field("req_uuid");
   value_writer.write_string(value.req_uuid);
   value_writer.end_field();
@@ -269,13 +278,15 @@ struct MetaStructImpl<DDSLogTracerMessage::Request> : MetaStruct {
 
   void deallocate(void* stru) const { delete static_cast<T*>(stru); }
 
-  size_t numDcpsKeys() const { return 0; }
+  size_t numDcpsKeys() const { return 1; }
 
 #endif /* OPENDDS_NO_MULTI_TOPIC */
 
   bool isDcpsKey(const char* field) const
   {
-    ACE_UNUSED_ARG(field);
+    if (!ACE_OS::strcmp(field, "target_instance")) {
+      return true;
+    }
     return false;
   }
 
@@ -283,6 +294,9 @@ struct MetaStructImpl<DDSLogTracerMessage::Request> : MetaStruct {
   {
     const DDSLogTracerMessage::Request& typed = *static_cast<const DDSLogTracerMessage::Request*>(stru);
     ACE_UNUSED_ARG(typed);
+    if (std::strcmp(field, "target_instance") == 0) {
+      return typed.target_instance.in();
+    }
     if (std::strcmp(field, "req_uuid") == 0) {
       return typed.req_uuid.in();
     }
@@ -300,6 +314,21 @@ struct MetaStructImpl<DDSLogTracerMessage::Request> : MetaStruct {
 
   Value getValue(Serializer& ser, const char* field) const
   {
+    if (std::strcmp(field, "target_instance") == 0) {
+      TAO::String_Manager val;
+      if (!(ser >> val.out())) {
+        throw std::runtime_error("Field 'target_instance' could not be deserialized");
+      }
+      return val;
+    } else {
+      ACE_CDR::ULong len;
+      if (!(ser >> len)) {
+        throw std::runtime_error("String 'target_instance' length could not be deserialized");
+      }
+      if (!ser.skip(static_cast<ACE_UINT16>(len))) {
+        throw std::runtime_error("String 'target_instance' contents could not be skipped");
+      }
+    }
     if (std::strcmp(field, "req_uuid") == 0) {
       TAO::String_Manager val;
       if (!(ser >> val.out())) {
@@ -361,6 +390,9 @@ struct MetaStructImpl<DDSLogTracerMessage::Request> : MetaStruct {
   ComparatorBase::Ptr create_qc_comparator(const char* field, ComparatorBase::Ptr next) const
   {
     ACE_UNUSED_ARG(next);
+    if (std::strcmp(field, "target_instance") == 0) {
+      return make_field_cmp(&T::target_instance, next);
+    }
     if (std::strcmp(field, "req_uuid") == 0) {
       return make_field_cmp(&T::req_uuid, next);
     }
@@ -379,12 +411,15 @@ struct MetaStructImpl<DDSLogTracerMessage::Request> : MetaStruct {
 #ifndef OPENDDS_NO_MULTI_TOPIC
   const char** getFieldNames() const
   {
-    static const char* names[] = {"req_uuid", "trace_uuid", "from_timestamp", "req_data", 0};
+    static const char* names[] = {"target_instance", "req_uuid", "trace_uuid", "from_timestamp", "req_data", 0};
     return names;
   }
 
   const void* getRawField(const void* stru, const char* field) const
   {
+    if (std::strcmp(field, "target_instance") == 0) {
+      return &static_cast<const T*>(stru)->target_instance;
+    }
     if (std::strcmp(field, "req_uuid") == 0) {
       return &static_cast<const T*>(stru)->req_uuid;
     }
@@ -408,6 +443,10 @@ struct MetaStructImpl<DDSLogTracerMessage::Request> : MetaStruct {
     ACE_UNUSED_ARG(rhs);
     ACE_UNUSED_ARG(rhsFieldSpec);
     ACE_UNUSED_ARG(rhsMeta);
+    if (std::strcmp(field, "target_instance") == 0) {
+      static_cast<T*>(lhs)->target_instance = *static_cast<const TAO::String_Manager*>(rhsMeta.getRawField(rhs, rhsFieldSpec));
+      return;
+    }
     if (std::strcmp(field, "req_uuid") == 0) {
       static_cast<T*>(lhs)->req_uuid = *static_cast<const TAO::String_Manager*>(rhsMeta.getRawField(rhs, rhsFieldSpec));
       return;
@@ -433,6 +472,9 @@ struct MetaStructImpl<DDSLogTracerMessage::Request> : MetaStruct {
     ACE_UNUSED_ARG(lhs);
     ACE_UNUSED_ARG(field);
     ACE_UNUSED_ARG(rhs);
+    if (std::strcmp(field, "target_instance") == 0) {
+      return 0 == ACE_OS::strcmp(static_cast<const T*>(lhs)->target_instance.in(), static_cast<const T*>(rhs)->target_instance.in());
+    }
     if (std::strcmp(field, "req_uuid") == 0) {
       return 0 == ACE_OS::strcmp(static_cast<const T*>(lhs)->req_uuid.in(), static_cast<const T*>(rhs)->req_uuid.in());
     }

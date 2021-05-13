@@ -107,5 +107,5 @@ main(int argc, char **argv) {
 }
 
 void onResponse(sole::uuid reqUuid, std::string content) {
-
+    std::cout << content;
 }

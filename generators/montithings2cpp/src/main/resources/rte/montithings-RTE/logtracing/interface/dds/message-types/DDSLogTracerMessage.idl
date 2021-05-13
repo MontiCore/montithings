@@ -4,6 +4,8 @@ module DDSLogTracerMessage {
 
     @topic
     struct Request {
+        @key string target_instance;
+
         string req_uuid;
         string trace_uuid;
 

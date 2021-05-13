@@ -43,6 +43,7 @@ private:
 
     DDS::Topic_var topicResponse;
     DDS::Topic_var topicRequest;
+    DDS::ContentFilteredTopic_var topicRequestFiltered;
 
     DDS::Subscriber_var subscriber;
     DDS::Publisher_var publisher;

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "sole/sole.hpp"
+
 namespace montithings {
 
 class LogEntry {
@@ -23,5 +24,11 @@ public:
     const std::string &getContent() const;
 
     void setContent(const std::string &c);
+
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+        archive( time, content );
+    }
 };
 }

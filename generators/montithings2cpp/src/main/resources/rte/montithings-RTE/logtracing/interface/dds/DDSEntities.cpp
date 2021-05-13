@@ -6,7 +6,7 @@
 #include "ReqResMessageListener.h"
 
 void DDSEntities::setInstanceName(std::string name) {
-
+    instanceName = name;
 }
 
 void DDSEntities::initMessageType() {
@@ -51,7 +51,21 @@ void DDSEntities::initTopic() {
     topicResponse = participant->create_topic(RES_TOPIC, RES_MESSAGE_TYPE, TOPIC_QOS_DEFAULT,
                                              nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
-    if (!topicRequest || !topicResponse) {
+    std::string topicRequestFilteredName(REQ_TOPIC);
+    topicRequestFilteredName.append("-filtered-");
+    topicRequestFilteredName.append(instanceName);
+
+    DDS::StringSeq topicfiltered_params(1);
+    topicfiltered_params.length(1);
+    topicfiltered_params[0] = instanceName.c_str();
+    std::cout << instanceName << std::endl;
+    
+    topicRequestFiltered = participant->create_contentfilteredtopic(
+            topicRequestFilteredName.c_str(), topicRequest,
+            "target_instance = %0",
+            topicfiltered_params);
+
+    if (!topicRequestFiltered || !topicResponse) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | initTopics failed!";
         exit(EXIT_FAILURE);
     }
@@ -82,7 +96,7 @@ void DDSEntities::initRequestDataReader() {
     dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
     DDS::DataReader_var dataReader = subscriber->create_datareader(
-            topicRequest, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+            topicRequestFiltered, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataReader) {
         CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | ERROR: initRequestDataReader() - OpenDDS data reader creation failed.";
