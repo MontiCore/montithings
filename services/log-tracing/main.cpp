@@ -10,14 +10,82 @@
 
 #include "lib/cxxopts.hpp"
 #include "lib/loguru.hpp"
+#include "lib/crow_all.h"
+#include "lib/json.hpp"
 
 INITIALIZE_EASYLOGGINGPP
 
 // forward declaration, is implemented down below
 void onResponse(sole::uuid reqUuid, std::string content);
 
+LogTracerInterface *interface;
+std::map<sole::uuid, std::string> responses;
+
 int
 main(int argc, char **argv) {
+    crow::SimpleApp app;
+
+    CROW_ROUTE(app, "/logs/<string>")
+            ([](std::string instanceName) {
+                crow::response res;
+                res.add_header("Access-Control-Allow-Origin", "*");
+                res.add_header("Content-Type", "application/json");
+                sole::uuid reqUuid = interface->request(instanceName, LogTracerInterface::Request::LOG_ENTRIES,
+                                                        time(0));
+                while (responses[reqUuid].empty()) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    std::this_thread::yield();
+                }
+                std::string response = responses[reqUuid];
+                responses.erase(reqUuid);
+
+                auto jContent = nlohmann::json::parse(response);
+
+                nlohmann::json jEntryFormatted;
+                nlohmann::json jEntries;
+                for(auto& entry : jContent["value0"]) {
+                    jEntryFormatted["uuid"] = entry["key"];
+                    jEntryFormatted["time"] = entry["value"]["value0"];
+                    jEntryFormatted["message"] = entry["value"]["value1"];
+
+                    jEntries.push_back(jEntryFormatted);
+                }
+                res.write(jEntries.dump());
+
+                return res;
+            });
+
+    CROW_ROUTE(app, "/logs/<string>/<string>")
+            ([](std::string instanceName, std::string traceUuidStr) {
+                crow::response res;
+                res.add_header("Access-Control-Allow-Origin", "*");
+                res.add_header("Content-Type", "application/json");
+                sole::uuid traceUuid = sole::rebuild(traceUuidStr);
+                sole::uuid reqUuid = interface->request(instanceName, LogTracerInterface::Request::INTERNAL_DATA,
+                                                        time(0), traceUuid);
+                while (responses[reqUuid].empty()) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    std::this_thread::yield();
+                }
+                std::string response = responses[reqUuid];
+                responses.erase(reqUuid);
+
+                auto jContent = nlohmann::json::parse(response);
+
+                nlohmann::json jEntryFormatted;
+                nlohmann::json jEntries;
+                for(auto& entry : jContent["value0"]) {
+                    jEntryFormatted["uuid"] = entry["key"];
+                    jEntryFormatted["time"] = entry["value"]["value0"];
+                    jEntryFormatted["message"] = entry["value"]["value1"];
+
+                    jEntries.push_back(jEntryFormatted);
+                }
+                res.write(jEntries.dump());
+
+                return res;
+            });
+
     el::Loggers::getLogger("DDS");
 
     // only show most relevant things on stderr:
@@ -75,9 +143,10 @@ main(int argc, char **argv) {
         }
     }
 
-    LogTracerInterface *interface;
+
     if (messageBroker == "DDS") {
         interface = new LogTracerDDSClient(argc, argv,
+                                           "middleware",
                                            true,
                                            false,
                                            false,
@@ -96,16 +165,18 @@ main(int argc, char **argv) {
 
     interface->waitUntilReadersConnected(1);
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    interface->request(instanceName, LogTracerInterface::Request::LOG_ENTRIES, fromDatetime);
-    interface->request(instanceName, LogTracerInterface::Request::INTERNAL_DATA, fromDatetime);
+    //interface->request(instanceName, LogTracerInterface::Request::LOG_ENTRIES, fromDatetime);
+    //interface->request(instanceName, LogTracerInterface::Request::INTERNAL_DATA, fromDatetime);
 
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    //std::this_thread::sleep_for(std::chrono::seconds(3));
 
-    interface->cleanup();
+    app.port(8080).multithreaded().run();
+    //interface->cleanup();
 }
 
 void onResponse(sole::uuid reqUuid, std::string content) {
-    std::cout << content;
+    LOG_F (INFO, "Got response ...");
+    responses[reqUuid] = content;
 }
