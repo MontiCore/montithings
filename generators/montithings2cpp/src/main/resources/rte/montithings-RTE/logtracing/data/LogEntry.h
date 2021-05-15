@@ -11,9 +11,11 @@ class LogEntry {
 private:
     time_t time;
     std::string content;
+    sole::uuid inputUuid;
+    sole::uuid outputUuid;
 
 public:
-    LogEntry(time_t time, std::string content);
+    LogEntry(time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid);
 
     virtual ~LogEntry();
 
@@ -25,10 +27,18 @@ public:
 
     void setContent(const std::string &c);
 
+    const sole::uuid &getInputUuid() const;
+
+    void setInputUuid(const sole::uuid &inputUuid);
+
+    const sole::uuid &getOutputUuid() const;
+
+    void setOutputUuid(const sole::uuid &outputUuid);
+
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive( time, content );
+        archive( time, content, inputUuid, outputUuid );
     }
 };
 }

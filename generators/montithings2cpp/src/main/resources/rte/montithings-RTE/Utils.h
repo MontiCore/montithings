@@ -7,6 +7,8 @@
 #include "tl/optional.hpp"
 #include "cereal/archives/json.hpp"
 #include "cereal/types/string.hpp"
+#include "cereal/types/utility.hpp"
+#include "cereal/types/vector.hpp"
 #include "cereal/types/unordered_map.hpp"
 #include "sole/sole.hpp"
 

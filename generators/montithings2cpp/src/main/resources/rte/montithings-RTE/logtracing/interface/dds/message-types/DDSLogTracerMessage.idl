@@ -7,7 +7,9 @@ module DDSLogTracerMessage {
         @key string target_instance;
 
         string req_uuid;
-        string trace_uuid;
+        string log_uuid;
+        string input_uuid;
+        string output_uuid;
 
         long from_timestamp;
         RequestData req_data;

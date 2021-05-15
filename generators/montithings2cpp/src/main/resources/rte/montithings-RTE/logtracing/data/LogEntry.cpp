@@ -6,8 +6,9 @@
 #include <utility>
 namespace montithings {
 
-LogEntry::LogEntry(time_t time, std::string content)
-        : time(time),  content(std::move(content)) {}
+LogEntry::LogEntry(time_t time, std::string content, sole::uuid inputUuid,sole::uuid outputUuid)
+        : time(time),  content(std::move(content)), inputUuid(inputUuid), outputUuid(outputUuid)
+        {}
 
 LogEntry::~LogEntry() = default;
 
@@ -27,6 +28,22 @@ const std::string &LogEntry::getContent() const {
 
 void LogEntry::setContent(const std::string &c) {
     LogEntry::content = c;
+}
+
+const sole::uuid &LogEntry::getInputUuid() const {
+    return inputUuid;
+}
+
+void LogEntry::setInputUuid(const sole::uuid &inputUuid) {
+    LogEntry::inputUuid = inputUuid;
+}
+
+const sole::uuid &LogEntry::getOutputUuid() const {
+    return outputUuid;
+}
+
+void LogEntry::setOutputUuid(const sole::uuid &outputUuid) {
+    LogEntry::outputUuid = outputUuid;
 }
 
 }

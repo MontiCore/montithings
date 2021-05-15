@@ -41,9 +41,12 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     onRowClick(record, index) {
-      store.state.selected_log_uuid = record.uuid;
+      store.state.selected_log_uuid = record.log_uuid;
       store.state.isFetchingInternalData = true;
-      store.dispatch('getInternalData', record.uuid)
+      store.dispatch('getInternalData',
+          { log_uuid: record.log_uuid,
+            input_uuid: record.input_uuid,
+            output_uuid: record.output_uuid  })
     }
   },
   data() {

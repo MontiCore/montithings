@@ -114,7 +114,9 @@ namespace DDSLogTracerMessage
     
     ::TAO::String_Manager target_instance;
     ::TAO::String_Manager req_uuid;
-    ::TAO::String_Manager trace_uuid;
+    ::TAO::String_Manager log_uuid;
+    ::TAO::String_Manager input_uuid;
+    ::TAO::String_Manager output_uuid;
     ::CORBA::Long from_timestamp;
     DDSLogTracerMessage::RequestData req_data;
   };

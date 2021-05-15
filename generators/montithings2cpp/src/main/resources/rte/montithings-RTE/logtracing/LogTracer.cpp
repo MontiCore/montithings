@@ -15,7 +15,9 @@ namespace montithings {
         interface.addOnRequestCallback(std::bind(&LogTracer::onRequest, this, std::placeholders::_1,
                                                  std::placeholders::_2,
                                                  std::placeholders::_3,
-                                                 std::placeholders::_4));
+                                                 std::placeholders::_4,
+                                                 std::placeholders::_5,
+                                                 std::placeholders::_6));
     }
 
     sole::uuid
@@ -26,7 +28,11 @@ namespace montithings {
     void
     LogTracer::handleLogEntry(const std::string &content) {
         sole::uuid id = uuid();
-        logEntries.insert({id, LogEntry(time(nullptr), content)});
+        LogEntry logEntry(time(nullptr),
+                          content,
+                          currInputId,
+                          currOutputId);
+        logEntries.insert({id, logEntry});
         currInputLogs.push_back(id);
     }
 
@@ -43,11 +49,40 @@ namespace montithings {
         return interface;
     }
 
+    std::map<std::string, std::string>
+    LogTracer::getVariableSnapshot(time_t time) {
+        std::map<std::string, std::string> snapshot;
+
+        for (const auto &varSnap : variableSnapshots) {
+            // varSnap.first -> variable name
+            // varSnap.second -> map of assignments with time as key
+            snapshot[varSnap.first] = varSnap.second.lower_bound(time)->second;
+        }
+
+        return snapshot;
+    }
+
+    std::vector<std::string>
+    LogTracer::getTraceUuids(sole::uuid inputUuid) {
+        std::vector<std::string> res;
+
+        typedef std::multimap<sole::uuid, sole::uuid>::iterator MMAPIterator;
+        std::pair<MMAPIterator, MMAPIterator> result = outputInputRefs.equal_range(inputUuid);
+
+        for (MMAPIterator it = result.first; it != result.second; it++) {
+            sole::uuid id = it->second;
+            res.push_back(id.str());
+        }
+
+        return res;
+    }
+
     void
-    LogTracer::onRequest(sole::uuid reqUuid, sole::uuid traceUuid, LogTracerInterface::Request reqType,
+    LogTracer::onRequest(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid,
+                         sole::uuid outputUuid, LogTracerInterface::Request reqType,
                          long fromTimestamp) {
         if (reqType == LogTracerInterface::INTERNAL_DATA) {
-            sendInternalData(reqUuid, traceUuid);
+            sendInternalData(reqUuid, logUuid, inputUuid, outputUuid);
         } else if (reqType == LogTracerInterface::LOG_ENTRIES) {
             sendLogEntries(reqUuid, fromTimestamp);
         }
@@ -60,8 +95,17 @@ namespace montithings {
         interface->response(reqUuid, payload);
     }
 
-    void LogTracer::sendInternalData(sole::uuid reqUuid, sole::uuid traceUuid) {
+    void
+    LogTracer::sendInternalData(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid) {
+        LogEntry *logEntry = &logEntries.at(logUuid);
+        std::string variableSnapshot = dataToJson(getVariableSnapshot(logEntry->getTime()));
+        std::cout << variableSnapshot << std::endl;
 
+        std::string serializedInput = serializedInputs.at(inputUuid);
+        std::cout << serializedInput << std::endl;
+
+        std::string traceUuids = dataToJson(getTraceUuids(inputUuid));
+        std::cout << traceUuids << std::endl;
     }
 
 }

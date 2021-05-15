@@ -45,31 +45,37 @@ LogTracerDDSClient::LogTracerDDSClient(int argc, char *argv[],
     }
 }
 
-void
+sole::uuid
 LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Request requestData, time_t fromDatetime) {
-    request(instanceName, requestData, fromDatetime, sole::uuid4());
+    return request(instanceName, requestData, fromDatetime, sole::uuid4(), sole::uuid4(), sole::uuid4());
 }
 
-void LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Request requestData, time_t fromDatetime,
-                                 sole::uuid traceUuid) {
+sole::uuid
+LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Request requestData, time_t fromDatetime,
+                            sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid) {
+    sole::uuid reqUuid = sole::uuid4();
+
     DDSLogTracerMessage::Request req;
     req.target_instance = instanceName.c_str();
     req.from_timestamp = (long) fromDatetime;
-    req.req_uuid = sole::uuid4().str().c_str();
+    req.req_uuid = reqUuid.str().c_str();
 
     if (requestData == LogTracerInterface::INTERNAL_DATA) {
         req.req_data = DDSLogTracerMessage::INTERNAL_DATA;
-        req.trace_uuid = traceUuid.str().c_str();
+        req.log_uuid = logUuid.str().c_str();
+        req.input_uuid = inputUuid.str().c_str();
+        req.output_uuid = outputUuid.str().c_str();
     } else {
         req.req_data = DDSLogTracerMessage::LOG_ENTRIES;
     }
 
     send(req);
+    return reqUuid;
 }
 
 void
 LogTracerDDSClient::onResponseCallback(const DDSLogTracerMessage::Response &res) {
-    if(onResponse) {
+    if (onResponse) {
         onResponse(sole::rebuild(res.req_uuid.in()), res.content.in());
     }
 }
@@ -77,7 +83,9 @@ LogTracerDDSClient::onResponseCallback(const DDSLogTracerMessage::Response &res)
 void
 LogTracerDDSClient::onRequestCallback(const DDSLogTracerMessage::Request &res) {
     sole::uuid reqUuid = sole::rebuild(res.req_uuid.in());
-    sole::uuid traceUuid = sole::rebuild(res.trace_uuid.in());
+    sole::uuid logUuid = sole::rebuild(res.log_uuid.in());
+    sole::uuid inputUuid = sole::rebuild(res.input_uuid.in());
+    sole::uuid outputUuid = sole::rebuild(res.output_uuid.in());
 
     LogTracerInterface::Request reqType = LogTracerInterface::LOG_ENTRIES;
 
@@ -85,8 +93,8 @@ LogTracerDDSClient::onRequestCallback(const DDSLogTracerMessage::Request &res) {
         reqType = LogTracerInterface::INTERNAL_DATA;
     }
 
-    if(onRequest) {
-        onRequest(reqUuid, traceUuid, reqType, res.from_timestamp);
+    if (onRequest) {
+        onRequest(reqUuid, logUuid, inputUuid, outputUuid, reqType, res.from_timestamp);
     }
 }
 
@@ -94,7 +102,7 @@ void LogTracerDDSClient::addOnResponseCallback(std::function<void(sole::uuid, st
     onResponse = std::move(callback);
 }
 
-void LogTracerDDSClient::addOnRequestCallback(std::function<void(sole::uuid, sole::uuid, Request, long)> callback) {
+void LogTracerDDSClient::addOnRequestCallback(std::function<void(sole::uuid, sole::uuid, sole::uuid, sole::uuid, Request, long)> callback) {
     onRequest = std::move(callback);
 }
 

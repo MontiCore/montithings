@@ -76,7 +76,9 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
   return
     (strm << _tao_aggregate.target_instance.in ()) &&
     (strm << _tao_aggregate.req_uuid.in ()) &&
-    (strm << _tao_aggregate.trace_uuid.in ()) &&
+    (strm << _tao_aggregate.log_uuid.in ()) &&
+    (strm << _tao_aggregate.input_uuid.in ()) &&
+    (strm << _tao_aggregate.output_uuid.in ()) &&
     (strm << _tao_aggregate.from_timestamp) &&
     (strm << _tao_aggregate.req_data);
 }
@@ -88,7 +90,9 @@ TAO_BEGIN_VERSIONED_NAMESPACE_DECL
   return
     (strm >> _tao_aggregate.target_instance.out ()) &&
     (strm >> _tao_aggregate.req_uuid.out ()) &&
-    (strm >> _tao_aggregate.trace_uuid.out ()) &&
+    (strm >> _tao_aggregate.log_uuid.out ()) &&
+    (strm >> _tao_aggregate.input_uuid.out ()) &&
+    (strm >> _tao_aggregate.output_uuid.out ()) &&
     (strm >> _tao_aggregate.from_timestamp) &&
     (strm >> _tao_aggregate.req_data);
 }

@@ -67,12 +67,15 @@ public:
 
     void handleLogEntry(const std::string& content);
 
-    void onRequest(sole::uuid reqUuid, sole::uuid traceUuid, LogTracerInterface::Request reqType, long fromTimestamp);
+    void onRequest(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid, LogTracerInterface::Request reqType, long fromTimestamp);
 
     void sendLogEntries(sole::uuid reqUuid, long fromTimestamp);
 
-    void sendInternalData(sole::uuid reqUuid, sole::uuid traceUuid);
+    void sendInternalData(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid);
 
+    std::map<std::string, std::string> getVariableSnapshot(time_t time);
+
+    std::vector<std::string> getTraceUuids(sole::uuid inputUuid);
 
     template <typename T>
     void handleVariableStateChange(const std::string& variableName, const T& valueBefore, const T& valueAfter) {

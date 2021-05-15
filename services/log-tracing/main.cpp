@@ -44,9 +44,11 @@ main(int argc, char **argv) {
                 nlohmann::json jEntryFormatted;
                 nlohmann::json jEntries;
                 for(auto& entry : jContent["value0"]) {
-                    jEntryFormatted["uuid"] = entry["key"];
+                    jEntryFormatted["log_uuid"] = entry["key"];
                     jEntryFormatted["time"] = entry["value"]["value0"];
                     jEntryFormatted["message"] = entry["value"]["value1"];
+                    jEntryFormatted["input_uuid"] = entry["value"]["value2"];
+                    jEntryFormatted["output_uuid"] = entry["value"]["value3"];
 
                     jEntries.push_back(jEntryFormatted);
                 }
@@ -55,14 +57,20 @@ main(int argc, char **argv) {
                 return res;
             });
 
-    CROW_ROUTE(app, "/logs/<string>/<string>")
-            ([](std::string instanceName, std::string traceUuidStr) {
+    CROW_ROUTE(app, "/logs/<string>/<string>/<string>/<string>")
+            ([](std::string instanceName, std::string logUuidStr,
+                    std::string inputUuidStr, std::string outputUuidStr) {
                 crow::response res;
                 res.add_header("Access-Control-Allow-Origin", "*");
                 res.add_header("Content-Type", "application/json");
-                sole::uuid traceUuid = sole::rebuild(traceUuidStr);
-                sole::uuid reqUuid = interface->request(instanceName, LogTracerInterface::Request::INTERNAL_DATA,
-                                                        time(0), traceUuid);
+                sole::uuid logUuid = sole::rebuild(logUuidStr);
+                sole::uuid inputUuid = sole::rebuild(inputUuidStr);
+                sole::uuid outputUuid = sole::rebuild(outputUuidStr);
+
+                sole::uuid reqUuid = interface->request(instanceName,
+                                                        LogTracerInterface::Request::INTERNAL_DATA,
+                                                        time(0),
+                                                        logUuid, inputUuid, outputUuid);
                 while (responses[reqUuid].empty()) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     std::this_thread::yield();
@@ -75,7 +83,9 @@ main(int argc, char **argv) {
                 nlohmann::json jEntryFormatted;
                 nlohmann::json jEntries;
                 for(auto& entry : jContent["value0"]) {
-                    jEntryFormatted["uuid"] = entry["key"];
+                    jEntryFormatted["log_uuid"] = entry["key"];
+
+                    jEntryFormatted["log_uuid"] = entry["key"];
                     jEntryFormatted["time"] = entry["value"]["value0"];
                     jEntryFormatted["message"] = entry["value"]["value1"];
 
