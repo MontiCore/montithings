@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(RaspberryPiLib)
 set(CMAKE_CXX_STANDARD 11)
 include_directories(.)
-include_directories("../../montithings-RTE")
+include_directories("../../../montithings-RTE")
 
 #set target for building executables and libraries
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
