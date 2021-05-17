@@ -6,5 +6,5 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
 
 std::vector<Message<${type}>> get${name}() const;
-void add${name}Element(tl::optional<Message<${type}>>);
+void add${name}Element(Message<${type}>);
 void set${name}(std::vector<Message<${type}>> vector);

@@ -33,8 +33,8 @@ error << "Input port values: " << std::endl;
 </#list>
 <#if !isPrecondition>
     <#list comp.getAllOutgoingPorts() as outPort>
-      if (${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().getPayload().has_value()) {
-      error << "Out port \"${outPort.getName()}\": " << ${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().getPayload().value() << std::endl;
+      if (${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().has_value()) {
+      error << "Out port \"${outPort.getName()}\": " << ${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().value() << std::endl;
       } else {
       error << "Out port \"${outPort.getName()}\": No data." << std::endl;
       }

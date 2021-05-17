@@ -6,14 +6,8 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
 
 ${Utils.printTemplateArguments(comp)}
-Message<${type}>
+tl::optional<${type}>
 ${className}${Utils.printFormalTypeParameters(comp, false)}::get${name?cap_first}() const
 {
-    Message<int> message = Message<${type}>();
-
-    if (${name}.has_value()) {
-        message.setPayload(${name}.value());
-    }
-
-    return message;
+    return ${name};
 }

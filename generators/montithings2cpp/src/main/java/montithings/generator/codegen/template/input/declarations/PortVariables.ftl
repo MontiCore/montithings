@@ -4,7 +4,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port >
   <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
-  tl::optional<Message<${type}>> ${port.getName()};
+  Message<${type}> ${port.getName()};
   <#if ComponentHelper.hasAgoQualification(comp, port)>
     static std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, Message<${type}>>> dequeOf__${port.getName()?cap_first};
     std::chrono::nanoseconds highestAgoOf__${port.getName()?cap_first} = std::chrono::nanoseconds {${ComponentHelper.getHighestAgoQualification(comp, port.getName())}};

@@ -6,12 +6,13 @@ ${tc.signature("config", "portSymbol", "portTemeplateName", "existsHWC")}
 #include "tl/optional.hpp"
 #include "Port.h"
 #include "Utils.h"
+#include "Message.h"
 
 ${tc.includeArgs("template.util.ports.helper.DDSRecorderIncludes", [config, portSymbol])}
 
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
-class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
+class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<Message<T>>"}{
 private:
 
   ${tc.includeArgs("template.util.ports.helper.DDSRecorderDeclarations", [config, portSymbol])}
@@ -30,17 +31,18 @@ private:
   ${defineHookPoint("<CppBlock>?portTemplate:provide")}
   }
 
-  void sendToExternal(tl::optional${r"<T>"} nextVal) override
+  void sendToExternal(T nextVal)
   {
   ${defineHookPoint("<CppBlock>?portTemplate:consume")}
   }
 
-  void setNextValue(T nextVal) override {
+  void setNextValue(T nextVal) {
     <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
         recordMessage(nextVal);
     </#if>
 
-    Port${"<T>"}::setNextValue(nextVal);
+    Message<T> message(nextVal);
+    Port${"<Message<T>>"}::setNextValue(message);
   }
 
   ${tc.includeArgs("template.util.ports.methods.DDSRecorderRecord", [config, portSymbol])}

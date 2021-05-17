@@ -6,10 +6,10 @@ ${tc.signature("comp", "config")}
 
     std::vector<sole::uuid> traceUUIDs = {
          <#list comp.getAllIncomingPorts() as inPort>
-             input.get${inPort.getName()?cap_first}Uuid()
+             ${Identifier.getInputName()}.get${inPort.getName()?cap_first}Uuid()
              <#sep>,</#sep>
          </#list>
     };
 
-    this->logTracer->handleInput(input, traceUUIDs);
+    this->logTracer->handleInput(${Identifier.getInputName()}, traceUUIDs);
 </#if>

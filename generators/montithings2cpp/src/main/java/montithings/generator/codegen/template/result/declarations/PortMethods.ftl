@@ -6,7 +6,7 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
 <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
 
-Message<${type}> get${name}() const;
+tl::optional<${type}> get${name}() const;
 Message<${type}> get${name}Message(sole::uuid id) const;
 
 void set${name}(tl::optional<${type}>);

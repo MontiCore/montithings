@@ -16,7 +16,7 @@ ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
     </#list>);
 </#if>
 <#list comp.getIncomingPorts() as port >
-  this->${port.getName()} = std::move(${port.getName()});
+  if(${port.getName()}.has_value()) {this->${port.getName()} = std::move(${port.getName()}.value());}
     <#if ComponentHelper.hasAgoQualification(comp, port)>
       auto nowOf__${port.getName()?cap_first} = std::chrono::system_clock::now();
       dequeOf__${port.getName()?cap_first}.push_back(std::make_pair(nowOf__${port.getName()?cap_first}, ${port.getName()}.value()));

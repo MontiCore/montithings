@@ -5,10 +5,11 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#assign name = port.getName()>
 <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
 
+${Utils.printTemplateArguments(comp)}
 Message<${type}>
 ${className}${Utils.printFormalTypeParameters(comp, false)}::get${name?cap_first}Message(sole::uuid id) const
 {
-    Message<int> message = Message<${type}>();
+    Message<${type}> message = Message<${type}>();
     message.setUuid(id);
 
     if (${name}.has_value()) {

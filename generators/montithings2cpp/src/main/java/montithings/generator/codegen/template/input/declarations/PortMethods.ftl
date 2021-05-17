@@ -7,7 +7,7 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
 
 tl::optional<${type}> get${name}() const;
-void set${name}(tl::optional<Message<${type}>>);
+void set${name}(Message<${type}>);
 
 sole::uuid get${name?cap_first}Uuid();
 

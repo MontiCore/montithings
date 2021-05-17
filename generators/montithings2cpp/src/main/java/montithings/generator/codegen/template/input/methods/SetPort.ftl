@@ -5,7 +5,7 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 
 ${Utils.printTemplateArguments(comp)}
 void
-${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(tl::optional<Message<${type}>> element)
+${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(Message<${type}> element)
 {
 this->${port.getName()} = std::move(element);
 <#if ComponentHelper.hasAgoQualification(comp, port)>
