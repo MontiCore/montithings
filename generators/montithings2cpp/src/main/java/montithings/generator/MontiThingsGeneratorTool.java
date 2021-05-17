@@ -414,9 +414,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      if (config.getMtConfigScope() == null) {
-        config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
-      }
+      config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
+
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
