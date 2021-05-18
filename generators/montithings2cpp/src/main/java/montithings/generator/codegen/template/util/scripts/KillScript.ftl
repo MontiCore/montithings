@@ -3,7 +3,7 @@
 ${tc.signature("components", "config", "existsHWC")}
 
 <#list components as comp >
-  killall ${comp}
+  pkill -f ${comp}
 </#list>
 
 if [ -d "hwc" ]; then
