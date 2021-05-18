@@ -1,11 +1,13 @@
 <template>
-  <b-card class="mt-3" header="Variable Assignments">
+  <b-card class="mt-3" header="Traces">
     <div v-if="selected_log_uuid.length">
       <div v-if="isFetchingInternalData">
         <b-spinner small label="Small Spinner"></b-spinner>
       </div>
       <div v-else>
-        <vue-json-pretty :path="'res'" :data="internal_data.var_snapshot" @click="handleClick"> </vue-json-pretty>
+        <p>selected_log_uuid: {{selected_log_uuid}}</p>
+
+        <vue-json-pretty :path="'res'" :data="internal_data.traces" @click="handleClick"> </vue-json-pretty>
       </div>
     </div>
     <div v-else>
@@ -19,7 +21,7 @@
 import {mapFields} from "vuex-map-fields";
 
 export default {
-  name: 'Variable Assignments',
+  name: 'Traces',
   computed: {
     ...mapFields([
       'isFetchingInternalData',

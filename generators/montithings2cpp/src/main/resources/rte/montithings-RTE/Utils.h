@@ -8,7 +8,9 @@
 #include "cereal/archives/json.hpp"
 #include "cereal/types/string.hpp"
 #include "cereal/types/utility.hpp"
+#include "cereal/types/tloptional.hpp"
 #include "cereal/types/vector.hpp"
+#include "cereal/types/map.hpp"
 #include "cereal/types/unordered_map.hpp"
 #include "sole/sole.hpp"
 
@@ -121,35 +123,6 @@ namespace cereal
                  std::string const & value)
     {
         uuid = sole::rebuild(value);
-    }
-
-    // for type tl::optional (adapted from cereal/types/optional.hpp)
-    template <class Archive, typename T> inline
-    void save(Archive & archive,
-              tl::optional<T> const & optional)
-    {
-        if(!optional) {
-            archive(CEREAL_NVP_("nullopt", true));
-        } else {
-            archive(CEREAL_NVP_("nullopt", false),
-                    CEREAL_NVP_("data", *optional));
-        }
-    }
-
-    template <class Archive, typename T> inline
-    void load(Archive & archive,
-              tl::optional<T> & optional)
-    {
-        bool nullopt;
-        archive(CEREAL_NVP_("nullopt", nullopt));
-
-        if (nullopt) {
-            optional = tl::nullopt;
-        } else {
-            T value;
-            archive(CEREAL_NVP_("data", value));
-            optional = std::move(value);
-        }
     }
 
 }

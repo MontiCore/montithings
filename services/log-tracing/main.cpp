@@ -7,6 +7,9 @@
 #include "easyloggingpp/easylogging++.h"
 #include "logtracing/interface/LogTracerInterface.h"
 #include "logtracing/interface/dds/LogTracerDDSClient.h"
+#include "logtracing/data/InternalDataResponse.h"
+#include "Utils.h"
+
 
 #include "lib/cxxopts.hpp"
 #include "lib/loguru.hpp"
@@ -78,20 +81,15 @@ main(int argc, char **argv) {
                 std::string response = responses[reqUuid];
                 responses.erase(reqUuid);
 
-                auto jContent = nlohmann::json::parse(response);
 
-                nlohmann::json jEntryFormatted;
-                nlohmann::json jEntries;
-                for(auto& entry : jContent["value0"]) {
-                    jEntryFormatted["log_uuid"] = entry["key"];
+                montithings::InternalDataResponse internalDataResponse = jsonToData<montithings::InternalDataResponse>(response);
 
-                    jEntryFormatted["log_uuid"] = entry["key"];
-                    jEntryFormatted["time"] = entry["value"]["value0"];
-                    jEntryFormatted["message"] = entry["value"]["value1"];
+                nlohmann::json jRes;
+                jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
+                jRes["inputs"] = internalDataResponse.getInput();
+                jRes["traces"] = dataToJson(internalDataResponse.getTraceUuids());
 
-                    jEntries.push_back(jEntryFormatted);
-                }
-                res.write(jEntries.dump());
+                res.write(jRes.dump());
 
                 return res;
             });

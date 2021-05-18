@@ -41,12 +41,12 @@
                 <variable-assignments></variable-assignments>
               </b-col>
               <b-col>
-                <variable-assignments></variable-assignments>
+                <inputs></inputs>
               </b-col>
             </b-row>
             <b-row>
               <b-col>
-                <variable-assignments></variable-assignments>
+                <traces></traces>
               </b-col>
             </b-row>
           </b-col>
@@ -77,6 +77,7 @@ export default {
     onInstanceChange: function (instanceName) {
       store.state.selected_instance = instanceName;
       store.state.isFetchingLogs = true;
+      store.state.selected_log_uuid = "";
       store.dispatch('getLogEntries', instanceName);
     },
   },
