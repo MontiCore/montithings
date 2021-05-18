@@ -2,6 +2,7 @@ project(LogTracer CXX)
 cmake_minimum_required(VERSION 3.8.2)
 
 find_package(OpenDDS REQUIRED)
+find_package(Boost REQUIRED)
 
 set(CMAKE_CXX_COMPILER ${OPENDDS_COMPILER})
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-3")
@@ -39,7 +40,10 @@ find_library(rte_lib MontiThingsRTE "${CMAKE_SOURCE_DIR}/build/rte/lib")
 
 add_executable(logtracer_middleware
   ${SOURCES}
+
 )
+include_directories(${Boost_INCLUDE_DIRS})
+target_link_libraries(logtracer_middleware ${Boost_LIBRARIES})
 
 target_link_libraries(logtracer_middleware ${opendds_libs})
 target_link_libraries(logtracer_middleware ${rte_lib})
