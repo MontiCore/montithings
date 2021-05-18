@@ -7,8 +7,10 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::compute${computeName}
 // ensure there are no parallel compute() executions
 std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
+<#if !ComponentHelper.isEveryBlock(computeName, comp)>
 if (shouldCompute())
 {
+</#if>
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
@@ -25,7 +27,9 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
   
   setResult(${Identifier.getResultName()});
+<#if !ComponentHelper.isEveryBlock(computeName, comp)>
   }
+</#if>
 <#else>
   <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
