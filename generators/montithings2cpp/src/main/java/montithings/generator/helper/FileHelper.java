@@ -4,6 +4,7 @@ package montithings.generator.helper;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.ConfigParams;
+import montithings.generator.data.Models;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -48,9 +49,31 @@ public class FileHelper {
   }
 
   public static void copyHwcToTarget(File target, File hwcPath, String fqComponentName,
-    ConfigParams config) {
-    Set<File> hwcFiles = getHwcClassWithoutExtension(hwcPath, fqComponentName);
-    addNonImplFiles(hwcPath, config, hwcFiles);
+    ConfigParams config, Models models) {
+    Set<File> hwcFiles = new HashSet<>();
+    try {
+      // Get all files in HWC folder
+      hwcFiles.addAll(Files.walk(hwcPath.toPath()).map(Path::toFile).collect(Collectors.toSet()));
+      // remove the ones that implement components
+      for (String comp : models.getMontithings()) {
+        hwcFiles.removeAll(getHwcClasses(hwcPath, comp));
+      }
+
+      // re-add those related to the current component
+      hwcFiles.addAll(getHwcClasses(hwcPath, fqComponentName));
+
+      // Remove directories (already covered by their contents) and Freemarker files
+      hwcFiles.removeIf(File::isDirectory);
+      hwcFiles.removeIf(f -> f.getName().toLowerCase().endsWith(".ftl"));
+
+      // Now, we're left with the classes for the current component and files not
+      // related to any component
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+
+
 
     for (File file : hwcFiles) {
       try {
@@ -126,23 +149,25 @@ public class FileHelper {
    * @return Returns true if a handwritten implementation for the component exist
    */
   public static Boolean existsHWCClass(File hwcPath, String fqComponentName) {
-    return !getHwcClassWithoutExtension(hwcPath, fqComponentName).isEmpty();
+    Set<File> hwcFilesForComponent = getHwcClasses(hwcPath, fqComponentName);
+    return hwcFilesForComponent.stream().anyMatch(f -> f.toPath().toString().toLowerCase().endsWith("impl.cpp")) &&
+      hwcFilesForComponent.stream().anyMatch(f -> f.toPath().toString().toLowerCase().endsWith("impl.h"));
   }
 
-  public static Set<File> getHwcClassWithoutExtension(File hwcPath, String fqComponentName) {
+  public static Set<File> getHwcClasses(File hwcPath, String fqComponentName) {
     Set<File> result = new HashSet<>();
-    Set<String> fileEndings = new HashSet<>();
-    fileEndings.add(".h");
-    fileEndings.add(".cpp");
 
-    for (String ending : fileEndings) {
-      File hwcFile = Paths.get(hwcPath.toString() + File.separator
-        + fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + "Impl"
-        + ending)
-        .toFile();
-      if (hwcFile.isFile()) {
-        result.add(hwcFile);
-      }
+    try {
+      result = Files.walk(hwcPath.toPath())
+        .filter(p -> p != hwcPath.toPath())
+        .map(p -> p.toString().substring(hwcPath.toPath().toString().length() +1))
+        .filter(p -> p.startsWith(fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))))
+        .filter(p -> p.endsWith(".h") || p.endsWith(".cpp"))
+        .map(p -> Paths.get(hwcPath.toPath() + File.separator + p).toFile())
+        .collect(Collectors.toSet());
+    }
+    catch (IOException e) {
+      e.printStackTrace();
     }
     return result;
   }
