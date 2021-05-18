@@ -8,7 +8,9 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::setResult(${compname}
 
 
   this->${Identifier.getInterfaceName()}.getPort${portOut.getName()?cap_first}()->setNextValue(
-    result.get${portOut.getName()?cap_first}<#if config.getLogTracing().toString() == "ON">Message(logTracer->newOutput())<#else>()</#if>
+    result.get${portOut.getName()?cap_first}Message(
+        <#if config.getLogTracing().toString() == "ON">logTracer->newOutput()</#if>
+      )
   );
 
   ${tc.includeArgs("template.logtracing.hooks.HandleOutput", [comp, config])}

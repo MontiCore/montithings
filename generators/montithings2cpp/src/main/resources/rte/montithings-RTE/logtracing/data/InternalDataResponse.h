@@ -4,41 +4,42 @@
 #pragma once
 
 #include "sole/sole.hpp"
+#include <string>
+#include <map>
 
 namespace montithings {
 
-class LogEntry {
-private:
-    time_t time;
-    std::string content;
-    sole::uuid inputUuid;
-    sole::uuid outputUuid;
+    class InternalDataResponse {
+    private:
+        std::map<std::string, std::string> varSnapshot;
+        std::string input;
+        std::vector<std::string> traceUuids;
 
-public:
-    LogEntry(time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid);
+    public:
+        InternalDataResponse(const std::map<std::string, std::string> &varSnapshot, const std::string &input,
+                             const std::vector<std::string> &traceUuids) : varSnapshot(varSnapshot), input(input),
+                                                                           traceUuids(traceUuids) {}
 
-    virtual ~LogEntry();
+        InternalDataResponse() = default;
 
-    time_t getTime() const;
+        virtual ~InternalDataResponse() =default;
 
-    void setTime(time_t t);
+        const std::map<std::string, std::string> &getVarSnapshot() const;
 
-    const std::string &getContent() const;
+        void setVarSnapshot(const std::map<std::string, std::string> &varSnapshot);
 
-    void setContent(const std::string &c);
+        const std::string &getInput() const;
 
-    const sole::uuid &getInputUuid() const;
+        void setInput(const std::string &input);
 
-    void setInputUuid(const sole::uuid &inputUuid);
+        const std::vector<std::string> &getTraceUuids() const ;
 
-    const sole::uuid &getOutputUuid() const;
+        void setTraceUuids(const std::vector<std::string> &traceUuids);
 
-    void setOutputUuid(const sole::uuid &outputUuid);
-
-    template<class Archive>
-    void serialize(Archive & archive)
-    {
-        archive( time, content, inputUuid, outputUuid );
-    }
-};
+        template<class Archive>
+        void serialize(Archive & archive)
+        {
+            archive( time, varSnapshot, varSnapshot, varSnapshot );
+        }
+    };
 }

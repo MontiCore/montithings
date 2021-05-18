@@ -7,6 +7,13 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 
 ${Utils.printTemplateArguments(comp)}
 Message<${type}>
+${className}${Utils.printFormalTypeParameters(comp, false)}::get${name?cap_first}Message() const
+{
+    return get${name?cap_first}Message(sole::uuid4());
+}
+
+${Utils.printTemplateArguments(comp)}
+Message<${type}>
 ${className}${Utils.printFormalTypeParameters(comp, false)}::get${name?cap_first}Message(sole::uuid id) const
 {
     Message<${type}> message = Message<${type}>();

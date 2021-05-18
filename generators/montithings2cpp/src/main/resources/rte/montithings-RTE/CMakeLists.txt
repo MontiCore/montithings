@@ -70,7 +70,9 @@ if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.cpp")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/message-types/*")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")    
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/message-types/*")
 endif ()
 
 # Keep hwc interceptor in case of replaying
