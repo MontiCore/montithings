@@ -22,9 +22,6 @@ import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.symboltable.serialization.json.JsonArray;
-import de.monticore.symboltable.serialization.json.JsonObject;
-import de.monticore.symboltable.serialization.json.JsonString;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
@@ -70,6 +67,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -566,36 +567,33 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
   
   protected void generateDeployInfo(File target, ConfigParams config, List<Pair<ComponentTypeSymbol, String>> executableInstances) {
-    JsonObject jsonBase = new JsonObject();
+    JsonObjectBuilder jsonBase = Json.createObjectBuilder();
     
     // Collect instances.
-    JsonArray jsonInstances = new JsonArray();
-    jsonBase.putMember("instances", jsonInstances);
+    JsonArrayBuilder jsonInstances = Json.createArrayBuilder();
     
     for (Pair<ComponentTypeSymbol, String> instance : executableInstances) {
       // Each executable instance will be added to the "instances" array.
       ComponentTypeSymbol comp = instance.getKey();
-      JsonObject jsonInstance = new JsonObject();
-      jsonInstances.add(jsonInstance);
+      JsonObjectBuilder jsonInstance = Json.createObjectBuilder();
       
-      jsonInstance.putMember("componentType", new JsonString(comp.getFullName()));
-      jsonInstance.putMember("instanceName", new JsonString(instance.getValue()));
+      jsonInstance.add("componentType", comp.getFullName());
+      jsonInstance.add("instanceName", instance.getValue());
       
       // Also add the requirements of the component.
-      JsonArray jreqs = new JsonArray();
-      jsonInstance.putMember("requirements", jreqs);
-      for (String req : ComponentHelper.getRequirements(comp, config)) {
-        jreqs.add(new JsonString(req));
-      }
+      JsonArrayBuilder jreqs = Json.createArrayBuilder();
+      ComponentHelper.getRequirements(comp, config).forEach(jreqs::add);
+      jsonInstance.add("requirements", jreqs.build());
       
+      jsonInstances.add(jsonInstance);
     }
+    jsonBase.add("instances", jsonInstances.build());
     
     // Serialize JSON and write it to a file.
-    String jsonString = jsonBase.toString();
+    String jsonString = jsonBase.build().toString();
     File jsonFile = new File(target, "deployment-info.json");
     FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
   }
-  
 
   protected ComponentTypeSymbol modelToSymbol(String model, IMontiThingsScope symTab) {
     String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
