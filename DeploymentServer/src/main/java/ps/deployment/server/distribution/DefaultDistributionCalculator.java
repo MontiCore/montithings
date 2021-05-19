@@ -108,6 +108,9 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
         ByteStreams.copy(inputHelpers, outputHelpers);
       }
     }
+    
+    // Retract facts from previous queries.
+    new Query(new Compound("retract", wrap(new Atom("property")))).oneSolution();
   }
   
   private void cleanup() throws IOException {
