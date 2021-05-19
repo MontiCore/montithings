@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
-import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.ComponentTypeSymbolTOP;
 import arcbasis._symboltable.PortSymbol;
@@ -58,7 +57,6 @@ import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -570,18 +568,29 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected void generateDeployInfo(File target, ConfigParams config, List<Pair<ComponentTypeSymbol, String>> executableInstances) {
     JsonObject jsonBase = new JsonObject();
     
-    // collect instances
+    // Collect instances.
     JsonArray jsonInstances = new JsonArray();
-    for (Pair<ComponentTypeSymbol, String> instance : executableInstances) {
-      ComponentTypeSymbol comp = instance.getKey();
-      JsonObject jsonInstance = new JsonObject();
-      jsonInstance.putMember("component", new JsonString(comp.getFullName()));
-      jsonInstance.putMember("name", new JsonString(instance.getValue()));
-      jsonInstances.add(jsonInstance);
-    }
     jsonBase.putMember("instances", jsonInstances);
     
-    // serialize JSON and write it to a file
+    for (Pair<ComponentTypeSymbol, String> instance : executableInstances) {
+      // Each executable instance will be added to the "instances" array.
+      ComponentTypeSymbol comp = instance.getKey();
+      JsonObject jsonInstance = new JsonObject();
+      jsonInstances.add(jsonInstance);
+      
+      jsonInstance.putMember("componentType", new JsonString(comp.getFullName()));
+      jsonInstance.putMember("instanceName", new JsonString(instance.getValue()));
+      
+      // Also add the requirements of the component.
+      JsonArray jreqs = new JsonArray();
+      jsonInstance.putMember("requirements", jreqs);
+      for (String req : ComponentHelper.getRequirements(comp, config)) {
+        jreqs.add(new JsonString(req));
+      }
+      
+    }
+    
+    // Serialize JSON and write it to a file.
     String jsonString = jsonBase.toString();
     File jsonFile = new File(target, "deployment-info.json");
     FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
