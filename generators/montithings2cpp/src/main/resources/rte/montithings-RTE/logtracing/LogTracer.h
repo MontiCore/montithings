@@ -14,8 +14,8 @@
 
 #include "interface/LogTracerInterface.h"
 #include "data/LogEntry.h"
+#include "data/InternalDataResponse.h"
 #include "Externals.h"
-#include "interface/dds/LogTracerDDSClient.h"
 
 
 namespace montithings {

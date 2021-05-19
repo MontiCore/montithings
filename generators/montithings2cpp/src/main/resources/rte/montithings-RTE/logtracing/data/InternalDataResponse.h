@@ -39,7 +39,7 @@ namespace montithings {
         template<class Archive>
         void serialize(Archive & archive)
         {
-            archive( time, varSnapshot, varSnapshot, varSnapshot );
+            archive( varSnapshot, input, traceUuids );
         }
     };
 }

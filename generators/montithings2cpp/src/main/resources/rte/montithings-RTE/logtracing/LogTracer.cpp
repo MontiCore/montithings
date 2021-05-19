@@ -98,14 +98,13 @@ namespace montithings {
     void
     LogTracer::sendInternalData(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid) {
         LogEntry *logEntry = &logEntries.at(logUuid);
-        std::string variableSnapshot = dataToJson(getVariableSnapshot(logEntry->getTime()));
-        std::cout << variableSnapshot << std::endl;
 
-        std::string serializedInput = serializedInputs.at(inputUuid);
-        std::cout << serializedInput << std::endl;
-
-        std::string traceUuids = dataToJson(getTraceUuids(inputUuid));
-        std::cout << traceUuids << std::endl;
+        InternalDataResponse res(
+                getVariableSnapshot(logEntry->getTime()),
+                serializedInputs.at(inputUuid),
+                getTraceUuids(inputUuid)
+                );
+        interface->response(reqUuid, dataToJson(res));
     }
 
 }
