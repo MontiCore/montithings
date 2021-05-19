@@ -36,13 +36,17 @@ public class InterfaceExists implements ArcBasisASTComponentTypeCoCo {
       if (genericToInterface.containsKey(typeName)) {
         // each generic type requires interface components, so we collect their names
         String interfaceName = genericToInterface.get(typeName);
-        ComponentTypeSymbol interfaceComp = GenericBindingUtil.getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), interfaceName);
+        ComponentTypeSymbol interfaceComp = GenericBindingUtil
+          .getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(),
+            interfaceName);
         // from the name we check that component exists and that it is really an interface component
-        if (interfaceComp == null || !((ASTMTComponentType) interfaceComp.getAstNode()).getMTComponentModifier().isInterface()) {
+        if (interfaceComp == null || !((ASTMTComponentType) interfaceComp.getAstNode())
+          .getMTComponentModifier().isInterface()) {
           Log.error(
-              String.format(
-                  MontiThingsError.NOT_INTERFACE.toString(),
-                    typeName, subComp.getInstancesNames().get(0), node.getName(), subComp.get_SourcePositionStart().toString()));
+            String.format(
+              MontiThingsError.NOT_INTERFACE.toString(),
+              typeName, subComp.getInstancesNames().get(0), node.getName(),
+              subComp.get_SourcePositionStart().toString()));
         }
       }
     }

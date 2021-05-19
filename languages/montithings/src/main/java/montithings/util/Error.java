@@ -17,7 +17,6 @@ public interface Error {
   String getErrorCode();
 
   /**
-   *
    * @return The error message of this error.
    */
   String printErrorMessage();

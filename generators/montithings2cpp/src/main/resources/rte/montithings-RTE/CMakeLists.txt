@@ -24,9 +24,11 @@ if (NOT EXCLUDE_DDS)
         OpenDDS::Dcps # Core OpenDDS Library
         OpenDDS::InfoRepoDiscovery
         OpenDDS::Tcp
-        OpenDDS::Rtps #RTPS Discovery
+        OpenDDS::Rtps
         OpenDDS::Udp
         OpenDDS::Rtps_Udp
+        OpenDDS::Multicast
+        OpenDDS::Shmem
     )
 endif ()
 
@@ -59,8 +61,16 @@ include_directories(".")
 if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.cpp")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "DDSMessage.idl")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/message-types/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")
 endif ()
+
+# Keep hwc interceptor in case of replaying
+set(RTE_SOURCES
+    ${RTE_SOURCES}
+    "dds/recorder/HWCInterceptor.h"
+    "dds/recorder/HWCInterceptor.cpp"
+) 
 
 
 # exclude MQTT related part of the RTE to not require Mosquitto for compiling
@@ -85,7 +95,6 @@ endif ()
 
 if (NOT EXCLUDE_DDS)
     # Generates type support code
-    OPENDDS_TARGET_SOURCES(MontiThingsRTE "../montithings-RTE/DDSMessage.idl")
     target_link_libraries(MontiThingsRTE ${opendds_libs})
 endif ()
 

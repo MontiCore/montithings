@@ -6,7 +6,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
 echo "Starting DCPSInfoRepo..."
-docker run --name dcpsinforepo -d -p 12345:12345 registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo
+docker run --name dcpsinforepo --rm -d -p 12345:12345 registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo
 echo "Waiting 5 seconds..."
 sleep 5
 echo "Starting components..."
@@ -27,4 +27,6 @@ echo "Starting components..."
 </#list>
 
 # Run Python Ports
+if [ -d "hwc" ]; then
 find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "$0" > "$0.log" 2>&1 &' '{}' \;
+fi

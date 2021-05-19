@@ -42,6 +42,11 @@ cp ../../"$1"/*.ini .
 <#if config.getSplittingMode().toString() == "LOCAL">
 cp -r ../../"$1"/ports .
 </#if>
+<#if config.getReplayMode().toString() == "ON">
+cp ../../../../recordings.json .
+</#if>
+
 chmod +x *.sh
 cd ../..
 </#if>
+

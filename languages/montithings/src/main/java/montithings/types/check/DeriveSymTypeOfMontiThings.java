@@ -5,9 +5,11 @@ import de.monticore.types.check.SymTypeExpressionFactory;
 import montithings._ast.ASTIsPresentExpression;
 import montithings._visitor.MontiThingsVisitor;
 
-public class DeriveSymTypeOfMontiThings extends DeriveSymTypeOfExpressionForMT implements MontiThingsVisitor {
+public class DeriveSymTypeOfMontiThings extends DeriveSymTypeOfExpressionForMT
+  implements MontiThingsVisitor {
 
   private static boolean condition = false;
+
   private MontiThingsVisitor realThis;
 
   public DeriveSymTypeOfMontiThings() {

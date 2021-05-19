@@ -12,6 +12,10 @@ project ("MontiThings Application")
 <#if (config.getSplittingMode().toString() != "OFF") && (config.getMessageBroker().toString() != "OFF")>
   set(EXCLUDE_COMM_MANAGER 1)
 </#if>
+<#if config.getTargetPlatform().toString() == "RASPBERRY">
+  add_compile_options(${"$<$<CXX_COMPILER_ID:GNU>"}:-Wno-psabi>)
+  add_subdirectory(lib/lib/raspberrypi)
+</#if>
 add_subdirectory ("montithings-RTE")
 <#list subdirectories as subdir >
   add_subdirectory ("${subdir}")

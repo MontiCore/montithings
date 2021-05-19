@@ -24,11 +24,11 @@ public class MontiThingsTypeCheck extends OCLTypeCheck {
     condition = false;
   }
 
-  public void setCondition(boolean b){
-    if(iTypesCalculator instanceof DeriveSymTypeOfMontiThingsCombine){
+  public void setCondition(boolean b) {
+    if (iTypesCalculator instanceof DeriveSymTypeOfMontiThingsCombine) {
       DeriveSymTypeOfMontiThingsCombine mTCalculator = (DeriveSymTypeOfMontiThingsCombine) iTypesCalculator;
-      if(mTCalculator.getMontiThingsVisitor().isPresent() &&
-        mTCalculator.getMontiThingsVisitor().get() instanceof DeriveSymTypeOfMontiThings){
+      if (mTCalculator.getMontiThingsVisitor().isPresent() &&
+        mTCalculator.getMontiThingsVisitor().get() instanceof DeriveSymTypeOfMontiThings) {
         DeriveSymTypeOfMontiThings.setCondition(b);
       }
     }

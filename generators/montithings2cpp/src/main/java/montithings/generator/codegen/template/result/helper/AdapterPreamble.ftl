@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#include "/template/result/helper/GeneralPreamble.ftl">
 <#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
 <#assign fullImportStatemantName = cdeImportStatementOpt.get().getSymbol().getFullName()?split(".")>

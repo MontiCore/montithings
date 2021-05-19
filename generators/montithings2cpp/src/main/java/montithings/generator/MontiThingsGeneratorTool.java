@@ -3,6 +3,7 @@ package montithings.generator;
 
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.ComponentTypeSymbolTOP;
 import arcbasis._symboltable.PortSymbol;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
@@ -46,6 +47,9 @@ import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
+import montithings.trafos.DelayedChannelTrafo;
+import montithings.trafos.DelayedComputationTrafo;
+import montithings.trafos.ExternalPortMockTrafo;
 import montithings.util.MontiThingsError;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
@@ -54,12 +58,14 @@ import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -99,6 +105,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ===================== Set up Symbol Tabs =================== */
     /* ============================================================ */
     Log.info("Initializing symboltable", TOOL_NAME);
+
+    if (config.getReplayMode() == ConfigParams.ReplayMode.ON) {
+        addTrafo(new ExternalPortMockTrafo(modelPath, config.getReplayDataFile(), config.getMainComponent()));
+        addTrafo(new DelayedChannelTrafo(modelPath, config.getReplayDataFile()));
+        addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
+    }
 
     ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
       .setModelPath(mp)
@@ -165,6 +177,19 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
     /* ============================================================ */
+
+    if (config.getReplayMode() == ConfigParams.ReplayMode.ON){
+      // clear list of templated ports since they get mocked by a trafo
+      config.getTemplatedPorts().clear();
+
+      List<String> allModels = symTab.getSubScopes().stream()
+              .map(s -> s.getComponentTypeSymbols().values())
+              .flatMap(Collection::stream)
+              .map(ComponentTypeSymbolTOP::getFullName)
+              .collect(Collectors.toList());
+      models.setMontithings(allModels);
+    }
+
     
     // Collect all the instances of the executable components (Some components
     // may only be included in other components and thus do not need an own
@@ -184,6 +209,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     
     // determine the packs of components for each (base) model
     Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks = new HashMap<>();
+
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
       
@@ -249,7 +275,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         config.setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
         config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
         
-        generateCppForComponent(model, symTab, compTarget, hwcPath, config, genDeploy);
+        generateCppForComponent(model, symTab, compTarget, hwcPath, config, models, genDeploy);
       }
       // reset splitting mode and message broker
       config.setSplittingMode(orgSplit);
@@ -296,7 +322,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
   }
-
 
   /* ============================================================ */
   /* ====================== Check Models ======================== */
@@ -395,9 +420,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      if (config.getMtConfigScope() == null) {
-        config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
-      }
+      config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
+
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
@@ -410,12 +434,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /* ============================================================ */
 
   protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
-    File hwcPath, ConfigParams config) {
-    generateCppForComponent(model, symTab, target, hwcPath, config, true);
+    File hwcPath, ConfigParams config, Models models) {
+    generateCppForComponent(model, symTab, target, hwcPath, config, models, true);
   }
 
   protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
-    File hwcPath, ConfigParams config, boolean generateDeploy) {
+    File hwcPath, ConfigParams config, Models models, boolean generateDeploy) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
     Log.info("Generate MT model: " + comp.getFullName(), TOOL_NAME);
 
@@ -442,22 +466,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     generateHwcPort(target, config, comp);
 
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-      copyHwcToTarget(target, hwcPath, model, config);
-    }
-  }
-
-  protected void generateCppForSubcomponents(String model, File modelPath, List<String> mtModels,
-    IMontiThingsScope symTab, File target, File hwcPath, ConfigParams config) {
-    // Find subcomponent types
-    ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-    List<ComponentTypeSymbol> subcomponentTypes = comp.getSubComponents().stream()
-      .map(ComponentInstanceSymbol::getType).collect(Collectors.toList());
-
-    // Generate code for each subcomponent type
-    for (ComponentTypeSymbol subcomp : subcomponentTypes) {
-      generateCppForComponent(subcomp.getFullName(), symTab, target, hwcPath, config, false);
-      generateCppForSubcomponents(subcomp.getFullName(), modelPath, mtModels, symTab, target,
-        hwcPath, config);
+      copyHwcToTarget(target, hwcPath, model, config, models);
     }
   }
 
