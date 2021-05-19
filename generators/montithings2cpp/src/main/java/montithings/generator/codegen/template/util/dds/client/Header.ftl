@@ -109,7 +109,7 @@ class ${className} : public DDSClient
             CLOG(DEBUG, "DDS") << "DDSClient | Received parameter configuration: " << payload;
             json jPayload = json::parse(payload);
             if (jPayload.contains(instanceName)) {
-                parameterConfig = jPayload;
+                parameterConfig = jPayload[instanceName];
                 receivedParameterConfig = true;
             }
             CLOG(DEBUG, "DDS") << "onNewConfig: " << payload;
