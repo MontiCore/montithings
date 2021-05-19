@@ -1,0 +1,8 @@
+bin/
+tmp/
+target/
+
+# eclipse IDE
+.settings/
+.classpath
+.project
