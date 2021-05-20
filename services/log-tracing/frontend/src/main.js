@@ -11,8 +11,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueJsonPretty from 'vue-json-pretty';
 
+
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
+
 Vue.component('variable-assignments', VariableAssignmentsComponent);
 Vue.component('inputs', InputsComponent);
 Vue.component('traces', TracesComponent);

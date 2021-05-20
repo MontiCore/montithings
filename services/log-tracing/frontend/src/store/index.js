@@ -7,8 +7,6 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-
-
         instances: ["hierarchy.Example",
             "hierarchy.Example.source",
             "hierarchy.Example.lpf",
@@ -44,6 +42,34 @@ export default new Vuex.Store({
     mutations: {
         updateField,
         update_log_entries(state, data) {
+            if(data) {
+                data.sort(function(a,b){
+                    if(a.time < b.time) return -1;
+                    if(a.time > b.time) return 1;
+                    return 0;
+                });
+
+
+                var outputCorrColors = ["bg-color1","bg-color2"];
+                var inputCorrColors = ["bg-color4","bg-color5","bg-color3"];
+                var lastOutputUuid = "";
+                var lastInputUuid = "";
+                var outputIndex = 0;
+                var inputIndex = 0;
+                data.forEach(function (logEntry) {
+                    if (lastInputUuid !== logEntry.input_uuid) {
+                        inputIndex = (inputIndex + 1) % inputCorrColors.length;
+                    }
+                    if (lastOutputUuid !== logEntry.output_uuid) {
+                        outputIndex = (outputIndex + 1) % outputCorrColors.length;
+                    }
+                    logEntry.input_corr_color = inputCorrColors[inputIndex];
+                    lastInputUuid = logEntry.input_uuid;
+                    logEntry.output_corr_color = outputCorrColors[outputIndex];
+                    lastOutputUuid = logEntry.output_uuid;
+                });
+            }
+
             state.log_entries = data;
             state.isFetchingLogs = false;
         },

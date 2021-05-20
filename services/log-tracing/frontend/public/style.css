@@ -6165,13 +6165,13 @@ button.bg-danger:focus {
 }
 
 .bg-light {
-    background-color: #f8f9fa !important;
+    background-color: #f8f9fa;
 }
 
 a.bg-light:hover, a.bg-light:focus,
 button.bg-light:hover,
 button.bg-light:focus {
-    background-color: #dae0e5 !important;
+    background-color: #dae0e5;
 }
 
 .bg-dark {
@@ -10047,3 +10047,13 @@ a.text-dark:hover, a.text-dark:focus {
         margin-left: -15rem;
     }
 }
+
+.menu-active {
+    color: #166fc8 !important;
+}
+
+.bg-color1 {background-color: #d2e7ff;}
+.bg-color2 {background-color: #e3f0ff;}
+.bg-color3 {background-color: #d9d8d1;}
+.bg-color4 {background-color: #fff6e9;}
+.bg-color5 {background-color: #eee7c4;}
