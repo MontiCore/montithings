@@ -13,6 +13,7 @@
         </div>
         {{ internal_data }}
         {{ inputs }}
+        {{ getSourceInstanceName("value") }}
       </div>
       <div v-else>Please select a log entry.</div>
     </b-card>
@@ -47,6 +48,18 @@ export default {
   },
 
   methods: {
+    getSourceInstanceName: function(portName) {
+      if(this.internal_data.sources_ports_map) {
+        var map = JSON.parse(this.internal_data.sources_ports_map).value0;
+        for (let item of map) {
+          if (item.key === portName) {
+            return item.value
+          }
+        }
+
+      }
+      return "NOT_FOUND";
+    },
     createTrace: function () {
       var data = {
         operators: {

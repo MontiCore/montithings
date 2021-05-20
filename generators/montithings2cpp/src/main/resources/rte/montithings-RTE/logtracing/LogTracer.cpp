@@ -100,11 +100,18 @@ namespace montithings {
         LogEntry *logEntry = &logEntries.at(logUuid);
 
         InternalDataResponse res(
+                sourcesOfPortsMap,
                 getVariableSnapshot(logEntry->getTime()),
                 serializedInputs.at(inputUuid),
                 getTraceUuids(inputUuid)
                 );
         interface->response(reqUuid, dataToJson(res));
+    }
+
+
+    void
+    LogTracer::mapPortToSourceInstance(std::string portName, std::string instanceName) {
+        sourcesOfPortsMap[portName] = instanceName;
     }
 
 }

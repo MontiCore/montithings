@@ -6,23 +6,34 @@
 #include "sole/sole.hpp"
 #include <string>
 #include <map>
+#include <utility>
 
 namespace montithings {
 
     class InternalDataResponse {
     private:
+        std::map<std::string, std::string> sourcesOfPortsMap;
         std::map<std::string, std::string> varSnapshot;
         std::string input;
         std::vector<std::string> traceUuids;
 
     public:
-        InternalDataResponse(const std::map<std::string, std::string> &varSnapshot, const std::string &input,
-                             const std::vector<std::string> &traceUuids) : varSnapshot(varSnapshot), input(input),
-                                                                           traceUuids(traceUuids) {}
+        InternalDataResponse(std::map<std::string, std::string> sourcesOfPortsMap,
+                             std::map<std::string, std::string> varSnapshot,
+                             std::string input,
+                             std::vector<std::string> traceUuids)
+                             :  sourcesOfPortsMap(std::move(sourcesOfPortsMap)),
+                                varSnapshot(std::move(varSnapshot)),
+                                input(std::move(input)),
+                                traceUuids(std::move(traceUuids)) {}
 
         InternalDataResponse() = default;
 
         virtual ~InternalDataResponse() =default;
+
+        const std::map<std::string, std::string> &getSourcesOfPortsMap() const;
+
+        void setSourcesOfPortsMap(const std::map<std::string, std::string> &sourcesOfPortsMap);
 
         const std::map<std::string, std::string> &getVarSnapshot() const;
 
@@ -39,7 +50,7 @@ namespace montithings {
         template<class Archive>
         void serialize(Archive & archive)
         {
-            archive( varSnapshot, input, traceUuids );
+            archive( sourcesOfPortsMap, varSnapshot, input, traceUuids );
         }
     };
 }

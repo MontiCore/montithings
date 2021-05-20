@@ -43,6 +43,10 @@ private:
     // store a JSON serialized snapshot of the input
     std::map<sole::uuid, std::string> serializedInputs;
 
+    // having the inputs is fine, but we although want to know which instance has sent the corresponding input
+    // therefore keep track of the source instance names
+    std::map<std::string, std::string> sourcesOfPortsMap;
+
     // there can be multiple InputLogs for the same output message, thus they are grouped as well; analogously to the inputLogs
     std::vector<sole::uuid> currOutputLogs;
     sole::uuid currOutputId{};
@@ -72,6 +76,8 @@ public:
     void sendLogEntries(sole::uuid reqUuid, long fromTimestamp);
 
     void sendInternalData(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid);
+
+    void mapPortToSourceInstance(std::string portName, std::string instanceName);
 
     std::map<std::string, std::string> getVariableSnapshot(time_t time);
 

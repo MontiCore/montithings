@@ -85,6 +85,7 @@ main(int argc, char **argv) {
                 montithings::InternalDataResponse internalDataResponse = jsonToData<montithings::InternalDataResponse>(response);
 
                 nlohmann::json jRes;
+                jRes["sources_ports_map"] = dataToJson(internalDataResponse.getSourcesOfPortsMap());
                 jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
                 jRes["inputs"] = internalDataResponse.getInput();
                 jRes["traces"] = dataToJson(internalDataResponse.getTraceUuids());

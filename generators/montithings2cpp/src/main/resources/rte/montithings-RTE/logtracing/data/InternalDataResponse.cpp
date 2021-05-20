@@ -27,4 +27,12 @@ namespace montithings {
     void InternalDataResponse::setTraceUuids(const std::vector<std::string> &traceUuids) {
         InternalDataResponse::traceUuids = traceUuids;
     }
+
+    const std::map<std::string, std::string> &InternalDataResponse::getSourcesOfPortsMap() const {
+        return sourcesOfPortsMap;
+    }
+
+    void InternalDataResponse::setSourcesOfPortsMap(const std::map<std::string, std::string> &sourcesOfPortsMap) {
+        InternalDataResponse::sourcesOfPortsMap = sourcesOfPortsMap;
+    }
 }
