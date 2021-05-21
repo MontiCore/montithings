@@ -51,9 +51,7 @@
           </div>
           <div class="col">
             <div class="d-flex flex-column h-100">
-              <variable-assignments></variable-assignments>
-
-              <inputs></inputs>
+              <tracing></tracing>
             </div>
           </div>
         </div>

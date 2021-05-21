@@ -20,12 +20,12 @@ namespace montithings {
         InternalDataResponse::input = input;
     }
 
-    const std::vector<std::string> &InternalDataResponse::getTraceUuids() const {
-        return traceUuids;
+    const std::multimap<std::string, std::string> &InternalDataResponse::getTracesUuidsWithPortNames() const {
+        return tracesUuidsWithPortNames;
     }
 
-    void InternalDataResponse::setTraceUuids(const std::vector<std::string> &traceUuids) {
-        InternalDataResponse::traceUuids = traceUuids;
+    void InternalDataResponse::setTracesUuidsWithPortNames(const std::multimap<std::string, std::string> &traceUuids) {
+        InternalDataResponse::tracesUuidsWithPortNames = traceUuids;
     }
 
     const std::map<std::string, std::string> &InternalDataResponse::getSourcesOfPortsMap() const {

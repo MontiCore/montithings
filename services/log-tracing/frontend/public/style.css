@@ -10057,3 +10057,8 @@ a.text-dark:hover, a.text-dark:focus {
 .bg-color3 {background-color: #d9d8d1;}
 .bg-color4 {background-color: #fff6e9;}
 .bg-color5 {background-color: #eee7c4;}
+
+.flowchart-operator-no-fix-width {
+    width: auto !important;
+
+}

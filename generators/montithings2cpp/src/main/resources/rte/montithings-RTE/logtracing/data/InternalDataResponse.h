@@ -15,17 +15,17 @@ namespace montithings {
         std::map<std::string, std::string> sourcesOfPortsMap;
         std::map<std::string, std::string> varSnapshot;
         std::string input;
-        std::vector<std::string> traceUuids;
+        std::multimap<std::string, std::string> tracesUuidsWithPortNames;
 
     public:
         InternalDataResponse(std::map<std::string, std::string> sourcesOfPortsMap,
                              std::map<std::string, std::string> varSnapshot,
                              std::string input,
-                             std::vector<std::string> traceUuids)
+                             std::multimap<std::string, std::string> tracesUuidsWithPortNames)
                              :  sourcesOfPortsMap(std::move(sourcesOfPortsMap)),
                                 varSnapshot(std::move(varSnapshot)),
                                 input(std::move(input)),
-                                traceUuids(std::move(traceUuids)) {}
+                                tracesUuidsWithPortNames(std::move(tracesUuidsWithPortNames)) {}
 
         InternalDataResponse() = default;
 
@@ -43,14 +43,14 @@ namespace montithings {
 
         void setInput(const std::string &input);
 
-        const std::vector<std::string> &getTraceUuids() const ;
+        const std::multimap<std::string, std::string> &getTracesUuidsWithPortNames() const ;
 
-        void setTraceUuids(const std::vector<std::string> &traceUuids);
+        void setTracesUuidsWithPortNames(const std::multimap<std::string, std::string> &tracesUuidsWithPortNames);
 
         template<class Archive>
         void serialize(Archive & archive)
         {
-            archive( sourcesOfPortsMap, varSnapshot, input, traceUuids );
+            archive( sourcesOfPortsMap, varSnapshot, input, tracesUuidsWithPortNames );
         }
     };
 }

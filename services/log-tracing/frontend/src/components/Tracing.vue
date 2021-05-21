@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <b-card class="mt-3 vh-100" header="Network Trace" v-if="internal_data">
+  <div class="mt-3 vh-100">
       <div v-if="selected_log_uuid.length" class="h-100">
         <div v-if="isFetchingInternalData">
           <b-spinner small label="Small Spinner"></b-spinner>
@@ -11,12 +10,7 @@
             id="flowchartworkspace"
           ></div>
         </div>
-        {{ internal_data }}
-        {{ inputs }}
-        {{ getSourceInstanceName("value") }}
       </div>
-      <div v-else>Please select a log entry.</div>
-    </b-card>
   </div>
 </template>
 
@@ -32,10 +26,44 @@ export default {
       "isFetchingInternalData",
       "selected_log_uuid",
       "internal_data",
+      'selected_instance',
     ]),
+    var_assignments: function() {
+      if(this.internal_data.var_snapshot) {
+        let assignments = JSON.parse(this.internal_data.var_snapshot).value0;
+        let res = "";
+        console.log(assignments);
+        for (let assignment of assignments) {
+          res += "<samp>" + assignment.key + " = " + assignment.value + ";</samp><br>";
+        }
+        return res;
+      } else {
+        return "";
+      }
+    },
     inputs: function() {
       if(this.internal_data.inputs) {
         return JSON.parse(this.internal_data.inputs).value0;
+      } else {
+        return [];
+      }
+    },
+    traces: function() {
+      if(this.internal_data.traces) {
+        var res = [];
+        var tracesWithPortNames = JSON.parse(this.internal_data.traces).value0;
+        for (let trace of tracesWithPortNames) {
+          var trace_id = trace.key;
+          var trace_portName = trace.value;
+
+          res.push({
+            "trace_uuid": trace_id,
+            "port" : trace_portName,
+            "source": this.getSourceInstanceName(trace_portName),
+            "value": this.inputs[trace_portName]
+          })
+        }
+        return res;
       } else {
         return [];
       }
@@ -61,7 +89,72 @@ export default {
       return "NOT_FOUND";
     },
     createTrace: function () {
-      var data = {
+      let top = 20;
+      let left = 0;
+      let operators = {};
+
+      // source components
+      for (let trace of this.traces){
+        let name = trace.trace_uuid + "_" + trace.port;
+        operators[name] = {
+          top: top,
+          left: left,
+          properties: {
+            class: "flowchart-operator-no-fix-width",
+            title: trace.source,
+            inputs: {},
+            outputs: {},
+          },
+        }
+        operators[name]["properties"]["outputs"][trace.trace_uuid + "_" + trace.port] = {
+          label: trace.port + "=" + trace.value,
+        }
+        top += 80;
+        left += 200;
+      }
+
+      left = Math.max(0, left/2-70);
+
+        top += 50;
+
+
+      // target components
+      operators[this.selected_instance] = {
+        top: top,
+        left: left,
+        properties: {
+          class: "flowchart-operator-no-fix-width",
+          body: this.var_assignments,
+          title: this.selected_instance,
+          inputs: {},
+          outputs: {},
+        },
+      }
+
+      for (let inPort in this.inputs) {
+        operators[this.selected_instance]["properties"]["inputs"][this.selected_instance + "_" + inPort] = {
+          label: inPort,
+        }
+      }
+
+      var data = {};
+      data["operators"] = operators;
+
+      let links = {};
+      for (let trace of this.traces){
+        let op_name = trace.trace_uuid + "_" + trace.port;
+        links[op_name] = {
+          fromOperator: op_name,
+          fromConnector: trace.trace_uuid + "_" + trace.port,
+          toOperator: this.selected_instance,
+          toConnector: this.selected_instance + "_" + trace.port,
+        }
+      }
+
+      data["links"] = links;
+
+      console.log(JSON.stringify(data, null, 2));
+      /*var data = {
         operators: {
           trace1_1: {
             top: 20,
@@ -120,16 +213,15 @@ export default {
             toConnector: "input_2",
           },
         },
-      };
+      };*/
 
       var $flowchart = $("#flowchartworkspace");
-      console.log($flowchart);
       //var $container = $flowchart.parent();
 
       $flowchart.flowchart({
         verticalConnection: true,
-        canUserEditLinks: false,
-        canUserMoveOperators: false,
+        //canUserEditLinks: false,
+        //canUserMoveOperators: false,
         defaultLinkColor: "#f0f0f0",
         defaultSelectedLinkColor: "#f0f0f0",
         linkWidth: 5,

@@ -3,13 +3,10 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if config.getLogTracing().toString() == "ON">
-
-    std::vector<sole::uuid> traceUUIDs = {
-         <#list comp.getAllIncomingPorts() as inPort>
-             ${Identifier.getInputName()}.get${inPort.getName()?cap_first}Uuid()
-             <#sep>,</#sep>
-         </#list>
-    };
+    std::multimap<sole::uuid, std::string> traceUUIDs;
+    <#list comp.getAllIncomingPorts() as inPort>
+        traceUUIDs.insert(std::make_pair(${Identifier.getInputName()}.get${inPort.getName()?cap_first}Uuid(), "${inPort.getName()}"));
+    </#list>
 
     this->logTracer->handleInput(${Identifier.getInputName()}, traceUUIDs);
 </#if>

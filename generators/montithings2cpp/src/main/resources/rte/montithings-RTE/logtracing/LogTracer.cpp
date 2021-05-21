@@ -39,10 +39,19 @@ namespace montithings {
     sole::uuid
     LogTracer::newOutput() {
         allOutputLogs[currOutputId] = currOutputLogs;
-        currOutputLogs.clear();
         currOutputId = uuid();
 
         return currOutputId;
+    }
+
+    void
+    LogTracer::resetCurrentOutput() {
+        currOutputLogs.clear();
+    }
+
+    void
+    LogTracer::resetCurrentInput() {
+        currOutputLogs.clear();
     }
 
     LogTracerInterface *LogTracer::getInterface() {
@@ -62,16 +71,27 @@ namespace montithings {
         return snapshot;
     }
 
-    std::vector<std::string>
+    std::multimap<std::string, std::string>
     LogTracer::getTraceUuids(sole::uuid inputUuid) {
-        std::vector<std::string> res;
+        std::multimap<std::string, std::string> res;
 
-        typedef std::multimap<sole::uuid, sole::uuid>::iterator MMAPIterator;
-        std::pair<MMAPIterator, MMAPIterator> result = outputInputRefs.equal_range(inputUuid);
+        typedef std::multimap<sole::uuid, sole::uuid>::iterator OIRefsIterator;
+        typedef std::multimap<sole::uuid, std::string>::iterator TracePortIterator;
 
-        for (MMAPIterator it = result.first; it != result.second; it++) {
+        std::pair<OIRefsIterator, OIRefsIterator> traces = outputInputRefs.equal_range(inputUuid);
+
+        for (OIRefsIterator it = traces.first; it != traces.second; it++) {
+            // get trace uuid associated with the input
             sole::uuid id = it->second;
-            res.push_back(id.str());
+
+
+            // find out which port names are associated with the trace
+            // not that it can be multiple ports if they are getting messages from the same source port
+            std::pair<TracePortIterator, TracePortIterator> portTraces = inputTracePortNameRefs.equal_range(id);
+            for (TracePortIterator it2 = portTraces.first; it2 != portTraces.second; it2++) {
+                // add corresponding port name
+                res.insert(std::make_pair(id.str(), it2->second));
+            }
         }
 
         return res;

@@ -88,7 +88,7 @@ main(int argc, char **argv) {
                 jRes["sources_ports_map"] = dataToJson(internalDataResponse.getSourcesOfPortsMap());
                 jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
                 jRes["inputs"] = internalDataResponse.getInput();
-                jRes["traces"] = dataToJson(internalDataResponse.getTraceUuids());
+                jRes["traces"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNames());
 
                 res.write(jRes.dump());
 
