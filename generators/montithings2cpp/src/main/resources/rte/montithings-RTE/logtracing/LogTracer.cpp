@@ -79,11 +79,17 @@ namespace montithings {
         typedef std::multimap<sole::uuid, std::string>::iterator TracePortIterator;
 
         std::pair<OIRefsIterator, OIRefsIterator> traces = outputInputRefs.equal_range(inputUuid);
+        std::vector<sole::uuid> seenIds;
 
         for (OIRefsIterator it = traces.first; it != traces.second; it++) {
             // get trace uuid associated with the input
             sole::uuid id = it->second;
 
+            // avoid duplicates
+            if(std::find(seenIds.begin(), seenIds.end(), id) != seenIds.end()) {
+                continue;
+            }
+            seenIds.push_back(id);
 
             // find out which port names are associated with the trace
             // not that it can be multiple ports if they are getting messages from the same source port

@@ -34,7 +34,11 @@ export default new Vuex.Store({
         log_entries: [],
         internal_data: {},
         isFetchingLogs: false,
-        isFetchingInternalData: false
+        isFetchingInternalData: false,
+        trace_data: {},
+        is_tracing: false,
+        selected_trace_uuid: "",
+        isFilterRelevantEntries: false
     },
     getters: {
         getField,
@@ -42,6 +46,9 @@ export default new Vuex.Store({
     mutations: {
         updateField,
         update_log_entries(state, data) {
+            console.log("update_log_entries");
+
+            let filteredData = [];
             if(data) {
                 data.sort(function(a,b){
                     if(a.time < b.time) return -1;
@@ -49,28 +56,42 @@ export default new Vuex.Store({
                     return 0;
                 });
 
-
                 var outputCorrColors = ["bg-color1","bg-color2"];
                 var inputCorrColors = ["bg-color4","bg-color5","bg-color3"];
                 var lastOutputUuid = "";
                 var lastInputUuid = "";
                 var outputIndex = 0;
                 var inputIndex = 0;
-                data.forEach(function (logEntry) {
-                    if (lastInputUuid !== logEntry.input_uuid) {
+
+                let stop = false;
+                var index;
+
+                for (index = 0; index < data.length; ++index) {
+                    if (stop) {
+                        break;
+                    }
+                    if (lastInputUuid !== data[index].input_uuid) {
                         inputIndex = (inputIndex + 1) % inputCorrColors.length;
                     }
-                    if (lastOutputUuid !== logEntry.output_uuid) {
+                    if (lastOutputUuid !== data[index].output_uuid) {
                         outputIndex = (outputIndex + 1) % outputCorrColors.length;
                     }
-                    logEntry.input_corr_color = inputCorrColors[inputIndex];
-                    lastInputUuid = logEntry.input_uuid;
-                    logEntry.output_corr_color = outputCorrColors[outputIndex];
-                    lastOutputUuid = logEntry.output_uuid;
-                });
-            }
+                    data[index].input_corr_color = inputCorrColors[inputIndex];
+                    lastInputUuid = data[index].input_uuid;
+                    data[index].output_corr_color = outputCorrColors[outputIndex];
+                    lastOutputUuid = data[index].output_uuid;
 
-            state.log_entries = data;
+                    if(state.is_tracing) {
+                        if (state.selected_trace_uuid === lastOutputUuid) {
+                            stop = true;
+                            data[index].is_related_to_selected_uuid = true;
+                        }
+                    }
+
+                    filteredData.push(data[index]);
+                }
+            }
+            state.log_entries = filteredData;
             state.isFetchingLogs = false;
         },
         update_internal_data(state, data) {
@@ -80,8 +101,10 @@ export default new Vuex.Store({
     },
     actions: {
         async getLogEntries(state, instanceName) {
+            console.log("getLogEntries " + instanceName);
             axios.get(`http://localhost:8080/logs/${instanceName}`)
                 .then((response) => {
+                    console.log("getLogEntries");
                     this.commit('update_log_entries', response.data);
                 })
                 .catch((error) => {
@@ -90,6 +113,16 @@ export default new Vuex.Store({
         },
         async getInternalData(state, payload) {
             axios.get(`http://localhost:8080/logs/${this.state.selected_instance}/${payload.log_uuid}/${payload.input_uuid}/${payload.output_uuid}`)
+                .then((response) => {
+                    this.commit('update_internal_data', response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        async getInternalDataTraced(state, trace_uuid) {
+            console.log("getInternalDataTraced " + trace_uuid);
+            axios.get(`http://localhost:8080/trace/${this.state.selected_instance}/${trace_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);
                 })

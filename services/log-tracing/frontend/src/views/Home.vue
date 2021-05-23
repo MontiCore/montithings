@@ -14,9 +14,7 @@
               @click="onInstanceChange(instanceName)"
               v-bind:class="{
                 'menu-active': instanceName === selected_instance,
-              }"
-              >{{ instanceName }}</a
-            >
+              }">{{ instanceName }}</a>
           </div>
         </b-tab>
         <b-tab title="Load config">
@@ -42,6 +40,10 @@
             <h1 class="mt-4 text-left">
               Log Entries for
               <small class="text-muted">{{ selected_instance }}</small>
+              <b-button v-if="is_tracing"
+                        variant="outline-dark"
+                        class="m-2"
+                        @click="onInstanceChange(selected_instance)"><b-icon icon="circle-fill" animation="throb" font-scale="1"></b-icon> Reset Trace</b-button>
             </h1>
           </b-col>
         </b-row>
@@ -51,6 +53,7 @@
           </div>
           <div class="col">
             <div class="d-flex flex-column h-100">
+
               <tracing></tracing>
             </div>
           </div>
@@ -69,7 +72,7 @@ import { mapFields } from "vuex-map-fields";
 
 export default {
   computed: {
-    ...mapFields(["instances", "selected_instance"]),
+    ...mapFields(["instances", "selected_instance", "is_tracing"]),
   },
   created() {},
   methods: {
@@ -78,6 +81,9 @@ export default {
       store.state.isFetchingLogs = true;
       store.state.selected_log_uuid = "";
       store.state.internal_data = "";
+      store.state.is_tracing = false;
+      store.state.trace_data = {};
+      store.state.isFilterRelevantEntries = false;
       store.dispatch("getLogEntries", instanceName);
     },
   },
