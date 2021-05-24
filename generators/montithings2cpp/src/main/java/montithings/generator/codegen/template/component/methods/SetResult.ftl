@@ -9,7 +9,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::setResult(${compname}
 
   this->${Identifier.getInterfaceName()}.getPort${portOut.getName()?cap_first}()->setNextValue(
     result.get${portOut.getName()?cap_first}Message(
-        ${tc.includeArgs("template.logtracing.hooks.HandleOutput", [comp, config, portOut])}
+        ${tc.includeArgs("template.logtracing.hooks.GetCurrOutputUuid", [comp, config, portOut])}
       )
   );
 </#list>

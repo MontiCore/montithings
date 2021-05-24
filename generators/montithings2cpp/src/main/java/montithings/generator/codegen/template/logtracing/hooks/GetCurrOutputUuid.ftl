@@ -3,5 +3,5 @@ ${tc.signature("comp", "config", "port")}
 <#include "/template/Preamble.ftl">
 
 <#if config.getLogTracing().toString() == "ON">
-this->logTracer->newOutput()
+this->logTracer->getCurrOutputUuid()
 </#if>

@@ -8,5 +8,7 @@ ${tc.signature("comp", "config")}
         traceUUIDs.insert(std::make_pair(${Identifier.getInputName()}.get${inPort.getName()?cap_first}Uuid(), "${inPort.getName()}"));
     </#list>
 
-    this->logTracer->handleInput(${Identifier.getInputName()}, traceUUIDs);
+    <#if comp.getAllIncomingPorts()?size gt 0>
+        this->logTracer->handleInput(${Identifier.getInputName()}, traceUUIDs);
+    </#if>
 </#if>
