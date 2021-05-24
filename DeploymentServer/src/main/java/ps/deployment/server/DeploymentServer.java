@@ -15,8 +15,8 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import com.google.common.base.Charsets;
 
 import ps.deployment.server.data.DeployClient;
-import ps.deployment.server.data.listener.IDeployStatusListener;
-import ps.deployment.server.data.listener.VoidDeployStatusListener;
+import ps.deployment.server.distribution.listener.IDeployStatusListener;
+import ps.deployment.server.distribution.listener.VoidDeployStatusListener;
 
 public class DeploymentServer {
   

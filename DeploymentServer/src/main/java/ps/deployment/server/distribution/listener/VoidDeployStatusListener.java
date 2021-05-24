@@ -1,4 +1,4 @@
-package ps.deployment.server.data.listener;
+package ps.deployment.server.distribution.listener;
 
 import ps.deployment.server.data.DeployClient;
 
