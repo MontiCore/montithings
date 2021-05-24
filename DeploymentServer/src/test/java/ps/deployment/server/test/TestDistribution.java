@@ -26,6 +26,8 @@ import ps.deployment.server.distribution.IDistributionCalculator;
 import ps.deployment.server.distribution.IPrologGenerator;
 import ps.deployment.server.distribution.RestPrologGenerator;
 import ps.deployment.server.distribution.config.DeployConfigGenerator;
+import ps.deployment.server.distribution.config.DockerComposeConfig;
+import ps.deployment.server.distribution.config.DockerComposeService;
 
 public class TestDistribution {
   
@@ -139,6 +141,16 @@ public class TestDistribution {
     }).get();
     
     System.out.println(dist);
+  }
+  
+  @Test
+  public void testDockerCompose_serialization() {
+    // example data
+    DockerComposeConfig config = new DockerComposeConfig();
+    config.addService("testapp1", new DockerComposeService("test.image1:latest", "testInstance1", "0.0.0.0", 1234));
+    config.addService("testapp2", new DockerComposeService("test.image2:latest", "testInstance2", "0.0.0.0", 1234));
+    System.out.println(config.serializeYaml());
+    
   }
   
 }
