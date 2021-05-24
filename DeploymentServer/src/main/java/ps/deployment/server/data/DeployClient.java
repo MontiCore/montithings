@@ -6,6 +6,7 @@ public class DeployClient {
   private boolean online;
   private DeployClientLocation location;
   private String[] hardware;
+  private long lastSeen;
   
   public String getClientID() {
     return clientID;
@@ -37,6 +38,17 @@ public class DeployClient {
   
   public void setHardware(String[] hardware) {
     this.hardware = hardware;
+  }
+  
+  /**
+   * @return The time-stamp of the last time this client was seen (e.g. heart beat).  
+   * */
+  public long getLastSeen() {
+    return lastSeen;
+  }
+  
+  public void setLastSeen(long lastSeen) {
+    this.lastSeen = lastSeen;
   }
   
   public static DeployClient create(String clientID, boolean online, DeployClientLocation location, String... hardware) {

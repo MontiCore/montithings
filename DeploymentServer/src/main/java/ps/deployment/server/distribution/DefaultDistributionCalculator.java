@@ -40,9 +40,9 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   public DefaultDistributionCalculator(String plFacts, String plQuery, File workingDir) {
     this.plFacts = plFacts;
     this.plQuery = plQuery;
-    this.fileFacts = new File(workingDir, "facts.pl");
-    this.fileQuery = new File(workingDir, "query.pl");
-    this.workingDir = workingDir;
+    this.workingDir = workingDir.getAbsoluteFile();
+    this.fileFacts = new File(this.workingDir, "facts.pl");
+    this.fileQuery = new File(this.workingDir, "query.pl");
   }
   
   private Distribution computeDistributionSync(List<String> components) throws DistributionException {
@@ -111,6 +111,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     
     // Retract facts from previous queries.
     new Query(new Compound("retract", wrap(new Atom("property")))).oneSolution();
+    new Query(new Compound("retract", wrap(new Atom("distribution")))).oneSolution();
   }
   
   private void cleanup() throws IOException {

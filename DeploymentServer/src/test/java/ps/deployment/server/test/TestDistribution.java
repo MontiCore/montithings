@@ -91,6 +91,7 @@ public class TestDistribution {
       fail();
       return null;
     }).get();
+    assertNotNull(query);
   }
   
   @Test
@@ -110,7 +111,7 @@ public class TestDistribution {
     JsonObject config = new DeployConfigGenerator(deployment).generateConfig();
     assertNotNull(config);
     
-    File workingDir = new File("./tmp/");
+    File workingDir = new File("tmp");
     
     // Generate Prolog files.
     
@@ -131,7 +132,7 @@ public class TestDistribution {
     
     IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
     List<String> components = deployment.getComponentTypes();
-    Distribution dist = calc.computeDistribution(clients, components).exceptionally((t)->{
+    Distribution dist = calc.computeDistribution(clients, components).exceptionally((t) -> {
       t.printStackTrace();
       fail();
       return null;
@@ -139,10 +140,5 @@ public class TestDistribution {
     
     System.out.println(dist);
   }
-  
-  
-  
-  
-  
   
 }
