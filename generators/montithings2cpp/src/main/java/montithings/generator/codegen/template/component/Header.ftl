@@ -45,13 +45,13 @@ ${tc.includeArgs("template.state.hooks.Member", [comp])}
 <#else>
   ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
-  void initialize();
   void setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result);
   void run();
   <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
     void run${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
   </#list>
 </#if>
+void initialize();
 
 public:
 ${className}(std::string instanceName
