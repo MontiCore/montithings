@@ -15,6 +15,7 @@ if __name__ == "__main__":
         pass
 
     myTopicStatus = f"deployment/{config.CLIENT_ID}/status"
+    myTopicConfig = f"deployment/{config.CLIENT_ID}/config"
     myTopicPush = f"deployment/{config.CLIENT_ID}/push"
     myTopicStop   = f"deployment/{config.CLIENT_ID}/stop"
     myTopicHeartbeat   = f"deployment/{config.CLIENT_ID}/heartbeat"
@@ -28,6 +29,12 @@ if __name__ == "__main__":
     def publishStatus():
         # Send status update. The MQTT-Broker shall retain this message.
         mqtt.publish(myTopicStatus, payload=json.dumps(getStatus()), qos=1, retain=True)
+
+    def publishConfig():
+        # Send config update. The MQTT-Broker shall retain this message.
+        mqtt.publish(myTopicConfig, payload=json.dumps(config.CLIENT_CONFIG), qos=1, retain=True)
+        # We'll  also send a heart-beat, because the sending a config alone shall not imply that the client is online.
+        sendHeartbeat()
 
     def handleDeploy(client, userdata, message:mqttc.MQTTMessage):
         print("Received deployment request!")
@@ -66,7 +73,8 @@ if __name__ == "__main__":
     # start sending heartbeats
     threading.Thread(target=loopHeartbeat,daemon=True).start()
 
-    # publish current status
+    # publish current config & status
+    publishConfig()
     publishStatus()
 
     # %%
