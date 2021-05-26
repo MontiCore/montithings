@@ -50,10 +50,13 @@ SET(dir_list "")
 
 <#if config.getTargetPlatform().toString() == "DSA_VCG"
 || config.getTargetPlatform().toString() == "DSA_LAB">
-    ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
+  ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
 <#if config.getTargetPlatform().toString() == "RASPBERRY">
-    ${tc.includeArgs("template.util.cmake.platform.raspberrypi.Parameters", [config])}
+  ${tc.includeArgs("template.util.cmake.platform.raspberrypi.Parameters", [config, commonCodePrefix])}
+  <#if config.getSplittingMode().toString() == "OFF">
+    add_subdirectory(lib/lib/raspberrypi)
+  </#if>
 </#if>
 
 <#if config.getTargetPlatform().toString() != "DSA_VCG"

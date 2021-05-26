@@ -24,10 +24,10 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.Run", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupAtomic", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitAtomic", [comp, config, className])}
-  ${tc.includeArgs("template.component.methods.Initialize", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
 </#if>
+${tc.includeArgs("template.component.methods.Initialize", [comp, config, className])}
 
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
@@ -45,7 +45,7 @@ ${tc.includeArgs("template.component.methods.ShouldComputePortSpecificBehavior",
   ${tc.includeArgs("template.component.methods.RestoreState", [comp, config, className])}
 </#if>
 
-${tc.includeArgs("template.component.methods.printGetState", [comp, className])}
+${tc.includeArgs("template.component.methods.GetState", [comp, className])}
 
 <#if config.getMessageBroker().toString() == "MQTT">
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}

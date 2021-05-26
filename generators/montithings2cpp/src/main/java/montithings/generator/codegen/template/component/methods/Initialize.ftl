@@ -29,11 +29,13 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
     </#if>));
   </#if>
 </#list>
-<#if ComponentHelper.retainState(comp)>
-  if (!${Identifier.getStateName()}.isRestoredState ())
+<#if !comp.isDecomposed()>
+  <#if ComponentHelper.retainState(comp)>
+    if (!${Identifier.getStateName()}.isRestoredState ())
+  </#if>
+  {
+  ${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();
+  setResult(result);
+  }
 </#if>
-{
-${compname}Result${Utils.printFormalTypeParameters(comp)} result = ${Identifier.getBehaviorImplName()}.getInitialValues();
-setResult(result);
-}
 }

@@ -7,9 +7,10 @@ ${Utils.printTemplateArguments(comp)}
 void
 ${className}${Utils.printFormalTypeParameters(comp)}::publishConfigForSubcomponent (std::string instanceName)
 {
+std::string thisInstance = replaceDotsBySlashes (this->getInstanceName());
 <#list comp.subComponents as subcomponent >
-  <#assign subcomponentWithSlashes = subcomponent.getFullName()?replace(".", "/")>
-  if (instanceName == "${subcomponentWithSlashes}")
+  <#assign subcomponentName = subcomponent.getName()>
+  if (instanceName == thisInstance + "/${subcomponentName}")
   {
     json config;
     ${Utils.printSerializeParameters(subcomponent)}
@@ -21,9 +22,9 @@ ${className}${Utils.printFormalTypeParameters(comp)}::publishConfigForSubcompone
     </#if>
     std::string configJson = config.dump ();
 
-    MqttClient::instance ()->publish ("/config/${subcomponentWithSlashes}", configJson);
+    MqttClient::instance ()->publish ("/config/" + thisInstance + "/${subcomponentName}", configJson);
     CLOG (DEBUG, "MQTT") << "Published config via MQTT. "
-                         << "/config/${subcomponentWithSlashes}"
+                         << "/config/" + thisInstance + "/${subcomponentName}"
                          << " " << configJson;
   }
 </#list>

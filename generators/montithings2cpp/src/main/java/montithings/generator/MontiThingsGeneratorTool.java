@@ -271,7 +271,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         config.setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
         config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
         
-        generateCppForComponent(model, symTab, compTarget, hwcPath, config, genDeploy);
+        generateCppForComponent(model, symTab, compTarget, hwcPath, config, models, genDeploy);
       }
       // reset splitting mode and message broker
       config.setSplittingMode(orgSplit);
@@ -414,9 +414,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
-      if (config.getMtConfigScope() == null) {
-        config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
-      }
+      config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
+
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
@@ -429,12 +428,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   /* ============================================================ */
 
   protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
-    File hwcPath, ConfigParams config) {
-    generateCppForComponent(model, symTab, target, hwcPath, config, true);
+    File hwcPath, ConfigParams config, Models models) {
+    generateCppForComponent(model, symTab, target, hwcPath, config, models, true);
   }
 
   protected void generateCppForComponent(String model, IMontiThingsScope symTab, File target,
-    File hwcPath, ConfigParams config, boolean generateDeploy) {
+    File hwcPath, ConfigParams config, Models models, boolean generateDeploy) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
     Log.info("Generate MT model: " + comp.getFullName(), TOOL_NAME);
 
@@ -461,22 +460,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     generateHwcPort(target, config, comp);
 
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-      copyHwcToTarget(target, hwcPath, model, config);
-    }
-  }
-
-  protected void generateCppForSubcomponents(String model, File modelPath, List<String> mtModels,
-    IMontiThingsScope symTab, File target, File hwcPath, ConfigParams config) {
-    // Find subcomponent types
-    ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-    List<ComponentTypeSymbol> subcomponentTypes = comp.getSubComponents().stream()
-      .map(ComponentInstanceSymbol::getType).collect(Collectors.toList());
-
-    // Generate code for each subcomponent type
-    for (ComponentTypeSymbol subcomp : subcomponentTypes) {
-      generateCppForComponent(subcomp.getFullName(), symTab, target, hwcPath, config, false);
-      generateCppForSubcomponents(subcomp.getFullName(), modelPath, mtModels, symTab, target,
-        hwcPath, config);
+      copyHwcToTarget(target, hwcPath, model, config, models);
     }
   }
 

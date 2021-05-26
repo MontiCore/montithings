@@ -2,6 +2,7 @@
 // (c) https://github.com/MontiCore/monticore
 
 #pragma once
+#include "easyloggingpp/easylogging++.h"
 #include "MqttClient.h"
 #include "MqttUser.h"
 #include "Port.h"

@@ -15,6 +15,10 @@ project ("MontiThings Application")
 <#if (config.getLogTracing().toString() == "ON")>
   set(ENABLE_LOG_TRACING 1)
 </#if>
+<#if config.getTargetPlatform().toString() == "RASPBERRY">
+  add_compile_options(${"$<$<CXX_COMPILER_ID:GNU>"}:-Wno-psabi>)
+  add_subdirectory(lib/lib/raspberrypi)
+</#if>
 add_subdirectory ("montithings-RTE")
 <#list subdirectories as subdir >
   add_subdirectory ("${subdir}")
