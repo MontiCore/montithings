@@ -1,4 +1,4 @@
-package ps.deployment.server.prolog;
+package ps.development.server.prolog;
 
 import java.io.File;
 import java.util.Arrays;

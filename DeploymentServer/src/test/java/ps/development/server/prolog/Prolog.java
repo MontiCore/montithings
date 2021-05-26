@@ -1,4 +1,4 @@
-package ps.deployment.server.prolog;
+package ps.development.server.prolog;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,10 +9,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class Prolog {
