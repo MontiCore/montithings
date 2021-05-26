@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.jpl7.Atom;
 import org.jpl7.Compound;
 import org.jpl7.Query;
@@ -45,7 +47,9 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     this.fileQuery = new File(this.workingDir, "query.pl");
   }
   
-  private Distribution computeDistributionSync(List<String> components) throws DistributionException {
+  private Distribution computeDistributionSync(Pair<Collection<DeployClient>,List<String>> param) throws DistributionException {
+    Collection<DeployClient> deployTargets = param.getLeft();
+    List<String> components = param.getRight();
     try {
       prepareWorkspace();
       
@@ -63,16 +67,17 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       if (solution != null) {
         Map<String, List<String>> dmap = new HashMap<>();
         
+        // initialize empty list for every target 
+        for(DeployClient client : deployTargets) {
+          dmap.put(client.getClientID(), new ArrayList<>());
+        }
+        
         for (Entry<String, Term> e : solution.entrySet()) {
           String instanceName = e.getKey();
           String[] clients = Util.atomListToStringArray(e.getValue());
           
           for (String clientID : clients) {
             List<String> instances = dmap.get(clientID);
-            if (instances == null) {
-              instances = new ArrayList<>();
-              dmap.put(clientID, instances);
-            }
             instances.add(instanceName);
           }
         }
@@ -125,7 +130,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   
   @Override
   public CompletableFuture<Distribution> computeDistribution(Collection<DeployClient> targets, List<String> components) {
-    return CompletableFuture.supplyAsync(() -> components).thenApply(this::computeDistributionSync);
+    return CompletableFuture.supplyAsync(() -> Pair.of(targets, components)).thenApply(this::computeDistributionSync);
   }
   
   private static Term[] wrap(Term... terms) {
