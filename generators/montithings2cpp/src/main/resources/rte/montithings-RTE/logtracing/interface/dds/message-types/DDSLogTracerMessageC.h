@@ -77,7 +77,8 @@ namespace DDSLogTracerMessage
   enum RequestData
   {
     LOG_ENTRIES,
-    INTERNAL_DATA
+    INTERNAL_DATA,
+    TRACE_DATA
   };
 
   typedef RequestData &RequestData_out;

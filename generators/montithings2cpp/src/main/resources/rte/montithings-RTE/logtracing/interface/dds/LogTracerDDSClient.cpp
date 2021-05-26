@@ -51,6 +51,11 @@ LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Reques
 }
 
 sole::uuid
+LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Request requestData, sole::uuid traceUuid) {
+    return request(instanceName, requestData, time(nullptr), traceUuid, sole::uuid4(), sole::uuid4());
+}
+
+sole::uuid
 LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Request requestData, time_t fromDatetime,
                             sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid) {
     sole::uuid reqUuid = sole::uuid4();
@@ -65,8 +70,11 @@ LogTracerDDSClient::request(std::string instanceName, LogTracerInterface::Reques
         req.log_uuid = logUuid.str().c_str();
         req.input_uuid = inputUuid.str().c_str();
         req.output_uuid = outputUuid.str().c_str();
-    } else {
+    } else if (requestData == LogTracerInterface::LOG_ENTRIES) {
         req.req_data = DDSLogTracerMessage::LOG_ENTRIES;
+    } else {
+        req.log_uuid = logUuid.str().c_str();
+        req.req_data = DDSLogTracerMessage::TRACE_DATA;
     }
 
     send(req);
@@ -91,6 +99,10 @@ LogTracerDDSClient::onRequestCallback(const DDSLogTracerMessage::Request &res) {
 
     if (res.req_data == DDSLogTracerMessage::INTERNAL_DATA) {
         reqType = LogTracerInterface::INTERNAL_DATA;
+    } else if (res.req_data == DDSLogTracerMessage::LOG_ENTRIES) {
+        reqType = LogTracerInterface::LOG_ENTRIES;
+    } else {
+        reqType = LogTracerInterface::TRACE_DATA;
     }
 
     if (onRequest) {

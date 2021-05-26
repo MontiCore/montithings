@@ -1,7 +1,8 @@
 <template>
   <div class="mt-3 vh-100">
-    {{traces}} <br><br>
-    {{ internal_data }}
+
+    <!--{{traces}} <br><br>
+    {{ internal_data }}-->
       <div v-if="selected_log_uuid.length" class="h-100">
         <div v-if="isFetchingInternalData">
           <b-spinner small label="Small Spinner"></b-spinner>
@@ -32,7 +33,8 @@ export default {
       "selected_instance",
       "trace_data",
       "is_tracing",
-      "selected_trace_uuid"
+      "selected_trace_uuid",
+      "trace_tree_revision"
     ]),
     var_assignments: function() {
       if(this.internal_data.var_snapshot) {
@@ -149,7 +151,7 @@ export default {
         left = Math.max(0, left/2-70);
       }
 
-      top += 50;
+      top += 100;
 
       // target components
       operators[this.selected_instance] = {
@@ -209,7 +211,9 @@ export default {
           store.state.isFilterRelevantEntries = true;
           store.state.is_tracing = true;
           store.dispatch("getLogEntries", selected_instance);
-          //store.dispatch('getInternalDataTraced', selected_uuid);
+          store.dispatch('getInternalDataTraced',
+              { trace_uuid: selected_uuid,
+                instance: selected_instance });
           return true;
         },
       });
@@ -219,21 +223,34 @@ export default {
       if (store.state.is_tracing === false) {
         this.buildInitialTree();
         return true;
+      } else {
+        this.updateTree();
       }
+    },
+    updateTree: function () {
+      store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["body"] = this.var_assignments;
+      store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["class"] = "flowchart-operator-no-fix-width-selected";
 
-
-
-
+      var $flowchart = $("#flowchartworkspace");
+      $flowchart.flowchart('setData', store.state.trace_data);
     },
   },
   watch: {
+    trace_tree_revision: {
+      handler: function(newVal, oldVal) {
+        console.log("trace_data value changed from " + oldVal + " to " + newVal);
+        Vue.nextTick(function () {
+              this.updateTree();
+            }.bind(this));
+        return true;
+      },
+      deep: true
+    },
     internal_data: function (newVal, oldVal) {
-      console.log("value changed from " + oldVal + " to " + newVal);
-      Vue.nextTick(
-        function () {
+      console.log("internal_data value changed from " + oldVal + " to " + newVal);
+      Vue.nextTick(function () {
           this.createTrace();
-        }.bind(this)
-      );
+        }.bind(this));
     },
   }
 };

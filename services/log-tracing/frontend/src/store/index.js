@@ -38,7 +38,8 @@ export default new Vuex.Store({
         trace_data: {},
         is_tracing: false,
         selected_trace_uuid: "",
-        isFilterRelevantEntries: false
+        isFilterRelevantEntries: false,
+        trace_tree_revision:0
     },
     getters: {
         getField,
@@ -63,11 +64,16 @@ export default new Vuex.Store({
                 var outputIndex = 0;
                 var inputIndex = 0;
 
+                if (data.length > 0) {
+                    lastOutputUuid = data[0].output_uuid;
+                    lastInputUuid = data[0].input_uuid;
+                }
+
                 let stop = false;
                 var index;
 
                 for (index = 0; index < data.length; ++index) {
-                    if (stop) {
+                    if (state.selected_trace_uuid !== lastOutputUuid && stop) {
                         break;
                     }
                     if (lastInputUuid !== data[index].input_uuid) {
@@ -87,7 +93,6 @@ export default new Vuex.Store({
                             data[index].is_related_to_selected_uuid = true;
                         }
                     }
-
                     filteredData.push(data[index]);
                 }
             }
@@ -97,6 +102,10 @@ export default new Vuex.Store({
         update_internal_data(state, data) {
             state.internal_data = data;
             state.isFetchingInternalData = false
+
+            if(state.is_tracing) {
+                state.trace_tree_revision++;
+            }
         },
     },
     actions: {
@@ -120,9 +129,9 @@ export default new Vuex.Store({
                     console.log(error);
                 });
         },
-        async getInternalDataTraced(state, trace_uuid) {
-            console.log("getInternalDataTraced " + trace_uuid);
-            axios.get(`http://localhost:8080/trace/${this.state.selected_instance}/${trace_uuid}`)
+        async getInternalDataTraced(state, payload) {
+            console.log("getInternalDataTraced " + payload.trace_uuid);
+            axios.get(`http://localhost:8080/trace/${payload.instance}/${payload.trace_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);
                 })

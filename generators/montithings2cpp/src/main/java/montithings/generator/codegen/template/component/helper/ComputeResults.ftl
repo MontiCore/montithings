@@ -15,5 +15,6 @@ ${className}Result${Utils.printFormalTypeParameters(comp)} result;
 </#if>)->getPayload().value()
 
     );
+    ${tc.includeArgs("template.logtracing.hooks.GetCurrUuidAndMarkOutput", [comp, config])}
     }
 </#list>

@@ -27,6 +27,9 @@ private:
 
     std::string instanceName;
 
+    // true if at least one port has sent data, the log tracer will then continue with a new output uuid after the current computation
+    bool atLeastOneNewOutput = false;
+
     // stores all log messages with their timestamp, referenced by a sole::uuid
     std::map<sole::uuid, LogEntry> logEntries;
 
@@ -39,8 +42,6 @@ private:
     sole::uuid currInputId{};
     //output UUIDs from messages are referenced with the current InputId
     std::multimap<sole::uuid, sole::uuid> outputInputRefs;
-
-
 
     // store a JSON serialized snapshot of the input
     std::map<sole::uuid, std::string> serializedInputs;
@@ -74,6 +75,12 @@ public:
 
     sole::uuid newOutput();
 
+    sole::uuid getCurrUuidAndMarkOutput();
+
+    sole::uuid getCurrOutputUuid();
+
+    void handleEndOfComputation();
+
     void resetCurrentOutput();
 
     void resetCurrentInput();
@@ -83,6 +90,8 @@ public:
     void onRequest(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid, LogTracerInterface::Request reqType, long fromTimestamp);
 
     void sendLogEntries(sole::uuid reqUuid, long fromTimestamp);
+
+    void sendTraceData(sole::uuid reqUuid, sole::uuid traceUuid);
 
     void sendInternalData(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid);
 

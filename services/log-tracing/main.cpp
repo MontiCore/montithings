@@ -62,7 +62,7 @@ main(int argc, char **argv) {
 
     CROW_ROUTE(app, "/logs/<string>/<string>/<string>/<string>")
             ([](std::string instanceName, std::string logUuidStr,
-                    std::string inputUuidStr, std::string outputUuidStr) {
+                std::string inputUuidStr, std::string outputUuidStr) {
                 crow::response res;
                 res.add_header("Access-Control-Allow-Origin", "*");
                 res.add_header("Content-Type", "application/json");
@@ -81,6 +81,36 @@ main(int argc, char **argv) {
                 std::string response = responses[reqUuid];
                 responses.erase(reqUuid);
 
+
+                montithings::InternalDataResponse internalDataResponse = jsonToData<montithings::InternalDataResponse>(response);
+
+                nlohmann::json jRes;
+                jRes["sources_ports_map"] = dataToJson(internalDataResponse.getSourcesOfPortsMap());
+                jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
+                jRes["inputs"] = internalDataResponse.getInput();
+                jRes["traces"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNames());
+
+                res.write(jRes.dump());
+
+                return res;
+            });
+
+    CROW_ROUTE(app, "/trace/<string>/<string>")
+            ([](std::string instanceName, std::string traceUuidStr) {
+                crow::response res;
+                res.add_header("Access-Control-Allow-Origin", "*");
+                res.add_header("Content-Type", "application/json");
+                sole::uuid traceUuid = sole::rebuild(traceUuidStr);
+
+                sole::uuid reqUuid = interface->request(instanceName,
+                                                        LogTracerInterface::Request::TRACE_DATA,
+                                                        traceUuid);
+                while (responses[reqUuid].empty()) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    std::this_thread::yield();
+                }
+                std::string response = responses[reqUuid];
+                responses.erase(reqUuid);
 
                 montithings::InternalDataResponse internalDataResponse = jsonToData<montithings::InternalDataResponse>(response);
 

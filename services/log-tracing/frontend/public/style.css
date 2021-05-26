@@ -10053,7 +10053,7 @@ a.text-dark:hover, a.text-dark:focus {
 }
 
 .bg-color1 {background-color: #d2e7ff;}
-.bg-color2 {background-color: #e3f0ff;}
+.bg-color2 {background-color: #9fccff;}
 .bg-color3 {background-color: #d9d8d1;}
 .bg-color4 {background-color: #fff6e9;}
 .bg-color5 {background-color: #eee7c4;}
@@ -10062,4 +10062,10 @@ a.text-dark:hover, a.text-dark:focus {
 .flowchart-operator-no-fix-width {
     width: auto !important;
     cursor: pointer !important;
+}
+
+.flowchart-operator-no-fix-width-selected {
+    width: auto !important;
+    cursor: pointer !important;
+    border: 1px solid #4085F0 !important;
 }

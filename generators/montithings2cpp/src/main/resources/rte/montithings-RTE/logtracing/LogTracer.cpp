@@ -40,8 +40,26 @@ namespace montithings {
     LogTracer::newOutput() {
         allOutputLogs[currOutputId] = currOutputLogs;
         currOutputId = uuid();
+        atLeastOneNewOutput = false;
 
         return currOutputId;
+    }
+
+    sole::uuid
+    LogTracer::getCurrUuidAndMarkOutput() {
+        atLeastOneNewOutput = true;
+        return currOutputId;
+    }
+
+    sole::uuid
+    LogTracer::getCurrOutputUuid() {
+        return currOutputId;
+    }
+
+    void LogTracer::handleEndOfComputation() {
+        if (atLeastOneNewOutput) {
+            newOutput();
+        }
     }
 
     void
@@ -65,7 +83,29 @@ namespace montithings {
         for (const auto &varSnap : variableSnapshots) {
             // varSnap.first -> variable name
             // varSnap.second -> map of assignments with time as key
-            snapshot[varSnap.first] = varSnap.second.lower_bound(time)->second;
+
+            // retrieve the most closely recorded key which is equal or less than the given time
+            // if only one entry is recorded, check if its suited or not
+            if (varSnap.second.size() == 1) {
+                if (varSnap.second.begin()->first <= time) {
+                    snapshot[varSnap.first] =varSnap.second.begin()->second;
+                    continue;
+                }
+            }
+
+            //otherwise find most closely recorded key
+            auto itlow = varSnap.second.lower_bound(time);
+
+            if (itlow == varSnap.second.end() || itlow->first != time) {
+                if (itlow != varSnap.second.begin()){
+                    // no key found
+                    continue;
+                } else {
+                    --itlow; /* found prev */
+                }
+            }
+
+            snapshot[varSnap.first] = itlow->second;
         }
 
         return snapshot;
@@ -111,6 +151,9 @@ namespace montithings {
             sendInternalData(reqUuid, logUuid, inputUuid, outputUuid);
         } else if (reqType == LogTracerInterface::LOG_ENTRIES) {
             sendLogEntries(reqUuid, fromTimestamp);
+        } else if (reqType == LogTracerInterface::TRACE_DATA) {
+            // logUuid == traceUuid in this case
+            sendTraceData(reqUuid, logUuid);
         }
 
         std::cout << "got something!" << std::endl;
@@ -125,15 +168,40 @@ namespace montithings {
     LogTracer::sendInternalData(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid) {
         LogEntry *logEntry = &logEntries.at(logUuid);
 
+        std::string input = "";
+        if (serializedInputs.find(inputUuid) != serializedInputs.end()) {
+            input = serializedInputs.at(inputUuid);
+        }
+
         InternalDataResponse res(
                 sourcesOfPortsMap,
                 getVariableSnapshot(logEntry->getTime()),
-                serializedInputs.at(inputUuid),
+                input,
                 getTraceUuids(inputUuid)
-                );
+        );
         interface->response(reqUuid, dataToJson(res));
     }
 
+    void
+    LogTracer::sendTraceData(sole::uuid reqUuid, sole::uuid traceUuid) {
+        // given
+        sole::uuid lastUuid;
+        for (auto it = outputInputRefs.end(); it != outputInputRefs.begin(); --it){
+            if (it->second == traceUuid) {
+                lastUuid = it->first;
+            }
+        }
+
+        std::map<std::string, std::string> emptyVarSnapshot;
+        std::multimap<std::string, std::string> emptyTraceUuids;
+        InternalDataResponse res(
+                sourcesOfPortsMap,
+                emptyVarSnapshot,
+                "",
+                emptyTraceUuids
+        );
+        interface->response(reqUuid, dataToJson(res));
+    }
 
     void
     LogTracer::mapPortToSourceInstance(std::string portName, std::string instanceName) {

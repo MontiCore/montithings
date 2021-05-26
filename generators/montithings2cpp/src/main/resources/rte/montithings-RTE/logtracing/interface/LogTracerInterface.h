@@ -9,7 +9,7 @@
 class LogTracerInterface {
 public:
     enum Request {
-        LOG_ENTRIES, INTERNAL_DATA
+        LOG_ENTRIES, INTERNAL_DATA, TRACE_DATA
     };
 
     virtual ~LogTracerInterface() = default;
@@ -17,6 +17,8 @@ public:
     virtual void response(sole::uuid reqUuid, const std::string &content) = 0;
 
     virtual sole::uuid request(std::string instanceName, Request request, time_t fromDatetime) = 0;
+
+    virtual sole::uuid request(std::string instanceName, Request request, sole::uuid traceUuid) = 0;
 
     virtual sole::uuid request(std::string instanceName, Request request, time_t fromDatetime,
                                sole::uuid logUuid, sole::uuid inputUuid,sole::uuid outputUuid) = 0;

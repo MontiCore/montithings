@@ -21,5 +21,7 @@ ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 
 ${tc.includeArgs("template.component.helper.ComputeResults", [comp, config, true, className])}
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
+
+${tc.includeArgs("template.logtracing.hooks.HandleEndOfComputation", [comp, config])}
 }
 }

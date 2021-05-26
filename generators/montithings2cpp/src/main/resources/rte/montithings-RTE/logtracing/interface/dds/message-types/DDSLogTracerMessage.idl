@@ -1,6 +1,7 @@
 module DDSLogTracerMessage {
   enum RequestData { LOG_ENTRIES,
-                     INTERNAL_DATA };
+                     INTERNAL_DATA,
+                     TRACE_DATA };
 
     @topic
     struct Request {

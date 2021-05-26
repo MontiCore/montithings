@@ -27,6 +27,8 @@ public:
 
     sole::uuid request(std::string instanceName, Request request, time_t fromDatetime) override;
 
+    sole::uuid request(std::string instanceName, Request request, sole::uuid traceUuid) override;
+
     sole::uuid request(std::string instanceName, Request request, time_t fromDatetime,
                        sole::uuid logUuid, sole::uuid inputUuid,sole::uuid outputUuid) override;
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
+    <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries && log_entries.length" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
     <br>
     <b-table borderless small hover selectable show-empty
              :items="log_entries"
@@ -47,12 +47,12 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     onRowClick(record, index) {
-      if(store.state.is_tracing) {
-        return;
+      if(!store.state.is_tracing) {
+        store.state.internal_data = "";
       }
+
       store.state.selected_log_uuid = record.log_uuid;
       store.state.isFetchingInternalData = true;
-      store.state.internal_data = "";
       store.dispatch('getInternalData',
           { log_uuid: record.log_uuid,
             input_uuid: record.input_uuid,

@@ -75,6 +75,9 @@ void vwrite(OpenDDS::DCPS::ValueWriter& value_writer, const DDSLogTracerMessage:
   case DDSLogTracerMessage::INTERNAL_DATA:
     value_writer.write_enum("INTERNAL_DATA", DDSLogTracerMessage::INTERNAL_DATA);
     break;
+  case DDSLogTracerMessage::TRACE_DATA:
+    value_writer.write_enum("TRACE_DATA", DDSLogTracerMessage::TRACE_DATA);
+    break;
   }
 }
 
@@ -86,9 +89,10 @@ namespace OpenDDS { namespace DCPS {
 
 const char* gen_DDSLogTracerMessage_RequestData_names[] = {
   "LOG_ENTRIES",
-  "INTERNAL_DATA"
+  "INTERNAL_DATA",
+  "TRACE_DATA"
 };
-const size_t gen_DDSLogTracerMessage_RequestData_names_size = 2;
+const size_t gen_DDSLogTracerMessage_RequestData_names_size = 3;
 }  }
 OPENDDS_END_VERSIONED_NAMESPACE_DECL
 
