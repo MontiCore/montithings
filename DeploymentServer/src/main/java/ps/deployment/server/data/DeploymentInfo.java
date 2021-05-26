@@ -23,11 +23,11 @@ public class DeploymentInfo {
     this.instances = instances;
   }
   
-  public List<String> getComponentTypes() {
+  public List<String> getInstanceNames() {
     List<String> res = new LinkedList<>();
     
-    for(InstanceInfo instance : instances) {
-      res.add(instance.getComponentType());
+    for (InstanceInfo instance : instances) {
+      res.add(instance.getInstanceName());
     }
     
     return res;

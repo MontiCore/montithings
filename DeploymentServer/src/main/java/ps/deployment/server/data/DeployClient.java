@@ -4,8 +4,8 @@ public class DeployClient {
   
   private String clientID;
   private boolean online;
-  private DeployClientLocation location;
-  private String[] hardware;
+  private DeployClientLocation location = new DeployClientLocation();
+  private String[] hardware = new String[0];
   private long lastSeen;
   
   public String getClientID() {

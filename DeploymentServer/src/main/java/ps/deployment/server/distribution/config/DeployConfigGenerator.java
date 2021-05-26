@@ -31,7 +31,7 @@ public class DeployConfigGenerator {
       
       jsonComp.add("distribution_selection", jsonSelection);
       jsonComp.add("distribution_constraints", new JsonArray()); // TODO add distribution_constraints
-      jsonDistribution.add(instance.getComponentType(), jsonComp);
+      jsonDistribution.add(instance.getInstanceName(), jsonComp);
     }
     
     jsonBase.add("distribution", jsonDistribution);

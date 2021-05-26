@@ -10,8 +10,15 @@ public class Distribution {
   
   private final Map<String, String[]> distributionMap = new HashMap<>();
   
+  /**
+   * @param distribution A map that assigns several executables (values) to each client (keys).
+   * */
   public Distribution(Map<String, String[]> distribution) {
     this.distributionMap.putAll(distribution);
+  }
+  
+  public Map<String, String[]> getDistributionMap() {
+    return this.distributionMap;
   }
   
   public static Distribution from(Map<String, List<String>> distribution) {
