@@ -10,3 +10,6 @@ target/
 /helpers.pl
 /query.pl
 /test.pl
+
+# MQTT runtime files
+**.lck
