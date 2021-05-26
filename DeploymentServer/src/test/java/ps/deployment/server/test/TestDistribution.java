@@ -10,6 +10,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
@@ -21,6 +23,7 @@ import ps.deployment.server.data.DeployClient;
 import ps.deployment.server.data.DeployClientLocation;
 import ps.deployment.server.data.DeploymentInfo;
 import ps.deployment.server.data.Distribution;
+import ps.deployment.server.data.NetworkInfo;
 import ps.deployment.server.distribution.DefaultDistributionCalculator;
 import ps.deployment.server.distribution.IDistributionCalculator;
 import ps.deployment.server.distribution.IPrologGenerator;
@@ -132,15 +135,24 @@ public class TestDistribution {
     }).get();
     assertNotNull(plQuery);
     
+    // Compute distribution.
+    
     IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
-    List<String> components = deployment.getComponentTypes();
-    Distribution dist = calc.computeDistribution(clients, components).exceptionally((t) -> {
+    List<String> instanceNames = deployment.getInstanceNames();
+    Distribution dist = calc.computeDistribution(clients, instanceNames).exceptionally((t) -> {
       t.printStackTrace();
       fail();
       return null;
     }).get();
     
     System.out.println(dist);
+    
+    // Generate docker compose files.
+    
+    Map<String,DockerComposeConfig> composes = DockerComposeConfig.fromDistribution(dist, deployment, new NetworkInfo());
+    for(Entry<String, DockerComposeConfig> e : composes.entrySet()) {
+      System.out.println(e.getKey()+": "+e.getValue().serializeYaml());
+    }
   }
   
   @Test
@@ -150,7 +162,6 @@ public class TestDistribution {
     config.addService("testapp1", new DockerComposeService("test.image1:latest", "testInstance1", "0.0.0.0", 1234));
     config.addService("testapp2", new DockerComposeService("test.image2:latest", "testInstance2", "0.0.0.0", 1234));
     System.out.println(config.serializeYaml());
-    
   }
   
 }
