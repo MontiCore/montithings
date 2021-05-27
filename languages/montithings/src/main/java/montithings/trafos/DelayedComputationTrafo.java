@@ -11,11 +11,13 @@ import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpressionBuilde
 import de.monticore.expressions.expressionsbasis._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTNatLiteralBuilder;
+import de.monticore.ocl.oclexpressions._ast.ASTTypeCastExpression;
 import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatement;
 import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTIfStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlockBuilder;
 import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
+import de.monticore.types.mcbasictypes._ast.ASTConstantsMCBasicTypes;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
@@ -93,7 +95,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
     return additionalTrafoModels;
   }
 
-  private Collection<ASTMACompilationUnit> transform(
+  protected Collection<ASTMACompilationUnit> transform(
     ASTMACompilationUnit origComp, String origQNameInstance,
     Set<String> origIngoingPorts, Set<String> origOutgoingPorts) throws Exception {
 
@@ -220,7 +222,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
     return additionalTrafoModels;
   }
 
-  private void addBehaviorDelayComp(ASTMACompilationUnit comp, String origQNameInstance,
+  protected void addBehaviorDelayComp(ASTMACompilationUnit comp, String origQNameInstance,
     List<String> origPortsIn, List<String> origPortsOut) {
         /*  Behavior looks like the following
         port in int in1_before_in;
@@ -293,7 +295,11 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
       // First argument
       ASTNameExpression indexMsgNameExpression = MontiThingsMill.nameExpressionBuilder()
         .setName("index_msg").build();
-      storeNsInMapArgs.addExpression(indexMsgNameExpression);
+      ASTTypeCastExpression typeCast = MontiThingsMill.typeCastExpressionBuilder()
+        .setMCType(MontiThingsMill.mCPrimitiveTypeBuilder().setPrimitive(ASTConstantsMCBasicTypes.INT).build())
+        .setExpression(indexMsgNameExpression)
+        .build();
+      storeNsInMapArgs.addExpression(typeCast);
 
       // Second argument
       ASTArguments emptyArgs = MontiThingsMill.argumentsBuilder().build();
@@ -381,7 +387,11 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
     ASTNameExpression indexMsgFromCompNameExpression = MontiThingsMill.nameExpressionBuilder()
       .setName("index_msg_from_comp").build();
     ASTArgumentsBuilder getNsFromMapArgs = MontiThingsMill.argumentsBuilder();
-    getNsFromMapArgs.addExpression(indexMsgFromCompNameExpression);
+    ASTTypeCastExpression typeCast = MontiThingsMill.typeCastExpressionBuilder()
+      .setMCType(MontiThingsMill.mCPrimitiveTypeBuilder().setPrimitive(ASTConstantsMCBasicTypes.INT).build())
+      .setExpression(indexMsgFromCompNameExpression)
+      .build();
+    getNsFromMapArgs.addExpression(typeCast);
 
     ASTCallExpression getNsFromMapCallExpression = createCallExpression("getNsFromMap",
       getNsFromMapArgs.build());

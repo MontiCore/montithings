@@ -322,7 +322,7 @@ public abstract class BasicTransformations {
       .callExpressionBuilder();
     storeMsgTsCallExpressionBuilder.setExpression(methodNameExpression);
     storeMsgTsCallExpressionBuilder.setArguments(args);
-    storeMsgTsCallExpressionBuilder.setName("test"); // TODO <- what does the name mean?
+    storeMsgTsCallExpressionBuilder.setName(methodName);
 
     return storeMsgTsCallExpressionBuilder.build();
   }

@@ -1,0 +1,60 @@
+{
+  "computation_latency": {
+    "sourceSensor.Example.source": {
+      "0": 610,
+      "1": 620,
+      "2": 612
+    },
+    "sourceSensor.Example.sink": {
+      "0": 610,
+      "1": 620,
+      "2": 612
+    }
+  },
+  "recordings": {
+    "sourceSensor.Example.source": [
+      {
+        "_recorder_id": 1,
+        "_vclocksum": 1,
+        "delay": {
+          "sourceSensor.Example.source": 100946684
+        },
+        "msg_content": "1",
+        "msg_id": 1,
+        "timestamp": 105170181,
+        "topic": "sourceSensor.Example.source/sensor",
+        "vclock": {
+          "sourceSensor.Example.source": 1
+        }
+      },
+      {
+        "_recorder_id": 1,
+        "_vclocksum": 1,
+        "delay": {
+          "sourceSensor.Example.source": 100946684
+        },
+        "msg_content": "1",
+        "msg_id": 2,
+        "timestamp": 105170181,
+        "topic": "sourceSensor.Example.source/sensor",
+        "vclock": {
+          "sourceSensor.Example.source": 2
+        }
+      },
+      {
+        "_recorder_id": 1,
+        "_vclocksum": 1,
+        "delay": {
+          "sourceSensor.Example.source": 100946684
+        },
+        "msg_content": "1",
+        "msg_id": 3,
+        "timestamp": 105170181,
+        "topic": "sourceSensor.Example.source/sensor",
+        "vclock": {
+          "sourceSensor.Example.source": 3
+        }
+      }
+    ]
+  }
+}
