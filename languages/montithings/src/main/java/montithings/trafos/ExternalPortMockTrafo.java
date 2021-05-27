@@ -178,7 +178,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
     return mockedPortComp;
   }
 
-  void addBehavior(ASTMACompilationUnit comp, String qNameComp, String portName) {
+  protected void addBehavior(ASTMACompilationUnit comp, String qNameComp, String portName) {
     List<JsonObject> recordings = dataHandler.getRecordings(qNameComp, portName);
 
     // create "every" block
@@ -214,7 +214,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
     comp.getComponentType().getBody().addArcElement(mtEveryBlock.build());
   }
 
-  private ASTAfterStatement addAfterBehaviorBlock(long timestamp, String value, boolean isNumeric) {
+  protected ASTAfterStatement addAfterBehaviorBlock(long timestamp, String value, boolean isNumeric) {
     ASTAfterStatementBuilder afterStatement = MontiThingsMill.afterStatementBuilder();
     afterStatement.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(timestamp, "ns"));
 

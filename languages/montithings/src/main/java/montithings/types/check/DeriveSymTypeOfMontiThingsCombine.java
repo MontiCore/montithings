@@ -40,6 +40,15 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
 
   private DeriveSymTypeOfBehavior deriveSymTypeOfBehavior;
 
+  private SynthesizeSymTypeFromMCBasicTypes synthesizeSymTypeFromMCBasicTypes;
+
+  private SynthesizeSymTypeFromMCSimpleGenericTypes synthesizeSymTypeFromMCSimpleGenericTypes;
+
+  private SynthesizeSymTypeFromSIUnitTypes4Computing synthesizeSymTypeFromSIUnitTypes4Computing;
+
+  private SynthesizeSymTypeFromMCCollectionTypes synthesizeSymTypeFromMCCollectionTypes;
+
+
   private TypeCheckResult typeCheckResult = new TypeCheckResult();
 
   public DeriveSymTypeOfMontiThingsCombine() {
@@ -80,6 +89,10 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfSetDefinitions.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfSetExpressions.setTypeCheckResult(typeCheckResult);
     deriveSymTypeOfBehavior.setTypeCheckResult(typeCheckResult);
+    synthesizeSymTypeFromMCBasicTypes.setTypeCheckResult(typeCheckResult);
+    synthesizeSymTypeFromMCCollectionTypes.setTypeCheckResult(typeCheckResult);
+    synthesizeSymTypeFromMCSimpleGenericTypes.setTypeCheckResult(typeCheckResult);
+    synthesizeSymTypeFromSIUnitTypes4Computing.setTypeCheckResult(typeCheckResult);
   }
 
   /**
@@ -94,10 +107,14 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     deriveSymTypeOfLiterals = new DeriveSymTypeOfLiterals();
     deriveSymTypeOfSIUnitLiterals = new DeriveSymTypeOfSIUnitLiterals();
     deriveSymTypeOfMontiThings = new DeriveSymTypeOfMontiThings();
-    deriveSymTypeOfOCLExpressions = new DeriveSymTypeOfOCLExpressions();
+    deriveSymTypeOfOCLExpressions = new DeriveSymTypeOfOCLExpressionsForMT();
     deriveSymTypeOfSetDefinitions = new DeriveSymTypeOfSetDefinitions();
     deriveSymTypeOfSetExpressions = new DeriveSymTypeOfSetExpressions();
     deriveSymTypeOfBehavior = new DeriveSymTypeOfBehavior();
+    synthesizeSymTypeFromMCBasicTypes = new SynthesizeSymTypeFromMCBasicTypes();
+    synthesizeSymTypeFromSIUnitTypes4Computing = new SynthesizeSymTypeFromSIUnitTypes4Computing();
+    synthesizeSymTypeFromMCSimpleGenericTypes = new SynthesizeSymTypeFromMCSimpleGenericTypes();
+    synthesizeSymTypeFromMCCollectionTypes = new SynthesizeSymTypeFromMCCollectionTypes();
 
     setCommonExpressionsVisitor(deriveSymTypeOfCommonExpressions);
     setAssignmentExpressionsVisitor(deriveSymTypeOfAssignmentExpressions);
@@ -110,6 +127,10 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     setSetDefinitionsVisitor(deriveSymTypeOfSetDefinitions);
     setSetExpressionsVisitor(deriveSymTypeOfSetExpressions);
     setBehaviorVisitor(deriveSymTypeOfBehavior);
+    setMCBasicTypesVisitor(synthesizeSymTypeFromMCBasicTypes);
+    setMCCollectionTypesVisitor(synthesizeSymTypeFromMCCollectionTypes);
+    setSIUnitTypes4ComputingVisitor(synthesizeSymTypeFromSIUnitTypes4Computing);
+    setMCSimpleGenericTypesVisitor(synthesizeSymTypeFromMCSimpleGenericTypes);
 
     setTypeCheckResult(typeCheckResult);
   }
