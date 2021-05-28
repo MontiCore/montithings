@@ -73,13 +73,11 @@ public:
 
     LogTracerInterface * getInterface();
 
-    sole::uuid newOutput();
-
     sole::uuid getCurrUuidAndMarkOutput();
 
     sole::uuid getCurrOutputUuid();
 
-    void handleEndOfComputation();
+    void handleOutput();
 
     void resetCurrentOutput();
 

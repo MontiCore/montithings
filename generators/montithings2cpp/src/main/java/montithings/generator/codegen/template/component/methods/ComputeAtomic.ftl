@@ -76,7 +76,5 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   </#if>
   ${Identifier.getStateName()}.storeState (json__state);
 </#if>
-
-${tc.includeArgs("template.logtracing.hooks.HandleEndOfComputation", [comp, config])}
 }
 }

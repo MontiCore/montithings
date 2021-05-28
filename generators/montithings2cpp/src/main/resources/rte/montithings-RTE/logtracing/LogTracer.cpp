@@ -3,8 +3,6 @@
 
 #include "LogTracer.h"
 
-#include <utility>
-
 namespace montithings {
     LogTracer::LogTracer(std::string instanceName, LogTracerInterface &interface)
             : instanceName(std::move(instanceName)), interface(&interface) {
@@ -25,6 +23,7 @@ namespace montithings {
         return sole::uuid4();
     }
 
+
     void
     LogTracer::handleLogEntry(const std::string &content) {
         sole::uuid id = uuid();
@@ -36,14 +35,6 @@ namespace montithings {
         currInputLogs.push_back(id);
     }
 
-    sole::uuid
-    LogTracer::newOutput() {
-        allOutputLogs[currOutputId] = currOutputLogs;
-        currOutputId = uuid();
-        atLeastOneNewOutput = false;
-
-        return currOutputId;
-    }
 
     sole::uuid
     LogTracer::getCurrUuidAndMarkOutput() {
@@ -56,10 +47,11 @@ namespace montithings {
         return currOutputId;
     }
 
-    void LogTracer::handleEndOfComputation() {
-        if (atLeastOneNewOutput) {
-            newOutput();
-        }
+
+    void LogTracer::handleOutput() {
+        allOutputLogs[currOutputId] = currOutputLogs;
+        currOutputId = uuid();
+        atLeastOneNewOutput = false;
     }
 
     void

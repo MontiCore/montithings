@@ -11,7 +11,7 @@ void serialize(Archive & archive)
 <#if comp.getAllIncomingPorts()?has_content>
     archive(
         <#list comp.getAllIncomingPorts() as port>
-            CEREAL_NVP_("${port.getName()}", ${port.getName()}.getPayload().value()
+            CEREAL_NVP_("${port.getName()}", ${port.getName()}.getPayload()
             )
           <#sep>,</#sep>
         </#list>

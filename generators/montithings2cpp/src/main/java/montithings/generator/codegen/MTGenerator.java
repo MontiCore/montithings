@@ -127,6 +127,15 @@ public class MTGenerator {
               "template/util/dds/client/ImplementationFile.ftl", comp, config);
           }
         }
+        if (config.getLogTracing() == ConfigParams.LogTracing.ON &&
+                !comp.getPorts().isEmpty()) {
+          fg.generate(targetPath,
+                  compname + "LogTraceObserver", ".h", "template/logtracing/Header.ftl", comp,
+                  config);
+          fg.generate(targetPath,
+                  compname + "LogTraceObserver", ".cpp",
+                  "template/logtracing/ImplementationFile.ftl", comp, config);
+        }
       }
     }
   }

@@ -1,8 +1,8 @@
 <template>
   <div class="mt-3 vh-100">
 
-    <!--{{traces}} <br><br>
-    {{ internal_data }}-->
+    {{traces}} <br><br>
+    {{ internal_data }}
       <div v-if="selected_log_uuid.length" class="h-100">
         <div v-if="isFetchingInternalData">
           <b-spinner small label="Small Spinner"></b-spinner>
@@ -40,7 +40,7 @@ export default {
       if(this.internal_data.var_snapshot) {
         let assignments = JSON.parse(this.internal_data.var_snapshot).value0;
         let res = "";
-        console.log(assignments);
+
         for (let assignment of assignments) {
           res += "<samp>" + assignment.key + " = " + assignment.value + ";</samp><br>";
         }
@@ -51,7 +51,17 @@ export default {
     },
     inputs: function() {
       if(this.internal_data.inputs) {
-        return JSON.parse(this.internal_data.inputs).value0;
+        let jInput = JSON.parse(this.internal_data.inputs).value0;
+        let res = {};
+        console.log("-----------------");
+        for (const [key, value] of Object.entries(jInput)) {
+          if (!value.nullopt) {
+            res[key] = value.data;
+          }
+
+          console.log(key, value);
+        }
+        return res;
       } else {
         return [];
       }
@@ -187,8 +197,6 @@ export default {
 
       store.state.trace_data["links"] = links;
 
-      console.log(JSON.stringify(store.state.trace_data, null, 2));
-
       var $flowchart = $("#flowchartworkspace");
       //var $container = $flowchart.parent();
 
@@ -231,6 +239,13 @@ export default {
       store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["body"] = this.var_assignments;
       store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["class"] = "flowchart-operator-no-fix-width-selected";
 
+      for (let inPort in this.inputs) {
+        store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["inputs"][this.selected_trace_uuid + "_" + inPort] = {
+          label: inPort,
+        }
+      }
+
+      console.log(JSON.stringify(store.state.trace_data, null, 2));
       var $flowchart = $("#flowchartworkspace");
       $flowchart.flowchart('setData', store.state.trace_data);
     },

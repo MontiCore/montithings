@@ -1,9 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* (c) https://github.com/MontiCore/monticore */
 
-#include <dds/DCPS/WaitSet.h>
 #include "DDSEntities.h"
-#include "ReqResMessageListener.h"
 
 void DDSEntities::setInstanceName(std::string name) {
     instanceName = name;

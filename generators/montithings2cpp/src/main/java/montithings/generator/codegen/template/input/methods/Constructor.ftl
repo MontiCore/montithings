@@ -16,7 +16,10 @@ ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
     </#list>);
 </#if>
 <#list comp.getIncomingPorts() as port >
+  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+
   if(${port.getName()}.has_value()) {this->${port.getName()} = std::move(${port.getName()}.value());}
+  else {this->${port.getName()} = Message<${type}>(tl::nullopt);}
     <#if ComponentHelper.hasAgoQualification(comp, port)>
       auto nowOf__${port.getName()?cap_first} = std::chrono::system_clock::now();
       dequeOf__${port.getName()?cap_first}.push_back(std::make_pair(nowOf__${port.getName()?cap_first}, ${port.getName()}.value()));

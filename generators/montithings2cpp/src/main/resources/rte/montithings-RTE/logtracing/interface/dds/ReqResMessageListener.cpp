@@ -2,7 +2,6 @@
 // (c) https://github.com/MontiCore/monticore
 #include "ReqResMessageListener.h"
 
-#include <utility>
 
 void
 ReqResMessageListener::on_data_available(DDS::DataReader_ptr reader) {

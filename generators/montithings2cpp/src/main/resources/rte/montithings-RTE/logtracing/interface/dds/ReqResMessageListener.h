@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <utility>
 #include <future>
 
 #include "../../../easyloggingpp/easylogging++.h"

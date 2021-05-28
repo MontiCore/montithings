@@ -43,5 +43,3 @@ ${tc.signature("comp","config","isMonitor","behavior")}
   </#list>
 </#if>
 
-${tc.includeArgs("template.logtracing.hooks.ResetOutput", [comp, config])}
-${tc.includeArgs("template.logtracing.hooks.HandleInput", [comp, config])}

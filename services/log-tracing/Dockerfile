@@ -3,10 +3,10 @@
 # Build Image -----------------------------
 FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
 
-
 RUN apt-get update && apt-get install -y \
     npm \
-    libboost-all-dev
+    libboost-all-dev \
+    libmosquitto-dev
 
 RUN npm install --global yarn
 
@@ -33,4 +33,5 @@ RUN rm -rf build
 RUN ./build.sh
 
 # Run the container
-ENTRYPOINT [ "build/recorder/bin/logtracer_middleware" ]
+ENTRYPOINT [ "sh", "entrypoint.sh" ]
+CMD [ "/bin/sh" ]
