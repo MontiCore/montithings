@@ -31,6 +31,7 @@ class MontiThingsPrettyPrinterDelegatorTest extends AbstractTest {
     // when
     String output = printer.prettyprint(ast.get());
     System.out.println(output);
+    System.out.println(new MontiThingsToMontiArcPrettyPrinterDelegator().prettyprint(ast.get()));
 
     // then
     final Optional<ASTMACompilationUnit> astPrint = parser.parse_StringMACompilationUnit(output);
@@ -44,7 +45,9 @@ class MontiThingsPrettyPrinterDelegatorTest extends AbstractTest {
       Arguments.of("src/test/resources/models/cocoTest/valid/Example.mt"),
       Arguments.of("src/test/resources/models/cocoTest/valid/LowPassFilter.mt"),
       Arguments.of("src/test/resources/models/cocoTest/valid/Sink.mt"),
-      Arguments.of("src/test/resources/models/cocoTest/valid/Source.mt")
+      Arguments.of("src/test/resources/models/cocoTest/valid/Source.mt"),
+      Arguments.of("src/test/resources/models/cocoTest/valid/math/Doubler.mt"),
+      Arguments.of("src/test/resources/models/cocoTest/valid/math/Sum.mt")
     );
   }
 
