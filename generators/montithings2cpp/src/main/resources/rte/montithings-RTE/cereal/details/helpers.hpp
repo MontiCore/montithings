@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file helpers.hpp
     \brief Internal helper functionality
     \ingroup Internal */

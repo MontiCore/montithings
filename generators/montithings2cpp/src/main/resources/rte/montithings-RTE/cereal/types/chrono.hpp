@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file chrono.hpp
     \brief Support for types found in \<chrono\>
     \ingroup STLSupport */

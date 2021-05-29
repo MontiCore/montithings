@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_HTTP_SERVER_H
 #define NNGPP_HTTP_SERVER_H
 #include "server_view.h"

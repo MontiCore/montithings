@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_HTTP_REQ_H
 #define NNGPP_HTTP_REQ_H
 #include "req_view.h"

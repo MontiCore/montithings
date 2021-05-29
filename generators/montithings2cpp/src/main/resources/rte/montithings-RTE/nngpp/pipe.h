@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_PIPE_H
 #define NNGPP_PIPE_H
 #include "pipe_view.h"

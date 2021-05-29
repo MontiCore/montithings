@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file complex.hpp
     \brief Support for types found in \<complex\>
     \ingroup STLSupport */

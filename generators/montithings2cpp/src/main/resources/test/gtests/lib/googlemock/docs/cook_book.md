@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 # gMock Cookbook
 
 <!-- GOOGLETEST_CM0012 DO NOT DELETE -->

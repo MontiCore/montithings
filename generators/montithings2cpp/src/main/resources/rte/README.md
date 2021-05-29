@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 # MontiThings Runtime Environment (RTE)
 
 The runtime environment (RTE) contains code that the generated code is based on.

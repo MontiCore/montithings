@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 // Copyright 2009, Google Inc.
 // All rights reserved.
 //

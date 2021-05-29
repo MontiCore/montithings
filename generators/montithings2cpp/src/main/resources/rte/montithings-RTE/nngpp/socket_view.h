@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_SOCKET_VIEW_H
 #define NNGPP_SOCKET_VIEW_H
 #include "core.h"

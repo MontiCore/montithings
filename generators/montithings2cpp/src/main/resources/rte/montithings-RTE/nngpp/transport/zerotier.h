@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_TRANSPORT_ZEROTIER_H
 #define NNGPP_TRANSPORT_ZEROTIER_H
 #include <nngpp/listener_view.h>

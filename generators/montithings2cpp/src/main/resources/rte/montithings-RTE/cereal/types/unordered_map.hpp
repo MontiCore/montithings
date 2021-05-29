@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file unordered_map.hpp
     \brief Support for types found in \<unordered_map\>
     \ingroup STLSupport */

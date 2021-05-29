@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_BUFFER_H
 #define NNGPP_BUFFER_H
 #include "view.h"

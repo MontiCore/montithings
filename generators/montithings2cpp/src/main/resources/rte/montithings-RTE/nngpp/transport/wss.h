@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_TRANSPORT_WSS_H
 #define NNGPP_TRANSPORT_WSS_H
 #include <nngpp/error.h>

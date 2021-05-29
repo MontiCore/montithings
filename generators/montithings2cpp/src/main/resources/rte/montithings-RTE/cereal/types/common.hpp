@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file common.hpp
     \brief Support common types - always included automatically
     \ingroup OtherTypes */

@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef __CURL_MPRINTF_H
 #define __CURL_MPRINTF_H
 /***************************************************************************

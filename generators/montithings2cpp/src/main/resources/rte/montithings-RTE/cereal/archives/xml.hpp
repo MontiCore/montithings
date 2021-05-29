@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file xml.hpp
     \brief XML input and output archives */
 /*
