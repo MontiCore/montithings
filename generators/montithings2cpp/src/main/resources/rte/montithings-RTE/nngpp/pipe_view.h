@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_PIPE_VIEW_H
 #define NNGPP_PIPE_VIEW_H
 #include "dialer_view.h"

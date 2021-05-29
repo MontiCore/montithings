@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 # gMock for Dummies {#GMockForDummies}
 
 <!-- GOOGLETEST_CM0013 DO NOT DELETE -->

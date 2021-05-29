@@ -1,4 +1,3 @@
-# (c) https://github.com/MontiCore/monticore  
 from montithingsconnector import MontiThingsConnector as MTC
 import time
 

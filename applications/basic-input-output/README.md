@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 # Basic Input Output
 
 This example shows how to connect components to each other. 

@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 <img src="docs/Banner.png" width="700px"/>
 
 # MontiThings Core Project

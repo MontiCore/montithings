@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 # Googletest Mocking (gMock) Framework
 
 ### Overview

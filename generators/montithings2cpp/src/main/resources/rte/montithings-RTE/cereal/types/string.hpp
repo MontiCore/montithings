@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file string.hpp
     \brief Support for types found in \<string\>
     \ingroup STLSupport */

@@ -1,5 +1,4 @@
 #!/bin/sh
-# (c) https://github.com/MontiCore/monticore  
 
 # dont forget to source OpenDDS/setenv.sh first
 tao_idl --idl-version 4 DDSMessage.idl

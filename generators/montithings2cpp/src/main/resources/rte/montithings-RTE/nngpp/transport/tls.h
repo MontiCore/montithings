@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_TRANSPORT_TLS_H
 #define NNGPP_TRANSPORT_TLS_H
 #include "tls/config.h"

@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file polymorphic_impl.hpp
     \brief Internal polymorphism support
     \ingroup Internal */

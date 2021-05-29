@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_STREAM_DIALER_H
 #define NNGPP_STREAM_DIALER_H
 #include "dialer_view.h"

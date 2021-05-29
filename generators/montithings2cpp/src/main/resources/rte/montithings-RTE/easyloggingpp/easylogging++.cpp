@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 //
 //  Bismillah ar-Rahmaan ar-Raheem
 //

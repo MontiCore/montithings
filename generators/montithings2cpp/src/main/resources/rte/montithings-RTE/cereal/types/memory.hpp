@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file memory.hpp
     \brief Support for types found in \<memory\>
     \ingroup STLSupport */

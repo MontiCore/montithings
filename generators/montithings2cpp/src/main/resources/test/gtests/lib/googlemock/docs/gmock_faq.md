@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 ## Legacy gMock FAQ {#GMockFaq}
 
 <!-- GOOGLETEST_CM0021 DO NOT DELETE -->

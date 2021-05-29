@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file pair_associative_container.hpp
     \brief Support for the PairAssociativeContainer refinement of the
     AssociativeContainer concept.

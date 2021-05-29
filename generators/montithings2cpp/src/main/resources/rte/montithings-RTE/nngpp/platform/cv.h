@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_CV_H
 #define NNGPP_CV_H
 #include "cv_view.h"

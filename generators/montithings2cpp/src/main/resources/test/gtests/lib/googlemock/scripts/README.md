@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 # Please Note:
 
 Files in this directory are no longer supported by the maintainers. They

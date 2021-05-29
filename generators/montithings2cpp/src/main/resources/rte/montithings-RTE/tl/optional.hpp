@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 
 ///
 // optional - An implementation of std::optional with extensions

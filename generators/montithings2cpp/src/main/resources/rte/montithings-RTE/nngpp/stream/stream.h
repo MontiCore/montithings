@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_STREAM_STREAM_H
 #define NNGPP_STREAM_STREAM_H
 #include "stream_view.h"

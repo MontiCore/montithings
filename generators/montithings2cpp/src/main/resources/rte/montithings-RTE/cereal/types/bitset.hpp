@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file bitset.hpp
     \brief Support for types found in \<bitset\>
     \ingroup STLSupport */
