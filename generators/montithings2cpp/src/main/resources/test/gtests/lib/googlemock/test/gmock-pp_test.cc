@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #include "gmock/internal/gmock-pp.h"
 
 // Used to test MSVC treating __VA_ARGS__ with a comma in it as one value

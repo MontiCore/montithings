@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ### Generic Build Instructions
 
 #### Setup

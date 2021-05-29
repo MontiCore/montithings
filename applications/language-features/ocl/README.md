@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Object Constraint Language (OCL)
 
 This example shows how OCL can be used in MontiThings.

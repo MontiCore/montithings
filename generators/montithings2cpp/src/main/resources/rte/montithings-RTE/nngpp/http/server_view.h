@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_HTTP_SERVER_VIEW_H
 #define NNGPP_HTTP_SERVER_VIEW_H
 #include <nngpp/transport/tls/config_view.h>

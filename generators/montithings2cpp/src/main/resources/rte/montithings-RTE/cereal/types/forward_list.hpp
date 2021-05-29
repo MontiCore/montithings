@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file forward_list.hpp
     \brief Support for types found in \<forward_list\>
     \ingroup STLSupport */

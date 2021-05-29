@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file stack.hpp
     \brief Support for types found in \<stack\>
     \ingroup STLSupport */

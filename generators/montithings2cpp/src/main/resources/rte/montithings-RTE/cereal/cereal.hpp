@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file cereal.hpp
     \brief Main cereal functionality */
 /*

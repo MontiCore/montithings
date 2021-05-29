@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file binary.hpp
     \brief Binary input and output archives */
 /*

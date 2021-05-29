@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Googletest Primer
 
 <!-- GOOGLETEST_CM0035 DO NOT DELETE -->

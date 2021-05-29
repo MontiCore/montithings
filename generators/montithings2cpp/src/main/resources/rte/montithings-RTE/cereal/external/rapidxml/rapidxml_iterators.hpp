@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef CEREAL_RAPIDXML_ITERATORS_HPP_INCLUDED
 #define CEREAL_RAPIDXML_ITERATORS_HPP_INCLUDED
 

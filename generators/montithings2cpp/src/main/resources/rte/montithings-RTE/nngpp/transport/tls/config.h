@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_TLS_CONFIG_H
 #define NNGPP_TLS_CONFIG_H
 #include "config_view.h"

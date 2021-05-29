@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef __CURL_TYPECHECK_GCC_H
 #define __CURL_TYPECHECK_GCC_H
 /***************************************************************************

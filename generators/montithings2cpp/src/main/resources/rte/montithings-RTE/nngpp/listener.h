@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_LISTENER_H
 #define NNGPP_LISTENER_H
 #include "listener_view.h"

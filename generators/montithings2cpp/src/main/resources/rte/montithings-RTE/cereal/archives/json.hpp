@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file json.hpp
     \brief JSON input and output archives */
 /*

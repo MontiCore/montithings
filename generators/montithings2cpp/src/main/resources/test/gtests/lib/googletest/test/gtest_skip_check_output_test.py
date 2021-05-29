@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore  
 #!/usr/bin/env python
 #
 # Copyright 2019 Google LLC.  All Rights Reserved.

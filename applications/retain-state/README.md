@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Retain State
 
 This example shows how components may retain their states over multiple runs 

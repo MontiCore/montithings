@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_AIO_VIEW_H
 #define NNGPP_AIO_VIEW_H
 #include "msg.h"

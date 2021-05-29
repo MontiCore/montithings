@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file access.hpp
     \brief Access control and default construction */
 /*

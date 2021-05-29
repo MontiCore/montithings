@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Sensor & Actuator Access
 
 This example shows how to connect components to sensors and actuators or, more

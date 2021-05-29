@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file optional.hpp
     \brief Support for std::optional
     \ingroup STLSupport */

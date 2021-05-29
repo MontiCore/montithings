@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file adapters.hpp
     \brief Archive adapters that provide additional functionality
            on top of an existing archive */

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file version.hpp
     \brief Macros to detect cereal version
 

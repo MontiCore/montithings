@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_HTTP_RES_H
 #define NNGPP_HTTP_RES_H
 #include "res_view.h"

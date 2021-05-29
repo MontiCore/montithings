@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef __CURL_SYSTEM_H
 #define __CURL_SYSTEM_H
 /***************************************************************************

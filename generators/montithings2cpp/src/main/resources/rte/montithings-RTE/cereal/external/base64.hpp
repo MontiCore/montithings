@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*
    Copyright (C) 2004-2008 René Nyffenegger
 

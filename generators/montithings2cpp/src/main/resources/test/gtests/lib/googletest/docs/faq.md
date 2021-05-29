@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Googletest FAQ
 
 <!-- GOOGLETEST_CM0014 DO NOT DELETE -->
