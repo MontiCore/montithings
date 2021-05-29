@@ -5,6 +5,7 @@ import arcbasis._symboltable.PortSymbol;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class ASTPortTemplateTag extends ASTPortTemplateTagTOP {
 
@@ -31,8 +32,15 @@ public class ASTPortTemplateTag extends ASTPortTemplateTagTOP {
 
   public boolean hasEveryTag() {
     return !getSinglePortTagList().stream()
-      .filter(e -> e instanceof mtconfig._ast.ASTEveryTag)
-      .map(e -> (mtconfig._ast.ASTEveryTag) e)
+      .filter(e -> e instanceof ASTEveryTag)
+      .map(e -> (ASTEveryTag) e)
       .collect(Collectors.toSet()).isEmpty();
+  }
+
+  public Optional<ASTEveryTag> getEveryTag() {
+    return getSinglePortTagList().stream()
+      .filter(e -> e instanceof ASTEveryTag)
+      .map(e -> (ASTEveryTag) e)
+      .findFirst();
   }
 }

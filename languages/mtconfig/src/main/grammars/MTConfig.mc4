@@ -59,7 +59,7 @@ grammar MTConfig extends MontiThings  {
    */
   symbol Hookpoint implements SinglePortTag = Name "=" template:String Arguments? ";";
 
-  EveryTag implements SinglePortTag = "every" SIUnitLiteral;
+  EveryTag implements SinglePortTag = "every" SIUnitLiteral ";";
 
   /**
    *  RequirementStatement contain information about what physical requirements
