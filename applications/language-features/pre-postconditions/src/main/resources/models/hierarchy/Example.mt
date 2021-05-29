@@ -6,7 +6,4 @@ component Example {
   Sink sink;
 
   source.value -> sink.value;
-
-  update interval 1s;
-  timing sync;
 }

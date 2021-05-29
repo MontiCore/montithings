@@ -7,12 +7,10 @@ component Source {
 
   int lastValue = 0;
 
-  behavior {
+  every 1s {
     log("Source: " + lastValue);
     value = lastValue++;
   }
-
-  update interval 1s;
 
   // Check if a value is within a certain range.
   // Only allow values between 0 and 5,

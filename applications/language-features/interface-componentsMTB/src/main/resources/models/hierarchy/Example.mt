@@ -11,7 +11,4 @@ component Example {
   c.y -> sink.value;
   source2.value -> c2.x;
   c2.y -> sink2.value;
-
-  update interval 1s;
-  timing sync;
 }
