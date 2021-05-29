@@ -5,5 +5,7 @@ import Colors.*;
 
 component Source {
   port out Color value;
+
+  // calls hand-written compute method every second
   update interval 1s;
 }

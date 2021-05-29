@@ -12,7 +12,8 @@ public enum MTConfigError implements mtconfig.util.Error {
   FILENAME_MATCHES_CONFIG("0xMTCFG1034", "Config '%s' does not match its filename"),
   PACKAGENAME_MATCHES_CONFIG("0xMTCFG1035", "Package '%s' does not match its relative filepath '%s'"),
   HOOKPOINT_EXISTS("0xMTCFG1036", "Hookpoint '%s' does not exist (use one of these: %s)"),
-  MQTT_NO_ARGS("0xMTCFG1037", "MQTT Hookpoint '%s' must not take arguements.")
+  MQTT_NO_ARGS("0xMTCFG1037", "MQTT Hookpoint '%s' must not take arguements."),
+  ONLY_ONE_EVERY("0xMTCFG1038", "Port '%s' has multiple 'every' statements. At most one is allowed.")
 ;
 
   protected final String errorCode;
