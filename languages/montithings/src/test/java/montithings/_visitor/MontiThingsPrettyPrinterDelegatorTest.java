@@ -31,7 +31,6 @@ class MontiThingsPrettyPrinterDelegatorTest extends AbstractTest {
     // when
     String output = printer.prettyprint(ast.get());
     System.out.println(output);
-    System.out.println(new MontiThingsToMontiArcPrettyPrinterDelegator().prettyprint(ast.get()));
 
     // then
     final Optional<ASTMACompilationUnit> astPrint = parser.parse_StringMACompilationUnit(output);
