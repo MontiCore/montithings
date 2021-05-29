@@ -2,6 +2,7 @@
 package montithings._visitor;
 
 import montiarc._ast.ASTMACompilationUnit;
+import montiarc._parser.MontiArcParser;
 import montithings.AbstractTest;
 import montithings._parser.MontiThingsParser;
 import montithings.util.MontiThingsError;
@@ -30,12 +31,28 @@ class MontiThingsPrettyPrinterDelegatorTest extends AbstractTest {
 
     // when
     String output = printer.prettyprint(ast.get());
-    System.out.println(output);
 
     // then
     final Optional<ASTMACompilationUnit> astPrint = parser.parse_StringMACompilationUnit(output);
     assertTrue(astPrint.isPresent());
     assertTrue(ast.get().deepEquals(astPrint.get()));
+  }
+
+  @ParameterizedTest
+  @MethodSource("validInput")
+  public void shouldConvertMT2MA(String filename) throws IOException {
+    // given
+    MontiThingsParser mtParser = new MontiThingsParser();
+    final Optional<ASTMACompilationUnit> ast = mtParser.parse(filename);
+    final MontiThingsToMontiArcPrettyPrinterDelegator printer = new MontiThingsToMontiArcPrettyPrinterDelegator();
+    assertThat(ast).isPresent();
+
+    // when
+    String output = printer.prettyprint(ast.get());
+
+    // then
+    MontiArcParser maParser = new MontiArcParser();
+    maParser.parse_StringMACompilationUnit(output);
   }
 
   protected static Stream<Arguments> validInput() {
