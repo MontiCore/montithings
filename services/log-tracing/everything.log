@@ -1,0 +1,185 @@
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --DCPSConfigFile dcpsconfig.ini
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:04:41.466 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:04:41.466 (   0.007s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:04:41.467 (   0.008s) | Initializing...
+Stack trace:
+9       0x564074974c1e /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0xc0c1e) [0x564074974c1e]
+8       0x7f13e37360b3 __libc_start_main + 243
+7       0x564074a08082 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x154082) [0x564074a08082]
+6       0x564074c03db0 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x34fdb0) [0x564074c03db0]
+5       0x564074c16ee7 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0x362ee7) [0x564074c16ee7]
+4       0x56407498cf71 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0xd8f71) [0x56407498cf71]
+3       0x7f13e37f5047 nanosleep + 23
+2       0x7f13e37ef3bf clock_nanosleep + 223
+1       0x7f13e39163c0 /lib/x86_64-linux-gnu/libpthread.so.0(+0x153c0) [0x7f13e39163c0]
+0       0x564074983105 /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware(+0xcf105) [0x564074983105]
+16:04:47.734 (   6.275s) | Signal: SIGTERM
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:06:16.536 (   0.006s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:06:16.536 (   0.006s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:06:16.536 (   0.007s) | Initializing...
+16:06:35.804 (  19.275s) | atexit
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:07:03.028 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:07:03.028 (   0.007s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:07:03.029 (   0.008s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:20:04.306 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:20:04.307 (   0.008s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:20:04.307 (   0.008s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:21:46.387 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:21:46.387 (   0.007s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:21:46.388 (   0.008s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:27:48.348 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:27:48.348 (   0.008s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:27:48.349 (   0.008s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:41:08.396 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:41:08.396 (   0.007s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:41:08.397 (   0.008s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+16:58:21.937 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+16:58:21.937 (   0.007s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+16:58:21.937 (   0.008s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+17:05:45.241 (   0.009s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+17:05:45.241 (   0.009s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+17:05:45.242 (   0.010s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+17:12:21.739 (   0.007s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+17:12:21.739 (   0.007s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+17:12:21.740 (   0.008s) | Initializing...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+17:24:05.806 (   0.008s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+17:24:05.806 (   0.008s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+17:24:05.807 (   0.008s) | Initializing...
+17:24:17.784 (  11.986s) | Got response ...
+17:24:51.091 (  45.293s) | Got response ...
+17:24:52.967 (  47.168s) | Got response ...
+17:25:06.262 (  60.464s) | Got response ...
+17:25:07.803 (  62.004s) | Got response ...
+
+
+
+
+
+arguments: /home/luke/Projects/montithings/core/services/log-tracing/cmake-build-debug/bin/logtracer_middleware --message-broker MQTT
+Current dir: /home/luke/Projects/montithings/core/services/log-tracing
+File verbosity level: 9
+17:27:27.886 (   0.010s) | Logging to 'everything.log', mode: 'a', verbosity: 9
+17:27:27.887 (   0.010s) | Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+17:27:27.887 (   0.010s) | Initializing...
+17:27:31.692 (   3.815s) | Got response ...
+17:27:35.158 (   7.281s) | Got response ...
+17:27:36.207 (   8.330s) | Got response ...
+17:27:37.227 (   9.351s) | Got response ...
+17:27:37.802 (   9.925s) | Got response ...
+17:27:38.366 (  10.489s) | Got response ...
+17:27:39.241 (  11.365s) | Got response ...
+17:27:40.148 (  12.271s) | Got response ...
+17:27:44.741 (  16.864s) | Got response ...
+17:27:47.497 (  19.620s) | Got response ...
+17:27:48.109 (  20.233s) | Got response ...
+17:27:48.759 (  20.882s) | Got response ...
+18:04:52.244 (2244.367s) | Got response ...
+18:04:52.246 (2244.369s) | Got response ...
+18:04:53.306 (2245.429s) | Got response ...
+18:04:56.990 (2249.113s) | Got response ...
+18:04:57.768 (2249.891s) | Got response ...
+18:04:58.325 (2250.448s) | Got response ...
+18:04:59.401 (2251.525s) | Got response ...
+18:04:59.619 (2251.742s) | Got response ...
+18:05:00.171 (2252.294s) | Got response ...
+18:05:00.947 (2253.070s) | Got response ...
+18:05:01.414 (2253.538s) | Got response ...
+18:05:01.820 (2253.943s) | Got response ...
+18:05:02.415 (2254.538s) | Got response ...
+18:05:03.371 (2255.494s) | Got response ...
+18:05:03.371 (2255.494s) | Got response ...
+18:05:04.494 (2256.618s) | Got response ...
+18:05:05.508 (2257.632s) | Got response ...
+18:12:02.586 (2674.709s) | Got response ...
+18:12:03.769 (2675.893s) | Got response ...
+18:12:04.787 (2676.911s) | Got response ...
+18:12:05.275 (2677.398s) | Got response ...
+18:12:06.194 (2678.317s) | Got response ...
+18:14:54.264 (2846.388s) | Got response ...

@@ -15,6 +15,8 @@ public:
 
     explicit Message(T payload) : payload(tl::optional<T>(payload)) {}
 
+    explicit Message(const sole::uuid &uuid) : payload(tl::nullopt), uuid(uuid) {}
+
     explicit Message(tl::optional<T> payload) : payload(payload) {}
 
     Message() : payload(tl::nullopt){}

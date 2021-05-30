@@ -3,6 +3,11 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if config.getLogTracing().toString() == "ON">
-LogTracerDDSClient* logTracerInterface;
+<#if config.getMessageBroker().toString() == "DDS">
+     LogTracerDDSClient*
+<#elseif config.getMessageBroker().toString() == "MQTT">
+     LogTracerMQTTClient*
+</#if>
+ logTracerInterface;
 LogTracer* logTracer;
 </#if>

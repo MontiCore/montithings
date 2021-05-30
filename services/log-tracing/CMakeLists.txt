@@ -38,11 +38,22 @@ include_directories("../../generators/montithings2cpp/src/main/resources/rte/mon
 # Find prebuild library (run ./build.sh)
 find_library(rte_lib MontiThingsRTE "${CMAKE_SOURCE_DIR}/build/rte/lib")
 
+# Include Mosquitto Library
+if(APPLE)
+    find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto)
+else()
+    find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
+    include_directories(/snap/mosquitto/current/usr/include)
+endif()
+
+
 add_executable(logtracer_middleware
   ${SOURCES}
 )
 
 include_directories(${Boost_INCLUDE_DIRS})
+
+target_link_libraries(logtracer_middleware ${rte_lib})
 target_link_libraries(logtracer_middleware ${Boost_LIBRARIES})
 target_link_libraries(logtracer_middleware ${opendds_libs})
-target_link_libraries(logtracer_middleware ${rte_lib})
+target_link_libraries(logtracer_middleware ${MOSQUITTO_LIB})

@@ -7,6 +7,7 @@
 #include "easyloggingpp/easylogging++.h"
 #include "logtracing/interface/LogTracerInterface.h"
 #include "logtracing/interface/dds/LogTracerDDSClient.h"
+#include "logtracing/interface/mqtt/LogTracerMQTTClient.h"
 #include "logtracing/data/InternalDataResponse.h"
 #include "Utils.h"
 
@@ -126,6 +127,7 @@ main(int argc, char **argv) {
             });
 
     el::Loggers::getLogger("DDS");
+    el::Loggers::getLogger("MQTT");
 
     // only show most relevant things on stderr:
     loguru::g_internal_verbosity = false;
@@ -191,28 +193,17 @@ main(int argc, char **argv) {
                                            false,
                                            true);
     } else if (messageBroker == "MQTT") {
-
+        std::string instanceName = "middleware";
+        interface = new LogTracerMQTTClient(instanceName, true);
     } else {
         std::cerr << "Message broker " << messageBroker << " is not supported!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    std::string instanceName = "hierarchy.Example.source";
-    time_t fromDatetime = time(nullptr);
-
     interface->addOnResponseCallback(std::bind(&onResponse, std::placeholders::_1, std::placeholders::_2));
-
     interface->waitUntilReadersConnected(1);
 
-    //std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    //interface->request(instanceName, LogTracerInterface::Request::LOG_ENTRIES, fromDatetime);
-    //interface->request(instanceName, LogTracerInterface::Request::INTERNAL_DATA, fromDatetime);
-
-    //std::this_thread::sleep_for(std::chrono::seconds(3));
-
     app.port(8080).multithreaded().run();
-    //interface->cleanup();
 }
 
 void onResponse(sole::uuid reqUuid, std::string content) {

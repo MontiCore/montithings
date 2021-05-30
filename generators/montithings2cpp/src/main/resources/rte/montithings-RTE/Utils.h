@@ -72,6 +72,15 @@ concat(const std::string& first, T second) {
 std::string replaceDotsBySlashes (std::string input);
 
 /**
+ * Replaces slashes in the string with dots
+ * This is useful when reversing replaceDotsBySlashes()
+ *
+ * \param input the string whose dots should be replaced
+ * \return the input string with each slash "/" being replaced by a dot "."
+ */
+std::string replaceSlashesByDots (std::string input);
+
+/**
  * Takes a fully qualified name of a component throws away everything after and including
  * the last dot in the fully qualified name
  * \param input the fully qualified name of a component
@@ -104,6 +113,8 @@ namespace cereal
 
         if (msgPayload.has_value()) {
             msg = Message<T>(msgPayload.value(), msgUuid);
+        } else {
+            msg = Message<T>(msgUuid);
         }
     }
 

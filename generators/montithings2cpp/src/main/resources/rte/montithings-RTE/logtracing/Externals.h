@@ -2,7 +2,7 @@
 /* (c) https://github.com/MontiCore/monticore */
 
 #pragma once
-#include "string"
+#include <string>
 #include <map>
 #include <vector>
 #include <utility>

@@ -3,25 +3,26 @@
 
 #pragma once
 
+#include <map>
+#include "easyloggingpp/easylogging++.h"
 #include "sole/sole.hpp"
 
 #include "logtracing/interface/LogTracerInterface.h"
-#include "logtracing/interface/dds/DDSEntities.h"
+#include "MqttUser.h"
+#include "MqttClient.h"
 
-class LogTracerDDSClient : public LogTracerInterface, public DDSEntities {
+class LogTracerMQTTClient : public LogTracerInterface, public MqttUser {
 private:
+    const std::string TOPIC_REQUEST_PREFIX = "/logtracing/requests/";
+    const std::string TOPIC_RESPONSE = "/logtracing/responses/middleware";
+
     std::function<void(sole::uuid, std::string)> onResponse;
     std::function<void(sole::uuid, sole::uuid, sole::uuid, sole::uuid, Request, long)> onRequest;
 
 public:
-    LogTracerDDSClient(int argc, char *argv[],
-                       std::string instanceName,
-                       bool initReqWriter,
-                       bool initReqReader,
-                       bool initResWriter,
-                       bool initResReader);
+    LogTracerMQTTClient(std::string &instanceName, bool shouldSubscribeToResponse);
 
-    ~LogTracerDDSClient() override = default;
+    ~LogTracerMQTTClient() override = default;
 
     void response(sole::uuid reqUuid, const std::string &content) override;
 
@@ -32,10 +33,6 @@ public:
     sole::uuid request(std::string instanceName, Request request, time_t fromDatetime,
                        sole::uuid logUuid, sole::uuid inputUuid,sole::uuid outputUuid) override;
 
-    void onResponseCallback(const DDSLogTracerMessage::Response &res);
-
-    void onRequestCallback(const DDSLogTracerMessage::Request &req);
-
     void addOnResponseCallback(std::function<void(sole::uuid, std::string)> callback) override;
 
     void addOnRequestCallback(std::function<void(sole::uuid, sole::uuid, sole::uuid, sole::uuid, Request, long)> callback) override;
@@ -44,4 +41,6 @@ public:
 
     void waitUntilReadersConnected(int number) override;
 
+    void onMessage(mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
 };
+

@@ -7,4 +7,6 @@ ${tc.signature("comp", "config")}
 
 <#if config.getMessageBroker().toString() == "DDS">
   #include "logtracing/interface/dds/LogTracerDDSClient.h"
+<#elseif config.getMessageBroker().toString() == "MQTT">
+  #include "logtracing/interface/mqtt/LogTracerMQTTClient.h"
 </#if>

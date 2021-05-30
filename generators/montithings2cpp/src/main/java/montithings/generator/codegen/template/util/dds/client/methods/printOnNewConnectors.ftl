@@ -22,7 +22,7 @@ bool isRecordingEnabled = false;
             CLOG(DEBUG, "DDS") << "New connection! Creating ingoing port which listens on " << topic;
             comp->getInterface()->addInPort${p.getName()?cap_first}(new DDSPort<Message<${type}>>(*this, INCOMING, topic, "${p.getName()}", isRecordingEnabled, false));
 
-            ${tc.includeArgs("template.logtracing.hooks.AddInstanceNameToPortRefDDS", [comp, config, p])}
+            ${tc.includeArgs("template.logtracing.hooks.AddInstanceNameToPortRef", [comp, config, p])}
 
             <#if !comp.isAtomic()>
                 // additional outgoing port for port incoming port ${p.getName()}

@@ -72,7 +72,7 @@ if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/message-types/*")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")    
     list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/*")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/message-types/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/message-types/*")
 endif ()
 
 # Keep hwc interceptor in case of replaying
@@ -87,6 +87,8 @@ set(RTE_SOURCES
 if (EXCLUDE_MQTT)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.cpp")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/mqtt/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/mqtt/message-types/*")
 endif ()
 
 if (EXCLUDE_COMM_MANAGER)
@@ -104,7 +106,6 @@ if (NOT EXCLUDE_MQTT)
 endif ()
 
 if (NOT EXCLUDE_DDS)
-    # Generates type support code
     target_link_libraries(MontiThingsRTE ${opendds_libs})
 endif ()
 
