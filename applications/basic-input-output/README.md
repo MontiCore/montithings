@@ -20,13 +20,7 @@ be the entry point of the application (like a `main` function in C++ or Java).
 
 After instantiating the two subcomponents `Source` and `Sink`, their ports are
 connected using the `->` notation. The names of the ports are defined in the 
-models of the `Source` and `Sink` components. 
-
-Besides instantiating and connecting its subcomponents, the `Example` component
-also defines the timing mode using `timing sync;` and the `update interval`. 
-The update interval defines how often the `compute()` method that defines the 
-behavior of a component will be executed. More about the timing modes can be 
-found in [Hab16].
+models of the `Source` and `Sink` components.
 
 In contrast to the `Example` component, `Source` and `Sink` and sink are atomic
 components. Atomic components do not have any subcomponents but instead define

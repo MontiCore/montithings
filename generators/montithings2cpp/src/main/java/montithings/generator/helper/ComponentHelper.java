@@ -642,14 +642,14 @@ public class ComponentHelper {
     return "50";
   }
 
-  protected static String printTime(ASTCalculationInterval calculationInterval) {
+  public static String printTime(ASTCalculationInterval calculationInterval) {
     if (calculationInterval == null) {
       return "milliseconds(50)";
     }
     return printTime(calculationInterval.getInterval());
   }
 
-  protected static String printTime(ASTSIUnitLiteral lit) {
+  public static String printTime(ASTSIUnitLiteral lit) {
     String time = "milliseconds";
     if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")) {
       time = "nanoseconds";

@@ -6,10 +6,8 @@ component Source (m/s startSpeed) {
 
   km/h lastValue = startSpeed;
 
-  behavior {
+  every 1s {
     value = lastValue;
     lastValue = lastValue + 1 km/h;
   }
-
-  update interval 1s;
 }

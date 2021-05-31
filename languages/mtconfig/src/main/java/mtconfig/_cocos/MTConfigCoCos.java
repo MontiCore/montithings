@@ -13,6 +13,7 @@ public class MTConfigCoCos {
       .addCoCo(new HookpointExists())
       .addCoCo(new CompConfigExists())
       .addCoCo(new PortTemplateTagExists())
+      .addCoCo(new OnlyOneEveryPerPort())
       .addCoCo(new MqttHasNoArguments());
     return mtConfigCoCoChecker;
   }

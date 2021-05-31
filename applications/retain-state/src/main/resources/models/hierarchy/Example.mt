@@ -8,7 +8,4 @@ component Example {
 
   source.value -> rs.input;
   rs.value -> sink.value;
-
-  timing sync;
-  update interval 1s;
 }
