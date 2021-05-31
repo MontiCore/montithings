@@ -2,6 +2,7 @@
 package montithings.generator.helper;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
+import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.data.Models;
@@ -157,8 +158,12 @@ public class FileHelper {
   }
 
   public static Set<File> getHwcClasses(File hwcPath, String fqComponentName) {
-    String compFilePrefix = fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
-    String regex = compFilePrefix + "(Impl|Input|Result|Precondition[0-9]*|Postcondition[0-9]*|Interface|State)?\\.(cpp|h)";
+    String compName = Names.getSimpleName(fqComponentName);
+    String packageName = fqComponentName.substring(0, fqComponentName.lastIndexOf(".") + 1);
+    String compFilePrefix = packageName.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
+
+    String regex = Pattern.quote(compFilePrefix) + "(Deploy)?" + Pattern.quote(compName)
+      + "(Impl|Input|Result|Precondition[0-9]*|Postcondition[0-9]*|Interface|State)?\\.(cpp|h)";
     Pattern pattern = Pattern.compile(regex);
 
     Set<File> result = new HashSet<>();
