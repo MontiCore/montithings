@@ -332,11 +332,14 @@ public class MTGenerator {
     bindSAPortTemplate(portName, setup, templates, "consume", config, portSymbol);
     bindSAPortTemplate(portName, setup, templates, "init", config, portSymbol);
 
-    Optional<PortTemplateTagSymbol> portTag = config.getMtConfigScope()
-      .resolvePortTemplateTag(config.getTargetPlatform().name(), portSymbol);
+
     Optional<ASTEveryTag> everyTag = Optional.empty();
-    if (portTag.isPresent() && portTag.get().getAstNode().hasEveryTag()) {
-      everyTag = portTag.get().getAstNode().getEveryTag();
+    if (config.getMtConfigScope() != null) {
+      Optional<PortTemplateTagSymbol> portTag = config.getMtConfigScope()
+        .resolvePortTemplateTag(config.getTargetPlatform().name(), portSymbol);
+      if (portTag.isPresent() && portTag.get().getAstNode().hasEveryTag()) {
+        everyTag = portTag.get().getAstNode().getEveryTag();
+      }
     }
 
     // Port generation.

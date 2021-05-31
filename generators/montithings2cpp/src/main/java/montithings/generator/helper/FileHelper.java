@@ -2,10 +2,12 @@
 package montithings.generator.helper;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
+import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.data.Models;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -15,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -155,14 +158,21 @@ public class FileHelper {
   }
 
   public static Set<File> getHwcClasses(File hwcPath, String fqComponentName) {
+    String compName = Names.getSimpleName(fqComponentName);
+    String packageName = fqComponentName.substring(0, fqComponentName.lastIndexOf(".") + 1);
+    String compFilePrefix = packageName.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
+
+    String regex = Pattern.quote(compFilePrefix) + "(Deploy)?" + Pattern.quote(compName)
+      + "(Impl|Input|Result|Precondition[0-9]*|Postcondition[0-9]*|Interface|State)?\\.(cpp|h)";
+    Pattern pattern = Pattern.compile(regex);
+
     Set<File> result = new HashSet<>();
 
     try {
       result = Files.walk(hwcPath.toPath())
         .filter(p -> p != hwcPath.toPath())
-        .map(p -> p.toString().substring(hwcPath.toPath().toString().length() +1))
-        .filter(p -> p.startsWith(fqComponentName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))))
-        .filter(p -> p.endsWith(".h") || p.endsWith(".cpp"))
+        .map(p -> p.toString().substring(hwcPath.toPath().toString().length() + 1))
+        .filter(pattern.asPredicate())
         .map(p -> Paths.get(hwcPath.toPath() + File.separator + p).toFile())
         .collect(Collectors.toSet());
     }
