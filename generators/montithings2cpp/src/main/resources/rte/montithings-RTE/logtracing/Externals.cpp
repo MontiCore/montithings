@@ -3,8 +3,6 @@
 
 #include "Externals.h"
 
-#include "data/LogEntry.h"
-
 namespace montithings {
     std::vector<LogTracer*> subscribers;
 

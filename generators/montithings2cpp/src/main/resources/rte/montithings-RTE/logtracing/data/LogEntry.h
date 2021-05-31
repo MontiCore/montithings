@@ -9,15 +9,20 @@ namespace montithings {
 
 class LogEntry {
 private:
+    long index;
     time_t time;
     std::string content;
     sole::uuid inputUuid;
     sole::uuid outputUuid;
 
 public:
-    LogEntry(time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid);
+    LogEntry(long index, time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid);
 
     virtual ~LogEntry();
+
+    long getIndex() const;
+
+    void setIndex(long index);
 
     time_t getTime() const;
 
@@ -38,7 +43,7 @@ public:
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive( time, content, inputUuid, outputUuid );
+        archive( index, time, content, inputUuid, outputUuid );
     }
 };
 }

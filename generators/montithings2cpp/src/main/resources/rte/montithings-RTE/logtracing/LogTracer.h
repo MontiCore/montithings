@@ -32,6 +32,7 @@ private:
 
     // stores all log messages with their timestamp, referenced by a sole::uuid
     std::map<sole::uuid, LogEntry> logEntries;
+    long logEntryIndex;
 
     // there can be multiple log entries for the same input messages, thus, they are grouped
     // currInputLogs collects all input log UUIDs until a new input arrives

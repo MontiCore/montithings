@@ -11,7 +11,6 @@
 #include "sole/sole.hpp"
 
 #include "LogTracer.h"
-#include "data/LogEntry.h"
 
 namespace montithings {
     // forward declaring

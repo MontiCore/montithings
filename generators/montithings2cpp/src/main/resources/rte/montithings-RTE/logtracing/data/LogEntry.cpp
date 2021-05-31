@@ -6,11 +6,19 @@
 #include <utility>
 namespace montithings {
 
-LogEntry::LogEntry(time_t time, std::string content, sole::uuid inputUuid,sole::uuid outputUuid)
-        : time(time),  content(std::move(content)), inputUuid(inputUuid), outputUuid(outputUuid)
+LogEntry::LogEntry(long index, time_t time, std::string content, sole::uuid inputUuid,sole::uuid outputUuid)
+        : index(index), time(time),  content(std::move(content)), inputUuid(inputUuid), outputUuid(outputUuid)
         {}
 
-LogEntry::~LogEntry() = default;
+    long LogEntry::getIndex() const {
+        return index;
+    }
+
+    void LogEntry::setIndex(long index) {
+        LogEntry::index = index;
+    }
+
+    LogEntry::~LogEntry() = default;
 
 
 

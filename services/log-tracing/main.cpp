@@ -49,10 +49,11 @@ main(int argc, char **argv) {
                 nlohmann::json jEntries;
                 for(auto& entry : jContent["value0"]) {
                     jEntryFormatted["log_uuid"] = entry["key"];
-                    jEntryFormatted["time"] = entry["value"]["value0"];
-                    jEntryFormatted["message"] = entry["value"]["value1"];
-                    jEntryFormatted["input_uuid"] = entry["value"]["value2"];
-                    jEntryFormatted["output_uuid"] = entry["value"]["value3"];
+                    jEntryFormatted["index"] = entry["value"]["value0"];
+                    jEntryFormatted["time"] = entry["value"]["value1"];
+                    jEntryFormatted["message"] = entry["value"]["value2"];
+                    jEntryFormatted["input_uuid"] = entry["value"]["value3"];
+                    jEntryFormatted["output_uuid"] = entry["value"]["value4"];
 
                     jEntries.push_back(jEntryFormatted);
                 }

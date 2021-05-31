@@ -8,6 +8,7 @@ namespace montithings {
             : instanceName(std::move(instanceName)), interface(&interface) {
         currInputId = uuid();
         currOutputId = uuid();
+        logEntryIndex = 0;
         montithings::subscribeLogTracer(this);
 
         interface.addOnRequestCallback(std::bind(&LogTracer::onRequest, this, std::placeholders::_1,
@@ -27,12 +28,14 @@ namespace montithings {
     void
     LogTracer::handleLogEntry(const std::string &content) {
         sole::uuid id = uuid();
-        LogEntry logEntry(time(nullptr),
+        LogEntry logEntry(logEntryIndex,
+                          time(nullptr),
                           content,
                           currInputId,
                           currOutputId);
         logEntries.insert({id, logEntry});
         currInputLogs.push_back(id);
+        logEntryIndex++;
     }
 
 
