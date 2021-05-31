@@ -59,8 +59,8 @@ public class MontiThingsToMontiArcPrettyPrinterDelegator extends MontiThingsDele
     setGenericArcVisitor(new GenericArcPrettyPrinter(printer));
 
     setSIUnitTypes4ComputingVisitor(new SIUnitTypes4ComputingPrettyPrinter(printer));
-    setSIUnitTypes4MathVisitor(new SIUnitTypePrimitivePrettyPrinter(printer));
-    setSIUnitsVisitor(new SIUnitPrimitivePrettyPrinter(printer));
+    setSIUnitTypes4MathVisitor(new SIUnitTypes4MathPrettyPrinter(printer));
+    setSIUnitsVisitor(new SIUnitsPrettyPrinter(printer));
     setSIUnitLiteralsVisitor(new SIUnitLiteralsPrettyPrinter(printer));
     
     setMontiThingsVisitor(new MontiThingsToMontiArcPrettyPrinter(printer));
