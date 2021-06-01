@@ -39,7 +39,8 @@ export default new Vuex.Store({
         is_tracing: false,
         selected_trace_uuid: "",
         isFilterRelevantEntries: false,
-        trace_tree_revision:0
+        trace_tree_revision:0,
+        comp_does_not_log_anything: false
     },
     getters: {
         getField,
@@ -47,10 +48,12 @@ export default new Vuex.Store({
     mutations: {
         updateField,
         update_log_entries(state, data) {
-            console.log("update_log_entries");
-
+            console.log("trest "+ JSON.stringify(data, null, 2));
             let filteredData = [];
             if(data) {
+                if (data[0].message.startsWith("Log entry for")) {
+                    state.comp_does_not_log_anything = true;
+                }
                 data.sort(function(a,b){
                     if(a.index < b.index) return -1;
                     if(a.index > b.index) return 1;
@@ -110,10 +113,8 @@ export default new Vuex.Store({
     },
     actions: {
         async getLogEntries(state, instanceName) {
-            console.log("getLogEntries " + instanceName);
             axios.get(`http://localhost:8080/logs/${instanceName}`)
                 .then((response) => {
-                    console.log("getLogEntries");
                     this.commit('update_log_entries', response.data);
                 })
                 .catch((error) => {
@@ -130,7 +131,6 @@ export default new Vuex.Store({
                 });
         },
         async getInternalDataTraced(state, payload) {
-            console.log("getInternalDataTraced " + payload.trace_uuid);
             axios.get(`http://localhost:8080/trace/${payload.instance}/${payload.trace_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);

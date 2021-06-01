@@ -1,6 +1,7 @@
 <template>
   <div class="mt-3 vh-100">
-
+    {{inputs}} <br><br>
+    {{trace_data}} <br><br>
     {{traces}} <br><br>
     {{ internal_data }}
       <div v-if="selected_log_uuid.length" class="h-100">
@@ -53,13 +54,12 @@ export default {
       if(this.internal_data.inputs) {
         let jInput = JSON.parse(this.internal_data.inputs).value0;
         let res = {};
-        console.log("-----------------");
         for (const [key, value] of Object.entries(jInput)) {
+          console.log([key, value]);
           if (!value.nullopt) {
             res[key] = value.data;
           }
 
-          console.log(key, value);
         }
         return res;
       } else {
@@ -180,6 +180,7 @@ export default {
         operators[this.selected_instance]["properties"]["inputs"][this.selected_instance + "_" + inPort] = {
           label: inPort,
         }
+        console.log(inPort);
       }
 
       store.state.trace_data["operators"] = operators;
@@ -198,11 +199,10 @@ export default {
       store.state.trace_data["links"] = links;
 
       var $flowchart = $("#flowchartworkspace");
-      //var $container = $flowchart.parent();
 
       $flowchart.flowchart({
         verticalConnection: true,
-        //canUserEditLinks: false,
+        canUserEditLinks: false,
         //canUserMoveOperators: false,
         defaultLinkColor: "#888d91",
         defaultSelectedLinkColor: "#888d91",
@@ -210,13 +210,13 @@ export default {
         linkWidth: 3,
         data: store.state.trace_data,
         onOperatorSelect: function(operatorId) {
-          console.log('Operator "' + operatorId + '" selected. Title: ' + $flowchart.flowchart('getOperatorTitle', operatorId) + '.');
           let selected_uuid = operatorId.split("_")[0];
           let selected_instance =  $flowchart.flowchart('getOperatorTitle', operatorId);
 
           store.state.selected_trace_uuid = selected_uuid;
           store.state.selected_instance = selected_instance;
           store.state.isFilterRelevantEntries = true;
+          store.state.comp_does_not_log_anything = false;
           store.state.is_tracing = true;
           store.dispatch("getLogEntries", selected_instance);
           store.dispatch('getInternalDataTraced',
@@ -230,6 +230,7 @@ export default {
     createTrace: function () {
       if (store.state.is_tracing === false) {
         this.buildInitialTree();
+
         return true;
       } else {
         this.updateTree();
@@ -245,7 +246,6 @@ export default {
         }
       }
 
-      console.log(JSON.stringify(store.state.trace_data, null, 2));
       var $flowchart = $("#flowchartworkspace");
       $flowchart.flowchart('setData', store.state.trace_data);
     },
@@ -265,6 +265,7 @@ export default {
       console.log("internal_data value changed from " + oldVal + " to " + newVal);
       Vue.nextTick(function () {
           this.createTrace();
+        console.log(JSON.stringify(store.state.trace_data, null, 2));
         }.bind(this));
     },
   }

@@ -155,7 +155,32 @@ namespace montithings {
     }
 
     void LogTracer::sendLogEntries(sole::uuid reqUuid, long fromTimestamp) {
-        std::string payload = dataToJson(logEntries);
+        std::string payload;
+
+        if(logEntries.empty()) {
+            // If no log entry is present create virtual ones based on input uuids
+            long index = 0;
+            std::map<sole::uuid, LogEntry> vLogEntries;
+
+            // output uuids are tracked at log entry calls. This should be changed in future.
+            // using a place holder for now
+            sole::uuid placeholderOutputUuid = sole::uuid4();
+
+            for(auto const& item: allInputLogs) {
+                sole::uuid inputUuid = item.first;
+                LogEntry entry(index,
+                               inputTimeMap[inputUuid],
+                               "Log entry for " + std::to_string(index + 1) + ". input.",
+                               inputUuid,
+                               placeholderOutputUuid);
+                vLogEntries.insert({sole::uuid4(), entry});
+                index++;
+            }
+
+            payload = dataToJson(vLogEntries);
+        } else {
+            payload = dataToJson(logEntries);
+        }
         interface->response(reqUuid, payload);
     }
 
@@ -179,7 +204,6 @@ namespace montithings {
 
     void
     LogTracer::sendTraceData(sole::uuid reqUuid, sole::uuid traceUuid) {
-        // given
         sole::uuid lastUuid;
         for (auto it = outputInputRefs.end(); it != outputInputRefs.begin(); --it){
             if (it->second == traceUuid) {
@@ -202,5 +226,4 @@ namespace montithings {
     LogTracer::mapPortToSourceInstance(std::string portName, std::string instanceName) {
         sourcesOfPortsMap[portName] = instanceName;
     }
-
 }

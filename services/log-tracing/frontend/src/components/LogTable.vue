@@ -2,6 +2,12 @@
   <div>
     <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries && log_entries.length" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
     <br>
+
+{{comp_does_not_log_anything}}
+
+    <b-alert show  v-if="comp_does_not_log_anything">Seems like this component does not log anything. Showing generated log entries for each input instead.</b-alert>
+    <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries && log_entries.length" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
+    <br>
     <b-table borderless small hover selectable show-empty
              :items="log_entries"
              :fields="fields"
@@ -41,7 +47,8 @@ export default {
       'isFetchingInternalData',
       'internal_data',
       'is_tracing',
-      'isFilterRelevantEntries'
+      'isFilterRelevantEntries',
+      'comp_does_not_log_anything'
     ]),
   },
   methods: {
