@@ -4,10 +4,17 @@ package montithings.types.check;
 import com.google.common.collect.Maps;
 import de.monticore.expressions.commonexpressions._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
+import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
+import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
+import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.*;
 import de.se_rwth.commons.logging.Log;
+import montithings.MontiThingsMill;
 import org.assertj.core.util.Lists;
 
 import java.util.*;
@@ -15,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static de.monticore.ocl.types.check.OCLTypeCheck.compatible;
 import static de.monticore.ocl.types.check.OCLTypeCheck.isBoolean;
+import static de.monticore.types.check.TypeCheck.isString;
 
 public class DeriveSymTypeOfCommonExpressionsForMT
   extends DeriveSymTypeOfCommonExpressionsWithSIUnitTypes {
@@ -317,4 +325,20 @@ public class DeriveSymTypeOfCommonExpressionsForMT
     return type instanceof SymTypeOfNumericWithSIUnit;
   }
 
+  /**
+   * return the result for the "+"-operation if Strings
+   *
+   * @param expr
+   * @param rightResult
+   * @param leftResult
+   */
+  @Override protected Optional<SymTypeExpression> getBinaryNumericPromotionWithString(
+    ASTExpression expr, SymTypeExpression rightResult, SymTypeExpression leftResult) {
+    //if one part of the expression is a String then the whole expression is a String
+    if (isString(leftResult) || isString(rightResult)) {
+      return Optional.of(SymTypeExpressionFactory.createTypeExpression("String", MontiThingsMill.montiThingsGlobalScope()));
+    }
+    //no String in the expression -> use the normal calculation for the basic arithmetic operators
+    return getBinaryNumericPromotion(leftResult, rightResult);
+  }
 }
