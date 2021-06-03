@@ -8,23 +8,23 @@ namespace montithings {
         return varSnapshot;
     }
 
-    void InternalDataResponse::setVarSnapshot(const std::map<std::string, std::string> &varSnapshot) {
-        InternalDataResponse::varSnapshot = varSnapshot;
+    void InternalDataResponse::setVarSnapshot(const std::map<std::string, std::string> &varSnap) {
+        InternalDataResponse::varSnapshot = varSnap;
     }
 
     const std::string &InternalDataResponse::getInput() const {
         return input;
     }
 
-    void InternalDataResponse::setInput(const std::string &input) {
-        InternalDataResponse::input = input;
+    void InternalDataResponse::setInput(const std::string &i) {
+        InternalDataResponse::input = i;
     }
 
-    const std::multimap<std::string, std::string> &InternalDataResponse::getTracesUuidsWithPortNames() const {
+    const std::multimap<sole::uuid, std::string> &InternalDataResponse::getTracesUuidsWithPortNames() const {
         return tracesUuidsWithPortNames;
     }
 
-    void InternalDataResponse::setTracesUuidsWithPortNames(const std::multimap<std::string, std::string> &traceUuids) {
+    void InternalDataResponse::setTracesUuidsWithPortNames(const std::multimap<sole::uuid, std::string> &traceUuids) {
         InternalDataResponse::tracesUuidsWithPortNames = traceUuids;
     }
 
@@ -32,7 +32,7 @@ namespace montithings {
         return sourcesOfPortsMap;
     }
 
-    void InternalDataResponse::setSourcesOfPortsMap(const std::map<std::string, std::string> &sourcesOfPortsMap) {
-        InternalDataResponse::sourcesOfPortsMap = sourcesOfPortsMap;
+    void InternalDataResponse::setSourcesOfPortsMap(const std::map<std::string, std::string> &sourcesOfPorts) {
+        InternalDataResponse::sourcesOfPortsMap = sourcesOfPorts;
     }
 }

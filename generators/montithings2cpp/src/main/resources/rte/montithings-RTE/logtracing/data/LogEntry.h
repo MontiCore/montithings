@@ -9,6 +9,7 @@ namespace montithings {
 
 class LogEntry {
 private:
+    sole::uuid uuid{};
     long index;
     time_t time;
     std::string content;
@@ -16,34 +17,65 @@ private:
     sole::uuid outputUuid;
 
 public:
-    LogEntry(long index, time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid);
+    LogEntry(long index, time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid)
+            : index(index), time(time), content(std::move(content)), inputUuid(inputUuid), outputUuid(outputUuid) {
+        uuid = sole::uuid4();
+    }
 
-    virtual ~LogEntry();
+    ~LogEntry() = default;
 
-    long getIndex() const;
+    const sole::uuid &getUuid() const {
+        return uuid;
+    }
 
-    void setIndex(long index);
+    void setUuid(const sole::uuid &id) {
+        uuid = id;
+    }
 
-    time_t getTime() const;
+    long getIndex() const {
+        return index;
+    }
 
-    void setTime(time_t t);
+    void setIndex(long i) {
+        index = i;
+    }
 
-    const std::string &getContent() const;
+    time_t getTime() const {
+        return time;
+    }
 
-    void setContent(const std::string &c);
+    void setTime(time_t t) {
+        time = t;
+    }
 
-    const sole::uuid &getInputUuid() const;
+    const std::string &getContent() const {
+        return content;
+    }
 
-    void setInputUuid(const sole::uuid &inputUuid);
+    void setContent(const std::string &c) {
+        content = c;
+    }
 
-    const sole::uuid &getOutputUuid() const;
+    const sole::uuid &getInputUuid() const {
+        return inputUuid;
+    }
 
-    void setOutputUuid(const sole::uuid &outputUuid);
+    void setInputUuid(const sole::uuid &inUuid) {
+        inputUuid = inUuid;
+    }
+
+    const sole::uuid &getOutputUuid() const {
+        return outputUuid;
+    }
+
+    void setOutputUuid(const sole::uuid &outUuid) {
+        outputUuid = outUuid;
+    }
 
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive( index, time, content, inputUuid, outputUuid );
+        archive( uuid, index, time, content, inputUuid, outputUuid );
     }
 };
 }

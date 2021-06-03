@@ -15,12 +15,12 @@
 
 #include "interface/LogTracerInterface.h"
 #include "data/LogEntry.h"
+#include "data/TraceOutput.h"
 #include "data/InternalDataResponse.h"
 #include "Externals.h"
 
 
 namespace montithings {
-
     class LogTracer {
     private:
         LogTracerInterface* interface;
@@ -29,36 +29,25 @@ namespace montithings {
 
         // true if at least one port has sent data, the log tracer will then continue with a new output uuid after the current computation
         bool atLeastOneNewOutput = false;
+        long logEntryIndex;
 
         // stores all log messages with their timestamp, referenced by a sole::uuid
-        std::map<sole::uuid, LogEntry> logEntries;
-        long logEntryIndex;
 
         // there can be multiple log entries for the same input messages, thus, they are grouped
         // currInputLogs collects all input log UUIDs until a new input arrives
-        std::vector<sole::uuid> currInputLogs;
-        // the currInputLogs vector is then referenced by a new UUID, stored in inputLogs, and cleared
-        std::map<sole::uuid, std::vector<sole::uuid>> allInputLogs;
-
-        // stores when input uuids were created
-        std::map<sole::uuid, time_t> inputTimeMap;
-
-        // when a new input arrives, a new input ID is created
-        sole::uuid currInputId{};
-        //output UUIDs from messages are referenced with the current InputId
-        std::multimap<sole::uuid, sole::uuid> outputInputRefs;
-
-        // store a JSON serialized snapshot of the input
-        std::map<sole::uuid, std::string> serializedInputs;
+        std::vector<LogEntry> currInputLogs;
 
         // having the inputs is fine, but we although want to know which instance has sent the corresponding input
         // therefore keep track of the source instance names
         std::map<std::string, std::string> sourcesOfPortsMap;
 
+        TraceInput currTraceInput;
+        TraceOutput currTraceOutput;
+
         // there can be multiple InputLogs for the same output message, thus they are grouped as well; analogously to the inputLogs
-        std::vector<sole::uuid> currOutputLogs;
-        sole::uuid currOutputId{};
-        std::map<sole::uuid, std::vector<sole::uuid>> allOutputLogs;
+        //std::vector<sole::uuid> currOutputLogs;
+        std::vector<TraceInput> currInputGroup;
+        std::vector<TraceOutput> traceOutputs;
 
         //input UUIDs belong to a certain port, keep track of it
         std::multimap<sole::uuid, std::string> inputTracePortNameRefs;
@@ -67,6 +56,15 @@ namespace montithings {
         // the variable value is stored as a string to avoid type clashes
         using vSnapshot = std::map<time_t, std::string>;
         std::map<std::string, vSnapshot> variableSnapshots;
+
+        std::vector<LogEntry> getAllLogEntries();
+
+        tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid);
+        tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid);
+        tl::optional<TraceInput> getInputByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid);
+        tl::optional<TraceInput> getInputByUuid(sole::uuid uuid);
+        tl::optional<TraceOutput> getOutputByUuid(sole::uuid uuid);
+        tl::optional<TraceOutput> getOutputByInputUuid(sole::uuid uuid);
 
         // creates new UUID
         static sole::uuid uuid();
@@ -112,7 +110,7 @@ namespace montithings {
 
         std::map<std::string, std::string> getVariableSnapshot(time_t time);
 
-        std::multimap<std::string, std::string> getTraceUuids(sole::uuid inputUuid);
+        std::multimap<sole::uuid, std::string> getTraceUuids(sole::uuid inputUuid);
 
         template <typename T>
         void handleVariableStateChange(const std::string& variableName, const T& valueBefore, const T& valueAfter) {
@@ -124,29 +122,25 @@ namespace montithings {
         template <typename T>
         void handleInput(const T& input, const std::multimap<sole::uuid, std::string>& traceUUIDs) {
             // stores the log entries which are grouped to the previous input
-            allInputLogs[currInputId] = currInputLogs;
+            currTraceInput.setLogEntries(currInputLogs);
 
-            // a new input arrived, hence clear the current group
+            // a new input arrived, hence clear the current log entry group
             currInputLogs.clear();
 
-            // updates current id with a fresh one
-            currInputId = uuid();
-
-            inputTimeMap[currInputId] = time(nullptr);
-
             // store serialized input
-            serializedInputs[currInputId] = dataToJson(input);
+            currTraceInput.setSerializedInput(dataToJson(input));
 
             // Add reference to uuids sent along with the input
             for (auto const &trace : traceUUIDs) {
-                // register, that the trace is linked to the current input
-                outputInputRefs.insert(std::make_pair(currInputId, trace.first));
-
-                // register, that the uuid is associated with a certain port
-                inputTracePortNameRefs.insert(std::make_pair(trace.first, trace.second));
+                // trace.first == uuid
+                // trace.second == port name
+                currTraceInput.addTrace(trace.first, trace.second);
             }
+
+            // Add input to the current group
+            currInputGroup.push_back(currTraceInput);
+
+            currTraceInput = TraceInput();
         }
     };
-
-
 }
