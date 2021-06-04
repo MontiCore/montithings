@@ -6,7 +6,8 @@ import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._ast.ASTProperty;
 import mtconfig._ast.ASTRequirementStatement;
-import mtconfig._visitor.MTConfigVisitor;
+import mtconfig._visitor.MTConfigHandler;
+import mtconfig._visitor.MTConfigTraverser;
 
 import java.util.Iterator;
 
@@ -16,9 +17,9 @@ import java.util.Iterator;
  *
  * @author Julian Krebber
  */
-public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements MTConfigVisitor {
+public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements MTConfigHandler {
 
-  protected MTConfigVisitor realThis = this;
+  protected MTConfigTraverser traverser;
 
   /**
    * Constructor.
@@ -29,25 +30,17 @@ public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
     super(printer);
   }
 
-  /**
-   * @see de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor#setRealThis(de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor)
-   */
-  @Override
-  public void setRealThis(MTConfigVisitor realThis) {
-    this.realThis = realThis;
+  @Override public MTConfigTraverser getTraverser() {
+    return traverser;
   }
 
-  /**
-   * @see de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor#getRealThis()
-   */
-  @Override
-  public MTConfigVisitor getRealThis() {
-    return realThis;
+  @Override public void setTraverser(MTConfigTraverser traverser) {
+    this.traverser = traverser;
   }
 
   @Override
-  public void visit(ASTMTConfigUnit a){
-    if(a.isPresentPackage()) {
+  public void handle(ASTMTConfigUnit a) {
+    if (a.isPresentPackage()) {
       this.getPrinter().print("package ");
       this.getPrinter().print(a.getPackage().getQName());
       this.getPrinter().println(";");
@@ -55,17 +48,17 @@ public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
   }
 
   @Override
-  public void handle(ASTRequirementStatement a){
+  public void handle(ASTRequirementStatement a) {
     this.getPrinter().print(" requires ");
-    if(a.getPropertiessList().size()==1){
-      a.getPropertiess(0).accept(this.getRealThis());
+    if (a.getPropertiessList().size() == 1) {
+      a.getPropertiess(0).accept(getTraverser());
     }
-    else{
+    else {
       this.getPrinter().println("{");
       this.getPrinter().indent();
       Iterator<ASTProperty> iter_propertiesss = a.getPropertiessList().iterator();
       while (iter_propertiesss.hasNext()) {
-        iter_propertiesss.next().accept(getRealThis());
+        iter_propertiesss.next().accept(getTraverser());
       }
       this.getPrinter().unindent();
       this.getPrinter().println(" } ");
@@ -73,13 +66,14 @@ public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
   }
 
   @Override
-  public void visit(ASTProperty a){
+  public void handle(ASTProperty a) {
     this.getPrinter().print(a.getName() + ":");
-  }
-
-  @Override
-  public void endVisit(ASTProperty a){
+    if (a.isPresentNumericValue()) {
+      a.getNumericValue().accept(getTraverser());
+    }
+    if (a.isPresentStringValue()) {
+      a.getStringValue().accept(getTraverser());
+    }
     this.getPrinter().println(";");
   }
-
 }

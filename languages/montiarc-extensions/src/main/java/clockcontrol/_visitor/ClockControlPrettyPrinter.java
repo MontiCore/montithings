@@ -6,9 +6,9 @@ import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
 
-public class ClockControlPrettyPrinter implements ClockControlVisitor {
+public class ClockControlPrettyPrinter implements ClockControlHandler {
 
-  protected ClockControlVisitor realThis = this;
+  protected ClockControlTraverser traverser;
   protected IndentPrinter printer;
 
   public ClockControlPrettyPrinter() {
@@ -21,17 +21,6 @@ public class ClockControlPrettyPrinter implements ClockControlVisitor {
     this.printer = printer;
   }
 
-  @Override
-  public ClockControlVisitor getRealThis() {
-    return this.realThis;
-  }
-
-  @Override
-  public void setRealThis(@NotNull ClockControlVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
-  }
-
   public IndentPrinter getPrinter() {
     return this.printer;
   }
@@ -39,7 +28,7 @@ public class ClockControlPrettyPrinter implements ClockControlVisitor {
   @Override
   public void handle(ASTCalculationInterval node){
     this.getPrinter().print("update interval ");
-    node.getInterval().accept(this.getRealThis());
+    node.getInterval().accept(getTraverser());
     this.getPrinter().println(";");
   }
 

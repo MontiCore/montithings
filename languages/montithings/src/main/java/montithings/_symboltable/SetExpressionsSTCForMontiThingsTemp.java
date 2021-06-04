@@ -12,7 +12,7 @@ public class SetExpressionsSTCForMontiThingsTemp extends SetExpressionsSymbolTab
   }
 
   public montithings._symboltable.IMontiThingsScope createScope(boolean shadowing) {
-    montithings._symboltable.IMontiThingsScope scope = montithings.MontiThingsMill.montiThingsScopeBuilder().build();
+    montithings._symboltable.IMontiThingsScope scope = montithings.MontiThingsMill.scope();
     scope.setShadowing(shadowing);
     return scope;
   }

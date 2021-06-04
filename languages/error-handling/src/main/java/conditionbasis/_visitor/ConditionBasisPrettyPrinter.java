@@ -5,9 +5,10 @@ import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
 
-public class ConditionBasisPrettyPrinter implements ConditionBasisVisitor {
+public class ConditionBasisPrettyPrinter implements ConditionBasisHandler {
 
-  protected ConditionBasisVisitor realThis = this;
+  protected ConditionBasisTraverser traverser;
+
   protected IndentPrinter printer;
 
   public ConditionBasisPrettyPrinter() {
@@ -21,19 +22,18 @@ public class ConditionBasisPrettyPrinter implements ConditionBasisVisitor {
   }
 
   @Override
-  public ConditionBasisVisitor getRealThis() {
-    return this.realThis;
+  public ConditionBasisTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull ConditionBasisVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
+  public void setTraverser(@NotNull ConditionBasisTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
   }
 
   public IndentPrinter getPrinter() {
     return this.printer;
   }
-
 
 }

@@ -11,7 +11,7 @@ public class OCLExpressionsSTCForMontiThingsTemp extends OCLExpressionsSymbolTab
   }
 
   public montithings._symboltable.IMontiThingsScope createScope(boolean shadowing) {
-    montithings._symboltable.IMontiThingsScope scope = montithings.MontiThingsMill.montiThingsScopeBuilder().build();
+    montithings._symboltable.IMontiThingsScope scope = montithings.MontiThingsMill.scope();
     scope.setShadowing(shadowing);
     return scope;
   }

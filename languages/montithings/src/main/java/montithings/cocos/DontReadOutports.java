@@ -40,13 +40,13 @@ public class DontReadOutports implements MontiThingsASTBehaviorCoCo,
 
   protected Set<ASTNameExpression> getAssignedNodes(ASTMCJavaBlock block) {
     FindAssignedNodes assignmentVisitor = new FindAssignedNodes();
-    block.accept(assignmentVisitor);
+    block.accept(assignmentVisitor.createTraverser());
     return assignmentVisitor.getReferencedAstNodes();
   }
 
   protected Set<ASTNameExpression> getReferencedPorts(ASTMCJavaBlock block) {
     FindOutgoingPorts portVisitor = new FindOutgoingPorts();
-    block.accept(portVisitor);
+    block.accept(portVisitor.createTraverser());
     return portVisitor.getReferencedPortsAstNodes();
   }
 }

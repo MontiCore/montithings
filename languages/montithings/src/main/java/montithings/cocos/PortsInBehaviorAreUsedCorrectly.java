@@ -97,7 +97,7 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
 
   protected Set<PortSymbol> getReferencedPorts(ASTMCJavaBlock block) {
     FindIncomingPorts portVisitor = new FindIncomingPorts();
-    block.accept(portVisitor);
+    block.accept(portVisitor.createTraverser());
     return portVisitor.getReferencedPorts();
   }
 

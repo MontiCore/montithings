@@ -4,6 +4,8 @@ package cdlangextension.printer;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._ast.ASTDepLanguage;
+import cdlangextension._visitor.CDLangExtensionHandler;
+import cdlangextension._visitor.CDLangExtensionTraverser;
 import cdlangextension._visitor.CDLangExtensionVisitor;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
@@ -14,9 +16,10 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Julian Krebber
  */
-public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter implements CDLangExtensionVisitor {
+public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter implements
+  CDLangExtensionHandler {
 
-  protected CDLangExtensionVisitor realThis = this;
+  protected CDLangExtensionTraverser traverser;
 
   /**
    * Constructor.
@@ -27,20 +30,12 @@ public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter impl
     super(printer);
   }
 
-  /**
-   * @see de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor#setRealThis(de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor)
-   */
-  @Override
-  public void setRealThis(CDLangExtensionVisitor realThis) {
-    this.realThis = realThis;
+  @Override public CDLangExtensionTraverser getTraverser() {
+    return traverser;
   }
 
-  /**
-   * @see de.monticore.types.mcbasictypes._visitor.MCBasicTypesVisitor#getRealThis()
-   */
-  @Override
-  public CDLangExtensionVisitor getRealThis() {
-    return realThis;
+  @Override public void setTraverser(CDLangExtensionTraverser traverser) {
+    this.traverser = traverser;
   }
 
   /**
@@ -49,18 +44,14 @@ public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter impl
    * @param a AST to be printed.
    */
   @Override
-  public void visit(ASTDepLanguage a){
+  public void handle(ASTDepLanguage a){
     getPrinter().println(a.getName() + " {");
     getPrinter().indent();
-  }
 
-  /**
-   * Prints '}'.
-   *
-   * @param a AST to be printed.
-   */
-  @Override
-  public void endVisit(ASTDepLanguage a){
+    for (ASTCDEImportStatement statement : a.getCDEImportStatementList()) {
+      statement.accept(getTraverser());
+    }
+
     getPrinter().unindent();
     getPrinter().println("}");
   }
@@ -77,7 +68,7 @@ public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter impl
   }
 
   @Override
-  public void visit(ASTCDLangExtensionUnit a){
+  public void handle(ASTCDLangExtensionUnit a){
     if(!a.isEmptyPackage()) {
       this.getPrinter().print("package ");
       StringUtils.join(a.getPackageList(),".");

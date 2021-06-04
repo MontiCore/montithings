@@ -13,6 +13,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+        </dependency>
+
         <!-- Languages within this project -->
 
         <dependency>

@@ -27,7 +27,7 @@ public class SymbolUtil {
       .setReturnType(returnType)
       .setEnclosingScope(enclosingScope)
       .build();
-    func.setSpannedScope(MontiThingsMill.montiThingsScope());
+    func.setSpannedScope(MontiThingsMill.globalScope());
     enclosingScope.add(func);
     returnType.getTypeInfo().addFunctionSymbol(func);
     return func;

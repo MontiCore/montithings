@@ -14,7 +14,7 @@ public class DeriveSymTypeOfOCLExpressionsForMT extends DeriveSymTypeOfOCLExpres
 
     //check type of Expression
     if (node.getExpression() != null) {
-      node.getExpression().accept(getRealThis());
+      node.getExpression().accept(getTraverser());
     }
     if (typeCheckResult.isPresentCurrentResult()) {
       exprResult = typeCheckResult.getCurrentResult();
@@ -27,7 +27,7 @@ public class DeriveSymTypeOfOCLExpressionsForMT extends DeriveSymTypeOfOCLExpres
 
     //check type of type to cast expression to
     if (node.getMCType() != null) {
-      node.getMCType().accept(getRealThis());
+      node.getMCType().accept(getTraverser());
     }
     if (typeCheckResult.isPresentCurrentResult()) {
       typeResult = typeCheckResult.getCurrentResult();

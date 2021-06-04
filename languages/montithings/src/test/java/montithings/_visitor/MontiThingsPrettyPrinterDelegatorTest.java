@@ -26,7 +26,7 @@ class MontiThingsPrettyPrinterDelegatorTest extends AbstractTest {
     // given
     MontiThingsParser parser = new MontiThingsParser();
     final Optional<ASTMACompilationUnit> ast = parser.parse(filename);
-    final MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator();
+    final MontiThingsFullPrettyPrinter printer = new MontiThingsFullPrettyPrinter();
     assertThat(ast).isPresent();
 
     // when
@@ -44,7 +44,7 @@ class MontiThingsPrettyPrinterDelegatorTest extends AbstractTest {
     // given
     MontiThingsParser mtParser = new MontiThingsParser();
     final Optional<ASTMACompilationUnit> ast = mtParser.parse(filename);
-    final MontiThingsToMontiArcPrettyPrinterDelegator printer = new MontiThingsToMontiArcPrettyPrinterDelegator();
+    final MontiThingsToMontiArcFullPrettyPrinter printer = new MontiThingsToMontiArcFullPrettyPrinter();
     assertThat(ast).isPresent();
 
     // when

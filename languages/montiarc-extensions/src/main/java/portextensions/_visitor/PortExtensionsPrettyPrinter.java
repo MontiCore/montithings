@@ -13,9 +13,10 @@ import portextensions._ast.ASTSyncStatement;
 import java.util.Iterator;
 import java.util.List;
 
-public class PortExtensionsPrettyPrinter implements PortExtensionsVisitor {
+public class PortExtensionsPrettyPrinter implements PortExtensionsHandler {
 
-  protected PortExtensionsVisitor realThis = this;
+  protected PortExtensionsTraverser traverser;
+
   protected IndentPrinter printer;
 
   public PortExtensionsPrettyPrinter() {
@@ -29,49 +30,49 @@ public class PortExtensionsPrettyPrinter implements PortExtensionsVisitor {
   }
 
   @Override
-  public PortExtensionsVisitor getRealThis() {
-    return this.realThis;
+  public PortExtensionsTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull PortExtensionsVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
+  public void setTraverser(@NotNull PortExtensionsTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
   }
 
   public IndentPrinter getPrinter() {
     return this.printer;
   }
 
-  public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list){
+  public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
     if (list.size() <= 0) {
       return;
     }
     Iterator<T> iterator = list.iterator();
-    iterator.next().accept(this.getRealThis());
+    iterator.next().accept(getTraverser());
     while (iterator.hasNext()) {
       this.getPrinter().print(", ");
-      iterator.next().accept(this.getRealThis());
+      iterator.next().accept(getTraverser());
     }
   }
 
   @Override
-  public void handle(ASTAnnotatedPort node){
-    node.getPortAnnotation().accept(this.getRealThis());
+  public void handle(ASTAnnotatedPort node) {
+    node.getPortAnnotation().accept(getTraverser());
     this.getPrinter().print(" port ");
     acceptSeperatedList(node.getPortDeclarationList());
     this.getPrinter().println(";");
   }
 
   @Override
-  public void handle(ASTBufferedPort node){
+  public void handle(ASTBufferedPort node) {
     this.getPrinter().print("buffer");
   }
 
   @Override
-  public void handle(ASTSyncStatement node){
+  public void handle(ASTSyncStatement node) {
     this.getPrinter().print("sync ");
-    this.getPrinter().print(StringUtils.join(node.getSyncedPortList(),","));
+    this.getPrinter().print(StringUtils.join(node.getSyncedPortList(), ","));
     this.getPrinter().println(";");
   }
 }

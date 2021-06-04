@@ -91,7 +91,7 @@ public class DeriveSymTypeOfCommonExpressionsForMT
     return calculateTypeCompare(expr, expr.getRight(), expr.getLeft());
   }
 
-  private Optional<SymTypeExpression> calculateTypeCompare(ASTInfixExpression expr,
+  public Optional<SymTypeExpression> calculateTypeCompare(ASTInfixExpression expr,
     ASTExpression right, ASTExpression left) {
     boolean b = DeriveSymTypeOfMontiThings.isCondition();
     DeriveSymTypeOfMontiThings.setCondition(false);
@@ -102,7 +102,7 @@ public class DeriveSymTypeOfCommonExpressionsForMT
     return calculateTypeCompare(expr, rightResult, leftResult);
   }
 
-  private Optional<SymTypeExpression> calculateTypeLogical(ASTInfixExpression expr,
+  public Optional<SymTypeExpression> calculateTypeLogical(ASTInfixExpression expr,
     ASTExpression right, ASTExpression left) {
     boolean b = DeriveSymTypeOfMontiThings.isCondition();
     DeriveSymTypeOfMontiThings.setCondition(false);
@@ -148,9 +148,9 @@ public class DeriveSymTypeOfCommonExpressionsForMT
   @Override
   public void traverse(ASTCallExpression expr) {
     NameToCallExpressionVisitor visitor = new NameToCallExpressionVisitor();
-    expr.accept(visitor);
+    expr.accept(visitor.getTraverser());
     SymTypeExpression innerResult;
-    expr.getExpression().accept(getRealThis());
+    expr.getExpression().accept(getTraverser());
     if (typeCheckResult.isPresentCurrentResult()) {
       innerResult = typeCheckResult.getCurrentResult();
       //resolve methods with name of the inner expression
@@ -160,7 +160,7 @@ public class DeriveSymTypeOfCommonExpressionsForMT
       List<FunctionSymbol> fittingMethods = getFittingMethods(methodlist, expr);
       //if the last result is static then filter for static methods
       if (typeCheckResult.isType()) {
-        fittingMethods = filterStaticMethodSymbols(fittingMethods);
+        fittingMethods = filterModifiersFunctions(fittingMethods);
       }
       //there can only be one method with the correct arguments and return type
       if (!fittingMethods.isEmpty()) {
@@ -201,7 +201,7 @@ public class DeriveSymTypeOfCommonExpressionsForMT
     }
   }
 
-  private List<FunctionSymbol> getFittingMethods(List<FunctionSymbol> methodlist,
+  protected List<FunctionSymbol> getFittingMethods(List<FunctionSymbol> methodlist,
     ASTCallExpression expr) {
     List<FunctionSymbol> fittingMethods = new ArrayList<>();
     for (FunctionSymbol method : methodlist) {
@@ -210,7 +210,7 @@ public class DeriveSymTypeOfCommonExpressionsForMT
         boolean success = true;
         List<SymTypeExpression> dynamicParamTypes = Lists.newArrayList();
         for(int i = 0; i<method.getParameterList().size(); i++){
-          expr.getArguments().getExpression(i).accept(getRealThis());
+          expr.getArguments().getExpression(i).accept(getTraverser());
           dynamicParamTypes.add(typeCheckResult.getCurrentResult());
         }
         SymTypeExpression ret = calculateReturnType(method, dynamicParamTypes);
@@ -336,7 +336,7 @@ public class DeriveSymTypeOfCommonExpressionsForMT
     ASTExpression expr, SymTypeExpression rightResult, SymTypeExpression leftResult) {
     //if one part of the expression is a String then the whole expression is a String
     if (isString(leftResult) || isString(rightResult)) {
-      return Optional.of(SymTypeExpressionFactory.createTypeExpression("String", MontiThingsMill.montiThingsGlobalScope()));
+      return Optional.of(SymTypeExpressionFactory.createTypeExpression("String", MontiThingsMill.globalScope()));
     }
     //no String in the expression -> use the normal calculation for the basic arithmetic operators
     return getBinaryNumericPromotion(leftResult, rightResult);

@@ -2,12 +2,13 @@
 package montithings.types.check;
 
 import de.monticore.types.check.*;
+import de.monticore.types.mcbasictypes._visitor.MCBasicTypesTraverser;
 import montithings._visitor.MontiThingsDelegatorVisitor;
 import montithings._visitor.MontiThingsVisitor;
 
 import java.util.Optional;
 
-public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisitor
+public class SynthesizeSymTypeFromMontiThings
   implements ISynthesize {
 
   private SynthesizeSymTypeFromMCBasicTypes symTypeFromMCBasicTypes;
@@ -37,6 +38,10 @@ public class SynthesizeSymTypeFromMontiThings extends MontiThingsDelegatorVisito
     setSIUnitTypes4ComputingVisitor(symTypeFromSIUnitTypes4Computing);
     setMontiThingsVisitor(new MontiThingsDelegatorVisitor());
     setTypeCheckResult(typeCheckResult);
+  }
+
+  @Override public MCBasicTypesTraverser getTraverser() {
+    return null;
   }
 
   public SynthesizeSymTypeFromMontiThings() {

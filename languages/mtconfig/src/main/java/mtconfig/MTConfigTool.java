@@ -73,10 +73,9 @@ public class MTConfigTool {
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
     MCQualifiedName2PortResolvingDelegate portResolvingDelegate;
     if(this.mtGlobalScope == null) {
-      IMontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
-          .setModelPath(mp)
-          .setModelFileExtension("mt")
-          .build();
+      IMontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.globalScope();
+      newMtGlobalScope.setModelPath(mp);
+      newMtGlobalScope.setFileExt("mt");
       this.mtGlobalScope = newMtGlobalScope;
       MontiThingsTool tool = new MontiThingsTool();
       tool.processModels(this.mtGlobalScope);
