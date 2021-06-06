@@ -21,7 +21,6 @@ import de.monticore.cd4code._symboltable.CD4CodeScope;
 import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
@@ -55,15 +54,11 @@ import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTCFGTag;
-import mtconfig._ast.ASTProperty;
 import mtconfig._ast.ASTRequirementStatement;
 import mtconfig._ast.ASTSeparationHint;
-import mtconfig._parser.MTConfigAntlrParser.RequirementStatementContext;
 import mtconfig._symboltable.CompConfigSymbol;
 import mtconfig._symboltable.IMTConfigGlobalScope;
 import mtconfig._symboltable.IMTConfigScope;
-import mtconfig._symboltable.PropertySymbol;
-
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
@@ -74,7 +69,6 @@ import prepostcondition._ast.ASTPrecondition;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -1147,8 +1141,13 @@ public class ComponentHelper {
   public static Set<String> getRequirements(ComponentTypeSymbol topComponent, boolean recursive, ConfigParams config) {
     HashSet<String> requirements = new HashSet<>();
     
-    Optional<CompConfigSymbol> cfgOpt = config.getMtConfigScope().resolveCompConfig(config.getTargetPlatform().toString(), topComponent);
+    IMTConfigGlobalScope cfgScope = config.getMtConfigScope();
+    if(cfgScope == null) {
+      // Fail fast: there cannot be any requirements without a config scope.
+      return requirements;
+    }
     
+    Optional<CompConfigSymbol> cfgOpt = cfgScope.resolveCompConfig(config.getTargetPlatform().toString(), topComponent);
     if (cfgOpt.isPresent()) {
       CompConfigSymbol cfg = cfgOpt.get();
       ASTCompConfig acc = cfg.getAstNode();
