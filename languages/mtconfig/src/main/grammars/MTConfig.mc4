@@ -73,5 +73,9 @@ grammar MTConfig extends MontiThings  {
       stringValue:StringLiteral | numericValue:SignedNumericLiteral
     ) ";";
 
+  /**
+   *  A SeparationHint gives instructions about how the component should be split up if splitting 
+   *  is enabled. "None" means that the component and its subcomponents should not be splitted. 
+   */
   SeparationHint implements MTCFGTag = "separate" "none" ";";
 }
