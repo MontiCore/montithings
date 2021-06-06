@@ -6,11 +6,8 @@ component Source {
 
   int lastValue = 0;
 
-  behavior {
+  every 1s {
     value = lastValue++;
-    delay(500);
     log("Source: " + lastValue);
   }
-
-  update interval 1s;
 }

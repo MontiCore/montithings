@@ -7,7 +7,7 @@ component Source {
 
   int lastValue = 0;
 
-  behavior {
+  every 10ms {
     lastValue++;
     if (exists i in {x in {1:100} | x % 3 == 0}: i == lastValue) {
       value = lastValue;
@@ -20,6 +20,4 @@ component Source {
   post exists i in {x in {1:100} | x % 3 == 0}:
          i == value;
   catch { value = 0; }
-
-  update interval 10ms;
 }

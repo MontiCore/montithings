@@ -6,12 +6,15 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
+import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.utils.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
+import mtconfig._ast.ASTEveryTag;
 import mtconfig._symboltable.HookpointSymbol;
+import mtconfig._symboltable.PortTemplateTagSymbol;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
 import prepostcondition._ast.ASTPrePostConditionNode;
@@ -329,9 +332,19 @@ public class MTGenerator {
     bindSAPortTemplate(portName, setup, templates, "consume", config, portSymbol);
     bindSAPortTemplate(portName, setup, templates, "init", config, portSymbol);
 
+
+    Optional<ASTEveryTag> everyTag = Optional.empty();
+    if (config.getMtConfigScope() != null) {
+      Optional<PortTemplateTagSymbol> portTag = config.getMtConfigScope()
+        .resolvePortTemplateTag(config.getTargetPlatform().name(), portSymbol);
+      if (portTag.isPresent() && portTag.get().getAstNode().hasEveryTag()) {
+        everyTag = portTag.get().getAstNode().getEveryTag();
+      }
+    }
+
     // Port generation.
     GeneratorEngine engine = new GeneratorEngine(setup);
-    engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, config, portSymbol, portName, existsHWC);
+    engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, config, portSymbol, portName, everyTag, existsHWC);
 
   }
 

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package hierarchy;
+package sourceSensor;
 
 component Example {
   Source source;

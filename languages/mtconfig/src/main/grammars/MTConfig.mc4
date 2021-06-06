@@ -40,13 +40,15 @@ grammar MTConfig extends MontiThings  {
     MTCFGTag*
     "}";
 
+  interface SinglePortTag;
+
   /**
    * PortTemplateTag specifies the templates that are used for processing of the specified port.
    * @attribute Name Name of the MontiThings port.
    */
   scope symbol PortTemplateTag implements MTCFGTag =
     port:Name "{"
-    Hookpoint+
+    SinglePortTag+
     "}";
 
   /**
@@ -55,7 +57,9 @@ grammar MTConfig extends MontiThings  {
    * @attribute template Unqualified name of the template.
    * @attribute Arguments Attributes required by the template.
    */
-  symbol Hookpoint = Name "=" template:String Arguments? ";";
+  symbol Hookpoint implements SinglePortTag = Name "=" template:String Arguments? ";";
+
+  EveryTag implements SinglePortTag = "every" SIUnitLiteral ";";
 
   /**
    *  RequirementStatement contain information about what physical requirements
