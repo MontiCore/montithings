@@ -29,7 +29,7 @@ public class DeploymentServer {
   
   public static void main(String[] args) throws Exception {
     // test code, will be removed (TODO)
-    String mqttHost = "127.0.0.1";
+    String mqttHost = "node4.se.rwth-aachen.de";
     
     MqttClient mqttClient = new MqttClient("tcp://" + mqttHost + ":1883", "orchestrator");
     mqttClient.connect();
