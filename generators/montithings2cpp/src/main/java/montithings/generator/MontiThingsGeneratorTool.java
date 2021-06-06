@@ -569,7 +569,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected void generateDeployInfo(File target, ConfigParams config, List<Pair<ComponentTypeSymbol, String>> executableInstances) {
     JsonObjectBuilder jsonBase = Json.createObjectBuilder();
     
-    // Collect instances.
+    // Collect executable instances.
     JsonArrayBuilder jsonInstances = Json.createArrayBuilder();
     
     for (Pair<ComponentTypeSymbol, String> instance : executableInstances) {
@@ -579,6 +579,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       
       jsonInstance.add("componentType", comp.getFullName());
       jsonInstance.add("instanceName", instance.getValue());
+      jsonInstance.add("dockerImage", comp.getFullName().toLowerCase()+":latest");
       
       // Also add the requirements of the component.
       JsonArrayBuilder jreqs = Json.createArrayBuilder();
