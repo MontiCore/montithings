@@ -67,7 +67,7 @@ public:
     }
 
     void addTrace(const sole::uuid &id, const std::string &portName) {
-        traceIdsWithPortNames.insert(std::make_pair(uuid, portName));
+        traceIdsWithPortNames.insert(std::make_pair(id, portName));
     }
 
     const std::multimap<sole::uuid, std::string> &getTraceIdsWithPortNames() const {

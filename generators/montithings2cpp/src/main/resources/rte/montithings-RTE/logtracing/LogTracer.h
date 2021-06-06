@@ -27,8 +27,6 @@ namespace montithings {
 
         std::string instanceName;
 
-        // true if at least one port has sent data, the log tracer will then continue with a new output uuid after the current computation
-        bool atLeastOneNewOutput = false;
         long logEntryIndex;
 
         // stores all log messages with their timestamp, referenced by a sole::uuid
@@ -61,7 +59,6 @@ namespace montithings {
 
         tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid);
         tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid);
-        tl::optional<TraceInput> getInputByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid);
         tl::optional<TraceInput> getInputByUuid(sole::uuid uuid);
         tl::optional<TraceOutput> getOutputByUuid(sole::uuid uuid);
         tl::optional<TraceOutput> getOutputByInputUuid(sole::uuid uuid);

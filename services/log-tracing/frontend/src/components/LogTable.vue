@@ -2,12 +2,6 @@
   <div>
     <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries && log_entries.length" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
     <br>
-
-{{comp_does_not_log_anything}}
-
-    <b-alert show  v-if="comp_does_not_log_anything">Seems like this component does not log anything. Showing generated log entries for each input instead.</b-alert>
-    <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries && log_entries.length" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
-    <br>
     <b-table borderless small hover selectable show-empty
              :items="log_entries"
              :fields="fields"
@@ -54,16 +48,17 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     onRowClick(record, index) {
+      console.log(store.state.is_tracing + "asdasdas");
       if(!store.state.is_tracing) {
         store.state.internal_data = "";
       }
 
-      store.state.selected_log_uuid = record.log_uuid;
-      store.state.isFetchingInternalData = true;
       store.dispatch('getInternalData',
           { log_uuid: record.log_uuid,
             input_uuid: record.input_uuid,
             output_uuid: record.output_uuid  });
+      store.state.selected_log_uuid = record.log_uuid;
+      store.state.isFetchingInternalData = true;
     },
     setOutputCorrColor(value, key, item) {
       return item.output_corr_color;

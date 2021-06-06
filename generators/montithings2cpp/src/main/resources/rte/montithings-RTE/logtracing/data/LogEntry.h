@@ -11,6 +11,11 @@ class LogEntry {
 private:
     sole::uuid uuid{};
     long index;
+
+    // components may lack of log statements
+    // in this case virtual log statements are generated in order to provide tracing via inputs/outputs
+    long indexSecondary;
+
     time_t time;
     std::string content;
     sole::uuid inputUuid;
@@ -20,6 +25,7 @@ public:
     LogEntry(long index, time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid)
             : index(index), time(time), content(std::move(content)), inputUuid(inputUuid), outputUuid(outputUuid) {
         uuid = sole::uuid4();
+        indexSecondary = 0;
     }
 
     ~LogEntry() = default;
@@ -38,6 +44,14 @@ public:
 
     void setIndex(long i) {
         index = i;
+    }
+
+    long getIndexSecondary() const {
+        return indexSecondary;
+    }
+
+    void setIndexSecondary(long i2) {
+        LogEntry::indexSecondary = i2;
     }
 
     time_t getTime() const {
@@ -75,7 +89,7 @@ public:
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive( uuid, index, time, content, inputUuid, outputUuid );
+        archive( uuid, index, indexSecondary, time, content, inputUuid, outputUuid );
     }
 };
 }

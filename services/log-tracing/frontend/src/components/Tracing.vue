@@ -1,9 +1,11 @@
 <template>
   <div class="mt-3 vh-100">
-    {{inputs}} <br><br>
+    <!--{{inputs}} <br><br>
     {{trace_data}} <br><br>
-    {{traces}} <br><br>
+    {{traces}} <br><br>-->
     {{ internal_data }}
+    <b-alert show  v-if="comp_does_not_log_anything">Seems like this component does not log much. Showing generated log entries for corresponding inputs instead.</b-alert>
+    <br>
       <div v-if="selected_log_uuid.length" class="h-100">
         <div v-if="isFetchingInternalData">
           <b-spinner small label="Small Spinner"></b-spinner>
@@ -35,7 +37,8 @@ export default {
       "trace_data",
       "is_tracing",
       "selected_trace_uuid",
-      "trace_tree_revision"
+      "trace_tree_revision",
+      'comp_does_not_log_anything'
     ]),
     var_assignments: function() {
       if(this.internal_data.var_snapshot) {
@@ -180,7 +183,6 @@ export default {
         operators[this.selected_instance]["properties"]["inputs"][this.selected_instance + "_" + inPort] = {
           label: inPort,
         }
-        console.log(inPort);
       }
 
       store.state.trace_data["operators"] = operators;
@@ -221,7 +223,7 @@ export default {
           store.dispatch("getLogEntries", selected_instance);
           store.dispatch('getInternalDataTraced',
               { trace_uuid: selected_uuid,
-                instance: selected_instance });
+                instance: store.state.selected_instance });
           return true;
         },
       });
@@ -237,12 +239,71 @@ export default {
       }
     },
     updateTree: function () {
+      console.log("Should update");
       store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["body"] = this.var_assignments;
+
+      // adjust selected operator (blue border)
+      for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+        console.log("aaaaaaaa" + op_name);
+        store.state.trace_data["operators"][op_name]["properties"]["class"] = "flowchart-operator-no-fix-width";
+      }
       store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["class"] = "flowchart-operator-no-fix-width-selected";
 
       for (let inPort in this.inputs) {
         store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["inputs"][this.selected_trace_uuid + "_" + inPort] = {
           label: inPort,
+        }
+      }
+
+
+      let top = 20;
+      let left = 0;
+      let source_count = 0;
+
+      for (let trace of this.traces.reverse()){
+        let name = trace.trace_uuid;
+
+        if(!store.state.trace_data[name]) {
+          // update positions of previous operators before inserting
+          for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+            store.state.trace_data["operators"][op_name].top += 100;
+          }
+
+          store.state.trace_data["operators"][name] = {
+            top: top,
+            left: left,
+            properties: {
+              class: "flowchart-operator-no-fix-width",
+              title: trace.source,
+              inputs: {},
+              outputs: {},
+            },
+          }
+
+          top += 80;
+          left += 200;
+          source_count++;
+        }
+        store.state.trace_data["operators"][name]["properties"]["outputs"][trace.trace_uuid + "_" + trace.source_port] = {
+          label: trace.source_port + "=" + trace.value,
+        }
+
+        if(source_count < 2) {
+          left = 0;
+        } else {
+          left = Math.max(0, left/2-70);
+        }
+
+        top += 100;
+      }
+
+      for (let trace of this.traces){
+        let op_name = trace.trace_uuid;
+        store.state.trace_data["links"][op_name  + "_" + trace.target_port] = {
+          fromOperator: op_name,
+          fromConnector: trace.trace_uuid + "_" + trace.source_port,
+          toOperator: this.selected_trace_uuid,
+          toConnector: this.selected_trace_uuid + "_" + trace.target_port,
         }
       }
 
@@ -265,7 +326,6 @@ export default {
       console.log("internal_data value changed from " + oldVal + " to " + newVal);
       Vue.nextTick(function () {
           this.createTrace();
-        console.log(JSON.stringify(store.state.trace_data, null, 2));
         }.bind(this));
     },
   }

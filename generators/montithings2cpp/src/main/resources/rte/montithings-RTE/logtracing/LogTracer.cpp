@@ -37,12 +37,6 @@ namespace montithings {
 
 
     sole::uuid
-    LogTracer::getCurrUuidAndMarkOutput() {
-        atLeastOneNewOutput = true;
-        return getCurrOutputUuid();
-    }
-
-    sole::uuid
     LogTracer::getCurrOutputUuid() {
         return currTraceOutput.getUuid();
     }
@@ -53,7 +47,6 @@ namespace montithings {
         currInputGroup.clear();
 
         traceOutputs.push_back(currTraceOutput);
-        atLeastOneNewOutput = false;
 
         currTraceOutput = TraceOutput();
     }
@@ -135,38 +128,57 @@ namespace montithings {
     std::vector<LogEntry> LogTracer::getAllLogEntries() {
         std::vector<LogEntry> res;
 
+        long lastIndex = 0;
+        long secondaryIndex = 0;
         for (auto &traceOutput : traceOutputs) {
             for (TraceInput traceInput : traceOutput.getInputs()) {
+                std::vector<LogEntry> entries = traceInput.getLogEntries();
                 if (traceInput.getLogEntries().empty()) {
                     // if input does not contain any log entry, create one.
-                    /*
-                    LogEntry virtualLogEntry(logEntryIndex, time_t
-                    time, std::string
-                    content)
-                    res.push_back(LogEntry())
-                    */
-                    logEntryIndex++;
+
+                    LogEntry virtualLogEntry(lastIndex,
+                                             traceInput.getArrivalTime(), "(No log captured)",
+                                             traceInput.getUuid(),
+                                             traceOutput.getUuid());
+                    virtualLogEntry.setIndexSecondary(++secondaryIndex);
+                    res.push_back(virtualLogEntry);
+                } else {
+                    res.insert(
+                            std::end(res),
+                            std::begin(entries),
+                            std::end(entries));
+                    lastIndex = entries.back().getIndex();
+                    secondaryIndex = 0;
                 }
-                res.insert(
-                        std::end(res),
-                        std::begin(traceInput.getLogEntries()),
-                        std::end(traceInput.getLogEntries()));
             }
         }
 
         // dont forget inputs which do not belong to an output, yet
         for (auto &traceInput : currInputGroup) {
-            res.insert(
-                    std::end(res),
-                    std::begin(traceInput.getLogEntries()),
-                    std::end(traceInput.getLogEntries()));
+            std::vector<LogEntry> entries = traceInput.getLogEntries();
+            if (traceInput.getLogEntries().empty()) {
+                // if input does not contain any log entry, create one.
+
+                LogEntry virtualLogEntry(lastIndex,
+                                         traceInput.getArrivalTime(), "(No log captured)",
+                                         traceInput.getUuid(),
+                                         currTraceOutput.getUuid());
+                virtualLogEntry.setIndexSecondary(++secondaryIndex);
+                res.push_back(virtualLogEntry);
+            } else {
+                res.insert(
+                        std::end(res),
+                        std::begin(entries),
+                        std::end(entries));
+                lastIndex = entries.back().getIndex();
+                secondaryIndex = 0;
+            }
         }
 
         // and the current input
         res.insert(std::end(res),
                    std::begin(currInputLogs),
                    std::end(currInputLogs));
-
 
         return res;
     }
@@ -175,47 +187,13 @@ namespace montithings {
     void LogTracer::sendLogEntries(sole::uuid reqUuid, long fromTimestamp) {
         std::string payload;
         std::vector<LogEntry> logs = getAllLogEntries();
-        if (logs.empty()) {
-            /*
-            // If no log entry is present create virtual ones based on input uuids
-            long index = 0;
-            std::map<sole::uuid, LogEntry> vLogEntries;
+        payload = dataToJson(logs);
 
-            // output uuids are tracked at log entry calls. This should be changed in future.
-            // using a place holder for now
-            sole::uuid placeholderOutputUuid = sole::uuid4();
-
-            for(auto const& item: allInputLogs) {
-                sole::uuid inputUuid = item.first;
-                LogEntry entry(index,
-                               inputTimeMap[inputUuid],
-                               "Log entry for " + std::to_string(index + 1) + ". input.",
-                               inputUuid,
-                               placeholderOutputUuid);
-                vLogEntries.insert({sole::uuid4(), entry});
-                index++;
-            }
-
-            payload = dataToJson(vLogEntries);
-             */
-        } else {
-
-            payload = dataToJson(logs);
-        }
         interface->response(reqUuid, payload);
     }
 
     tl::optional<LogEntry> LogTracer::getLogEntryByUuid(sole::uuid uuid) {
-        return getLogEntryByUuid(uuid, tl::nullopt);
-
-    }
-
-    tl::optional<LogEntry> LogTracer::getLogEntryByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid) {
         for (auto &traceOutput : traceOutputs) {
-            // if an outputUuid is provided we can narrow down the relevant data
-            if (outputUuid.has_value() && outputUuid != traceOutput.getUuid()) {
-                continue;
-            }
             for (TraceInput traceInput : traceOutput.getInputs()) {
                 for (auto &logEntry : traceInput.getLogEntries()) {
                     if (logEntry.getUuid() == uuid) {
@@ -234,19 +212,18 @@ namespace montithings {
             }
         }
 
+        // and the current input
+        for(auto &logEntry : currInputLogs) {
+            if (logEntry.getUuid() == uuid) {
+                return tl::optional<LogEntry>(logEntry);
+            }
+        }
+
         return tl::nullopt;
     }
 
     tl::optional<TraceInput> LogTracer::getInputByUuid(sole::uuid uuid) {
-        return getInputByUuid(uuid, tl::nullopt);
-    }
-
-    tl::optional<TraceInput> LogTracer::getInputByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid) {
         for (auto &traceOutput : traceOutputs) {
-            // if an outputUuid is provided we can narrow down the relevant data
-            if (outputUuid.has_value() && outputUuid != traceOutput.getUuid()) {
-                continue;
-            }
             for (auto &traceInput : traceOutput.getInputs()) {
                 if (traceInput.getUuid() == uuid) {
                     return tl::optional<TraceInput>(traceInput);
@@ -288,13 +265,15 @@ namespace montithings {
 
     void
     LogTracer::sendInternalData(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid) {
-        tl::optional<LogEntry> logEntry = getLogEntryByUuid(logUuid, outputUuid);
+        tl::optional<LogEntry> logEntry = getLogEntryByUuid(logUuid);
 
-        if (!logEntry.has_value()) {
-            return;
+        std::map<std::string, std::string> varSnapshot;
+
+        if (logEntry.has_value()) {
+            varSnapshot = getVariableSnapshot(logEntry.value().getTime());
         }
 
-        tl::optional<TraceInput> traceInput = getInputByUuid(inputUuid, outputUuid);
+        tl::optional<TraceInput> traceInput = getInputByUuid(inputUuid);
 
         std::string serializedInput;
         if (traceInput.has_value()) {
@@ -303,7 +282,7 @@ namespace montithings {
 
         InternalDataResponse res(
                 sourcesOfPortsMap,
-                getVariableSnapshot(logEntry.value().getTime()),
+                varSnapshot,
                 serializedInput,
                 getTraceUuids(inputUuid)
         );
@@ -312,19 +291,26 @@ namespace montithings {
 
     void
     LogTracer::sendTraceData(sole::uuid reqUuid, sole::uuid traceUuid) {
-        // traceUuid is an output uuid
-        /*
-        tl::optional<TraceOutput> relevantTraceOutput = getOutputByUuid(traceUuid);
-        if (!relevantTraceOutput.has_value()) {
-            return;
-        }*/
-
         std::map<std::string, std::string> emptyVarSnapshot;
         std::multimap<sole::uuid, std::string> emptyTraceUuids;
+        std::string serializedInputs;
+
+        // traceUuid is an output uuid
+        tl::optional<TraceOutput> relevantTraceOutput = getOutputByUuid(traceUuid);
+        if (relevantTraceOutput.has_value()) {
+            if (!relevantTraceOutput.value().getInputs().empty()) {
+                TraceInput lastInput = relevantTraceOutput.value().getInputs().back();
+
+                serializedInputs = lastInput.getSerializedInput();
+                emptyTraceUuids = getTraceUuids(lastInput.getUuid());
+                emptyVarSnapshot = getVariableSnapshot(lastInput.getArrivalTime());
+            }
+        }
+
         InternalDataResponse res(
                 sourcesOfPortsMap,
                 emptyVarSnapshot,
-                "",
+                serializedInputs,
                 emptyTraceUuids
         );
         interface->response(reqUuid, dataToJson(res));

@@ -48,12 +48,8 @@ export default new Vuex.Store({
     mutations: {
         updateField,
         update_log_entries(state, data) {
-            console.log("trest "+ JSON.stringify(data, null, 2));
             let filteredData = [];
             if(data) {
-                if (data[0].message.startsWith("Log entry for")) {
-                    state.comp_does_not_log_anything = true;
-                }
                 data.sort(function(a,b){
                     if(a.index < b.index) return -1;
                     if(a.index > b.index) return 1;
@@ -76,6 +72,10 @@ export default new Vuex.Store({
                 var index;
 
                 for (index = 0; index < data.length; ++index) {
+                    if (data[index].message.startsWith("(No log captured)")) {
+                        state.comp_does_not_log_anything = true;
+                    }
+
                     if (state.selected_trace_uuid !== lastOutputUuid && stop) {
                         break;
                     }
@@ -103,6 +103,8 @@ export default new Vuex.Store({
             state.isFetchingLogs = false;
         },
         update_internal_data(state, data) {
+            console.log("wewewewe");
+            console.log(data);
             state.internal_data = data;
             state.isFetchingInternalData = false
 
@@ -122,6 +124,7 @@ export default new Vuex.Store({
                 });
         },
         async getInternalData(state, payload) {
+            console.log("getInternalData");
             axios.get(`http://localhost:8080/logs/${this.state.selected_instance}/${payload.log_uuid}/${payload.input_uuid}/${payload.output_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);
@@ -131,6 +134,7 @@ export default new Vuex.Store({
                 });
         },
         async getInternalDataTraced(state, payload) {
+            console.log("getInternalDataTraced");
             axios.get(`http://localhost:8080/trace/${payload.instance}/${payload.trace_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);

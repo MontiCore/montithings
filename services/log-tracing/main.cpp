@@ -36,10 +36,21 @@ main(int argc, char **argv) {
                 res.add_header("Content-Type", "application/json");
                 sole::uuid reqUuid = interface->request(instanceName, LogTracerInterface::Request::LOG_ENTRIES,
                                                         time(0));
-                while (responses[reqUuid].empty()) {
+
+                std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+                std::chrono::steady_clock::time_point current = std::chrono::steady_clock::now();
+                while (responses[reqUuid].empty() &&
+                       std::chrono::duration_cast<std::chrono::seconds>(current - begin).count() < 2) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     std::this_thread::yield();
+                    std::cout << 1 << std::endl;
+                    current = std::chrono::steady_clock::now();
                 }
+
+                if (responses[reqUuid].empty()) {
+                    return crow::response(404);
+                }
+
                 std::string response = responses[reqUuid];
                 responses.erase(reqUuid);
 
@@ -48,12 +59,13 @@ main(int argc, char **argv) {
                 nlohmann::json jEntryFormatted;
                 nlohmann::json jEntries;
                 for(auto& entry : jContent["value0"]) {
-                    jEntryFormatted["log_uuid"] = entry["key"];
-                    jEntryFormatted["index"] = entry["value"]["value0"];
-                    jEntryFormatted["time"] = entry["value"]["value1"];
-                    jEntryFormatted["message"] = entry["value"]["value2"];
-                    jEntryFormatted["input_uuid"] = entry["value"]["value3"];
-                    jEntryFormatted["output_uuid"] = entry["value"]["value4"];
+                    jEntryFormatted["log_uuid"] = entry["value0"];
+                    jEntryFormatted["index"] = entry["value1"];
+                    jEntryFormatted["index_second"] = entry["value2"];
+                    jEntryFormatted["time"] = entry["value3"];
+                    jEntryFormatted["message"] = entry["value4"];
+                    jEntryFormatted["input_uuid"] = entry["value5"];
+                    jEntryFormatted["output_uuid"] = entry["value6"];
 
                     jEntries.push_back(jEntryFormatted);
                 }
@@ -76,10 +88,21 @@ main(int argc, char **argv) {
                                                         LogTracerInterface::Request::INTERNAL_DATA,
                                                         time(0),
                                                         logUuid, inputUuid, outputUuid);
-                while (responses[reqUuid].empty()) {
+
+                std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+                std::chrono::steady_clock::time_point current = std::chrono::steady_clock::now();
+                while (responses[reqUuid].empty() &&
+                        std::chrono::duration_cast<std::chrono::seconds>(current - begin).count() < 2) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     std::this_thread::yield();
+                    std::cout << std::chrono::duration_cast<std::chrono::microseconds>(current - begin).count() << std::endl;
+                    current = std::chrono::steady_clock::now();
                 }
+
+                if (responses[reqUuid].empty()) {
+                    return crow::response(404);
+                }
+
                 std::string response = responses[reqUuid];
                 responses.erase(reqUuid);
 
@@ -107,10 +130,20 @@ main(int argc, char **argv) {
                 sole::uuid reqUuid = interface->request(instanceName,
                                                         LogTracerInterface::Request::TRACE_DATA,
                                                         traceUuid);
-                while (responses[reqUuid].empty()) {
+                std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+                std::chrono::steady_clock::time_point current = std::chrono::steady_clock::now();
+                while (responses[reqUuid].empty() &&
+                        std::chrono::duration_cast<std::chrono::seconds>(current - begin).count() < 2) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     std::this_thread::yield();
+                    std::cout << 3 << std::endl;
+                    current = std::chrono::steady_clock::now();
                 }
+
+                if (responses[reqUuid].empty()) {
+                    return crow::response(404);
+                }
+
                 std::string response = responses[reqUuid];
                 responses.erase(reqUuid);
 
