@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,21 @@ public class TestDistribution {
     IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
     List<String> components = Lists.newArrayList("RoomTempSensor", "RoomTempController");
     
+    List<DeployClient> targets = new ArrayList<>();
+    
+    // add clients from example facts.pl
+    for (int building = 1; building <= 3; building++) {
+      for (int floor = 1; floor <= 3; floor++) {
+        for (int room = 301; room <= 303; room++) {
+          DeployClientLocation loc = DeployClientLocation.create(String.valueOf(building), String.valueOf(floor), String.valueOf(room));
+          targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_temp_"+(room-300), true, loc));
+          targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_controller_"+(room-300), true, loc));
+        }
+      }
+    }
+    
     try {
-      Distribution dist = calc.computeDistribution(null, components).exceptionally((t) -> {
+      Distribution dist = calc.computeDistribution(targets, components).exceptionally((t) -> {
         t.printStackTrace();
         return null;
       }).get();
