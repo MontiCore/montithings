@@ -20,6 +20,8 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import ps.deployment.server.Utils;
 import ps.deployment.server.data.DeployClient;
 import ps.deployment.server.data.DeployClientLocation;
 import ps.deployment.server.data.DeploymentInfo;
@@ -38,8 +40,8 @@ public class TestDistribution {
   @Test(timeout = 10_000L)
   public void testDefaultDistributionCalculator() throws IOException {
     File workingDir = new File("tmp");
-    String plFacts = new String(getClass().getResourceAsStream("/scripts/ex1_facts.pl").readAllBytes(), StandardCharsets.UTF_8);
-    String plQuery = new String(getClass().getResourceAsStream("/scripts/ex1_query.pl").readAllBytes(), StandardCharsets.UTF_8);
+    String plFacts = new String(Utils.readAllBytes(getClass().getResourceAsStream("/scripts/ex1_facts.pl")), StandardCharsets.UTF_8);
+    String plQuery = new String(Utils.readAllBytes(getClass().getResourceAsStream("/scripts/ex1_query.pl")), StandardCharsets.UTF_8);
     
     IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
     List<String> components = Lists.newArrayList("RoomTempSensor", "RoomTempController");
@@ -75,7 +77,7 @@ public class TestDistribution {
     clients.add(DeployClient.create("2fa84e32", true, DeployClientLocation.create("1", "1", "101"), "sensor_temperature"));
     clients.add(DeployClient.create("713fa127", true, DeployClientLocation.create("1", "1", "101"), "heat_controller"));
     
-    String jsonConfig = new String(getClass().getResourceAsStream("/scripts/ex1_config.json").readAllBytes(), StandardCharsets.UTF_8);
+    String jsonConfig = new String(Utils.readAllBytes(getClass().getResourceAsStream("/scripts/ex1_config.json")), StandardCharsets.UTF_8);
     
     IPrologGenerator gen = new RestPrologGenerator();
     String strFactsProlog = gen.generateFacts(clients).exceptionally((t) -> {

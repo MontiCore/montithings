@@ -1,11 +1,9 @@
 package ps.deployment.server.distribution;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import com.google.gson.Gson;
@@ -13,14 +11,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import ps.deployment.server.Utils;
 import ps.deployment.server.data.DeployClient;
 
 public class RestPrologGenerator implements IPrologGenerator {
   
-  private HttpClient httpClient;
-  
   public RestPrologGenerator() {
-    this.httpClient = HttpClient.newHttpClient();
+    
   }
   
   @Override
@@ -53,11 +50,18 @@ public class RestPrologGenerator implements IPrologGenerator {
   
   private String sendPost(String endpoint, String content) {
     try {
-      HttpRequest req = HttpRequest.newBuilder(new URI("http://localhost:5004/" + endpoint)).POST(HttpRequest.BodyPublishers.ofString(content)).build();
-      HttpResponse<String> resp = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
-      return resp.body();
+      URL url = new URL("http://localhost:5004/" + endpoint);
+      byte[] payload = content.getBytes(StandardCharsets.UTF_8);
+      
+      HttpURLConnection con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("POST");
+      con.setRequestProperty("Content-Length", String.valueOf(payload.length));
+      con.setDoOutput(true);
+      con.getOutputStream().write(payload);
+      
+      return new String(Utils.readAllBytes(con.getInputStream()), StandardCharsets.UTF_8);
     }
-    catch (IOException | InterruptedException | URISyntaxException e) {
+    catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
