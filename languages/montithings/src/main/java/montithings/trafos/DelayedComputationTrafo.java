@@ -67,7 +67,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
 
     // retrieves a list of all ports of the original component
     FindPortNamesVisitor visitor = new FindPortNamesVisitor();
-    targetComp.accept(visitor);
+    targetComp.accept(visitor.createTraverser());
     Set<String> origIngoingPorts = visitor.getIngoingPorts();
     Set<String> origOutgoingPorts = visitor.getOutgoingPorts();
 

@@ -5,7 +5,7 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc.util.MontiArcError;
 import montithings.AbstractTest;
-import montithings._visitor.MontiThingsPrettyPrinterDelegator;
+import montithings._visitor.MontiThingsFullPrettyPrinter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -91,7 +91,7 @@ class MontiThingsParserTest extends AbstractTest {
       "valid/PortExtensions.mt", "valid/SetExpressions.mt", "valid/Timing.mt", "valid/Statements.mt"})
   public void shouldPrettyPrintWithoutError(String fileName) {
     ASTMACompilationUnit unit = parse(Paths.get(RELATIVE_MODEL_PATH, PACKAGE, fileName).toString(), false).orElse(null);
-    String s = new MontiThingsPrettyPrinterDelegator().prettyprint(unit);
+    String s = new MontiThingsFullPrettyPrinter().prettyprint(unit);
     ASTMACompilationUnit similarUnit = parse_String(s,false).orElse(null);
     if(!unit.deepEquals(similarUnit)){
       Log.error("PrettyPrinted ASTMACompilationUnit has changed");

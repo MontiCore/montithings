@@ -6,16 +6,23 @@ import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrett
 
 public class MontiThingsScopesGenitorDelegator extends MontiThingsScopesGenitorDelegatorTOP {
 
+  ArcBasisSTCForMontiThings arcBasis;
+  OCLExpressionsSTCForMontiThingsTemp ocl;
+  SetExpressionsSTCForMontiThingsTemp setExpr;
+
+
   public MontiThingsScopesGenitorDelegator() {
     super();
-    traverser.setOCLExpressionsHandler(new OCLExpressionsSTCForMontiThingsTemp(scopeStack));
-    traverser.setSetExpressionsHandler(new SetExpressionsSTCForMontiThingsTemp(scopeStack));
-  }
+    arcBasis = new ArcBasisSTCForMontiThings();
+    traverser.setArcBasisHandler(arcBasis);
+    traverser.add4ArcBasis(arcBasis);
 
-  public MontiThingsScopesGenitorDelegator(montithings._symboltable.IMontiThingsGlobalScope globalScope) {
-    super(globalScope);
-    ((ArcBasisSTCForMontiThings) getArcBasisVisitor().get()).setTypeVisitor(new SIUnitTypes4ComputingPrettyPrinter(new IndentPrinter()));
-    traverser.setOCLExpressionsHandler(new OCLExpressionsSTCForMontiThingsTemp(scopeStack));
-    traverser.setSetExpressionsHandler(new SetExpressionsSTCForMontiThingsTemp(scopeStack));
+    ocl = new OCLExpressionsSTCForMontiThingsTemp();
+    traverser.setOCLExpressionsHandler(ocl);
+    traverser.add4OCLExpressions(ocl);
+
+    setExpr = new SetExpressionsSTCForMontiThingsTemp();
+    traverser.setSetExpressionsHandler(setExpr);
+    traverser.add4SetExpressions(setExpr);
   }
 }

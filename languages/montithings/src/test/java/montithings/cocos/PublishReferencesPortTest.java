@@ -9,8 +9,9 @@ import java.util.stream.Stream;
 
 class PublishReferencesPortTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new PublishReferencesPort());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new PublishReferencesPort());
+    return cocos;
   }
 
   protected static Stream<Arguments> validInput() {

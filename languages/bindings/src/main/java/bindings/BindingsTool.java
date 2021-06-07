@@ -83,11 +83,9 @@ public class BindingsTool {
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
     MCQualifiedName2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
     if (this.mtGlobalScope == null) {
-      this.mtGlobalScope = MontiThingsMill
-        .montiThingsGlobalScopeBuilder()
-        .setModelPath(mp)
-        .setModelFileExtension("mt")
-        .build();
+      this.mtGlobalScope = MontiThingsMill.globalScope();
+      this.mtGlobalScope.setModelPath(mp);
+      this.mtGlobalScope.setFileExt("mt");
       MontiThingsTool tool = new MontiThingsTool();
       tool.addBasicTypes(mtGlobalScope);
       tool.addLibraryFunctions(mtGlobalScope);

@@ -16,18 +16,17 @@ import montithings._auxiliary.BasicSymbolsMillForMontiThings;
 public class SymbolUtil {
 
   public static FunctionSymbol createFunction(String name, IBasicSymbolsScope enclosingScope) {
-    return createFunction(name, SymTypeExpressionFactory.createTypeVoid(), enclosingScope);
+    return createFunction(name, SymTypeExpressionFactory.createTypeConstant("void"), enclosingScope);
   }
 
   public static FunctionSymbol createFunction(String name, SymTypeExpression returnType,
     IBasicSymbolsScope enclosingScope) {
-    FunctionSymbol func = MontiThingsMill
-      .functionSymbolBuilder()
+    FunctionSymbol func = MontiThingsMill.functionSymbolBuilder()
       .setName(name)
       .setReturnType(returnType)
       .setEnclosingScope(enclosingScope)
       .build();
-    func.setSpannedScope(MontiThingsMill.globalScope());
+    func.setSpannedScope(MontiThingsMill.scope());
     enclosingScope.add(func);
     returnType.getTypeInfo().addFunctionSymbol(func);
     return func;

@@ -2,17 +2,15 @@
 package montithings._symboltable;
 
 import de.monticore.ocl.setexpressions._symboltable.ISetExpressionsScope;
+import de.monticore.ocl.setexpressions._symboltable.SetExpressionsScopesGenitor;
+import montithings.MontiThingsMill;
 
 import java.util.Deque;
 
-public class SetExpressionsSTCForMontiThingsTemp extends SetExpressionsSymbolTableCreator {
+public class SetExpressionsSTCForMontiThingsTemp extends SetExpressionsScopesGenitor {
 
-  public SetExpressionsSTCForMontiThingsTemp(Deque<? extends ISetExpressionsScope> scopeStack) {
-    super(scopeStack);
-  }
-
-  public montithings._symboltable.IMontiThingsScope createScope(boolean shadowing) {
-    montithings._symboltable.IMontiThingsScope scope = montithings.MontiThingsMill.scope();
+  public IMontiThingsScope createScope(boolean shadowing) {
+    IMontiThingsScope scope = MontiThingsMill.scope();
     scope.setShadowing(shadowing);
     return scope;
   }

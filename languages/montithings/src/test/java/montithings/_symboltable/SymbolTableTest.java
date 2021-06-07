@@ -4,6 +4,7 @@ package montithings._symboltable;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
 import montithings.AbstractTest;
+import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings.util.MontiThingsError;
 import org.codehaus.commons.nullanalysis.NotNull;

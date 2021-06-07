@@ -2,14 +2,15 @@
 package montithings.types.check;
 
 import de.monticore.types.check.*;
-import de.monticore.types.mcbasictypes._visitor.MCBasicTypesTraverser;
-import montithings._visitor.MontiThingsDelegatorVisitor;
-import montithings._visitor.MontiThingsVisitor;
+import montithings.MontiThingsMill;
+import montithings._visitor.MontiThingsTraverser;
 
 import java.util.Optional;
 
 public class SynthesizeSymTypeFromMontiThings
   implements ISynthesize {
+
+  protected MontiThingsTraverser traverser;
 
   private SynthesizeSymTypeFromMCBasicTypes symTypeFromMCBasicTypes;
 
@@ -20,39 +21,34 @@ public class SynthesizeSymTypeFromMontiThings
   private SynthesizeSymTypeFromSIUnitTypes4Computing symTypeFromSIUnitTypes4Computing;
 
   public void init() {
-    typeCheckResult = new TypeCheckResult();
+    traverser = MontiThingsMill.traverser();
 
     symTypeFromMCBasicTypes = new SynthesizeSymTypeFromMCBasicTypes();
     symTypeFromMCSimpleGenericTypes = new SynthesizeSymTypeFromMCSimpleGenericTypes();
     symTypeFromSIUnitTypes4Math = new SynthesizeSymTypeFromSIUnitTypes4Math();
     symTypeFromSIUnitTypes4Computing = new SynthesizeSymTypeFromSIUnitTypes4Computing();
 
-    symTypeFromMCBasicTypes.setTypeCheckResult(typeCheckResult);
-    symTypeFromMCSimpleGenericTypes.setTypeCheckResult(typeCheckResult);
-    symTypeFromSIUnitTypes4Math.setTypeCheckResult(typeCheckResult);
-    symTypeFromSIUnitTypes4Computing.setTypeCheckResult(typeCheckResult);
+    setTypeCheckResult(new TypeCheckResult());
 
-    setMCBasicTypesVisitor(symTypeFromMCBasicTypes);
-    setMCSimpleGenericTypesVisitor(symTypeFromMCSimpleGenericTypes);
-    setSIUnitTypes4MathVisitor(symTypeFromSIUnitTypes4Math);
-    setSIUnitTypes4ComputingVisitor(symTypeFromSIUnitTypes4Computing);
-    setMontiThingsVisitor(new MontiThingsDelegatorVisitor());
+    traverser.setMCBasicTypesHandler(symTypeFromMCBasicTypes);
+    traverser.add4MCBasicTypes(symTypeFromMCBasicTypes);
+    traverser.setMCSimpleGenericTypesHandler(symTypeFromMCSimpleGenericTypes);
+    traverser.add4MCSimpleGenericTypes(symTypeFromMCSimpleGenericTypes);
+    traverser.setSIUnitTypes4MathHandler(symTypeFromSIUnitTypes4Math);
+    traverser.setSIUnitTypes4ComputingHandler(symTypeFromSIUnitTypes4Computing);
     setTypeCheckResult(typeCheckResult);
   }
 
-  @Override public MCBasicTypesTraverser getTraverser() {
-    return null;
+  @Override public MontiThingsTraverser getTraverser() {
+    return traverser;
+  }
+
+  public void setTraverser(MontiThingsTraverser traverser) {
+    this.traverser = traverser;
   }
 
   public SynthesizeSymTypeFromMontiThings() {
     init();
-  }
-
-  MontiThingsVisitor realThis = this;
-
-  @Override
-  public void setRealThis(MontiThingsVisitor realThis) {
-    this.realThis = realThis;
   }
 
   public TypeCheckResult typeCheckResult;

@@ -17,8 +17,10 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.check.cocos.TypeCheckCoCo;
 import de.se_rwth.commons.logging.Log;
+import montithings.MontiThingsMill;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
+import montithings._visitor.MontiThingsTraverser;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
@@ -47,9 +49,18 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo
     return new MontiThingsTypeCheckCoCo(typeCheck);
   }
 
+  public MontiThingsTraverser createTraverser() {
+    MontiThingsTraverser traverser = MontiThingsMill.traverser();
+    traverser.add4ArcBasis(this);
+    traverser.add4MCVarDeclarationStatements(this);
+    traverser.add4MCCommonStatements(this);
+    traverser.add4PrePostCondition(this);
+    return traverser;
+  }
+
   @Override
   public void check(ASTMTComponentType ast) {
-    ast.accept(this);
+    ast.accept(createTraverser());
   }
 
   @Override

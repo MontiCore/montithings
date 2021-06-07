@@ -76,6 +76,7 @@ public class MontiThingsFullPrettyPrinter {
 
     MCCommonLiteralsPrettyPrinter mccommonliteralspp = new MCCommonLiteralsPrettyPrinter(printer);
     traverser.setMCCommonLiteralsHandler(mccommonliteralspp);
+    traverser.add4MCCommonLiterals(mccommonliteralspp);
     CommonExpressionsPrettyPrinter commonExpressionsPrettyPrinter = new CommonExpressionsPrettyPrinter(printer);
     traverser.setCommonExpressionsHandler(commonExpressionsPrettyPrinter);
     traverser.add4CommonExpressions(commonExpressionsPrettyPrinter);
@@ -112,6 +113,7 @@ public class MontiThingsFullPrettyPrinter {
     traverser.setSIUnitTypes4ComputingHandler(siunittypes4computingpp);
     SIUnitsPrettyPrinter siunitspp = new SIUnitsPrettyPrinter(printer);
     traverser.setSIUnitsHandler(siunitspp);
+    traverser.add4SIUnits(siunitspp);
     SIUnitLiteralsPrettyPrinter siunitliteralspp = new SIUnitLiteralsPrettyPrinter(printer);
     traverser.setSIUnitLiteralsHandler(siunitliteralspp);
 

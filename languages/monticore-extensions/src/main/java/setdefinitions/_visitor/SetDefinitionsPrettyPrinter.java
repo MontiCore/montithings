@@ -81,5 +81,6 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   @Override
   public void handle(ASTSetValueRegEx node) {
     this.getPrinter().print("format :");
+    node.getFormat().accept(getTraverser());
   }
 }

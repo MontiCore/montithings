@@ -32,4 +32,11 @@ public class ClockControlPrettyPrinter implements ClockControlHandler {
     this.getPrinter().println(";");
   }
 
+  @Override public ClockControlTraverser getTraverser() {
+    return traverser;
+  }
+
+  @Override public void setTraverser(ClockControlTraverser traverser) {
+    this.traverser = traverser;
+  }
 }

@@ -11,7 +11,7 @@ import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
-import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
+import de.monticore.types.prettyprint.MCBasicTypesFullPrettyPrinter;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
 import montithings._symboltable.MontiThingsArtifactScope;
@@ -209,7 +209,7 @@ public class GenericBindingUtil {
       //return type.printType(new SIUnitTypes4ComputingPrettyPrinter(new IndentPrinter()));
     }
     else {
-      return type.printType(new MCBasicTypesPrettyPrinter(new IndentPrinter()));
+      return type.printType(new MCBasicTypesFullPrettyPrinter(new IndentPrinter()));
     }
   }
 }

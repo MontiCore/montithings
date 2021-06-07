@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._cocos.CD4CodeCoCoChecker;
 import de.monticore.cd4code._parser.CD4CodeParser;
-import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCreatorDelegator;
+import de.monticore.cd4code._symboltable.CD4CodeScopesGenitorDelegator;
 import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeScope;
@@ -14,9 +14,9 @@ import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._ast.ASTCDPackage;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
-import de.monticore.types.check.DefsTypeBasic;
 import de.monticore.types.check.SymTypeExpressionFactory;
 import de.monticore.types.check.SymTypeVariable;
 import de.se_rwth.commons.logging.Log;
@@ -26,7 +26,7 @@ import montithings._parser.MontiThingsParser;
 import montithings._symboltable.IMontiThingsArtifactScope;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
-import montithings._symboltable.MontiThingsSymbolTableCreatorDelegator;
+import montithings._symboltable.MontiThingsFullSymbolTableCreator;
 import montithings.cocos.MontiThingsCoCos;
 import montithings.trafos.MontiThingsTrafo;
 import montithings.util.ParserUtil;
@@ -92,17 +92,17 @@ public class MontiThingsTool {
   public IMontiThingsGlobalScope processModels(@NotNull Path... modelPaths) {
     Preconditions.checkArgument(modelPaths != null);
     Preconditions.checkArgument(!Arrays.asList(modelPaths).contains(null));
+    MontiThingsMill.globalScope().clear();
+    MontiThingsMill.init();
     ModelPath mp = new ModelPath(Arrays.asList(modelPaths));
-    ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
-      .setModelPath(mp)
-      .setModelFileExtension(CD_FILE_EXTENSION)
-      .build();
-    IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
-      .setModelPath(mp)
-      .setModelFileExtension(MT_FILE_EXTENSION)
-      .build();
+    ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.globalScope();
+    cd4CGlobalScope.setModelPath(mp);
+    cd4CGlobalScope.setFileExt(CD_FILE_EXTENSION);
+    IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.globalScope();
+    montiThingsGlobalScope.setModelPath(mp);
+    montiThingsGlobalScope.setFileExt(MT_FILE_EXTENSION);
     resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
-    addBasicTypes(montiThingsGlobalScope);
+    addBasicTypes();
     addLibraryFunctions(montiThingsGlobalScope);
     this.processModels(cd4CGlobalScope);
     this.processModels(montiThingsGlobalScope);
@@ -127,7 +127,7 @@ public class MontiThingsTool {
       if (shouldLog) {
         Log.info("Check model: " + a.getComponentType().getSymbol().getFullName(), TOOL_NAME);
       }
-      a.accept(this.getMTChecker());
+      a.accept(this.getMTChecker().getTraverser());
     }
   }
 
@@ -143,7 +143,7 @@ public class MontiThingsTool {
       }
       for (ICD4CodeScope as : a.getSubScopes()) {
         ASTCDPackage astNode = (ASTCDPackage) as.getSpanningSymbol().getAstNode();
-        astNode.accept(this.getCdChecker());
+        astNode.accept(this.getCdChecker().getTraverser());
       }
     }
   }
@@ -173,8 +173,7 @@ public class MontiThingsTool {
     models.addAll(additionalTrafoModels);
 
     for (ASTMACompilationUnit ast : models) {
-      MontiThingsSymbolTableCreatorDelegator symTab = new MontiThingsSymbolTableCreatorDelegator(
-        scope);
+      MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
       result.add(symTab.createFromAST(ast));
     }
 
@@ -185,7 +184,7 @@ public class MontiThingsTool {
     Preconditions.checkArgument(scope != null);
     Collection<ICD4CodeArtifactScope> result = new HashSet<>();
     for (ASTCDCompilationUnit ast : parseModels(scope)) {
-      CD4CodeSymbolTableCreatorDelegator symTab = new CD4CodeSymbolTableCreatorDelegator(scope);
+      CD4CodeScopesGenitorDelegator symTab = CD4CodeMill.scopesGenitorDelegator();
       result.add(symTab.createFromAST(ast));
     }
     return result;
@@ -219,18 +218,13 @@ public class MontiThingsTool {
       .parse(path, CD_FILE_EXTENSION, new CD4CodeParser());
   }
 
-  public void addBasicTypes(@NotNull IMontiThingsScope scope) {
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._boolean);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._char);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._short);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._String);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._int);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._long);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._float);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._double);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._null);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._Object);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._array);
+  public void addBasicTypes() {
+    BasicSymbolsMill.initializePrimitives();
+
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder().setName("void").setEnclosingScope(MontiThingsMill.globalScope()).setFullName("void").setSpannedScope(MontiThingsMill.scope()).build());
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder().setName("null").setEnclosingScope(MontiThingsMill.globalScope()).setFullName("null").setSpannedScope(MontiThingsMill.scope()).build());
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder().setName("Object").setEnclosingScope(MontiThingsMill.globalScope()).setFullName("Object").setSpannedScope(MontiThingsMill.scope()).build());
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder().setName("String").setEnclosingScope(MontiThingsMill.globalScope()).setFullName("String").setSpannedScope(MontiThingsMill.scope()).build());
   }
 
   public void addLibraryFunctions(@NotNull IMontiThingsScope scope) {
@@ -268,7 +262,7 @@ public class MontiThingsTool {
       .setName("T")
       .build();
 
-    returnNd.setSpannedScope(MontiThingsMill.montiThingsScope());
+    returnNd.setSpannedScope(MontiThingsMill.scope());
     returnNd.setEnclosingScope(scope);
     SymTypeVariable returnType = SymTypeExpressionFactory.createTypeVariable(returnNd);
 
