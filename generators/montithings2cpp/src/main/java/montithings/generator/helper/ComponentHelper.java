@@ -53,9 +53,12 @@ import montithings.generator.visitor.GuardExpressionVisitor;
 import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
+import mtconfig._ast.ASTMTCFGTag;
+import mtconfig._ast.ASTRequirementStatement;
 import mtconfig._ast.ASTSeparationHint;
 import mtconfig._symboltable.CompConfigSymbol;
 import mtconfig._symboltable.IMTConfigGlobalScope;
+import mtconfig._symboltable.IMTConfigScope;
 import org.apache.commons.lang3.tuple.Pair;
 import portextensions._ast.ASTAnnotatedPort;
 import portextensions._ast.ASTBufferedPort;
@@ -1102,11 +1105,75 @@ public class ComponentHelper {
       // If splitting is turned off, splitting hints are ignored.
       return getInstances(topComponent);
     } else {
-      // If the component includes its subcomponent (recursively), its
+      // If the component includes its subcomponents (recursively), its
       // subcomponents do not need to be executed individually.
       return getInstances(topComponent, topComponent.getFullName(), 
           (ComponentTypeSymbol component) -> !ComponentHelper.shouldIncludeSubcomponents(component, config));
     }
+  }
+  
+  /**
+   * Collects the requirements from the MTConfig for the specified component and
+   * all its subcomponents that are included in the same executable.
+   * 
+   * @return A {@link List} of requirements for the component.
+   */
+  public static Set<String> getRequirements(ComponentTypeSymbol topComponent, ConfigParams config) {
+    if (config.getSplittingMode() == SplittingMode.OFF) {
+      // If splitting is turned off, all the components share one executable.
+      return getRequirements(topComponent, true, config);
+    }
+    else {
+      // If the component includes its subcomponents (recursively), then this
+      // component
+      // inherits the requirements of its subcomponents.
+      return getRequirements(topComponent, shouldIncludeSubcomponents(topComponent, config), config);
+    }
+  }
+  
+  /**
+   * Collects the requirements from the MTConfig for the specified component. If
+   * {@code recursive == true}, this also includes the requirements of its
+   * subcomponents.
+   * 
+   * @return A {@link List} of requirements for the component.
+   */
+  public static Set<String> getRequirements(ComponentTypeSymbol topComponent, boolean recursive, ConfigParams config) {
+    HashSet<String> requirements = new HashSet<>();
+    
+    IMTConfigGlobalScope cfgScope = config.getMtConfigScope();
+    if(cfgScope == null) {
+      // Fail fast: there cannot be any requirements without a config scope.
+      return requirements;
+    }
+    
+    Optional<CompConfigSymbol> cfgOpt = cfgScope.resolveCompConfig(config.getTargetPlatform().toString(), topComponent);
+    if (cfgOpt.isPresent()) {
+      CompConfigSymbol cfg = cfgOpt.get();
+      ASTCompConfig acc = cfg.getAstNode();
+      
+      // Iterate over all MTCFG tags and find the requirement statements.
+      for (ASTMTCFGTag tag : acc.getMTCFGTagList()) {
+        if (tag instanceof ASTRequirementStatement) {
+          ASTRequirementStatement rtag = (ASTRequirementStatement) tag;
+          IMTConfigScope rtagScope = rtag.getSpannedScope();
+          if (rtagScope != null) {
+            // Merge the requirements of this scope into our requirements.
+            requirements.addAll(rtag.getSpannedScope().getPropertySymbols().keySet());
+          }
+        }
+      }
+    }
+    
+    if (recursive) {
+      // Merge our requirements with the requirements of our subcomponents.
+      for (ComponentInstanceSymbol comp : topComponent.getSubComponents()) {
+        requirements.addAll(getRequirements(comp.getType(), true, config));
+      }
+    }
+    
+    return requirements;
+    
   }
   
   public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance) {

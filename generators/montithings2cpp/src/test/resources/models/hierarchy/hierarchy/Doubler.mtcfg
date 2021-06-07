@@ -2,4 +2,6 @@ package hierarchy;
 
 config Doubler for GENERIC {
   separate none;
+  
+  requires HighPerformanceAdditionComputeUnit: 1;
 }

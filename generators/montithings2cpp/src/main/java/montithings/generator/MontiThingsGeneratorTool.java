@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
-import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.ComponentTypeSymbolTOP;
 import arcbasis._symboltable.PortSymbol;
@@ -21,6 +20,7 @@ import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
@@ -54,7 +54,6 @@ import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -68,6 +67,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -294,6 +297,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         mtg.generateDockerfileScript(target, comp);
       }
     }
+    
+    generateDeployInfo(target, config, instances);
 
     if (testPath != null && !testPath.toString().equals("")) {
       if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
@@ -559,6 +564,36 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         }
       }
     }
+  }
+  
+  protected void generateDeployInfo(File target, ConfigParams config, List<Pair<ComponentTypeSymbol, String>> executableInstances) {
+    JsonObjectBuilder jsonBase = Json.createObjectBuilder();
+    
+    // Collect executable instances.
+    JsonArrayBuilder jsonInstances = Json.createArrayBuilder();
+    
+    for (Pair<ComponentTypeSymbol, String> instance : executableInstances) {
+      // Each executable instance will be added to the "instances" array.
+      ComponentTypeSymbol comp = instance.getKey();
+      JsonObjectBuilder jsonInstance = Json.createObjectBuilder();
+      
+      jsonInstance.add("componentType", comp.getFullName());
+      jsonInstance.add("instanceName", instance.getValue());
+      jsonInstance.add("dockerImage", comp.getFullName().toLowerCase()+":latest");
+      
+      // Also add the requirements of the component.
+      JsonArrayBuilder jreqs = Json.createArrayBuilder();
+      ComponentHelper.getRequirements(comp, config).forEach(jreqs::add);
+      jsonInstance.add("requirements", jreqs.build());
+      
+      jsonInstances.add(jsonInstance);
+    }
+    jsonBase.add("instances", jsonInstances.build());
+    
+    // Serialize JSON and write it to a file.
+    String jsonString = jsonBase.build().toString();
+    File jsonFile = new File(target, "deployment-info.json");
+    FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
   }
 
   protected ComponentTypeSymbol modelToSymbol(String model, IMontiThingsScope symTab) {

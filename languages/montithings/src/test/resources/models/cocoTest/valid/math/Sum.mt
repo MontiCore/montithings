@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package hierarchy.math;
+package valid.math;
 
 component Sum {
   port in int in1;
