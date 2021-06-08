@@ -92,19 +92,25 @@ public class MontiThingsTool {
   public IMontiThingsGlobalScope processModels(@NotNull Path... modelPaths) {
     Preconditions.checkArgument(modelPaths != null);
     Preconditions.checkArgument(!Arrays.asList(modelPaths).contains(null));
-    MontiThingsMill.globalScope().clear();
-    MontiThingsMill.init();
     ModelPath mp = new ModelPath(Arrays.asList(modelPaths));
+
+
+    CD4CodeMill.globalScope().clear();
+    CD4CodeMill.init();
     ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.globalScope();
     cd4CGlobalScope.setModelPath(mp);
     cd4CGlobalScope.setFileExt(CD_FILE_EXTENSION);
+    this.processModels(cd4CGlobalScope);
+
+
+    MontiThingsMill.globalScope().clear();
+    MontiThingsMill.init();
     IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.globalScope();
     montiThingsGlobalScope.setModelPath(mp);
     montiThingsGlobalScope.setFileExt(MT_FILE_EXTENSION);
     resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
     addBasicTypes();
     addLibraryFunctions(montiThingsGlobalScope);
-    this.processModels(cd4CGlobalScope);
     this.processModels(montiThingsGlobalScope);
     return montiThingsGlobalScope;
   }
