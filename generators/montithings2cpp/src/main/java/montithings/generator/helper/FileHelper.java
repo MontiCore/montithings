@@ -7,7 +7,6 @@ import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.data.Models;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -15,10 +14,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility class for file-related actions of the generator
@@ -121,11 +123,27 @@ public class FileHelper {
     }
   }
 
+  public static void makeExecutable(File targetPath, String name, String fileExtension) {
+    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
+    path.toFile().setExecutable(true);
+  }
+
   public static void copyGeneratedToTarget(File target) {
     try {
       Path targetDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources");
       if(!targetDir.toAbsolutePath().toString().equals(target.getAbsolutePath().toString())) {
         FileUtils.copyDirectory(Paths.get(target.getAbsolutePath()).toFile(), targetDir.toFile());
+        Set<Path> executables;
+        try (Stream<Path> walk = Files.walk(target.toPath().getParent())) {
+          executables = walk.filter(Files::isRegularFile)
+            .filter(Files::isExecutable)
+            .collect(Collectors.toSet());
+        }
+        for (Path executable : executables) {
+          Path relative = executable.subpath(target.toPath().getNameCount(),executable.getNameCount());
+          Path execPath = Paths.get(targetDir.toAbsolutePath().toString(), relative.toString());
+          execPath.toFile().setExecutable(true);
+        }
       }
     }
     catch (IOException e) {
