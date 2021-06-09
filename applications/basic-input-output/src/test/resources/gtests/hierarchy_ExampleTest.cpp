@@ -16,8 +16,8 @@ struct ExampleTest : testing::Test
   montithings::hierarchy::Sink *sink;
   montithings::hierarchy::SourceImpl *sourceImpl;
   montithings::hierarchy::SinkImpl *sinkImpl;
-  montithings::hierarchy::SourceState sourceState;
-  montithings::hierarchy::SinkState sinkState;
+  montithings::hierarchy::SourceState *sourceState;
+  montithings::hierarchy::SinkState *sinkState;
 
   ExampleTest ()
   {
@@ -26,6 +26,8 @@ struct ExampleTest : testing::Test
     sink = cmp->getSubcomp__Sink();
     sourceImpl = source->getImpl();
     sinkImpl = sink->getImpl();
+    sourceState = source->getState();
+    sinkState = sink->getState();
   }
   ~ExampleTest ()
   {
