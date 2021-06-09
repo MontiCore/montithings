@@ -14,6 +14,9 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.StartDecomposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupComposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
+  <#list comp.getSubComponents() as subcomponent>
+    ${tc.includeArgs("template.component.methods.GetSubcomp", [comp, className, subcomponent, config])}
+  </#list>
 <#else>
   ${tc.includeArgs("template.component.methods.ComputeAtomic", [comp, config, className, ""])}
   <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
@@ -26,6 +29,7 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.InitAtomic", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
+  ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
 </#if>
 ${tc.includeArgs("template.component.methods.Initialize", [comp, config, className])}
 
