@@ -73,6 +73,15 @@ ${ComponentHelper.printConstructorArguments(comp)});
   <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
     ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
   </#if>
+  <#list comp.getSubComponents() as subcomponent>
+    <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
+      <#assign type = subcomponent.getGenericType().getName()>
+    <#else>
+      <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>
+    </#if>
+    ${Utils.printPackageNamespace(comp, subcomponent)}${type}*
+    getSubcomp__${subcomponent.getName()?cap_first} ();
+  </#list>
 </#if>
 
 <#if !(comp.getPorts()?size == 0)>
@@ -94,6 +103,9 @@ void start() override;
 void onEvent () override;
 <#if ComponentHelper.retainState(comp)>
   bool restoreState ();
+</#if>
+<#if !comp.isDecomposed()>
+  ${compname}Impl${generics}* getImpl();
 </#if>
 ${compname}State${generics}* getState();
 void threadJoin ();
