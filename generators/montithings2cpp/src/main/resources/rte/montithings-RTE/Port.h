@@ -98,13 +98,13 @@ public:
   }
 
   tl::optional<T>
-  getCurrentValue (sole::uuid requester) override
+  getCurrentValue (sole::uuid requester, bool mayRequestExternal = true) override
   {
     // getCurrentValue's updateMessageSource() call can cause new messages
     // to be added to the queue. As we're already querying the queue here,
     // we need to suppress additional events to prevent endless loops
     suppressNotification = requester;
-    tl::optional<T> result = MessageProvider<T>::getCurrentValue (requester);
+    tl::optional<T> result = MessageProvider<T>::getCurrentValue (requester, mayRequestExternal);
     suppressNotification = tl::nullopt;
     return result;
   }
