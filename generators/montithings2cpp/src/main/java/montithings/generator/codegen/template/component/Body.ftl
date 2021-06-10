@@ -14,9 +14,11 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.StartDecomposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupComposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
-  <#list comp.getSubComponents() as subcomponent>
-    ${tc.includeArgs("template.component.methods.GetSubcomp", [comp, className, subcomponent, config])}
-  </#list>
+  <#if config.getSplittingMode().toString() == "OFF">
+    <#list comp.getSubComponents() as subcomponent>
+      ${tc.includeArgs("template.component.methods.GetSubcomp", [comp, className, subcomponent, config])}
+    </#list>
+  </#if>
 <#else>
   ${tc.includeArgs("template.component.methods.ComputeAtomic", [comp, config, className, ""])}
   <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
