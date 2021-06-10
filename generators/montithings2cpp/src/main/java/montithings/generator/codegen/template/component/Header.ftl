@@ -73,15 +73,17 @@ ${ComponentHelper.printConstructorArguments(comp)});
   <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
     ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
   </#if>
-  <#list comp.getSubComponents() as subcomponent>
-    <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
-      <#assign type = subcomponent.getGenericType().getName()>
-    <#else>
-      <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>
-    </#if>
-    ${Utils.printPackageNamespace(comp, subcomponent)}${type}*
-    getSubcomp__${subcomponent.getName()?cap_first} ();
-  </#list>
+  <#if config.getSplittingMode().toString() == "OFF">
+    <#list comp.getSubComponents() as subcomponent>
+      <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
+        <#assign type = subcomponent.getGenericType().getName()>
+      <#else>
+        <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>
+      </#if>
+      ${Utils.printPackageNamespace(comp, subcomponent)}${type}*
+      getSubcomp__${subcomponent.getName()?cap_first} ();
+    </#list>
+  </#if>
 </#if>
 
 <#if !(comp.getPorts()?size == 0)>
