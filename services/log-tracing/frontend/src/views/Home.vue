@@ -9,19 +9,19 @@
             <a
               class="list-group-item list-group-item-action bg-light text-right"
               href="#"
-              v-for="instanceName in instances"
-              :key="instanceName"
-              @click="onInstanceChange(instanceName)"
+              v-for="instance in instance_list"
+              :key="instance.instanceName"
+              @click="onInstanceChange(instance.instanceName)"
               v-bind:class="{
-                'menu-active': instanceName === selected_instance,
-              }">{{ instanceName }}</a>
+                'menu-active': instance.instanceName === selected_instance,
+              }">{{ instance.instanceName }}</a>
           </div>
         </b-tab>
         <b-tab title="Load config">
           <b-card-text>
             <b-form-textarea
               id="textarea-auto-height"
-              v-model="instances"
+              v-model="instances_config"
               placeholder="Paste your json config here..."
               rows="30"
               max-rows="8"
@@ -72,7 +72,24 @@ import { mapFields } from "vuex-map-fields";
 
 export default {
   computed: {
-    ...mapFields(["instances", "selected_instance", "is_tracing"]),
+    ...mapFields(["instances_config", "instances", "selected_instance", "is_tracing"]),
+    instance_list: function() {
+      console.log(this.instances_config);
+      try {
+        let config = JSON.parse(this.instances_config);
+        if ('instances' in config) {
+          return config.instances;
+        }
+      }
+      catch (e) {
+        this.$bvToast.toast(`Could not parse config. Please paste a valid deployment-info.json.`, {
+          title: 'Unable to parse JSON',
+          autoHideDelay: 5000,
+          appendToast: true
+        })
+      }
+      return [];
+    },
   },
   created() {},
   methods: {

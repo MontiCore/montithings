@@ -44,12 +44,34 @@ ${tc.includeArgs("template.input.declarations.Constructor", [comp, config, exist
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as port>
   <#if port.isIncoming()>
     ${tc.includeArgs("template.input.declarations.PortMethods", [port, comp, config, existsHWC])}
+  <#else>
+    // include ports which are target ports of subcomponents as well
+    <#if !comp.isAtomic()>
+      <#list comp.getAstNode().getConnectors() as connector>
+        <#list connector.getTargetList() as target>
+          <#if target.getQName() == port.getName()>
+             ${tc.includeArgs("template.input.declarations.PortMethods", [port, comp, config, existsHWC])}
+          </#if>
+        </#list>
+      </#list>
+    </#if>
   </#if>
 </#list>
 
 <#list ComponentHelper.getPortsInBatchStatement(comp) as port>
   <#if port.isIncoming()>
     ${tc.includeArgs("template.input.declarations.BatchPortMethods", [port, comp, config, existsHWC])}
+  <#else>
+    // include ports which are target ports of subcomponents as well
+    <#if !comp.isAtomic()>
+      <#list comp.getAstNode().getConnectors() as connector>
+        <#list connector.getTargetList() as target>
+          <#if target.getQName() == port.getName()>
+             ${tc.includeArgs("template.input.declarations.BatchPortMethodsd bu bi", [port, comp, config, existsHWC])}
+          </#if>
+        </#list>
+      </#list>
+    </#if>
   </#if>
 </#list>
 };

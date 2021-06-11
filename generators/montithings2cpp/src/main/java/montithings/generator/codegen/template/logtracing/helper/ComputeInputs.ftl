@@ -31,3 +31,19 @@ ${tc.signature("comp","config","isMonitor","behavior")}
   </#list>
 </#if>
 
+
+// include ports which are target ports of subcomponents as well
+<#list comp.getAllOutgoingPorts() as port>
+   <#if !comp.isAtomic()>
+    <#list comp.getAstNode().getConnectors() as connector>
+      <#list connector.getTargetList() as target>
+        <#if target.getQName() == port.getName()>
+          if (comp->getInterface()->getPort${port.getName()?cap_first}()->hasValue(this->uuid)) {
+              ${Identifier.getInputName()}.set${port.getName()?cap_first}(interface->getPort${port.getName()?cap_first}()->getCurrentValue(this->uuid).value());
+          }
+        </#if>
+      </#list>
+    </#list>
+  </#if>
+</#list>
+

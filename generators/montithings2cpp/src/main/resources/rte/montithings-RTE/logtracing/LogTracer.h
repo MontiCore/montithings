@@ -87,7 +87,7 @@ namespace montithings {
 
         sole::uuid getCurrOutputUuid();
 
-        void handleOutput();
+        void handleOutput(std::vector<sole::uuid> subCompOutputForwards);
 
         void resetCurrentOutput();
 

@@ -7,6 +7,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
+        instances_config: {},
         instances: ["hierarchy.Example",
             "hierarchy.Example.source",
             "hierarchy.Example.lpf",
@@ -103,8 +104,6 @@ export default new Vuex.Store({
             state.isFetchingLogs = false;
         },
         update_internal_data(state, data) {
-            console.log("wewewewe");
-            console.log(data);
             state.internal_data = data;
             state.isFetchingInternalData = false
 
@@ -140,7 +139,7 @@ export default new Vuex.Store({
                     this.commit('update_internal_data', response.data);
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.log(error.message);
                 });
         }
     },

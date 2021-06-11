@@ -42,8 +42,9 @@ namespace montithings {
     }
 
 
-    void LogTracer::handleOutput() {
+    void LogTracer::handleOutput(std::vector<sole::uuid> subCompOutputForwards) {
         currTraceOutput.setInputs(currInputGroup);
+        currTraceOutput.setSubCompOutputForwards(subCompOutputForwards);
         currInputGroup.clear();
 
         traceOutputs.push_back(currTraceOutput);
@@ -246,6 +247,12 @@ namespace montithings {
             if (traceOutput.getUuid() == uuid) {
                 return tl::optional<TraceOutput>(traceOutput);
             }
+
+            for (auto &forwardUuid : traceOutput.getSubCompOutputForwards()) {
+                if (forwardUuid == uuid) {
+                    return tl::optional<TraceOutput>(traceOutput);
+                }
+            }
         }
 
         return tl::nullopt;
@@ -291,8 +298,8 @@ namespace montithings {
 
     void
     LogTracer::sendTraceData(sole::uuid reqUuid, sole::uuid traceUuid) {
-        std::map<std::string, std::string> emptyVarSnapshot;
-        std::multimap<sole::uuid, std::string> emptyTraceUuids;
+        std::map<std::string, std::string> varSnapshot;
+        std::multimap<sole::uuid, std::string> traceUuids;
         std::string serializedInputs;
 
         // traceUuid is an output uuid
@@ -302,16 +309,16 @@ namespace montithings {
                 TraceInput lastInput = relevantTraceOutput.value().getInputs().back();
 
                 serializedInputs = lastInput.getSerializedInput();
-                emptyTraceUuids = getTraceUuids(lastInput.getUuid());
-                emptyVarSnapshot = getVariableSnapshot(lastInput.getArrivalTime());
+                traceUuids = getTraceUuids(lastInput.getUuid());
+                varSnapshot = getVariableSnapshot(lastInput.getArrivalTime());
             }
         }
 
         InternalDataResponse res(
                 sourcesOfPortsMap,
-                emptyVarSnapshot,
+                varSnapshot,
                 serializedInputs,
-                emptyTraceUuids
+                traceUuids
         );
         interface->response(reqUuid, dataToJson(res));
     }

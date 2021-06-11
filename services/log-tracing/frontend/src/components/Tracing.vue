@@ -1,28 +1,29 @@
 <template>
   <div class="mt-3 vh-100">
-    <!--{{inputs}} <br><br>
-    {{trace_data}} <br><br>
-    {{traces}} <br><br>-->
-    {{ internal_data }}
-    <b-alert show  v-if="comp_does_not_log_anything">Seems like this component does not log much. Showing generated log entries for corresponding inputs instead.</b-alert>
-    <br>
-      <div v-if="selected_log_uuid.length" class="h-100">
-        <div v-if="isFetchingInternalData">
-          <b-spinner small label="Small Spinner"></b-spinner>
-        </div>
-        <div class="h-100" id="chart_container">
-          <div
+
+    op name = {{ selected_trace_uuid}}_{{selected_instance}} <br><br>
+    {{ internal_data }}<br><br>
+    inputs: {{ inputs }} <br><br>
+    traces: {{ traces }} <br><br><br><br>
+    <!--<b-alert show  v-if="comp_does_not_log_anything">Seems like this component does not log much. Showing generated log entries for corresponding inputs instead.</b-alert>
+    <br>-->
+    <div v-if="selected_log_uuid.length" class="h-100">
+      <div v-if="isFetchingInternalData">
+        <b-spinner small label="Small Spinner"></b-spinner>
+      </div>
+      <div class="h-100" id="chart_container">
+        <div
             class="h-100 flowchart-example-container"
             id="flowchartworkspace"
-          ></div>
-        </div>
+        ></div>
       </div>
+    </div>
   </div>
 </template>
 
 
 <script>
-import { mapFields } from "vuex-map-fields";
+import {mapFields} from "vuex-map-fields";
 import Vue from "vue";
 import store from "../store";
 
@@ -40,8 +41,8 @@ export default {
       "trace_tree_revision",
       'comp_does_not_log_anything'
     ]),
-    var_assignments: function() {
-      if(this.internal_data.var_snapshot) {
+    var_assignments: function () {
+      if (this.internal_data.var_snapshot) {
         let assignments = JSON.parse(this.internal_data.var_snapshot).value0;
         let res = "";
 
@@ -53,8 +54,8 @@ export default {
         return "";
       }
     },
-    inputs: function() {
-      if(this.internal_data.inputs) {
+    inputs: function () {
+      if (this.internal_data.inputs) {
         let jInput = JSON.parse(this.internal_data.inputs).value0;
         let res = {};
         for (const [key, value] of Object.entries(jInput)) {
@@ -69,8 +70,8 @@ export default {
         return [];
       }
     },
-    traces: function() {
-      if(this.internal_data.traces) {
+    traces: function () {
+      if (this.internal_data.traces) {
         var res = [];
         var tracesWithPortNames = JSON.parse(this.internal_data.traces).value0;
         for (let trace of tracesWithPortNames) {
@@ -79,7 +80,7 @@ export default {
 
           res.push({
             "trace_uuid": trace_id,
-            "target_port" : trace_portName,
+            "target_port": trace_portName,
             "source": this.getSourceInstanceName(trace_portName),
             "source_port": this.getSourcePortName(trace_portName),
             "value": this.inputs[trace_portName]
@@ -98,8 +99,8 @@ export default {
   },
 
   methods: {
-    getSourceInstanceName: function(portName) {
-      if(this.internal_data.sources_ports_map) {
+    getSourceInstanceName: function (portName) {
+      if (this.internal_data.sources_ports_map) {
         var map = JSON.parse(this.internal_data.sources_ports_map).value0;
         for (let item of map) {
           if (item.key === portName) {
@@ -113,8 +114,8 @@ export default {
       }
       return "NOT_FOUND";
     },
-    getSourcePortName: function(portName) {
-      if(this.internal_data.sources_ports_map) {
+    getSourcePortName: function (portName) {
+      if (this.internal_data.sources_ports_map) {
         var map = JSON.parse(this.internal_data.sources_ports_map).value0;
         for (let item of map) {
           if (item.key === portName) {
@@ -128,16 +129,16 @@ export default {
       }
       return "NOT_FOUND";
     },
-    buildInitialTree: function() {
+    buildInitialTree: function () {
       let top = 20;
       let left = 0;
       let operators = {};
       let source_count = 0;
       // source components
-      for (let trace of this.traces.reverse()){
-        let name = trace.trace_uuid;
+      for (let trace of this.traces.reverse()) {
+        let name = trace.trace_uuid + "_" + trace.source;
 
-        if(!operators[name]) {
+        if (!operators[name]) {
           operators[name] = {
             top: top,
             left: left,
@@ -153,20 +154,20 @@ export default {
           left += 200;
           source_count++;
         }
-        operators[name]["properties"]["outputs"][trace.trace_uuid + "_" + trace.source_port] = {
+        operators[name]["properties"]["outputs"]["out_" + trace.source_port] = {
           label: trace.source_port + "=" + trace.value,
         }
       }
 
-      if(source_count < 2) {
+      if (source_count < 2) {
         left = 0;
       } else {
-        left = Math.max(0, left/2-70);
+        left = Math.max(0, left / 2 - 70);
       }
 
       top += 100;
 
-      // target components
+      // target component
       operators[this.selected_instance] = {
         top: top,
         left: left,
@@ -180,7 +181,7 @@ export default {
       }
 
       for (let inPort in this.inputs) {
-        operators[this.selected_instance]["properties"]["inputs"][this.selected_instance + "_" + inPort] = {
+        operators[this.selected_instance]["properties"]["inputs"]["in_" + inPort] = {
           label: inPort,
         }
       }
@@ -188,15 +189,16 @@ export default {
       store.state.trace_data["operators"] = operators;
 
       let links = {};
-      for (let trace of this.traces){
-        let op_name = trace.trace_uuid;
-        links[op_name  + "_" + trace.target_port] = {
+      for (let trace of this.traces) {
+        let op_name = trace.trace_uuid + "_" + trace.source;
+        links[op_name + "_" + trace.target_port] = {
           fromOperator: op_name,
-          fromConnector: trace.trace_uuid + "_" + trace.source_port,
+          fromConnector: "out_" + trace.source_port,
           toOperator: this.selected_instance,
-          toConnector: this.selected_instance + "_" + trace.target_port,
+          toConnector: "in_" + trace.target_port,
         }
       }
+
 
       store.state.trace_data["links"] = links;
 
@@ -211,9 +213,9 @@ export default {
         multipleLinksOnOutput: true,
         linkWidth: 3,
         data: store.state.trace_data,
-        onOperatorSelect: function(operatorId) {
+        onOperatorSelect: function (operatorId) {
           let selected_uuid = operatorId.split("_")[0];
-          let selected_instance =  $flowchart.flowchart('getOperatorTitle', operatorId);
+          let selected_instance = $flowchart.flowchart('getOperatorTitle', operatorId);
 
           store.state.selected_trace_uuid = selected_uuid;
           store.state.selected_instance = selected_instance;
@@ -222,8 +224,10 @@ export default {
           store.state.is_tracing = true;
           store.dispatch("getLogEntries", selected_instance);
           store.dispatch('getInternalDataTraced',
-              { trace_uuid: selected_uuid,
-                instance: store.state.selected_instance });
+              {
+                trace_uuid: selected_uuid,
+                instance: store.state.selected_instance
+              });
           return true;
         },
       });
@@ -239,36 +243,45 @@ export default {
       }
     },
     updateTree: function () {
+
+      console.log(store.state.trace_data);
       console.log("Should update");
-      store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["body"] = this.var_assignments;
+
+      let selected_operator = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
+
+      store.state.trace_data["operators"][selected_operator]["properties"]["body"] = this.var_assignments;
 
       // adjust selected operator (blue border)
       for (const op_name of Object.keys(store.state.trace_data["operators"])) {
         console.log("aaaaaaaa" + op_name);
         store.state.trace_data["operators"][op_name]["properties"]["class"] = "flowchart-operator-no-fix-width";
       }
-      store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["class"] = "flowchart-operator-no-fix-width-selected";
+      store.state.trace_data["operators"][selected_operator]["properties"]["class"] = "flowchart-operator-no-fix-width-selected";
 
       for (let inPort in this.inputs) {
-        store.state.trace_data["operators"][store.state.selected_trace_uuid]["properties"]["inputs"][this.selected_trace_uuid + "_" + inPort] = {
+        store.state.trace_data["operators"][selected_operator]["properties"]["inputs"]["in_" + inPort] = {
           label: inPort,
         }
       }
 
 
+      // eslint-disable-next-line no-unused-vars
       let top = 20;
       let left = 0;
+      // eslint-disable-next-line no-unused-vars
       let source_count = 0;
 
-      for (let trace of this.traces.reverse()){
-        let name = trace.trace_uuid;
+      // update positions of previous operators before inserting
+      for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+        console.log("prev:" + op_name);
+        store.state.trace_data["operators"][op_name].top += 100;
+      }
 
-        if(!store.state.trace_data[name]) {
-          // update positions of previous operators before inserting
-          for (const op_name of Object.keys(store.state.trace_data["operators"])) {
-            store.state.trace_data["operators"][op_name].top += 100;
-          }
-
+      for (let trace of this.traces.reverse()) {
+        // eslint-disable-next-line no-unused-vars
+        let name = trace.trace_uuid + "_" + trace.source;
+        console.log("new:" + name);
+        if (!store.state.trace_data[name]) {
           store.state.trace_data["operators"][name] = {
             top: top,
             left: left,
@@ -279,45 +292,39 @@ export default {
               outputs: {},
             },
           }
-
-          top += 80;
           left += 200;
           source_count++;
         }
-        store.state.trace_data["operators"][name]["properties"]["outputs"][trace.trace_uuid + "_" + trace.source_port] = {
+
+        store.state.trace_data["operators"][name]["properties"]["outputs"]["out_" + trace.source_port] = {
           label: trace.source_port + "=" + trace.value,
         }
-
-        if(source_count < 2) {
-          left = 0;
-        } else {
-          left = Math.max(0, left/2-70);
-        }
-
-        top += 100;
       }
 
-      for (let trace of this.traces){
-        let op_name = trace.trace_uuid;
-        store.state.trace_data["links"][op_name  + "_" + trace.target_port] = {
+      for (let trace of this.traces) {
+        let op_name = trace.trace_uuid + "_" + trace.source;
+        let target_name = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
+        store.state.trace_data["links"][op_name + "_" + trace.target_port] = {
           fromOperator: op_name,
-          fromConnector: trace.trace_uuid + "_" + trace.source_port,
-          toOperator: this.selected_trace_uuid,
-          toConnector: this.selected_trace_uuid + "_" + trace.target_port,
+          fromConnector: "out_" + trace.source_port,
+          toOperator: target_name,
+          toConnector: "in_" + trace.target_port,
         }
       }
 
+      console.log("finish");
+      console.log(store.state.trace_data);
       var $flowchart = $("#flowchartworkspace");
       $flowchart.flowchart('setData', store.state.trace_data);
     },
   },
   watch: {
     trace_tree_revision: {
-      handler: function(newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         console.log("trace_data value changed from " + oldVal + " to " + newVal);
         Vue.nextTick(function () {
-              this.updateTree();
-            }.bind(this));
+          this.updateTree();
+        }.bind(this));
         return true;
       },
       deep: true
@@ -325,8 +332,8 @@ export default {
     internal_data: function (newVal, oldVal) {
       console.log("internal_data value changed from " + oldVal + " to " + newVal);
       Vue.nextTick(function () {
-          this.createTrace();
-        }.bind(this));
+        this.createTrace();
+      }.bind(this));
     },
   }
 };

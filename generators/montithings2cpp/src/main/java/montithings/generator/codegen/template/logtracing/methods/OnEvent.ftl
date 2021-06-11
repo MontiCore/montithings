@@ -5,6 +5,7 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}LogTraceObserver::onEvent ()
 {
+    std::vector<sole::uuid> subCompOutputForwards;
     bool isOutputPresent = false;
 
     if(comp->shouldCompute()) {
@@ -23,6 +24,6 @@ void ${className}LogTraceObserver::onEvent ()
 
     ${tc.includeArgs("template.logtracing.helper.CheckOutputs", [comp, config])}
     if (isOutputPresent) {
-        comp->getLogTracer()->handleOutput();
+        comp->getLogTracer()->handleOutput(subCompOutputForwards);
     }
 }

@@ -20,5 +20,5 @@ ${tc.signature("comp","config")}
     -->
     this->interface.addInPort${p.getName()?cap_first} (${p.getName()});
   </#if>
-  this->interface.addOutPort${p.getName()?cap_first} (new MqttPort<${type}>(this->getInstanceName () + "/${p.getName()}", false));
+  this->interface.addOutPort${p.getName()?cap_first} (new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", false));
 </#list>

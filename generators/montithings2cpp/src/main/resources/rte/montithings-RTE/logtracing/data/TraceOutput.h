@@ -8,39 +8,54 @@
 #include "TraceInput.h"
 
 namespace montithings {
-class TraceOutput {
-private:
-    sole::uuid uuid{};
+    class TraceOutput {
+    private:
+        sole::uuid uuid{};
 
-    std::vector<TraceInput> inputs;
+        std::vector<TraceInput> inputs;
 
-public:
-    TraceOutput() {
-        uuid = sole::uuid4();
-    }
+        // outgoing ports can forward outputs from subcomponents
+        // therefore we need to reference these output uuids in order to allow tracing
+        // otherwise we lose track, as the main component will generate a new output with a fresh uuid which is not related to the
+        // outputs of any subcomponent
+        std::vector<sole::uuid> subCompOutputForwards;
 
-    virtual ~TraceOutput() = default;
+    public:
+        TraceOutput() {
+            uuid = sole::uuid4();
+        }
 
-    const sole::uuid &getUuid() const {
-        return uuid;
-    }
+        virtual ~TraceOutput() = default;
 
-    void setUuid(const sole::uuid &id) {
-        TraceOutput::uuid = id;
-    }
+        const sole::uuid &getUuid() const {
+            return uuid;
+        }
 
-    const std::vector<TraceInput> &getInputs() const {
-        return inputs;
-    }
+        void setUuid(const sole::uuid &id) {
+            TraceOutput::uuid = id;
+        }
 
-    void setInputs(const std::vector<TraceInput> &in) {
-        TraceOutput::inputs = in;
-    }
+        const std::vector<TraceInput> &getInputs() const {
+            return inputs;
+        }
 
-    template<class Archive>
-    void serialize(Archive & archive)
-    {
-        archive( uuid, inputs );
-    }
-};
+        void setInputs(const std::vector<TraceInput> &in) {
+            TraceOutput::inputs = in;
+        }
+
+        const std::vector<sole::uuid> &getSubCompOutputForwards() const {
+            return subCompOutputForwards;
+        }
+
+        void setSubCompOutputForwards(const std::vector<sole::uuid> &forwards) {
+            TraceOutput::subCompOutputForwards = forwards;
+        }
+
+
+        template<class Archive>
+        void serialize(Archive & archive)
+        {
+            archive( uuid, inputs, subCompOutputForwards );
+        }
+    };
 }
