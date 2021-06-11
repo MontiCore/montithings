@@ -9,12 +9,29 @@ template<class Archive>
 void serialize(Archive & archive)
 {
 <#if comp.getAllIncomingPorts()?has_content>
-    archive(
-        <#list comp.getAllIncomingPorts() as port>
-            CEREAL_NVP_("${port.getName()}", ${port.getName()}.getPayload()
-            )
-          <#sep>,</#sep>
+  archive(
+    <#assign ports = []>
+    <#list comp.getAllPorts() as port>
+      <#if port.isIncoming()>
+        <#assign ports = ports + [ "${port.getName()}" ] />
+      <#else>
+        // include ports which are target ports of subcomponents as well
+        <#if !comp.isAtomic()>
+          <#list comp.getAstNode().getConnectors() as connector>
+            <#list connector.getTargetList() as target>
+              <#if target.getQName() == port.getName()>
+                <#assign ports = ports + [ "${port.getName()}" ] />
+             </#if>
+          </#list>
         </#list>
+      </#if>
+    </#if>
+    </#list>
+
+    <#list ports as port>
+    CEREAL_NVP_("${port}", ${port}.getPayload())
+    <#sep>,</#sep>
+    </#list>
     );
 </#if>
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="mt-3 vh-100">
 
-    op name = {{ selected_trace_uuid}}_{{selected_instance}} <br><br>
+    op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
     {{ internal_data }}<br><br>
     inputs: {{ inputs }} <br><br>
     traces: {{ traces }} <br><br><br><br>
@@ -272,9 +272,11 @@ export default {
       let source_count = 0;
 
       // update positions of previous operators before inserting
-      for (const op_name of Object.keys(store.state.trace_data["operators"])) {
-        console.log("prev:" + op_name);
-        store.state.trace_data["operators"][op_name].top += 100;
+      if (this.traces.length > 0) {
+        for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+          console.log("prev:" + op_name);
+          store.state.trace_data["operators"][op_name].top += 100;
+        }
       }
 
       for (let trace of this.traces.reverse()) {
