@@ -24,6 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static montithings.generator.helper.FileHelper.makeExecutable;
+
 /**
  * Main entry point for generator. From this all target artifacts are generated for a component.
  * It uses dispatching for calling the right implementation generator.
@@ -161,11 +163,6 @@ public class MTGenerator {
         "template/impl/Header.ftl", comp, config);
     fg.generate(targetPath, comp.getName() + "Impl", ".cpp",
         "template/impl/ImplementationFile.ftl", comp, config);
-  }
-
-  protected void makeExecutable(File targetPath, String name, String fileExtension) {
-    Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
-    path.toFile().setExecutable(true);
   }
 
   public void generateBuildScript(File targetPath) {
