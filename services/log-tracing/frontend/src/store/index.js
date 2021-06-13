@@ -106,7 +106,8 @@ export default new Vuex.Store({
         update_internal_data(state, data) {
             state.internal_data = data;
             state.isFetchingInternalData = false
-
+        },
+        increment_tree_revision(state) {
             if(state.is_tracing) {
                 state.trace_tree_revision++;
             }
@@ -137,6 +138,7 @@ export default new Vuex.Store({
             axios.get(`http://localhost:8080/trace/${payload.instance}/${payload.trace_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);
+                    this.commit('increment_tree_revision');
                 })
                 .catch((error) => {
                     console.log(error.message);
