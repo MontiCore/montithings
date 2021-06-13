@@ -2,11 +2,14 @@
 ${tc.signature("comp","config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-<#list comp.getPorts() as p>
-    comp->getInterface()->getPort${p.getName()?cap_first}()->attach(this);
+<#if !comp.isAtomic()>
+  <#list comp.getOutgoingPorts() as p>
+    <#list comp.getAstNode().getConnectors() as connector>
+      <#list connector.getTargetList() as target>
+        <#if target.getQName() == p.getName()>
+          //comp->getInterface()->getPort${p.getName()?cap_first}()->attach(this);
+      </#if>
+    </#list>
+  </#list>
 </#list>
-<#--
-<#list comp.getOutgoingPorts() as p>
-    comp->getInterface()->getPort${p.getName()?cap_first}()->getOutport()->attach(this);
-</#list>
--->
+</#if>

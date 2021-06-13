@@ -7,9 +7,11 @@ ${Identifier.createInstance(comp)}
 
 #pragma once
 
-#include "${className}.h"
+#include "EventObserver.h"
 
 ${Utils.printNamespaceStart(comp)}
+
+class ${className}; // forward declaration to avoid cyclic include
 
 ${Utils.printTemplateArguments(comp)}
 class ${className}LogTraceObserver : public EventObserver {
@@ -17,12 +19,12 @@ class ${className}LogTraceObserver : public EventObserver {
 private:
     ${comp.getName()}* comp;
 
-    void onEvent () override;
-
 public:
     ${className}LogTraceObserver(${className} *comp);
 
     ~${className}LogTraceObserver() = default;
+
+    void onEvent () override;
 };
 
 ${Utils.printNamespaceEnd(comp)}

@@ -7,20 +7,18 @@ void ${className}LogTraceObserver::onEvent ()
 {
     std::vector<sole::uuid> subCompOutputForwards;
     bool isOutputPresent = false;
+    bool isInputPresent = false;
 
-    if(comp->shouldCompute()) {
-        bool isInputPresent = false;
-        ${className}Interface *interface = comp->getInterface();
-        ${tc.includeArgs("template.logtracing.helper.ComputeInputs", [comp, config, false, "false"])}
-        std::multimap${"<"}sole::uuid, std::string${">"} traceUUIDs;
+    ${className}Interface *interface = comp->getInterface();
 
-        ${tc.includeArgs("template.logtracing.helper.FillTraceUuids", [comp, config])}
+    ${tc.includeArgs("template.logtracing.helper.ComputeInputs", [comp, config, false, "false"])}
+    std::multimap${"<"}sole::uuid, std::string${">"} traceUUIDs;
 
-        if (isInputPresent) {
-            comp->getLogTracer()->handleInput(${Identifier.getInputName()}, traceUUIDs);
-        }
+    ${tc.includeArgs("template.logtracing.helper.FillTraceUuids", [comp, config])}
+
+    if (isInputPresent) {
+        comp->getLogTracer()->handleInput(${Identifier.getInputName()}, traceUUIDs);
     }
-
 
     ${tc.includeArgs("template.logtracing.helper.CheckOutputs", [comp, config])}
     if (isOutputPresent) {

@@ -2,10 +2,6 @@
 ${tc.signature("comp", "config")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 
-<#if config.getLogTracing().toString() == "ON" && !(comp.getPorts()?size == 0)>
-    ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name}LogTraceObserver logTraceObserver(&cmp);
-</#if>
-
 LOG(DEBUG) << "Started.";
 
 <#if ComponentHelper.isTimesync(comp) || (config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF")>

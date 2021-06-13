@@ -5,6 +5,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#include "/template/Copyright.ftl">
 
 #include "${className}LogTraceObserver.h"
+#include "${className}.h"
 
 ${Utils.printNamespaceStart(comp)}
 <#if !Utils.hasTypeParameter(comp)>

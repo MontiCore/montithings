@@ -16,8 +16,9 @@ ${tc.signature("comp", "config", "className")}
     ${tc.includeArgs("template.input.methods.SetBatchPort", [port, comp, config, existsHWC])}
   <#else>
 
-    // include ports which are target ports of subcomponents as well
+
     <#if !comp.isAtomic()>
+    // include ports which are target ports of subcomponents as well
       <#list comp.getAstNode().getConnectors() as connector>
         <#list connector.getTargetList() as target>
           <#if target.getQName() == port.getName()>
