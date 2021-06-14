@@ -79,12 +79,12 @@ public:
   }
 
   tl::optional<T>
-  getCurrentValue (sole::uuid requester) override
+  getCurrentValue (sole::uuid requester, bool mayRequestExternal = true) override
   {
     tl::optional<T> returnValue = tl::nullopt;
     for (auto port : managedPorts)
       {
-        returnValue = port->getCurrentValue (requester);
+        returnValue = port->getCurrentValue (requester, mayRequestExternal);
         if (returnValue != tl::nullopt)
           break;
       }

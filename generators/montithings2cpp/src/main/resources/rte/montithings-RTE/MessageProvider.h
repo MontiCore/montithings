@@ -12,14 +12,13 @@
 #include <map>
 #include <mutex>
 
-template <typename T>
-class MessageProvider : public virtual EventSource
+template <typename T> class MessageProvider : public virtual EventSource
 {
 public:
   MessageProvider (){};
 
 protected:
-  typedef std::map<sole::uuid, std::pair<rigtorp::SPSCQueue<T>, std::mutex> > map_type;
+  typedef std::map<sole::uuid, std::pair<rigtorp::SPSCQueue<T>, std::mutex>> map_type;
   map_type queueMap;
 
 public:
@@ -86,20 +85,18 @@ public:
    * \return the next message for the requester, empty optional if no message present
    */
   virtual tl::optional<T>
-  getCurrentValue (sole::uuid requester)
+  getCurrentValue (sole::uuid requester, bool mayRequestExternal = true)
   {
-    updateMessageSource ();
+    if (!MessageProvider<T>::hasValue (requester) && mayRequestExternal)
+      {
+        updateMessageSource ();
+      }
 
     // pull new message if queue is empty
-    {
-      this->queueMap[requester].second.lock ();
-      T *frontElement = this->queueMap[requester].first.front ();
-      this->queueMap[requester].second.unlock ();
-      if (frontElement == nullptr)
-        {
-          getExternalMessages ();
-        }
-    }
+    if (!MessageProvider<T>::hasValue (requester) && mayRequestExternal)
+      {
+        getExternalMessages ();
+      }
 
     this->queueMap[requester].second.lock ();
     T *frontElement = this->queueMap[requester].first.front ();
