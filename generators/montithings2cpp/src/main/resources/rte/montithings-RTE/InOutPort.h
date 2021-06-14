@@ -50,9 +50,9 @@ class InOutPort : public Port<T>
     return outportInterface->hasValue (requester);
   }
 
-  tl::optional<T> getCurrentValue (sole::uuid requester) override
+  tl::optional<T> getCurrentValue (sole::uuid requester, bool mayRequestExternal = true) override
   {
-    return outportInterface->getCurrentValue (requester);
+    return outportInterface->getCurrentValue (requester, mayRequestExternal);
   }
 
   void getExternalMessages () override
