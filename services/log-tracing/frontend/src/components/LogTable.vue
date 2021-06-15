@@ -7,7 +7,7 @@
              :fields="fields"
              :busy="isFetchingLogs"
              :select-mode.sync="selectMode"
-             :filter=isFilterRelevantEntries
+             :filter=String(isFilterRelevantEntries)
              :filter-function="filterOnlyRelevant"
              @row-clicked="onRowClick">
 
@@ -48,7 +48,6 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     onRowClick(record, index) {
-      console.log(store.state.is_tracing + "asdasdas");
       if(!store.state.is_tracing) {
         store.state.internal_data = "";
       }
@@ -73,7 +72,7 @@ export default {
       return;
     },
     filterOnlyRelevant(row, isFilterEnabled) {
-      if (!isFilterEnabled) {
+      if (isFilterEnabled === "false") {
         return true;
       }
 

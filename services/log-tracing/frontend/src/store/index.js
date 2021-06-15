@@ -124,7 +124,6 @@ export default new Vuex.Store({
                 });
         },
         async getInternalData(state, payload) {
-            console.log("getInternalData");
             axios.get(`http://localhost:8080/logs/${this.state.selected_instance}/${payload.log_uuid}/${payload.input_uuid}/${payload.output_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);
@@ -134,7 +133,6 @@ export default new Vuex.Store({
                 });
         },
         async getInternalDataTraced(state, payload) {
-            console.log("getInternalDataTraced");
             axios.get(`http://localhost:8080/trace/${payload.instance}/${payload.trace_uuid}`)
                 .then((response) => {
                     this.commit('update_internal_data', response.data);

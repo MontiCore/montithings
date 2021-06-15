@@ -10061,11 +10061,23 @@ a.text-dark:hover, a.text-dark:focus {
 
 .flowchart-operator-no-fix-width {
     width: auto !important;
-    cursor: pointer !important;
 }
 
 .flowchart-operator-no-fix-width-selected {
     width: auto !important;
-    cursor: pointer !important;
     border: 1px solid #4085F0 !important;
+}
+
+.flowchart-operator .flowchart-operator-title {
+    width: 100%;
+    padding: 5px;
+    font-weight: bold;
+    box-sizing: border-box;
+    border-bottom: 1px solid #DDDDDD;
+    background: #F0F0F0;
+    height: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
 }

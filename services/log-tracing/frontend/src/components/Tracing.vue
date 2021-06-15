@@ -1,13 +1,13 @@
 <template>
   <div class="mt-3 vh-100">
 
-    <!-- op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
+    op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
      {{ internal_data }}<br><br>
      inputs: {{ inputs }} <br><br>
      traces: {{ traces }} <br><br>
      vars: {{ var_assignments }}<br><br>
      <b-alert show  v-if="comp_does_not_log_anything">Seems like this component does not log much. Showing generated log entries for corresponding inputs instead.</b-alert>
-     <br>-->
+     <br>
     <div v-if="selected_log_uuid.length" class="h-100">
       <div v-if="isFetchingInternalData">
         <b-spinner small label="Small Spinner"></b-spinner>
@@ -60,7 +60,6 @@ export default {
         let jInput = JSON.parse(this.internal_data.inputs).value0;
         let res = {};
         for (const [key, value] of Object.entries(jInput)) {
-          console.log([key, value]);
           if (!value.nullopt) {
             res[key] = value.data;
           }
