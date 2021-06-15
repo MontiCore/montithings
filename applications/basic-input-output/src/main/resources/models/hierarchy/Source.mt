@@ -7,7 +7,8 @@ component Source {
   int lastValue = 0;
 
   every 1s {
-    value = lastValue++;
+    lastValue++;
     log("Source: " + lastValue);
+    value = lastValue;
   }
 }
