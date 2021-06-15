@@ -17,6 +17,9 @@
 
         <!-- .. SE-Libraries .................................................. -->
         <monticore.version>7.0.0</monticore.version>
+        <sequencediagram.version>${monticore.version}</sequencediagram.version>
+        <ocl.version>${monticore.version}</ocl.version>
+        <montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
         <se-commons.version>1.7.9</se-commons.version>
         <mc.grammars.assembly.version>0.0.10</mc.grammars.assembly.version>
 
@@ -86,12 +89,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jscience</groupId>
-            <artifactId>jscience</artifactId>
-            <version>${jscience.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4</artifactId>
             <version>4.7.1</version>
@@ -118,13 +115,62 @@
         </dependency>
 
         <dependency>
+          <groupId>de.monticore.lang</groupId>
+          <artifactId>sd-language</artifactId>
+          <version>${sequencediagram.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>de.monticore.lang</groupId>
             <artifactId>sd-language</artifactId>
-            <version>${monticore.version}</version>
+            <version>${sequencediagram.version}</version>
             <classifier>${grammars.classifier}</classifier>
         </dependency>
 
-        <!-- .. Test Libraries ............................................... -->
+        <dependency>
+          <groupId>de.monticore.lang</groupId>
+          <artifactId>ocl</artifactId>
+          <version>${ocl.version}</version>
+          <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+          <groupId>de.monticore.lang</groupId>
+          <artifactId>ocl</artifactId>
+          <version>${ocl.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>montiarc.languages</groupId>
+          <artifactId>arc-fe</artifactId>
+          <version>${montiarc.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>montiarc.languages</groupId>
+          <artifactId>arc-fe</artifactId>
+          <version>${montiarc.version}</version>
+          <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+          <groupId>montiarc.languages</groupId>
+          <artifactId>montiarc-fe</artifactId>
+          <version>${montiarc.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>montiarc.languages</groupId>
+          <artifactId>montiarc-fe</artifactId>
+          <version>${montiarc.version}</version>
+          <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+
+
+
+
+      <!-- .. Test Libraries ............................................... -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

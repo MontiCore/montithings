@@ -1,4 +1,5 @@
-grammar SD4ComponentTesting extends SD4Development, MontiArc  {
+grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
+                                    MontiArc  {
     start SDArtifact;
 
     SDArtifact =
