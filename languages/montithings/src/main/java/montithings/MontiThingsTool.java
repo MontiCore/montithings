@@ -40,6 +40,7 @@ import static montithings.util.SymbolUtil.createFunction;
 
 public class MontiThingsTool {
 
+
   protected MontiThingsCoCoChecker mtChecker;
 
   protected CD4CodeCoCoChecker cdChecker;

@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
+import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
@@ -8,9 +9,11 @@ import montiarc._ast.ASTMACompilationUnit;
 import montithings.AbstractTest;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
+import montithings.MontiThingsTool2;
 import montithings._parser.MontiThingsParser;
 import montithings.util.MontiThingsError;
 import org.codehaus.commons.nullanalysis.NotNull;
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,6 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SymbolTableTest extends AbstractTest {
 
@@ -33,18 +38,27 @@ public class SymbolTableTest extends AbstractTest {
     );
   }
 
+  @Test
+  public void toolTest() throws IOException {
+    // Given
+    MontiThingsMill.init();
+    MontiThingsTool2 tool = new MontiThingsTool2();
+    Path path = Paths.get(RELATIVE_MODEL_PATH, "montithings", "tool", "validExample", "valid");
+    IMontiThingsGlobalScope scope = tool.processModels(path);
+    ComponentTypeSymbol rootComp = scope.resolveComponentType("valid.Composed").get();
+    System.out.println(rootComp.getFullName());
+  }
+
   /**
    * Method under test {@link MontiArcTool#processModels(Path...)}.
    */
-  @ParameterizedTest
-  @MethodSource("validModelPathAndExpectedValuesProvider")
-  public void testest(@NotNull String modelPathName, int expNumModels) throws IOException {
+  @Test
+  public void testest() throws IOException {
     //Given
     Log.init();
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     BasicSymbolsMill.initializePrimitives();
-    MontiThingsTool tool = new MontiThingsTool();
     MontiThingsDeSer deser = new MontiThingsDeSer();
     String path = Paths.get("models", "symbolTableTest", "cd").toString();
     Path modelPath = Paths.get(RELATIVE_MODEL_PATH, path, "Source.mt");
@@ -67,18 +81,17 @@ public class SymbolTableTest extends AbstractTest {
   public void shouldProcessValidModels(@NotNull String modelPathName, int expNumModels) {
     //Given
     Log.init();
-    MontiThingsTool tool = new MontiThingsTool();
+    MontiThingsTool2 tool = new MontiThingsTool2();
     Path modelPath = Paths.get(RELATIVE_MODEL_PATH, TEST_PATH, modelPathName);
 
     //When
     IMontiThingsGlobalScope scope = tool.processModels(modelPath);
-    scope.resolveComponentType("valid.Composed");
+    scope.resolveComponentType("cd.Example");
 
     //Then
-    Assertions.assertTrue(Log.getFindings().isEmpty());
-    Assertions.assertEquals(expNumModels, scope.getSubScopes().size());
-    Assertions.assertTrue(
-      scope.getSubScopes().stream().allMatch(s -> s instanceof MontiThingsArtifactScope));
+    assertThat(Log.getFindings()).isEmpty();
+    assertThat(expNumModels).isEqualTo(scope.getSubScopes().size());
+    assertThat(scope.getSubScopes()).allMatch(s -> s instanceof MontiThingsArtifactScope);
   }
 
   protected Pattern supplyErrorCodePattern() {
