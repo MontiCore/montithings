@@ -42,9 +42,8 @@ namespace montithings {
     }
 
 
-    void LogTracer::handleOutput(std::vector<sole::uuid> subCompOutputForwards) {
+    void LogTracer::handleOutput() {
         currTraceOutput.setInputs(currInputGroup);
-        currTraceOutput.setSubCompOutputForwards(subCompOutputForwards);
         currInputGroup.clear();
 
         traceOutputs.push_back(currTraceOutput);
@@ -103,13 +102,29 @@ namespace montithings {
 
     std::multimap<sole::uuid, std::string>
     LogTracer::getTraceUuids(sole::uuid inputUuid) {
+        std::multimap<sole::uuid, std::string> res;
+
         tl::optional<TraceInput> traceInput = getInputByUuid(inputUuid);
-        if (!traceInput.has_value()) {
-            std::multimap<sole::uuid, std::string> res;
-            return res;
+
+        if (traceInput.has_value()) {
+            res.insert(traceInput.value().getTraceIdsWithPortNames().begin(),
+                       traceInput.value().getTraceIdsWithPortNames().end());
         }
 
-        return traceInput.value().getTraceIdsWithPortNames();
+        return res;
+    }
+
+    std::multimap<sole::uuid, std::string>
+    LogTracer::getTraceUuidsDecomposed(sole::uuid outputUuid) {
+        std::multimap<sole::uuid, std::string> res;
+        tl::optional<TraceOutput> traceOutput = getOutputByUuid(outputUuid);
+
+        if (traceOutput.has_value()) {
+            res.insert(traceOutput.value().getTraceIdsWithPortNames().begin(),
+                       traceOutput.value().getTraceIdsWithPortNames().end());
+        }
+
+        return res;
     }
 
     void
@@ -248,8 +263,8 @@ namespace montithings {
                 return tl::optional<TraceOutput>(traceOutput);
             }
 
-            for (auto &forwardUuid : traceOutput.getSubCompOutputForwards()) {
-                if (forwardUuid == uuid) {
+            for (auto &traceUuid : traceOutput.getTraceIdsWithPortNames()) {
+                if (traceUuid.first == uuid) {
                     return tl::optional<TraceOutput>(traceOutput);
                 }
             }
@@ -291,7 +306,8 @@ namespace montithings {
                 sourcesOfPortsMap,
                 varSnapshot,
                 serializedInput,
-                getTraceUuids(inputUuid)
+                getTraceUuids(inputUuid),
+                getTraceUuidsDecomposed(outputUuid)
         );
         interface->response(reqUuid, dataToJson(res));
     }
@@ -300,6 +316,7 @@ namespace montithings {
     LogTracer::sendTraceData(sole::uuid reqUuid, sole::uuid traceUuid) {
         std::map<std::string, std::string> varSnapshot;
         std::multimap<sole::uuid, std::string> traceUuids;
+        std::multimap<sole::uuid, std::string> traceUuidsDecomposed;
         std::string serializedInputs;
 
         // traceUuid is an output uuid
@@ -310,6 +327,7 @@ namespace montithings {
 
                 serializedInputs = lastInput.getSerializedInput();
                 traceUuids = getTraceUuids(lastInput.getUuid());
+                traceUuidsDecomposed = getTraceUuidsDecomposed(relevantTraceOutput->getUuid());
                 varSnapshot = getVariableSnapshot(lastInput.getArrivalTime());
             }
         }
@@ -318,7 +336,8 @@ namespace montithings {
                 sourcesOfPortsMap,
                 varSnapshot,
                 serializedInputs,
-                traceUuids
+                traceUuids,
+                traceUuidsDecomposed
         );
         interface->response(reqUuid, dataToJson(res));
     }
@@ -326,5 +345,17 @@ namespace montithings {
     void
     LogTracer::mapPortToSourceInstance(std::string portName, std::string instanceName) {
         sourcesOfPortsMap[portName] = instanceName;
+    }
+
+    TraceInput &LogTracer::getCurrTraceInput() {
+        return currTraceInput;
+    }
+
+    TraceOutput &LogTracer::getCurrTraceOutput() {
+        return currTraceOutput;
+    }
+
+    std::vector<TraceInput> &LogTracer::getCurrInputGroup() {
+        return currInputGroup;
     }
 }

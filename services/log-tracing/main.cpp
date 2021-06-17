@@ -113,6 +113,7 @@ main(int argc, char **argv) {
                 jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
                 jRes["inputs"] = internalDataResponse.getInput();
                 jRes["traces"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNames());
+                jRes["traces_decomposed"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNamesDecomposed());
 
                 res.write(jRes.dump());
 
@@ -152,6 +153,7 @@ main(int argc, char **argv) {
                 jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
                 jRes["inputs"] = internalDataResponse.getInput();
                 jRes["traces"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNames());
+                jRes["traces_decomposed"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNamesDecomposed());
 
                 res.write(jRes.dump());
 

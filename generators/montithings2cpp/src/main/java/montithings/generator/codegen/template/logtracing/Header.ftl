@@ -24,6 +24,10 @@ public:
 
     ~${className}LogTraceObserver() = default;
 
+    void onCompute ();
+
+    void afterCompute ();
+
     void onEvent () override;
 };
 

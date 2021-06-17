@@ -35,4 +35,13 @@ namespace montithings {
     void InternalDataResponse::setSourcesOfPortsMap(const std::map<std::string, std::string> &sourcesOfPorts) {
         InternalDataResponse::sourcesOfPortsMap = sourcesOfPorts;
     }
+
+    const std::multimap<sole::uuid, std::string> &InternalDataResponse::getTracesUuidsWithPortNamesDecomposed() const {
+        return tracesUuidsWithPortNamesDecomposed;
+    }
+
+    void InternalDataResponse::setTracesUuidsWithPortNamesDecomposed(
+            const std::multimap<sole::uuid, std::string> &traceUuids) {
+        InternalDataResponse::tracesUuidsWithPortNamesDecomposed = traceUuids;
+    }
 }

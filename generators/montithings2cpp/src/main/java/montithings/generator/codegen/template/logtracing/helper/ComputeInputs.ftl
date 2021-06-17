@@ -10,6 +10,7 @@ ${tc.signature("comp","config","isMonitor","behavior")}
   <#else>
       ${Identifier.getInterfaceName()}->getPort${inPort.getName()?cap_first}()->getCurrentValue(this->uuid
   </#if>
+  , false
   )
   <#sep>,</#sep>
   </#list>)</#if>;
@@ -19,31 +20,15 @@ ${tc.signature("comp","config","isMonitor","behavior")}
   <#if behavior == "false" || ComponentHelper.usesPort(behavior, inPort)>
     while(${Identifier.getInterfaceName()}->getPort${inPort.getName()?cap_first}()->hasValue(this->uuid)){
     ${Identifier.getInputName()}->add${inPort.getName()?cap_first}Element(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(
-      this->uuid));
+      this->uuid, false));
     }
   </#if>
   </#list>
   <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort >
   <#if behavior == "false" || ComponentHelper.usesPort(behavior, inPort)>
     ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(
-      this->uuid));
+      this->uuid, false));
   </#if>
   </#list>
 </#if>
-
-
-// include ports which are target ports of subcomponents as well
-<#list comp.getAllOutgoingPorts() as port>
-   <#if !comp.isAtomic()>
-    <#list comp.getAstNode().getConnectors() as connector>
-      <#list connector.getTargetList() as target>
-        <#if target.getQName() == port.getName()>
-          if (comp->getInterface()->getPort${port.getName()?cap_first}()->hasValue(this->uuid)) {
-              ${Identifier.getInputName()}.set${port.getName()?cap_first}(interface->getPort${port.getName()?cap_first}()->getCurrentValue(this->uuid).value());
-          }
-        </#if>
-      </#list>
-    </#list>
-  </#if>
-</#list>
 

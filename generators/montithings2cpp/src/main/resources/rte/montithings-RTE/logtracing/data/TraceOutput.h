@@ -14,11 +14,9 @@ namespace montithings {
 
         std::vector<TraceInput> inputs;
 
-        // outgoing ports can forward outputs from subcomponents
-        // therefore we need to reference these output uuids in order to allow tracing
-        // otherwise we lose track, as the main component will generate a new output with a fresh uuid which is not related to the
-        // outputs of any subcomponent
-        std::vector<sole::uuid> subCompOutputForwards;
+        // outputs can contain trade IDs as well. This can be, for instance, forwarding ports due to decomposition
+        // e.g. hierarchy.Example.d.sum.result -> hierarchy.Example.d.y, whereas port y is a outgoing port
+        std::multimap<sole::uuid, std::string> traceIdsWithPortNames;
 
     public:
         TraceOutput() {
@@ -43,19 +41,18 @@ namespace montithings {
             TraceOutput::inputs = in;
         }
 
-        const std::vector<sole::uuid> &getSubCompOutputForwards() const {
-            return subCompOutputForwards;
+        void addTrace(const sole::uuid &id, const std::string &portName) {
+            traceIdsWithPortNames.insert(std::make_pair(id, portName));
         }
 
-        void setSubCompOutputForwards(const std::vector<sole::uuid> &forwards) {
-            TraceOutput::subCompOutputForwards = forwards;
+        const std::multimap<sole::uuid, std::string> &getTraceIdsWithPortNames() const {
+            return traceIdsWithPortNames;
         }
-
 
         template<class Archive>
         void serialize(Archive & archive)
         {
-            archive( uuid, inputs, subCompOutputForwards );
+            archive( uuid, inputs, traceIdsWithPortNames );
         }
     };
 }

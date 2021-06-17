@@ -5,23 +5,5 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}LogTraceObserver::onEvent ()
 {
-    std::vector<sole::uuid> subCompOutputForwards;
-    bool isOutputPresent = false;
-    bool isInputPresent = false;
-
-    ${className}Interface *interface = comp->getInterface();
-
-    ${tc.includeArgs("template.logtracing.helper.ComputeInputs", [comp, config, false, "false"])}
-    std::multimap${"<"}sole::uuid, std::string${">"} traceUUIDs;
-
-    ${tc.includeArgs("template.logtracing.helper.FillTraceUuids", [comp, config])}
-
-    if (isInputPresent) {
-        comp->getLogTracer()->handleInput(${Identifier.getInputName()}, traceUUIDs);
-    }
-
-    ${tc.includeArgs("template.logtracing.helper.CheckOutputs", [comp, config])}
-    if (isOutputPresent) {
-        comp->getLogTracer()->handleOutput(subCompOutputForwards);
-    }
+    this->afterCompute();
 }

@@ -16,16 +16,19 @@ namespace montithings {
         std::map<std::string, std::string> varSnapshot;
         std::string input;
         std::multimap<sole::uuid, std::string> tracesUuidsWithPortNames;
+        std::multimap<sole::uuid, std::string> tracesUuidsWithPortNamesDecomposed;
 
     public:
         InternalDataResponse(std::map<std::string, std::string> sourcesOfPortsMap,
                              std::map<std::string, std::string> varSnapshot,
                              std::string input,
-                             std::multimap<sole::uuid, std::string> tracesUuidsWithPortNames)
+                             std::multimap<sole::uuid, std::string> tracesUuidsWithPortNames,
+                             std::multimap<sole::uuid, std::string> tracesUuidsWithPortNamesDecomposed)
                              :  sourcesOfPortsMap(std::move(sourcesOfPortsMap)),
                                 varSnapshot(std::move(varSnapshot)),
                                 input(std::move(input)),
-                                tracesUuidsWithPortNames(std::move(tracesUuidsWithPortNames)) {}
+                                tracesUuidsWithPortNames(std::move(tracesUuidsWithPortNames)),
+                                tracesUuidsWithPortNamesDecomposed(std::move(tracesUuidsWithPortNamesDecomposed)) {}
 
         InternalDataResponse() = default;
 
@@ -47,10 +50,15 @@ namespace montithings {
 
         void setTracesUuidsWithPortNames(const std::multimap<sole::uuid, std::string> &tracesUuidsWithPortNames);
 
+        const std::multimap<sole::uuid, std::string> &getTracesUuidsWithPortNamesDecomposed() const;
+
+        void setTracesUuidsWithPortNamesDecomposed(
+                const std::multimap<sole::uuid, std::string> &tracesUuidsWithPortNamesDecomposed);
+
         template<class Archive>
         void serialize(Archive & archive)
         {
-            archive( sourcesOfPortsMap, varSnapshot, input, tracesUuidsWithPortNames );
+            archive( sourcesOfPortsMap, varSnapshot, input, tracesUuidsWithPortNames, tracesUuidsWithPortNamesDecomposed );
         }
     };
 }

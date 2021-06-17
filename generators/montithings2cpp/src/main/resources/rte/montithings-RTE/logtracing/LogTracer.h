@@ -87,7 +87,13 @@ namespace montithings {
 
         sole::uuid getCurrOutputUuid();
 
-        void handleOutput(std::vector<sole::uuid> subCompOutputForwards);
+        TraceInput &getCurrTraceInput();
+
+        TraceOutput &getCurrTraceOutput();
+
+        std::vector<TraceInput> &getCurrInputGroup();
+
+        void handleOutput();
 
         void resetCurrentOutput();
 
@@ -108,6 +114,8 @@ namespace montithings {
         std::map<std::string, std::string> getVariableSnapshot(time_t time);
 
         std::multimap<sole::uuid, std::string> getTraceUuids(sole::uuid inputUuid);
+
+        std::multimap<sole::uuid, std::string> getTraceUuidsDecomposed(sole::uuid outputUuid);
 
         template <typename T>
         void handleVariableStateChange(const std::string& variableName, const T& valueBefore, const T& valueAfter) {

@@ -2,12 +2,15 @@
   <div class="mt-3 vh-100">
 
     op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
-     {{ internal_data }}<br><br>
-     inputs: {{ inputs }} <br><br>
-     traces: {{ traces }} <br><br>
-     vars: {{ var_assignments }}<br><br>
-     <b-alert show  v-if="comp_does_not_log_anything">Seems like this component does not log much. Showing generated log entries for corresponding inputs instead.</b-alert>
-     <br>
+    {{ internal_data }}<br><br>
+    inputs: {{ inputs }} <br><br>
+    traces: {{ traces }} <br><br>
+    traces dec: {{ traces_decomposed }} <br><br>
+    vars: {{ var_assignments }}<br><br>
+    <b-alert show v-if="comp_does_not_log_anything">Seems like this component does not log much. Showing generated log
+      entries for corresponding inputs instead.
+    </b-alert>
+    <br>
     <div v-if="selected_log_uuid.length" class="h-100">
       <div v-if="isFetchingInternalData">
         <b-spinner small label="Small Spinner"></b-spinner>
@@ -61,9 +64,8 @@ export default {
         let res = {};
         for (const [key, value] of Object.entries(jInput)) {
           if (!value.nullopt) {
-            res[key] = value.data;
+            res[key] = value.payload.data;
           }
-
         }
         return res;
       } else {
@@ -73,10 +75,31 @@ export default {
     traces: function () {
       if (this.internal_data.traces) {
         var res = [];
-        var tracesWithPortNames = JSON.parse(this.internal_data.traces).value0;
+        var tracesWithPortNames = JSON.parse(this.internal_data.traces)["value0"];
         for (let trace of tracesWithPortNames) {
           var trace_id = trace.key;
           var trace_portName = trace.value;
+
+          res.push({
+            "trace_uuid": trace_id,
+            "target_port": trace_portName,
+            "source": this.getSourceInstanceName(trace_portName),
+            "source_port": this.getSourcePortName(trace_portName),
+            "value": this.inputs[trace_portName]
+          })
+        }
+        return res;
+      } else {
+        return [];
+      }
+    },
+    traces_decomposed: function () {
+      if (this.internal_data.traces_decomposed) {
+        let res = [];
+        let tracesWithPortNames = JSON.parse(this.internal_data.traces_decomposed)["value0"];
+        for (let trace of tracesWithPortNames) {
+          let trace_id = trace.key;
+          let trace_portName = trace.value;
 
           res.push({
             "trace_uuid": trace_id,
@@ -130,7 +153,7 @@ export default {
       return "NOT_FOUND";
     },
     updateVarSnapshots: function () {
-      let name = store.state.selected_trace_uuid + "_" + store.state.selected_instance ;
+      let name = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
       store.state.trace_data["operators"][name]["properties"]["body"] = this.var_assignments;
 
       var $flowchart = $("#flowchartworkspace");
@@ -219,6 +242,7 @@ export default {
         defaultLinkColor: "#888d91",
         defaultSelectedLinkColor: "#888d91",
         multipleLinksOnOutput: true,
+        multipleLinksOnInput: true,
         linkWidth: 3,
         data: store.state.trace_data,
         onOperatorSelect: function (operatorId) {
@@ -261,28 +285,25 @@ export default {
       }
       store.state.trace_data["operators"][selected_operator]["properties"]["class"] = "flowchart-operator-no-fix-width-selected";
 
-      if(Object.keys(store.state.trace_data["operators"][selected_operator]["properties"]["inputs"]).length > 0) {
+      if (Object.keys(store.state.trace_data["operators"][selected_operator]["properties"]["inputs"]).length > 0) {
         $flowchart.flowchart('setData', store.state.trace_data);
         return;
       }
 
       for (let inPort in this.inputs) {
-        store.state.trace_data["operators"][selected_operator]["properties"]["inputs"]["in_" + inPort] = {
-          label: inPort,
-        }
+        if (this.traces)
+          store.state.trace_data["operators"][selected_operator]["properties"]["inputs"]["in_" + inPort] = {
+            label: inPort,
+          }
       }
 
       let top = 20;
-
       let left = 0;
-      // update positions of previous operators before inserting
-      if (this.traces.length > 0) {
-        for (const op_name of Object.keys(store.state.trace_data["operators"])) {
-          store.state.trace_data["operators"][op_name].top += 160;
-        }
-      }
 
-      for (let trace of this.traces.reverse()) {
+      if (this.traces_decomposed.length) {
+        left = 200;
+      }
+      for (let trace of this.traces_decomposed.reverse()) {
         let name = trace.trace_uuid + "_" + trace.source;
 
         if (!store.state.trace_data[name]) {
@@ -293,6 +314,7 @@ export default {
               class: "flowchart-operator-no-fix-width",
               body: this.var_assignments,
               title: trace.source,
+              is_decomposed: true,
               inputs: {},
               outputs: {},
             },
@@ -303,17 +325,102 @@ export default {
         store.state.trace_data["operators"][name]["properties"]["outputs"]["out_" + trace.source_port] = {
           label: trace.source_port + "=" + trace.value,
         }
-      }
 
-      for (let trace of this.traces) {
-        let op_name = trace.trace_uuid + "_" + trace.source;
         let target_name = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
 
-        store.state.trace_data["links"][op_name + "_" + trace.target_port] = {
-          fromOperator: op_name,
-          fromConnector: "out_" + trace.source_port,
-          toOperator: target_name,
-          toConnector: "in_" + trace.target_port,
+        let toOp = "";
+        let toConnector = "";
+        for (const link_key of Object.keys(store.state.trace_data["links"])) {
+          let link = store.state.trace_data["links"][link_key];
+          let selected_op = target_name;
+          if (link["fromOperator"].startsWith(selected_op) && link["fromConnector"] === "out_" + trace.target_port) {
+            toOp = link["toOperator"];
+            toConnector = link["toConnector"];
+          }
+        }
+        if (toOp !== "" && toConnector !== "") {
+
+          store.state.trace_data["links"][name + "_" + trace.target_port] = {
+            fromOperator: name,
+            fromConnector: "out_" + trace.source_port,
+            toOperator: toOp,
+            toConnector: toConnector,
+            color: "#166fc8"
+          };
+        }
+      }
+
+      left = 0;
+      // update positions of previous operators before inserting
+      if (this.traces.length > 0) {
+        for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+          store.state.trace_data["operators"][op_name].top += 160;
+        }
+      }
+
+      for (let trace of this.traces.reverse()) {
+        let shouldMergeDecomposedTrace = false;
+        // if the current selected operator is decomposed we have to merge the flow back to the main branch at some point
+        if(store.state.trace_data["operators"][selected_operator]["properties"]["is_decomposed"]) {
+          // the decomposition ends when the trace points to an operator with a different prefix in the title
+          // or, more precisely, if there exists an operator marked with the same trace
+          for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+            if (op_name.startsWith(store.state.selected_trace_uuid) &&
+                op_name !== selected_operator) {
+              shouldMergeDecomposedTrace = true;
+              break;
+            }
+          }
+        }
+
+        if (shouldMergeDecomposedTrace) {
+          for (const link_key of Object.keys(store.state.trace_data["links"])) {
+            let link = store.state.trace_data["links"][link_key];
+            if (link["toOperator"] !== selected_operator &&
+                link["toOperator"].startsWith(store.state.selected_trace_uuid) &&
+                link["toConnector"] === "in_" + trace.source_port) {
+
+              store.state.trace_data["links"][name + "_" + trace.target_port] = {
+                fromOperator: link["fromOperator"],
+                fromConnector: link["fromConnector"],
+                toOperator: selected_operator,
+                toConnector: "in_" + trace.target_port,
+                color: "#166fc8"
+              }
+            }
+
+
+          }
+        } else {
+          let name = trace.trace_uuid + "_" + trace.source;
+
+          if (!store.state.trace_data[name]) {
+            store.state.trace_data["operators"][name] = {
+              top: top,
+              left: left,
+              properties: {
+                class: "flowchart-operator-no-fix-width",
+                body: this.var_assignments,
+                title: trace.source,
+                inputs: {},
+                outputs: {},
+              },
+            }
+            left += 200;
+          }
+
+          store.state.trace_data["operators"][name]["properties"]["outputs"]["out_" + trace.source_port] = {
+            label: trace.source_port + "=" + trace.value,
+          }
+
+
+          let target_name = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
+          store.state.trace_data["links"][name + "_" + trace.target_port] = {
+            fromOperator: name,
+            fromConnector: "out_" + trace.source_port,
+            toOperator: target_name,
+            toConnector: "in_" + trace.target_port,
+          }
         }
       }
 

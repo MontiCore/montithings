@@ -29,7 +29,7 @@ void serialize(Archive & archive)
     </#list>
 
     <#list ports as port>
-    CEREAL_NVP_("${port}", ${port}.getPayload())
+    CEREAL_NVP_("${port}", ${port})
     <#sep>,</#sep>
     </#list>
     );
