@@ -323,7 +323,7 @@ export default {
         }
 
         store.state.trace_data["operators"][name]["properties"]["outputs"]["out_" + trace.source_port] = {
-          label: trace.source_port + "=" + trace.value,
+          label: trace.source_port,
         }
 
         let target_name = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
@@ -354,7 +354,10 @@ export default {
       // update positions of previous operators before inserting
       if (this.traces.length > 0) {
         for (const op_name of Object.keys(store.state.trace_data["operators"])) {
-          store.state.trace_data["operators"][op_name].top += 160;
+          if(store.state.trace_data["operators"][op_name]["properties"]["is_decomposed"]) {
+
+            store.state.trace_data["operators"][op_name].top += 160;
+          }
         }
       }
 

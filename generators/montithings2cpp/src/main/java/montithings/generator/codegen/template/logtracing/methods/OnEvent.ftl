@@ -5,5 +5,5 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}LogTraceObserver::onEvent ()
 {
-    this->afterCompute();
+    this->checkOutput();
 }

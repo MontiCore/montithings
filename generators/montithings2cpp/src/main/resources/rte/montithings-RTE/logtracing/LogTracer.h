@@ -135,6 +135,8 @@ namespace montithings {
             // store serialized input
             currTraceInput.setSerializedInput(dataToJson(input));
 
+            currTraceInput.setArrivalTime(time(nullptr));
+            
             // Add reference to uuids sent along with the input
             for (auto const &trace : traceUUIDs) {
                 // trace.first == uuid

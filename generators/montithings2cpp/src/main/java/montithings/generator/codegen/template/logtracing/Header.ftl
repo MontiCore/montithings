@@ -8,6 +8,7 @@ ${Identifier.createInstance(comp)}
 #pragma once
 
 #include "EventObserver.h"
+#include "${compname}Input${Utils.printFormalTypeParameters(comp)}.h"
 
 ${Utils.printNamespaceStart(comp)}
 
@@ -24,9 +25,9 @@ public:
 
     ~${className}LogTraceObserver() = default;
 
-    void onCompute ();
+    void checkInput (${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()});
 
-    void afterCompute ();
+    void checkOutput ();
 
     void onEvent () override;
 };

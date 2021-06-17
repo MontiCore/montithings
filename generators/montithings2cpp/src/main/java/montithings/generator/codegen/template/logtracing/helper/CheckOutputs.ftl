@@ -16,11 +16,11 @@ ${tc.signature("comp","config")}
             Message<${type}> valuePort${p.getName()?cap_first} = comp->getInterface()->getPort${p.getName()?cap_first}()->getCurrentValue(this->uuid, false).value();
             comp->getLogTracer()->getCurrTraceOutput().addTrace(valuePort${p.getName()?cap_first}.getUuid(), "${p.getName()}");
 
-            for (TraceInput& traceInput : comp->getLogTracer()->getCurrInputGroup()) {
+            /*for (TraceInput& traceInput : comp->getLogTracer()->getCurrInputGroup()) {
               ${className}Input input = jsonToData<${className}Input>(traceInput.getSerializedInput());
               input.set${p.getName()?cap_first}(valuePort${p.getName()?cap_first});
               traceInput.setSerializedInput(dataToJson(input));
-            }
+            }*/
            </#if>
         </#list>
       </#list>

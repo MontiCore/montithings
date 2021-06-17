@@ -3,7 +3,7 @@ ${tc.signature("comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
-void ${className}LogTraceObserver::afterCompute ()
+void ${className}LogTraceObserver::checkOutput ()
 {
     bool isOutputPresent = false;
 
