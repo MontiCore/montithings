@@ -5,11 +5,21 @@ ${tc.signature("comp","config","className", "computeName")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::compute${computeName}() {
 // ensure there are no parallel compute() executions
+<#if !ComponentHelper.isEveryBlock(computeName, comp)>
+  if (remainingComputes > 0)
+  {
+  remainingComputes++;
+  return;
+  }
+</#if>
 std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
 <#if !ComponentHelper.isEveryBlock(computeName, comp)>
-if (shouldCompute())
-{
+  remainingComputes++;
+  while (remainingComputes > 0)
+  {
+  if (shouldCompute())
+  {
 </#if>
 ${tc.includeArgs("template.logtracing.hooks.OnCompute", [comp, config])}
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
@@ -84,4 +94,8 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 </#if>
 
 }
+<#if !ComponentHelper.isEveryBlock(computeName, comp)>
+remainingComputes--;
+}
+</#if>
 }
