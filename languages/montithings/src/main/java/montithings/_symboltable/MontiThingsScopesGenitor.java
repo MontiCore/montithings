@@ -38,11 +38,10 @@ public class MontiThingsScopesGenitor extends MontiThingsScopesGenitorTOP {
     // in our grammar instead of the "start" non-terminal? I dont know. Anyway,
     // that's why the following two lines fake the behavior that should have
     // been provided by setLinkBetweenSpannedScopeAndNode
-    artifactScope.setAstNode(rootNode);
     rootNode.setSpannedScope(artifactScope);
+    artifactScope.setAstNode(rootNode);
 
     rootNode.accept(getTraverser());
-    removeCurrentScope();
     return artifactScope;
   }
 

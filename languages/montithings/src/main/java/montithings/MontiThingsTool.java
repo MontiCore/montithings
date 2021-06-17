@@ -107,7 +107,6 @@ public class MontiThingsTool {
     MontiThingsMill.init();
     IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.globalScope();
     montiThingsGlobalScope.setModelPath(mp);
-    montiThingsGlobalScope.setFileExt(MT_FILE_EXTENSION);
     resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
     addBasicTypes();
     addLibraryFunctions(montiThingsGlobalScope);
