@@ -1,0 +1,10 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+/*
+ * Example in documentation.
+ */
+package examples.correct;
+
+testdiagram Test for Example {
+  value -> result : 1234
+}

@@ -1,9 +1,0 @@
-grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
-                                    MontiArc  {
-    start SDArtifact;
-
-    SDArtifact =
-      ("package" packageDeclaration:MCQualifiedName& ";")?
-      MCImportStatement*
-      SequenceDiagram;
-}
