@@ -4,6 +4,6 @@ package valid;
 /*
  * Valid model.
  */
-component InComp (String threshold) {
+component InComp (String test) {
   port in String inPort;
 }
