@@ -4,7 +4,7 @@ package montithings._symboltable;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcTool;
 import montithings.AbstractTest;
-import montithings.MontiThingsTool2;
+import montithings.MontiThingsTool;
 import montithings.util.MontiThingsError;
 import org.codehaus.commons.nullanalysis.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +38,7 @@ public class SymbolTableTest extends AbstractTest {
     int expNumModels) {
     //Given
     Log.init();
-    MontiThingsTool2 tool = new MontiThingsTool2();
+    MontiThingsTool tool = new MontiThingsTool();
     Path modelPath = Paths.get(RELATIVE_MODEL_PATH, TEST_PATH, modelPathName);
 
     //When

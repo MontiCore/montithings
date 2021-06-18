@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface IMontiThingsTool2 {
+public interface IMontiThingsTool {
   /**
    * Parses the provided file as a MontiThings model. Returns the compilation unit of that model if the file is parsed
    * successfully.

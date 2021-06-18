@@ -3,7 +3,7 @@ package montithings.trafos;
 
 import de.se_rwth.commons.logging.Log;
 import montithings.AbstractTest;
-import montithings.MontiThingsTool2;
+import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsArtifactScope;
 import montithings.util.MontiThingsError;
@@ -72,7 +72,7 @@ public class TrafosTest extends AbstractTest {
     MontiThingsTrafo trafo, int expNumModels, Set<String> addedCompsFqns) {
     //Given
     Log.init();
-    MontiThingsTool2 tool = new MontiThingsTool2();
+    MontiThingsTool tool = new MontiThingsTool();
     tool.addTrafo(trafo);
 
     //When

@@ -34,7 +34,7 @@ class MontiThingsToolTest {
   @MethodSource("validModelPathAndExpectedValuesProvider")
   public void shouldProcessValidModels(@NotNull String modelPathName, int expNumModels) {
     //Given
-    MontiThingsTool2 tool = new MontiThingsTool2();
+    MontiThingsTool tool = new MontiThingsTool();
     Path modelPath = Paths.get(RELATIVE_MODEL_PATH, TEST_PATH, modelPathName);
 
     //When
