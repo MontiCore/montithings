@@ -41,7 +41,7 @@ struct ExampleTest : testing::Test
 
 TEST_F (ExampleTest, MainTEST)
 {
-  cmp->setUp (TIMESYNC);
+  cmp->setUp (EVENTBASED);
   cmp->init ();
 
   for (int i = 0; i < 2; i++)
