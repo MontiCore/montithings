@@ -23,6 +23,8 @@ import java.util.Optional;
 /**
  * The same as OCLExpressionsSymbolTableCompleter, but typeVisitor has type
  * DeriveSymTypeOfMontiThingsCombine instead of DeriveSymTypeOfOCLCombineExpressions
+ * Also, endVisit(InDeclaration) of this class contains the same content as
+ * visit(InDeclaration) of OCLExpressionsSymbolTableCompleter
  */
 public class OCLExpressionsSymbolTableCompleterForMontiThings implements BasicSymbolsVisitor2,
   OCLExpressionsVisitor2, OCLExpressionsHandler {

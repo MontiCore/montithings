@@ -2,11 +2,10 @@
 package montithings.cocos;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
-import de.monticore.cd4code._cocos.CD4CodeCoCoChecker;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
 import montithings.AbstractTest;
-import montithings.MontiThingsTool;
+import montithings.MontiThingsTool2;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings.util.MontiThingsError;
@@ -76,8 +75,7 @@ public abstract class AbstractCoCoTest extends AbstractTest {
   /* ============================================================ */
 
   public ComponentTypeSymbol getSymbol(String componentName) {
-    MontiThingsTool tool = new MontiThingsTool(new MontiThingsCoCoChecker(),
-      new CD4CodeCoCoChecker());
+    MontiThingsTool2 tool = new MontiThingsTool2(new MontiThingsCoCoChecker());
     Path p = Paths.get("src", "test", "resources", "models");
     IMontiThingsGlobalScope scope = tool.processModels(p);
     ComponentTypeSymbol typeSymbol = scope.resolveComponentType(componentName).get();

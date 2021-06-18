@@ -24,7 +24,7 @@ class MontiThingsToolTest {
   protected static final String TEST_PATH = Paths.get("montithings", "tool").toString();
 
   protected static Stream<Arguments> validModelPathAndExpectedValuesProvider() {
-    return Stream.of(Arguments.of(Paths.get("validExample").toString(), 3));
+    return Stream.of(Arguments.of(Paths.get("validExample").toString(), 4));
   }
 
   /**
@@ -34,7 +34,7 @@ class MontiThingsToolTest {
   @MethodSource("validModelPathAndExpectedValuesProvider")
   public void shouldProcessValidModels(@NotNull String modelPathName, int expNumModels) {
     //Given
-    MontiThingsTool tool = new MontiThingsTool();
+    MontiThingsTool2 tool = new MontiThingsTool2();
     Path modelPath = Paths.get(RELATIVE_MODEL_PATH, TEST_PATH, modelPathName);
 
     //When

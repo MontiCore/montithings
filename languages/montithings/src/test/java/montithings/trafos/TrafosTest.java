@@ -3,7 +3,7 @@ package montithings.trafos;
 
 import de.se_rwth.commons.logging.Log;
 import montithings.AbstractTest;
-import montithings.MontiThingsTool;
+import montithings.MontiThingsTool2;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.MontiThingsArtifactScope;
 import montithings.util.MontiThingsError;
@@ -41,7 +41,7 @@ public class TrafosTest extends AbstractTest {
         Paths.get("sourceSensor").toString(),
         new ExternalPortMockTrafo(getModelPath("sourceSensor").toFile(),
           getRecordingPath("sourceSensor").toFile(), "sourceSensor.Example"),
-        5,
+        6,
         new HashSet<>(Arrays.asList("sourceSensor.SinkActuatorMock",
           "sourceSensor.SourceSensorMock"))
       ),
@@ -49,14 +49,14 @@ public class TrafosTest extends AbstractTest {
         Paths.get("sourceSensor").toString(),
         new DelayedChannelTrafo(getModelPath("sourceSensor").toFile(),
           getRecordingPath("sourceSensor").toFile()),
-        4,
+        5,
         new HashSet<>(Arrays.asList("sourceSensor.SourceSensorExampleSourceSourceSensorExampleSinkDelay"))
       ),
       Arguments.of(
         Paths.get("sourceSensor").toString(),
         new DelayedComputationTrafo(getModelPath("sourceSensor").toFile(),
           getRecordingPath("sourceSensor").toFile()),
-        7,
+        8,
         new HashSet<>(Arrays.asList("sourceSensor.SourceSensorExampleSinkWrapper",
           "sourceSensor.SourceSensorExampleSourceWrapper",
           "sourceSensor.SourceSensorExampleSinkWrapperComputationDelay",
@@ -72,7 +72,7 @@ public class TrafosTest extends AbstractTest {
     MontiThingsTrafo trafo, int expNumModels, Set<String> addedCompsFqns) {
     //Given
     Log.init();
-    MontiThingsTool tool = new MontiThingsTool();
+    MontiThingsTool2 tool = new MontiThingsTool2();
     tool.addTrafo(trafo);
 
     //When

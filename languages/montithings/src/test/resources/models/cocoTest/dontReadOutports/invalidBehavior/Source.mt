@@ -7,7 +7,7 @@ component Source {
   int lastValue = 0;
 
   behavior {
-    lastValue = value;
+    lastValue = value; // ERROR: You can't read outputs
     value = lastValue++;
   }
 

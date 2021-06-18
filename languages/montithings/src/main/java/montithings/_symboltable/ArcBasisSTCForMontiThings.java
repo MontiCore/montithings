@@ -6,8 +6,6 @@ import arcbasis._ast.ASTArcField;
 import arcbasis._ast.ASTArcParameter;
 import arcbasis._ast.ASTPort;
 import arcbasis._symboltable.ArcBasisScopesGenitor;
-import arcbasis._symboltable.IArcBasisScope;
-import arcbasis._symboltable.PortSymbol;
 import arcbasis._symboltable.PortSymbolBuilder;
 import com.google.common.base.Preconditions;
 import de.monticore.siunittypes4math._ast.ASTSIUnitType;
@@ -18,12 +16,9 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.prettyprint.MCBasicTypesFullPrettyPrinter;
-import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import org.codehaus.commons.nullanalysis.NotNull;
-
-import java.util.Deque;
 
 public class ArcBasisSTCForMontiThings extends ArcBasisScopesGenitor {
 
@@ -76,6 +71,7 @@ public class ArcBasisSTCForMontiThings extends ArcBasisScopesGenitor {
     node.setEnclosingScope(this.getCurrentScope().get());
     symbol.setAstNode(node);
     symbol.setEnclosingScope(this.getCurrentScope().get());
+    this.getCurrentScope().get().add(symbol);
     this.getCurrentComponent().get().addParameter(symbol);
   }
 

@@ -32,12 +32,17 @@ import static montithings.util.LibraryFunctionsUtil.addAllLibraryFunctions;
 
 public class MontiThingsTool2 implements IMontiThingsTool2 {
   protected MontiThingsParser parser;
+
   protected MontiThingsSymbols2Json deSer;
+
   protected MontiThingsCoCoChecker checker;
-  protected List<MontiThingsTrafo> trafos;
+
+  protected List<MontiThingsTrafo> trafos = new ArrayList<>();
 
   protected final String MT_FILE_EXTENSION = "mt";
+
   protected final String SYM_FILE_EXTENSION = "sym";
+
   protected static final String TOOL_NAME = "MontiThingsTool";
 
   public MontiThingsTool2() {
@@ -48,7 +53,8 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     this(checker, new MontiThingsParser(), new MontiThingsSymbols2Json());
   }
 
-  protected MontiThingsTool2(@NotNull MontiThingsCoCoChecker checker, @NotNull MontiThingsParser parser,
+  protected MontiThingsTool2(@NotNull MontiThingsCoCoChecker checker,
+    @NotNull MontiThingsParser parser,
     @NotNull MontiThingsSymbols2Json deSer) {
     Preconditions.checkArgument(checker != null);
     Preconditions.checkArgument(deSer != null);
@@ -57,7 +63,8 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     this.parser = parser;
     this.deSer = deSer;
     this.checker = checker;
-    ((MontiThingsDeSer) MontiThingsMill.globalScope().getDeSer()).ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
+    ((MontiThingsDeSer) MontiThingsMill.globalScope().getDeSer())
+      .ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
   }
 
   protected MontiThingsParser getParser() {
@@ -97,11 +104,14 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     Preconditions.checkArgument(file != null);
     Preconditions.checkArgument(file.toFile().exists(), file.toString());
     Preconditions.checkArgument(file.toFile().isFile(), file.toString());
-    Preconditions.checkArgument(FilenameUtils.getExtension(file.getFileName().toString()).equals(this.getMTFileExtension()));
+    Preconditions.checkArgument(
+      FilenameUtils.getExtension(file.getFileName().toString()).equals(this.getMTFileExtension()));
     try {
       return this.getParser().parse(file.toString());
-    } catch (IOException e) {
-      Log.error(String.format(MontiThingsError.TOOL_PARSE_IOEXCEPTION.toString(), file.toString()), e);
+    }
+    catch (IOException e) {
+      Log.error(String.format(MontiThingsError.TOOL_PARSE_IOEXCEPTION.toString(), file.toString()),
+        e);
     }
     return Optional.empty();
   }
@@ -111,7 +121,8 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     Preconditions.checkArgument(file != null);
     Preconditions.checkArgument(file.toFile().exists(), file.toString());
     Preconditions.checkArgument(file.toFile().isFile(), file.toString());
-    Preconditions.checkArgument(FilenameUtils.getExtension(file.getFileName().toString()).equals(this.getSymFileExtension()));
+    Preconditions.checkArgument(
+      FilenameUtils.getExtension(file.getFileName().toString()).equals(this.getSymFileExtension()));
     return this.getDeSer().load(file.toString());
   }
 
@@ -134,10 +145,14 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     Preconditions.checkArgument(directory.toFile().isDirectory());
     try (Stream<Path> paths = Files.walk(directory)) {
       return paths.filter(Files::isRegularFile)
-        .filter(file -> file.getFileName().toString().endsWith(this.getMTFileExtension())).map(this::parse)
+        .filter(file -> file.getFileName().toString().endsWith(this.getMTFileExtension()))
+        .map(this::parse)
         .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
-    } catch (IOException e) {
-      Log.error(String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()), e);
+    }
+    catch (IOException e) {
+      Log.error(
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        e);
     }
     return Collections.emptySet();
   }
@@ -149,9 +164,14 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     Preconditions.checkArgument(directory.toFile().isDirectory());
     try (Stream<Path> paths = Files.walk(directory)) {
       return paths.filter(Files::isRegularFile)
-        .filter(file -> file.getFileName().toString().endsWith(this.getSymFileExtension())).map(this::load).collect(Collectors.toSet());
-    } catch (IOException e) {
-      Log.error(String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()), e);
+        .filter(file -> file.getFileName().toString().endsWith(this.getSymFileExtension()))
+        .map(this::load)
+        .collect(Collectors.toSet());
+    }
+    catch (IOException e) {
+      Log.error(
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        e);
     }
     return Collections.emptySet();
   }
@@ -159,13 +179,16 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
   @Override
   public Collection<ASTMACompilationUnit> parseAll(@NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    return scope.getModelPath().getFullPathOfEntries().stream().flatMap(path -> this.parseAll(path).stream()).collect(Collectors.toSet());
+    return scope.getModelPath().getFullPathOfEntries().stream()
+      .flatMap(path -> this.parseAll(path).stream()).collect(Collectors.toSet());
   }
 
   @Override
   public Collection<IMontiThingsArtifactScope> loadAll(@NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    return scope.getModelPath().getFullPathOfEntries().stream().flatMap(path -> this.loadAll(path).stream()).collect(Collectors.toSet());
+    return scope.getModelPath().getFullPathOfEntries().stream()
+      .flatMap(path -> this.loadAll(path).stream())
+      .collect(Collectors.toSet());
   }
 
   @Override
@@ -181,7 +204,9 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
     MontiThingsMill.globalScope();
     this.loadAll(scope).forEach(scope::addSubScope);
-    return this.parseAll(scope).stream().map(symTab::createFromAST).collect(Collectors.toSet());
+    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+    models = applyTrafos(models);
+    return models.stream().map(symTab::createFromAST).collect(Collectors.toSet());
   }
 
   @Override
@@ -196,6 +221,30 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
   public IMontiThingsGlobalScope createMTGlobalScope(@NotNull Path... directories) {
     Preconditions.checkArgument(directories != null);
     return this.createMTGlobalScope(new ModelPath(directories));
+  }
+
+  protected Set<ASTMACompilationUnit> applyTrafos(
+    @NotNull Collection<ASTMACompilationUnit> models) {
+    Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
+    Set<ASTMACompilationUnit> result = new HashSet<>(models);
+
+    // iterate with an iterator in order to avoid ConcurrentModificationException,
+    // as models are transformed
+    for (Iterator<ASTMACompilationUnit> iterator = models.iterator(); iterator.hasNext(); ) {
+      ASTMACompilationUnit ast = iterator.next();
+
+      for (MontiThingsTrafo trafo : trafos) {
+        try {
+          additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
+        }
+        catch (Exception e) {
+          Log.error(e.getCause().getMessage());
+          e.printStackTrace();
+        }
+      }
+    }
+    result.addAll(additionalTrafoModels);
+    return result;
   }
 
   protected IMontiThingsGlobalScope createMTGlobalScope(@NotNull ModelPath modelPath) {
@@ -223,7 +272,8 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
       .setName("String")
       .setEnclosingScope(MontiThingsMill.artifactScope())
       .setSpannedScope(MontiThingsMill.scope())
-      .addSuperTypes(SymTypeExpressionFactory.createTypeObject("java.lang.Object", MontiThingsMill.globalScope()))
+      .addSuperTypes(SymTypeExpressionFactory
+        .createTypeObject("java.lang.Object", MontiThingsMill.globalScope()))
       .build());
     MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder()
       .setName("void")
