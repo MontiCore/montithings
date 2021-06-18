@@ -6,7 +6,6 @@ import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._ast.ASTDepLanguage;
 import cdlangextension._visitor.CDLangExtensionHandler;
 import cdlangextension._visitor.CDLangExtensionTraverser;
-import cdlangextension._visitor.CDLangExtensionVisitor;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import org.apache.commons.lang3.StringUtils;

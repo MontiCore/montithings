@@ -9,10 +9,10 @@ package cdlangextension._cocos;
 public class CDLangExtensionCoCos {
   public static CDLangExtensionCoCoChecker createChecker() {
     final CDLangExtensionCoCoChecker checker = new CDLangExtensionCoCoChecker();
-    return checker
-        .addCoCo((CDLangExtensionASTCDLangExtensionUnitCoCo) new ImportNameUnique())
-        .addCoCo((CDLangExtensionASTDepLanguageCoCo) new ImportNameUnique())
-        .addCoCo(new ImportNameExists())
-        .addCoCo(new ImportNameNotEmpty());
+    checker.addCoCo((CDLangExtensionASTCDLangExtensionUnitCoCo) new ImportNameUnique());
+    checker.addCoCo((CDLangExtensionASTDepLanguageCoCo) new ImportNameUnique());
+    checker.addCoCo(new ImportNameExists());
+    checker.addCoCo(new ImportNameNotEmpty());
+    return checker;
   }
 }

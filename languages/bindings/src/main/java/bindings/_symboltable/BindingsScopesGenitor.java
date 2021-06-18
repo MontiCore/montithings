@@ -7,7 +7,7 @@ import bindings._ast.ASTBindingRule;
 
 import java.util.Optional;
 
-public class BindingsSymbolTableCreator extends BindingsSymbolTableCreatorTOP {
+public class BindingsScopesGenitor extends BindingsScopesGenitorTOP {
 
   @Override public void visit(ASTBindingRule node) {
     super.visit(node);

@@ -16,6 +16,58 @@
 
         <dependency>
             <groupId>montithings.languages</groupId>
+            <artifactId>montiarc-extensions</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montiarc-extensions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>monticore-extensions</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>monticore-extensions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>error-handling</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>error-handling</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>iot-behavior</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>iot-behavior</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
             <artifactId>montithings</artifactId>
             <version>${project.version}</version>
             <classifier>${grammars.classifier}</classifier>
@@ -31,6 +83,32 @@
             <groupId>montithings.languages</groupId>
             <artifactId>bindings</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+            <classifier>grammars</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>ocl</artifactId>
+            <version>${ocl.version}</version>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>ocl</artifactId>
+            <version>${ocl.version}</version>
         </dependency>
 
         <!-- MontiArc's languages -->
@@ -54,6 +132,17 @@
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>montiarc-fe</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>behavior-fe</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>behavior-fe</artifactId>
             <classifier>${grammars.classifier}</classifier>
         </dependency>
 

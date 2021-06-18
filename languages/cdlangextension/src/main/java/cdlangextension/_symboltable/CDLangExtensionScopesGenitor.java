@@ -7,7 +7,7 @@ import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import java.util.Optional;
 
 
-public class CDLangExtensionSymbolTableCreator extends CDLangExtensionSymbolTableCreatorTOP {
+public class CDLangExtensionScopesGenitor extends CDLangExtensionScopesGenitorTOP {
 
   @Override public void visit(ASTCDEImportStatement node) {
     super.visit(node);

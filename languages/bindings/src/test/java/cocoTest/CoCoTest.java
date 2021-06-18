@@ -56,38 +56,54 @@ public class CoCoTest extends AbstractTest {
   }
 
   protected static Stream<Arguments> invalidInput() {
+
+    BindingsCoCoChecker implExistsChecker = new BindingsCoCoChecker();
+    implExistsChecker.addCoCo(new ImplementationExists());
+
+    BindingsCoCoChecker implementationHasSamePortsAsInterfaceChecker = new BindingsCoCoChecker();
+    implementationHasSamePortsAsInterfaceChecker.addCoCo(new ImplementationHasSamePortsAsInterface());
+
+    BindingsCoCoChecker interfaceExistsChecker = new BindingsCoCoChecker();
+    interfaceExistsChecker.addCoCo(new InterfaceExists());
+
+    BindingsCoCoChecker leftSideIsInterfaceChecker = new BindingsCoCoChecker();
+    leftSideIsInterfaceChecker.addCoCo(new LeftSideIsInterface());
+
+    BindingsCoCoChecker rightSideIsImplementationChecker = new BindingsCoCoChecker();
+    rightSideIsImplementationChecker.addCoCo(new RightSideIsImplementation());
+
     return Stream.of(
       Arguments.of(
         "ImplementationExists",
-        new BindingsCoCoChecker().addCoCo(new ImplementationExists()),
+        implExistsChecker,
         "missingMT/InvalidBinding.mtb",
         1,
         new BindingsError[] { BindingsError.NO_MODEL_IMPLEMENTATION }
       ),
       Arguments.of(
         "ImplementationHasSamePortsAsInterface",
-        new BindingsCoCoChecker().addCoCo(new ImplementationHasSamePortsAsInterface()),
+        implementationHasSamePortsAsInterfaceChecker,
         "implementationPortTest/WrongPortBinding.mtb",
         2,
         new BindingsError[] { BindingsError.NOT_SAME_PORTS_IMPLEMENTED }
       ),
       Arguments.of(
         "InterfaceExists",
-        new BindingsCoCoChecker().addCoCo(new InterfaceExists()),
+        interfaceExistsChecker,
         "missingMT/InvalidBinding.mtb",
         1,
         new BindingsError[] { BindingsError.NO_MODEL_INTERFACE }
       ),
       Arguments.of(
         "LeftSideIsInterface",
-        new BindingsCoCoChecker().addCoCo(new LeftSideIsInterface()),
+        leftSideIsInterfaceChecker,
         "interfaceMismatch/WrongModel.mtb",
         2,
         new BindingsError[] { BindingsError.LEFT_SIDE_NO_INTERFACE }
       ),
       Arguments.of(
         "RightSideIsImplementation",
-        new BindingsCoCoChecker().addCoCo(new RightSideIsImplementation()),
+        rightSideIsImplementationChecker,
         "interfaceMismatch/WrongModel.mtb",
         1,
         new BindingsError[] { BindingsError.RIGHT_SIDE_NO_IMPLEMENTATION}

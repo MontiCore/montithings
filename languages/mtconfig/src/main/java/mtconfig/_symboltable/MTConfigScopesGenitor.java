@@ -17,17 +17,17 @@ import java.util.Optional;
 /**
  * Symbol table creator.
  */
-public class MTConfigSymbolTableCreator extends MTConfigSymbolTableCreatorTOP {
+public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
 
-  public MTConfigSymbolTableCreator() {
+  public MTConfigScopesGenitor() {
     super();
   }
 
-  public MTConfigSymbolTableCreator(IMTConfigScope enclosingScope) {
+  public MTConfigScopesGenitor(IMTConfigScope enclosingScope) {
     super(enclosingScope);
   }
 
-  public MTConfigSymbolTableCreator(
+  public MTConfigScopesGenitor(
       Deque<? extends IMTConfigScope> scopeStack) {
     super(scopeStack);
   }

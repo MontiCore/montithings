@@ -5,7 +5,7 @@ import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._cocos.BindingsCoCoChecker;
 import bindings._cocos.BindingsCoCos;
 import bindings._parser.BindingsParser;
-import bindings._symboltable.BindingsSymbolTableCreatorDelegator;
+import bindings._symboltable.BindingsScopesGenitorDelegator;
 import bindings._symboltable.IBindingsGlobalScope;
 import bindings._symboltable.IBindingsScope;
 import bindings._symboltable.adapters.MCQualifiedName2ComponentInstanceResolvingDelegate;
@@ -87,8 +87,6 @@ public class BindingsTool {
       this.mtGlobalScope.setModelPath(mp);
       this.mtGlobalScope.setFileExt("mt");
       MontiThingsTool tool = new MontiThingsTool();
-      tool.addBasicTypes(mtGlobalScope);
-      tool.addLibraryFunctions(mtGlobalScope);
       tool.processModels(this.mtGlobalScope);
     }
     componentTypeResolvingDelegate =
@@ -96,11 +94,9 @@ public class BindingsTool {
     componentInstanceResolvingDelegate =
       new MCQualifiedName2ComponentInstanceResolvingDelegate(this.mtGlobalScope);
 
-    IBindingsGlobalScope bindingsGlobalScope = BindingsMill
-      .bindingsGlobalScopeBuilder()
-      .setModelPath(mp)
-      .setModelFileExtension("mtb")
-      .build();
+    IBindingsGlobalScope bindingsGlobalScope = BindingsMill.globalScope();
+    bindingsGlobalScope.setModelPath(mp);
+    bindingsGlobalScope.setFileExt("mtb");
     bindingsGlobalScope
       .addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
     bindingsGlobalScope
@@ -135,7 +131,7 @@ public class BindingsTool {
   public IBindingsGlobalScope createSymboltable(ASTBindingsCompilationUnit ast,
     IBindingsGlobalScope globalScope) {
 
-    BindingsSymbolTableCreatorDelegator stc = new BindingsSymbolTableCreatorDelegator(globalScope);
+    BindingsScopesGenitorDelegator stc = new BindingsScopesGenitorDelegator();
     stc.createFromAST(ast);
 
     return globalScope;

@@ -5,7 +5,7 @@ import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCoChecker;
 import cdlangextension._cocos.CDLangExtensionCoCos;
 import cdlangextension._symboltable.CDLangExtensionGlobalScope;
-import cdlangextension._symboltable.CDLangExtensionSymbolTableCreatorDelegator;
+import cdlangextension._symboltable.CDLangExtensionScopesGenitorDelegator;
 import cdlangextension._symboltable.ICDLangExtensionArtifactScope;
 import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import com.google.common.base.Preconditions;
@@ -73,10 +73,9 @@ public class CDLangExtensionTool {
 
     CD4CodeResolver cd4aResolver;
     if(this.cdGlobalScope ==null) {
-      ICD4CodeGlobalScope cd4aGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
-          .setModelPath(mp)
-          .setModelFileExtension(CD4AnalysisGlobalScope.EXTENSION)
-          .build();
+      ICD4CodeGlobalScope cd4aGlobalScope = CD4CodeMill.globalScope();
+      cd4aGlobalScope.setModelPath(mp);
+      cd4aGlobalScope.setFileExt(CD4AnalysisGlobalScope.EXTENSION);
       cd4aResolver = new CD4CodeResolver(cd4aGlobalScope);
       this.cdGlobalScope = cd4aGlobalScope;
       MontiThingsTool tool = new MontiThingsTool();
@@ -120,7 +119,7 @@ public class CDLangExtensionTool {
   public ICDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
       ICDLangExtensionGlobalScope globalScope) {
 
-    CDLangExtensionSymbolTableCreatorDelegator stc = new CDLangExtensionSymbolTableCreatorDelegator(globalScope);
+    CDLangExtensionScopesGenitorDelegator stc = new CDLangExtensionScopesGenitorDelegator();
     artifactScope = stc.createFromAST(ast);
 
     return globalScope;
