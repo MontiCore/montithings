@@ -1,0 +1,12 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+/*
+ * Example in documentation.
+ */
+package examples.cocoTest.valid;
+
+testdiagram MainTest for Main {
+  value -> sum.first : 12
+  value -> sum.second: 13
+  sum.result -> result : 25
+}

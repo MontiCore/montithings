@@ -20,10 +20,10 @@ grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
     interface SD4CComponent;
 
     SD4CObjectPort implements SD4CComponent =
-      component:MCObjectType "." port:Name;
+      component:MCQualifiedName "." port:MCQualifiedName;
 
     SD4CPort implements SD4CComponent =
-      port:Name;
+      port:MCQualifiedName;
 
 
     interface SD4CElement;
