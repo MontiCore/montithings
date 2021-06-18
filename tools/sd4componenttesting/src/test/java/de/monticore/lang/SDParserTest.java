@@ -37,15 +37,15 @@ public class SDParserTest {
 
   @ParameterizedTest
   @CsvSource({
-    "ConnectionTest.sd",
-    "ConnectionTestShort.sd",
-    "EmptyTestDiagram.sd",
-    "ExpressionsTest.sd",
-    "FullTest.sd",
-    "InputTest.sd",
-    "OutputTest.sd",
-    "SingleConnectionStringValueTest.sd",
-    "SingleConnectionNumberValueTest.sd",
+    "ConnectionTest.sd4c",
+    "ConnectionTestShort.sd4c",
+    "EmptyTestDiagram.sd4c",
+    "ExpressionsTest.sd4c",
+    "FullTest.sd4c",
+    "InputTest.sd4c",
+    "OutputTest.sd4c",
+    "SingleConnectionStringValueTest.sd4c",
+    "SingleConnectionNumberValueTest.sd4c",
   })
   void testCorrectExamples(String model) {
     testParseModel(CORRECT_PATH, model);
