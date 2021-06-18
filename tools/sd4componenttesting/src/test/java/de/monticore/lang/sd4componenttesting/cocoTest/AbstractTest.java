@@ -2,7 +2,7 @@
 package de.monticore.lang.sd4componenttesting.cocoTest;
 
 import de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool;
-import de.monticore.lang.sd4componenttesting._ast.ASTSDArtifact;
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting.util.Error;
@@ -57,22 +57,6 @@ public abstract class AbstractTest {
       + actualErrorCodes.toString()));
   }
 
-  protected void checkNoAdditionalErrorsPresent(List<Finding> findings,
-    Error[] expErrors) {
-    List<String> actualErrorCodes = collectErrorCodes(findings);
-    List<String> expErrorCodes = collectErrorCodes(expErrors);
-
-    actualErrorCodes.removeAll(expErrorCodes);
-
-    Assertions.assertEquals(0, actualErrorCodes.size());
-  }
-
-  protected void checkOnlyExpectedErrorsPresent(List<Finding> findings,
-    Error[] expErrors) {
-    checkExpectedErrorsPresent(findings, expErrors);
-    checkNoAdditionalErrorsPresent(findings, expErrors);
-  }
-
   protected List<String> collectErrorCodes(Error[] errors) {
     return Arrays.stream(errors)
       .map(Error::getErrorCode)
@@ -95,18 +79,22 @@ public abstract class AbstractTest {
     return errorCodes;
   }
 
-  public ASTSDArtifact getAST(String modelPath, String fileName) {
-    ASTSDArtifact sdartifactAST = null;
+  public ASTSD4Artifact getAST(String modelPath, String fileName) {
+    ASTSD4Artifact SD4ArtifactAST = null;
     try {
-      sdartifactAST = new SD4ComponentTestingParser().parseSDArtifact(modelPath + fileName).orElse(null);
+      SD4ArtifactAST = new SD4ComponentTestingParser().parseSD4Artifact(modelPath + fileName).orElse(null);
     }
     catch (IOException e) {
-      Log.error("File '" + modelPath + fileName + "' Bindings artifact was not found");
+      Log.error("File '" + modelPath + fileName + "' SD4Artifact artifact was not found");
     }
-    Assertions.assertNotNull(sdartifactAST);
+    Assertions.assertNotNull(SD4ArtifactAST);
     SD4ComponentTestingTool tool = new SD4ComponentTestingTool();
-    ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(sdartifactAST, new File(modelPath));
+
+    System.out.println("jhgjhgjhg");
+    System.out.println(SD4ArtifactAST);
+    System.out.println("cbeehdebwde");
+    ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(SD4ArtifactAST, new File(modelPath));
     System.out.println(sc);
-    return sdartifactAST;
+    return SD4ArtifactAST;
   }
 }

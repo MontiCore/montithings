@@ -1,13 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting;
 
-import de.monticore.lang.sd4componenttesting._ast.ASTSDArtifact;
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCoChecker;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
-import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingScopesGenitorDelegator;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
-import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingScope;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.MCQualifiedName2ComponentInstanceResolvingDelegate;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.MCQualifiedName2ComponentTypeResolvingDelegate;
 import com.google.common.base.Preconditions;
@@ -19,19 +17,14 @@ import montiarc._symboltable.IMontiArcGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.Set;
 
 /**
  * Provides useful methods for handling the Bindings language.
  */
 public class SD4ComponentTestingTool {
-
-  public static final String FILE_ENDING = "sd4c";
-
   protected SD4ComponentTestingCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
@@ -46,20 +39,6 @@ public class SD4ComponentTestingTool {
     Preconditions.checkArgument(checker != null);
     this.checker = checker;
     this.isSymTabInitialized = false;
-  }
-
-  public Optional<ASTSDArtifact> parse(@NotNull String filename) {
-    Preconditions.checkArgument(filename != null);
-    SD4ComponentTestingParser p = new SD4ComponentTestingParser();
-    Optional<ASTSDArtifact> compUnit;
-    try {
-      compUnit = p.parse(filename);
-      return compUnit;
-    }
-    catch (IOException e) {
-      e.printStackTrace();
-    }
-    return Optional.empty();
   }
 
   /**
@@ -112,7 +91,7 @@ public class SD4ComponentTestingTool {
    * @param modelPaths path that contains all models
    * @return created global scope
    */
-  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSDArtifact ast,
+  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSD4Artifact ast,
                                                 File... modelPaths) {
 
     ISD4ComponentTestingGlobalScope globalScope = initSymbolTable(modelPaths);
@@ -127,39 +106,12 @@ public class SD4ComponentTestingTool {
    * @param globalScope globalScope used for the symbolTable
    * @return extended global scope
    */
-  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSDArtifact ast,
+  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSD4Artifact ast,
                                                 ISD4ComponentTestingGlobalScope globalScope) {
 
-    SD4ComponentTestingScopesGenitorDelegator stc = new SD4ComponentTestingScopesGenitorDelegator(globalScope);
+    SD4ComponentTestingScopesGenitorDelegator stc = new SD4ComponentTestingScopesGenitorDelegator();
     stc.createFromAST(ast);
 
     return globalScope;
-  }
-
-  /**
-   * Initializes the Symboltable by introducing scopes for the passed modelpaths. It does not create
-   * the symbol table! Symbols for models within the modelpaths are not added to the symboltable
-   * until resolve() is called. Modelpaths are relative to the project path and do contain all the
-   * packages the models are located in. E.g. if model with fqn a.b.C lies in folder
-   * src/main/resources/models/a/b/C.arc, the modelPath is src/main/resources.
-   *
-   * @param modelPath The model path for the symbol table
-   * @return the initialized symbol table
-   */
-  public ISD4ComponentTestingScope initSymbolTable(String modelPath) {
-    return initSymbolTable(Paths.get(modelPath).toFile());
-  }
-
-  public IMontiArcGlobalScope getMaGlobalScope() {
-    return maGlobalScope;
-  }
-
-  /**
-   * Setter for the global scope that should be used for resolving non native symbols.
-   *
-   * @param maGlobalScope globalScope used for resolving non native symbols
-   */
-  public void setMaGlobalScope(IMontiArcGlobalScope maGlobalScope) {
-    this.maGlobalScope = maGlobalScope;
   }
 }
