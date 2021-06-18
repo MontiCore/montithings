@@ -2,16 +2,12 @@
 package montithings.types.check;
 
 import com.google.common.collect.Maps;
+import de.monticore.expressions.commonexpressions.CommonExpressionsMill;
 import de.monticore.expressions.commonexpressions._ast.*;
+import de.monticore.expressions.commonexpressions._visitor.CommonExpressionsTraverser;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
-import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
-import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
-import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
-import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
-import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.*;
 import de.se_rwth.commons.logging.Log;
 import montithings.MontiThingsMill;
@@ -148,7 +144,13 @@ public class DeriveSymTypeOfCommonExpressionsForMT
   @Override
   public void traverse(ASTCallExpression expr) {
     NameToCallExpressionVisitor visitor = new NameToCallExpressionVisitor();
-    expr.accept(visitor.getTraverser());
+    CommonExpressionsTraverser traverser = CommonExpressionsMill.traverser();
+    traverser.setCommonExpressionsHandler(visitor);
+    traverser.add4CommonExpressions(visitor);
+    traverser.setExpressionsBasisHandler(visitor);
+    traverser.add4ExpressionsBasis(visitor);
+    expr.accept(traverser);
+
     SymTypeExpression innerResult;
     expr.getExpression().accept(getTraverser());
     if (typeCheckResult.isPresentCurrentResult()) {

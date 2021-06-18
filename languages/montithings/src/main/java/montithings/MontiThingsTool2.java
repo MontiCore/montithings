@@ -4,14 +4,11 @@ package montithings;
 import com.google.common.base.Preconditions;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
-import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
-import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeExpressionFactory;
-import de.monticore.types.check.SymTypeVariable;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -32,8 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static montithings.util.LibraryFunctionsUtil.addAllLibraryFunctions;
-import static montithings.util.SymbolUtil.addParam;
-import static montithings.util.SymbolUtil.createFunction;
 
 public class MontiThingsTool2 implements IMontiThingsTool2 {
   protected MontiThingsParser parser;
@@ -62,6 +57,7 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     this.parser = parser;
     this.deSer = deSer;
     this.checker = checker;
+    ((MontiThingsDeSer) MontiThingsMill.globalScope().getDeSer()).ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
   }
 
   protected MontiThingsParser getParser() {
@@ -175,14 +171,14 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
   @Override
   public IMontiThingsScope createSymbolTable(@NotNull ASTMACompilationUnit ast) {
     Preconditions.checkArgument(ast != null);
-    MontiThingsScopesGenitorDelegator symTab = MontiThingsMill.scopesGenitorDelegator();
+    MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
     return symTab.createFromAST(ast);
   }
 
   @Override
   public Collection<IMontiThingsScope> createSymbolTable(@NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    MontiThingsScopesGenitorDelegator symTab = MontiThingsMill.scopesGenitorDelegator();
+    MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
     MontiThingsMill.globalScope();
     this.loadAll(scope).forEach(scope::addSubScope);
     return this.parseAll(scope).stream().map(symTab::createFromAST).collect(Collectors.toSet());
@@ -199,17 +195,17 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
   @Override
   public IMontiThingsGlobalScope createMTGlobalScope(@NotNull Path... directories) {
     Preconditions.checkArgument(directories != null);
-    return this.createMAGlobalScope(new ModelPath(directories));
+    return this.createMTGlobalScope(new ModelPath(directories));
   }
 
-  protected IMontiThingsGlobalScope createMAGlobalScope(@NotNull ModelPath modelPath) {
+  protected IMontiThingsGlobalScope createMTGlobalScope(@NotNull ModelPath modelPath) {
     Preconditions.checkArgument(modelPath != null);
     IMontiThingsGlobalScope mtScope = MontiThingsMill.globalScope();
     mtScope.clear();
     mtScope.setModelPath(modelPath);
     mtScope.setFileExt(this.getMTFileExtension());
     this.addBasicTypes();
-    //addAllLibraryFunctions(mtScope);
+    addAllLibraryFunctions(mtScope);
     return mtScope;
   }
 
@@ -229,17 +225,17 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
       .setSpannedScope(MontiThingsMill.scope())
       .addSuperTypes(SymTypeExpressionFactory.createTypeObject("java.lang.Object", MontiThingsMill.globalScope()))
       .build());
-    this.add2Scope(artifactScope, MontiThingsMill.typeSymbolBuilder()
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder()
       .setName("void")
-      .setEnclosingScope(MontiThingsMill.artifactScope())
-      .setSpannedScope(MontiThingsMill.scope())
       .setFullName("void")
-      .build());
-    this.add2Scope(artifactScope, MontiThingsMill.typeSymbolBuilder()
-      .setName("null")
-      .setEnclosingScope(MontiThingsMill.artifactScope())
+      .setEnclosingScope(MontiThingsMill.globalScope())
       .setSpannedScope(MontiThingsMill.scope())
+      .build());
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder()
+      .setName("null")
       .setFullName("null")
+      .setEnclosingScope(MontiThingsMill.globalScope())
+      .setSpannedScope(MontiThingsMill.scope())
       .build());
   }
 
@@ -270,7 +266,8 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
   @Override
   public void processModels(@NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    this.createSymbolTable(scope).stream().map(artifactScope -> (ASTMACompilationUnit) artifactScope.getAstNode())
+    this.createSymbolTable(scope).stream()
+      .map(artifactScope -> (ASTMACompilationUnit) artifactScope.getAstNode())
       .forEach(this::checkCoCos);
   }
 
@@ -279,7 +276,7 @@ public class MontiThingsTool2 implements IMontiThingsTool2 {
     Preconditions.checkArgument(directories != null);
     Preconditions.checkArgument(!Arrays.asList(directories).contains(null));
     ModelPath modelPath = new ModelPath(directories);
-    IMontiThingsGlobalScope mtScope = this.createMAGlobalScope(modelPath);
+    IMontiThingsGlobalScope mtScope = this.createMTGlobalScope(modelPath);
     this.processModels(mtScope);
     return mtScope;
   }

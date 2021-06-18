@@ -7,7 +7,6 @@ import de.monticore.io.paths.ModelCoordinate;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbolDeSer;
 import de.monticore.symbols.oosymbols._symboltable.MethodSymbolDeSer;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbolDeSer;
-import montiarc._symboltable.MontiArcGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.Optional;

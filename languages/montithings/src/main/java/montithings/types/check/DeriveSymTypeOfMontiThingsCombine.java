@@ -2,9 +2,6 @@
 package montithings.types.check;
 
 import behavior.types.check.DeriveSymTypeOfBehavior;
-import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
-import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
 import de.monticore.ocl.types.check.DeriveSymTypeOfOCLExpressions;
 import de.monticore.ocl.types.check.DeriveSymTypeOfSetExpressions;
 import de.monticore.types.check.*;
@@ -123,6 +120,7 @@ public class DeriveSymTypeOfMontiThingsCombine
 
     traverser.add4CommonExpressions(deriveSymTypeOfCommonExpressions);
     traverser.add4AssignmentExpressions(deriveSymTypeOfAssignmentExpressions);
+    traverser.add4MCCommonLiterals(deriveSymTypeOfMCCommonLiterals);
     traverser.add4ExpressionsBasis(deriveSymTypeOfExpression);
     traverser.add4SetExpressions(deriveSymTypeOfSetExpressions);
     traverser.add4MCBasicTypes(synthesizeSymTypeFromMCBasicTypes);
