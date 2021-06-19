@@ -15,6 +15,7 @@ namespace montithings {
         std::map<std::string, std::string> sourcesOfPortsMap;
         std::map<std::string, std::string> varSnapshot;
         std::string input;
+        std::vector<std::string> externalPorts;
         std::multimap<sole::uuid, std::string> tracesUuidsWithPortNames;
         std::multimap<sole::uuid, std::string> tracesUuidsWithPortNamesDecomposed;
 
@@ -22,11 +23,13 @@ namespace montithings {
         InternalDataResponse(std::map<std::string, std::string> sourcesOfPortsMap,
                              std::map<std::string, std::string> varSnapshot,
                              std::string input,
+                             std::vector<std::string> externalPorts,
                              std::multimap<sole::uuid, std::string> tracesUuidsWithPortNames,
                              std::multimap<sole::uuid, std::string> tracesUuidsWithPortNamesDecomposed)
                              :  sourcesOfPortsMap(std::move(sourcesOfPortsMap)),
                                 varSnapshot(std::move(varSnapshot)),
                                 input(std::move(input)),
+                                externalPorts(std::move(externalPorts)),
                                 tracesUuidsWithPortNames(std::move(tracesUuidsWithPortNames)),
                                 tracesUuidsWithPortNamesDecomposed(std::move(tracesUuidsWithPortNamesDecomposed)) {}
 
@@ -46,6 +49,10 @@ namespace montithings {
 
         void setInput(const std::string &input);
 
+        const std::vector<std::string> &getExternalPorts() const;
+
+        void setExternalPorts(const std::vector<std::string> &externalPorts);
+
         const std::multimap<sole::uuid, std::string> &getTracesUuidsWithPortNames() const ;
 
         void setTracesUuidsWithPortNames(const std::multimap<sole::uuid, std::string> &tracesUuidsWithPortNames);
@@ -58,7 +65,12 @@ namespace montithings {
         template<class Archive>
         void serialize(Archive & archive)
         {
-            archive( sourcesOfPortsMap, varSnapshot, input, tracesUuidsWithPortNames, tracesUuidsWithPortNamesDecomposed );
+            archive( sourcesOfPortsMap,
+                     varSnapshot,
+                     input,
+                     externalPorts,
+                     tracesUuidsWithPortNames,
+                     tracesUuidsWithPortNamesDecomposed );
         }
     };
 }

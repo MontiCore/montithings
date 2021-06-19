@@ -13,7 +13,7 @@ ReqResMessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSLogTracerMessage::RequestDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSRecorderMessage failed!";
+            CLOG (ERROR, LOGTRACER_LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSRecorderMessage failed!";
             exit(EXIT_FAILURE);
         }
 
@@ -28,7 +28,7 @@ ReqResMessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSLogTracerMessage::ResponseDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSCommandMessage failed!";
+            CLOG (ERROR, LOGTRACER_LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSCommandMessage failed!";
             exit(EXIT_FAILURE);
         }
 

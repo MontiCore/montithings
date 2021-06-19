@@ -24,7 +24,7 @@
 
 #include "message-types/DDSLogTracerMessageTypeSupportImpl.h"
 
-#define DDS_LOG_ID "DDS"
+#define LOGTRACER_LOG_ID "DDS"
 
 class DDSEntities {
 

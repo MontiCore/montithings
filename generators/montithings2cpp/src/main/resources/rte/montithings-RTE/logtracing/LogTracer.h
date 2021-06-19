@@ -50,6 +50,9 @@ namespace montithings {
         //input UUIDs belong to a certain port, keep track of it
         std::multimap<sole::uuid, std::string> inputTracePortNameRefs;
 
+        // store which ports are external. This is done to visualize external ports differently
+        std::vector<std::string> externalPorts;
+
         // in order to store variable states, a map (key=variable name) holds a map where the variable value is keyed by the timestamp which indicates when it was changed
         // the variable value is stored as a string to avoid type clashes
         using vSnapshot = std::map<time_t, std::string>;
@@ -111,6 +114,8 @@ namespace montithings {
 
         void mapPortToSourceInstance(std::string portName, std::string instanceName);
 
+        void registerExternalPort(std::string portName);
+
         std::map<std::string, std::string> getVariableSnapshot(time_t time);
 
         std::multimap<sole::uuid, std::string> getTraceUuids(sole::uuid inputUuid);
@@ -136,7 +141,7 @@ namespace montithings {
             currTraceInput.setSerializedInput(dataToJson(input));
 
             currTraceInput.setArrivalTime(time(nullptr));
-            
+
             // Add reference to uuids sent along with the input
             for (auto const &trace : traceUUIDs) {
                 // trace.first == uuid

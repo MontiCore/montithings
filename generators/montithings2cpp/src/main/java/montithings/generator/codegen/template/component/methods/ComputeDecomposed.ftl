@@ -18,6 +18,7 @@ while (remainingComputes > 0)
 if (shouldCompute()) {
 ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
 ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
+${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
 

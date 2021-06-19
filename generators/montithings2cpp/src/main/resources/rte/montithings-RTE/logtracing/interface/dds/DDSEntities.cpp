@@ -17,7 +17,7 @@ void DDSEntities::initMessageType() {
             = requestTypeSupport->register_type(participant, REQ_MESSAGE_TYPE);
     if (responseRegistration != DDS::RETCODE_OK
         || requestRegistration != DDS::RETCODE_OK) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | initMessageTypes failed!";
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | initMessageTypes failed!";
         exit(EXIT_FAILURE);
     }
 }
@@ -27,7 +27,7 @@ void DDSEntities::initSubscriber() {
                                                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!subscriber) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | initSubscriber failed.";
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | initSubscriber failed.";
         exit(EXIT_FAILURE);
     }
 }
@@ -37,7 +37,7 @@ void DDSEntities::initPublisher() {
                                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!publisher) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | initPublisher failed.";
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | initPublisher failed.";
         exit(EXIT_FAILURE);
     }
 }
@@ -56,15 +56,14 @@ void DDSEntities::initTopic() {
     DDS::StringSeq topicfiltered_params(1);
     topicfiltered_params.length(1);
     topicfiltered_params[0] = instanceName.c_str();
-    std::cout << instanceName << std::endl;
-    
+
     topicRequestFiltered = participant->create_contentfilteredtopic(
             topicRequestFilteredName.c_str(), topicRequest,
             "target_instance = %0",
             topicfiltered_params);
 
     if (!topicRequestFiltered || !topicResponse) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | initTopics failed!";
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | initTopics failed!";
         exit(EXIT_FAILURE);
     }
 }
@@ -77,7 +76,7 @@ bool DDSEntities::initParticipant(int argc, char **argv) {
             OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!participant) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | createParticipant failed.";
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | createParticipant failed.";
         return false;
     }
 
@@ -97,7 +96,7 @@ void DDSEntities::initRequestDataReader() {
             topicRequestFiltered, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataReader) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | ERROR: initRequestDataReader() - OpenDDS data reader creation failed.";
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | ERROR: initRequestDataReader() - OpenDDS data reader creation failed.";
         exit(EXIT_FAILURE);
     }
 
@@ -106,7 +105,7 @@ void DDSEntities::initRequestDataReader() {
     requestDataReader = DDSLogTracerMessage::RequestDataReader::_narrow(dataReader);
 
     if (!requestDataReader) {
-        CLOG (ERROR, DDS_LOG_ID)
+        CLOG (ERROR, LOGTRACER_LOG_ID)
                 << "DDSEntities | ERROR: initRequestDataReader() - OpenDDS message reader narrowing failed.";
         exit(EXIT_FAILURE);
     }
@@ -125,7 +124,7 @@ void DDSEntities::initResponseDataReader() {
             topicResponse, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataReader) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | ERROR: initResponseDataReader() - OpenDDS data reader creation failed.";
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | ERROR: initResponseDataReader() - OpenDDS data reader creation failed.";
         exit(EXIT_FAILURE);
     }
 
@@ -134,7 +133,7 @@ void DDSEntities::initResponseDataReader() {
     responseDataReader = DDSLogTracerMessage::ResponseDataReader::_narrow(dataReader);
 
     if (!responseDataReader) {
-        CLOG (ERROR, DDS_LOG_ID)
+        CLOG (ERROR, LOGTRACER_LOG_ID)
                 << "DDSEntities | ERROR: initResponseDataReader() - OpenDDS message reader narrowing failed.";
         exit(EXIT_FAILURE);
     }
@@ -150,7 +149,7 @@ void DDSEntities::initResponseDataWriter() {
             topicResponse, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataWriter) {
-        CLOG (ERROR, DDS_LOG_ID)
+        CLOG (ERROR, LOGTRACER_LOG_ID)
                 << "DDSEntities | ERROR: initResponseDataWriter() - OpenDDS Data Writer creation failed.";
         exit(EXIT_FAILURE);
     }
@@ -159,7 +158,7 @@ void DDSEntities::initResponseDataWriter() {
     responseDataWriter = DDSLogTracerMessage::ResponseDataWriter::_narrow(dataWriter);
 
     if (!responseDataWriter) {
-        CLOG (ERROR, DDS_LOG_ID)
+        CLOG (ERROR, LOGTRACER_LOG_ID)
                 << "DDSEntities | ERROR: initResponseDataWriter() - OpenDDS Data Writer narrowing failed. ";
         exit(EXIT_FAILURE);
     }
@@ -175,7 +174,7 @@ void DDSEntities::initRequestDataWriter() {
             topicRequest, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataWriter) {
-        CLOG (ERROR, DDS_LOG_ID)
+        CLOG (ERROR, LOGTRACER_LOG_ID)
                 << "DDSEntities | ERROR: initRequestDataWriter() - OpenDDS Data Writer creation failed.";
         exit(EXIT_FAILURE);
     }
@@ -184,30 +183,30 @@ void DDSEntities::initRequestDataWriter() {
     requestDataWriter = DDSLogTracerMessage::RequestDataWriter::_narrow(dataWriter);
 
     if (!requestDataWriter) {
-        CLOG (ERROR, DDS_LOG_ID)
+        CLOG (ERROR, LOGTRACER_LOG_ID)
                 << "DDSEntities | ERROR: initRequestDataWriter() - OpenDDS Data Writer narrowing failed. ";
         exit(EXIT_FAILURE);
     }
 }
 
 void DDSEntities::send(DDSLogTracerMessage::Response res) {
-    CLOG (INFO, DDS_LOG_ID) << "DDSEntities | sending response... ";
+    CLOG (INFO, LOGTRACER_LOG_ID) << "DDSEntities | sending response... ";
 
     DDS::ReturnCode_t error = responseDataWriter->write(res, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | send() write returned " << error;
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | send() write returned " << error;
 
     }
 }
 
 void DDSEntities::send(DDSLogTracerMessage::Request req) {
-    CLOG (INFO, DDS_LOG_ID) << "DDSEntities | sending request... ";
+    CLOG (INFO, LOGTRACER_LOG_ID) << "DDSEntities | sending request... ";
 
     DDS::ReturnCode_t error = requestDataWriter->write(req, DDS::HANDLE_NIL);
 
     if (error != DDS::RETCODE_OK) {
-        CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | send() write returned " << error;
+        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | send() write returned " << error;
 
     }
 }
@@ -223,7 +222,7 @@ DDSEntities::waitUntilReadersConnected(int number) {
     while (true) {
         DDS::PublicationMatchedStatus matches{};
         if (requestDataWriter->get_publication_matched_status(matches) != DDS::RETCODE_OK) {
-            CLOG (ERROR, DDS_LOG_ID) << "DDSEntities | subscription_matched_status failed!";
+            CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | subscription_matched_status failed!";
             exit(EXIT_FAILURE);
         }
 

@@ -20,6 +20,14 @@ namespace montithings {
         InternalDataResponse::input = i;
     }
 
+    const std::vector<std::string> &InternalDataResponse::getExternalPorts() const {
+        return externalPorts;
+    }
+
+    void InternalDataResponse::setExternalPorts(const std::vector<std::string> &ports) {
+        externalPorts = ports;
+    }
+
     const std::multimap<sole::uuid, std::string> &InternalDataResponse::getTracesUuidsWithPortNames() const {
         return tracesUuidsWithPortNames;
     }

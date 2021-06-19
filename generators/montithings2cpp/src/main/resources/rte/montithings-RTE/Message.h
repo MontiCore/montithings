@@ -13,13 +13,13 @@ private:
 public:
     Message(T payload, const sole::uuid &uuid) : payload(tl::optional<T>(payload)), uuid(uuid) {}
 
-    explicit Message(T payload) : payload(tl::optional<T>(payload)) {}
+    explicit Message(T payload) : payload(tl::optional<T>(payload)), uuid(sole::uuid4()) {}
 
     explicit Message(const sole::uuid &uuid) : payload(tl::nullopt), uuid(uuid) {}
 
-    explicit Message(tl::optional<T> payload) : payload(payload) {}
+    explicit Message(tl::optional<T> payload) : payload(payload), uuid(sole::uuid4()) {}
 
-    Message() : payload(tl::nullopt){}
+    Message() : payload(tl::nullopt), uuid(sole::uuid4()){}
 
     tl::optional<T> getPayload() const {
         return payload;

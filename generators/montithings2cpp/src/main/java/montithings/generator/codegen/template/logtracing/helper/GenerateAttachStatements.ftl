@@ -6,14 +6,13 @@ ${tc.signature("comp","config")}
   //comp->getInterface()->getPort${p.getName()?cap_first}()->attach(this);
 </#list>
 
-<#if !comp.isAtomic()>
-  <#list comp.getOutgoingPorts() as p>
-    <#list comp.getAstNode().getConnectors() as connector>
-      <#list connector.getTargetList() as target>
-        <#if target.getQName() == p.getName()>
-          comp->getInterface()->getPort${p.getName()?cap_first}()->attach(this);
-        </#if>
-      </#list>
+
+<#list comp.getOutgoingPorts() as p>
+  <#list comp.getAstNode().getConnectors() as connector>
+    <#list connector.getTargetList() as target>
+      <#if target.getQName() == p.getName()>
+        comp->getInterface()->getPort${p.getName()?cap_first}()->attach(this);
+      </#if>
     </#list>
   </#list>
-</#if>
+</#list>

@@ -66,7 +66,7 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
     ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
-  ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
+    ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     if (timeMode == TIMESYNC) {
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
     setResult(${Identifier.getResultName()});

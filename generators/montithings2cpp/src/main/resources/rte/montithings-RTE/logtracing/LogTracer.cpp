@@ -306,6 +306,7 @@ namespace montithings {
                 sourcesOfPortsMap,
                 varSnapshot,
                 serializedInput,
+                externalPorts,
                 getTraceUuids(inputUuid),
                 getTraceUuidsDecomposed(outputUuid)
         );
@@ -336,6 +337,7 @@ namespace montithings {
                 sourcesOfPortsMap,
                 varSnapshot,
                 serializedInputs,
+                externalPorts,
                 traceUuids,
                 traceUuidsDecomposed
         );
@@ -345,6 +347,11 @@ namespace montithings {
     void
     LogTracer::mapPortToSourceInstance(std::string portName, std::string instanceName) {
         sourcesOfPortsMap[portName] = instanceName;
+    }
+
+    void
+    LogTracer::registerExternalPort(std::string portName){
+        externalPorts.push_back(portName);
     }
 
     TraceInput &LogTracer::getCurrTraceInput() {

@@ -112,6 +112,7 @@ main(int argc, char **argv) {
                 jRes["sources_ports_map"] = dataToJson(internalDataResponse.getSourcesOfPortsMap());
                 jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
                 jRes["inputs"] = internalDataResponse.getInput();
+                jRes["external_ports"] = internalDataResponse.getExternalPorts();
                 jRes["traces"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNames());
                 jRes["traces_decomposed"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNamesDecomposed());
 
@@ -152,6 +153,7 @@ main(int argc, char **argv) {
                 jRes["sources_ports_map"] = dataToJson(internalDataResponse.getSourcesOfPortsMap());
                 jRes["var_snapshot"] = dataToJson(internalDataResponse.getVarSnapshot());
                 jRes["inputs"] = internalDataResponse.getInput();
+                jRes["external_ports"] = internalDataResponse.getExternalPorts();
                 jRes["traces"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNames());
                 jRes["traces_decomposed"] = dataToJson(internalDataResponse.getTracesUuidsWithPortNamesDecomposed());
 
@@ -235,6 +237,8 @@ main(int argc, char **argv) {
     }
 
     interface->addOnResponseCallback(std::bind(&onResponse, std::placeholders::_1, std::placeholders::_2));
+
+    LOG_F (INFO, "Wait for connections...");
     interface->waitUntilReadersConnected(1);
 
     app.port(8080).multithreaded().run();

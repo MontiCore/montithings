@@ -10081,3 +10081,11 @@ a.text-dark:hover, a.text-dark:focus {
     white-space: nowrap;
     cursor: pointer;
 }
+
+.flowchart-operator-inputs, .flowchart-vertical .flowchart-operator-outputs {
+    position: relative;
+    text-align: center;
+    display: table;
+    width: 100%;
+    margin-right: 50px;
+}

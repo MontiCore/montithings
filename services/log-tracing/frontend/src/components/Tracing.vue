@@ -4,13 +4,10 @@
     op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
     {{ internal_data }}<br><br>
     inputs: {{ inputs }} <br><br>
+    external_ports: {{ external_ports }} <br><br>
     traces: {{ traces }} <br><br>
     traces dec: {{ traces_decomposed }} <br><br>
-    vars: {{ var_assignments }}<br><br>
-    <b-alert show v-if="comp_does_not_log_anything">Seems like this component does not log much. Showing generated log
-      entries for corresponding inputs instead.
-    </b-alert>
-    <br>
+    vars: {{ var_assignments }}<br><br>-
     <div v-if="selected_log_uuid.length" class="h-100">
       <div v-if="isFetchingInternalData">
         <b-spinner small label="Small Spinner"></b-spinner>
@@ -93,6 +90,13 @@ export default {
         return [];
       }
     },
+    external_ports: function () {
+      if (this.internal_data.external_ports) {
+        return this.internal_data.external_ports
+      } else {
+        return [];
+      }
+    },
     traces_decomposed: function () {
       if (this.internal_data.traces_decomposed) {
         let res = [];
@@ -167,6 +171,11 @@ export default {
       let source_count = 0;
       // source components
       for (let trace of this.traces) {
+        // if trace points to an external port simply annotate the corresponding port, but do not create a new operator
+        if (this.external_ports.includes(trace.target_port)) {
+          continue;
+        }
+
         let name = trace.trace_uuid + "_" + trace.source;
 
         if (!operators[name]) {
@@ -221,12 +230,17 @@ export default {
 
       let links = {};
       for (let trace of this.traces) {
-        let op_name = trace.trace_uuid + "_" + trace.source;
-        links[op_name + "_" + trace.target_port] = {
-          fromOperator: op_name,
-          fromConnector: "out_" + trace.source_port,
-          toOperator: this.selected_instance,
-          toConnector: "in_" + trace.target_port,
+        if (this.external_ports.includes(trace.target_port)) {
+          // if trace points to an external port simply annotate the corresponding port, but do not create a link
+          operators[this.selected_instance]["properties"]["inputs"]["in_" + trace.target_port]["label"] = trace.target_port + "=" + trace.value;
+        } else {
+          let op_name = trace.trace_uuid + "_" + trace.source;
+          links[op_name + "_" + trace.target_port] = {
+            fromOperator: op_name,
+            fromConnector: "out_" + trace.source_port,
+            toOperator: this.selected_instance,
+            toConnector: "in_" + trace.target_port,
+          }
         }
       }
 
@@ -268,8 +282,8 @@ export default {
     onNewInternalData: function () {
       if (store.state.is_tracing === false) {
         this.buildInitialTree();
-        return true;
       } else {
+        this.updateTree();
         this.updateVarSnapshots();
       }
     },
@@ -285,10 +299,10 @@ export default {
       }
       store.state.trace_data["operators"][selected_operator]["properties"]["class"] = "flowchart-operator-no-fix-width-selected";
 
-      if (Object.keys(store.state.trace_data["operators"][selected_operator]["properties"]["inputs"]).length > 0) {
-        $flowchart.flowchart('setData', store.state.trace_data);
-        return;
-      }
+      //if (Object.keys(store.state.trace_data["operators"][selected_operator]["properties"]["inputs"]).length > 0) {
+      //  $flowchart.flowchart('setData', store.state.trace_data);
+      //  return;
+     // }
 
       for (let inPort in this.inputs) {
         if (this.traces)
@@ -303,10 +317,11 @@ export default {
       if (this.traces_decomposed.length) {
         left = 200;
       }
+
       for (let trace of this.traces_decomposed.reverse()) {
         let name = trace.trace_uuid + "_" + trace.source;
 
-        if (!store.state.trace_data[name]) {
+        if (!store.state.trace_data["operators"][name]) {
           store.state.trace_data["operators"][name] = {
             top: top,
             left: left,
@@ -351,15 +366,6 @@ export default {
       }
 
       left = 0;
-      // update positions of previous operators before inserting
-      if (this.traces.length > 0) {
-        for (const op_name of Object.keys(store.state.trace_data["operators"])) {
-          if(store.state.trace_data["operators"][op_name]["properties"]["is_decomposed"]) {
-
-            store.state.trace_data["operators"][op_name].top += 160;
-          }
-        }
-      }
 
       for (let trace of this.traces.reverse()) {
         let shouldMergeDecomposedTrace = false;
@@ -375,7 +381,6 @@ export default {
             }
           }
         }
-
         if (shouldMergeDecomposedTrace) {
           for (const link_key of Object.keys(store.state.trace_data["links"])) {
             let link = store.state.trace_data["links"][link_key];
@@ -391,13 +396,15 @@ export default {
                 color: "#166fc8"
               }
             }
-
-
           }
         } else {
           let name = trace.trace_uuid + "_" + trace.source;
+          if (!store.state.trace_data["operators"][name] && !this.external_ports.includes(trace.target_port)) {
 
-          if (!store.state.trace_data[name]) {
+            for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+              store.state.trace_data["operators"][op_name].top += 160;
+            }
+
             store.state.trace_data["operators"][name] = {
               top: top,
               left: left,
@@ -412,21 +419,36 @@ export default {
             left += 200;
           }
 
-          store.state.trace_data["operators"][name]["properties"]["outputs"]["out_" + trace.source_port] = {
-            label: trace.source_port + "=" + trace.value,
+          if (store.state.trace_data["operators"][name]) {
+            store.state.trace_data["operators"][name]["properties"]["outputs"]["out_" + trace.source_port] = {
+              label: trace.source_port + "=" + trace.value,
+            }
           }
 
-
           let target_name = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
-          store.state.trace_data["links"][name + "_" + trace.target_port] = {
-            fromOperator: name,
-            fromConnector: "out_" + trace.source_port,
-            toOperator: target_name,
-            toConnector: "in_" + trace.target_port,
+
+          if (this.external_ports.includes(trace.target_port)) {
+            // if trace points to an external port simply annotate the corresponding port, but do not create a link
+            store.state.trace_data["operators"][target_name]["properties"]["inputs"]["in_" + trace.target_port]["label"] =
+                trace.target_port + "=" + trace.value;
+          } else {
+            store.state.trace_data["links"][name + "_" + trace.target_port] = {
+              fromOperator: name,
+              fromConnector: "out_" + trace.source_port,
+              toOperator: target_name,
+              toConnector: "in_" + trace.target_port,
+            }
           }
         }
       }
-
+/*
+      // update positions of previous operators
+      if (newOpCounter > 0) {
+        for (const op_name of Object.keys(store.state.trace_data["operators"])) {
+          store.state.trace_data["operators"][op_name].top += 160;
+        }
+      }
+*/
       $flowchart.flowchart('setData', store.state.trace_data);
     },
   },

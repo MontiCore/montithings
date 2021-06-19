@@ -38,4 +38,6 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
   setResult(result);
   }
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.RegisterExternalPort", [comp, config])}
 }

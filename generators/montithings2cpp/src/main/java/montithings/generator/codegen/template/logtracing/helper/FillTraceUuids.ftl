@@ -6,6 +6,5 @@ ${tc.signature("comp","config")}
   if(${Identifier.getInputName()}.get${p.getName()?cap_first}().has_value()) {
     traceUUIDs.insert(std::make_pair(${Identifier.getInputName()}.get${p.getName()?cap_first}Uuid(), "${p.getName()}"));
     isInputPresent = true;
-    std::cout << "in: " << ${Identifier.getInputName()}.get${p.getName()?cap_first}().value() << std::endl;
   }
 </#list>
