@@ -328,9 +328,9 @@ namespace montithings {
 
                 serializedInputs = lastInput.getSerializedInput();
                 traceUuids = getTraceUuids(lastInput.getUuid());
-                traceUuidsDecomposed = getTraceUuidsDecomposed(relevantTraceOutput->getUuid());
                 varSnapshot = getVariableSnapshot(lastInput.getArrivalTime());
             }
+            traceUuidsDecomposed = getTraceUuidsDecomposed(relevantTraceOutput->getUuid());
         }
 
         InternalDataResponse res(

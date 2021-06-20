@@ -11,7 +11,7 @@ namespace montithings {
     class TraceInput {
     private:
         sole::uuid uuid{};
-        time_t arrival_time;
+        time_t arrivalTime;
         std::vector<LogEntry> logEntries;
         sole::uuid outputRef{};
         std::string serializedInput;
@@ -20,7 +20,7 @@ namespace montithings {
 
     public:
         TraceInput()  {
-            arrival_time = time(nullptr);
+            arrivalTime = time(nullptr);
             uuid = sole::uuid4();
         }
 
@@ -35,11 +35,11 @@ namespace montithings {
         }
 
         time_t getArrivalTime() const {
-            return arrival_time;
+            return arrivalTime;
         }
 
-        void setArrivalTime(time_t arrivalTime) {
-            arrival_time = arrivalTime;
+        void setArrivalTime(time_t aTime) {
+            arrivalTime = aTime;
         }
 
         std::vector<LogEntry> getLogEntries() {
@@ -77,7 +77,7 @@ namespace montithings {
         template<class Archive>
         void serialize(Archive & archive)
         {
-            archive( uuid, arrival_time, logEntries, outputRef, serializedInput, traceIdsWithPortNames );
+            archive( uuid, arrivalTime, logEntries, outputRef, serializedInput, traceIdsWithPortNames );
         }
     };
 }

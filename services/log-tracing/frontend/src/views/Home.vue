@@ -78,7 +78,7 @@ export default {
       try {
         let config = JSON.parse(this.instances_config);
         if ('instances' in config) {
-          return config.instances;
+          return config.instances.sort();
         }
       }
       catch (e) {

@@ -1,14 +1,14 @@
 <template>
   <div class="mt-3 vh-100">
-
+<!--
     op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
     {{ internal_data }}<br><br>
     inputs: {{ inputs }} <br><br>
     external_ports: {{ external_ports }} <br><br>
     traces: {{ traces }} <br><br>
     traces dec: {{ traces_decomposed }} <br><br>
-    vars: {{ var_assignments }}<br><br>-
-    <div v-if="selected_log_uuid.length" class="h-100">
+    vars: {{ var_assignments }}<br><br>-->
+    <div v-if="selected_log_uuid.length" class="h-100 w-100 position-fixed">
       <div v-if="isFetchingInternalData">
         <b-spinner small label="Small Spinner"></b-spinner>
       </div>
@@ -191,7 +191,7 @@ export default {
           }
 
           top += 80;
-          left += 200;
+          left += 250;
           source_count++;
         }
         operators[name]["properties"]["outputs"]["out_" + trace.source_port] = {
@@ -315,7 +315,7 @@ export default {
       let left = 0;
 
       if (this.traces_decomposed.length) {
-        left = 200;
+        left = 250;
       }
 
       for (let trace of this.traces_decomposed.reverse()) {
@@ -381,6 +381,7 @@ export default {
             }
           }
         }
+        console.log("shouldMergeDecomposedTrace:" + shouldMergeDecomposedTrace)
         if (shouldMergeDecomposedTrace) {
           for (const link_key of Object.keys(store.state.trace_data["links"])) {
             let link = store.state.trace_data["links"][link_key];
@@ -397,7 +398,7 @@ export default {
               }
             }
           }
-        } else {
+        }
           let name = trace.trace_uuid + "_" + trace.source;
           if (!store.state.trace_data["operators"][name] && !this.external_ports.includes(trace.target_port)) {
 
@@ -427,11 +428,7 @@ export default {
 
           let target_name = store.state.selected_trace_uuid + "_" + store.state.selected_instance;
 
-          if (this.external_ports.includes(trace.target_port)) {
-            // if trace points to an external port simply annotate the corresponding port, but do not create a link
-            store.state.trace_data["operators"][target_name]["properties"]["inputs"]["in_" + trace.target_port]["label"] =
-                trace.target_port + "=" + trace.value;
-          } else {
+          if (!this.external_ports.includes(trace.target_port)) {
             store.state.trace_data["links"][name + "_" + trace.target_port] = {
               fromOperator: name,
               fromConnector: "out_" + trace.source_port,
@@ -439,6 +436,12 @@ export default {
               toConnector: "in_" + trace.target_port,
             }
           }
+
+
+        if (this.external_ports.includes(trace.target_port)) {
+          // if trace points to an external port simply annotate the corresponding port, but do not create a link
+          store.state.trace_data["operators"][target_name]["properties"]["inputs"]["in_" + trace.target_port]["label"] =
+              trace.target_port + "=" + trace.value;
         }
       }
 /*
