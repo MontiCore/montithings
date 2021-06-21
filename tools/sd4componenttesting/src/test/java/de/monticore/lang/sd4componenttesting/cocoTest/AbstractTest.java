@@ -9,6 +9,7 @@ import de.monticore.lang.sd4componenttesting.util.Error;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
+import montiarc.MontiArcMill;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,10 @@ public abstract class AbstractTest {
     Log.getFindings().clear();
     errorCodePattern = supplyErrorCodePattern();
     assert errorCodePattern != null;
+
+    MontiArcMill.globalScope().clear();
+    MontiArcMill.reset();
+    MontiArcMill.init();
   }
 
   protected abstract Pattern supplyErrorCodePattern();

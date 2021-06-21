@@ -68,25 +68,10 @@ public class SD4ComponentTestingTool {
       this.maGlobalScope.setModelPath(mp);
       this.maGlobalScope.setFileExt("mt");
 
-      System.out.println("initSymbolTable 23");
-      System.out.println(modelPaths[0]);
-
       MontiArcTool tool = new MontiArcTool();
-      System.out.println("initSymbolTable 24");
-      System.out.println(modelPaths[0]);
-
       tool.addBasicTypes();
-      System.out.println("initSymbolTable 25");
-      System.out.println(modelPaths[0]);
-
       tool.processModels(this.maGlobalScope);
-      System.out.println("initSymbolTable 26");
-      System.out.println(modelPaths[0]);
-
     }
-
-    System.out.println("initSymbolTable 30");
-    System.out.println(modelPaths[0]);
 
     componentTypeResolvingDelegate =
       new MCQualifiedName2ComponentTypeResolvingDelegate(this.maGlobalScope);
@@ -98,9 +83,6 @@ public class SD4ComponentTestingTool {
     componentTestingGlobalScope.setFileExt("sd4c");
     componentTestingGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
     componentTestingGlobalScope.addAdaptedComponentInstanceSymbolResolver(componentInstanceResolvingDelegate);
-
-    System.out.println("initSymbolTable 40");
-    System.out.println(modelPaths[0]);
 
     isSymTabInitialized = true;
     return componentTestingGlobalScope;
@@ -115,26 +97,8 @@ public class SD4ComponentTestingTool {
    */
   public ISD4ComponentTestingGlobalScope createSymboltable(ASTSD4Artifact ast,
                                                 File... modelPaths) {
-    System.out.println("Davor");
-    System.out.println(ast);
-    System.out.println(modelPaths.length);
-    System.out.println(modelPaths[0]);
-
     ISD4ComponentTestingGlobalScope globalScope = initSymbolTable(modelPaths);
-
-    System.out.println("Dahinter");
-    System.out.println(ast);
-    System.out.println(modelPaths.length);
-    System.out.println(modelPaths[0]);
-
-    ISD4ComponentTestingGlobalScope t = createSymboltable(ast, globalScope);
-
-    System.out.println("Dahinter hinter dem Dahinter");
-    System.out.println(ast);
-    System.out.println(modelPaths.length);
-    System.out.println(modelPaths[0]);
-
-    return t;
+    return createSymboltable(ast, globalScope);
   }
 
   /**
