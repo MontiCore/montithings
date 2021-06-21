@@ -90,9 +90,6 @@ public abstract class AbstractTest {
     Assertions.assertNotNull(SD4ArtifactAST);
     SD4ComponentTestingTool tool = new SD4ComponentTestingTool();
 
-    System.out.println("jhgjhgjhg");
-    System.out.println(SD4ArtifactAST);
-    System.out.println("cbeehdebwde");
     ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(SD4ArtifactAST, new File(modelPath));
     System.out.println(sc);
     return SD4ArtifactAST;

@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -28,7 +29,25 @@ public class CoCoTest extends AbstractTest {
     SD4ComponentTestingCoCoChecker checker = SD4ComponentTestingCoCos.createChecker();
 
     // When
-    checker.checkAll(getAST(MODEL_PATH, modelToCheck));
+    try {
+      checker.checkAll(getAST(MODEL_PATH, modelToCheck));
+    } catch (Exception e) {
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      e.printStackTrace();
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+      System.out.println("IM TEST JKHJKHJKHJKHJHGJHGJHGJHGJHGHJGJHGJHGJHGJHG");
+    }
 
     // Then
     shouldRejectInvalidInput("", checker, modelToCheck, 0, new SD4ComponentTestingError[] {});
