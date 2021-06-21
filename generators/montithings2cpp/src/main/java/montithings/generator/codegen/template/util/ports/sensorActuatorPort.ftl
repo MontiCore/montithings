@@ -15,7 +15,7 @@ ${tc.includeArgs("template.util.ports.helper.DDSRecorderIncludes", [config, port
 
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
-class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<Message<T>>"}{
+class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
 protected:
 
   ${tc.includeArgs("template.util.ports.helper.DDSRecorderDeclarations", [config, portSymbol])}
@@ -54,19 +54,42 @@ protected:
   ${defineHookPoint("<CppBlock>?portTemplate:provide")}
   }
 
-  void sendToExternal(T nextVal)
+  template <typename A>
+  void handleNextVal(tl::optional<Message<A>> nextValMessage)
   {
-  ${defineHookPoint("<CppBlock>?portTemplate:consume")}
+    // unpacking Message type
+    tl::optional<A> nextVal;
+    if(nextValMessage.has_value()) {
+      Message<A> msg = nextValMessage.value();
+      nextVal = msg.getPayload();
+    }
+
+    ${defineHookPoint("<CppBlock>?portTemplate:consume")}
+ }
+
+
+  void sendToExternal(tl::optional${r"<T>"} nextVal) override
+  {
+    // Type T is a Message type, hand written code, however, expects a primitive type
+    // hence, unpack nextVal first
+    handleNextVal(nextVal);
   }
 
-  void setNextValue(T nextVal) {
+  void setNextValue(T nextVal) override {
     <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
         recordMessage(nextVal);
     </#if>
 
-    Message<T> message(nextVal);
-    Port${"<Message<T>>"}::setNextValue(message);
+    Port${"<T>"}::setNextValue(nextVal);
   }
+
+  template <typename A>
+  void setNextValue(A nextVal) {
+    // hand written code does not wrap values into the Message typ
+    // hence, it has to be done here
+    setNextValue(Message<A>(nextVal));
+  }
+
 
   ${tc.includeArgs("template.util.ports.methods.DDSRecorderRecord", [config, portSymbol])}
 
