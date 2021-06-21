@@ -5,7 +5,7 @@ package de.monticore.lang.sd4componenttesting.util;
  * The enum of all SD4ComponentTesting errors. Extends the mixing interface {@link Error}
  */
 public enum SD4ComponentTestingError implements Error {
-  NO_MODEL_IMPLEMENTATION("0xMTB0010", "Implementation '%s' has no model file!");
+  NO_MODEL_IMPLEMENTATION("0xSD4C0010", "Implementation '%s' has no model file!");
 
   protected final String errorCode;
   protected final String errorMessage;

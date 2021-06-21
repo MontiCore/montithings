@@ -66,7 +66,6 @@ public class SD4ComponentTestingTool {
 
       this.maGlobalScope = MontiArcMill.globalScope();
       this.maGlobalScope.setModelPath(mp);
-      this.maGlobalScope.setFileExt("mt");
 
       MontiArcTool tool = new MontiArcTool();
       tool.addBasicTypes();

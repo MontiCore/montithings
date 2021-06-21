@@ -12,16 +12,7 @@ public class ComponentExists implements SD4ComponentTestingASTSD4CObjectPortCoCo
   @Override
   public void check(ASTSD4CObjectPort node) {
     String implComp = node.getComponent().getQName();
-
-    System.out.println("jkhjkhrjvhrjvhr vrh jk hjhkrcjkrhr cjkh kjh kjher kjrjkrh ");
-    System.out.println(implComp);
-    System.out.println("jkhjkhrjvhrjvhr vrh jk hjhkrcjkrhr cjkh kjh kjher kjrjkrh ");
-
     Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(implComp);
-
-    System.out.println("jkhjkhrjvhrjvhr vrh jk hjhkrcjkrhr cjkh kjh kjher kjrjkrh ");
-    System.out.println(comp.toString());
-    System.out.println("jkhjkhrjvhrjvhr vrh jk hjhkrcjkrhr cjkh kjh kjher kjrjkrh ");
 
     if (!comp.isPresent()) {
       Log.error(String.format(SD4ComponentTestingError.NO_MODEL_IMPLEMENTATION.toString(), implComp));

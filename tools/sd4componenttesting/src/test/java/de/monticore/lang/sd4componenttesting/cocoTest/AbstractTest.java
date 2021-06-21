@@ -6,6 +6,7 @@ import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting.util.Error;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
@@ -41,6 +42,8 @@ public abstract class AbstractTest {
     errorCodePattern = supplyErrorCodePattern();
     assert errorCodePattern != null;
 
+    //See montiarc/check/MontiArcDeriveTest.java
+    //See montiarc/AbstractTest.java
     MontiArcMill.globalScope().clear();
     MontiArcMill.reset();
     MontiArcMill.init();
