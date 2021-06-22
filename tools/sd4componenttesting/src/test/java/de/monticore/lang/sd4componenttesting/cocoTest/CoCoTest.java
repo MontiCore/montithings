@@ -1,7 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting.cocoTest;
 
-import de.monticore.lang.sd4componenttesting._cocos.*;
+import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCoChecker;
+import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;

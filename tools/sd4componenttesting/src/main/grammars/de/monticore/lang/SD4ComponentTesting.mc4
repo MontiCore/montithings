@@ -20,7 +20,7 @@ grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
     interface SD4CElement;
 
     SD4CConnection implements SD4CElement =
-     (source:PortAccess)? "->" target:(PortAccess || ",")* ":" value:Literal ";";
+      (source:PortAccess)? "->" target:(PortAccess || ",")* ":" value:(Literal || ",")* ";";
 
     SD4CExpression implements SD4CElement =
       key("assert") Expression ";";
