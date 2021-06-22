@@ -6,8 +6,8 @@
 package examples.correct;
 
 testdiagram Test for Example {
-	-> value : 12
+	-> value : 12;
 
-  value -> product.value : 12
-  product.result -> secondresult : "bca"
+  value -> product.value : 12;
+  product.result -> secondresult : "bca";
 }

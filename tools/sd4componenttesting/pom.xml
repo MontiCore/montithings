@@ -166,8 +166,17 @@
           <classifier>${grammars.classifier}</classifier>
         </dependency>
 
-
-
+        <dependency>
+          <groupId>montiarc.languages</groupId>
+          <artifactId>behavior-fe</artifactId>
+          <version>${montiarc.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>montiarc.languages</groupId>
+          <artifactId>behavior-fe</artifactId>
+          <classifier>${grammars.classifier}</classifier>
+          <version>${montiarc.version}</version>
+        </dependency>
 
 
       <!-- .. Test Libraries ............................................... -->

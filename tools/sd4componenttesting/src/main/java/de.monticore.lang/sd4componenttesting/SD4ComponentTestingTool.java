@@ -64,6 +64,13 @@ public class SD4ComponentTestingTool {
     MCQualifiedName2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
     if (this.maGlobalScope == null) {
 
+      //TODO Test ob es ohne geht
+      //See montiarc/check/MontiArcDeriveTest.java
+      //See montiarc/AbstractTest.java
+      MontiArcMill.globalScope().clear();
+      MontiArcMill.reset();
+      MontiArcMill.init();
+
       this.maGlobalScope = MontiArcMill.globalScope();
       this.maGlobalScope.setModelPath(mp);
 
@@ -72,10 +79,16 @@ public class SD4ComponentTestingTool {
       tool.processModels(this.maGlobalScope);
     }
 
+    //TODO brauchen wir das noch?
     componentTypeResolvingDelegate =
       new MCQualifiedName2ComponentTypeResolvingDelegate(this.maGlobalScope);
     componentInstanceResolvingDelegate =
       new MCQualifiedName2ComponentInstanceResolvingDelegate(this.maGlobalScope);
+
+    //TODO Test ob es ohne geht
+    SD4ComponentTestingMill.globalScope().clear();
+    SD4ComponentTestingMill.reset();
+    SD4ComponentTestingMill.init();
 
     ISD4ComponentTestingGlobalScope componentTestingGlobalScope = SD4ComponentTestingMill.globalScope();
     componentTestingGlobalScope.setModelPath(mp);

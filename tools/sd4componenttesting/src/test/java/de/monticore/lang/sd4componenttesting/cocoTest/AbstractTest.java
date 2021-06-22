@@ -11,6 +11,7 @@ import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
 import montiarc.MontiArcMill;
+import montiarc.MontiArcTool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,11 +43,6 @@ public abstract class AbstractTest {
     errorCodePattern = supplyErrorCodePattern();
     assert errorCodePattern != null;
 
-    //See montiarc/check/MontiArcDeriveTest.java
-    //See montiarc/AbstractTest.java
-    MontiArcMill.globalScope().clear();
-    MontiArcMill.reset();
-    MontiArcMill.init();
   }
 
   protected abstract Pattern supplyErrorCodePattern();
@@ -99,6 +95,7 @@ public abstract class AbstractTest {
     SD4ComponentTestingTool tool = new SD4ComponentTestingTool();
 
     ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(SD4ArtifactAST, new File(modelPath));
+
     System.out.println(sc);
     return SD4ArtifactAST;
   }

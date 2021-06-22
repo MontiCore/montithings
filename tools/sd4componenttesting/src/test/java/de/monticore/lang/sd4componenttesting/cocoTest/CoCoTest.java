@@ -29,7 +29,6 @@ public class CoCoTest extends AbstractTest {
     // When
     checker.checkAll(getAST(MODEL_PATH, modelToCheck));
 
-    System.out.println(Log.getFindings());
 
     // Then
     shouldRejectInvalidInput("", checker, modelToCheck, 0, new SD4ComponentTestingError[] {});

@@ -7,15 +7,15 @@ package examples.correct;
 
 testdiagram Test for Example {
 
-  value -> sum.value : 12
-  sum.result -> result : 24
+  value -> sum.value : 12;
+  sum.result -> result : 24;
 
-  assert result <= 200
+  assert result <= 200;
 
-  value -> product.value : "abc"
-  product.result -> secondresult : "bca"
+  value -> product.value : "abc";
+  product.result -> secondresult : "bca";
 
-  assert result + secondresult >= value * 2
+  assert result + secondresult >= value * 2;
 
-  result -> : 24
+  result -> : 24;
 }

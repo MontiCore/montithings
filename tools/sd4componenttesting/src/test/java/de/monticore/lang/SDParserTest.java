@@ -38,7 +38,6 @@ public class SDParserTest {
   @ParameterizedTest
   @CsvSource({
     "ConnectionTest.sd4c",
-    "ConnectionTestShort.sd4c",
     "EmptyTestDiagram.sd4c",
     "ExpressionsTest.sd4c",
     "FullTest.sd4c",
