@@ -17,25 +17,10 @@ grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
       "}";
 
 
-    interface SD4CComponent;
-
-    SD4CObjectPort implements SD4CComponent =
-      component:MCQualifiedName "." port:MCQualifiedName;
-
-    SD4CPort implements SD4CComponent =
-      port:MCQualifiedName;
-
-
     interface SD4CElement;
 
     SD4CConnection implements SD4CElement =
-      source:SD4CComponent "->" sink:SD4CComponent ":" value:Literal;
-
-    SD4CCInput implements SD4CElement =
-      "->" sink:SD4CComponent ":" value:Literal;
-
-    SD4CCOutput implements SD4CElement =
-      source:SD4CComponent "->" ":" value:Literal;
+     source:PortAccess "->" target:(PortAccess || ",")* ":" value:Literal;
 
     SD4CExpression implements SD4CElement =
       key("assert") Expression;
