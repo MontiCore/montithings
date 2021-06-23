@@ -6,7 +6,7 @@
 package examples.cocoTest.valid;
 
 testdiagram MainTest for Main {
-  value -> sumCom.first : 12;
-  value -> sumCom.second: 13;
-  sumCom.result -> result : 25;
+  value -> sum.first : 12;
+  value -> sum.second: 13;
+  sum.result -> result : 25;
 }

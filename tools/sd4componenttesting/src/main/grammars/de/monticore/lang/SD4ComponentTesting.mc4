@@ -2,10 +2,10 @@ package de.monticore.lang;
 
 grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
                                     MontiArc  {
-    start SD4Artifact;
+    start SDArtifact;
 
-
-    SD4Artifact =
+    @Override
+    SDArtifact =
       ("package" packageDeclaration:MCQualifiedName& ";")?
       MCImportStatement*
       TestDiagram;

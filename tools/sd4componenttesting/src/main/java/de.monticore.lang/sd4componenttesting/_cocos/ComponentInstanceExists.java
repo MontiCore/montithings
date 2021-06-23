@@ -1,12 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting._cocos;
 
-import arcbasis._ast.ASTComponentInstance;
 import arcbasis._ast.ASTPortAccess;
-import arcbasis._cocos.ArcBasisASTComponentInstanceCoCo;
 import arcbasis._cocos.ArcBasisASTPortAccessCoCo;
 import arcbasis._symboltable.ComponentTypeSymbol;
-import de.se_rwth.commons.logging.Log;
+import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
+import jdk.internal.org.jline.utils.Log;
 
 import java.util.Optional;
 
@@ -14,14 +13,19 @@ public class ComponentInstanceExists implements ArcBasisASTPortAccessCoCo {
 
   @Override
   public void check(ASTPortAccess node) {
+    if (node.isPresentComponent()) {
+      String componentInterfaceName = node.getComponent();
+      Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(componentInterfaceName);
 
-    node.getComponent();
-    /*
-    String implComp = node.getImplementationComponent().getQName();
-    Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(implComp);
+      if (!comp.isPresent()) {
+        Log.error(String.format(SD4ComponentTestingError.NO_MODEL_IMPLEMENTATION.toString(), comp));
+      }
+      //Log.error(String.format(SD4ComponentTestingError.NO_MODEL_IMPLEMENTATION.toString(), comp));
+    }
 
-    if (!comp.isPresent()) {
-      Log.error(String.format(BindingsError.NO_MODEL_IMPLEMENTATION.toString(), implComp));
-    }*/
+
+    //TODO: eventuell in Check Methode von ASTSD4Artifact alle Nodes testen (dort ist der Package Name vorhanden)
+    //Element mit allen AST Elementen
+    //node.getEnclosingScope().getDiagramSymbols().get("MainTest")
   }
 }

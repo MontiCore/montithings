@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting.cocoTest;
 
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4ComponentTestingNode;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCoChecker;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
@@ -28,22 +29,24 @@ public class CoCoTest extends AbstractTest {
     SD4ComponentTestingCoCoChecker checker = SD4ComponentTestingCoCos.createChecker();
 
     // When
-    checker.checkAll(getAST(MODEL_PATH, modelToCheck));
-
+    //TODO check warum es gecastet werden muss
+    checker.checkAll((ASTSD4ComponentTestingNode) getAST(MODEL_PATH, modelToCheck));
 
     // Then
-    shouldRejectInvalidInput("", checker, modelToCheck, 0, new SD4ComponentTestingError[] {});
+    Assertions.assertEquals(0, Log.getErrorCount());
+    this.checkExpectedErrorsPresent(Log.getFindings(), new SD4ComponentTestingError[] {});
   }
 
   @ParameterizedTest(name = "[{index}] {0}")
   @MethodSource("invalidInput")
   void shouldRejectInvalidInput(
     //Given
-    String testName, SD4ComponentTestingCoCoChecker checker, String modelToCheck,
+    SD4ComponentTestingCoCoChecker checker, String modelToCheck,
     int errorCount, SD4ComponentTestingError[] expectedErrors) {
 
     // When
-    checker.checkAll(getAST(MODEL_PATH, modelToCheck));
+    //TODO check warum es gecastet werden muss
+    checker.checkAll((ASTSD4ComponentTestingNode) getAST(MODEL_PATH, modelToCheck));
 
     // Then
     Assertions.assertEquals(errorCount, Log.getErrorCount());
@@ -57,6 +60,13 @@ public class CoCoTest extends AbstractTest {
   }
 
   protected static Stream<Arguments> invalidInput() {
-    return Stream.of();
+    return Stream.of(
+      Arguments.of(
+        SD4ComponentTestingCoCos.createChecker(),
+        "valid/MainTest.sd4c",
+        0,
+        new SD4ComponentTestingError[] {}
+      )
+    );
   }
 }

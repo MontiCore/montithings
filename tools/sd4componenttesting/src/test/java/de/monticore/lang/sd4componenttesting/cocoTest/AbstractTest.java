@@ -2,16 +2,13 @@
 package de.monticore.lang.sd4componenttesting.cocoTest;
 
 import de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool;
-import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
+import de.monticore.lang.sd4componenttesting._ast.ASTSDArtifact;
 import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting.util.Error;
-import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
-import montiarc.MontiArcMill;
-import montiarc.MontiArcTool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,20 +80,20 @@ public abstract class AbstractTest {
     return errorCodes;
   }
 
-  public ASTSD4Artifact getAST(String modelPath, String fileName) {
-    ASTSD4Artifact SD4ArtifactAST = null;
+  public ASTSDArtifact getAST(String modelPath, String fileName) {
+    ASTSDArtifact SDArtifactAST = null;
     try {
-      SD4ArtifactAST = new SD4ComponentTestingParser().parseSD4Artifact(modelPath + fileName).orElse(null);
+      SDArtifactAST = new SD4ComponentTestingParser().parseSDArtifact(modelPath + fileName).orElse(null);
     }
     catch (IOException e) {
       Log.error("File '" + modelPath + fileName + "' SD4Artifact artifact was not found");
     }
-    Assertions.assertNotNull(SD4ArtifactAST);
+    Assertions.assertNotNull(SDArtifactAST);
     SD4ComponentTestingTool tool = new SD4ComponentTestingTool();
 
-    ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(SD4ArtifactAST, new File(modelPath));
+    ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(SDArtifactAST, new File(modelPath));
 
     System.out.println(sc);
-    return SD4ArtifactAST;
+    return SDArtifactAST;
   }
 }
