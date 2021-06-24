@@ -8,7 +8,12 @@ import cdlangextension._symboltable.*;
 import cdlangextension.util.CDLangExtensionError;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeScopesGenitorDelegator;
+import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code.resolver.CD4CodeResolver;
+import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.paths.ModelPath;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.io.FilenameUtils;
@@ -77,24 +82,43 @@ public class CDLangExtensionTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    ICDLangExtensionGlobalScope cDLangExtensionGlobalScope = CDLangExtensionMill.globalScope();
-    //cDLangExtensionGlobalScope.setFileExt(FILE_ENDING);
-    cDLangExtensionGlobalScope.setModelPath(mp);
-    /*
-    cDLangExtensionGlobalScope.addAdaptedFieldSymbolResolver(cd4aResolver);
-    cDLangExtensionGlobalScope.addAdaptedTypeSymbolResolver(cd4aResolver);
-    cDLangExtensionGlobalScope.addAdaptedCDTypeSymbolResolver(cd4aResolver);
-    */
+    // Load all CD files
+    CD4CodeMill.globalScope().clear();
+    CD4CodeMill.reset();
+    CD4CodeMill.init();
+    CD4CodeMill.globalScope().setModelPath(mp);
+    CD4CodeMill.globalScope().setFileExt("cd");
+    for (File mP : modelPaths) {
+      Collection<ICD4CodeArtifactScope> scopes = loadAllCDs(mP.toPath());
+      for (ICD4CodeArtifactScope currentScope : scopes) {
+        CD4CodeMill.globalScope().addSubScope(currentScope);
+      }
+    }
+    CD4CodeResolver resolver = new CD4CodeResolver(CD4CodeMill.globalScope());
 
+
+    CDLangExtensionMill.reset();
+    CDLangExtensionMill.init();
+    ICDLangExtensionGlobalScope cDLangExtensionGlobalScope = CDLangExtensionMill.globalScope();
+    cDLangExtensionGlobalScope.setModelPath(mp);
+    cDLangExtensionGlobalScope.addAdaptedFieldSymbolResolver(resolver);
+    cDLangExtensionGlobalScope.addAdaptedTypeSymbolResolver(resolver);
+
+    // Load add Sym files
+    // frontLoadSymFiles(cDLangExtensionGlobalScope, modelPaths);
+
+    isSymTabInitialized = true;
+    return cDLangExtensionGlobalScope;
+  }
+
+  protected void frontLoadSymFiles(ICDLangExtensionGlobalScope cDLangExtensionGlobalScope,
+    File[] modelPaths) {
     for (File mP : modelPaths) {
       Collection<ICDLangExtensionArtifactScope> scopes = loadAll(mP.toPath());
       for (ICDLangExtensionArtifactScope currentScope : scopes) {
         cDLangExtensionGlobalScope.addSubScope(currentScope);
       }
     }
-
-    isSymTabInitialized = true;
-    return cDLangExtensionGlobalScope;
   }
 
   public ICDLangExtensionArtifactScope load(@NotNull Path file) {
@@ -120,6 +144,45 @@ public class CDLangExtensionTool {
       return paths.filter(Files::isRegularFile)
         .filter(file -> file.getFileName().toString().endsWith("sym"))
         .map(this::load)
+        .collect(Collectors.toSet());
+    }
+    catch (IOException e) {
+      Log.error(
+        String.format(CDLangExtensionError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        e);
+    }
+    return Collections.emptySet();
+  }
+
+  public ICD4CodeArtifactScope loadCD(@NotNull Path file) {
+    Preconditions.checkArgument(file != null);
+    Preconditions.checkArgument(file.toFile().exists(), file.toString());
+    Preconditions.checkArgument(file.toFile().isFile(), file.toString());
+    Preconditions.checkArgument(
+      FilenameUtils.getExtension(file.getFileName().toString()).endsWith("cd"));
+    try {
+      ASTCDCompilationUnit cdcu = CD4CodeMill.parser().parse(file.toString()).get();
+      CD4CodeScopesGenitorDelegator symTab = CD4CodeMill.scopesGenitorDelegator();
+      return symTab.createFromAST(cdcu);
+    } catch (IOException e) {
+      Log.error("Oh NO!");
+    }
+    return null;
+  }
+
+  public ICD4CodeArtifactScope loadCD(@NotNull String filename) {
+    Preconditions.checkArgument(filename != null);
+    return this.loadCD(Paths.get(filename));
+  }
+
+  public Collection<ICD4CodeArtifactScope> loadAllCDs(@NotNull Path directory) {
+    Preconditions.checkArgument(directory != null);
+    Preconditions.checkArgument(directory.toFile().exists());
+    Preconditions.checkArgument(directory.toFile().isDirectory());
+    try (Stream<Path> paths = Files.walk(directory)) {
+      return paths.filter(Files::isRegularFile)
+        .filter(file -> file.getFileName().toString().endsWith("cd"))
+        .map(this::loadCD)
         .collect(Collectors.toSet());
     }
     catch (IOException e) {
