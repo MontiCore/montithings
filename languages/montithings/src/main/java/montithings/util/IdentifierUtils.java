@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class IdentifierUtils {
 
-  // Util class prevent instantiation
+  // Util class - prevent instantiation
   private IdentifierUtils() {
   }
 

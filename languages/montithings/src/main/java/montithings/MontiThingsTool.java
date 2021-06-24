@@ -330,4 +330,11 @@ public class MontiThingsTool implements IMontiThingsTool {
     this.processModels(mtScope);
     return mtScope;
   }
+
+  public IMontiThingsGlobalScope processModels(@NotNull ModelPath modelPath) {
+    Preconditions.checkArgument(modelPath != null);
+    IMontiThingsGlobalScope mtScope = this.createMTGlobalScope(modelPath);
+    this.processModels(mtScope);
+    return mtScope;
+  }
 }

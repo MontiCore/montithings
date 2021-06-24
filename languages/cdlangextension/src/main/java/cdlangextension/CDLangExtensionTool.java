@@ -96,7 +96,6 @@ public class CDLangExtensionTool {
     }
     CD4CodeResolver resolver = new CD4CodeResolver(CD4CodeMill.globalScope());
 
-
     CDLangExtensionMill.reset();
     CDLangExtensionMill.init();
     ICDLangExtensionGlobalScope cDLangExtensionGlobalScope = CDLangExtensionMill.globalScope();

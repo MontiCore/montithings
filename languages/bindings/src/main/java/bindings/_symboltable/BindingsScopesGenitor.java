@@ -4,10 +4,15 @@ package bindings._symboltable;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
+import bindings._ast.ASTBindingsCompilationUnit;
 
 import java.util.Optional;
 
 public class BindingsScopesGenitor extends BindingsScopesGenitorTOP {
+
+  @Override protected void initArtifactScopeHP1(IBindingsArtifactScope scope) {
+    scope.setName("");
+  }
 
   @Override public void visit(ASTBindingRule node) {
     super.visit(node);

@@ -22,7 +22,7 @@ grammar Bindings extends de.monticore.types.MCBasicTypes, MontiArc {
     )
     "->"
     implementationComponent:Name@ComponentType";";
-    */
+*/
 
   BindingRule implements Element =
     ((["instance"] interfaceInstance:MCQualifiedName)|interfaceComponent:MCQualifiedName)

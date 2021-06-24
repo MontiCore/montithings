@@ -18,6 +18,7 @@ import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
+import javax.naming.Binding;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -80,27 +81,26 @@ public class BindingsTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
-    MCQualifiedName2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
     if (this.mtGlobalScope == null) {
       this.mtGlobalScope = MontiThingsMill.globalScope();
       this.mtGlobalScope.setModelPath(mp);
       this.mtGlobalScope.setFileExt("mt");
       MontiThingsTool tool = new MontiThingsTool();
-      tool.processModels(this.mtGlobalScope);
+      tool.processModels(mp);
     }
-    componentTypeResolvingDelegate =
+    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate =
       new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
-    componentInstanceResolvingDelegate =
+    MCQualifiedName2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate =
       new MCQualifiedName2ComponentInstanceResolvingDelegate(this.mtGlobalScope);
 
+
+    BindingsMill.reset();
+    BindingsMill.init();
     IBindingsGlobalScope bindingsGlobalScope = BindingsMill.globalScope();
     bindingsGlobalScope.setModelPath(mp);
     bindingsGlobalScope.setFileExt("mtb");
-    bindingsGlobalScope
-      .addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
-    bindingsGlobalScope
-      .addAdaptedComponentInstanceSymbolResolver(componentInstanceResolvingDelegate);
+    bindingsGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
+    bindingsGlobalScope.addAdaptedComponentInstanceSymbolResolver(componentInstanceResolvingDelegate);
 
     isSymTabInitialized = true;
     return bindingsGlobalScope;

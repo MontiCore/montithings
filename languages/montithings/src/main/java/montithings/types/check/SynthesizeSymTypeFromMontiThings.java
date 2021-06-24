@@ -54,7 +54,11 @@ public class SynthesizeSymTypeFromMontiThings
   public TypeCheckResult typeCheckResult;
 
   public Optional<SymTypeExpression> getResult() {
-    return Optional.of(typeCheckResult.getCurrentResult());
+    if (typeCheckResult.isPresentCurrentResult()) {
+      return Optional.of(typeCheckResult.getCurrentResult());
+    } else {
+      return Optional.empty();
+    }
   }
 
   public void setTypeCheckResult(TypeCheckResult typeCheckResult) {

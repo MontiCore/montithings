@@ -5,32 +5,19 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;
+import mtconfig.MTConfigMill;
 import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._ast.ASTPortTemplateTag;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.Optional;
 
 /**
  * Symbol table creator.
  */
 public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
-
-  public MTConfigScopesGenitor() {
-    super();
-  }
-
-  public MTConfigScopesGenitor(IMTConfigScope enclosingScope) {
-    super(enclosingScope);
-  }
-
-  public MTConfigScopesGenitor(
-      Deque<? extends IMTConfigScope> scopeStack) {
-    super(scopeStack);
-  }
 
   /**
    * Creates MTConfigArtifactScope from ast.
@@ -42,13 +29,11 @@ public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
   public IMTConfigArtifactScope createFromAST(@NotNull ASTMTConfigUnit rootNode) {
     Preconditions.checkArgument(rootNode != null);
 
-    IMTConfigArtifactScope artifactScope = mtconfig.MTConfigMill.mTConfigArtifactScopeBuilder()
-        .setPackageName(rootNode.getPackage().getQName())
-        .setImportsList(new ArrayList<>())
-        .build();
+    IMTConfigArtifactScope artifactScope = MTConfigMill.artifactScope();
+    artifactScope.setPackageName(rootNode.getPackage().getQName());
+    artifactScope.setImportsList(new ArrayList<>());
     putOnStack(artifactScope);
-    rootNode.accept(getRealThis());
-
+    rootNode.accept(getTraverser());
     return artifactScope;
   }
 
@@ -63,12 +48,17 @@ public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
     }
     else {
       Log.error("Could not set enclosing scope of ASTNode \"" + node
-          + "\", because no scope is set yet!");
+        + "\", because no scope is set yet!");
     }
-    mtconfig._symboltable.IMTConfigScope scope = create_MTConfigUnit(node);
-    initialize_MTConfigUnit(scope, node);
-    //putOnStack(scope);
-    setLinkBetweenSpannedScopeAndNode(scope, node);
+    mtconfig._symboltable.IMTConfigScope scope = createScope(false);
+    // putOnStack(scope);
+
+    // scope -> ast
+    scope.setAstNode(node);
+
+    // ast -> scope
+    node.setSpannedScope(scope);
+    initScopeHP1(scope);
   }
 
   @Override
@@ -80,8 +70,8 @@ public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
    * @param ast AST containing name and platform used for symbol creation.
    * @return symbol with component_platform as name.
    */
-  protected  mtconfig._symboltable.CompConfigSymbol create_CompConfig (mtconfig._ast.ASTCompConfig ast)  {
-    return mtconfig.MTConfigMill.compConfigSymbolBuilder().setName(ast.getName()+"_"+ast.getPlatform()).build();
+  protected CompConfigSymbol create_CompConfig (ASTCompConfig ast)  {
+    return MTConfigMill.compConfigSymbolBuilder().setName(ast.getName()+"_"+ast.getPlatform()).build();
   }
 
   @Override public void visit(ASTCompConfig node) {

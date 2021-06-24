@@ -8,15 +8,15 @@ import de.monticore.io.paths.ModelPath;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
+import mtconfig.MTConfigMill;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCoChecker;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._symboltable.IMTConfigArtifactScope;
 import mtconfig._symboltable.IMTConfigGlobalScope;
-import mtconfig._symboltable.MTConfigSymbolTableCreatorDelegator;
+import mtconfig._symboltable.MTConfigScopesGenitorDelegator;
 import mtconfig._symboltable.adapters.MCQualifiedName2PortResolvingDelegate;
 import org.codehaus.commons.nullanalysis.NotNull;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,29 +69,22 @@ public class MTConfigTool {
 
     final ModelPath mp = new ModelPath(p);
 
-
-    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
-    MCQualifiedName2PortResolvingDelegate portResolvingDelegate;
     if(this.mtGlobalScope == null) {
+      MontiThingsMill.reset();
+      MontiThingsMill.init();
       IMontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.globalScope();
       newMtGlobalScope.setModelPath(mp);
       newMtGlobalScope.setFileExt("mt");
       this.mtGlobalScope = newMtGlobalScope;
       MontiThingsTool tool = new MontiThingsTool();
-      tool.processModels(this.mtGlobalScope);
-      componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(newMtGlobalScope);
-      portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(newMtGlobalScope);
-    }
-    else{
-      componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
-      portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
+      tool.processModels(mp);
     }
 
-    IMTConfigGlobalScope mtConfigGlobalScope = MTConfigMill
-      .mTConfigGlobalScopeBuilder()
-      .setModelPath(mp)
-      .setModelFileExtension("mtcfg")
-      .build();
+    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
+    MCQualifiedName2PortResolvingDelegate portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
+
+    IMTConfigGlobalScope mtConfigGlobalScope = MTConfigMill.globalScope();
+    mtConfigGlobalScope.setModelPath(mp);
     mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
     mtConfigGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
 
@@ -124,7 +117,7 @@ public class MTConfigTool {
   public IMTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
       IMTConfigGlobalScope globalScope) {
 
-    MTConfigSymbolTableCreatorDelegator stc = new MTConfigSymbolTableCreatorDelegator(globalScope);
+    MTConfigScopesGenitorDelegator stc = new MTConfigScopesGenitorDelegator();
     artifactScope = stc.createFromAST(ast);
 
     return globalScope;
