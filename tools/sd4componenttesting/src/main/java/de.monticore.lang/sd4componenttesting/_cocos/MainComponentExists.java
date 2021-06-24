@@ -13,9 +13,5 @@ public class MainComponentExists implements SD4ComponentTestingASTTestDiagramCoC
   @Override
   public void check(ASTTestDiagram node) {
     Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(node.getMainComponent());
-    if (!comp.isPresent()) {
-      Log.error(String.format(SD4ComponentTestingError.NO_MODEL_IMPLEMENTATION.toString(), comp));
-    }
-    Log.error(String.format(SD4ComponentTestingError.NO_MODEL_IMPLEMENTATION.toString(), comp));
   }
 }

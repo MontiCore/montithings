@@ -15,15 +15,7 @@ public class ComponentInstanceExists implements ArcBasisASTPortAccessCoCo {
   public void check(ASTPortAccess node) {
 
     //TODO: evaluate node.getSymbol().getPackageDeclaration()
-    if (node.isPresentComponent()) {
-      String componentInterfaceName = node.getComponent();
-      Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(componentInterfaceName);
-
-      if (!comp.isPresent()) {
-        Log.error(String.format(SD4ComponentTestingError.NO_MODEL_IMPLEMENTATION.toString(), comp));
-      }
-      //Log.error(String.format(SD4ComponentTestingError.NO_MODEL_IMPLEMENTATION.toString(), comp));
-    }
+      String componentInterfaceName = node.getQName();
 
 
     //TODO: eventuell in Check Methode von ASTSD4Artifact alle Nodes testen (dort ist der Package Name vorhanden)

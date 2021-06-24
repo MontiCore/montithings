@@ -124,6 +124,7 @@ public class SD4ComponentTestingTool {
   public ISD4ComponentTestingGlobalScope createSymboltable(ASTSD4Artifact ast,
                                                 ISD4ComponentTestingGlobalScope globalScope) {
 
+    //TODO vermutlich falsch, delegator werden nicht aufgerufen
     SD4ComponentTestingScopesGenitorDelegator stc = new SD4ComponentTestingScopesGenitorDelegator();
     stc.createFromAST(ast);
 

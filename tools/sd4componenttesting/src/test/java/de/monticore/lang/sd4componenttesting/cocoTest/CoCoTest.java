@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting.cocoTest;
 
-import de.monticore.lang.sd4componenttesting._ast.ASTSD4ComponentTestingNode;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCoChecker;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
@@ -25,16 +24,21 @@ public class CoCoTest extends AbstractTest {
   @ParameterizedTest(name = "[{index}] {0}")
   @MethodSource("validInput")
   void shouldAcceptValidInput(String modelToCheck) {
-    //Given
-    SD4ComponentTestingCoCoChecker checker = SD4ComponentTestingCoCos.createChecker();
+    try {
+      //Given
+      SD4ComponentTestingCoCoChecker checker = SD4ComponentTestingCoCos.createChecker();
 
-    // When
-    //TODO check warum es gecastet werden muss
-    checker.checkAll(getAST(MODEL_PATH, modelToCheck));
+      // When
+      checker.checkAll(getAST(MODEL_PATH, modelToCheck));
 
-    // Then
-    Assertions.assertEquals(0, Log.getErrorCount());
-    this.checkExpectedErrorsPresent(Log.getFindings(), new SD4ComponentTestingError[] {});
+      // Then
+      Assertions.assertEquals(0, Log.getErrorCount());
+      this.checkExpectedErrorsPresent(Log.getFindings(), new SD4ComponentTestingError[]{});
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
   }
 
   @ParameterizedTest(name = "[{index}] {0}")
@@ -45,7 +49,6 @@ public class CoCoTest extends AbstractTest {
     int errorCount, SD4ComponentTestingError[] expectedErrors) {
 
     // When
-    //TODO check warum es gecastet werden muss
     checker.checkAll(getAST(MODEL_PATH, modelToCheck));
 
     // Then
@@ -60,6 +63,11 @@ public class CoCoTest extends AbstractTest {
   }
 
   protected static Stream<Arguments> invalidInput() {
+    return Stream.of();
+  }
+
+/*
+  protected static Stream<Arguments> invalidInput() {
     return Stream.of(
       Arguments.of(
         SD4ComponentTestingCoCos.createChecker(),
@@ -68,5 +76,5 @@ public class CoCoTest extends AbstractTest {
         new SD4ComponentTestingError[] {}
       )
     );
-  }
+  }*/
 }
