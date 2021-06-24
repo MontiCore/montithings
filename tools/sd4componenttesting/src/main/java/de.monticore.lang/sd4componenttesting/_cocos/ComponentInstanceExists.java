@@ -5,7 +5,7 @@ import arcbasis._ast.ASTPortAccess;
 import arcbasis._cocos.ArcBasisASTPortAccessCoCo;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
-import jdk.internal.org.jline.utils.Log;
+import de.se_rwth.commons.logging.Log;
 
 import java.util.Optional;
 
