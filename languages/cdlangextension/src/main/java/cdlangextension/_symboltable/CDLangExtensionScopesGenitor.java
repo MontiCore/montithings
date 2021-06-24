@@ -2,7 +2,7 @@
 package cdlangextension._symboltable;
 
 import cdlangextension._ast.ASTCDEImportStatement;
-import de.monticore.cdbasis._symboltable.CDTypeSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ public class CDLangExtensionScopesGenitor extends CDLangExtensionScopesGenitorTO
 
   @Override public void visit(ASTCDEImportStatement node) {
     super.visit(node);
-    Optional<CDTypeSymbol> symbol = node.getEnclosingScope().resolveCDType(node.getCdType().getQName());
-    symbol.ifPresent(node::setCdTypeSymbol);
+    Optional<TypeSymbol> symbol = node.getEnclosingScope().resolveType(node.getCdType().getQName());
+    symbol.ifPresent(node::setTypeSymbol);
   }
 }

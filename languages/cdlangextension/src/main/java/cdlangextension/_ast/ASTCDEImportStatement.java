@@ -1,21 +1,21 @@
 // (c) https://github.com/MontiCore/monticore
 package cdlangextension._ast;
 
-import de.monticore.cdbasis._symboltable.CDTypeSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 
 /**
  * AST that provides necessary import information for CDTypes.
  */
 public class ASTCDEImportStatement extends ASTCDEImportStatementTOP {
 
-  CDTypeSymbol cdTypeSymbol;
+  TypeSymbol typeSymbol;
 
-  public CDTypeSymbol getCdTypeSymbol() {
-    return cdTypeSymbol;
+  public TypeSymbol getTypeSymbol() {
+    return typeSymbol;
   }
 
-  public void setCdTypeSymbol(CDTypeSymbol cdTypeSymbol) {
-    this.cdTypeSymbol = cdTypeSymbol;
+  public void setTypeSymbol(TypeSymbol typeSymbol) {
+    this.typeSymbol = typeSymbol;
   }
 
   @Override public String getName() {
