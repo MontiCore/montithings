@@ -2,7 +2,7 @@
 package de.monticore.lang.sd4componenttesting.cocoTest;
 
 import de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool;
-import de.monticore.lang.sd4componenttesting._ast.ASTSDArtifact;
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting.util.Error;
@@ -80,20 +80,20 @@ public abstract class AbstractTest {
     return errorCodes;
   }
 
-  public ASTSDArtifact getAST(String modelPath, String fileName) {
-    ASTSDArtifact SDArtifactAST = null;
+  public ASTSD4Artifact getAST(String modelPath, String fileName) {
+    ASTSD4Artifact SD4ArtifactAST = null;
     try {
-      SDArtifactAST = new SD4ComponentTestingParser().parseSDArtifact(modelPath + fileName).orElse(null);
+      SD4ArtifactAST = new SD4ComponentTestingParser().parseSD4Artifact(modelPath + fileName).orElse(null);
     }
     catch (IOException e) {
       Log.error("File '" + modelPath + fileName + "' SD4Artifact artifact was not found");
     }
-    Assertions.assertNotNull(SDArtifactAST);
+    Assertions.assertNotNull(SD4ArtifactAST);
     SD4ComponentTestingTool tool = new SD4ComponentTestingTool();
 
-    ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(SDArtifactAST, new File(modelPath));
+    ISD4ComponentTestingGlobalScope sc = tool.createSymboltable(SD4ArtifactAST, new File(modelPath));
 
     System.out.println(sc);
-    return SDArtifactAST;
+    return SD4ArtifactAST;
   }
 }

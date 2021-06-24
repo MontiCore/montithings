@@ -30,7 +30,7 @@ public class CoCoTest extends AbstractTest {
 
     // When
     //TODO check warum es gecastet werden muss
-    checker.checkAll((ASTSD4ComponentTestingNode) getAST(MODEL_PATH, modelToCheck));
+    checker.checkAll(getAST(MODEL_PATH, modelToCheck));
 
     // Then
     Assertions.assertEquals(0, Log.getErrorCount());
@@ -46,7 +46,7 @@ public class CoCoTest extends AbstractTest {
 
     // When
     //TODO check warum es gecastet werden muss
-    checker.checkAll((ASTSD4ComponentTestingNode) getAST(MODEL_PATH, modelToCheck));
+    checker.checkAll(getAST(MODEL_PATH, modelToCheck));
 
     // Then
     Assertions.assertEquals(errorCount, Log.getErrorCount());

@@ -1,7 +1,7 @@
 /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.lang;
 
-import de.monticore.lang.sd4componenttesting._ast.ASTSDArtifact;
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +60,7 @@ public class SDParserTest {
 
   private void testParseModel(String path, String model) {
     try {
-      Optional<ASTSDArtifact> ast = parser.parse(path + model);
+      Optional<ASTSD4Artifact> ast = parser.parse(path + model);
       assertTrue(ast.isPresent(), "Failed to parse model: " + model);
     } catch (IOException | NoSuchElementException e) {
       System.err.println("Loading model: " + model + " failed: " + e.getMessage());

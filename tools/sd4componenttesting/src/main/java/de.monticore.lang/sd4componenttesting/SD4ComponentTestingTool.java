@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting;
 
-import de.monticore.lang.sd4componenttesting._ast.ASTSDArtifact;
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCoChecker;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
 import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingScopesGenitorDelegator;
@@ -108,7 +108,7 @@ public class SD4ComponentTestingTool {
    * @param modelPaths path that contains all models
    * @return created global scope
    */
-  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSDArtifact ast,
+  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSD4Artifact ast,
                                                 File... modelPaths) {
     ISD4ComponentTestingGlobalScope globalScope = initSymbolTable(modelPaths);
     return createSymboltable(ast, globalScope);
@@ -121,7 +121,7 @@ public class SD4ComponentTestingTool {
    * @param globalScope globalScope used for the symbolTable
    * @return extended global scope
    */
-  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSDArtifact ast,
+  public ISD4ComponentTestingGlobalScope createSymboltable(ASTSD4Artifact ast,
                                                 ISD4ComponentTestingGlobalScope globalScope) {
 
     SD4ComponentTestingScopesGenitorDelegator stc = new SD4ComponentTestingScopesGenitorDelegator();

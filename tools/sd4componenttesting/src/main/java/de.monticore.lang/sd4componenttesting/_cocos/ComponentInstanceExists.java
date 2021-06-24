@@ -13,6 +13,8 @@ public class ComponentInstanceExists implements ArcBasisASTPortAccessCoCo {
 
   @Override
   public void check(ASTPortAccess node) {
+
+    //TODO: evaluate node.getSymbol().getPackageDeclaration()
     if (node.isPresentComponent()) {
       String componentInterfaceName = node.getComponent();
       Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(componentInterfaceName);
