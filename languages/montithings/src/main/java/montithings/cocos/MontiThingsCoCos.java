@@ -28,7 +28,7 @@ public class MontiThingsCoCos {
     checker.addCoCo(new ConfigurationParameterAssignment(new MontiArcDerive(new TypeCheckResult())));
     checker.addCoCo(new ConnectorSourceAndTargetComponentDiffer());
     checker.addCoCo(new ConnectorSourceAndTargetDiffer());
-    checker.addCoCo(new ConnectorSourceAndTargetExistAndFit());
+    checker.addCoCo(new MTConnectorSourceAndTargetExistAndFit());
     checker.addCoCo(new FieldNameCapitalization());
     checker.addCoCo(new FieldTypeExists());
     checker.addCoCo(new InheritedComponentTypeExists());

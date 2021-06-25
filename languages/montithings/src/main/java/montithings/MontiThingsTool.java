@@ -309,12 +309,21 @@ public class MontiThingsTool implements IMontiThingsTool {
 
   @Override
   public void checkCoCos(@NotNull ASTMACompilationUnit ast) {
+    checkCoCos(ast, false);
+  }
+
+  public void checkCoCos(@NotNull ASTMACompilationUnit ast, boolean shouldLog) {
     Preconditions.checkArgument(ast != null);
+    Log.info("Check model: " + ast.getPackage() + "." + ast.getComponentType().getName(), TOOL_NAME);
     this.checker.checkAll(ast);
   }
 
   @Override
   public void checkCoCos(@NotNull IMontiThingsGlobalScope scope) {
+    checkCoCos(scope, false);
+  }
+
+  public void checkCoCos(@NotNull IMontiThingsGlobalScope scope, boolean shouldLog) {
     Preconditions.checkArgument(scope != null);
     scope.getSubScopes().stream()
       .filter(as -> !((MontiThingsArtifactScope) as).getPackageName().equals(""))
