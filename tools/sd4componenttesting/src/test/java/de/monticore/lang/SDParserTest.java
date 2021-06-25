@@ -19,8 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SDParserTest {
 
-  private final static String CORRECT_PATH = "src/test/resources/examples/correct/";
-  protected final static String INCORRECT_PATH = "src/test/resources/examples/incorrect/";
+  private final static String PATH = "src/test/resources/examples/parser/";
 
   private SD4ComponentTestingParser parser;
 
@@ -47,20 +46,8 @@ public class SDParserTest {
     "SingleConnectionNumberValueTest.sd4c",
   })
   void testCorrectExamples(String model) {
-    testParseModel(CORRECT_PATH, model);
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-
-  })
-  void testInCorrectExamples(String model) {
-    testParseModel(INCORRECT_PATH, model);
-  }
-
-  private void testParseModel(String path, String model) {
     try {
-      Optional<ASTSD4Artifact> ast = parser.parse(path + model);
+      Optional<ASTSD4Artifact> ast = parser.parse(PATH + model);
       assertTrue(ast.isPresent(), "Failed to parse model: " + model);
     } catch (IOException | NoSuchElementException e) {
       System.err.println("Loading model: " + model + " failed: " + e.getMessage());
