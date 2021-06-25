@@ -3,11 +3,6 @@ package de.monticore.lang.sd4componenttesting._cocos;
 
 import arcbasis._ast.ASTPortAccess;
 import arcbasis._cocos.ArcBasisASTPortAccessCoCo;
-import arcbasis._symboltable.ComponentTypeSymbol;
-import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
-import de.se_rwth.commons.logging.Log;
-
-import java.util.Optional;
 
 public class ComponentInstanceExists implements ArcBasisASTPortAccessCoCo {
 
