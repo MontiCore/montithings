@@ -10,11 +10,11 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class MCQualifiedName2ComponentInstanceResolvingDelegate implements IComponentInstanceSymbolResolver {
+public class Name2ComponentInstanceResolvingDelegate implements IComponentInstanceSymbolResolver {
 
   protected IMontiArcGlobalScope globalScope;
 
-  public MCQualifiedName2ComponentInstanceResolvingDelegate(@NotNull IMontiArcGlobalScope globalScope) {
+  public Name2ComponentInstanceResolvingDelegate(@NotNull IMontiArcGlobalScope globalScope) {
     this.globalScope = globalScope;
   }
 
