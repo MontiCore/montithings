@@ -1,6 +1,6 @@
 package examples.correct;
 
-testdiagram MainTest for Main {
+testdiagram MainTest for NotExisting {
   value -> sumCom.first : 12;
   value -> sumCom.second: 13;
   sumCom.result -> result : 25;

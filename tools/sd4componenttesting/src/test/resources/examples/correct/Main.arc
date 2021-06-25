@@ -5,9 +5,9 @@ component Main {
 
   port out int result;
 
-  Sum sum;
+  Sum sumCom;
 
-  value -> sum.first;
-  value -> sum.second;
-  sum.result -> result;
+  value -> sumCom.first;
+  value -> sumCom.second;
+  sumCom.result -> result;
 }

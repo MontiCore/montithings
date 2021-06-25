@@ -5,20 +5,9 @@ package de.monticore.lang.sd4componenttesting.util;
  * The enum of all SD4ComponentTesting errors. Extends the mixing interface {@link Error}
  */
 public enum SD4ComponentTestingError implements Error {
-  NO_MODEL_IMPLEMENTATION("0xMASD4CPT1010", "Implementation '%s' has no model file!"),
-  NOT_SAME_PORTS_IMPLEMENTED("0xMASD4CPT1020", "Interface '%s' and Implementation '%s' don't implement the same ports!"),
-
-
-  MISSING_REQUIREMENT_NAME("0xMTCFG1030", "ASTRequirementStatement '%s' at <%d,%d> has no corresponding ComponentTypeSymbol."),
-  MISSING_COMPONENT_NAME("0xMTCFG1031", "ASTCompConfig '%s' at <%d,%d> has no corresponding ComponentTypeSymbol."),
-  MISSING_PORT_NAME("0xMTCFG1032", "ASTPortTemplateTag '%s' at <%d,%d> has no corresponding PortSymbol."),
-  MULTIPLE_COMPONENTS("0xMTCFG1033", "Config references multiple component types: %s"),
-  FILENAME_MATCHES_CONFIG("0xMTCFG1034", "Config '%s' does not match its filename"),
-  PACKAGENAME_MATCHES_CONFIG("0xMTCFG1035", "Package '%s' does not match its relative filepath '%s'"),
-  HOOKPOINT_EXISTS("0xMTCFG1036", "Hookpoint '%s' does not exist (use one of these: %s)"),
-  MQTT_NO_ARGS("0xMTCFG1037", "MQTT Hookpoint '%s' must not take arguements."),
-  ONLY_ONE_EVERY("0xMTCFG1038", "Port '%s' has multiple 'every' statements. At most one is allowed.")
-;
+  NO_MAIN_COMPONENT_IMPLEMENTATION("0xSD4CPT1010", "Main Component Instance '%s' has no model file!"),
+  NO_MODEL_IMPLEMENTATION("0xSD4CPT1020", "Implementation '%s' has no model file!"),
+  NOT_SAME_PORTS_IMPLEMENTED("0xSD4CPT1030", "Interface '%s' and Implementation '%s' don't implement the same ports!");
 
   protected final String errorCode;
   protected final String errorMessage;

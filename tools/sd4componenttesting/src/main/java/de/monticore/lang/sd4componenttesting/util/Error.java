@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  */
 public interface Error {
 
-  static Pattern ERROR_CODE_PATTERN = Pattern.compile("0xMASD4CPT(\\d{4})(\\d{4})*");
+  static Pattern ERROR_CODE_PATTERN = Pattern.compile("0xSD4CPT(\\d{4})(\\d{4})*");
 
   /**
    * @return The unique error code of this error.

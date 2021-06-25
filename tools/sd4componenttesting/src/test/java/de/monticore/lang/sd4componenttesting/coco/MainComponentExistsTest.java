@@ -1,24 +1,25 @@
 package de.monticore.lang.sd4componenttesting.coco;
 
 import de.monticore.lang.sd4componenttesting.AbstractCoCoTest;
-import de.monticore.lang.sd4componenttesting._cocos.ComponentInstanceExistsCoCo;
+import de.monticore.lang.sd4componenttesting._cocos.MainComponentExists;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
-public class ComponentInstanceExistsTest extends AbstractCoCoTest {
+public class MainComponentExistsTest extends AbstractCoCoTest {
   @Override
   protected void initCoCoChecker() {
-    this.checker.addCoCo(new ComponentInstanceExistsCoCo());
+    this.checker.addCoCo(new MainComponentExists());
   }
 
   @Override
   protected List<String> getErrorCodeOfCocoUnderTest() {
-    return null;
+    return Arrays.asList("0xSD4CPT1010");
   }
 
   @Test
   void testCocoViolation() {
-    testCocoViolation("MainTest.sd4c", 0, 0);
+    testCocoViolation("NotExistingMainComponent.sd4c", 1, 1);
   }
 }
