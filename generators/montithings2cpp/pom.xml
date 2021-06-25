@@ -83,6 +83,12 @@
 			<groupId>de.monticore</groupId>
 			<artifactId>monticore-generator</artifactId>
 			<version>${monticore.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>de.monticore.bs</groupId>
+					<artifactId>monticore-runtime</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
