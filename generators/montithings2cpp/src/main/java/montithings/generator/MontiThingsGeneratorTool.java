@@ -17,6 +17,7 @@ import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension._symboltable.CDLangExtensionUnitSymbol;
 import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
+import de.monticore.cd.cli.CDCLI;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
@@ -43,6 +44,7 @@ import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.data.Models;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
+import montithings.generator.helper.LogSettingRestore;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
 import montithings.trafos.DelayedChannelTrafo;
@@ -80,7 +82,7 @@ import static montithings.generator.helper.FileHelper.*;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
 
-  protected static final String TOOL_NAME = "MontiThingsGeneratorTool";
+  public static final String TOOL_NAME = "MontiThingsGeneratorTool";
 
   protected MTGenerator mtg;
 
@@ -101,6 +103,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Models models = new Models(modelPath);
 
     /* ============================================================ */
+    /* ======================= Serialize CDs ====================== */
+    /* ============================================================ */
+
+    if (!models.getClassdiagrams().isEmpty()) {
+      String symbolPath = target.toString() + File.separator + "symbols" + File.separator;
+      convertCdsToSyms(modelPath, models, symbolPath);
+      mp.addEntry(Paths.get(symbolPath));
+    }
+
+    /* ============================================================ */
     /* ===================== Set up Symbol Tabs =================== */
     /* ============================================================ */
     Log.info("Initializing symboltable", TOOL_NAME);
@@ -110,7 +122,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         addTrafo(new DelayedChannelTrafo(modelPath, config.getReplayDataFile()));
         addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
     }
-
 
     CD4CodeMill.reset();
     CD4CodeMill.init();
@@ -138,19 +149,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     IMTConfigGlobalScope mtConfigGlobalScope = mtConfigTool.initSymbolTable(modelPath);
 
     /* ============================================================ */
-    /* ====================== Check Models ======================== */
-    /* ============================================================ */
-    Log.info("Checking models", TOOL_NAME);
-    MontiThingsMill.reset();
-    MontiThingsMill.init();
-    BasicSymbolsMill.initializePrimitives();
-    checkCoCos(symTab);
-    checkIfMainComponentExists(symTab, models, config);
-    checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
-    checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkMTConfig(models.getMTConfig(), config, mtConfigTool, mtConfigGlobalScope);
-
-    /* ============================================================ */
     /* =================== Find Code Templates ==================== */
     /* ============================================================ */
 
@@ -175,7 +173,21 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     config.setTypeArguments(genericInstantiationVisitor.getTypeArguments());
 
-    checkMtGeneratorCoCos(symTab, config);
+    /* ============================================================ */
+    /* ====================== Check Models ======================== */
+    /* ============================================================ */
+    Log.info("Checking models", TOOL_NAME);
+    MontiThingsMill.reset();
+    MontiThingsMill.init();
+    BasicSymbolsMill.initializePrimitives();
+    // add generator CoCos
+    checker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
+    checker.addCoCo(new PortConnection(config.getTemplatedPorts()));
+    checkCoCos(symTab);
+    checkIfMainComponentExists(symTab, models, config);
+    checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
+    checkBindings(models.getBindings(), config, bindingsTool, binTab);
+    checkMTConfig(models.getMTConfig(), config, mtConfigTool, mtConfigGlobalScope);
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -324,6 +336,33 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         }
       }
     }
+  }
+
+  protected void convertCdsToSyms(File modelPath, Models models, String symbolPath) {
+    Log.info("==== Start Serialize Class Diagrams ====", "");
+
+    LogSettingRestore logSettingRestore = new LogSettingRestore();
+
+    logSettingRestore.save();
+    for (String cd : models.getClassdiagrams()) {
+      List<String> args = new ArrayList<>();
+      args.add("-d");
+      args.add("false");
+      args.add("--fieldfromrole");
+      args.add("navigable");
+      args.add("-i");
+      args.add(cd);
+      args.add("-s");
+      args.add(symbolPath + cd.substring(modelPath.toString().length() + 1, cd.length() - 2) + "sym");
+      try {
+        CDCLI.main(args.toArray(new String[0]));
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    logSettingRestore.restore();
+    Log.info("==== End Serialize Class Diagrams ====", "");
   }
 
   /* ============================================================ */
