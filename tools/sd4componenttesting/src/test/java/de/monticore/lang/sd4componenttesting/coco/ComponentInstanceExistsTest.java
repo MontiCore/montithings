@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class ComponentInstanceExists extends AbstractCoCoTest {
+public class ComponentInstanceExistsTest extends AbstractCoCoTest {
   @Override
   protected void initCoCoChecker() {
     this.checker.addCoCo(new ComponentInstanceExistsCoCo());
