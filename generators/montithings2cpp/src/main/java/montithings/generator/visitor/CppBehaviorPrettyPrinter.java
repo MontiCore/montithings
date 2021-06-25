@@ -5,7 +5,8 @@ import arcbasis._symboltable.PortSymbol;
 import behavior._ast.ASTAfterStatement;
 import behavior._ast.ASTAgoQualification;
 import behavior._ast.ASTLogStatement;
-import behavior._visitor.BehaviorVisitor;
+import behavior._visitor.BehaviorHandler;
+import behavior._visitor.BehaviorTraverser;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
@@ -21,14 +22,15 @@ import java.util.regex.Pattern;
 import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
 import static montithings.util.IdentifierUtils.getPortForName;
 
-public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
-  protected BehaviorVisitor realThis;
+public class CppBehaviorPrettyPrinter
+  implements BehaviorHandler {
+
+  protected BehaviorTraverser traverser;
   protected IndentPrinter printer;
   protected int afterStatementIndex;
 
   public CppBehaviorPrettyPrinter(IndentPrinter printer){
     this.printer = printer;
-    this.realThis = this;
     this.afterStatementIndex = 0;
   }
 
@@ -41,7 +43,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
     printTime(node.getSIUnitLiteral());
     getPrinter().print(");");
 
-    node.getMCJavaBlock().accept(getRealThis());
+    node.getMCJavaBlock().accept(getTraverser());
 
     getPrinter().print("return true;");
     getPrinter().print("} );");
@@ -94,22 +96,8 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
       }
     }
     else {
-      node.getExpression().accept(getRealThis());
+      node.getExpression().accept(getTraverser());
     }
-  }
-
-  protected IndentPrinter getPrinter() {
-    return printer;
-  }
-
-  @Override
-  public BehaviorVisitor getRealThis(){
-    return this.realThis;
-  }
-
-  @Override
-  public void setRealThis(BehaviorVisitor realThis){
-    this.realThis = realThis;
   }
 
   protected void printTime(ASTSIUnitLiteral lit){
@@ -129,7 +117,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
       getPrinter().print("minutes");
     }
     getPrinter().print("{");
-    lit.getNumericLiteral().accept(getRealThis());
+    lit.getNumericLiteral().accept(getTraverser());
     getPrinter().print("}");
   }
 
@@ -150,7 +138,7 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
               .setName(subString)
               .build();
       name.setEnclosingScope(node.getEnclosingScope());
-      name.accept(getRealThis());
+      name.accept(getTraverser());
 
       getPrinter().print(" << ");
 
@@ -160,5 +148,21 @@ public class CppBehaviorPrettyPrinter implements BehaviorVisitor {
     getPrinter().print("\"");
     getPrinter().print(input.substring(currentPosition));
     getPrinter().print("\"");
+  }
+
+  /* ============================================================ */
+  /* ====================== GENERATED CODE ====================== */
+  /* ============================================================ */
+
+  protected IndentPrinter getPrinter() {
+    return printer;
+  }
+
+  @Override public BehaviorTraverser getTraverser() {
+    return traverser;
+  }
+
+  @Override public void setTraverser(BehaviorTraverser traverser) {
+    this.traverser = traverser;
   }
 }

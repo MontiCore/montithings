@@ -37,6 +37,10 @@ public class FindPortNamesVisitor implements ArcBasisVisitor2 {
     return traverser;
   }
 
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
   public Set<String> getIngoingPorts() {
     return ingoingPorts;
   }

@@ -26,7 +26,6 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
 
   public CppOCLExpressionsPrettyPrinter(IndentPrinter printer) {
     super(printer);
-    this.realThis = this;
   }
 
   @Override
@@ -37,15 +36,15 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().print("[&]() -> " + expressionType + " {");
 
     getPrinter().print("if (");
-    node.getCondition().accept(getRealThis());
+    node.getCondition().accept(getTraverser());
     getPrinter().println(") {");
     getPrinter().print("return ");
-    node.getThenExpression().accept(getRealThis());
+    node.getThenExpression().accept(getTraverser());
     getPrinter().println(";");
     getPrinter().println(" }");
     getPrinter().println("else {");
     getPrinter().print("return ");
-    node.getElseExpression().accept(getRealThis());
+    node.getElseExpression().accept(getTraverser());
     getPrinter().println(";");
     getPrinter().println("}");
 
@@ -55,24 +54,24 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
   @Override
   public void handle(ASTImpliesExpression node) {
     getPrinter().print("(((");
-    node.getLeft().accept(getRealThis());
+    node.getLeft().accept(getTraverser());
     getPrinter().print(") && (");
-    node.getRight().accept(getRealThis());
+    node.getRight().accept(getTraverser());
     getPrinter().print(")) || ( !(");
-    node.getLeft().accept(getRealThis());
+    node.getLeft().accept(getTraverser());
     getPrinter().print(")))");
   }
 
   @Override
   public void handle(ASTEquivalentExpression node) {
     getPrinter().print("(((");
-    node.getLeft().accept(getRealThis());
+    node.getLeft().accept(getTraverser());
     getPrinter().print(") && (");
-    node.getRight().accept(getRealThis());
+    node.getRight().accept(getTraverser());
     getPrinter().print(")) || (( !(");
-    node.getLeft().accept(getRealThis());
+    node.getLeft().accept(getTraverser());
     getPrinter().print(")) && ( !(");
-    node.getRight().accept(getRealThis());
+    node.getRight().accept(getTraverser());
     getPrinter().print("))))");
   }
 
@@ -104,7 +103,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().println("[&](" + symbolType + " " + symbolName + ") -> bool {");
     getPrinter().print("if(");
 
-    node.getExpression().accept(getRealThis());
+    node.getExpression().accept(getTraverser());
 
     getPrinter().print("){ return true;} return false;");
     getPrinter().println("}(set.at(_index))");
@@ -145,7 +144,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().println("[&](" + symbolType + " " + symbolName + ") -> bool {");
     getPrinter().print("if(");
 
-    node.getExpression().accept(getRealThis());
+    node.getExpression().accept(getTraverser());
 
     getPrinter().print("){ return true;} return false;");
     getPrinter().println("}(set.at(_index))");
@@ -163,10 +162,10 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().print("[&]() -> bool {");
 
     for (ASTOCLVariableDeclaration variableDeclaration : node.getOCLVariableDeclarationList()){
-      variableDeclaration.accept(getRealThis());
+      variableDeclaration.accept(getTraverser());
     }
     getPrinter().print("return (");
-    node.getExpression().accept(getRealThis());
+    node.getExpression().accept(getTraverser());
     getPrinter().print(");");
 
     getPrinter().print("}()");
@@ -179,7 +178,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().print(node.getName());
     if(node.isPresentExpression()){
       getPrinter().print(" = ");
-      node.getExpression().accept(getRealThis());
+      node.getExpression().accept(getTraverser());
     }
     getPrinter().print(";");
   }
@@ -195,14 +194,14 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     String varType = printCPPTypeName(node.getNameSymbol().getType());
     getPrinter().print("if (");
     getPrinter().print("std::is_base_of<");
-    node.getMCType().accept(getRealThis());
+    node.getMCType().accept(getTraverser());
     getPrinter().print(", " + varType + ">::value) {");
     getPrinter().print("return ");
     //TODO: cast to Base Type
-    node.getThenExpression().accept(getRealThis());
+    node.getThenExpression().accept(getTraverser());
     getPrinter().print("; } else {");
     getPrinter().print("return ");
-    node.getElseExpression().accept(getRealThis());
+    node.getElseExpression().accept(getTraverser());
     getPrinter().print("; }");
 
     getPrinter().print("}()");
@@ -215,7 +214,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     getPrinter().print("[&]() -> bool {");
     getPrinter().print("return ");
     getPrinter().print("std::is_base_of<");
-    node.getMCType().accept(getRealThis());
+    node.getMCType().accept(getTraverser());
     getPrinter().print(", " + expressionType + ">::value;");
     getPrinter().print("}()");
   }
@@ -238,10 +237,10 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
       Log.error("Only SetEnumerations or SetComprehensions are allowed in the Iterator of IterateExpressions");
     }
     getPrinter().print(";");
-    node.getInit().accept(getRealThis());
+    node.getInit().accept(getTraverser());
     getPrinter().print("for( auto " + node.getIteration().getInDeclarationVariable(0).getName() + " : set) {");
     getPrinter().print(node.getName() + " = ");
-    node.getValue().accept(getRealThis());
+    node.getValue().accept(getTraverser());
     getPrinter().print(";");
     getPrinter().print("}");
     getPrinter().print("return " + node.getName() + ";");
@@ -293,7 +292,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     for (int i = 0; i < node.sizeSetCollectionItems(); i++){
       if (node.getSetCollectionItem(i) instanceof ASTSetValueItem){
         for (ASTExpression expr : ((ASTSetValueItem) node.getSetCollectionItem(i)).getExpressionList()){
-          expr.accept(getRealThis());
+          expr.accept(getTraverser());
           if (expr != ((ASTSetValueItem) node.getSetCollectionItem(i)).getExpression(((ASTSetValueItem)
                   node.getSetCollectionItem(i)).sizeExpressions() - 1)){
             getPrinter().print(", ");
@@ -316,15 +315,15 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
     for (ASTSetValueRange range : elementsToAdd){
       getPrinter().print(";");
       getPrinter().print("for (int _set_value_range_index = ");
-      range.getLowerBound().accept(getRealThis());
+      range.getLowerBound().accept(getTraverser());
       getPrinter().print("; _set_value_range_index <=");
-      range.getUpperBound().accept(getRealThis());
+      range.getUpperBound().accept(getTraverser());
       getPrinter().print("; _set_value_range_index++){");
       if(range.isPresentStepsize()){
         getPrinter().print("if((_set_value_range_index - (");
-        range.getLowerBound().accept(getRealThis());
+        range.getLowerBound().accept(getTraverser());
         getPrinter().print(")) % ");
-        range.getStepsize().accept(getRealThis());
+        range.getStepsize().accept(getTraverser());
         getPrinter().print(" == 0){");
         getPrinter().print("set.push_back(_set_value_range_index);");
         getPrinter().print("}");
@@ -364,7 +363,7 @@ public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter 
         Log.error("Only expressions are supported at the right side of set comprehensions");
       }
       getPrinter().print("!(");
-      setComprehension.getSetComprehensionItem(i).getExpression().accept(getRealThis());
+      setComprehension.getSetComprehensionItem(i).getExpression().accept(getTraverser());
       getPrinter().print(")");
 
       if (i != setComprehension.sizeSetComprehensionItems() - 1){

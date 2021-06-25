@@ -18,7 +18,6 @@ import static montithings.util.IdentifierUtils.getPortForName;
 public class CppOptionalOperatorsPrettyPrinter extends OptionalOperatorsPrettyPrinter {
   public CppOptionalOperatorsPrettyPrinter(IndentPrinter printer) {
     super(printer);
-    this.realThis = this;
   }
 
   @Override public void handle(ASTOptionalExpressionPrefix node) {
@@ -52,13 +51,13 @@ public class CppOptionalOperatorsPrettyPrinter extends OptionalOperatorsPrettyPr
   protected void handle(ASTInfixExpression node, String leftOperator, String rightOperator) {
     if (!handlePort(node, leftOperator, rightOperator)) {
       CommentPrettyPrinter.printPreComments(node, getPrinter());
-      node.getLeft().accept(getRealThis());
+      node.getLeft().accept(getTraverser());
       getPrinter().print(".has_value ()");
       getPrinter().print(" " + leftOperator + " ");
-      node.getLeft().accept(getRealThis());
+      node.getLeft().accept(getTraverser());
       getPrinter().print(".value ()");
       getPrinter().print(" " + rightOperator + " ");
-      node.getRight().accept(getRealThis());
+      node.getRight().accept(getTraverser());
       CommentPrettyPrinter.printPostComments(node, getPrinter());
     }
   }
@@ -95,7 +94,7 @@ public class CppOptionalOperatorsPrettyPrinter extends OptionalOperatorsPrettyPr
     getPrinter().print(" " + leftOperator + " ");
     getPrinter().print(prefix + ".get" + capitalize(nameExpr.getName()) + "().value ()");
     getPrinter().print(" " + rightOperator + " ");
-    node.getRight().accept(getRealThis());
+    node.getRight().accept(getTraverser());
     CommentPrettyPrinter.printPostComments(node, getPrinter());
     return true;
   }

@@ -24,7 +24,6 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
   public CppCommonExpressionsPrettyPrinter(IndentPrinter printer) {
     super(printer);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
-    this.realThis = this;
   }
 
   @Override public void handle(ASTLessEqualExpression node) {
@@ -97,22 +96,22 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
     else if(tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
             tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit) {
       //SIUnit Types are used - conversion might be necessary
-      node.getLeft().accept(getRealThis());
+      node.getLeft().accept(getTraverser());
       getPrinter().print(infix);
       UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()),
         tc.typeOf(node.getRight()));
       getPrinter().print(factorStart(converter));
-      node.getRight().accept(getRealThis());
+      node.getRight().accept(getTraverser());
       getPrinter().print(factorEnd(converter));
       CommentPrettyPrinter.printPostComments(node, this.getPrinter());
       return;
     }
     else if (isStringConcat) {
       getPrinter().print("concat(");
-      node.getLeft().accept(getRealThis());
+      node.getLeft().accept(getTraverser());
     }
     else {
-      node.getLeft().accept(getRealThis());
+      node.getLeft().accept(getTraverser());
     }
     if (isStringConcat) {
       getPrinter().print(", ");
@@ -132,7 +131,7 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       }
     }
     else {
-      node.getRight().accept(getRealThis());
+      node.getRight().accept(getTraverser());
     }
 
     if (isStringConcat) {

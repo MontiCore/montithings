@@ -29,7 +29,6 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
 
   public CppExpressionPrettyPrinter(IndentPrinter out) {
     super(out);
-    this.realThis = this;
   }
 
   @Override

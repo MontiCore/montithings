@@ -4,10 +4,14 @@ package montithings.generator.visitor;
 import arcbasis._ast.ASTComponentInstance;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._visitor.ArcBasisHandler;
+import arcbasis._visitor.ArcBasisTraverser;
+import arcbasis._visitor.ArcBasisVisitor2;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import montithings._visitor.MontiThingsVisitor;
+import montithings.MontiThingsMill;
+import montithings._visitor.MontiThingsTraverser;
 import montithings.generator.helper.TypesHelper;
 
 /**
@@ -15,7 +19,10 @@ import montithings.generator.helper.TypesHelper;
  *
  * @since 05.01.21
  */
-public class GenericInstantiationVisitor implements MontiThingsVisitor {
+public class GenericInstantiationVisitor
+  implements ArcBasisVisitor2, ArcBasisHandler {
+
+  ArcBasisTraverser traverser;
 
   Multimap<ComponentTypeSymbol, String> typeArguments = ArrayListMultimap.create();
 
@@ -34,7 +41,26 @@ public class GenericInstantiationVisitor implements MontiThingsVisitor {
     }
   }
 
+  public MontiThingsTraverser createTraverser() {
+    MontiThingsTraverser traverser = MontiThingsMill.traverser();
+    traverser.add4ArcBasis(this);
+    traverser.setArcBasisHandler(this);
+    return traverser;
+  }
+
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
   public Multimap<ComponentTypeSymbol, String> getTypeArguments() {
     return typeArguments;
+  }
+
+  @Override public ArcBasisTraverser getTraverser() {
+    return traverser;
+  }
+
+  @Override public void setTraverser(ArcBasisTraverser traverser) {
+    this.traverser = traverser;
   }
 }

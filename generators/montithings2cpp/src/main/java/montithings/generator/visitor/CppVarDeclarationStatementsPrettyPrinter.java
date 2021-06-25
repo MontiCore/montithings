@@ -23,7 +23,7 @@ public class CppVarDeclarationStatementsPrettyPrinter extends MCVarDeclarationSt
     CommentPrettyPrinter.printPreComments(a, this.getPrinter());
     a.getMCModifierList().stream().forEach((m) -> {
       this.getPrinter().print(" ");
-      m.accept(this.getRealThis());
+      m.accept(getTraverser());
       this.getPrinter().print(" ");
     });
     this.getPrinter().print(" ");
@@ -40,7 +40,7 @@ public class CppVarDeclarationStatementsPrettyPrinter extends MCVarDeclarationSt
         }
       }
       else {
-        a.getMCType().accept(this.getRealThis());
+        a.getMCType().accept(getTraverser());
       }
     }
     this.getPrinter().print(" ");
@@ -51,7 +51,7 @@ public class CppVarDeclarationStatementsPrettyPrinter extends MCVarDeclarationSt
       ASTVariableDeclarator v = (ASTVariableDeclarator)var4.next();
       this.getPrinter().print(sep);
       sep = ", ";
-      v.accept(this.getRealThis());
+      v.accept(getTraverser());
     }
 
     CommentPrettyPrinter.printPostComments(a, this.getPrinter());

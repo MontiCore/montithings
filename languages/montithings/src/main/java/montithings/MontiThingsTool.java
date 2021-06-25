@@ -39,11 +39,11 @@ public class MontiThingsTool implements IMontiThingsTool {
 
   protected List<MontiThingsTrafo> trafos = new ArrayList<>();
 
-  protected final String MT_FILE_EXTENSION = "mt";
+  public static final String MT_FILE_EXTENSION = "mt";
 
-  protected final String SYM_FILE_EXTENSION = "sym";
+  public static final String SYM_FILE_EXTENSION = "sym";
 
-  protected static final String TOOL_NAME = "MontiThingsTool";
+  public static final String TOOL_NAME = "MontiThingsTool";
 
   public MontiThingsTool() {
     this(MontiThingsCoCos.createChecker());

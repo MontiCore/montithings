@@ -35,6 +35,7 @@ import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
+import de.monticore.types.prettyprint.MCCollectionTypesFullPrettyPrinter;
 import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
@@ -43,7 +44,7 @@ import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
 import montithings._ast.*;
 import montithings._symboltable.MontiThingsArtifactScope;
-import montithings._visitor.MontiThingsPrettyPrinterDelegator;
+import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.codegen.util.Utils;
@@ -72,6 +73,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+
 import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
@@ -196,7 +198,7 @@ public class ComponentHelper {
 
   public static String printCdFQN(ComponentTypeSymbol componentSymbol,
     TypeSymbol typeSymbol, ConfigParams config) {
-    String packageName = ((CD4CodeScope) typeSymbol.getEnclosingScope()).getPackageName();
+    String packageName = ((CD4CodeScope) typeSymbol.getEnclosingScope()).getName();
     String typeName = typeSymbol.getName();
     return packageName.replaceAll("\\.", "::") + "::" + typeName;
   }
@@ -328,7 +330,7 @@ public class ComponentHelper {
    */
   public static List<String> getParamValues(ComponentInstanceSymbol param) {
     List<ASTExpression> configArguments = param.getArguments();
-    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
+    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter();
 
     List<String> outputParameters = new ArrayList<>();
     for (int i = 0; i < configArguments.size(); i++) {
@@ -376,7 +378,7 @@ public class ComponentHelper {
 
   public static String printConstructorArguments(ComponentTypeSymbol comp) {
     String result = "";
-    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter();
+    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter();
     List<ASTArcParameter> parameters = comp.getAstNode().getHead().getArcParameterList();
 
     for (int i = 0; i < parameters.size(); i++) {
@@ -462,7 +464,7 @@ public class ComponentHelper {
       return ((ASTMCGenericType) arg).printWithoutTypeArguments();
     }
     return java2cppTypeString(
-      arg.printType(new MCCollectionTypesPrettyPrinter(new IndentPrinter())));
+      arg.printType(new MCCollectionTypesFullPrettyPrinter(new IndentPrinter())));
   }
 
   public static Set<ComponentTypeSymbol> getSubcompTypesRecursive(ComponentTypeSymbol comp) {
@@ -737,7 +739,7 @@ public class ComponentHelper {
   public static List<de.monticore.expressions.expressionsbasis._ast.ASTNameExpression> getGuardExpressionElements(
     de.monticore.expressions.expressionsbasis._ast.ASTExpression node) {
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
-    node.accept(visitor);
+    node.accept(visitor.createTraverser());
     return visitor.getExpressions();
   }
 
@@ -826,7 +828,7 @@ public class ComponentHelper {
   }
 
   public static String printJavaBlock(ASTMCJavaBlock block, boolean suppressPostconditions) {
-    MontiThingsPrettyPrinterDelegator printer = CppPrettyPrinter.getPrinter(suppressPostconditions);
+    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(suppressPostconditions);
     return printer.prettyprint(block);
   }
 
@@ -957,7 +959,7 @@ public class ComponentHelper {
   public static boolean portIsComparedToNoData(
     de.monticore.expressions.expressionsbasis._ast.ASTExpression e, String portName) {
     NoDataComparisionsVisitor visitor = new NoDataComparisionsVisitor();
-    e.accept(visitor);
+    e.accept(visitor.createTraverser());
     return visitor.getFoundExpressions().stream()
       .map(ASTNameExpression::getName)
       .anyMatch(n -> n.equals(portName));
@@ -1015,7 +1017,7 @@ public class ComponentHelper {
   public static Set<PortSymbol> getPublishedPorts(ComponentTypeSymbol component,
     ASTMCJavaBlock statements) {
     FindPublishedPortsVisitor visitor = new FindPublishedPortsVisitor();
-    statements.accept(visitor);
+    statements.accept(visitor.createTraverser());
     return visitor.getPublishedPorts();
   }
 
@@ -1322,7 +1324,7 @@ public class ComponentHelper {
   public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
     if (comp.isPresentAstNode()) {
-      comp.getAstNode().accept(visitor);
+      comp.getAstNode().accept(visitor.createTraverser());
     }
     return visitor.getAgoQualifications().containsKey(var.getName());
   }
@@ -1330,7 +1332,7 @@ public class ComponentHelper {
   public static boolean hasAgoQualification(ComponentTypeSymbol comp, PortSymbol port) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
     if (comp.isPresentAstNode()) {
-      comp.getAstNode().accept(visitor);
+      comp.getAstNode().accept(visitor.createTraverser());
     }
     return visitor.getAgoQualifications().containsKey(port.getName());
   }
@@ -1338,7 +1340,7 @@ public class ComponentHelper {
   public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
     if (comp.isPresentAstNode()) {
-      comp.getAstNode().accept(visitor);
+      comp.getAstNode().accept(visitor.createTraverser());
     }
     double valueInSeconds = visitor.getAgoQualifications().get(name);
     //return as nanoseconds

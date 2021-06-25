@@ -4,8 +4,11 @@ package montithings.generator.visitor;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import com.google.common.base.Preconditions;
+import montithings.MontiThingsMill;
 import montithings._ast.ASTMTComponentType;
-import montithings._visitor.MontiThingsVisitor;
+import montithings._visitor.MontiThingsHandler;
+import montithings._visitor.MontiThingsTraverser;
+import montithings._visitor.MontiThingsVisitor2;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.GeneratorHelper;
 
@@ -15,7 +18,10 @@ import java.util.Set;
 /**
  * Finds all ports with templates
  */
-public class FindTemplatedPortsVisitor implements MontiThingsVisitor {
+public class FindTemplatedPortsVisitor
+  implements MontiThingsVisitor2, MontiThingsHandler {
+
+  protected MontiThingsTraverser traverser;
 
   protected Set<PortSymbol> templatedPorts = new HashSet<>();
 
@@ -44,6 +50,13 @@ public class FindTemplatedPortsVisitor implements MontiThingsVisitor {
     templatedPorts.addAll(findTemplatedPorts(compSymbol, config));
   }
 
+  public MontiThingsTraverser createTraverser() {
+    MontiThingsTraverser traverser = MontiThingsMill.traverser();
+    traverser.add4MontiThings(this);
+    traverser.setMontiThingsHandler(this);
+    return traverser;
+  }
+
   /* ============================================================ */
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
@@ -63,4 +76,12 @@ public class FindTemplatedPortsVisitor implements MontiThingsVisitor {
   public ConfigParams getConfig() {return config;}
 
   public void setConfig(ConfigParams config) {this.config = config;}
+
+  @Override public MontiThingsTraverser getTraverser() {
+    return traverser;
+  }
+
+  public void setTraverser(MontiThingsTraverser traverser) {
+    this.traverser = traverser;
+  }
 }
