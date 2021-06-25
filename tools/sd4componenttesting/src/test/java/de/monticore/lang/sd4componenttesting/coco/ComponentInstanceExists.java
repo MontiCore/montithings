@@ -1,7 +1,7 @@
 package de.monticore.lang.sd4componenttesting.coco;
 
-import arcbasis._cocos.ComponentInstanceTypeExists;
 import de.monticore.lang.sd4componenttesting.AbstractCoCoTest;
+import de.monticore.lang.sd4componenttesting._cocos.ComponentInstanceExistsCoCo;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 public class ComponentInstanceExists extends AbstractCoCoTest {
   @Override
   protected void initCoCoChecker() {
-    this.checker.addCoCo(new ComponentInstanceTypeExists());
+    this.checker.addCoCo(new ComponentInstanceExistsCoCo());
   }
 
   @Override

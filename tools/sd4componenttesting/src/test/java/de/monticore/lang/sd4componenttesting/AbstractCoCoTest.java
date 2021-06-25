@@ -3,9 +3,11 @@ package de.monticore.lang.sd4componenttesting;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCoChecker;
 import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import montiarc.MontiArcMill;
+import montiarc.MontiArcTool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,9 +37,13 @@ public abstract class AbstractCoCoTest {
   @BeforeEach
   public void setup() {
     //TODO testen ob man das machen muss
+    //see arcbasis/AbstractTest
+    MontiArcMill.globalScope().clear();
     MontiArcMill.reset();
     MontiArcMill.init();
+    BasicSymbolsMill.initializePrimitives();
 
+    SD4ComponentTestingMill.globalScope().clear();
     SD4ComponentTestingMill.reset();
     SD4ComponentTestingMill.init();
 
