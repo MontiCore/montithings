@@ -22,6 +22,7 @@ import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
@@ -31,6 +32,7 @@ import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
+import montithings._symboltable.MontiThingsArtifactScope;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
@@ -120,10 +122,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     IMontiThingsGlobalScope symTab = createMTGlobalScope(mp);
+    createSymbolTable(symTab);
 
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);
+    ICDLangExtensionGlobalScope cdLangExtensionGlobalScope = cdExtensionTool.initSymbolTable(modelPath);
 
     BindingsTool bindingsTool = new BindingsTool();
     bindingsTool.setMtGlobalScope(symTab);
@@ -131,18 +135,20 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     MTConfigTool mtConfigTool = new MTConfigTool();
     mtConfigTool.setMtGlobalScope(symTab);
+    IMTConfigGlobalScope mtConfigGlobalScope = mtConfigTool.initSymbolTable(modelPath);
 
     /* ============================================================ */
     /* ====================== Check Models ======================== */
     /* ============================================================ */
     Log.info("Checking models", TOOL_NAME);
-
-    processModels(symTab);
+    MontiThingsMill.reset();
+    MontiThingsMill.init();
+    BasicSymbolsMill.initializePrimitives();
+    checkCoCos(symTab);
     checkIfMainComponentExists(symTab, models, config);
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
-    checkMTConfig(models.getMTConfig(), config, mtConfigTool,
-      mtConfigTool.initSymbolTable(modelPath));
+    checkMTConfig(models.getMTConfig(), config, mtConfigTool, mtConfigGlobalScope);
 
     /* ============================================================ */
     /* =================== Find Code Templates ==================== */
@@ -343,6 +349,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
     checker.addCoCo(new PortConnection(config.getTemplatedPorts()));
     for (IMontiThingsScope as : symTab.getSubScopes()) {
+      if (as instanceof MontiThingsArtifactScope && ((MontiThingsArtifactScope) as).getPackageName().equals("")) {
+        continue; // scope with java.lang types
+      }
       ASTMACompilationUnit a = (ASTMACompilationUnit) as.getAstNode();
       Log.info("Check model: " + a.getComponentType().getSymbol().getFullName(), TOOL_NAME);
       a.accept(checker.getTraverser());

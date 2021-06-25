@@ -143,6 +143,14 @@ public interface IMontiThingsTool {
   void checkCoCos(@NotNull ASTMACompilationUnit ast);
 
   /**
+   * Checks default context conditions for the provided MontiThings compilation unit and logs findings.
+   * Unnamed artifact scopes are only used internally and will be ignored.
+   *
+   * @param scope global scope containing all the artifact scopes which should be checked (if they have a name)
+   */
+  void checkCoCos(@NotNull IMontiThingsGlobalScope scope);
+
+  /**
    * Loads all model files in the provided scope, creates their symbol table, checks default context conditions for
    * these and logs findings.
    *

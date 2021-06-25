@@ -4,7 +4,6 @@ package bindings._symboltable;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import bindings._ast.ASTBindingRule;
-import bindings._ast.ASTBindingsCompilationUnit;
 
 import java.util.Optional;
 

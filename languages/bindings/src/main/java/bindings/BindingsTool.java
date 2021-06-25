@@ -18,7 +18,6 @@ import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
-import javax.naming.Binding;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -96,6 +95,7 @@ public class BindingsTool {
 
     BindingsMill.reset();
     BindingsMill.init();
+    BindingsMill.globalScope().clear();
     IBindingsGlobalScope bindingsGlobalScope = BindingsMill.globalScope();
     bindingsGlobalScope.setModelPath(mp);
     bindingsGlobalScope.setFileExt("mtb");

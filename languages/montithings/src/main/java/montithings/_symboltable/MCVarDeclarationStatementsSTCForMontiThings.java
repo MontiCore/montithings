@@ -6,18 +6,14 @@ import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTLocalVariableDeclaration;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
-import de.monticore.statements.mcvardeclarationstatements._symboltable.IMCVarDeclarationStatementsScope;
 import de.monticore.statements.mcvardeclarationstatements._symboltable.MCVarDeclarationStatementsSTCompleteTypes;
-import de.monticore.statements.mcvardeclarationstatements._symboltable.MCVarDeclarationStatementsScopesGenitor;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.monticore.types.check.FullSynthesizeFromMCFullGenericTypes;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNull;
-import de.monticore.types.check.SynthesizeSymTypeFromMCFullGenericTypes;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 

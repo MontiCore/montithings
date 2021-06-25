@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.util;
 
-import de.monticore.symbols.basicsymbols._symboltable.BasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;

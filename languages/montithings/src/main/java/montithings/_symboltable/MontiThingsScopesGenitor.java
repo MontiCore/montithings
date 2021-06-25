@@ -11,7 +11,6 @@ import montithings._ast.ASTMTComponentType;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 /**

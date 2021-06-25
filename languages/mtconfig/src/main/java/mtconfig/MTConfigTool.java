@@ -5,10 +5,10 @@ import bindings._symboltable.adapters.MCQualifiedName2ComponentTypeResolvingDele
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
-import mtconfig.MTConfigMill;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCoChecker;
 import mtconfig._cocos.MTConfigCoCos;
@@ -17,6 +17,7 @@ import mtconfig._symboltable.IMTConfigGlobalScope;
 import mtconfig._symboltable.MTConfigScopesGenitorDelegator;
 import mtconfig._symboltable.adapters.MCQualifiedName2PortResolvingDelegate;
 import org.codehaus.commons.nullanalysis.NotNull;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +39,7 @@ public class MTConfigTool {
   protected IMontiThingsGlobalScope mtGlobalScope;
 
   public MTConfigTool() {
+
     this(MTConfigCoCos.createChecker());
   }
 
@@ -83,6 +85,10 @@ public class MTConfigTool {
     MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
     MCQualifiedName2PortResolvingDelegate portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
 
+    MTConfigMill.reset();
+    MTConfigMill.init();
+    MTConfigMill.globalScope().clear();
+    BasicSymbolsMill.initializePrimitives();
     IMTConfigGlobalScope mtConfigGlobalScope = MTConfigMill.globalScope();
     mtConfigGlobalScope.setModelPath(mp);
     mtConfigGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);

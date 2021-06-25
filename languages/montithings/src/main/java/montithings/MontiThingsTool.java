@@ -314,11 +314,19 @@ public class MontiThingsTool implements IMontiThingsTool {
   }
 
   @Override
-  public void processModels(@NotNull IMontiThingsGlobalScope scope) {
+  public void checkCoCos(@NotNull IMontiThingsGlobalScope scope) {
     Preconditions.checkArgument(scope != null);
-    this.createSymbolTable(scope).stream()
+    scope.getSubScopes().stream()
+      .filter(as -> !((MontiThingsArtifactScope) as).getPackageName().equals(""))
       .map(artifactScope -> (ASTMACompilationUnit) artifactScope.getAstNode())
       .forEach(this::checkCoCos);
+  }
+
+  @Override
+  public void processModels(@NotNull IMontiThingsGlobalScope scope) {
+    Preconditions.checkArgument(scope != null);
+    createSymbolTable(scope);
+    checkCoCos(scope);
   }
 
   @Override
