@@ -18,9 +18,18 @@ import cdlangextension._symboltable.CDLangExtensionUnitSymbol;
 import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd.cli.CDCLI;
+import de.monticore.cd4analysis.CD4AnalysisMill;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
+import de.monticore.cd4analysis._visitor.CD4AnalysisTraverser;
 import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code._parser.CD4CodeParser;
+import de.monticore.cd4code._symboltable.*;
+import de.monticore.cd4code.cocos.CD4CodeCoCosDelegator;
+import de.monticore.cd4code.trafo.CD4CodeDirectCompositionTrafo;
+import de.monticore.cdassociation._visitor.CDAssociationTraverser;
+import de.monticore.cdassociation.trafo.CDAssociationCreateFieldsFromNavigableRoles;
+import de.monticore.cdassociation.trafo.CDAssociationRoleNameTrafo;
+import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -42,9 +51,9 @@ import montithings.generator.codegen.MTGenerator;
 import montithings.generator.codegen.ConfigParams.MessageBroker;
 import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.data.Models;
+import montithings.generator.helper.CD4MTTool;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
-import montithings.generator.helper.LogSettingRestore;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
 import montithings.trafos.DelayedChannelTrafo;
@@ -108,7 +117,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     if (!models.getClassdiagrams().isEmpty()) {
       String symbolPath = target.toString() + File.separator + "symbols" + File.separator;
-      convertCdsToSyms(modelPath, models, symbolPath);
+      CD4MTTool.convertToSymFile(modelPath, models.getClassdiagrams(), symbolPath);
       mp.addEntry(Paths.get(symbolPath));
     }
 
@@ -205,7 +214,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       models.setMontithings(allModels);
     }
 
-    
+
     // Collect all the instances of the executable components (Some components
     // may only be included in other components and thus do not need an own
     // executable).
@@ -215,19 +224,19 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for(Pair<ComponentTypeSymbol, String> instance : instances) {
       executableComponents.add(instance.getKey());
     }
-    
+
     // Aggregate all the target folders for the components.
     List<String> executableSubdirs = new ArrayList<>(instances.size());
     for(ComponentTypeSymbol comp : executableComponents) {
       executableSubdirs.add(comp.getFullName());
     }
-    
+
     // determine the packs of components for each (base) model
     Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks = new HashMap<>();
 
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
-      
+
       // If this component does not need its own executable, then we can just
       // ignore it right here. If splitting is turned of, we will generate
       // everything due to compatibility reasons.
@@ -236,10 +245,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         // component
         Set<ComponentTypeSymbol> includeModels = new HashSet<>();
         modelPacks.put(comp, includeModels);
-        
+
         // the component itself should obviously be part of the deployment
         includeModels.add(comp);
-        
+
         // all (in-)direct sub-components should be part of the deployment if
         // component should be deployed with its subcomponents
         if (ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
@@ -250,7 +259,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         }
       }
     }
-    
+
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
       mtg.generateMakeFileForSubdirs(target, executableSubdirs, config);
     }
@@ -258,7 +267,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for (Entry<ComponentTypeSymbol, Set<ComponentTypeSymbol>> e : modelPacks.entrySet()) {
       String baseModel = e.getKey().getFullName();
       Set<ComponentTypeSymbol> enclosingModels = e.getValue();
-      
+
 
       File compTarget = target;
 
@@ -280,24 +289,24 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       // Save splitting mode and message broker for overriding it for subcomponents that should be included in the same binary.
       SplittingMode orgSplit = config.getSplittingMode();
       MessageBroker orgBroker = config.getMessageBroker();
-      
+
       for (ComponentTypeSymbol symModel : enclosingModels) {
         String model = symModel.getFullName();
         boolean genDeploy = model.equals(baseModel);
-        
+
         // Only the deployed component should communicate directly with the 'outer world'.
         // All the other enclosed components should communicate using native ports. 
         config.setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
         config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
-        
+
         generateCppForComponent(model, symTab, compTarget, hwcPath, config, models, genDeploy);
       }
       // reset splitting mode and message broker
       config.setSplittingMode(orgSplit);
       config.setMessageBroker(orgBroker);
-      
+
       generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, hwcPath, config, models, executableSubdirs);
-      
+
       mtg = new MTGenerator(target, hwcPath, config);
     }
 
@@ -313,7 +322,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         mtg.generateDockerfileScript(target, comp);
       }
     }
-    
+
     generateDeployInfo(target, config, instances);
 
     if (testPath != null && !testPath.toString().equals("")) {
@@ -336,33 +345,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         }
       }
     }
-  }
-
-  protected void convertCdsToSyms(File modelPath, Models models, String symbolPath) {
-    Log.info("==== Start Serialize Class Diagrams ====", "");
-
-    LogSettingRestore logSettingRestore = new LogSettingRestore();
-
-    logSettingRestore.save();
-    for (String cd : models.getClassdiagrams()) {
-      List<String> args = new ArrayList<>();
-      args.add("-d");
-      args.add("false");
-      args.add("--fieldfromrole");
-      args.add("navigable");
-      args.add("-i");
-      args.add(cd);
-      args.add("-s");
-      args.add(symbolPath + cd.substring(modelPath.toString().length() + 1, cd.length() - 2) + "sym");
-      try {
-        CDCLI.main(args.toArray(new String[0]));
-      }
-      catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    logSettingRestore.restore();
-    Log.info("==== End Serialize Class Diagrams ====", "");
   }
 
   /* ============================================================ */
@@ -611,31 +593,31 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
   }
-  
+
   protected void generateDeployInfo(File target, ConfigParams config, List<Pair<ComponentTypeSymbol, String>> executableInstances) {
     JsonObjectBuilder jsonBase = Json.createObjectBuilder();
-    
+
     // Collect executable instances.
     JsonArrayBuilder jsonInstances = Json.createArrayBuilder();
-    
+
     for (Pair<ComponentTypeSymbol, String> instance : executableInstances) {
       // Each executable instance will be added to the "instances" array.
       ComponentTypeSymbol comp = instance.getKey();
       JsonObjectBuilder jsonInstance = Json.createObjectBuilder();
-      
+
       jsonInstance.add("componentType", comp.getFullName());
       jsonInstance.add("instanceName", instance.getValue());
       jsonInstance.add("dockerImage", comp.getFullName().toLowerCase()+":latest");
-      
+
       // Also add the requirements of the component.
       JsonArrayBuilder jreqs = Json.createArrayBuilder();
       ComponentHelper.getRequirements(comp, config).forEach(jreqs::add);
       jsonInstance.add("requirements", jreqs.build());
-      
+
       jsonInstances.add(jsonInstance);
     }
     jsonBase.add("instances", jsonInstances.build());
-    
+
     // Serialize JSON and write it to a file.
     String jsonString = jsonBase.build().toString();
     File jsonFile = new File(target, "deployment-info.json");
