@@ -7,9 +7,9 @@ import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingScope;
 import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingScopesGenitorDelegator;
-//import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponenTypeResolvingDelegate;
-//import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentInstanceResolvingDelegate;
-//import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2PortResolvingDelegate;
+import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentTypeResolvingDelegate;
+import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentInstanceResolvingDelegate;
+import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2PortResolvingDelegate;
 import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._symboltable.IMontiArcGlobalScope;
@@ -37,9 +37,9 @@ public class SD4ComponentTestingTool {
 
     //TODO brauchen wir noch ein Name2CompontentTypeResolvingDelegator?
     //TODO brauchen wir überhaupt die resolver?
-    //Name2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
-    //Name2ComponenTypeResolvingDelegate componentTypeResolvingDelegate;
-    //Name2PortResolvingDelegate portResolvingDelegate;
+    Name2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
+    Name2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
+    Name2PortResolvingDelegate portResolvingDelegate;
 
     if(this.maGlobalScope == null) {
       this.maGlobalScope = MontiArcMill.globalScope();
@@ -49,16 +49,16 @@ public class SD4ComponentTestingTool {
       tool.addBasicTypes();
       tool.processModels(this.maGlobalScope);
     }
-    //componentInstanceResolvingDelegate = new Name2ComponentInstanceResolvingDelegate(this.maGlobalScope);
-    //componentTypeResolvingDelegate = new Name2ComponenTypeResolvingDelegate(this.maGlobalScope);
-    //portResolvingDelegate = new Name2PortResolvingDelegate(this.maGlobalScope);
+    componentInstanceResolvingDelegate = new Name2ComponentInstanceResolvingDelegate(this.maGlobalScope);
+    componentTypeResolvingDelegate = new Name2ComponentTypeResolvingDelegate(this.maGlobalScope);
+    portResolvingDelegate = new Name2PortResolvingDelegate(this.maGlobalScope);
 
     ISD4ComponentTestingGlobalScope sd4ComponentTestingGlobalScope = SD4ComponentTestingMill.globalScope();
     sd4ComponentTestingGlobalScope.setModelPath(mp);
     sd4ComponentTestingGlobalScope.setFileExt(FILE_ENDING);
-    //sd4ComponentTestingGlobalScope.addAdaptedComponentInstanceSymbolResolver(componentInstanceResolvingDelegate);
-    //sd4ComponentTestingGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
-    //sd4ComponentTestingGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
+    sd4ComponentTestingGlobalScope.addAdaptedComponentInstanceSymbolResolver(componentInstanceResolvingDelegate);
+    sd4ComponentTestingGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
+    sd4ComponentTestingGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
 
     return sd4ComponentTestingGlobalScope;
   }

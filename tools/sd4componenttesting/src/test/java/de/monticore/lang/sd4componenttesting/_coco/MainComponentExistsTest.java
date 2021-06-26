@@ -1,4 +1,4 @@
-package de.monticore.lang.sd4componenttesting.coco;
+package de.monticore.lang.sd4componenttesting._coco;
 
 import de.monticore.lang.sd4componenttesting.AbstractCoCoTest;
 import de.monticore.lang.sd4componenttesting._cocos.MainComponentExists;
