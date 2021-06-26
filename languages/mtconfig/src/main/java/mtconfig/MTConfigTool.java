@@ -6,12 +6,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
+import de.se_rwth.commons.logging.Log;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCoChecker;
 import mtconfig._cocos.MTConfigCoCos;
+import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigArtifactScope;
 import mtconfig._symboltable.IMTConfigGlobalScope;
 import mtconfig._symboltable.MTConfigScopesGenitorDelegator;
@@ -19,8 +21,10 @@ import mtconfig._symboltable.adapters.MCQualifiedName2PortResolvingDelegate;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -30,8 +34,6 @@ public class MTConfigTool {
 
   public static String FILE_ENDING = "mtcfg";
 
-  protected IMTConfigArtifactScope artifactScope;
-
   protected MTConfigCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
@@ -39,7 +41,6 @@ public class MTConfigTool {
   protected IMontiThingsGlobalScope mtGlobalScope;
 
   public MTConfigTool() {
-
     this(MTConfigCoCos.createChecker());
   }
 
@@ -47,10 +48,6 @@ public class MTConfigTool {
     Preconditions.checkArgument(checker != null);
     this.checker = checker;
     this.isSymTabInitialized = false;
-  }
-
-  public IMTConfigArtifactScope getArtifactScope() {
-    return artifactScope;
   }
 
   /**
@@ -124,7 +121,8 @@ public class MTConfigTool {
       IMTConfigGlobalScope globalScope) {
 
     MTConfigScopesGenitorDelegator stc = new MTConfigScopesGenitorDelegator();
-    artifactScope = stc.createFromAST(ast);
+    IMTConfigArtifactScope artifactScope = stc.createFromAST(ast);
+    globalScope.addSubScope(artifactScope);
 
     return globalScope;
   }
@@ -139,5 +137,24 @@ public class MTConfigTool {
    */
   public void setMtGlobalScope(IMontiThingsGlobalScope mtGlobalScope) {
     this.mtGlobalScope = mtGlobalScope;
+  }
+
+  public ASTMTConfigUnit processFile(String file) {
+    ASTMTConfigUnit astMTCFG = null;
+    try {
+      Path filePath = Paths.get(file);
+      astMTCFG = new MTConfigParser().parseMTConfigUnit(filePath.toFile().getPath()).orElse(null);
+    }
+    catch (IOException e) {
+      Log.error("File '" + file + "' MTCFG artifact was not found");
+    }
+    Preconditions.checkArgument(astMTCFG != null);
+    MTConfigTool tool = new MTConfigTool();
+    tool.createSymboltable(astMTCFG, MTConfigMill.globalScope());
+    return astMTCFG;
+  }
+
+  public void processFiles(Collection<String> file) {
+    file.forEach(this::processFile);
   }
 }

@@ -5,6 +5,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.symboltable.modifiers.AccessModifier;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -34,8 +35,10 @@ public  interface IMTConfigScope extends IMTConfigScopeTOP {
    */
   default
   public Optional<CompConfigSymbol> resolveCompConfig(String platform, ComponentTypeSymbol componentTypeSymbol) {
-    return resolveCompConfig(componentTypeSymbol.getFullName()+"_"+platform,
-        AccessModifier.ALL_INCLUSION,new CompConfigFilter(platform,componentTypeSymbol));
+    List<CompConfigSymbol> allConfigsForComp = resolveCompConfigMany(componentTypeSymbol.getFullName());
+    return allConfigsForComp.stream()
+      .filter(config -> config.getAstNode().getPlatform().equals(platform))
+      .findAny();
   }
 
   /**

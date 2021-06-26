@@ -22,8 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests CoCos of MTConfig.
- *
- * @author Julian Krebber
  */
 public class CoCoTest extends AbstractTest {
   protected static final String PACKAGE = "cocoTest";
@@ -37,27 +35,20 @@ public class CoCoTest extends AbstractTest {
 
   @Test
   public void valid() {
+    // Given
     MTConfigCoCoChecker checker = MTConfigCoCos.createChecker();
-    checker.checkAll(getAST("cocoTest/valid/SpeedLimiter.mtcfg"));
+    MTConfigTool tool = new MTConfigTool();
+    tool.initSymbolTable(new File(MODEL_PATH));
+    ASTMTConfigUnit ast = tool.processFile(MODEL_PATH + "cocoTest/valid/SpeedLimiter.mtcfg");
+
+    // When
+    checker.checkAll(ast);
+
+    // Then
     if (Log.getErrorCount() != 0) {
       Log.getFindings().stream().filter(Finding::isError).forEach(f -> System.err.println(f.getMsg()));
     }
     assertThat(Log.getErrorCount()).isEqualTo(0);
-  }
-
-  public ASTMTConfigUnit getAST(String fileName) {
-    ASTMTConfigUnit astMTCFG = null;
-    try {
-      Path filePath = Paths.get(MODEL_PATH + fileName);
-      astMTCFG = new MTConfigParser().parseMTConfigUnit(filePath.toFile().getPath()).orElse(null);
-    }
-    catch (IOException e) {
-      Log.error("File '" + MODEL_PATH + fileName + "' MTCFG artifact was not found");
-    }
-    Assertions.assertNotNull(astMTCFG);
-    MTConfigTool tool = new MTConfigTool();
-    tool.createSymboltable(astMTCFG, new File(MODEL_PATH));
-    return astMTCFG;
   }
 }
 

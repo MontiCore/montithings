@@ -9,6 +9,7 @@ import montiarc.check.MontiArcDerive;
 import montithings._cocos.MontiThingsASTBehaviorCoCo;
 import montithings._cocos.MontiThingsASTMTEveryBlockCoCo;
 import montithings._cocos.MontiThingsCoCoChecker;
+import montithings.cocos.montiarcCopyPaste.*;
 import portextensions.cocos.PortsInBatchStatementAreIncoming;
 import portextensions.cocos.PortsInSyncGroupAreIncoming;
 import portextensions.cocos.SyncGroupIsNoSubset;
@@ -25,7 +26,7 @@ public class MontiThingsCoCos {
     checker.addCoCo(new ComponentInstanceTypeExists());
     checker.addCoCo(new ComponentTypeNameCapitalization());
     checker.addCoCo(new ConfigurationParametersCorrectlyInherited());
-    checker.addCoCo(new ConfigurationParameterAssignment(new MontiArcDerive(new TypeCheckResult())));
+    checker.addCoCo(new MTConfigurationParameterAssignment(new MontiArcDerive(new TypeCheckResult())));
     checker.addCoCo(new ConnectorSourceAndTargetComponentDiffer());
     checker.addCoCo(new ConnectorSourceAndTargetDiffer());
     checker.addCoCo(new MTConnectorSourceAndTargetExistAndFit());

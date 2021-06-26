@@ -138,6 +138,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.globalScope();
     cd4CGlobalScope.setModelPath(mp);
 
+
     MontiThingsMill.reset();
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
@@ -148,14 +149,19 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);
     ICDLangExtensionGlobalScope cdLangExtensionGlobalScope = cdExtensionTool.initSymbolTable(modelPath);
+    config.setCdLangExtensionScope(cdLangExtensionGlobalScope);
+
 
     BindingsTool bindingsTool = new BindingsTool();
     bindingsTool.setMtGlobalScope(symTab);
     IBindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
 
+
     MTConfigTool mtConfigTool = new MTConfigTool();
     mtConfigTool.setMtGlobalScope(symTab);
     IMTConfigGlobalScope mtConfigGlobalScope = mtConfigTool.initSymbolTable(modelPath);
+    config.setMtConfigScope(mtConfigGlobalScope);
+    mtConfigTool.processFiles(models.getMTConfig());
 
     /* ============================================================ */
     /* =================== Find Code Templates ==================== */

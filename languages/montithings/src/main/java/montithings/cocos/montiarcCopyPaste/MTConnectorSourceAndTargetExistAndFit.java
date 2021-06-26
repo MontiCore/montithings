@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.cocos;
+package montithings.cocos.montiarcCopyPaste;
 
 import arcbasis._ast.ASTComponentType;
 import arcbasis._ast.ASTConnector;
