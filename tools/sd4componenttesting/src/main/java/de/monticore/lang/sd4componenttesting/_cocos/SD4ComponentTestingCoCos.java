@@ -10,6 +10,7 @@ public class SD4ComponentTestingCoCos {
     checker.addCoCo(new SD4CConnectionMainOutputValid());
     checker.addCoCo(new SD4CConnectionMainInputValid());
     checker.addCoCo(new SD4CConnectionPortsDirectionValid());
+    checker.addCoCo(new SD4CConnectionConnectorValid());
     return checker;
   }
 }

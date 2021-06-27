@@ -5,7 +5,6 @@ package de.monticore.lang.sd4componenttesting.util;
  * The enum of all SD4ComponentTesting errors. Extends the mixing interface {@link Error}
  */
 public enum SD4ComponentTestingError implements Error {
-  //TODO check grammatik of error messages
   NO_MAIN_COMPONENT_IMPLEMENTATION("0xSD4CPT1010", "Main Component Instance '%s' has no model file!"),
   UNKNOWN_COMPONENT_INSTANCE_IN_PORT_ACCESS("0xSD4CPT1030", "ComponentInstance '%s' of PortAccess '%s' could not be found in MainComponent '%s'!"),
   UNKNOWN_PORT_ACCESS("0xSD4CPT1040", "The Port Access '%s' could not be found!"),
@@ -18,7 +17,9 @@ public enum SD4ComponentTestingError implements Error {
   MAIN_INPUT_UNKNOWN_PORT("0xSD4CPT1100", "Input Port '%s' of Connection '%s' could not be found in MainComponent '%s'"),
 
   CONNECTION_SOURCE_UNKNOWN_PORT("0xSD4CPT1110", "Output Port '%s' of Connection '%s' could not be found in Component '%s'"),
-  CONNECTION_TARGET_UNKNOWN_PORT("0xSD4CPT1120", "Input Port '%s' of Connection '%s' could not be found in Component '%s'");
+  CONNECTION_TARGET_UNKNOWN_PORT("0xSD4CPT1120", "Input Port '%s' of Connection '%s' could not be found in Component '%s'"),
+
+  CONNECTION_NOT_DEFINED_AS_CONNECTOR("0xSD4CPT1130", "Connection '%s' is not defined in MainComponent '%s' as connector");
 
   protected final String errorCode;
   protected final String errorMessage;
