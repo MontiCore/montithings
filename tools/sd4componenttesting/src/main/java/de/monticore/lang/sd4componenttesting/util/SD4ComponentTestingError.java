@@ -5,11 +5,20 @@ package de.monticore.lang.sd4componenttesting.util;
  * The enum of all SD4ComponentTesting errors. Extends the mixing interface {@link Error}
  */
 public enum SD4ComponentTestingError implements Error {
+  //TODO check grammatik of error messages
   NO_MAIN_COMPONENT_IMPLEMENTATION("0xSD4CPT1010", "Main Component Instance '%s' has no model file!"),
-  NO_MODEL_IMPLEMENTATION("0xSD4CPT1020", "Implementation '%s' has no model file!"),
-  NOT_SAME_PORTS_IMPLEMENTED("0xSD4CPT1030", "Interface '%s' and Implementation '%s' don't implement the same ports!"),
+  UNKNOWN_COMPONENT_INSTANCE_IN_PORT_ACCESS("0xSD4CPT1030", "ComponentInstance '%s' of PortAccess '%s' could not be found in MainComponent '%s'!"),
   UNKNOWN_PORT_ACCESS("0xSD4CPT1040", "The Port Access '%s' could not be found!"),
-  TARGET_IS_OUTPUT_PORT("0xSD4CPT1050", "The Connection target '%s' is not an input port!");
+
+  CONNECTION_NOT_VALID("0xSD4CPT1050", "Connection '%s' is not valid"),
+  CONNECTION_NOT_VALID_WRONG_VALUE_AMOUNT("0xSD4CPT1060", "Connection '%s' is not valid (wrong value amount)"),
+  MAIN_OUTPUT_COMPONENT_GIVEN("0xSD4CPT1070", "Component '%s' given in Output Connection '%s'"),
+  MAIN_OUTPUT_UNKNOWN_PORT("0xSD4CPT1080", "Output Port '%s' of Connection '%s' could not be found in MainComponent '%s'"),
+  MAIN_INPUT_COMPONENT_GIVEN("0xSD4CPT1090", "Component '%s' given in Input Connection '%s'"),
+  MAIN_INPUT_UNKNOWN_PORT("0xSD4CPT1100", "Input Port '%s' of Connection '%s' could not be found in MainComponent '%s'"),
+
+  CONNECTION_SOURCE_UNKNOWN_PORT("0xSD4CPT1110", "Output Port '%s' of Connection '%s' could not be found in Component '%s'"),
+  CONNECTION_TARGET_UNKNOWN_PORT("0xSD4CPT1120", "Input Port '%s' of Connection '%s' could not be found in Component '%s'");
 
   protected final String errorCode;
   protected final String errorMessage;
