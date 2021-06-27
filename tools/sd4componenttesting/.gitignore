@@ -5,3 +5,7 @@
 **/.gradle
 out/**
 out
+.settings/
+.classpath
+.project
+.vscode/
