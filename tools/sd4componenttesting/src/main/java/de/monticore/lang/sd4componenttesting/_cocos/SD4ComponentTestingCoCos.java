@@ -6,6 +6,7 @@ public class SD4ComponentTestingCoCos {
     final SD4ComponentTestingCoCoChecker checker = new SD4ComponentTestingCoCoChecker();
     checker.addCoCo(new MainComponentExists());
     checker.addCoCo(new PortAccessValid());
+    checker.addCoCo(new SD4CConnectionValid());
     return checker;
   }
 }
