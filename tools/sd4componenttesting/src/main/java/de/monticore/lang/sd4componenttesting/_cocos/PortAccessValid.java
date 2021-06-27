@@ -1,51 +1,44 @@
 // (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting._cocos;
 
+import arcbasis._ast.ASTPortAccess;
+import arcbasis._cocos.ArcBasisASTPortAccessCoCo;
+import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
-import arcbasis._ast.ASTPortAccess;
-import de.monticore.lang.sd4componenttesting._ast.ASTTestDiagram;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CConnection;
+import de.monticore.lang.sd4componenttesting._ast.ASTTestDiagram;
+import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingArtifactScope;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
 import de.se_rwth.commons.logging.Log;
 
 import java.util.Optional;
 
-public class PortAccessValid implements SD4ComponentTestingASTTestDiagramCoCo {
+public class PortAccessValid implements ArcBasisASTPortAccessCoCo {
   @Override
-  public void check(ASTTestDiagram node) {
-    Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(node.getMainComponent());
-    if (!comp.isPresent()) {
-      Log.error(
-          String.format(SD4ComponentTestingError.NO_MAIN_COMPONENT_IMPLEMENTATION.toString(), node.getMainComponent()));
-      return;
-    }
-    ComponentTypeSymbol component = comp.get();
-    node.getSD4CElementList().forEach(elem -> {
-      if (!elem.getClass().equals(ASTSD4CConnection.class))
-        return;
+  public void check(ASTPortAccess node) {
+    ComponentTypeSymbol mainComponent = ((ISD4ComponentTestingArtifactScope) node.getEnclosingScope()).getMainComponentTypeSymbol();
 
-      ASTSD4CConnection connection = (ASTSD4CConnection) elem;
-      if (connection.isPresentSource())
-        check(component, connection.getSource());
-      connection.getTargetList().forEach(target -> {
-        check(component, target);
-      });
-    });
-  }
-
-  public void check(ComponentTypeSymbol component, ASTPortAccess portAccess) {
     Optional<PortSymbol> portSymbol;
-    if (!portAccess.isPresentComponent()) {
-      portSymbol = component.getPort(portAccess.getPort(), true);
+    if (!node.isPresentComponent()) {
+      portSymbol = mainComponent.getPort(node.getPort());
     } else {
-      portSymbol = component.getSubComponent(portAccess.getComponent())
-          .flatMap(componentInstanceSymbol -> componentInstanceSymbol.getType().getPort(portAccess.getPort(), true));
+      Optional<ComponentInstanceSymbol> componentInstance = mainComponent.getSubComponent(node.getComponent());
+      if (!componentInstance.isPresent()) {
+        Log.error(String.format(
+          SD4ComponentTestingError.UNKNOWN_COMPONENT_INSTANCE_IN_PORT_ACCESS.toString(),
+          node.getComponent(),
+          node.getQName(),
+          mainComponent.getName())
+        );
+        return;
+      }
+      ComponentTypeSymbol componentTypeSymbol = componentInstance.get().getType();
+
+      portSymbol = componentTypeSymbol.getPort(node.getPort());
     }
     if (!portSymbol.isPresent()) {
-      Log.error(String.format((SD4ComponentTestingError.UNKNOWN_PORT_ACCESS).toString(), portAccess.getQName()),
-          portAccess.get_SourcePositionStart());
-      return;
+      Log.error(String.format(SD4ComponentTestingError.UNKNOWN_PORT_ACCESS.toString(), node.getQName()));
     }
   }
 }
