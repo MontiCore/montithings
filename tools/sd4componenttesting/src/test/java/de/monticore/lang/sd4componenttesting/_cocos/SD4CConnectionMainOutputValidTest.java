@@ -6,24 +6,24 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-public class SD4CConnectionValidTest extends AbstractCoCoTest {
+class SD4CConnectionMainOutputValidTest extends AbstractCoCoTest {
   @Override
   protected void initCoCoChecker() {
-    this.checker.addCoCo(new SD4CConnectionValid());
+    this.checker.addCoCo(new SD4CConnectionMainOutputValid());
   }
 
   @Override
   protected List<String> getErrorCodeOfCocoUnderTest() {
-    return Arrays.asList("0xSD4CPT1050", "0xSD4CPT1060");
+    return Arrays.asList("0xSD4CPT1070", "0xSD4CPT1080");
   }
 
   @Test
   void testCocoViolation() {
-    testCocoViolation("SD4CConnectionNotValid.sd4c", 1, 1);
+    testCocoViolation("SD4CConnectionMainOutputComponentGiven.sd4c", 1, 1);
   }
 
   @Test
   void testCocoViolation2() {
-    testCocoViolation("SD4CConnectionWrongValueAmount.sd4c", 1, 1);
+    testCocoViolation("SD4CConnectionMainOutputUnknownPort.sd4c", 1, 1);
   }
 }

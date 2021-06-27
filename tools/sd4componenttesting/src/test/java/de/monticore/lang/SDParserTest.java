@@ -41,6 +41,7 @@ public class SDParserTest {
     "ExpressionsTest.sd4c",
     "FullTest.sd4c",
     "InputTest.sd4c",
+    "MainTest.sd4c",
     "OutputTest.sd4c",
     "SingleConnectionStringValueTest.sd4c",
     "SingleConnectionNumberValueTest.sd4c",
