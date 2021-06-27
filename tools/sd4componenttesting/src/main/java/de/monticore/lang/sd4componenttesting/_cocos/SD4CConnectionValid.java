@@ -9,7 +9,7 @@ public class SD4CConnectionValid implements SD4ComponentTestingASTSD4CConnection
   @Override
   public void check(ASTSD4CConnection node) {
     //Case 1:  ->  : VALUE;
-    if (node.getSource() == null && node.getTargetList().isEmpty()) {
+    if (!node.isPresentSource() && node.getTargetList().isEmpty()) {
       Log.error(String.format(SD4ComponentTestingError.CONNECTION_NOT_VALID.toString(), node));
     }
 
