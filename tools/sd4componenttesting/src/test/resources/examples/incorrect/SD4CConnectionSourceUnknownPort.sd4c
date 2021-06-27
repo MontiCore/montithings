@@ -1,0 +1,6 @@
+package examples.incorrect;
+
+testdiagram MainTest for Main {
+  value -> sumCom.second: 13;
+  sumCom.foo -> result : 25;
+}

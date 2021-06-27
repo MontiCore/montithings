@@ -13,12 +13,17 @@ import de.se_rwth.commons.logging.Log;
 import java.util.List;
 import java.util.Optional;
 
-public class SD4CConnectionConnectorValid implements SD4ComponentTestingASTSD4CConnectionCoCo {
+public class SD4CConnectionPortsDirectionValid implements SD4ComponentTestingASTSD4CConnectionCoCo {
   @Override
   public void check(ASTSD4CConnection node) {
     ComponentTypeSymbol mainComponent = ((ISD4ComponentTestingArtifactScope) node.getEnclosingScope()).getMainComponentTypeSymbol();
 
     //Case 4: PORTACCESS -> PORTACCESS : VALUE;
+
+    // will checked in case 2 or 3
+    if (!node.isPresentSource() || node.getTargetList().isEmpty()) {
+      return;
+    }
 
     // check source
     if (!node.getSource().isPresentComponent()) {
@@ -41,9 +46,9 @@ public class SD4CConnectionConnectorValid implements SD4ComponentTestingASTSD4CC
       if (!portSymbol.isPresent()) {
         Log.error(String.format(
           SD4ComponentTestingError.CONNECTION_SOURCE_UNKNOWN_PORT.toString(),
-          node.getSource().getComponent(),
+          node.getSource().getPort(),
           node,
-          node.getSource()));
+          node.getSource().getComponent()));
         return;
       }
     }
@@ -54,7 +59,7 @@ public class SD4CConnectionConnectorValid implements SD4ComponentTestingASTSD4CC
     for (ASTPortAccess target: targetList) {
 
       if (!target.isPresentComponent()) {
-        Optional<PortSymbol> portSymbol = mainComponent.getIncomingPort(target.getPort());
+        Optional<PortSymbol> portSymbol = mainComponent.getOutgoingPort(target.getPort());
 
         if (!portSymbol.isPresent()) {
           Log.error(String.format(
@@ -68,14 +73,14 @@ public class SD4CConnectionConnectorValid implements SD4ComponentTestingASTSD4CC
 
       if (target.isPresentComponent()) {
         Optional<ComponentInstanceSymbol> component = mainComponent.getSubComponent(target.getComponent());
-        Optional<PortSymbol> portSymbol = component.get().getType().getOutgoingPort(target.getPort());
+        Optional<PortSymbol> portSymbol = component.get().getType().getIncomingPort(target.getPort());
 
         if (!portSymbol.isPresent()) {
           Log.error(String.format(
             SD4ComponentTestingError.CONNECTION_TARGET_UNKNOWN_PORT.toString(),
-            target.getComponent(),
+            target.getPort(),
             node,
-            target));
+            target.getComponent()));
           return;
         }
       }

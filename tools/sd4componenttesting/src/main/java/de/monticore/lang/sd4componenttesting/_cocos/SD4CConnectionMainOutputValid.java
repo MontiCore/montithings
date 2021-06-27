@@ -16,6 +16,7 @@ public class SD4CConnectionMainOutputValid implements SD4ComponentTestingASTSD4C
     ComponentTypeSymbol mainComponent = ((ISD4ComponentTestingArtifactScope) node.getEnclosingScope()).getMainComponentTypeSymbol();
 
     //Case 2: PORTACCESS -> : VALUE;
+    // will checked in case 3 or 4
     if (!node.getTargetList().isEmpty()) {
       return;
     }

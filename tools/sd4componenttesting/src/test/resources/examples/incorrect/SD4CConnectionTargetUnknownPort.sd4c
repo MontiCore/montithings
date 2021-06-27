@@ -1,7 +1,6 @@
 package examples.incorrect;
 
 testdiagram MainTest for Main {
-  foo -> : 12;
-  value -> mainfoo: 13;
+  value -> sumCom.foo: 13;
   sumCom.result -> result : 25;
 }
