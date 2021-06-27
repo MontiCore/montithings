@@ -7,7 +7,8 @@ package de.monticore.lang.sd4componenttesting.util;
 public enum SD4ComponentTestingError implements Error {
   NO_MAIN_COMPONENT_IMPLEMENTATION("0xSD4CPT1010", "Main Component Instance '%s' has no model file!"),
   NO_MODEL_IMPLEMENTATION("0xSD4CPT1020", "Implementation '%s' has no model file!"),
-  NOT_SAME_PORTS_IMPLEMENTED("0xSD4CPT1030", "Interface '%s' and Implementation '%s' don't implement the same ports!");
+  NOT_SAME_PORTS_IMPLEMENTED("0xSD4CPT1030", "Interface '%s' and Implementation '%s' don't implement the same ports!"),
+  UNKNOWN_PORT_ACCESS("0xSD4CPT1040", "The Port Access '%s' could not be found!");
 
   protected final String errorCode;
   protected final String errorMessage;
