@@ -1,4 +1,4 @@
-package examples.correct;
+package examples.incorrect;
 
 testdiagram MainTest for NotExisting {
   value -> sumCom.first : 12;
