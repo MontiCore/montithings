@@ -1,3 +1,5 @@
+set -e
+
 buildProject() {
   cd "$1"/target/generated-sources
   ./build.sh "$2"
