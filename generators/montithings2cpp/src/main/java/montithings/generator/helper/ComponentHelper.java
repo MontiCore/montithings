@@ -17,8 +17,6 @@ import com.google.common.collect.FluentIterable;
 import conditionbasis._ast.ASTCondition;
 import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.ast.ASTNode;
-import de.monticore.cd4code._symboltable.CD4CodeScope;
-import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
@@ -37,7 +35,6 @@ import de.monticore.types.mccollectiontypes._ast.ASTMCGenericType;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.monticore.types.prettyprint.MCCollectionTypesFullPrettyPrinter;
-import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
 import genericarc._ast.ASTArcTypeParameter;
@@ -106,7 +103,7 @@ public class ComponentHelper {
 
   public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp,
     ConfigParams config) {
-    if (expression.getTypeInfo() instanceof CDTypeSymbol) {
+    if (expression.getTypeInfo() instanceof OOTypeSymbol) {
       return printCdFQN(comp, expression.getTypeInfo(), config);
     }
     if (expression instanceof SymTypeOfNumericWithSIUnit) {
@@ -223,9 +220,9 @@ public class ComponentHelper {
     ConfigParams config) {
     ICDLangExtensionScope scope = config.getCdLangExtensionScope();
 
-    if (scope != null && typeSymbol instanceof CDTypeSymbol) {
+    if (scope != null && typeSymbol instanceof OOTypeSymbol) {
       Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = scope
-        .resolveASTCDEImportStatement("Cpp", (CDTypeSymbol) typeSymbol);
+        .resolveASTCDEImportStatement("Cpp", (OOTypeSymbol) typeSymbol);
       if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get()
         .isPresentAstNode()) {
         return Optional.of(cdeImportStatementSymbol.get().getAstNode());
@@ -1060,8 +1057,8 @@ public class ComponentHelper {
     return result;
   }
 
-  public static List<cdlangextension._ast.ASTCDEImportStatement> getImportStatements(
-    java.lang.String name, montithings.generator.codegen.ConfigParams config) {
+  public static List<ASTCDEImportStatement> getImportStatements(
+    String name, ConfigParams config) {
     ICDLangExtensionScope cdLangScope = config.getCdLangExtensionScope();
     List<DepLanguageSymbol> depLanguageSymbols = cdLangScope.resolveDepLanguageMany(name + ".Cpp");
     List<ASTCDEImportStatement> importStatements = new ArrayList<>();

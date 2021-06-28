@@ -2,9 +2,9 @@
 package hierarchy;
 Colors {
     Cpp {
-     from <cinttypes> import uint8_t as Color;
+     from <cinttypes> import uint8_t as Colors.Color;
     }
     Java {
-      from java.lang.String import String as Color;
+      from java.lang.String import String as Colors.Color;
     }
 }

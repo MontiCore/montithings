@@ -4,6 +4,7 @@ package cdlangextension;
 import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCoChecker;
 import cdlangextension._cocos.CDLangExtensionCoCos;
+import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension._symboltable.*;
 import cdlangextension.util.CDLangExtensionError;
 import com.google.common.base.Preconditions;
@@ -37,8 +38,6 @@ public class CDLangExtensionTool {
 
   public static final String FILE_ENDING = "cde";
 
-  protected ICDLangExtensionArtifactScope artifactScope;
-
   protected CDLangExtensionCoCoChecker checker;
 
   protected boolean isSymTabInitialized;
@@ -58,10 +57,6 @@ public class CDLangExtensionTool {
     this.isSymTabInitialized = false;
     ((CDLangExtensionDeSer) CDLangExtensionMill.globalScope().getDeSer())
       .ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
-  }
-
-  public ICDLangExtensionArtifactScope getArtifactScope() {
-    return artifactScope;
   }
 
   /**
@@ -87,7 +82,6 @@ public class CDLangExtensionTool {
     CD4CodeMill.reset();
     CD4CodeMill.init();
     CD4CodeMill.globalScope().setModelPath(mp);
-    CD4CodeMill.globalScope().setFileExt("cd");
     for (File mP : modelPaths) {
       Collection<ICD4CodeArtifactScope> scopes = loadAllCDs(mP.toPath());
       for (ICD4CodeArtifactScope currentScope : scopes) {
@@ -164,7 +158,7 @@ public class CDLangExtensionTool {
       CD4CodeScopesGenitorDelegator symTab = CD4CodeMill.scopesGenitorDelegator();
       return symTab.createFromAST(cdcu);
     } catch (IOException e) {
-      Log.error("Oh NO!");
+      Log.error("Could not load CDE file '" + file + "'");
     }
     return null;
   }
@@ -218,7 +212,8 @@ public class CDLangExtensionTool {
       ICDLangExtensionGlobalScope globalScope) {
 
     CDLangExtensionScopesGenitorDelegator stc = new CDLangExtensionScopesGenitorDelegator();
-    artifactScope = stc.createFromAST(ast);
+    ICDLangExtensionArtifactScope artifactScope = stc.createFromAST(ast);
+    globalScope.addSubScope(artifactScope);
 
     return globalScope;
   }
@@ -233,5 +228,23 @@ public class CDLangExtensionTool {
    */
   public void setCdGlobalScope(ICD4CodeGlobalScope cdGlobalScope) {
     this.cdGlobalScope = cdGlobalScope;
+  }
+
+  public ASTCDLangExtensionUnit processFile(String file) {
+    ASTCDLangExtensionUnit astCDE = null;
+    try {
+      Path filePath = Paths.get(file);
+      astCDE = new CDLangExtensionParser().parseCDLangExtensionUnit(filePath.toFile().getPath()).orElse(null);
+    }
+    catch (IOException e) {
+      Log.error("File '" + file + "' CDE artifact was not found");
+    }
+    Preconditions.checkArgument(astCDE != null);
+    createSymboltable(astCDE, CDLangExtensionMill.globalScope());
+    return astCDE;
+  }
+
+  public void processFiles(Collection<String> file) {
+    file.forEach(this::processFile);
   }
 }

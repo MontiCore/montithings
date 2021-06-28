@@ -17,19 +17,9 @@ import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension._symboltable.CDLangExtensionUnitSymbol;
 import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
-import de.monticore.cd.cli.CDCLI;
-import de.monticore.cd4analysis.CD4AnalysisMill;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd4analysis._visitor.CD4AnalysisTraverser;
 import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._parser.CD4CodeParser;
-import de.monticore.cd4code._symboltable.*;
-import de.monticore.cd4code.cocos.CD4CodeCoCosDelegator;
-import de.monticore.cd4code.trafo.CD4CodeDirectCompositionTrafo;
-import de.monticore.cdassociation._visitor.CDAssociationTraverser;
-import de.monticore.cdassociation.trafo.CDAssociationCreateFieldsFromNavigableRoles;
-import de.monticore.cdassociation.trafo.CDAssociationRoleNameTrafo;
-import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
+import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -47,9 +37,9 @@ import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
 import montithings.generator.codegen.ConfigParams;
-import montithings.generator.codegen.MTGenerator;
 import montithings.generator.codegen.ConfigParams.MessageBroker;
 import montithings.generator.codegen.ConfigParams.SplittingMode;
+import montithings.generator.codegen.MTGenerator;
 import montithings.generator.data.Models;
 import montithings.generator.helper.CD4MTTool;
 import montithings.generator.helper.ComponentHelper;
@@ -65,27 +55,18 @@ import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
-
-import org.apache.commons.lang3.tuple.Pair;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static montithings.generator.helper.FileHelper.*;
 
@@ -147,7 +128,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
-    cdExtensionTool.setCdGlobalScope(cd4CGlobalScope);
     ICDLangExtensionGlobalScope cdLangExtensionGlobalScope = cdExtensionTool.initSymbolTable(modelPath);
     config.setCdLangExtensionScope(cdLangExtensionGlobalScope);
 
@@ -369,19 +349,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Log.error(String.format(MontiThingsError.GENERATOR_MAIN_UNKNOWN.toString(),
         config.getMainComponent(), allComponents)
       );
-    }
-  }
-
-  protected void checkMtGeneratorCoCos(IMontiThingsGlobalScope symTab, ConfigParams config) {
-    checker.addCoCo(new ComponentHasBehavior(config.getHwcPath()));
-    checker.addCoCo(new PortConnection(config.getTemplatedPorts()));
-    for (IMontiThingsScope as : symTab.getSubScopes()) {
-      if (as instanceof MontiThingsArtifactScope && ((MontiThingsArtifactScope) as).getPackageName().equals("")) {
-        continue; // scope with java.lang types
-      }
-      ASTMACompilationUnit a = (ASTMACompilationUnit) as.getAstNode();
-      Log.info("Check model: " + a.getComponentType().getSymbol().getFullName(), TOOL_NAME);
-      a.accept(checker.getTraverser());
     }
   }
 
