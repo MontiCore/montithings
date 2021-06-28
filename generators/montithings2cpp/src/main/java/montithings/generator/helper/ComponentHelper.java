@@ -29,6 +29,7 @@ import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
@@ -183,7 +184,7 @@ public class ComponentHelper {
   }
 
   public static boolean portUsesCdType(PortSymbol portSymbol) {
-    return portSymbol.getTypeInfo() instanceof CDTypeSymbol;
+    return portSymbol.getTypeInfo() instanceof OOTypeSymbol;
   }
 
   public static String printCdPortFQN(ComponentTypeSymbol componentSymbol,
@@ -198,9 +199,8 @@ public class ComponentHelper {
 
   public static String printCdFQN(ComponentTypeSymbol componentSymbol,
     TypeSymbol typeSymbol, ConfigParams config) {
-    String packageName = ((CD4CodeScope) typeSymbol.getEnclosingScope()).getName();
     String typeName = typeSymbol.getName();
-    return packageName.replaceAll("\\.", "::") + "::" + typeName;
+    return typeName.replaceAll("\\.", "::");
   }
 
   /**

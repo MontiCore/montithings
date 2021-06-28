@@ -7,10 +7,7 @@ import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import de.monticore.cd4analysis.cocos.CD4AnalysisCoCos;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._parser.CD4CodeParser;
-import de.monticore.cd4code._symboltable.CD4CodeDeSer;
-import de.monticore.cd4code._symboltable.CD4CodeScopesGenitorDelegator;
-import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
-import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code._symboltable.*;
 import de.monticore.cd4code.prettyprint.CD4CodeFullPrettyPrinter;
 import de.monticore.cdassociation._ast.ASTCDAssociation;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
@@ -69,16 +66,22 @@ public class CppGenerator {
     this.outputDir = outputDir;
 
     CD4CodeMill.init();
-    CD4CodeParser p = CD4CodeMill.parser();
 
+    CD4CodeMill.globalScope().clear();
     globalScope = CD4CodeMill.globalScope();
     globalScope.setModelPath(new ModelPath(modelPath));
-    BasicSymbolsMill.initializePrimitives();
-    symbolTableCreator = new CD4CodeScopesGenitorDelegator();
+    ((CD4CodeGlobalScope) CD4CodeMill.globalScope()).addBuiltInTypes();
+    CD4CodeMill.globalScope().add(CD4CodeMill.typeSymbolBuilder()
+      .setName("String")
+      .setFullName("String")
+      .setEnclosingScope(CD4CodeMill.globalScope())
+      .setSpannedScope(CD4CodeMill.scope())
+      .build());
+    symbolTableCreator = CD4CodeMill.scopesGenitorDelegator();
 
     final Optional<ASTCDCompilationUnit> astcdCompilationUnit;
     try {
-      astcdCompilationUnit = p
+      astcdCompilationUnit = CD4CodeMill.parser()
         .parse(modelPath.toFile().getPath() + "/" + modelName.replace(".", File.separator) + ".cd");
     }
     catch (IOException e) {
@@ -87,6 +90,7 @@ public class CppGenerator {
     }
     compilationUnit = astcdCompilationUnit.get();
     final ICD4CodeArtifactScope scope = symbolTableCreator.createFromAST(compilationUnit);
+    compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
 
     cdSymbols.addAll(scope.getCDTypeSymbols().values());
 
@@ -117,13 +121,6 @@ public class CppGenerator {
 
     if (!cdSymbols.isEmpty()) {
       this.generatePackageHeader(new ArrayList<>(cdSymbols));
-    }
-  }
-
-  protected void injectPrimitives(ICD4AnalysisGlobalScope scope) {
-    for (String primitive : primitiveTypes) {
-      CDTypeSymbol primitiveCdType = new CDTypeSymbol(primitive);
-      scope.add(primitiveCdType);
     }
   }
 
