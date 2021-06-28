@@ -15,9 +15,10 @@ import de.monticore.symbols.basicsymbols._ast.ASTVariable;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.IDerive;
 import de.monticore.types.check.SymTypeExpression;
-import de.monticore.types.check.TypeCheckResult;
 import de.se_rwth.commons.logging.Log;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.List;
@@ -33,7 +34,10 @@ public class MTConfigurationParameterAssignment extends ConfigurationParameterAs
    * arguments match a component types signature.
    */
   public MTConfigurationParameterAssignment() {
-    this(new MontiThingsTypeCheck(new FullSynthesizeSymTypeFromMCBasicTypes(), new ArcBasisDerive(new TypeCheckResult())));
+    this(new MontiThingsTypeCheck(
+      new SynthesizeSymTypeFromMontiThings(),
+      new DeriveSymTypeOfMontiThingsCombine()
+    ));
   }
 
   /**
@@ -49,14 +53,16 @@ public class MTConfigurationParameterAssignment extends ConfigurationParameterAs
    * signature.
    */
   public MTConfigurationParameterAssignment(@NotNull IDerive deriverFromExpr) {
-    this(new MontiThingsTypeCheck(new FullSynthesizeSymTypeFromMCBasicTypes(), checkNotNull(deriverFromExpr)));
+    this(new MontiThingsTypeCheck(new FullSynthesizeSymTypeFromMCBasicTypes(),
+      checkNotNull(deriverFromExpr)));
   }
 
   @Override
   public void check(ASTComponentInstance node) {
     Preconditions.checkArgument(node != null);
-    Preconditions.checkArgument(node.isPresentSymbol(), "Could not perform coco check '%s'. Perhaps you missed the " +
-      "symbol table creation.", this.getClass().getSimpleName());
+    Preconditions.checkArgument(node.isPresentSymbol(),
+      "Could not perform coco check '%s'. Perhaps you missed the " +
+        "symbol table creation.", this.getClass().getSimpleName());
     Preconditions.checkArgument(node.getSymbol().getType() != null);
 
     ComponentInstanceSymbol compInstance = node.getSymbol();
@@ -101,9 +107,11 @@ public class MTConfigurationParameterAssignment extends ConfigurationParameterAs
   }
 
   protected void assertVarIsArcParameter(ASTVariable configParam, ComponentTypeSymbol fromType) {
-    Preconditions.checkArgument(configParam instanceof ASTArcParameter, "Could not check coco '%s', because " +
-        "configuration parameter '%s' of component type '%s' is not of type '%s", this.getClass().getSimpleName(),
-      configParam.getName(), fromType.getFullName(), ASTArcParameter.class.getSimpleName());
+    Preconditions
+      .checkArgument(configParam instanceof ASTArcParameter, "Could not check coco '%s', because " +
+          "configuration parameter '%s' of component type '%s' is not of type '%s",
+        this.getClass().getSimpleName(),
+        configParam.getName(), fromType.getFullName(), ASTArcParameter.class.getSimpleName());
   }
 
   protected void logCocoViolation(
@@ -113,7 +121,8 @@ public class MTConfigurationParameterAssignment extends ConfigurationParameterAs
   }
 
   protected String printSignature(List<SymTypeExpression> signature) {
-    List<String> signatureParts = signature.stream().map(SymTypeExpression::print).collect(toList());
+    List<String> signatureParts = signature.stream().map(SymTypeExpression::print)
+      .collect(toList());
     return "(" + String.join(", ", signatureParts) + ")";
   }
 }
