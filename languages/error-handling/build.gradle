@@ -47,7 +47,7 @@ dependencies {
     exclude group:'de.monticore', module:'monticore-grammar'
   }
 
-  implementation "de.monticore:monticore-generator:$monticore_version"
+  //implementation "de.monticore:monticore-generator:$monticore_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "de.monticore.lang:ocl:$ocl_version"

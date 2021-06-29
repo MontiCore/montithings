@@ -34,7 +34,7 @@ dependencies {
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation project(":generators:cd2cpp")
-  implementation "de.monticore:monticore-generator:$monticore_version"
+  //implementation "de.monticore:monticore-generator:$monticore_version"
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "junit:junit:$junit_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"
