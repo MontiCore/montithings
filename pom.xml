@@ -6,7 +6,7 @@
 
 	<groupId>montithings</groupId>
 	<artifactId>montithings-core</artifactId>
-	<version>6.5.0-SNAPSHOT</version>
+	<version>6.5.0</version>
 	<packaging>pom</packaging>
 
 	<!-- == PROJECT MODULES ================================================= -->
