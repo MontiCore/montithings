@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
-import de.monticore.lang.sd4componenttesting._ast.ASTTestDiagram;
 
 /**
  * Generates a c++ file that contains test cases
@@ -32,12 +31,11 @@ public class SD4ComponentTestingGenerator {
 
     GeneratorEngine engine = new GeneratorEngine(setup);
 
-    // Generate Python file
+    // Generate CPP file
     File outputDir = new File(System.getProperty("user.dir") + File.separator + "target");
     Path TestCasesOutputFile = Paths.get(outputDir.getAbsolutePath(), "Test.cpp");
     engine.generate("templates/TestCasesGenerator.ftl", TestCasesOutputFile, ast);
 
     return TestCasesOutputFile;
   }
-
 }
