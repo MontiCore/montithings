@@ -4,24 +4,27 @@ package de.monticore.lang.sd4componenttesting;
 import com.google.common.collect.Sets;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
+import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
+import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingScope;
 import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingScopesGenitorDelegator;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentTypeResolvingDelegate;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentInstanceResolvingDelegate;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2PortResolvingDelegate;
-import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._symboltable.IMontiArcGlobalScope;
+import de.se_rwth.commons.logging.Log;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Set;
 
 /**
- * Provides useful methods for handling the MTConfig language.
+ * Provides useful methods for handling the SD4ComponentTesting language.
  */
 public class SD4ComponentTestingTool {
   protected IMontiArcGlobalScope maGlobalScope;
@@ -67,9 +70,37 @@ public class SD4ComponentTestingTool {
     return sd4ComponentTestingGlobalScope;
   }
 
-  //TODO eventuell initSymbolTable hier drin aufrufen
   public void createSymbolTableFromAST(ASTSD4Artifact ast) {
     SD4ComponentTestingScopesGenitorDelegator genitor = SD4ComponentTestingMill.scopesGenitorDelegator();
     genitor.createFromAST(ast);
+  }
+
+  protected ASTSD4Artifact parseModel(String modelFile) {
+    Path model = Paths.get(modelFile);
+    SD4ComponentTestingParser parser = new SD4ComponentTestingParser();
+    Optional<ASTSD4Artifact> optAutomaton;
+    try {
+      optAutomaton = parser.parse(model.toString());
+      return optAutomaton.get();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      Log.error("There was an exception when parsing the model " + modelFile + ": "
+        + e.getMessage());
+    }
+    return null;
+  }
+
+  public ASTSD4Artifact loadModel(String modelPath, String model) {
+    initSymbolTable(new File(modelPath));
+
+    ASTSD4Artifact ast = parseModel(modelPath + "/" + model);
+
+    if (ast != null) {
+      createSymbolTableFromAST(ast);
+      SD4ComponentTestingCoCos.createChecker().checkAll(ast);
+      return ast;
+    }
+    return null;
   }
 }
