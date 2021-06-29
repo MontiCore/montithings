@@ -36,17 +36,6 @@ public abstract class AbstractCoCoTest {
 
   @BeforeEach
   public void setup() {
-    //TODO testen ob man das machen muss
-    //see arcbasis/AbstractTest
-    MontiArcMill.globalScope().clear();
-    MontiArcMill.reset();
-    MontiArcMill.init();
-    BasicSymbolsMill.initializePrimitives();
-
-    SD4ComponentTestingMill.globalScope().clear();
-    SD4ComponentTestingMill.reset();
-    SD4ComponentTestingMill.init();
-
     this.checker = new SD4ComponentTestingCoCoChecker();
     this.tool = new SD4ComponentTestingTool();
     this.tool.initSymbolTable(new File(SYMBOL_PATH));

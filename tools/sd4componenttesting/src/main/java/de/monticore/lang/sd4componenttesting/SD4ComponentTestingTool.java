@@ -10,6 +10,7 @@ import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingSco
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentTypeResolvingDelegate;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentInstanceResolvingDelegate;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2PortResolvingDelegate;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._symboltable.IMontiArcGlobalScope;
@@ -23,8 +24,6 @@ import java.util.Set;
  * Provides useful methods for handling the MTConfig language.
  */
 public class SD4ComponentTestingTool {
-  public static String FILE_ENDING = "sd4c";
-
   protected IMontiArcGlobalScope maGlobalScope;
 
   public ISD4ComponentTestingScope initSymbolTable(File... modelPaths) {
@@ -35,13 +34,15 @@ public class SD4ComponentTestingTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    //TODO brauchen wir noch ein Name2CompontentTypeResolvingDelegator?
-    //TODO brauchen wir überhaupt die resolver?
     Name2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
     Name2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
     Name2PortResolvingDelegate portResolvingDelegate;
 
     if(this.maGlobalScope == null) {
+      MontiArcMill.globalScope().clear();
+      MontiArcMill.reset();
+      MontiArcMill.init();
+
       this.maGlobalScope = MontiArcMill.globalScope();
       this.maGlobalScope.setModelPath(mp);
 
@@ -53,9 +54,12 @@ public class SD4ComponentTestingTool {
     componentTypeResolvingDelegate = new Name2ComponentTypeResolvingDelegate(this.maGlobalScope);
     portResolvingDelegate = new Name2PortResolvingDelegate(this.maGlobalScope);
 
+    SD4ComponentTestingMill.globalScope().clear();
+    SD4ComponentTestingMill.reset();
+    SD4ComponentTestingMill.init();
+
     ISD4ComponentTestingGlobalScope sd4ComponentTestingGlobalScope = SD4ComponentTestingMill.globalScope();
     sd4ComponentTestingGlobalScope.setModelPath(mp);
-    sd4ComponentTestingGlobalScope.setFileExt(FILE_ENDING);
     sd4ComponentTestingGlobalScope.addAdaptedComponentInstanceSymbolResolver(componentInstanceResolvingDelegate);
     sd4ComponentTestingGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
     sd4ComponentTestingGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
