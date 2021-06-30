@@ -16,6 +16,7 @@ import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2PortReso
 import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._symboltable.IMontiArcGlobalScope;
+import de.se_rwth.commons.logging.Log;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -26,11 +27,9 @@ import java.util.Set;
 
 
 /**
- * Provides useful methods for handling the MTConfig language.
+ * Provides useful methods for handling the SD4ComponentTesting language.
  */
 public class SD4ComponentTestingTool {
-  public static String FILE_ENDING = "sd4c";
-
   protected IMontiArcGlobalScope maGlobalScope;
 
   public ISD4ComponentTestingScope initSymbolTable(File... modelPaths) {
@@ -41,13 +40,15 @@ public class SD4ComponentTestingTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    //TODO brauchen wir noch ein Name2CompontentTypeResolvingDelegator?
-    //TODO brauchen wir überhaupt die resolver?
     Name2ComponentInstanceResolvingDelegate componentInstanceResolvingDelegate;
     Name2ComponentTypeResolvingDelegate componentTypeResolvingDelegate;
     Name2PortResolvingDelegate portResolvingDelegate;
 
     if(this.maGlobalScope == null) {
+      MontiArcMill.globalScope().clear();
+      MontiArcMill.reset();
+      MontiArcMill.init();
+
       this.maGlobalScope = MontiArcMill.globalScope();
       this.maGlobalScope.setModelPath(mp);
 
@@ -59,9 +60,12 @@ public class SD4ComponentTestingTool {
     componentTypeResolvingDelegate = new Name2ComponentTypeResolvingDelegate(this.maGlobalScope);
     portResolvingDelegate = new Name2PortResolvingDelegate(this.maGlobalScope);
 
+    SD4ComponentTestingMill.globalScope().clear();
+    SD4ComponentTestingMill.reset();
+    SD4ComponentTestingMill.init();
+
     ISD4ComponentTestingGlobalScope sd4ComponentTestingGlobalScope = SD4ComponentTestingMill.globalScope();
     sd4ComponentTestingGlobalScope.setModelPath(mp);
-    sd4ComponentTestingGlobalScope.setFileExt(FILE_ENDING);
     sd4ComponentTestingGlobalScope.addAdaptedComponentInstanceSymbolResolver(componentInstanceResolvingDelegate);
     sd4ComponentTestingGlobalScope.addAdaptedComponentTypeSymbolResolver(componentTypeResolvingDelegate);
     sd4ComponentTestingGlobalScope.addAdaptedPortSymbolResolver(portResolvingDelegate);
@@ -69,13 +73,12 @@ public class SD4ComponentTestingTool {
     return sd4ComponentTestingGlobalScope;
   }
 
-  //TODO eventuell initSymbolTable hier drin aufrufen
   public void createSymbolTableFromAST(ASTSD4Artifact ast) {
     SD4ComponentTestingScopesGenitorDelegator genitor = SD4ComponentTestingMill.scopesGenitorDelegator();
     genitor.createFromAST(ast);
   }
 
-  protected static ASTSD4Artifact parseModel(String modelFile) {
+  protected ASTSD4Artifact parseModel(String modelFile) {
     Path model = Paths.get(modelFile);
     SD4ComponentTestingParser parser = new SD4ComponentTestingParser();
     Optional<ASTSD4Artifact> optAutomaton;
@@ -87,6 +90,19 @@ public class SD4ComponentTestingTool {
       e.printStackTrace();
       Log.error("There was an exception when parsing the model " + modelFile + ": "
         + e.getMessage());
+    }
+    return null;
+  }
+
+  public ASTSD4Artifact loadModel(String modelPath, String model) {
+    initSymbolTable(new File(modelPath));
+
+    ASTSD4Artifact ast = parseModel(modelPath + "/" + model);
+
+    if (ast != null) {
+      createSymbolTableFromAST(ast);
+      SD4ComponentTestingCoCos.createChecker().checkAll(ast);
+      return ast;
     }
     return null;
   }
