@@ -3,9 +3,9 @@ package de.monticore.lang.sd4componenttesting;
 
 import com.google.common.collect.Sets;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
 import de.se_rwth.commons.logging.Log;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
-import de.monticore.lang.sd4componenttesting._ast.ASTTestDiagram;
 import de.monticore.lang.sd4componenttesting._parser.SD4ComponentTestingParser;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingScope;
@@ -16,15 +16,12 @@ import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2PortReso
 import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._symboltable.IMontiArcGlobalScope;
-import de.se_rwth.commons.logging.Log;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
-
-
 
 /**
  * Provides useful methods for handling the SD4ComponentTesting language.

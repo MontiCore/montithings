@@ -14,7 +14,7 @@ import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
  * Overall generation process:
  * Arc File + SD$C File -> MontiCore -> C++ File -> Test Cases
  *
- * @author (last commit) bockhrst
+ * @author (last commit) bockhorst
  * @version 0.1, 28.06.2021
  * @since 0.1
  */
@@ -25,7 +25,12 @@ public class SD4ComponentTestingGenerator {
    *
    * @param ast the ASTSD4Artifact to create the Test Cases from
    */
+
   public static Path generate(ASTSD4Artifact ast) {
+    return generate(ast, "Test.cpp");
+  }
+
+  public static Path generate(ASTSD4Artifact ast, String path ) {
     GeneratorSetup setup = new GeneratorSetup();
     setup.setTracing(false);
 
@@ -33,7 +38,7 @@ public class SD4ComponentTestingGenerator {
 
     // Generate CPP file
     File outputDir = new File(System.getProperty("user.dir") + File.separator + "target");
-    Path TestCasesOutputFile = Paths.get(outputDir.getAbsolutePath(), "Test.cpp");
+    Path TestCasesOutputFile = Paths.get(outputDir.getAbsolutePath(), path);
     engine.generate("templates/TestCasesGenerator.ftl", TestCasesOutputFile, ast);
 
     return TestCasesOutputFile;
