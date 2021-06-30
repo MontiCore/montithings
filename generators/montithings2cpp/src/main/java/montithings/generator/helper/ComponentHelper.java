@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
+import arcautomaton._ast.ASTArcStatechart;
 import arcbasis._ast.*;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
@@ -20,10 +21,12 @@ import de.monticore.ast.ASTNode;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.scbasis._ast.ASTSCTransition;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
+import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
@@ -733,8 +736,7 @@ public class ComponentHelper {
    * @param node
    * @return
    */
-  public static List<de.monticore.expressions.expressionsbasis._ast.ASTNameExpression> getGuardExpressionElements(
-    de.monticore.expressions.expressionsbasis._ast.ASTExpression node) {
+  public static List<ASTNameExpression> getGuardExpressionElements(ASTExpression node) {
     GuardExpressionVisitor visitor = new GuardExpressionVisitor();
     node.accept(visitor.createTraverser());
     return visitor.getExpressions();
@@ -827,6 +829,14 @@ public class ComponentHelper {
   public static String printJavaBlock(ASTMCJavaBlock block, boolean suppressPostconditions) {
     MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(suppressPostconditions);
     return printer.prettyprint(block);
+  }
+
+  public static String printBlock(ASTMCBlockStatement ast) {
+    return CppPrettyPrinter.getPrinter().prettyprint(ast);
+  }
+
+  public static String printExpression(ASTExpression ast) {
+    return CppPrettyPrinter.getPrinter().prettyprint(ast);
   }
 
   public static List<VariableSymbol> getVariablesAndParameters(ComponentTypeSymbol comp) {
@@ -936,12 +946,15 @@ public class ComponentHelper {
     return !elementsOf(component).filter(ASTBehavior.class).filter(e -> e.isEmptyNames()).isEmpty();
   }
 
+  public static boolean hasStatechart(ComponentTypeSymbol component) {
+    return !elementsOf(component).filter(ASTArcStatechart.class).isEmpty();
+  }
+
   public static boolean isApplication(ComponentTypeSymbol component, ConfigParams config) {
     return component.getFullName().equals(config.getMainComponent());
   }
 
-  public static List<PortSymbol> getPortsInGuardExpression(
-    de.monticore.expressions.expressionsbasis._ast.ASTExpression node) {
+  public static List<PortSymbol> getPortsInGuardExpression(ASTExpression node) {
     List<PortSymbol> ports = new ArrayList<>();
 
     for (ASTNameExpression guardExpressionElement : getGuardExpressionElements(node)) {
@@ -953,8 +966,7 @@ public class ComponentHelper {
     return ports;
   }
 
-  public static boolean portIsComparedToNoData(
-    de.monticore.expressions.expressionsbasis._ast.ASTExpression e, String portName) {
+  public static boolean portIsComparedToNoData(ASTExpression e, String portName) {
     NoDataComparisionsVisitor visitor = new NoDataComparisionsVisitor();
     e.accept(visitor.createTraverser());
     return visitor.getFoundExpressions().stream()

@@ -16,10 +16,14 @@ import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
 import de.monticore.ocl.optionaloperators.prettyprint.OptionalOperatorsPrettyPrinter;
 import de.monticore.ocl.setexpressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.prettyprint.SCBasisPrettyPrinter;
+import de.monticore.prettyprint.SCTransitions4CodePrettyPrinter;
+import de.monticore.scbasis._ast.ASTSCTransition;
 import de.monticore.siunitliterals.prettyprint.SIUnitLiteralsPrettyPrinter;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrettyPrinter;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
+import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
@@ -115,6 +119,11 @@ public class MontiThingsFullPrettyPrinter {
     SIUnitLiteralsPrettyPrinter siunitliteralspp = new SIUnitLiteralsPrettyPrinter(printer);
     traverser.setSIUnitLiteralsHandler(siunitliteralspp);
 
+    SCBasisPrettyPrinter scBasisPrettyPrinter = new SCBasisPrettyPrinter(printer);
+    traverser.setSCBasisHandler(scBasisPrettyPrinter);
+    SCTransitions4CodePrettyPrinter scTransitions4CodePrettyPrinter = new SCTransitions4CodePrettyPrinter(printer);
+    traverser.setSCTransitions4CodeHandler(scTransitions4CodePrettyPrinter);
+
     MontiThingsPrettyPrinter montithingspp = new MontiThingsPrettyPrinter(printer);
     traverser.setMontiThingsHandler(montithingspp);
   }
@@ -138,6 +147,18 @@ public class MontiThingsFullPrettyPrinter {
   }
 
   public String prettyprint(ASTMCJavaBlock a) {
+    getPrinter().clearBuffer();
+    a.accept(getTraverser());
+    return getPrinter().getContent();
+  }
+
+  public String prettyprint(ASTMCBlockStatement a) {
+    getPrinter().clearBuffer();
+    a.accept(getTraverser());
+    return getPrinter().getContent();
+  }
+
+  public String prettyprint(ASTSCTransition a) {
     getPrinter().clearBuffer();
     a.accept(getTraverser());
     return getPrinter().getContent();

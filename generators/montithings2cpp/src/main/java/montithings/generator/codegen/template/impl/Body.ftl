@@ -3,7 +3,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#include "/template/impl/helper/GeneralPreamble.ftl">
 
 
-<#if ComponentHelper.hasBehavior(comp)>
+<#if ComponentHelper.hasBehavior(comp) || ComponentHelper.hasStatechart(comp)>
   ${tc.includeArgs("template.impl.methods.GetInitialValues", [comp, config, existsHWC])}
   ${tc.includeArgs("template.impl.methods.Compute", [comp, config, existsHWC])}
 </#if>

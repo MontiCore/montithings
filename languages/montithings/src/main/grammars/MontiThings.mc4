@@ -45,6 +45,14 @@ grammar MontiThings extends MontiArc,
 
     Behavior implements ArcElement = "behavior" (Name@Port || ",")* MCJavaBlock;
 
+    // In contrast to MontiArc, we use the "statechart" keyword from the
+    // statechart language instead of "automaton"
+    @Override
+    ArcStatechart implements ArcBehaviorElement =
+      "statechart" "{"
+        SCStatechartElement*
+      "}";
+
     PublishPort implements MCStatement =
         "publish" publishedPorts:(Name@Port || ",")+ ";";
 
