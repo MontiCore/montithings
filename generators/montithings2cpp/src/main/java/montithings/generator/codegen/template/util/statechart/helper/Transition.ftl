@@ -13,7 +13,7 @@ if (this->state.getStatechartState() == ${compname}StatechartState::${source})
 <#if guardedPorts?size gt 0>
   if (
   <#list guardedPorts as currentPort>
-    input.get${currentPort.getName()?cap_first} ().has_value () <#sep>&&</#sep>
+    ${Identifier.getInputName()}.get${currentPort.getName()?cap_first} ().has_value () <#sep>&&</#sep>
   </#list>
   )
 </#if>
