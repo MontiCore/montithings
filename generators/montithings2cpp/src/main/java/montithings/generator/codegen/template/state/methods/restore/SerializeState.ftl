@@ -9,5 +9,6 @@ json state;
 <#list ComponentHelper.getFields(comp) as variable>
   state["${variable.getName()}"] = dataToJson (${variable.getName()});
 </#list>
+${tc.includeArgs("template.util.statechart.hooks.Serialize", [comp, config])}
 return state;
 }

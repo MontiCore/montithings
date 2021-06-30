@@ -9,6 +9,7 @@ try
 {
 json state = json::parse (content);
 
+${tc.includeArgs("template.util.statechart.hooks.Deserialize", [comp, config])}
 // set state
 <#list ComponentHelper.getFields(comp) as variable>
     ${variable.getName()} = jsonToData${"<"}${ComponentHelper.printCPPTypeName(variable.getType())}${">"}(state["${variable.getName()}"]);

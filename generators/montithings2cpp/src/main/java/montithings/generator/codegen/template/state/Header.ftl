@@ -19,6 +19,9 @@ using json = nlohmann::json;
 ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
+
+${tc.includeArgs("template.util.statechart.hooks.Enum", [comp, config])}
+
 class ${className}
 <#if comp.isPresentParentComponent()> :
     ${Utils.printSuperClassFQ(comp)}Result
@@ -39,6 +42,7 @@ ${Utils.printVariables(comp, config, false)}
 <#list ComponentHelper.getArcFieldVariables(comp) as var>
   ${tc.includeArgs("template.state.declarations.VariableVariables", [var, comp, config, existsHWC])}
 </#list>
+${tc.includeArgs("template.util.statechart.hooks.Member", [comp, config])}
 public:
 ${tc.includeArgs("template.state.methods.Constructor", [comp, config, existsHWC])}
 
@@ -64,6 +68,7 @@ virtual void setup ();
   virtual void requestReplay ();
   virtual void publishState (json state);
 </#if>
+${tc.includeArgs("template.util.statechart.hooks.MethodDeclaration", [comp, config])}
 virtual json serializeState ();
 virtual void storeState (json state);
 virtual bool restoreState ();
@@ -80,6 +85,6 @@ bool isRestoredState () const;
 };
 
 <#if Utils.hasTypeParameter(comp)>
-    ${tc.includeArgs("template.state.Body", [comp, config, className])}
+  ${tc.includeArgs("template.state.Body", [comp, config, className])}
 </#if>
 ${Utils.printNamespaceEnd(comp)}

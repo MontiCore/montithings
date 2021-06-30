@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign GeneratorHelper = tc.instantiate("montithings.generator.helper.GeneratorHelper")>
+<#assign StatechartHelper = tc.instantiate("montithings.generator.helper.StatechartHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign PrettyPrinter = tc.instantiate("montithings._visitor.MontiThingsFullPrettyPrinter")>
