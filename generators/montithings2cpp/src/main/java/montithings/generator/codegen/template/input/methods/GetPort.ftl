@@ -10,6 +10,7 @@ ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()
 return ${port.getName()}.getPayload();
 }
 
+${Utils.printTemplateArguments(comp)}
 sole::uuid
 ${className}${Utils.printFormalTypeParameters(comp, false)}::get${port.getName()?cap_first}Uuid()
 {

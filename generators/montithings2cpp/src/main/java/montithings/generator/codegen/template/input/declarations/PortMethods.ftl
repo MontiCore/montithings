@@ -8,6 +8,7 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 
 tl::optional<${type}> get${name}() const;
 void set${name}(Message<${type}>);
+void set${name}(${type});
 
 sole::uuid get${name?cap_first}Uuid();
 

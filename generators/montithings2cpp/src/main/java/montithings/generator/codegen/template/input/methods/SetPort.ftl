@@ -14,3 +14,10 @@ this->${port.getName()} = std::move(element);
   cleanDequeOf${port.getName()?cap_first}(now);
 </#if>
 }
+
+${Utils.printTemplateArguments(comp)}
+void
+${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${type} element)
+{
+  set${port.getName()?cap_first}(Message<${type}>(element));
+}
