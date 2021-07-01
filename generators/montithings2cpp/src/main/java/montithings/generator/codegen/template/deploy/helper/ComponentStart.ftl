@@ -22,6 +22,8 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
     cmp.getInterface()->setPort${portName?cap_first}ConversionFactor(${portName}ConversionFactor);
   </#list>
 
+  ${tc.includeArgs("template.logtracing.hooks.InitLogTracer", [comp, config])}
+
   cmp.setUp(
   <#if ComponentHelper.isTimesync(comp)>
     TIMESYNC

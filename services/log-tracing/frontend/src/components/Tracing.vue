@@ -1,7 +1,7 @@
 <template>
   <div class="mt-3 vh-100">
-<!--
-    op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
+
+    <!--op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
     {{ internal_data }}<br><br>
     inputs: {{ inputs }} <br><br>
     external_ports: {{ external_ports }} <br><br>
@@ -190,7 +190,7 @@ export default {
             },
           }
 
-          top += 80;
+          top += 100;
           left += 250;
           source_count++;
         }
@@ -205,8 +205,8 @@ export default {
         left = Math.max(0, left / 2 - 70);
       }
 
-      top += 100;
-
+      top += 100 + this.var_assignments.split(/\r\n|\r|\n/).length * 20;
+      console.log(top);
       // target component
       operators[this.selected_instance] = {
         top: top,
@@ -315,7 +315,7 @@ export default {
       let left = 0;
 
       if (this.traces_decomposed.length) {
-        left = 250;
+        left = 350;
       }
 
       for (let trace of this.traces_decomposed.reverse()) {
@@ -334,7 +334,7 @@ export default {
               outputs: {},
             },
           }
-          left += 200;
+          left += 350;
         }
 
         store.state.trace_data["operators"][name]["properties"]["outputs"]["out_" + trace.source_port] = {
@@ -417,7 +417,7 @@ export default {
                 outputs: {},
               },
             }
-            left += 200;
+            left += 350;
           }
 
           if (store.state.trace_data["operators"][name]) {

@@ -8,13 +8,14 @@
 #include "logtracing/interface/LogTracerInterface.h"
 #include "logtracing/interface/dds/DDSEntities.h"
 
+
 class LogTracerDDSClient : public LogTracerInterface, public DDSEntities {
 private:
     std::function<void(sole::uuid, std::string)> onResponse;
     std::function<void(sole::uuid, sole::uuid, sole::uuid, sole::uuid, Request, long)> onRequest;
 
 public:
-    LogTracerDDSClient(int argc, char *argv[],
+    LogTracerDDSClient(DDSClient &ddsClient,
                        std::string instanceName,
                        bool initReqWriter,
                        bool initReqReader,
@@ -40,7 +41,6 @@ public:
 
     void addOnRequestCallback(std::function<void(sole::uuid, sole::uuid, sole::uuid, sole::uuid, Request, long)> callback) override;
 
-    void cleanup() override;
 
     void waitUntilReadersConnected(int number) override;
 

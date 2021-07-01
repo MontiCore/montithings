@@ -40,6 +40,7 @@ ${tc.includeArgs("template.component.methods.Initialize", [comp, config, classNa
 </#if>
 
 ${tc.includeArgs("template.logtracing.hooks.GetterDefinition", [comp, config, className])}
+${tc.includeArgs("template.logtracing.hooks.InitLogTracerDefinition", [comp, config])}
 
 ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, config, className])}
 

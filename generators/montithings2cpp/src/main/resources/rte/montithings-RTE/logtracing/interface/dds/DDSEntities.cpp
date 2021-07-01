@@ -12,9 +12,9 @@ void DDSEntities::initMessageType() {
     requestTypeSupport = new DDSLogTracerMessage::RequestTypeSupportImpl();
 
     DDS::ReturnCode_t responseRegistration
-            = responseTypeSupport->register_type(participant, RES_MESSAGE_TYPE);
+            = responseTypeSupport->register_type(ddsClient->getParticipant(), RES_MESSAGE_TYPE);
     DDS::ReturnCode_t requestRegistration
-            = requestTypeSupport->register_type(participant, REQ_MESSAGE_TYPE);
+            = requestTypeSupport->register_type(ddsClient->getParticipant(), REQ_MESSAGE_TYPE);
     if (responseRegistration != DDS::RETCODE_OK
         || requestRegistration != DDS::RETCODE_OK) {
         CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | initMessageTypes failed!";
@@ -22,32 +22,14 @@ void DDSEntities::initMessageType() {
     }
 }
 
-void DDSEntities::initSubscriber() {
-    subscriber = participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT, nullptr,
-                                                OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
-    if (!subscriber) {
-        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | initSubscriber failed.";
-        exit(EXIT_FAILURE);
-    }
-}
-
-void DDSEntities::initPublisher() {
-    publisher = participant->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr,
-                                              OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-
-    if (!publisher) {
-        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | initPublisher failed.";
-        exit(EXIT_FAILURE);
-    }
-}
 
 void DDSEntities::initTopic() {
-    topicRequest = participant->create_topic(REQ_TOPIC, REQ_MESSAGE_TYPE, TOPIC_QOS_DEFAULT,
-                                             nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+    topicRequest = ddsClient->getParticipant()->create_topic(REQ_TOPIC, REQ_MESSAGE_TYPE, TOPIC_QOS_DEFAULT,
+                                                             nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
-    topicResponse = participant->create_topic(RES_TOPIC, RES_MESSAGE_TYPE, TOPIC_QOS_DEFAULT,
-                                             nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+    topicResponse = ddsClient->getParticipant()->create_topic(RES_TOPIC, RES_MESSAGE_TYPE, TOPIC_QOS_DEFAULT,
+                                                              nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     std::string topicRequestFilteredName(REQ_TOPIC);
     topicRequestFilteredName.append("-filtered-");
@@ -57,7 +39,7 @@ void DDSEntities::initTopic() {
     topicfiltered_params.length(1);
     topicfiltered_params[0] = instanceName.c_str();
 
-    topicRequestFiltered = participant->create_contentfilteredtopic(
+    topicRequestFiltered = ddsClient->getParticipant()->create_contentfilteredtopic(
             topicRequestFilteredName.c_str(), topicRequest,
             "target_instance = %0",
             topicfiltered_params);
@@ -68,20 +50,6 @@ void DDSEntities::initTopic() {
     }
 }
 
-bool DDSEntities::initParticipant(int argc, char **argv) {
-    dpf = TheParticipantFactoryWithArgs (argc, argv);
-
-    participant = dpf->create_participant(
-            42, PARTICIPANT_QOS_DEFAULT, nullptr,
-            OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-
-    if (!participant) {
-        CLOG (ERROR, LOGTRACER_LOG_ID) << "DDSEntities | createParticipant failed.";
-        return false;
-    }
-
-    return true;
-}
 
 void DDSEntities::initRequestDataReader() {
     DDS::DataReaderListener_var listener(new ReqResMessageListener());
@@ -89,10 +57,10 @@ void DDSEntities::initRequestDataReader() {
     DDS::DataReaderQos dataReaderQos;
 
     // Applies default qos settings
-    subscriber->get_default_datareader_qos(dataReaderQos);
+    ddsClient->getSubscriber()->get_default_datareader_qos(dataReaderQos);
     dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
-    DDS::DataReader_var dataReader = subscriber->create_datareader(
+    DDS::DataReader_var dataReader = ddsClient->getSubscriber()->create_datareader(
             topicRequestFiltered, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataReader) {
@@ -117,10 +85,10 @@ void DDSEntities::initResponseDataReader() {
     DDS::DataReaderQos dataReaderQos;
 
     // Applies default qos settings
-    subscriber->get_default_datareader_qos(dataReaderQos);
+    ddsClient->getSubscriber()->get_default_datareader_qos(dataReaderQos);
     dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
-    DDS::DataReader_var dataReader = subscriber->create_datareader(
+    DDS::DataReader_var dataReader = ddsClient->getSubscriber()->create_datareader(
             topicResponse, dataReaderQos, listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataReader) {
@@ -141,11 +109,11 @@ void DDSEntities::initResponseDataReader() {
 
 void DDSEntities::initResponseDataWriter() {
     DDS::DataWriterQos dataWriterQoS;
-    publisher->get_default_datawriter_qos(dataWriterQoS);
+    ddsClient->getPublisher()->get_default_datawriter_qos(dataWriterQoS);
 
     dataWriterQoS.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
-    DDS::DataWriter_var dataWriter = publisher->create_datawriter(
+    DDS::DataWriter_var dataWriter = ddsClient->getPublisher()->create_datawriter(
             topicResponse, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataWriter) {
@@ -166,11 +134,11 @@ void DDSEntities::initResponseDataWriter() {
 
 void DDSEntities::initRequestDataWriter() {
     DDS::DataWriterQos dataWriterQoS;
-    publisher->get_default_datawriter_qos(dataWriterQoS);
+    ddsClient->getPublisher()->get_default_datawriter_qos(dataWriterQoS);
 
     dataWriterQoS.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
-    DDS::DataWriter_var dataWriter = publisher->create_datawriter(
+    DDS::DataWriter_var dataWriter = ddsClient->getPublisher()->create_datawriter(
             topicRequest, dataWriterQoS, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
     if (!dataWriter) {
@@ -249,9 +217,3 @@ void DDSEntities::addRequestCallback(std::function<void(DDSLogTracerMessage::Req
     listener->addOnRequestCallback(std::move(callback));
 }
 
-void
-DDSEntities::cleanup() {
-    participant->delete_contained_entities();
-    dpf->delete_participant(participant);
-    TheServiceParticipant->shutdown();
-}

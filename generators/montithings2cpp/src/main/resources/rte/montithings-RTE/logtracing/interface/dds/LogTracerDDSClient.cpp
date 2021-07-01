@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* (c) https://github.com/MontiCore/monticore */
 
+
 #include "LogTracerDDSClient.h"
 
 void LogTracerDDSClient::response(sole::uuid reqUuid, const std::string &content) {
@@ -13,16 +14,14 @@ void LogTracerDDSClient::response(sole::uuid reqUuid, const std::string &content
     send(res);
 }
 
-LogTracerDDSClient::LogTracerDDSClient(int argc, char *argv[],
+LogTracerDDSClient::LogTracerDDSClient(DDSClient &client,
                                        std::string instanceName,
                                        bool initReqWriter,
                                        bool initReqReader,
                                        bool initResWriter,
-                                       bool initResReader) {
+                                       bool initResReader)  {
+    ddsClient = &client;
     setInstanceName(instanceName);
-    initParticipant(argc, argv);
-    initPublisher();
-    initSubscriber();
     initMessageType();
     initTopic();
 
@@ -118,9 +117,6 @@ void LogTracerDDSClient::addOnRequestCallback(std::function<void(sole::uuid, sol
     onRequest = std::move(callback);
 }
 
-void LogTracerDDSClient::cleanup() {
-    DDSEntities::cleanup();
-}
 
 void LogTracerDDSClient::waitUntilReadersConnected(int number) {
     DDSEntities::waitUntilReadersConnected(number);

@@ -37,7 +37,6 @@ public:
 
     void addOnRequestCallback(std::function<void(sole::uuid, sole::uuid, sole::uuid, sole::uuid, Request, long)> callback) override;
 
-    void cleanup() override;
 
     void waitUntilReadersConnected(int number) override;
 

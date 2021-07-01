@@ -61,10 +61,6 @@ void LogTracerMQTTClient::addOnRequestCallback(
     onRequest = std::move(callback);
 }
 
-void LogTracerMQTTClient::cleanup() {
-    // intentionally left empty; is used by DDS
-}
-
 void LogTracerMQTTClient::waitUntilReadersConnected(int number) {
     // intentionally left empty; is used by DDS
 }

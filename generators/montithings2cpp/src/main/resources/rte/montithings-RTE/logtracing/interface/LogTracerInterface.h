@@ -26,9 +26,7 @@ public:
     virtual void addOnResponseCallback(std::function<void(sole::uuid reqUuid, std::string content)> callback) = 0;
 
     virtual void addOnRequestCallback(std::function<void(sole::uuid reqUuid, sole::uuid logUuid,
-            sole::uuid inputUuid, sole::uuid outUuid, Request reqType, long from_timestamp)> callback) = 0;
-
-    virtual void cleanup() = 0;
+                                                         sole::uuid inputUuid, sole::uuid outUuid, Request reqType, long from_timestamp)> callback) = 0;
 
     virtual void waitUntilReadersConnected(int number) = 0;
 };

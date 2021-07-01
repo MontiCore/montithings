@@ -9,7 +9,7 @@ ${tc.signature("comp", "config", "port")}
     <#elseif config.getMessageBroker().toString() == "MQTT">
         if( topic.find("/connectors/" +  replaceDotsBySlashes (instanceName)) != std::string::npos) {
             std::string portName = topic.substr(topic.find_last_of("/") +1, topic.length());
-            <#if !comp.isAtomic()>
+            <#--<#if !comp.isAtomic()>
                 <#list comp.getIncomingPorts() as p>
                     <#list comp.getAstNode().getConnectors() as connector>
                         <#if connector.getSource().getQName() == p.getName()>
@@ -21,11 +21,11 @@ ${tc.signature("comp", "config", "port")}
 
                     </#list>
                 </#list>
-            <#else>
+            <#else>-->
                 std::string sourceInstanceName = replaceSlashesByDots(payload);
 
                 getLogTracer()->mapPortToSourceInstance(portName, sourceInstanceName);
-            </#if>
+            <#--</#if>-->
       }
     </#if>
 </#if>

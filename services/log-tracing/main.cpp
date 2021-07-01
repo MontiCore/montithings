@@ -17,6 +17,8 @@
 #include "lib/crow_all.h"
 #include "lib/json.hpp"
 
+#include "DDSClientImpl.h"
+
 INITIALIZE_EASYLOGGINGPP
 
 // forward declaration, is implemented down below
@@ -222,7 +224,8 @@ main(int argc, char **argv) {
 
 
     if (messageBroker == "DDS") {
-        interface = new LogTracerDDSClient(argc, argv,
+        DDSClientImpl ddsClient(argc,argv);
+        interface = new LogTracerDDSClient(ddsClient,
                                            "middleware",
                                            true,
                                            false,

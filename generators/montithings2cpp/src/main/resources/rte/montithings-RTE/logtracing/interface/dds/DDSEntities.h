@@ -23,6 +23,7 @@
 #include "ReqResMessageListener.h"
 
 #include "message-types/DDSLogTracerMessageTypeSupportImpl.h"
+#include <DDSClient.h>
 
 #define LOGTRACER_LOG_ID "DDS"
 
@@ -36,10 +37,8 @@ private:
 
     std::string instanceName;
 
-    DDS::DomainParticipantFactory_var dpf;
     DDSLogTracerMessage::RequestTypeSupport_var requestTypeSupport;
     DDSLogTracerMessage::ResponseTypeSupport_var responseTypeSupport;
-    DDS::DomainParticipant_var participant;
     DDSLogTracerMessage::RequestDataReader_var requestDataReader;
     DDSLogTracerMessage::ResponseDataReader_var responseDataReader;
     DDSLogTracerMessage::RequestDataWriter_var requestDataWriter;
@@ -49,10 +48,9 @@ private:
     DDS::Topic_var topicRequest;
     DDS::ContentFilteredTopic_var topicRequestFiltered;
 
-    DDS::Subscriber_var subscriber;
-    DDS::Publisher_var publisher;
-
 protected:
+    DDSClient *ddsClient;
+
     DDSEntities() = default;
 
     ~DDSEntities() = default;
@@ -61,13 +59,7 @@ protected:
 
     void initMessageType();
 
-    void initSubscriber();
-
-    void initPublisher();
-
     void initTopic();
-
-    bool initParticipant(int argc, char *argv[]);
 
     void initRequestDataReader();
 
@@ -86,8 +78,6 @@ protected:
     void addResponseCallback(std::function<void(DDSLogTracerMessage::Response)> callback);
 
     void addRequestCallback(std::function<void(DDSLogTracerMessage::Request)> callback);
-
-    void cleanup();
 
 public:
 

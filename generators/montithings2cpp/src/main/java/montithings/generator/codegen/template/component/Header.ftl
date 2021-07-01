@@ -93,6 +93,7 @@ ${ComponentHelper.printConstructorArguments(comp)});
 </#if>
 
 ${tc.includeArgs("template.logtracing.hooks.GetterDeclaration", [comp, config])}
+${tc.includeArgs("template.logtracing.hooks.InitLogTracerDeclaration", [comp, config])}
 
 void setUp(TimeMode enclosingComponentTiming) override;
 void init() override;
