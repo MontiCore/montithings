@@ -3,6 +3,8 @@
 
 #include "LogTracer.h"
 
+#include <utility>
+
 namespace montithings {
     LogTracer::LogTracer(std::string instanceName, LogTracerInterface &interface)
             : instanceName(std::move(instanceName)), interface(&interface) {
@@ -345,8 +347,8 @@ namespace montithings {
     }
 
     void
-    LogTracer::mapPortToSourceInstance(std::string portName, std::string instanceName) {
-        sourcesOfPortsMap[portName] = instanceName;
+    LogTracer::mapPortToSourceInstance(std::string portName, std::string name) {
+        sourcesOfPortsMap[portName] = std::move(name);
     }
 
     void

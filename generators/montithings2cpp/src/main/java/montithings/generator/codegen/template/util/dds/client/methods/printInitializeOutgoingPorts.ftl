@@ -23,6 +23,8 @@ bool isRecordingEnabled = false;
                         CLOG(DEBUG, "DDS") << "Creating additional port for incoming port ${p.getName()} to forward data to subcomponents " << topic;
 
                         comp->getInterface()->addInPort${p.getName()?cap_first}(new DDSPort<Message<${type}>>(*this, INCOMING, topic, "${p.getName()}", isRecordingEnabled, false));
+
+                        ${tc.includeArgs("template.logtracing.hooks.AddInstanceNameToPortRef", [comp, config, p])}
                     </#if>
                 </#list>
             </#list>
