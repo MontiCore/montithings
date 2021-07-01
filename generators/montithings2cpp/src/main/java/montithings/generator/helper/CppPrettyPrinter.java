@@ -19,7 +19,7 @@ public class CppPrettyPrinter {
   }
 
   public static MontiThingsFullPrettyPrinter getPrinter() {
-    return getPrinter(false);
+    return getPrinter(false, false);
   }
 
   public static MontiThingsFullPrettyPrinter getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck) {
