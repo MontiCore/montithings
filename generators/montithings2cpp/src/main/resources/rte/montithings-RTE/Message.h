@@ -36,5 +36,12 @@ public:
     void setUuid(const sole::uuid &id) {
         Message::uuid = id;
     }
+
+    Message<T> applyConversionFactor(double factor) {
+        if (payload.has_value()) {
+            payload = tl::optional<T>(payload.value() * factor);
+        }
+        return *this;
+    }
 };
 

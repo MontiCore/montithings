@@ -9,6 +9,7 @@ ${className}${generics}::compute${ComponentHelper.getEveryBlockName(comp, everyB
 (${compname}Input${generics} ${Identifier.getInputName()})
 {
 ${compname}Result${generics} ${Identifier.getResultName()};
+${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 ${ComponentHelper.printJavaBlock(everyBlock.getMCJavaBlock(), isLogTracingEnabled)}
 <#list ComponentHelper.getPublishedPorts(comp, everyBlock.getMCJavaBlock()) as port>
     ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);

@@ -8,12 +8,12 @@ ${tc.signature("comp","config","isMonitor","behavior")}
     tl::nullopt
   <#else>
   <#if ComponentHelper.isSIUnitPort(inPort)>
-    tl::make_optional(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
-    .value()  * this->${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}ConversionFactor()
+    ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>).value()
+                 .applyConversionFactor(this->${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}ConversionFactor())
   <#else>
-      ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>
+      ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
   </#if>
-  )
+
   </#if>
   <#sep>,</#sep>
   </#list>)</#if>;
