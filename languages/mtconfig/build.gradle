@@ -43,10 +43,15 @@ configurations { grammar }
 
 dependencies {
   grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
-  grammar "montiarc.languages:montiarc-fe:$montiarc_version:$grammars_classifier"
-  grammar "montiarc.languages:arc-fe:$montiarc_version:$grammars_classifier"
-  grammar "de.monticore:siunits:$siunits_version:$grammars_classifier"
-  grammar "de.monticore.lang:ocl:$ocl_version:$grammars_classifier"
+  grammar("montiarc.languages:montiarc-fe:$montiarc_version:$grammars_classifier"){
+    exclude group:'de.monticore', module:'monticore-grammar'
+  }
+  grammar("de.monticore:siunits:$siunits_version:$grammars_classifier"){
+    exclude group:'de.monticore', module:'monticore-grammar'
+  }
+  grammar("de.monticore.lang:ocl:$ocl_version:$grammars_classifier"){
+    exclude group:'de.monticore', module:'monticore-grammar'
+  }
   grammar files(project(":languages:monticore-extensions").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:montiarc-extensions").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:error-handling").projectDir.toPath().resolve("src/main/grammars"))

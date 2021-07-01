@@ -2,21 +2,19 @@
 package montithings.types.check;
 
 import behavior.types.check.DeriveSymTypeOfBehavior;
-import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
-import de.monticore.literals.mcliteralsbasis._ast.ASTLiteral;
 import de.monticore.ocl.types.check.DeriveSymTypeOfOCLExpressions;
 import de.monticore.ocl.types.check.DeriveSymTypeOfSetExpressions;
 import de.monticore.types.check.*;
-import montithings._visitor.MontiThingsDelegatorVisitor;
+import montithings.MontiThingsMill;
+import montithings._visitor.MontiThingsTraverser;
 import types.check.DeriveSymTypeOfSetDefinitions;
 
 import java.util.Optional;
 
-public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisitor
-  implements ITypesCalculator {
+public class DeriveSymTypeOfMontiThingsCombine
+  implements IDerive {
 
-  private MontiThingsDelegatorVisitor realThis;
+  private MontiThingsTraverser traverser;
 
   private DeriveSymTypeOfAssignmentExpressionsForMT deriveSymTypeOfAssignmentExpressions;
 
@@ -52,27 +50,9 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
   private TypeCheckResult typeCheckResult = new TypeCheckResult();
 
   public DeriveSymTypeOfMontiThingsCombine() {
-    this.realThis = this;
     init();
   }
 
-  /**
-   * main method to calculate the type of an expression
-   */
-  public Optional<SymTypeExpression> calculateType(ASTExpression e) {
-    e.accept(realThis);
-    Optional<SymTypeExpression> result = Optional.empty();
-    if (typeCheckResult.isPresentCurrentResult()) {
-      result = Optional.ofNullable(typeCheckResult.getCurrentResult());
-    }
-    typeCheckResult.setCurrentResultAbsent();
-    return result;
-  }
-
-  @Override
-  public MontiThingsDelegatorVisitor getRealThis() {
-    return realThis;
-  }
 
   /**
    * set the last result of all calculators to the same object
@@ -95,11 +75,19 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     synthesizeSymTypeFromSIUnitTypes4Computing.setTypeCheckResult(typeCheckResult);
   }
 
+  @Override public Optional<SymTypeExpression> getResult() {
+    if(typeCheckResult.isPresentCurrentResult()){
+      return Optional.ofNullable(typeCheckResult.getCurrentResult());
+    }
+    return Optional.empty();
+  }
+
   /**
    * initialize the typescalculator
    */
   @Override
   public void init() {
+    traverser = MontiThingsMill.traverser();
     deriveSymTypeOfCommonExpressions = new DeriveSymTypeOfCommonExpressionsForMT();
     deriveSymTypeOfAssignmentExpressions = new DeriveSymTypeOfAssignmentExpressionsForMT();
     deriveSymTypeOfMCCommonLiterals = new DeriveSymTypeOfMCCommonLiterals();
@@ -116,54 +104,42 @@ public class DeriveSymTypeOfMontiThingsCombine extends MontiThingsDelegatorVisit
     synthesizeSymTypeFromMCSimpleGenericTypes = new SynthesizeSymTypeFromMCSimpleGenericTypes();
     synthesizeSymTypeFromMCCollectionTypes = new SynthesizeSymTypeFromMCCollectionTypes();
 
-    setCommonExpressionsVisitor(deriveSymTypeOfCommonExpressions);
-    setAssignmentExpressionsVisitor(deriveSymTypeOfAssignmentExpressions);
-    setExpressionsBasisVisitor(deriveSymTypeOfExpression);
-    setMCLiteralsBasisVisitor(deriveSymTypeOfLiterals);
-    setMCCommonLiteralsVisitor(deriveSymTypeOfMCCommonLiterals);
-    setSIUnitLiteralsVisitor(deriveSymTypeOfSIUnitLiterals);
-    setMontiThingsVisitor(deriveSymTypeOfMontiThings);
-    setOCLExpressionsVisitor(deriveSymTypeOfOCLExpressions);
-    setSetDefinitionsVisitor(deriveSymTypeOfSetDefinitions);
-    setSetExpressionsVisitor(deriveSymTypeOfSetExpressions);
-    setBehaviorVisitor(deriveSymTypeOfBehavior);
-    setMCBasicTypesVisitor(synthesizeSymTypeFromMCBasicTypes);
-    setMCCollectionTypesVisitor(synthesizeSymTypeFromMCCollectionTypes);
-    setSIUnitTypes4ComputingVisitor(synthesizeSymTypeFromSIUnitTypes4Computing);
-    setMCSimpleGenericTypesVisitor(synthesizeSymTypeFromMCSimpleGenericTypes);
+    traverser.setCommonExpressionsHandler(deriveSymTypeOfCommonExpressions);
+    traverser.setAssignmentExpressionsHandler(deriveSymTypeOfAssignmentExpressions);
+    traverser.setExpressionsBasisHandler(deriveSymTypeOfExpression);
+    traverser.setSIUnitLiteralsHandler(deriveSymTypeOfSIUnitLiterals);
+    traverser.setMontiThingsHandler(deriveSymTypeOfMontiThings);
+    traverser.setOCLExpressionsHandler(deriveSymTypeOfOCLExpressions);
+    traverser.setSetDefinitionsHandler(deriveSymTypeOfSetDefinitions);
+    traverser.setSetExpressionsHandler(deriveSymTypeOfSetExpressions);
+    traverser.setBehaviorHandler(deriveSymTypeOfBehavior);
+    traverser.setMCBasicTypesHandler(synthesizeSymTypeFromMCBasicTypes);
+    traverser.setMCCollectionTypesHandler(synthesizeSymTypeFromMCCollectionTypes);
+    traverser.setSIUnitTypes4ComputingHandler(synthesizeSymTypeFromSIUnitTypes4Computing);
+    traverser.setMCSimpleGenericTypesHandler(synthesizeSymTypeFromMCSimpleGenericTypes);
+
+    traverser.add4CommonExpressions(deriveSymTypeOfCommonExpressions);
+    traverser.add4AssignmentExpressions(deriveSymTypeOfAssignmentExpressions);
+    traverser.add4MCCommonLiterals(deriveSymTypeOfMCCommonLiterals);
+    traverser.add4ExpressionsBasis(deriveSymTypeOfExpression);
+    traverser.add4SetExpressions(deriveSymTypeOfSetExpressions);
+    traverser.add4MCBasicTypes(synthesizeSymTypeFromMCBasicTypes);
+    traverser.add4MCCollectionTypes(synthesizeSymTypeFromMCCollectionTypes);
+    traverser.add4MCSimpleGenericTypes(synthesizeSymTypeFromMCSimpleGenericTypes);
 
     setTypeCheckResult(typeCheckResult);
   }
 
-  /**
-   * main method to calculate the type of a literal
-   */
-  @Override
-  public Optional<SymTypeExpression> calculateType(ASTLiteral lit) {
-    lit.accept(realThis);
-    Optional<SymTypeExpression> result = Optional.empty();
-    if (typeCheckResult.isPresentCurrentResult()) {
-      result = Optional.ofNullable(typeCheckResult.getCurrentResult());
-    }
-    typeCheckResult.setCurrentResultAbsent();
-    return result;
-  }
-
-  /**
-   * main method to calculate the type of a signed literal
-   */
-  @Override
-  public Optional<SymTypeExpression> calculateType(ASTSignedLiteral lit) {
-    lit.accept(realThis);
-    Optional<SymTypeExpression> result = Optional.empty();
-    if (typeCheckResult.isPresentCurrentResult()) {
-      result = Optional.ofNullable(typeCheckResult.getCurrentResult());
-    }
-    typeCheckResult.setCurrentResultAbsent();
-    return result;
-  }
-
   public TypeCheckResult getTypeCheckResult() {
     return typeCheckResult;
+  }
+
+  public void setTraverser(MontiThingsTraverser traverser) {
+    this.traverser = traverser;
+  }
+
+  @Override
+  public MontiThingsTraverser getTraverser() {
+    return traverser;
   }
 }

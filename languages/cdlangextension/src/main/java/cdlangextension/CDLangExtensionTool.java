@@ -4,24 +4,32 @@ package cdlangextension;
 import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCoChecker;
 import cdlangextension._cocos.CDLangExtensionCoCos;
-import cdlangextension._symboltable.CDLangExtensionGlobalScope;
-import cdlangextension._symboltable.CDLangExtensionSymbolTableCreatorDelegator;
-import cdlangextension._symboltable.ICDLangExtensionArtifactScope;
-import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
+import cdlangextension._parser.CDLangExtensionParser;
+import cdlangextension._symboltable.*;
+import cdlangextension.util.CDLangExtensionError;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeScopesGenitorDelegator;
+import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.cd4code.resolver.CD4CodeResolver;
+import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.paths.ModelPath;
-import montithings.MontiThingsTool;
+import de.se_rwth.commons.logging.Log;
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Provides useful methods for handling the CDLangExtension language.
@@ -29,8 +37,6 @@ import java.util.Set;
 public class CDLangExtensionTool {
 
   public static final String FILE_ENDING = "cde";
-
-  protected ICDLangExtensionArtifactScope artifactScope;
 
   protected CDLangExtensionCoCoChecker checker;
 
@@ -44,12 +50,13 @@ public class CDLangExtensionTool {
 
   public CDLangExtensionTool(@NotNull CDLangExtensionCoCoChecker checker) {
     Preconditions.checkArgument(checker != null);
+    CDLangExtensionMill.globalScope().clear();
+    CDLangExtensionMill.reset();
+    CDLangExtensionMill.init();
     this.checker = checker;
     this.isSymTabInitialized = false;
-  }
-
-  public ICDLangExtensionArtifactScope getArtifactScope() {
-    return artifactScope;
+    ((CDLangExtensionDeSer) CDLangExtensionMill.globalScope().getDeSer())
+      .ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
   }
 
   /**
@@ -70,29 +77,113 @@ public class CDLangExtensionTool {
 
     final ModelPath mp = new ModelPath(p);
 
-
-    CD4CodeResolver cd4aResolver;
-    if(this.cdGlobalScope ==null) {
-      ICD4CodeGlobalScope cd4aGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
-          .setModelPath(mp)
-          .setModelFileExtension(CD4AnalysisGlobalScope.EXTENSION)
-          .build();
-      cd4aResolver = new CD4CodeResolver(cd4aGlobalScope);
-      this.cdGlobalScope = cd4aGlobalScope;
-      MontiThingsTool tool = new MontiThingsTool();
-      tool.processModels(this.cdGlobalScope);
+    // Load all CD files
+    CD4CodeMill.globalScope().clear();
+    CD4CodeMill.reset();
+    CD4CodeMill.init();
+    CD4CodeMill.globalScope().setModelPath(mp);
+    for (File mP : modelPaths) {
+      Collection<ICD4CodeArtifactScope> scopes = loadAllCDs(mP.toPath());
+      for (ICD4CodeArtifactScope currentScope : scopes) {
+        CD4CodeMill.globalScope().addSubScope(currentScope);
+      }
     }
-    else{
-      cd4aResolver = new CD4CodeResolver(this.cdGlobalScope);
-    }
+    CD4CodeResolver resolver = new CD4CodeResolver(CD4CodeMill.globalScope());
 
-    CDLangExtensionGlobalScope cDLangExtensionGlobalScope = new CDLangExtensionGlobalScope(mp, FILE_ENDING);
-    cDLangExtensionGlobalScope.addAdaptedFieldSymbolResolver(cd4aResolver);
-    cDLangExtensionGlobalScope.addAdaptedTypeSymbolResolver(cd4aResolver);
-    cDLangExtensionGlobalScope.addAdaptedCDTypeSymbolResolver(cd4aResolver);
+    CDLangExtensionMill.reset();
+    CDLangExtensionMill.init();
+    ICDLangExtensionGlobalScope cDLangExtensionGlobalScope = CDLangExtensionMill.globalScope();
+    cDLangExtensionGlobalScope.setModelPath(mp);
+    cDLangExtensionGlobalScope.addAdaptedFieldSymbolResolver(resolver);
+    cDLangExtensionGlobalScope.addAdaptedTypeSymbolResolver(resolver);
+
+    // Load add Sym files
+    // frontLoadSymFiles(cDLangExtensionGlobalScope, modelPaths);
 
     isSymTabInitialized = true;
     return cDLangExtensionGlobalScope;
+  }
+
+  protected void frontLoadSymFiles(ICDLangExtensionGlobalScope cDLangExtensionGlobalScope,
+    File[] modelPaths) {
+    for (File mP : modelPaths) {
+      Collection<ICDLangExtensionArtifactScope> scopes = loadAll(mP.toPath());
+      for (ICDLangExtensionArtifactScope currentScope : scopes) {
+        cDLangExtensionGlobalScope.addSubScope(currentScope);
+      }
+    }
+  }
+
+  public ICDLangExtensionArtifactScope load(@NotNull Path file) {
+    Preconditions.checkArgument(file != null);
+    Preconditions.checkArgument(file.toFile().exists(), file.toString());
+    Preconditions.checkArgument(file.toFile().isFile(), file.toString());
+    Preconditions.checkArgument(
+      FilenameUtils.getExtension(file.getFileName().toString()).endsWith("sym"));
+    CDLangExtensionSymbols2Json s2j = new CDLangExtensionSymbols2Json();
+    return s2j.load(file.toString());
+  }
+
+  public ICDLangExtensionArtifactScope load(@NotNull String filename) {
+    Preconditions.checkArgument(filename != null);
+    return this.load(Paths.get(filename));
+  }
+
+  public Collection<ICDLangExtensionArtifactScope> loadAll(@NotNull Path directory) {
+    Preconditions.checkArgument(directory != null);
+    Preconditions.checkArgument(directory.toFile().exists());
+    Preconditions.checkArgument(directory.toFile().isDirectory());
+    try (Stream<Path> paths = Files.walk(directory)) {
+      return paths.filter(Files::isRegularFile)
+        .filter(file -> file.getFileName().toString().endsWith("sym"))
+        .map(this::load)
+        .collect(Collectors.toSet());
+    }
+    catch (IOException e) {
+      Log.error(
+        String.format(CDLangExtensionError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        e);
+    }
+    return Collections.emptySet();
+  }
+
+  public ICD4CodeArtifactScope loadCD(@NotNull Path file) {
+    Preconditions.checkArgument(file != null);
+    Preconditions.checkArgument(file.toFile().exists(), file.toString());
+    Preconditions.checkArgument(file.toFile().isFile(), file.toString());
+    Preconditions.checkArgument(
+      FilenameUtils.getExtension(file.getFileName().toString()).endsWith("cd"));
+    try {
+      ASTCDCompilationUnit cdcu = CD4CodeMill.parser().parse(file.toString()).get();
+      CD4CodeScopesGenitorDelegator symTab = CD4CodeMill.scopesGenitorDelegator();
+      return symTab.createFromAST(cdcu);
+    } catch (IOException e) {
+      Log.error("Could not load CDE file '" + file + "'");
+    }
+    return null;
+  }
+
+  public ICD4CodeArtifactScope loadCD(@NotNull String filename) {
+    Preconditions.checkArgument(filename != null);
+    return this.loadCD(Paths.get(filename));
+  }
+
+  public Collection<ICD4CodeArtifactScope> loadAllCDs(@NotNull Path directory) {
+    Preconditions.checkArgument(directory != null);
+    Preconditions.checkArgument(directory.toFile().exists());
+    Preconditions.checkArgument(directory.toFile().isDirectory());
+    try (Stream<Path> paths = Files.walk(directory)) {
+      return paths.filter(Files::isRegularFile)
+        .filter(file -> file.getFileName().toString().endsWith("cd"))
+        .map(this::loadCD)
+        .collect(Collectors.toSet());
+    }
+    catch (IOException e) {
+      Log.error(
+        String.format(CDLangExtensionError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        e);
+    }
+    return Collections.emptySet();
   }
 
   /**
@@ -120,8 +211,9 @@ public class CDLangExtensionTool {
   public ICDLangExtensionGlobalScope createSymboltable(ASTCDLangExtensionUnit ast,
       ICDLangExtensionGlobalScope globalScope) {
 
-    CDLangExtensionSymbolTableCreatorDelegator stc = new CDLangExtensionSymbolTableCreatorDelegator(globalScope);
-    artifactScope = stc.createFromAST(ast);
+    CDLangExtensionScopesGenitorDelegator stc = new CDLangExtensionScopesGenitorDelegator();
+    ICDLangExtensionArtifactScope artifactScope = stc.createFromAST(ast);
+    globalScope.addSubScope(artifactScope);
 
     return globalScope;
   }
@@ -136,5 +228,23 @@ public class CDLangExtensionTool {
    */
   public void setCdGlobalScope(ICD4CodeGlobalScope cdGlobalScope) {
     this.cdGlobalScope = cdGlobalScope;
+  }
+
+  public ASTCDLangExtensionUnit processFile(String file) {
+    ASTCDLangExtensionUnit astCDE = null;
+    try {
+      Path filePath = Paths.get(file);
+      astCDE = new CDLangExtensionParser().parseCDLangExtensionUnit(filePath.toFile().getPath()).orElse(null);
+    }
+    catch (IOException e) {
+      Log.error("File '" + file + "' CDE artifact was not found");
+    }
+    Preconditions.checkArgument(astCDE != null);
+    createSymboltable(astCDE, CDLangExtensionMill.globalScope());
+    return astCDE;
+  }
+
+  public void processFiles(Collection<String> file) {
+    file.forEach(this::processFile);
   }
 }

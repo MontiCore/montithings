@@ -8,9 +8,13 @@ ${compname}Result${generics} ${className}${generics}::compute(${compname}Input${
 ${Identifier.getInputName()}){
 ${compname}Result${generics} ${Identifier.getResultName()};
 ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
-${ComponentHelper.printStatementBehavior(comp, isLogTracingEnabled)}
-<#list ComponentHelper.getPublishedPortsForBehavior(comp) as port>
-  ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
-</#list>
+<#if ComponentHelper.hasBehavior(comp)>
+  ${ComponentHelper.printStatementBehavior(comp, isLogTracingEnabled)}
+  <#list ComponentHelper.getPublishedPortsForBehavior(comp) as port>
+    ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
+  </#list>
+<#else>
+  ${tc.includeArgs("template.util.statechart.hooks.Compute", [comp, config])}
+</#if>
 return ${Identifier.getResultName()};
 }

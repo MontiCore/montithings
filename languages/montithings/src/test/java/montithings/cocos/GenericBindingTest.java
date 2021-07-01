@@ -10,9 +10,10 @@ import java.util.stream.Stream;
 public class GenericBindingTest extends AbstractCoCoTest {
 
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new InterfaceExists())
-      .addCoCo(new ImplementationFitsInterface());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new InterfaceExists());
+    cocos.addCoCo(new ImplementationFitsInterface());
+    return cocos;
   }
 
   protected static Stream<Arguments> validInput() {

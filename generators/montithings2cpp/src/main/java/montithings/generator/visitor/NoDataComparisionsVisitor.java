@@ -2,9 +2,12 @@
 package montithings.generator.visitor;
 
 import de.monticore.expressions.commonexpressions._ast.ASTEqualsExpression;
+import de.monticore.expressions.commonexpressions._visitor.CommonExpressionsHandler;
+import de.monticore.expressions.commonexpressions._visitor.CommonExpressionsTraverser;
+import de.monticore.expressions.commonexpressions._visitor.CommonExpressionsVisitor2;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisVisitor;
-import montithings._visitor.MontiThingsVisitor;
+import montithings.MontiThingsMill;
+import montithings._visitor.MontiThingsTraverser;
 import montithings.generator.helper.ASTNoData;
 
 import java.util.ArrayList;
@@ -13,19 +16,10 @@ import java.util.List;
 /**
  * Searches for name expressions (here: ports) that are compared to NoData.
  */
-public class NoDataComparisionsVisitor implements MontiThingsVisitor {
+public class NoDataComparisionsVisitor
+  implements CommonExpressionsVisitor2, CommonExpressionsHandler {
 
-  protected MontiThingsVisitor realThis = this;
-
-  @Override
-  public void setRealThis(MontiThingsVisitor realThis) {
-    this.realThis = realThis;
-  }
-
-  @Override
-  public MontiThingsVisitor getRealThis() {
-    return realThis;
-  }
+  protected CommonExpressionsTraverser traverser;
 
   /**
    * All connections during traversing the AST
@@ -47,11 +41,27 @@ public class NoDataComparisionsVisitor implements MontiThingsVisitor {
     }
   }
 
+  public MontiThingsTraverser createTraverser() {
+    MontiThingsTraverser traverser = MontiThingsMill.traverser();
+    traverser.add4CommonExpressions(this);
+    traverser.setCommonExpressionsHandler(this);
+    return traverser;
+  }
+
   /* ============================================================ */
   /* ====================== GENERATED CODE ====================== */
   /* ============================================================ */
 
   public List<ASTNameExpression> getFoundExpressions() {
     return foundExpressions;
+  }
+
+  @Override public CommonExpressionsTraverser getTraverser() {
+    return traverser;
+  }
+
+  @Override public void setTraverser(
+    CommonExpressionsTraverser traverser) {
+    this.traverser = traverser;
   }
 }

@@ -10,8 +10,9 @@ import java.util.stream.Stream;
 public class UnsupportedOperatorTest extends AbstractCoCoTest {
 
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new UnsupportedOperator());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new UnsupportedOperator());
+    return cocos;
   }
 
   protected static MontiThingsError[] getExpectedErrors() {

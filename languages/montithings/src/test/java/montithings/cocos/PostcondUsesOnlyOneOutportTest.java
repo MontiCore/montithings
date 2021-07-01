@@ -9,8 +9,9 @@ import java.util.stream.Stream;
 
 class PostcondUsesOnlyOneOutportTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new PostcondUsesOnlyOneOutport());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new PostcondUsesOnlyOneOutport());
+    return cocos;
   }
 
   protected static Stream<Arguments> validInput() {

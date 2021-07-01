@@ -48,7 +48,7 @@ dependencies {
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:monticore-generator:$monticore_version"
+  //implementation "de.monticore:monticore-generator:$monticore_version"
   implementation project(":generators:cd2cpp")
   implementation project(":generators:montithings2cpp")
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"

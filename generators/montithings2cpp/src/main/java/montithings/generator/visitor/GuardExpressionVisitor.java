@@ -2,22 +2,19 @@
 package montithings.generator.visitor;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import montithings._visitor.MontiThingsVisitor;
+import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisHandler;
+import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisTraverser;
+import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisVisitor2;
+import montithings.MontiThingsMill;
+import montithings._visitor.MontiThingsTraverser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuardExpressionVisitor implements MontiThingsVisitor {
+public class GuardExpressionVisitor
+  implements ExpressionsBasisVisitor2, ExpressionsBasisHandler {
 
-  protected MontiThingsVisitor realThis = this;
-
-  @Override public MontiThingsVisitor getRealThis() {
-    return realThis;
-  }
-
-  public void setRealThis(MontiThingsVisitor realThis) {
-    this.realThis = realThis;
-  }
+  protected ExpressionsBasisTraverser traverser;
 
   List<ASTNameExpression> expressions = new ArrayList<>();
 
@@ -26,7 +23,27 @@ public class GuardExpressionVisitor implements MontiThingsVisitor {
     expressions.add(node);
   }
 
+  public MontiThingsTraverser createTraverser() {
+    MontiThingsTraverser traverser = MontiThingsMill.traverser();
+    traverser.add4ExpressionsBasis(this);
+    traverser.setExpressionsBasisHandler(this);
+    return traverser;
+  }
+
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
   public List<ASTNameExpression> getExpressions() {
     return expressions;
+  }
+
+  @Override public ExpressionsBasisTraverser getTraverser() {
+    return traverser;
+  }
+
+  @Override public void setTraverser(
+    ExpressionsBasisTraverser traverser) {
+    this.traverser = traverser;
   }
 }

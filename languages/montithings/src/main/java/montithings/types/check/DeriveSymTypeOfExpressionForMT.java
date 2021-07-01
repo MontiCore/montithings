@@ -3,8 +3,6 @@ package montithings.types.check;
 
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.expressions.expressionsbasis._visitor.ExpressionsBasisVisitor;
-import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
@@ -19,22 +17,6 @@ import static montithings.util.IdentifierUtils.getPortForName;
 
 public class DeriveSymTypeOfExpressionForMT
   extends de.monticore.types.check.DeriveSymTypeOfExpression {
-
-  private ExpressionsBasisVisitor realThis;
-
-  @Override
-  public void setRealThis(ExpressionsBasisVisitor realThis) {
-    this.realThis = realThis;
-  }
-
-  @Override
-  public ExpressionsBasisVisitor getRealThis() {
-    return realThis;
-  }
-
-  public DeriveSymTypeOfExpressionForMT() {
-    realThis = this;
-  }
 
   @Override
   protected Optional<SymTypeExpression> calculateNameExpression(ASTNameExpression expr) {

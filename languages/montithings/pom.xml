@@ -4,7 +4,7 @@
     <parent>
         <groupId>montithings.languages</groupId>
         <artifactId>languages</artifactId>
-        <version>6.5.0-SNAPSHOT</version>
+        <version>7.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -12,6 +12,11 @@
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 
     <dependencies>
+
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+        </dependency>
 
         <!-- Languages within this project -->
 
@@ -77,6 +82,17 @@
         <dependency>
             <groupId>montiarc.languages</groupId>
             <artifactId>arc-fe</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>behavior-fe</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>behavior-fe</artifactId>
             <classifier>${grammars.classifier}</classifier>
         </dependency>
 

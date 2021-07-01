@@ -6,7 +6,7 @@
 
 	<groupId>montithings</groupId>
 	<artifactId>montithings-core</artifactId>
-	<version>6.5.0-SNAPSHOT</version>
+	<version>7.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<!-- == PROJECT MODULES ================================================= -->
@@ -24,13 +24,13 @@
 
 		<!-- DSLs -->
 
-		<cd4a.version>6.5.0</cd4a.version>
-		<ocl.version>6.5.0-SNAPSHOT</ocl.version>
-		<siunits.version>6.5.0</siunits.version>
-		<montiarc.version>6.5.0</montiarc.version>
+		<cd4a.version>7.0.0</cd4a.version>
+		<ocl.version>7.0.0</ocl.version>
+		<siunits.version>7.0.0</siunits.version>
+		<montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
-		<monticore.version>6.5.0.1</monticore.version>
+		<monticore.version>7.0.0</monticore.version>
 		<mc.grammars.assembly.version>0.0.8</mc.grammars.assembly.version>
 		<se-commons.version>1.7.9</se-commons.version>
 		<groovy.version>2.3.0</groovy.version>
@@ -49,7 +49,7 @@
 		<mosquitto.version>1.2.5</mosquitto.version>
 
 		<!-- .. Plugins ....................................................... -->
-		<monticore.plugin>6.5.0</monticore.plugin>
+		<monticore.plugin>${monticore.version}</monticore.plugin>
 		<assembly.plugin>3.2.0</assembly.plugin>
 		<compiler.plugin>3.8.1</compiler.plugin>
 		<plexus.plugin>2.8.8</plexus.plugin>
@@ -82,6 +82,12 @@
 	<!-- == DEPENDENCIES ==================================================== -->
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+				<groupId>javax.json</groupId>
+				<artifactId>javax.json-api</artifactId>
+				<version>1.1.4</version>
+			</dependency>
 
 			<dependency>
 				<groupId>montiarc.languages</groupId>

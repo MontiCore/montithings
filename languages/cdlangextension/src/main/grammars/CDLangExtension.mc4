@@ -3,7 +3,10 @@
 /**
  * CDLangExtension provides deployment language dependent import statements.
  */
-grammar CDLangExtension extends de.monticore.types.MCBasicTypes, de.monticore.literals.MCCommonLiterals, de.monticore.CDBasis  {
+grammar CDLangExtension extends de.monticore.types.MCBasicTypes,
+                                // de.monticore.CDBasis,
+                                de.monticore.literals.MCCommonLiterals,
+                                de.monticore.symbols.OOSymbols {
 
   start CDLangExtensionUnit;
 

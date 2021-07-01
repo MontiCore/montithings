@@ -57,7 +57,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
     allModels.addAll(addedModels);
 
     FindPortNamesVisitor visitorPortNames = new FindPortNamesVisitor();
-    targetComp.accept(visitorPortNames);
+    targetComp.accept(visitorPortNames.createTraverser());
 
     // get parent components and see if any of the incoming ports is not connected
     // if this is the case the port must be externally connected

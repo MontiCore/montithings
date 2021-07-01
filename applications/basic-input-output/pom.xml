@@ -6,7 +6,7 @@
     <parent>
         <artifactId>applications</artifactId>
         <groupId>montithings.applications</groupId>
-        <version>6.5.0-SNAPSHOT</version>
+        <version>7.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -266,6 +266,12 @@
                         <groupId>montithings.generators</groupId>
                         <artifactId>montithings2cpp</artifactId>
                         <version>${project.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>de.monticore.bs</groupId>
+                                <artifactId>monticore-runtime</artifactId>
+                            </exclusion>
+                        </exclusions>
                     </dependency>
                     <dependency>
                         <groupId>de.se_rwth.commons</groupId>

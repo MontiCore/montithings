@@ -2,13 +2,15 @@
 package conditioncatch._visitor;
 
 import com.google.common.base.Preconditions;
+import conditionbasis._visitor.ConditionBasisTraverser;
 import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
 
-public class ConditionCatchPrettyPrinter implements ConditionCatchVisitor {
+public class ConditionCatchPrettyPrinter implements ConditionCatchHandler {
 
-  protected ConditionCatchVisitor realThis = this;
+  protected ConditionCatchTraverser traverser;
+
   protected IndentPrinter printer;
 
   public ConditionCatchPrettyPrinter() {
@@ -22,14 +24,14 @@ public class ConditionCatchPrettyPrinter implements ConditionCatchVisitor {
   }
 
   @Override
-  public ConditionCatchVisitor getRealThis() {
-    return this.realThis;
+  public ConditionCatchTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull ConditionCatchVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
+  public void setTraverser(@NotNull ConditionCatchTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
   }
 
   public IndentPrinter getPrinter() {
@@ -37,12 +39,11 @@ public class ConditionCatchPrettyPrinter implements ConditionCatchVisitor {
   }
 
   @Override
-  public void handle(ASTConditionCatch node){
-    node.getCondition().accept(this.getRealThis());
+  public void handle(ASTConditionCatch node) {
+    node.getCondition().accept((ConditionBasisTraverser) getTraverser());
     this.getPrinter().print(" catch ");
-    node.getHandler().accept(this.getRealThis());
+    node.getHandler().accept(getTraverser());
     this.getPrinter().println(";");
   }
-
 
 }

@@ -8,8 +8,9 @@ import java.util.stream.Stream;
 
 class PortsInBehaviorAreUsedCorrectlyTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-            .addCoCo(new PortsInBehaviorAreUsedCorrectly());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new PortsInBehaviorAreUsedCorrectly());
+    return cocos;
   }
 
   protected static Stream<Arguments> validInput() {

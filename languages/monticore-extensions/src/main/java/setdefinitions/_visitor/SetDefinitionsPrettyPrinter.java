@@ -5,14 +5,17 @@ import com.google.common.base.Preconditions;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpressionsBasisNode;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
-import setdefinitions._ast.*;
+import setdefinitions._ast.ASTSetDefinitionsNode;
+import setdefinitions._ast.ASTSetValueRange;
+import setdefinitions._ast.ASTSetValueRegEx;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class SetDefinitionsPrettyPrinter implements SetDefinitionsVisitor {
+public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
 
-  protected SetDefinitionsVisitor realThis = this;
+  protected SetDefinitionsTraverser traverser;
+
   protected IndentPrinter printer;
 
   public SetDefinitionsPrettyPrinter() {
@@ -26,57 +29,58 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsVisitor {
   }
 
   @Override
-  public SetDefinitionsVisitor getRealThis() {
-    return this.realThis;
+  public SetDefinitionsTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull SetDefinitionsVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
+  public void setTraverser(@NotNull SetDefinitionsTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
   }
 
   public IndentPrinter getPrinter() {
     return this.printer;
   }
 
-  public <T extends ASTExpressionsBasisNode> void acceptSeperatedList(@NotNull List<T> list){
+  public <T extends ASTExpressionsBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
     if (list.size() <= 0) {
       return;
     }
     Iterator<T> iterator = list.iterator();
-    iterator.next().accept(this.getRealThis());
+    iterator.next().accept(getTraverser());
     while (iterator.hasNext()) {
       this.getPrinter().print(", ");
-      iterator.next().accept(this.getRealThis());
+      iterator.next().accept(getTraverser());
     }
   }
 
-  public <T extends ASTSetDefinitionsNode> void acceptSeperatedSetList(@NotNull List<T> list){
+  public <T extends ASTSetDefinitionsNode> void acceptSeperatedSetList(@NotNull List<T> list) {
     if (list.size() <= 0) {
       return;
     }
     Iterator<T> iterator = list.iterator();
-    iterator.next().accept(this.getRealThis());
+    iterator.next().accept(getTraverser());
     while (iterator.hasNext()) {
       this.getPrinter().print(", ");
-      iterator.next().accept(this.getRealThis());
+      iterator.next().accept(getTraverser());
     }
   }
 
   @Override
-  public void handle(ASTSetValueRange node){
-    node.getLowerBound().accept(this.getRealThis());
-    if(node.isPresentStepsize()){
+  public void handle(ASTSetValueRange node) {
+    node.getLowerBound().accept(getTraverser());
+    if (node.isPresentStepsize()) {
       this.getPrinter().print(":");
-      node.getStepsize().accept(this.getRealThis());
+      node.getStepsize().accept(getTraverser());
     }
     this.getPrinter().print(":");
-    node.getUpperBound().accept(this.getRealThis());
+    node.getUpperBound().accept(getTraverser());
   }
 
   @Override
-  public void visit(ASTSetValueRegEx node){
+  public void handle(ASTSetValueRegEx node) {
     this.getPrinter().print("format :");
+    node.getFormat().accept(getTraverser());
   }
 }

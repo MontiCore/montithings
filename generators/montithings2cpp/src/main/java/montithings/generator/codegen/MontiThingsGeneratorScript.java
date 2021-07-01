@@ -6,6 +6,7 @@ import de.se_rwth.commons.groovy.GroovyInterpreter;
 import de.se_rwth.commons.groovy.GroovyRunner;
 import de.se_rwth.commons.logging.Log;
 import groovy.lang.Script;
+import montithings.MontiThingsMill;
 import montithings.generator.MontiThingsGeneratorTool;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
@@ -58,6 +59,7 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
    * component in {@code modelPath} to {@code targetFilepath}
    */
   public void generate(File modelPath, File targetFilepath, File hwcPath, File testPath, ConfigParams configParams) {
+    MontiThingsMill.init();
     new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath, testPath, configParams);
   }
 

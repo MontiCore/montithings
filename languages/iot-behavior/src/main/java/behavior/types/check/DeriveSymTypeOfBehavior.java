@@ -2,25 +2,24 @@
 package behavior.types.check;
 
 import behavior._ast.ASTAgoQualification;
-import behavior._visitor.BehaviorVisitor;
+import behavior._visitor.BehaviorHandler;
+import behavior._visitor.BehaviorTraverser;
 import de.monticore.types.check.DeriveSymTypeOfExpression;
 
-public class DeriveSymTypeOfBehavior extends DeriveSymTypeOfExpression implements BehaviorVisitor {
+public class DeriveSymTypeOfBehavior extends DeriveSymTypeOfExpression implements BehaviorHandler {
 
-  private BehaviorVisitor realThis;
+  protected BehaviorTraverser traverser;
+
+  @Override public BehaviorTraverser getTraverser() {
+    return traverser;
+  }
+
+  @Override public void setTraverser(BehaviorTraverser traverser) {
+    this.traverser = traverser;
+  }
 
   @Override
   public void traverse(ASTAgoQualification node){
-    node.getExpression().accept(getRealThis());
-  }
-
-  @Override
-  public void setRealThis(BehaviorVisitor realThis) {
-    this.realThis = realThis;
-  }
-
-  @Override
-  public BehaviorVisitor getRealThis() {
-    return realThis;
+    node.getExpression().accept(getTraverser());
   }
 }

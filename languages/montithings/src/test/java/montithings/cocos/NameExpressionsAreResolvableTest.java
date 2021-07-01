@@ -10,9 +10,10 @@ import java.util.stream.Stream;
 public class NameExpressionsAreResolvableTest extends AbstractCoCoTest {
 
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new InterfaceExists())
-      .addCoCo(new NameExpressionsAreResolvable());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new InterfaceExists());
+    cocos.addCoCo(new NameExpressionsAreResolvable());
+    return cocos;
   }
 
   protected static Stream<Arguments> validInput() {

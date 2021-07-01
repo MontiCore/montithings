@@ -56,6 +56,9 @@ public enum MontiThingsError implements montithings.util.Error {
           "Port-specific behavior for ports in component '%s' which works on the ports '%s' can never be executed, " +
                   "as another port-specific behavior uses a subset of these ports."),
 
+  TOOL_PARSE_IOEXCEPTION("0xMT1902", "Could not parse the file \"%s\"."),
+  TOOL_FILE_WALK_IOEXCEPTION("0xMT1903", "Could not access the directory \"%s\" or one of its subdirectories."),
+
   GENERATOR_ONLY_ONE_MAIN("0xMT2001",
     "Configured both '%s' (as 'mainComponent') and '%s' (as 'main') as main components using generator parameters. Only use of them."),
   GENERATOR_MAIN_REQUIRED("0xMT2002", "You did not configure generator parameter 'mainComponent'."),

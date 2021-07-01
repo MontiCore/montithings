@@ -3,8 +3,10 @@ package montithings.generator.helper;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import montithings._ast.ASTMontiThingsNode;
-import montithings._visitor.MontiThingsPrettyPrinterDelegator;
+import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.visitor.*;
+
+import java.util.Stack;
 
 public class CppPrettyPrinter {
 
@@ -16,33 +18,34 @@ public class CppPrettyPrinter {
     return getPrinter().prettyprint(node);
   }
 
-  public static MontiThingsPrettyPrinterDelegator getPrinter() {
-    return getPrinter(false, false);
+  public static MontiThingsFullPrettyPrinter getPrinter() {
+    return getPrinter(false);
   }
 
-  public static MontiThingsPrettyPrinterDelegator getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck) {
-    MontiThingsPrettyPrinterDelegator printer = new MontiThingsPrettyPrinterDelegator();
-    printer.setExpressionsBasisVisitor(new CppExpressionPrettyPrinter(printer.getPrinter()));
-    printer
-      .setCommonExpressionsVisitor(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
-    printer.setAssignmentExpressionsVisitor(
-      new CppAssignmentPrettyPrinter(printer.getPrinter(), isLogTracingEnabled, suppressPostConditionCheck));
-    printer.setOCLExpressionsVisitor(new CppOCLExpressionsPrettyPrinter(printer.getPrinter()));
-    printer
-      .setOptionalOperatorsVisitor(new CppOptionalOperatorsPrettyPrinter(printer.getPrinter()));
-    printer
-      .setSIUnitLiteralsVisitor(new MontiThingsSIUnitLiteralsPrettyPrinter(printer.getPrinter()));
-    printer.setMCVarDeclarationStatementsVisitor(
-      new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
-    printer.setBehaviorVisitor(new CppBehaviorPrettyPrinter(printer.getPrinter()));
-    printer
-      .setMCCommonStatementsVisitor(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
+  public static MontiThingsFullPrettyPrinter getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck) {
+    MontiThingsFullPrettyPrinter printer = new MontiThingsFullPrettyPrinter();
+    printer.getTraverser().setExpressionsBasisHandler(new CppExpressionPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setCommonExpressionsHandler(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setAssignmentExpressionsHandler(new CppAssignmentPrettyPrinter(printer.getPrinter(), isLogTracingEnabled, suppressPostConditionCheck));
+    printer.getTraverser().setOCLExpressionsHandler(new CppOCLExpressionsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setOptionalOperatorsHandler(new CppOptionalOperatorsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setSIUnitLiteralsHandler(new MontiThingsSIUnitLiteralsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setMCVarDeclarationStatementsHandler(new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setBehaviorHandler(new CppBehaviorPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setMCCommonStatementsHandler(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
+
+
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
-    printer.setSetDefinitionsVisitor(setPrinter);
-    printer.setSetExpressionsVisitor(setPrinter);
-    printer.setMontiThingsVisitor(setPrinter);
-    printer.setSIUnitTypes4MathVisitor(setPrinter);
-    printer.setSIUnitTypes4ComputingVisitor(setPrinter);
+    Stack<ASTExpression> expressions = new Stack<>();
+    CppSetDefinitionsPrettyPrinter setDefinitionsPrettyPrinter = new CppSetDefinitionsPrettyPrinter(printer.getPrinter());
+    CppSetExpressionsPrettyPrinter setExpressionsPrettyPrinter = new CppSetExpressionsPrettyPrinter(printer.getPrinter());
+    setDefinitionsPrettyPrinter.setExpressions(expressions);
+    setExpressionsPrettyPrinter.setExpressions(expressions);
+    printer.getTraverser().setSetDefinitionsHandler(setDefinitionsPrettyPrinter);
+    printer.getTraverser().setSetExpressionsHandler(setExpressionsPrettyPrinter);
+    printer.getTraverser().setMontiThingsHandler(setPrinter);
+    printer.getTraverser().setSIUnitsHandler(new CppSIUnitsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setSIUnitTypes4ComputingHandler(new CppSIUnitTypes4ComputingPrettyPrinter(printer.getPrinter()));
     return printer;
   }
 }

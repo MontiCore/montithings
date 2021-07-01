@@ -63,7 +63,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
     allModels.addAll(addedModels);
 
     FindConnectionsVisitor visitor = new FindConnectionsVisitor();
-    targetComp.accept(visitor);
+    targetComp.accept(visitor.createTraverser());
     List<FindConnectionsVisitor.Connection> connections = visitor.getConnections();
 
     // first, collect fully qualified instance names of the target comp

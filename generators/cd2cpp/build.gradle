@@ -7,7 +7,7 @@ test { useJUnit() }
 dependencies {
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:monticore-generator:$monticore_version"
+  //implementation "de.monticore:monticore-generator:$monticore_version"
 
   implementation "montiarc:util:$montiarc_version"
   implementation "de.monticore.lang:cd4analysis:$cd4a_version"

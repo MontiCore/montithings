@@ -29,13 +29,13 @@ public class CppMCCommonStatementsPrettyPrinter extends MCCommonStatementsPretty
   @Override public void handle(ASTIfStatement a) {
     CommentPrettyPrinter.printPreComments(a, this.getPrinter());
     this.getPrinter().print("if (");
-    a.getCondition().accept(this.getRealThis());
+    a.getCondition().accept(getTraverser());
     this.getPrinter().print(") ");
 
     if (!(a.getThenStatement() instanceof ASTMCJavaBlock)) {
       this.getPrinter().print("{");
     }
-    a.getThenStatement().accept(this.getRealThis());
+    a.getThenStatement().accept(getTraverser());
     if (!(a.getThenStatement() instanceof ASTMCJavaBlock)) {
       this.getPrinter().print("}");
     }
@@ -44,7 +44,7 @@ public class CppMCCommonStatementsPrettyPrinter extends MCCommonStatementsPretty
       if (!(a.getElseStatement() instanceof ASTMCJavaBlock)) {
         this.getPrinter().print("{");
       }
-      a.getElseStatement().accept(this.getRealThis());
+      a.getElseStatement().accept(getTraverser());
       if (!(a.getElseStatement() instanceof ASTMCJavaBlock)) {
         this.getPrinter().print("}");
       }

@@ -18,6 +18,9 @@ ${tc.signature("comp", "config", "className")}
 
 ${tc.includeArgs("template.state.methods.SetInstanceName", [comp, config, existsHWC])}
 
+${tc.includeArgs("template.util.statechart.methods.Get", [comp, config, className])}
+${tc.includeArgs("template.util.statechart.methods.Set", [comp, config, className])}
+
 ${tc.includeArgs("template.state.methods.restore.Setup", [comp, className])}
 ${tc.includeArgs("template.state.methods.restore.SerializeState", [comp, className])}
 ${tc.includeArgs("template.state.methods.restore.StoreState", [comp, className])}

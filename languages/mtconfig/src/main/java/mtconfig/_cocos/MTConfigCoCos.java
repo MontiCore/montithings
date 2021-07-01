@@ -8,13 +8,13 @@ package mtconfig._cocos;
  */
 public class MTConfigCoCos {
   public static MTConfigCoCoChecker createChecker() {
-    final MTConfigCoCoChecker mtConfigCoCoChecker = new MTConfigCoCoChecker()
-      .addCoCo(new AllConfigsReferToTheSameComponent())
-      .addCoCo(new HookpointExists())
-      .addCoCo(new CompConfigExists())
-      .addCoCo(new PortTemplateTagExists())
-      .addCoCo(new OnlyOneEveryPerPort())
-      .addCoCo(new MqttHasNoArguments());
-    return mtConfigCoCoChecker;
+    final MTConfigCoCoChecker checker = new MTConfigCoCoChecker();
+    checker.addCoCo(new AllConfigsReferToTheSameComponent());
+    checker.addCoCo(new HookpointExists());
+    checker.addCoCo(new CompConfigExists());
+    checker.addCoCo(new PortTemplateTagExists());
+    checker.addCoCo(new OnlyOneEveryPerPort());
+    checker.addCoCo(new MqttHasNoArguments());
+    return checker;
   }
 }

@@ -3,28 +3,35 @@ package montithings.cocos;
 
 import arcbasis._ast.ASTArcField;
 import arcbasis._ast.ASTArcParameter;
+import arcbasis._visitor.ArcBasisVisitor2;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.ocl.types.check.OCLTypeCheck;
 import de.monticore.statements.mccommonstatements._ast.*;
+import de.monticore.statements.mccommonstatements._visitor.MCCommonStatementsVisitor2;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTSimpleInit;
 import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclarator;
+import de.monticore.statements.mcvardeclarationstatements._visitor.MCVarDeclarationStatementsVisitor2;
 import de.monticore.symbols.basicsymbols._ast.ASTFunction;
 import de.monticore.symbols.basicsymbols._ast.ASTVariable;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.check.cocos.TypeCheckCoCo;
 import de.se_rwth.commons.logging.Log;
+import montithings.MontiThingsMill;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
-import montithings._visitor.MontiThingsVisitor;
+import montithings._visitor.MontiThingsTraverser;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
+import prepostcondition._visitor.PrePostConditionVisitor2;
 
 public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo
-  implements MontiThingsASTMTComponentTypeCoCo, MontiThingsVisitor {
+  implements MontiThingsASTMTComponentTypeCoCo, ArcBasisVisitor2,
+  MCVarDeclarationStatementsVisitor2, MCCommonStatementsVisitor2,
+  PrePostConditionVisitor2 {
   /**
    * Creates an instance of TypeCheckCoCo
    *
@@ -42,9 +49,18 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo
     return new MontiThingsTypeCheckCoCo(typeCheck);
   }
 
+  public MontiThingsTraverser createTraverser() {
+    MontiThingsTraverser traverser = MontiThingsMill.traverser();
+    traverser.add4ArcBasis(this);
+    traverser.add4MCVarDeclarationStatements(this);
+    traverser.add4MCCommonStatements(this);
+    traverser.add4PrePostCondition(this);
+    return traverser;
+  }
+
   @Override
   public void check(ASTMTComponentType ast) {
-    ast.accept(this);
+    ast.accept(createTraverser());
   }
 
   @Override

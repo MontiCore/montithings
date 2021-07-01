@@ -3,32 +3,27 @@ package montithings.types.check;
 
 import de.monticore.types.check.SymTypeExpressionFactory;
 import montithings._ast.ASTIsPresentExpression;
-import montithings._visitor.MontiThingsVisitor;
+import montithings._visitor.MontiThingsHandler;
+import montithings._visitor.MontiThingsTraverser;
 
 public class DeriveSymTypeOfMontiThings extends DeriveSymTypeOfExpressionForMT
-  implements MontiThingsVisitor {
+  implements MontiThingsHandler {
 
-  private static boolean condition = false;
+  protected static boolean condition = false;
 
-  private MontiThingsVisitor realThis;
+  protected MontiThingsTraverser traverser;
 
-  public DeriveSymTypeOfMontiThings() {
-    realThis = this;
+  @Override public MontiThingsTraverser getTraverser() {
+    return traverser;
   }
 
-  @Override
-  public MontiThingsVisitor getRealThis() {
-    return realThis;
-  }
-
-  @Override
-  public void setRealThis(MontiThingsVisitor realThis) {
-    this.realThis = realThis;
+  public void setTraverser(MontiThingsTraverser traverser) {
+    this.traverser = traverser;
   }
 
   @Override
   public void traverse(ASTIsPresentExpression node) {
-    node.getNameExpression().accept(getRealThis());
+    node.getNameExpression().accept(getTraverser());
 
     //if used in a condition, the IsPresentExpression evaluates to boolean
     if (condition) {

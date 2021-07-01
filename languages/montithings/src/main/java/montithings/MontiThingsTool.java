@@ -2,71 +2,81 @@
 package montithings;
 
 import com.google.common.base.Preconditions;
-import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._cocos.CD4CodeCoCoChecker;
-import de.monticore.cd4code._parser.CD4CodeParser;
-import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCreatorDelegator;
-import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
-import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
-import de.monticore.cd4code._symboltable.ICD4CodeScope;
-import de.monticore.cd4code.cocos.CD4CodeCoCos;
-import de.monticore.cd4code.resolver.CD4CodeResolver;
-import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
-import de.monticore.cdbasis._ast.ASTCDPackage;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
-import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
-import de.monticore.types.check.DefsTypeBasic;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
+import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
+import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeExpressionFactory;
-import de.monticore.types.check.SymTypeVariable;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
-import montithings._symboltable.IMontiThingsArtifactScope;
-import montithings._symboltable.IMontiThingsGlobalScope;
-import montithings._symboltable.IMontiThingsScope;
-import montithings._symboltable.MontiThingsSymbolTableCreatorDelegator;
+import montithings._symboltable.*;
 import montithings.cocos.MontiThingsCoCos;
 import montithings.trafos.MontiThingsTrafo;
-import montithings.util.ParserUtil;
+import montithings.util.MontiThingsError;
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static montithings.util.SymbolUtil.addParam;
-import static montithings.util.SymbolUtil.createFunction;
+import static montithings.util.LibraryFunctionsUtil.addAllLibraryFunctions;
 
-public class MontiThingsTool {
+public class MontiThingsTool implements IMontiThingsTool {
+  protected MontiThingsParser parser;
 
-  protected MontiThingsCoCoChecker mtChecker;
+  protected MontiThingsSymbols2Json deSer;
 
-  protected CD4CodeCoCoChecker cdChecker;
+  protected MontiThingsCoCoChecker checker;
 
-  protected boolean isSymTabInitialized;
+  protected List<MontiThingsTrafo> trafos = new ArrayList<>();
 
   public static final String MT_FILE_EXTENSION = "mt";
 
-  public static final String CD_FILE_EXTENSION = "cd";
+  public static final String SYM_FILE_EXTENSION = "sym";
 
-  protected static final String TOOL_NAME = "MontiThingsTool";
-
-  protected List<MontiThingsTrafo> trafos;
+  public static final String TOOL_NAME = "MontiThingsTool";
 
   public MontiThingsTool() {
-    this(MontiThingsCoCos.createChecker(), new CD4CodeCoCos().createNewChecker());
+    this(MontiThingsCoCos.createChecker());
   }
 
-  public MontiThingsTool(@NotNull MontiThingsCoCoChecker mtChecker,
-    @NotNull CD4CodeCoCoChecker cdChecker) {
-    Preconditions.checkArgument(mtChecker != null);
-    Preconditions.checkArgument(cdChecker != null);
-    this.mtChecker = mtChecker;
-    this.cdChecker = cdChecker;
-    this.isSymTabInitialized = false;
+  public MontiThingsTool(@NotNull MontiThingsCoCoChecker checker) {
+    this(checker, new MontiThingsParser(), new MontiThingsSymbols2Json());
+  }
 
-    this.trafos = new ArrayList<>();
+  protected MontiThingsTool(@NotNull MontiThingsCoCoChecker checker,
+    @NotNull MontiThingsParser parser,
+    @NotNull MontiThingsSymbols2Json deSer) {
+    Preconditions.checkArgument(checker != null);
+    Preconditions.checkArgument(deSer != null);
+    Preconditions.checkArgument(parser != null);
+    MontiThingsMill.init();
+    this.parser = parser;
+    this.deSer = deSer;
+    this.checker = checker;
+    ((MontiThingsDeSer) MontiThingsMill.globalScope().getDeSer())
+      .ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
+  }
+
+  protected MontiThingsParser getParser() {
+    return this.parser;
+  }
+
+  protected MontiThingsSymbols2Json getDeSer() {
+    return this.deSer;
+  }
+
+  protected MontiThingsCoCoChecker getChecker() {
+    return this.checker;
   }
 
   public List<MontiThingsTrafo> getTrafos() {
@@ -81,82 +91,145 @@ public class MontiThingsTool {
     this.trafos.add(trafo);
   }
 
-  protected MontiThingsCoCoChecker getMTChecker() {
-    return this.mtChecker;
+  protected String getMTFileExtension() {
+    return this.MT_FILE_EXTENSION;
   }
 
-  protected CD4CodeCoCoChecker getCdChecker() {
-    return this.cdChecker;
+  protected String getSymFileExtension() {
+    return this.SYM_FILE_EXTENSION;
   }
 
-  public IMontiThingsGlobalScope processModels(@NotNull Path... modelPaths) {
-    Preconditions.checkArgument(modelPaths != null);
-    Preconditions.checkArgument(!Arrays.asList(modelPaths).contains(null));
-    ModelPath mp = new ModelPath(Arrays.asList(modelPaths));
-    ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.cD4CodeGlobalScopeBuilder()
-      .setModelPath(mp)
-      .setModelFileExtension(CD_FILE_EXTENSION)
-      .build();
-    IMontiThingsGlobalScope montiThingsGlobalScope = MontiThingsMill.montiThingsGlobalScopeBuilder()
-      .setModelPath(mp)
-      .setModelFileExtension(MT_FILE_EXTENSION)
-      .build();
-    resolvingDelegates(montiThingsGlobalScope, cd4CGlobalScope);
-    addBasicTypes(montiThingsGlobalScope);
-    addLibraryFunctions(montiThingsGlobalScope);
-    this.processModels(cd4CGlobalScope);
-    this.processModels(montiThingsGlobalScope);
-    return montiThingsGlobalScope;
-  }
-
-  protected void resolvingDelegates(@NotNull IMontiThingsGlobalScope montiThingsGlobalScope,
-    @NotNull ICD4CodeGlobalScope cd4CGlobalScope) {
-    CD4CodeResolver cd4CodeResolver = new CD4CodeResolver(cd4CGlobalScope);
-    montiThingsGlobalScope.addAdaptedFieldSymbolResolver(cd4CodeResolver);
-    montiThingsGlobalScope.addAdaptedTypeSymbolResolver(cd4CodeResolver);
-  }
-
-  public void processModels(@NotNull IMontiThingsGlobalScope scope) {
-    processModels(scope, false);
-  }
-
-  public void processModels(@NotNull IMontiThingsGlobalScope scope, boolean shouldLog) {
-    Preconditions.checkArgument(scope != null);
-    for (IMontiThingsArtifactScope as : this.createSymbolTable(scope)) {
-      ASTMACompilationUnit a = (ASTMACompilationUnit) as.getAstNode();
-      if (shouldLog) {
-        Log.info("Check model: " + a.getComponentType().getSymbol().getFullName(), TOOL_NAME);
-      }
-      a.accept(this.getMTChecker());
+  @Override
+  public Optional<ASTMACompilationUnit> parse(@NotNull Path file) {
+    Preconditions.checkArgument(file != null);
+    Preconditions.checkArgument(file.toFile().exists(), file.toString());
+    Preconditions.checkArgument(file.toFile().isFile(), file.toString());
+    Preconditions.checkArgument(
+      FilenameUtils.getExtension(file.getFileName().toString()).equals(this.getMTFileExtension()));
+    try {
+      return this.getParser().parse(file.toString());
     }
-  }
-
-  public void processModels(@NotNull ICD4CodeGlobalScope scope) {
-    processModels(scope, false);
-  }
-
-  public void processModels(@NotNull ICD4CodeGlobalScope scope, boolean shouldLog) {
-    Preconditions.checkArgument(scope != null);
-    for (ICD4CodeArtifactScope a : this.createSymbolTable(scope)) {
-      if (shouldLog) {
-        Log.info("Check model: " + a.getName(), TOOL_NAME);
-      }
-      for (ICD4CodeScope as : a.getSubScopes()) {
-        ASTCDPackage astNode = (ASTCDPackage) as.getSpanningSymbol().getAstNode();
-        astNode.accept(this.getCdChecker());
-      }
+    catch (IOException e) {
+      Log.error(String.format(MontiThingsError.TOOL_PARSE_IOEXCEPTION.toString(), file.toString()),
+        e);
     }
+    return Optional.empty();
   }
 
-  public Collection<IMontiThingsArtifactScope> createSymbolTable(
-    @NotNull IMontiThingsGlobalScope scope) {
-    Preconditions.checkArgument(scope != null);
-    Collection<IMontiThingsArtifactScope> result = new HashSet<>();
-    Collection<ASTMACompilationUnit> models = parseModels(scope);
+  @Override
+  public IMontiThingsArtifactScope load(@NotNull Path file) {
+    Preconditions.checkArgument(file != null);
+    Preconditions.checkArgument(file.toFile().exists(), file.toString());
+    Preconditions.checkArgument(file.toFile().isFile(), file.toString());
+    Preconditions.checkArgument(
+      FilenameUtils.getExtension(file.getFileName().toString()).equals(this.getSymFileExtension()));
+    return this.getDeSer().load(file.toString());
+  }
 
+  @Override
+  public Optional<ASTMACompilationUnit> parse(@NotNull String filename) {
+    Preconditions.checkArgument(filename != null);
+    return this.parse(Paths.get(filename));
+  }
+
+  @Override
+  public IMontiThingsArtifactScope load(@NotNull String filename) {
+    Preconditions.checkArgument(filename != null);
+    return this.load(Paths.get(filename));
+  }
+
+  @Override
+  public Collection<ASTMACompilationUnit> parseAll(@NotNull Path directory) {
+    Preconditions.checkArgument(directory != null);
+    Preconditions.checkArgument(directory.toFile().exists());
+    Preconditions.checkArgument(directory.toFile().isDirectory());
+    try (Stream<Path> paths = Files.walk(directory)) {
+      return paths.filter(Files::isRegularFile)
+        .filter(file -> file.getFileName().toString().endsWith(this.getMTFileExtension()))
+        .map(this::parse)
+        .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
+    }
+    catch (IOException e) {
+      Log.error(
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        e);
+    }
+    return Collections.emptySet();
+  }
+
+  @Override
+  public Collection<IMontiThingsArtifactScope> loadAll(@NotNull Path directory) {
+    Preconditions.checkArgument(directory != null);
+    Preconditions.checkArgument(directory.toFile().exists());
+    Preconditions.checkArgument(directory.toFile().isDirectory());
+    try (Stream<Path> paths = Files.walk(directory)) {
+      return paths.filter(Files::isRegularFile)
+        .filter(file -> file.getFileName().toString().endsWith(this.getSymFileExtension()))
+        .map(this::load)
+        .collect(Collectors.toSet());
+    }
+    catch (IOException e) {
+      Log.error(
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        e);
+    }
+    return Collections.emptySet();
+  }
+
+  @Override
+  public Collection<ASTMACompilationUnit> parseAll(@NotNull IMontiThingsGlobalScope scope) {
+    Preconditions.checkArgument(scope != null);
+    return scope.getModelPath().getFullPathOfEntries().stream()
+      .flatMap(path -> this.parseAll(path).stream()).collect(Collectors.toSet());
+  }
+
+  @Override
+  public Collection<IMontiThingsArtifactScope> loadAll(@NotNull IMontiThingsGlobalScope scope) {
+    Preconditions.checkArgument(scope != null);
+    return scope.getModelPath().getFullPathOfEntries().stream()
+      .flatMap(path -> this.loadAll(path).stream())
+      .collect(Collectors.toSet());
+  }
+
+  @Override
+  public IMontiThingsScope createSymbolTable(@NotNull ASTMACompilationUnit ast) {
+    Preconditions.checkArgument(ast != null);
+    MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
+    return symTab.createFromAST(ast);
+  }
+
+  @Override
+  public Collection<IMontiThingsScope> createSymbolTable(@NotNull IMontiThingsGlobalScope scope) {
+    Preconditions.checkArgument(scope != null);
+    MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
+    MontiThingsMill.globalScope();
+    this.loadAll(scope).forEach(scope::addSubScope);
+    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+    models = applyTrafos(models);
+    return models.stream().map(symTab::createFromAST).collect(Collectors.toSet());
+  }
+
+  @Override
+  public Collection<IMontiThingsScope> createSymbolTable(@NotNull Path directory) {
+    Preconditions.checkArgument(directory != null);
+    Preconditions.checkArgument(directory.toFile().exists());
+    Preconditions.checkArgument(directory.toFile().isDirectory());
+    return this.createSymbolTable(this.createMTGlobalScope(directory));
+  }
+
+  @Override
+  public IMontiThingsGlobalScope createMTGlobalScope(@NotNull Path... directories) {
+    Preconditions.checkArgument(directories != null);
+    return this.createMTGlobalScope(new ModelPath(directories));
+  }
+
+  protected Set<ASTMACompilationUnit> applyTrafos(
+    @NotNull Collection<ASTMACompilationUnit> models) {
     Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
+    Set<ASTMACompilationUnit> result = new HashSet<>(models);
 
-    // iterate with an iterator in order to avoid ConcurrentModificationException, as models are transformed
+    // iterate with an iterator in order to avoid ConcurrentModificationException,
+    // as models are transformed
     for (Iterator<ASTMACompilationUnit> iterator = models.iterator(); iterator.hasNext(); ) {
       ASTMACompilationUnit ast = iterator.next();
 
@@ -170,110 +243,115 @@ public class MontiThingsTool {
         }
       }
     }
-    models.addAll(additionalTrafoModels);
-
-    for (ASTMACompilationUnit ast : models) {
-      MontiThingsSymbolTableCreatorDelegator symTab = new MontiThingsSymbolTableCreatorDelegator(
-        scope);
-      result.add(symTab.createFromAST(ast));
-    }
-
+    result.addAll(additionalTrafoModels);
     return result;
   }
 
-  public Collection<ICD4CodeArtifactScope> createSymbolTable(@NotNull ICD4CodeGlobalScope scope) {
+  protected IMontiThingsGlobalScope createMTGlobalScope(@NotNull ModelPath modelPath) {
+    Preconditions.checkArgument(modelPath != null);
+    IMontiThingsGlobalScope mtScope = MontiThingsMill.globalScope();
+    mtScope.clear();
+    mtScope.setModelPath(modelPath);
+    mtScope.setFileExt(this.getMTFileExtension());
+    this.addBasicTypes();
+    addAllLibraryFunctions(mtScope);
+    return mtScope;
+  }
+
+  @Override
+  public void addBasicTypes() {
+    BasicSymbolsMill.initializePrimitives();
+    IMontiThingsArtifactScope artifactScope = MontiThingsMill.artifactScope();
+    artifactScope.setEnclosingScope(MontiThingsMill.globalScope());
+    artifactScope.setName("java.lang");
+    this.add2Scope(artifactScope, MontiThingsMill.oOTypeSymbolBuilder()
+      .setName("Object")
+      .setEnclosingScope(MontiThingsMill.artifactScope())
+      .setSpannedScope(MontiThingsMill.scope()).build());
+    this.add2Scope(artifactScope, MontiThingsMill.oOTypeSymbolBuilder()
+      .setName("String")
+      .setEnclosingScope(MontiThingsMill.artifactScope())
+      .setSpannedScope(MontiThingsMill.scope())
+      .addSuperTypes(SymTypeExpressionFactory
+        .createTypeObject("java.lang.Object", MontiThingsMill.globalScope()))
+      .build());
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder()
+      .setName("void")
+      .setFullName("void")
+      .setEnclosingScope(MontiThingsMill.globalScope())
+      .setSpannedScope(MontiThingsMill.scope())
+      .build());
+    MontiThingsMill.globalScope().add(MontiThingsMill.typeSymbolBuilder()
+      .setName("null")
+      .setFullName("null")
+      .setEnclosingScope(MontiThingsMill.globalScope())
+      .setSpannedScope(MontiThingsMill.scope())
+      .build());
+  }
+
+  protected void add2Scope(@NotNull IBasicSymbolsScope scope, @NotNull TypeSymbol... symbols) {
+    Preconditions.checkNotNull(scope);
+    Preconditions.checkNotNull(symbols);
+    Arrays.stream(symbols).forEach(symbol -> {
+      symbol.setEnclosingScope(scope);
+      scope.add(symbol);
+    });
+  }
+
+  protected void add2Scope(@NotNull IOOSymbolsScope scope, @NotNull OOTypeSymbol... symbols) {
+    Preconditions.checkNotNull(scope);
+    Preconditions.checkNotNull(symbols);
+    Arrays.stream(symbols).forEach(symbol -> {
+      symbol.setEnclosingScope(scope);
+      scope.add(symbol);
+    });
+  }
+
+  @Override
+  public void checkCoCos(@NotNull ASTMACompilationUnit ast) {
+    checkCoCos(ast, false);
+  }
+
+  public void checkCoCos(@NotNull ASTMACompilationUnit ast, boolean shouldLog) {
+    Preconditions.checkArgument(ast != null);
+    Log.info("Check model: " + ast.getPackage() + "." + ast.getComponentType().getName(), TOOL_NAME);
+    this.checker.checkAll(ast);
+  }
+
+  @Override
+  public void checkCoCos(@NotNull IMontiThingsGlobalScope scope) {
+    checkCoCos(scope, false);
+  }
+
+  public void checkCoCos(@NotNull IMontiThingsGlobalScope scope, boolean shouldLog) {
     Preconditions.checkArgument(scope != null);
-    Collection<ICD4CodeArtifactScope> result = new HashSet<>();
-    for (ASTCDCompilationUnit ast : parseModels(scope)) {
-      CD4CodeSymbolTableCreatorDelegator symTab = new CD4CodeSymbolTableCreatorDelegator(scope);
-      result.add(symTab.createFromAST(ast));
-    }
-    return result;
+    scope.getSubScopes().stream()
+      .filter(as -> !((MontiThingsArtifactScope) as).getPackageName().equals(""))
+      .map(artifactScope -> (ASTMACompilationUnit) artifactScope.getAstNode())
+      .forEach(this::checkCoCos);
   }
 
-  public Collection<ASTMACompilationUnit> parseModels(@NotNull IMontiThingsGlobalScope scope) {
-    return (Collection<ASTMACompilationUnit>) ParserUtil
-      .parseModels(scope, MT_FILE_EXTENSION, new MontiThingsParser());
+  @Override
+  public void processModels(@NotNull IMontiThingsGlobalScope scope) {
+    Preconditions.checkArgument(scope != null);
+    createSymbolTable(scope);
+    checkCoCos(scope);
   }
 
-  public Collection<ASTCDCompilationUnit> parseModels(@NotNull ICD4CodeGlobalScope scope) {
-    return (Collection<ASTCDCompilationUnit>) ParserUtil
-      .parseModels(scope, CD_FILE_EXTENSION, new CD4CodeParser());
+  @Override
+  public IMontiThingsGlobalScope processModels(@NotNull Path... directories) {
+    Preconditions.checkArgument(directories != null);
+    Preconditions.checkArgument(!Arrays.asList(directories).contains(null));
+    ModelPath modelPath = new ModelPath(directories);
+    IMontiThingsGlobalScope mtScope = this.createMTGlobalScope(modelPath);
+    this.processModels(mtScope);
+    return mtScope;
   }
 
-  public Optional<ASTMACompilationUnit> parseMT(@NotNull String filename) {
-    return (Optional<ASTMACompilationUnit>) ParserUtil.parse(filename, new MontiThingsParser());
-  }
-
-  public Optional<ASTCDCompilationUnit> parseCD(@NotNull String filename) {
-    return (Optional<ASTCDCompilationUnit>) ParserUtil.parse(filename, new CD4CodeParser());
-  }
-
-  public Collection<ASTMACompilationUnit> parseMT(@NotNull Path path) {
-    return (Collection<ASTMACompilationUnit>) ParserUtil
-      .parse(path, MT_FILE_EXTENSION, new MontiThingsParser());
-  }
-
-  public Collection<ASTCDCompilationUnit> parseCD(@NotNull Path path) {
-    return (Collection<ASTCDCompilationUnit>) ParserUtil
-      .parse(path, CD_FILE_EXTENSION, new CD4CodeParser());
-  }
-
-  public void addBasicTypes(@NotNull IMontiThingsScope scope) {
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._boolean);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._char);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._short);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._String);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._int);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._long);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._float);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._double);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._null);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._Object);
-    DefsTypeBasic.add2scope(scope, DefsTypeBasic._array);
-  }
-
-  public void addLibraryFunctions(@NotNull IMontiThingsScope scope) {
-    FunctionSymbol log = createFunction("log", scope);
-    addParam(log, "message", SymTypeExpressionFactory.createTypeObject("String", scope));
-
-    FunctionSymbol delay = createFunction("delay", scope);
-    addParam(delay, "milliseconds", SymTypeExpressionFactory.createTypeConstant("int"));
-
-    createFunction("now_ns", SymTypeExpressionFactory.createTypeObject("String", scope), scope);
-
-    createFunction("now", SymTypeExpressionFactory.createTypeConstant("long"), scope);
-
-    // Library functions added by dds/replayer/MTReplayLibrary
-    // assume long = unsigned long long since Monticore does not support all types
-    createFunction("getNanoTimestamp", SymTypeExpressionFactory.createTypeConstant("long"),
-      scope);
-
-    FunctionSymbol delayNanoseconds = createFunction("delayNanoseconds", scope);
-    addParam(delayNanoseconds, "nanoseconds", SymTypeExpressionFactory.createTypeConstant("long"));
-
-    FunctionSymbol subtract = createFunction("subtract", SymTypeExpressionFactory.createTypeConstant("long"), scope);
-    addParam(subtract, "v1", SymTypeExpressionFactory.createTypeConstant("long"));
-    addParam(subtract, "v2", SymTypeExpressionFactory.createTypeConstant("long"));
-
-    FunctionSymbol getNsFromMap = createFunction("getNsFromMap", SymTypeExpressionFactory.createTypeConstant("long"), scope);
-    addParam(getNsFromMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
-
-    FunctionSymbol storeNsInMap = createFunction("storeNsInMap", scope);
-    addParam(storeNsInMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
-    addParam(storeNsInMap, "ts", SymTypeExpressionFactory.createTypeConstant("long"));
-
-    TypeVarSymbol returnNd = MontiThingsMill
-      .typeVarSymbolBuilder()
-      .setName("T")
-      .build();
-
-    returnNd.setSpannedScope(MontiThingsMill.montiThingsScope());
-    returnNd.setEnclosingScope(scope);
-    SymTypeVariable returnType = SymTypeExpressionFactory.createTypeVariable(returnNd);
-
-
-    FunctionSymbol nd = createFunction("nd", returnType, scope);
-    addParam(nd, "value", SymTypeExpressionFactory.createTypeVariable(returnNd));
+  public IMontiThingsGlobalScope processModels(@NotNull ModelPath modelPath) {
+    Preconditions.checkArgument(modelPath != null);
+    IMontiThingsGlobalScope mtScope = this.createMTGlobalScope(modelPath);
+    this.processModels(mtScope);
+    return mtScope;
   }
 }

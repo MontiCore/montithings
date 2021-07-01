@@ -10,9 +10,9 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import java.util.Iterator;
 import java.util.List;
 
-public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
+public class MontiThingsPrettyPrinter implements MontiThingsHandler {
 
-  protected MontiThingsVisitor realThis = this;
+  protected MontiThingsTraverser traverser;
 
   protected IndentPrinter printer;
 
@@ -27,14 +27,14 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
   }
 
   @Override
-  public MontiThingsVisitor getRealThis() {
-    return this.realThis;
+  public MontiThingsTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull MontiThingsVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
+  public void setTraverser(@NotNull MontiThingsTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
   }
 
   public IndentPrinter getPrinter() {
@@ -46,20 +46,20 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
       return;
     }
     Iterator<T> iterator = list.iterator();
-    iterator.next().accept(this.getRealThis());
+    iterator.next().accept(getTraverser());
     while (iterator.hasNext()) {
       this.getPrinter().print(", ");
-      iterator.next().accept(this.getRealThis());
+      iterator.next().accept(getTraverser());
     }
   }
 
   @Override
   public void handle(@NotNull ASTMTComponentType node) {
-    node.getMTComponentModifier().accept(this.getRealThis());
+    node.getMTComponentModifier().accept(getTraverser());
     this.getPrinter().print(node.getName());
-    node.getHead().accept(this.getRealThis());
+    node.getHead().accept(getTraverser());
     acceptSeperatedList(node.getComponentInstanceList());
-    node.getBody().accept(this.getRealThis());
+    node.getBody().accept(getTraverser());
   }
 
   @Override
@@ -82,12 +82,12 @@ public class MontiThingsPrettyPrinter implements MontiThingsVisitor {
       getPrinter().print(ports.get(i));
     }
     getPrinter().print(" ");
-    node.getMCJavaBlock().accept(this.getRealThis());
+    node.getMCJavaBlock().accept(getTraverser());
   }
 
   @Override
   public void handle(@NotNull ASTIsPresentExpression node) {
-    node.getNameExpression().accept(this.getRealThis());
+    node.getNameExpression().accept(getTraverser());
     this.getPrinter().print("?");
   }
 

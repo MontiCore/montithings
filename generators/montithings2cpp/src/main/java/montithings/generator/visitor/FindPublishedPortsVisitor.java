@@ -3,15 +3,21 @@ package montithings.generator.visitor;
 
 import arcbasis._symboltable.PortSymbol;
 import com.google.common.base.Preconditions;
+import montithings.MontiThingsMill;
 import montithings._ast.ASTPublishPort;
-import montithings._visitor.MontiThingsVisitor;
+import montithings._visitor.MontiThingsHandler;
+import montithings._visitor.MontiThingsTraverser;
+import montithings._visitor.MontiThingsVisitor2;
 
 import java.util.*;
 
 /**
  * Finds all ports that are referenced by a "publish" statement
  */
-public class FindPublishedPortsVisitor implements MontiThingsVisitor {
+public class FindPublishedPortsVisitor
+  implements MontiThingsVisitor2, MontiThingsHandler {
+
+  protected MontiThingsTraverser traverser;
 
   protected Set<PortSymbol> publishedPorts = new HashSet<>();
 
@@ -35,11 +41,26 @@ public class FindPublishedPortsVisitor implements MontiThingsVisitor {
     return result;
   }
 
+  public MontiThingsTraverser createTraverser() {
+    MontiThingsTraverser traverser = MontiThingsMill.traverser();
+    traverser.add4MontiThings(this);
+    traverser.setMontiThingsHandler(this);
+    return traverser;
+  }
+
   /* ============================================================ */
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
 
   public Set<PortSymbol> getPublishedPorts() {
     return publishedPorts;
+  }
+
+  @Override public MontiThingsTraverser getTraverser() {
+    return traverser;
+  }
+
+  public void setTraverser(MontiThingsTraverser traverser) {
+    this.traverser = traverser;
   }
 }

@@ -2,17 +2,13 @@
 package montithings.generator.cd2cpp;
 
 import com.google.common.collect.LinkedListMultimap;
-import de.monticore.cd4analysis.CD4AnalysisMill;
 import de.monticore.cd4analysis._parser.CD4AnalysisParser;
-import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd4analysis._symboltable.CD4AnalysisScopeDeSer;
 import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import de.monticore.cd4analysis.cocos.CD4AnalysisCoCos;
-import de.monticore.cd4analysis.prettyprint.CD4AnalysisPrettyPrinter;
 import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCreatorDelegator;
-import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
-import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code._parser.CD4CodeParser;
+import de.monticore.cd4code._symboltable.*;
+import de.monticore.cd4code.prettyprint.CD4CodeFullPrettyPrinter;
 import de.monticore.cdassociation._ast.ASTCDAssociation;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._symboltable.CDTypeSymbol;
@@ -20,6 +16,7 @@ import de.monticore.cdbasis._symboltable.ICDBasisScope;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
 
 import java.io.File;
@@ -50,13 +47,13 @@ public class CppGenerator {
 
   protected ICD4CodeGlobalScope globalScope;
 
-  protected CD4CodeSymbolTableCreatorDelegator symbolTableCreator;
+  protected CD4CodeScopesGenitorDelegator symbolTableCreator;
 
   protected CD4AnalysisCoCos cd4AnalyisCoCos;
 
-  protected CD4AnalysisPrettyPrinter printer;
+  protected CD4CodeFullPrettyPrinter printer;
 
-  protected CD4AnalysisScopeDeSer deSer;
+  protected CD4CodeDeSer deSer;
 
   protected ASTCDCompilationUnit compilationUnit;
 
@@ -68,21 +65,23 @@ public class CppGenerator {
     String modelName) {
     this.outputDir = outputDir;
 
-    CD4AnalysisMill.init();
-    CD4AnalysisParser p = new CD4AnalysisParser();
+    CD4CodeMill.init();
 
-    globalScope = CD4CodeMill
-      .cD4CodeGlobalScopeBuilder()
-      .setModelPath(new ModelPath(modelPath))
-      .setModelFileExtension(CD4AnalysisGlobalScope.EXTENSION)
-      .addBuiltInTypes()
-      .build();
-    symbolTableCreator = new CD4CodeSymbolTableCreatorDelegator(globalScope);
-    //injectPrimitives(globalScope);
+    CD4CodeMill.globalScope().clear();
+    globalScope = CD4CodeMill.globalScope();
+    globalScope.setModelPath(new ModelPath(modelPath));
+    ((CD4CodeGlobalScope) CD4CodeMill.globalScope()).addBuiltInTypes();
+    CD4CodeMill.globalScope().add(CD4CodeMill.typeSymbolBuilder()
+      .setName("String")
+      .setFullName("String")
+      .setEnclosingScope(CD4CodeMill.globalScope())
+      .setSpannedScope(CD4CodeMill.scope())
+      .build());
+    symbolTableCreator = CD4CodeMill.scopesGenitorDelegator();
 
     final Optional<ASTCDCompilationUnit> astcdCompilationUnit;
     try {
-      astcdCompilationUnit = p
+      astcdCompilationUnit = CD4CodeMill.parser()
         .parse(modelPath.toFile().getPath() + "/" + modelName.replace(".", File.separator) + ".cd");
     }
     catch (IOException e) {
@@ -91,6 +90,9 @@ public class CppGenerator {
     }
     compilationUnit = astcdCompilationUnit.get();
     final ICD4CodeArtifactScope scope = symbolTableCreator.createFromAST(compilationUnit);
+    compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
+
+    cdSymbols.addAll(scope.getCDTypeSymbols().values());
 
     scope
       .getSubScopes()
@@ -107,7 +109,7 @@ public class CppGenerator {
       // CD4A uses different packages. If there's a package _within_ the diagram
       // that is the symbolPackage. If there's no such package, the artifact
       // package is the package containing the diagram itself.
-      String symbolPackage = symbol.getEnclosingScope().getPackageName();
+      String symbolPackage = symbol.getEnclosingScope().getName();
       String artifactPackage = symbol.getEnclosingScope().getRealPackageName();
       _package = targetPackage.orElse(symbolPackage.equals("") ? artifactPackage : symbolPackage);
       this.typeHelper = new TypeHelper(_package);
@@ -117,13 +119,8 @@ public class CppGenerator {
       this.generate(symbol);
     }
 
-    this.generatePackageHeader(new ArrayList<>(cdSymbols));
-  }
-
-  protected void injectPrimitives(ICD4AnalysisGlobalScope scope) {
-    for (String primitive : primitiveTypes) {
-      CDTypeSymbol primitiveCdType = new CDTypeSymbol(primitive);
-      scope.add(primitiveCdType);
+    if (!cdSymbols.isEmpty()) {
+      this.generatePackageHeader(new ArrayList<>(cdSymbols));
     }
   }
 

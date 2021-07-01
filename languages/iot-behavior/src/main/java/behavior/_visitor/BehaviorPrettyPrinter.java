@@ -9,9 +9,10 @@ import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
 
-public class BehaviorPrettyPrinter implements BehaviorVisitor {
+public class BehaviorPrettyPrinter implements BehaviorHandler {
 
-  protected BehaviorVisitor realThis = this;
+  protected BehaviorTraverser traverser;
+
   protected IndentPrinter printer;
 
   public BehaviorPrettyPrinter() {
@@ -25,14 +26,14 @@ public class BehaviorPrettyPrinter implements BehaviorVisitor {
   }
 
   @Override
-  public BehaviorVisitor getRealThis() {
-    return this.realThis;
+  public BehaviorTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull BehaviorVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
+  public void setTraverser(@NotNull BehaviorTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
   }
 
   public IndentPrinter getPrinter() {
@@ -40,37 +41,37 @@ public class BehaviorPrettyPrinter implements BehaviorVisitor {
   }
 
   @Override
-  public void handle (ASTAfterStatement node){
+  public void handle(ASTAfterStatement node) {
     getPrinter().print("after ");
-    node.getSIUnitLiteral().accept(getRealThis());
+    node.getSIUnitLiteral().accept(getTraverser());
     getPrinter().print(" ");
-    node.getMCJavaBlock().accept(getRealThis());
+    node.getMCJavaBlock().accept(getTraverser());
   }
 
   @Override
-  public void handle (ASTEveryBlock node){
-    if(node.isPresentName()){
+  public void handle(ASTEveryBlock node) {
+    if (node.isPresentName()) {
       getPrinter().print(node.getName() + ": ");
     }
     getPrinter().print("every ");
-    node.getSIUnitLiteral().accept(getRealThis());
+    node.getSIUnitLiteral().accept(getTraverser());
     getPrinter().print(" ");
-    node.getMCJavaBlock().accept(getRealThis());
+    node.getMCJavaBlock().accept(getTraverser());
   }
 
   @Override
-  public void handle (ASTLogStatement node){
+  public void handle(ASTLogStatement node) {
     getPrinter().print("log ");
-    node.getStringLiteral().accept(getRealThis());
+    node.getStringLiteral().accept(getTraverser());
     getPrinter().println(";");
   }
 
   @Override
-  public void handle (ASTAgoQualification node){
-    node.getExpression().accept(getRealThis());
+  public void handle(ASTAgoQualification node) {
+    node.getExpression().accept(getTraverser());
     getPrinter().print("@ago");
     getPrinter().print("(");
-    node.getSIUnitLiteral().accept(getRealThis());
+    node.getSIUnitLiteral().accept(getTraverser());
     getPrinter().print(")");
   }
 }

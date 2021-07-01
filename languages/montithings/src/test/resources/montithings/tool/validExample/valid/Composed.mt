@@ -5,7 +5,7 @@ package valid;
  * Valid model.
  */
 component Composed {
-  InComp ic;
+  InComp ic ("test");
 	OutComp oc;
 
 	oc.outPort -> ic.inPort;

@@ -5,7 +5,6 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.ocl.setexpressions._ast.ASTSetCollectionItem;
 import de.monticore.ocl.setexpressions._ast.ASTSetEnumeration;
 import de.monticore.ocl.setexpressions._ast.ASTSetValueItem;
-import de.monticore.ocl.setexpressions._visitor.SetExpressionsVisitor;
 import de.monticore.ocl.types.check.DeriveSymTypeOfSetExpressions;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
@@ -13,31 +12,23 @@ import de.monticore.types.check.SymTypeOfGenerics;
 import de.se_rwth.commons.logging.Log;
 import setdefinitions._ast.ASTSetValueRange;
 import setdefinitions._ast.ASTSetValueRegEx;
-import setdefinitions._visitor.SetDefinitionsVisitor;
+import setdefinitions._visitor.SetDefinitionsHandler;
+import setdefinitions._visitor.SetDefinitionsTraverser;
 
 import static de.monticore.ocl.types.check.OCLTypeCheck.compatible;
 
-public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions implements SetDefinitionsVisitor {
+public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions implements
+  SetDefinitionsHandler {
 
-  private SetDefinitionsVisitor realThis;
-
-  public DeriveSymTypeOfSetDefinitions(){
-    this.realThis = this;
-  }
+  private SetDefinitionsTraverser traverser;
 
   @Override
-  public void setRealThis(SetDefinitionsVisitor realThis) {
-    this.realThis = realThis;
+  public void setTraverser(SetDefinitionsTraverser traverser) {
+    this.traverser = traverser;
   }
 
-  @Override
-  public void setRealThis(SetExpressionsVisitor realThis) {
-    this.realThis = (SetDefinitionsVisitor) realThis;
-  }
-
-  @Override
-  public SetDefinitionsVisitor getRealThis() {
-    return this.realThis;
+  @Override public SetDefinitionsTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
@@ -45,7 +36,7 @@ public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions
     SymTypeExpression result = null;
     SymTypeExpression innerResult = null;
     if(node.isPresentMCType()){
-      node.getMCType().accept(getRealThis());
+      node.getMCType().accept(getTraverser());
       if(typeCheckResult.isPresentCurrentResult()){
         boolean correct = false;
         for (String s : collections) {
@@ -78,7 +69,7 @@ public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions
     for (ASTSetCollectionItem item : node.getSetCollectionItemList()){
       if (item instanceof ASTSetValueItem) {
         for (ASTExpression e : ((ASTSetValueItem) item).getExpressionList()) {
-          e.accept(getRealThis());
+          e.accept(getTraverser());
         }
         if (typeCheckResult.isPresentCurrentResult()) {
           if (innerResult == null) {
@@ -92,7 +83,7 @@ public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions
         }
       }
       else {
-        item.accept(getRealThis());
+        item.accept(getTraverser());
         if (typeCheckResult.isPresentCurrentResult()) {
           if (innerResult == null) {
             innerResult = typeCheckResult.getCurrentResult();

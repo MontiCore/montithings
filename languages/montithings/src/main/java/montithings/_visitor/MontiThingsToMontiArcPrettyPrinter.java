@@ -10,9 +10,9 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import java.util.Iterator;
 import java.util.List;
 
-public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsVisitor {
+public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
 
-  protected MontiThingsVisitor realThis = this;
+  protected MontiThingsTraverser traverser;
 
   protected IndentPrinter printer;
 
@@ -26,16 +26,16 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsVisitor {
     this.printer = printer;
   }
 
-  @Override
-  public MontiThingsVisitor getRealThis() {
-    return this.realThis;
+  @Override 
+  public MontiThingsTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull MontiThingsVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
-  }
+public void setTraverser(@NotNull MontiThingsTraverser traverser) {
+  Preconditions.checkArgument(traverser != null);
+  this.traverser = traverser;
+}
 
   public IndentPrinter getPrinter() {
     return this.printer;
@@ -46,20 +46,20 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsVisitor {
       return;
     }
     Iterator<T> iterator = list.iterator();
-    iterator.next().accept(this.getRealThis());
+    iterator.next().accept(getTraverser());
     while (iterator.hasNext()) {
       this.getPrinter().print(", ");
-      iterator.next().accept(this.getRealThis());
+      iterator.next().accept(getTraverser());
     }
   }
 
   @Override
   public void handle(@NotNull ASTMTComponentType node) {
-    node.getMTComponentModifier().accept(this.getRealThis());
+    node.getMTComponentModifier().accept(getTraverser());
     this.getPrinter().print(node.getName());
-    node.getHead().accept(this.getRealThis());
+    node.getHead().accept(getTraverser());
     acceptSeperatedList(node.getComponentInstanceList());
-    node.getBody().accept(this.getRealThis());
+    node.getBody().accept(getTraverser());
   }
 
   @Override

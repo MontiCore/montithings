@@ -5,10 +5,12 @@ package cdlangextension.util;
  * The enum of all CDLangExtension errors. Extends the mixing interface {@link cdlangextension.util.Error}
  */
 public enum CDLangExtensionError implements cdlangextension.util.Error {
-  MISSING_IMPORT_NAME("0xCDE1030", "ASTCDEImportStatement '%s' at <%d,%d> has no corresponding CDTypeSymbol."),
   EMPTY_IMPORT_FIELD("0xCDE1000", "Import Name at %s cannot be empty"),
   AMBIGUOUS_IMPORT_NAME("0xCDE1010", "Import Name '%s' at '%s' is used multiple times in Language '%s'"),
-  AMBIGUOUS_LANGUAGE_NAME("0xCDE1020", "Language Name '%s' at '%s' is used multiple times");
+  AMBIGUOUS_LANGUAGE_NAME("0xCDE1020", "Language Name '%s' at '%s' is used multiple times"),
+  MISSING_IMPORT_NAME("0xCDE1030", "ASTCDEImportStatement '%s' at <%d,%d> has no corresponding TypeSymbol."),
+  TOOL_FILE_WALK_IOEXCEPTION("0xCDE1040", "Could not access the directory \"%s\" or one of its subdirectories.");
+
 
   protected final String errorCode;
   protected final String errorMessage;

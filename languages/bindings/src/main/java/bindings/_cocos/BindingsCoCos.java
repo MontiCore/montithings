@@ -9,16 +9,18 @@ package bindings._cocos;
 public class BindingsCoCos {
   public static BindingsCoCoChecker createChecker() {
     final BindingsCoCoChecker checker = new BindingsCoCoChecker();
-    return checker
-        // Coco 1: Assert that left side is Interface
-        .addCoCo(new LeftSideIsInterface())
-        // Coco 2: Assert that right side is Implementation
-        .addCoCo(new RightSideIsImplementation())
-        // Coco 3: Assert that Implementation has same ports (+ port names) as Interface
-        .addCoCo(new ImplementationHasSamePortsAsInterface())
-        // Coco 4: Assert that Implementation with this specific filename exists
-        .addCoCo(new ImplementationExists())
-        // Coco 5: Assert that Interface with this specific filename exists
-        .addCoCo(new InterfaceExists());
+
+    // Coco 1: Assert that left side is Interface
+    checker.addCoCo(new LeftSideIsInterface());
+    // Coco 2: Assert that right side is Implementation
+    checker.addCoCo(new RightSideIsImplementation());
+    // Coco 3: Assert that Implementation has same ports (+ port names) as Interface
+    checker.addCoCo(new ImplementationHasSamePortsAsInterface());
+    // Coco 4: Assert that Implementation with this specific filename exists
+    checker.addCoCo(new ImplementationExists());
+    // Coco 5: Assert that Interface with this specific filename exists
+    checker.addCoCo(new InterfaceExists());
+
+    return checker;
   }
 }

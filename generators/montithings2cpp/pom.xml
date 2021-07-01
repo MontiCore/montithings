@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>montithings.generators</groupId>
 		<artifactId>generators</artifactId>
-		<version>6.5.0-SNAPSHOT</version>
+		<version>7.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>montithings2cpp</artifactId>
 
@@ -77,12 +77,6 @@
 			<groupId>montithings.languages</groupId>
 			<artifactId>mtconfig</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>de.monticore</groupId>
-			<artifactId>monticore-generator</artifactId>
-			<version>${monticore.version}</version>
 		</dependency>
 
 		<dependency>

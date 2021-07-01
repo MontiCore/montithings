@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.util;
 
-import de.monticore.symbols.basicsymbols._symboltable.BasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
@@ -16,18 +15,17 @@ import montithings._auxiliary.BasicSymbolsMillForMontiThings;
 public class SymbolUtil {
 
   public static FunctionSymbol createFunction(String name, IBasicSymbolsScope enclosingScope) {
-    return createFunction(name, SymTypeExpressionFactory.createTypeVoid(), enclosingScope);
+    return createFunction(name, SymTypeExpressionFactory.createTypeConstant("void"), enclosingScope);
   }
 
   public static FunctionSymbol createFunction(String name, SymTypeExpression returnType,
     IBasicSymbolsScope enclosingScope) {
-    FunctionSymbol func = MontiThingsMill
-      .functionSymbolBuilder()
+    FunctionSymbol func = MontiThingsMill.functionSymbolBuilder()
       .setName(name)
       .setReturnType(returnType)
       .setEnclosingScope(enclosingScope)
       .build();
-    func.setSpannedScope(MontiThingsMill.montiThingsScope());
+    func.setSpannedScope(MontiThingsMill.scope());
     enclosingScope.add(func);
     returnType.getTypeInfo().addFunctionSymbol(func);
     return func;

@@ -9,8 +9,9 @@ import java.util.stream.Stream;
 
 class MaxOneUpdateIntervalTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new MaxOneUpdateInterval());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new MaxOneUpdateInterval());
+    return cocos;
   }
 
   protected static MontiThingsError[] getExpectedErrors() {

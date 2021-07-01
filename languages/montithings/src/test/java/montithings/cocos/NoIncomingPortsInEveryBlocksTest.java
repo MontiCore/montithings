@@ -9,8 +9,9 @@ import java.util.stream.Stream;
 
 class NoIncomingPortsInEveryBlocksTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new NoIncomingPortsInEveryBlocks());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new NoIncomingPortsInEveryBlocks());
+    return cocos;
   }
 
   protected static Stream<Arguments> validInput() {

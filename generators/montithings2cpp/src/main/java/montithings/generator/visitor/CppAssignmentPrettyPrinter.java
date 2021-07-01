@@ -44,7 +44,6 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
     super(printer);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
       new DeriveSymTypeOfMontiThingsCombine());
-    this.realThis = this;
     this.suppressPostconditionCheck = suppressPostconditionCheck;
     this.isLogTracingEnabled = isLogTracingEnabled;
   }
@@ -131,7 +130,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       getPrinter().print(prefix + ".set" + capitalize(nameExpression.getName()) + "( ");
 
       if (node.getOperator() != ASTConstantsAssignmentExpressions.EQUALS) {
-        node.getLeft().accept(getRealThis());
+        node.getLeft().accept(getTraverser());
       }
 
       switch (node.getOperator()) {
@@ -192,12 +191,12 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       if (leftType.isPresent() && rightType.isPresent()) {
         UnitConverter converter = getSIConverter(leftType.get(), rightType.get());
         getPrinter().print(factorStart(converter));
-        node.getRight().accept(getRealThis());
+        node.getRight().accept(getTraverser());
         getPrinter().print(factorEnd(converter));
       }
 
       else {
-        node.getRight().accept(getRealThis());
+        node.getRight().accept(getTraverser());
       }
       getPrinter().println(" );");
 
@@ -234,7 +233,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       if (tc.typeOf(node.getLeft()) instanceof SymTypeOfNumericWithSIUnit &&
         tc.typeOf(node.getRight()) instanceof SymTypeOfNumericWithSIUnit) {
         CommentPrettyPrinter.printPreComments(node, this.getPrinter());
-        node.getLeft().accept(this.getRealThis());
+        node.getLeft().accept(getTraverser());
         switch (node.getOperator()) {
           case ASTConstantsAssignmentExpressions.ANDEQUALS:
             this.getPrinter().print("&=");
@@ -279,7 +278,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
         UnitConverter converter = getSIConverter(tc.typeOf(node.getLeft()),
           tc.typeOf(node.getRight()));
         getPrinter().print(factorStartSimple(converter));
-        node.getRight().accept(getRealThis());
+        node.getRight().accept(getTraverser());
         getPrinter().print(factorEndSimple(converter));
         CommentPrettyPrinter.printPostComments(node, this.getPrinter());
       }

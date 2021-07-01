@@ -63,7 +63,7 @@ void setInstanceName (const std::string &instanceName);
   void setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first});
 </#list>
 
-<#if ComponentHelper.hasBehavior(comp)>
+<#if ComponentHelper.hasBehavior(comp) || ComponentHelper.hasStatechart(comp)>
   ${compname}Result${generics} getInitialValues() override;
   ${compname}Result${generics} compute(${compname}Input${generics} input) override;
 <#else>

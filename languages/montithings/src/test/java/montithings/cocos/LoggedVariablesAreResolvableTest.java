@@ -9,8 +9,9 @@ import java.util.stream.Stream;
 
 class LoggedVariablesAreResolvableTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
-    return new MontiThingsCoCoChecker()
-      .addCoCo(new LoggedVariablesAreResolvable());
+    MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
+    cocos.addCoCo(new LoggedVariablesAreResolvable());
+    return cocos;
   }
 
   protected static MontiThingsError[] getExpectedErrors() {

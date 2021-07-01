@@ -7,14 +7,14 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
 
-public class PrePostConditionPrettyPrinter implements PrePostConditionVisitor {
+public class PrePostConditionPrettyPrinter implements PrePostConditionHandler {
 
-  protected PrePostConditionVisitor realThis = this;
+  protected PrePostConditionTraverser traverser;
+
   protected IndentPrinter printer;
 
   public PrePostConditionPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public PrePostConditionPrettyPrinter(@NotNull IndentPrinter printer) {
@@ -23,14 +23,14 @@ public class PrePostConditionPrettyPrinter implements PrePostConditionVisitor {
   }
 
   @Override
-  public PrePostConditionVisitor getRealThis() {
-    return this.realThis;
+  public PrePostConditionTraverser getTraverser() {
+    return traverser;
   }
 
   @Override
-  public void setRealThis(@NotNull PrePostConditionVisitor realThis) {
-    Preconditions.checkArgument(realThis != null);
-    this.realThis = realThis;
+  public void setTraverser(@NotNull PrePostConditionTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
   }
 
   public IndentPrinter getPrinter() {
@@ -38,16 +38,16 @@ public class PrePostConditionPrettyPrinter implements PrePostConditionVisitor {
   }
 
   @Override
-  public void handle(ASTPrecondition node){
+  public void handle(ASTPrecondition node) {
     this.getPrinter().print("pre ");
-    node.getGuard().accept(this.getRealThis());
+    node.getGuard().accept(getTraverser());
     this.getPrinter().println(";");
   }
 
   @Override
-  public void handle(ASTPostcondition node){
+  public void handle(ASTPostcondition node) {
     this.getPrinter().print("post ");
-    node.getGuard().accept(this.getRealThis());
+    node.getGuard().accept(getTraverser());
     this.getPrinter().println(";");
   }
 }

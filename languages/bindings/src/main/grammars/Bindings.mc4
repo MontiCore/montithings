@@ -1,5 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
-grammar Bindings extends de.monticore.types.MCBasicTypes, MontiArc {
+grammar Bindings extends MontiArc,
+                         de.monticore.types.MCBasicTypes {
   start BindingsCompilationUnit;
   BindingsCompilationUnit = Element*;
 
@@ -22,7 +23,7 @@ grammar Bindings extends de.monticore.types.MCBasicTypes, MontiArc {
     )
     "->"
     implementationComponent:Name@ComponentType";";
-    */
+*/
 
   BindingRule implements Element =
     ((["instance"] interfaceInstance:MCQualifiedName)|interfaceComponent:MCQualifiedName)

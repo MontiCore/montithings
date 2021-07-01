@@ -6,7 +6,7 @@
   <parent>
     <artifactId>applications</artifactId>
     <groupId>montithings.applications</groupId>
-    <version>6.5.0-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>language-features</artifactId>
@@ -19,6 +19,7 @@
     <module>ocl</module>
     <module>pre-postconditions</module>
     <module>si-units</module>
+    <module>statecharts</module>
   </modules>
 
   <packaging>pom</packaging>
