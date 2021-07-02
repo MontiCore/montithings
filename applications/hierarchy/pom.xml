@@ -188,9 +188,8 @@
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
                         <main>hierarchy.Example</main>
-                        <messageBroker>OFF</messageBroker>
+                        <messageBroker>MQTT</messageBroker>
                         <splitting>OFF</splitting>
-                        <logtracing>ON</logtracing>
                         <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>

@@ -43,7 +43,6 @@ ${tc.signature("comp", "config")}
     ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config["${variable.getName()}"]);
   </#list>
   <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
-    // TODO not yet implemented by DDS
     double ${portName}ConversionFactor = jsonToData${"<"}double${">"}(config["${portName}ConversionFactor"]);
   </#list>
 </#if>
