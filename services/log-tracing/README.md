@@ -9,8 +9,8 @@ Communication with the application instances is done over predefined topics usin
 ## Usage
 Start the binary or docker container with the following arguments:
 
-- message-broker [MQTT/DDS] (make sure that the MontiThings application uses the same message broker)
-- DCPSConfigFile [dcpsconfig.ini] (DDS configuration should match the config of the MontiThings application. Mixed transports such as UDP and TCP will not work)
-- DCPSInfoRepo [localhost:12345] (In case DDS is configured using a discovery service)
+- `message-broker` [MQTT/DDS] (make sure that the MontiThings application uses the same message broker)
+- `DCPSConfigFile` [dcpsconfig.ini] (DDS configuration should match the config of the MontiThings application. Mixed transports such as UDP and TCP will not work)
+- `DCPSInfoRepo` [localhost:12345] (In case DDS is configured using a discovery service)
 
- 
+The frontend is started using the docker container, or `yarn serve`. It uses port 3000 by default. 
