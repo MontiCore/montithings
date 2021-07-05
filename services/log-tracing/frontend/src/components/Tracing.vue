@@ -1,13 +1,5 @@
 <template>
   <div class="mt-3 vh-100">
-
-    <!--op name = {{ selected_trace_uuid }}_{{ selected_instance }} <br><br>
-    {{ internal_data }}<br><br>
-    inputs: {{ inputs }} <br><br>
-    external_ports: {{ external_ports }} <br><br>
-    traces: {{ traces }} <br><br>
-    traces dec: {{ traces_decomposed }} <br><br>
-    vars: {{ var_assignments }}<br><br>-->
     <div v-if="selected_log_uuid.length" class="h-100 w-100 position-fixed">
       <div v-if="isFetchingInternalData">
         <b-spinner small label="Small Spinner"></b-spinner>
