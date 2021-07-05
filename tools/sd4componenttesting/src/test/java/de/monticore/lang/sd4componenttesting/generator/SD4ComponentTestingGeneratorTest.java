@@ -2,6 +2,7 @@ package de.monticore.lang.sd4componenttesting.generator;
 
 import de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
+import de.monticore.lang.sd4componenttesting._ast.ASTTestDiagram;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
