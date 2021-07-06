@@ -124,27 +124,29 @@ TEST_F (${ast.getTestDiagram().getName()}, Wiring)
   cmp${mainCompName}->setUp(EVENTBASED);
   cmp${mainCompName}->init();
 
-<#--
-//Ablauf der Tests:
-<#if mainComp.getConnections().get(0).getType() != "MAIN_INPUT">
+
+// tests:
+<#assign testDiagramSymbol = ast.getEnclosingScope().getDiagramSymbols().values()[0]>
+<#assign testDiagramComp = testDiagramSymbol.getAstNode()>
+
+<#if testDiagramComp.getSD4CElementList()[0].getType() != "MAIN_INPUT">
   mainComp.compute();
 </#if>
--->
 
-<#--  TODO wir müssen die Connections bekommen -->
-
-<#--
-<#list mainComp.getConnections() as connection>
+<#list testDiagramComp.getSD4CElementList() as connection>
   <#if connection.getType() == "MAIN_INPUT">
-  // Input von mainComp setzen (mainComp.getInterface().getPortFirst()->setNextValue())
-  // mainComp.compute() aufrufen (nur wenn nächste Connection != MAIN_INPUT)
+    <#assign portName = connection.getTarget(0).getPort()?cap_first>
+  mainComp.getInterface().getPort${portName}()->setNextValue(${connection.getValue(0).getValue()})
+  mainComp.compute();
   <#elseif connection.getType() == "MAIN_OUTPUT">
   // Output von mainComp prüfen
-  <#else>
+  <#elseif connection.getType() == "DEFAULT">
   // Targets Ports haben den gegeben Wert (am richtigen Zeitpunkt)
+  <#elseif connection.getType() == "EXPRESSION">
+  // TODO Expressions behandeln
   </#if>
 </#list>
--->
+
   for (int i = 0; i < 33; i++)
   {
     source->compute__Every1 ();
