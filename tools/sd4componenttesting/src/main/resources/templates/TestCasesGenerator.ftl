@@ -6,7 +6,6 @@
 
 <#assign mainComp = ast.getEnclosingScope().getMainComponentTypeSymbol()>
 <#assign mainCompName = mainComp.getName()>
-<#-- TODO package default ?!?! -->
 <#assign package = "montithings">
 <#list ast.getPackageDeclaration().getPartsList() as name>
   <#assign package = package + "::" + name>
@@ -35,11 +34,10 @@ struct ${ast.getTestDiagram().getName()} : testing::Test
 
   ${ast.getTestDiagram().getName()} ()
   {
-    <#--  //TODO wofür steht das "example" -->
     cmp${mainCompName} = new ${package}${mainComp.getName()} ("example");
 
 <#list mainComp.getSubComponents() as component>
-    ${component.getName()}Cmp = cmp${mainCompName}->getSubcomp__${component.getType().getName()}();
+    ${component.getName()}Cmp = cmp${mainCompName}->getSubcomp__${component.getName()?cap_first}();
     ${component.getName()}Impl = ${component.getName()}Cmp->getImpl();
     ${component.getName()}State = ${component.getName()}Cmp->getState();
 
@@ -48,7 +46,7 @@ struct ${ast.getTestDiagram().getName()} : testing::Test
 
   ~${ast.getTestDiagram().getName()} ()
   {
-    delete cmp;
+    delete cmp${mainCompName};
   }
 };
 
@@ -75,6 +73,28 @@ public:
     return recordedMessages;
   }
 };
+
+
+<#list mainComp.getPorts() as port>
+  <#assign compTypeName = mainComp.getName()>
+  <#assign portName = port.getName()>
+/**
+ * This class records values of the "${compTypeName}" component's "${portName}" port
+ */
+class PortSpy_${compTypeName}_${portName?cap_first} : public PortSpy<${package}${compTypeName}, ${port.getType().getTypeInfo().getName()}>
+{
+public:
+  using PortSpy::PortSpy;
+
+  void onEvent () override
+  {
+    tl::optional<${port.getType().getTypeInfo().getName()}> value
+        = component->getInterface ()->getPort${portName?cap_first} ()->getCurrentValue (this->getUuid ());
+    recordedMessages.push_back (value);
+  }
+};
+
+</#list>
 
 
 <#list mainComp.getSubComponents() as component>
@@ -107,11 +127,20 @@ public:
 TEST_F (${ast.getTestDiagram().getName()}, Wiring)
 {
   // Given
+  <#assign compTypeName = mainComp.getName()>
+  // PortSpy of the "${compTypeName}" component
+  <#list mainComp.getPorts() as port>
+    <#assign portName = port.getName()?cap_first>
+  PortSpy_${compTypeName}_${portName} portSpy${compTypeName}${portName}(cmp${mainCompName});
+  cmp${mainCompName}->getInterface()->getPort${portName}()->attach(&portSpy${compTypeName}${portName});
+
+  </#list>
+
 <#list mainComp.getSubComponents() as component>
+  <#assign compName = component.getName()>
+  <#assign compTypeName = component.getType().getName()>
   // PortSpy of the "${compName}" component
   <#list component.getType().getPorts() as port>
-    <#assign compTypeName = component.getType().getName()>
-    <#assign compName = component.getName()>
     <#assign portName = port.getName()?cap_first>
   PortSpy_${compTypeName}_${compName?cap_first}_${portName} portSpy${compTypeName}${compName?cap_first}${portName}(${compName}Cmp);
   ${compName}Cmp->getInterface()->getPort${portName}()->attach(&portSpy${compTypeName}${compName?cap_first}${portName});
@@ -125,39 +154,62 @@ TEST_F (${ast.getTestDiagram().getName()}, Wiring)
   cmp${mainCompName}->init();
 
 
-// tests:
+  // tests:
 <#assign testDiagramSymbol = ast.getEnclosingScope().getDiagramSymbols().values()[0]>
 <#assign testDiagramComp = testDiagramSymbol.getAstNode()>
-
 <#if testDiagramComp.getSD4CElementList()[0].getType() != "MAIN_INPUT">
   mainComp.compute();
 </#if>
 
+<#assign refCounterList = {"bla" : 12}>
 <#list testDiagramComp.getSD4CElementList() as connection>
   <#if connection.getType() == "MAIN_INPUT">
+  // Input von mainComp setzen
     <#assign portName = connection.getTarget(0).getPort()?cap_first>
   mainComp.getInterface().getPort${portName}()->setNextValue(${connection.getValue(0).getValue()})
-  mainComp.compute();
+  <#-- TODO prüfen ob compute bei setNextValue aufgerufen wird (vermutlich wird onEvent der Component aufgerufen) -->
+  <#-- mainComp.compute();-->
+
   <#elseif connection.getType() == "MAIN_OUTPUT">
   // Output von mainComp prüfen
+    <#assign compTypeName = mainComp.getName()>
+    <#assign portName = connection.getSource().getPort()?cap_first>
+    <#if !refCounterList["portSpy" + compTypeName + portName]?? >
+      <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + portName : 0}>
+    <#else >
+      <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + portName : (refCounterList["portSpy" + compTypeName + portName] + 1)}>
+    </#if>
+  ASSERT_TRUE (portSpy${compTypeName}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + portName]}).has_value();
+  EXPECT_EQ (portSpy${compTypeName}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + portName]}).value(), ${connection.getValue(0).getValue()});
+
   <#elseif connection.getType() == "DEFAULT">
-  // Targets Ports haben den gegeben Wert (am richtigen Zeitpunkt)
+    <#list connection.getTargetList() as portAccess>
+      <#if portAccess.isPresentComponent()>
+  // Input von Target ${portAccess.getComponent()}.${portAccess.getPort()} prüfen
+        <#assign compName = portAccess.getComponent()>
+        <#assign compTypeName = mainComp.getSubComponent(portAccess.getComponent()).get().getType().getName()>
+      <#else>
+  // Input von Target ${portAccess.getPort()} prüfen
+        <#assign compName = "">
+        <#assign compTypeName = mainComp.getName()>
+      </#if>
+      <#assign portName = portAccess.getPort()?cap_first>
+      <#if !refCounterList["portSpy" + compTypeName + compName + portName]?? >
+        <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + compName + portName : 0}>
+      <#else >
+        <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + compName + portName : (refCounterList["portSpy" + compTypeName + compName + portName] + 1)}>
+      </#if>
+  ASSERT_TRUE (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).has_value();
+      <#if connection.getValueList()?size < 2 >
+  EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value(), ${connection.getValue(0).getValue()});
+      <#else>
+  EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value(), ${connection.getValue(portAccess?index).getValue()});
+      </#if>
+
+    </#list>
   <#elseif connection.getType() == "EXPRESSION">
-  // TODO Expressions behandeln
+  <#--TODO Expressions behandeln-->
+
   </#if>
 </#list>
-
-  for (int i = 0; i < 33; i++)
-  {
-    source->compute__Every1 ();
-  }
-
-  // Then
-  for (int i = 0; i < 2; i++)
-  {
-    ASSERT_TRUE (portSpyExampleSourceValue.getRecordedMessages ().at (i).has_value ());
-    EXPECT_EQ (portSpyExampleSourceValue.getRecordedMessages ().at (i).value (), i);
-    ASSERT_TRUE (portSpySinkValue.getRecordedMessages ().at (i).has_value ());
-    EXPECT_EQ (portSpySinkValue.getRecordedMessages ().at (i).value (), i);
-  }
 }
