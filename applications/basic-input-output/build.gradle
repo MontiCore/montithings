@@ -1,5 +1,12 @@
 /* (c) https://github.com/MontiCore/monticore */
 
+buildscript {
+  dependencies {
+    classpath "montithings.generators:montithings2cpp:$version"
+  }
+}
+
+
 plugins {
   id "monticore"
 }
@@ -110,6 +117,7 @@ task unpackHeaders(type: Sync) {
 
 task groovyTask(type: GroovyTask) {
   baseClass = "montithings.generator.codegen.MontiThingsGeneratorScript"
+  
   outputDir = file "$buildDir/generated-sources"
   modelPath(
     file("$projectDir/src/main/resources/models")
@@ -118,6 +126,7 @@ task groovyTask(type: GroovyTask) {
     file("$projectDir/src/main/resources/hwc")
   )
   script = "montithings/generator/mtgenerator.groovy"
+  arguments.put("mainComponent", "hierarchy.Example")
 }
 
 unpackHeaders.mustRunAfter unpackRte
