@@ -1,6 +1,11 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* (c) https://github.com/MontiCore/monticore */
 
+/**
+ * Overwriting implementation of the log method which notifies corresponding LogTracers.
+ * This file is swapped within CMAKE in case of log tracing is enabled.
+ */
+
 #include <thread>
 
 #include "easyloggingpp/easylogging++.h"

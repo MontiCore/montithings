@@ -1,8 +1,12 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* (c) https://github.com/MontiCore/monticore */
 
+/**
+ * The log tracer module instantiated by component instances.
+ */
+
 #pragma once
-#include "string"
+#include <string>
 #include <map>
 #include <vector>
 #include <utility>
@@ -23,13 +27,12 @@
 namespace montithings {
     class LogTracer {
     private:
+        // interface for communication with the middleware and components
         LogTracerInterface* interface;
 
         std::string instanceName;
 
         long logEntryIndex;
-
-        // stores all log messages with their timestamp, referenced by a sole::uuid
 
         // there can be multiple log entries for the same input messages, thus, they are grouped
         // currInputLogs collects all input log UUIDs until a new input arrives
@@ -43,7 +46,6 @@ namespace montithings {
         TraceOutput currTraceOutput;
 
         // there can be multiple InputLogs for the same output message, thus they are grouped as well; analogously to the inputLogs
-        //std::vector<sole::uuid> currOutputLogs;
         std::vector<TraceInput> currInputGroup;
         std::vector<TraceOutput> traceOutputs;
 
@@ -59,24 +61,24 @@ namespace montithings {
         std::map<std::string, vSnapshot> variableSnapshots;
 
         std::vector<LogEntry> getAllLogEntries();
-
         tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid);
         tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid);
         tl::optional<TraceInput> getInputByUuid(sole::uuid uuid);
         tl::optional<TraceOutput> getOutputByUuid(sole::uuid uuid);
         tl::optional<TraceOutput> getOutputByInputUuid(sole::uuid uuid);
 
-        // creates new UUID
+        // creates new UUIDs
         static sole::uuid uuid();
 
         // helper function to turn any primitive type supported by MontiCore to a string
         static std::string toString(std::string value) {
+            // its already a string, nothing to do
             return value;
         }
 
         template <typename T>
         static std::string toString(T value) {
-            return  std::to_string(value);
+            return std::to_string(value);
         }
 
     public:

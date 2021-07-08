@@ -2,8 +2,6 @@
 // (c) https://github.com/MontiCore/monticore
 #include "HWCInterceptor.h"
 
-#include <utility>
-
 namespace montithings {
     namespace library {
         namespace hwcinterceptor {

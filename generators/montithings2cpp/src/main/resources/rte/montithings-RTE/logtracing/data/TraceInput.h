@@ -16,6 +16,8 @@ namespace montithings {
         sole::uuid outputRef{};
         std::string serializedInput;
 
+        // Traces always belong to a certain port. 
+        // Note that a trace can be linked to multiple incoming ports (e.g. Sum within the Doubler component) 
         std::multimap<sole::uuid, std::string> traceIdsWithPortNames;
 
     public:

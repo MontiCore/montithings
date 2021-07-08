@@ -30,7 +30,8 @@ void DDSEntities::initTopic() {
 
     topicResponse = ddsClient->getParticipant()->create_topic(RES_TOPIC, RES_MESSAGE_TYPE, TOPIC_QOS_DEFAULT,
                                                               nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-
+    
+    // Filtered topics so that requests are only sent to the target instance.
     std::string topicRequestFilteredName(REQ_TOPIC);
     topicRequestFilteredName.append("-filtered-");
     topicRequestFilteredName.append(instanceName);

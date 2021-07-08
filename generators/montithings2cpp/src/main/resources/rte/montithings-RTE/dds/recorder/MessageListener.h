@@ -1,5 +1,10 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
+
+/**
+ * Listener Implementation called by lower level DDS instances whenever the recorder specific DDS interface receives data over DDS.
+ */
+
 #pragma once
 #include <iostream>
 #include <functional>
@@ -19,7 +24,7 @@
 
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 
-#define LOG_ID "RECORDER"
+#define LOG_ID "DDS_RECORDER"
 
 class MessageListener
       : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>

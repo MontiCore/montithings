@@ -1,5 +1,10 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
+
+/**
+ * Class providing an interface for communication done over DDS. 
+ */
+
 #pragma once
 
 #include <functional>
@@ -7,6 +12,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <utility>
+
 
 #include <dds/DdsDcpsInfrastructureC.h>
 #include <dds/DdsDcpsPublicationC.h>

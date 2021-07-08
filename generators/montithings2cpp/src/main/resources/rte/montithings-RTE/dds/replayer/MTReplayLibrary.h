@@ -1,6 +1,12 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 
+/**
+ * Library Extension which are included in hwc when replaying is enabled.
+ * Methods defined here are used by model transformations.
+ * This way, behavior can be defined in behavior{} blocks instead of going the more complex way of generating hwc files. 
+ */
+
 #pragma once
 
 #include <string>
@@ -24,6 +30,8 @@ namespace montithings {
 
             unsigned long long getNsFromMap(int index);
 
+            // very simple substraction of two numerical value returning an integer >= 0
+            // simplified generation of behavior
             template<typename A, typename B>
             A subtract(A v1, B v2) {
                 if (v1 - v2 < 0) {
@@ -32,6 +40,7 @@ namespace montithings {
                 return v1 - v2;
             }
 
+            // support for delays with a high resolution
             void
             delayNanoseconds(unsigned long nanoseconds);
 

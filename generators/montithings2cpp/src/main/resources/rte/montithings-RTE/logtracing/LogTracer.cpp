@@ -153,7 +153,6 @@ namespace montithings {
                 std::vector<LogEntry> entries = traceInput.getLogEntries();
                 if (traceInput.getLogEntries().empty()) {
                     // if input does not contain any log entry, create one.
-
                     LogEntry virtualLogEntry(lastIndex,
                                              traceInput.getArrivalTime(), "(No log captured)",
                                              traceInput.getUuid(),

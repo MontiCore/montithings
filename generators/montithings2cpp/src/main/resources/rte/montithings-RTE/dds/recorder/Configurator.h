@@ -1,9 +1,20 @@
 // (c) https://github.com/MontiCore/monticore
+
+/**
+ * Class dedicated for maintaning and instantiating DDS entities. 
+ * The recording module should not have many dependencies.
+ * However, it instantiates its own subsciber and publisher, but uses the DDS participant of the DDSClient.
+ * 
+ * This was a design decision made after the performance evaluation showed significant overhead 
+ * which might be caused by instantiating too many DDS participants.
+ * Note, that each port instantiates a new recording module. 
+ * 
+ * Also note, that initialization of a new DDS participant is still supported and used by the recording tool.
+ * 
+ * Unfortunately, the way OpenDDS handles topics and corresponding data readers and writers lead to quite a lot boilercode.
+ */
+
 #pragma once
-
-#include "../../easyloggingpp/easylogging++.h"
-
-#include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 
 #include <dds/DdsDcpsInfrastructureC.h>
 #include <dds/DdsDcpsPublicationC.h>
@@ -15,6 +26,7 @@
 #include <dds/DCPS/transport/framework/TransportConfig.h>
 #include <dds/DCPS/transport/framework/TransportInst.h>
 
+// Supporting all transport types with a statically built OpenDDS
 #include <dds/DCPS/transport/tcp/TcpInst.h>
 #include <dds/DCPS/transport/tcp/Tcp.h>
 #include <dds/DCPS/transport/rtps_udp/RtpsUdpInst.h>
@@ -26,6 +38,9 @@
 #include <dds/DCPS/transport/multicast/MulticastInst.h>
 #include <dds/DCPS/transport/multicast/Multicast.h>
 
+#include "../../easyloggingpp/easylogging++.h"
+
+#include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "MessageListener.h"
 
 #define DDS_LOG_ID "DDS"
@@ -89,8 +104,6 @@ public:
 
     void setInstanceName(std::string name);
 
-    void setParticipant(const DDS::DomainParticipant_var& participant);
-
     void initMessageTypes();
 
     void initSubscriber();
@@ -98,8 +111,6 @@ public:
     void initPublisher();
 
     void initTopics();
-
-    bool initParticipant(int argc, char *argv[]);
 
     void initReaderRecorderMessage();
 
@@ -116,4 +127,9 @@ public:
     void initWriterCommandReply();
 
     void initWriterAcknowledgement();
+
+    // The DDS participant can be initiated (done by the recording tool), 
+    // or passed as an argument if a participant is already present, as done by components.
+    void setParticipant(const DDS::DomainParticipant_var& participant);
+    bool initParticipant(int argc, char *argv[]);
 };

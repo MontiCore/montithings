@@ -69,8 +69,6 @@ Configurator::initTopics() {
     topicRecorder = participant->create_topic(RECORDER_MESSAGE_TOPIC,
             // Topics are type-specific
                                               RECORDER_MESSAGE_TYPE,
-            // QoS includes KEEP_LAST_HISTORY_QOS which might be
-            // changed when log traces are inspected
                                               TOPIC_QOS_DEFAULT,
             // no topic listener required
                                               nullptr,
@@ -92,6 +90,9 @@ Configurator::initTopics() {
             = participant->create_topic(RECORDER_ACKNOWLEDGE_TOPIC, RECORDER_ACKNOWLEDGE_TYPE,
                                         TOPIC_QOS_DEFAULT, nullptr, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
+    // Messages sent on the ACK topic make use of the content filtered topics feature.
+    // Thus, ACKS are only sent and received by corresponding counterparts.
+    // Otherwise the network would be flooded by ACKs.
     std::string topicNameFiltered(RECORDER_ACKNOWLEDGE_TOPIC);
     topicNameFiltered.append("-filtered-");
     topicNameFiltered.append(topicName);
@@ -102,7 +103,7 @@ Configurator::initTopics() {
 
     topicAcknowledgementFiltered = participant->create_contentfilteredtopic(
             topicNameFiltered.c_str(), topicAcknowledgement,
-            "(receiving_instance = %0)",
+            "(receiving_instance = %0)", // receive only messages which are addressed to the own instance name
             topicfiltered_params);
 
     if (!topicRecorder || !topicCommand || !topicCommandReply || !topicAcknowledgement

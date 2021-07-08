@@ -1,5 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
+
 #include "VectorClock.h"
 
 namespace VectorClock
@@ -19,7 +20,7 @@ namespace VectorClock
 
     void
     updateVectorClock(const vclock &receivedVectorClock, const std::string &initiator) {
-        // ensure there are no parallel updates
+        // ensure there are no simultaneous updates
         std::lock_guard<std::mutex> guard(updateClockMutex);
 
         for (auto &clock : receivedVectorClock) {

@@ -1,31 +1,23 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* (c) https://github.com/MontiCore/monticore */
 
+/**
+ * Class dedicated to initialize and manage specific DDS entities which are used for communication related to log tracing.
+ * In order to reuse the DDS participant, subscriber, and publisher, the DDSClient instance is passed and used.
+ */
+
 #pragma once
 
 #include <string>
 
-#include <dds/DCPS/Service_Participant.h>
 #include <dds/DCPS/WaitSet.h>
 #include <dds/DCPS/RTPS/RtpsDiscovery.h>
 
-#include <dds/DCPS/transport/tcp/TcpInst.h>
-#include <dds/DCPS/transport/tcp/Tcp.h>
-#include <dds/DCPS/transport/rtps_udp/RtpsUdpInst.h>
-#include <dds/DCPS/transport/rtps_udp/RtpsUdp.h>
-#include <dds/DCPS/transport/shmem/ShmemInst.h>
-#include <dds/DCPS/transport/shmem/Shmem.h>
-#include <dds/DCPS/transport/udp/UdpInst.h>
-#include <dds/DCPS/transport/udp/Udp.h>
-#include <dds/DCPS/transport/multicast/MulticastInst.h>
-#include <dds/DCPS/transport/multicast/Multicast.h>
-
 #include "ReqResMessageListener.h"
-
 #include "message-types/DDSLogTracerMessageTypeSupportImpl.h"
 #include <DDSClient.h>
 
-#define LOGTRACER_LOG_ID "DDS"
+#define LOGTRACER_LOG_ID "DDS_LOGTRACER"
 
 class DDSEntities {
 

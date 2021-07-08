@@ -24,6 +24,9 @@ public:
 
     ~LogTracerMQTTClient() override = default;
 
+    /**
+     * Implementation of the LogTracerInterface 
+     */
     void response(sole::uuid reqUuid, const std::string &content) override;
 
     sole::uuid request(std::string instanceName, Request request, time_t fromDatetime) override;

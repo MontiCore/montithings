@@ -1,5 +1,10 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
+
+/**
+ * Listener Implementation called by lower level DDS instances whenever new data is received.
+ */
+
 #pragma once
 #include <iostream>
 #include <functional>
@@ -20,7 +25,7 @@
 
 #include "message-types/DDSLogTracerMessageTypeSupportImpl.h"
 
-#define LOGTRACER_LOG_ID "LOGTRACER"
+#define LOGTRACER_LOG_ID "DDS_LOGTRACER"
 
 class ReqResMessageListener
       : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>

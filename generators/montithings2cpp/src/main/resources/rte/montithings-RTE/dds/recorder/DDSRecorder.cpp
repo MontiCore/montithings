@@ -260,7 +260,9 @@ DDSRecorder::handleAck(unackedMap &unackedMap,
     }
 
     long long timestamp_sent = unackedMap[ackedId];
-    // TODO: it would be more precise to adjust the delay base on the message size
+    // NOTE: it would be more precise to adjust the delay base on the message size,
+    // however, due to the OpenDDS layer the actual message size is abstraced and can only be guessed.
+    // Instead, messages and ACKs are considered to be equal is size.
     long delay = (timestamp_ack_received - timestamp_sent) / 2;
 
     std::pair<std::string, long long> instanceDelay = std::make_pair(sendingInstance, delay);
