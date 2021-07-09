@@ -25,7 +25,7 @@
 
 INITIALIZE_EASYLOGGINGPP
 
-struct ${ast.getTestDiagram().getName()} : testing::Test
+struct ${mainComp.getName()}Test : testing::Test
 {
   ${package}${mainComp.getName()} *cmp${mainCompName};
 
@@ -128,7 +128,7 @@ public:
 
 
 // Check that is correctly connected to Sink (i.e. Sink receives Source's messages)
-TEST_F (${mainComp.getName()}, ${ast.getTestDiagram().getName()})
+TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
 {
   // Given
   <#assign compTypeName = mainComp.getName()>
