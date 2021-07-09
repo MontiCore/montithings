@@ -2,20 +2,36 @@ package examples.correct;
 
 testdiagram MainTest for Main {
   -> value : 14;
-  value -> sumCom.first, sumCom.second : 27, 29;
-  value -> sumCom.second, sumCom.second: 33;
+  value -> sumCom.first : 14;
+  value -> sumCom.second: 14;
   sumCom.result -> foo : 28;
 
-  value -> sumCom.first : 28;
-  value -> sumCom.second: 28;
-  sumCom.result -> foo : 56;
+  -> value : 33;
+  value -> sumCom.first : 33;
+  value -> sumCom.second: 33;
+  sumCom.result -> foo : 66;
+
+  -> value : 33;
+  value -> sumCom.first : 33;
+  value -> sumCom.second: 33;
+  sumCom.result -> foo : 66;
+  foo -> : 66;
+  foo -> : 66;
+  foo -> : 66;
+  foo -> : 66;
 
   -> value : 25;
   value -> sumCom.first : 25;
   value -> sumCom.second: 25;
   sumCom.result -> foo : 50;
   foo -> : 50;
+  foo -> : 50;
+  foo -> : 50;
+  foo -> : 50;
+  foo -> : 50;
+  foo -> : 50;
 
   -> value : 42;
+  foo -> : 84;
   foo -> : 84;
 }

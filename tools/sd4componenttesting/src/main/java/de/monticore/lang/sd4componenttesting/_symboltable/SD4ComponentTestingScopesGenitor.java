@@ -5,7 +5,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CConnection;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CExpression;
-import de.monticore.lang.sd4componenttesting.util.ConnectionType;
+import de.monticore.lang.sd4componenttesting.util.SD4CElementType;
 
 import java.util.Optional;
 
@@ -28,11 +28,11 @@ public class SD4ComponentTestingScopesGenitor extends SD4ComponentTestingScopesG
     super.visit(node);
 
     if (!node.isPresentSource() && !node.getTargetList().isEmpty()) {
-      node.setType(ConnectionType.MAIN_INPUT);
+      node.setType(SD4CElementType.MAIN_INPUT);
     } else if (node.isPresentSource() && node.getTargetList().isEmpty()) {
-      node.setType(ConnectionType.MAIN_OUTPUT);
+      node.setType(SD4CElementType.MAIN_OUTPUT);
     } else {
-      node.setType(ConnectionType.DEFAULT);
+      node.setType(SD4CElementType.DEFAULT);
     }
   }
 
@@ -40,6 +40,6 @@ public class SD4ComponentTestingScopesGenitor extends SD4ComponentTestingScopesG
   public void visit (ASTSD4CExpression node) {
     super.visit(node);
 
-    node.setType(ConnectionType.EXPRESSION);
+    node.setType(SD4CElementType.EXPRESSION);
   }
 }

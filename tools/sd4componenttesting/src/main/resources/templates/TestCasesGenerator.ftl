@@ -14,9 +14,13 @@
 
 #include "${mainComp.getName()}.h"
 
-<#-- TODO: bei mehreren subComponents des gleichen Typs wird mehrmals die gleiche Header Datei eingebunden -->
+<#assign typeList = {}>
 <#list mainComp.getSubComponents() as component>
-#include "${component.getType().getName()}.h"
+  <#assign compTypeName = component.getType().getName()>
+    <#if !typeList[compTypeName]?? >
+#include "${compTypeName}.h"
+      <#assign typeList = typeList + {compTypeName : 0}>
+    </#if>
 </#list>
 
 INITIALIZE_EASYLOGGINGPP
@@ -124,7 +128,7 @@ public:
 
 
 // Check that is correctly connected to Sink (i.e. Sink receives Source's messages)
-TEST_F (${ast.getTestDiagram().getName()}, Wiring)
+TEST_F (${mainComp.getName()}, ${ast.getTestDiagram().getName()})
 {
   // Given
   <#assign compTypeName = mainComp.getName()>
@@ -158,29 +162,22 @@ TEST_F (${ast.getTestDiagram().getName()}, Wiring)
 <#assign testDiagramSymbol = ast.getEnclosingScope().getDiagramSymbols().values()[0]>
 <#assign testDiagramComp = testDiagramSymbol.getAstNode()>
 <#if testDiagramComp.getSD4CElementList()[0].getType() != "MAIN_INPUT">
-  mainComp.compute();
+  cmp${mainCompName}->compute();
 </#if>
 
-<#assign refCounterList = {"bla" : 12}>
+<#assign refCounterList = {}>
 <#list testDiagramComp.getSD4CElementList() as connection>
   <#if connection.getType() == "MAIN_INPUT">
   // Input von mainComp setzen
     <#assign portName = connection.getTarget(0).getPort()?cap_first>
-  mainComp.getInterface().getPort${portName}()->setNextValue(${connection.getValue(0).getValue()})
-  <#-- TODO prüfen ob compute bei setNextValue aufgerufen wird (vermutlich wird onEvent der Component aufgerufen) -->
-  <#-- mainComp.compute();-->
+  cmp${mainCompName}->getInterface()->getPort${portName}()->setNextValue(${connection.getValue(0).getValue()});
 
   <#elseif connection.getType() == "MAIN_OUTPUT">
   // Output von mainComp prüfen
     <#assign compTypeName = mainComp.getName()>
     <#assign portName = connection.getSource().getPort()?cap_first>
-    <#if !refCounterList["portSpy" + compTypeName + portName]?? >
-      <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + portName : 0}>
-    <#else >
-      <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + portName : (refCounterList["portSpy" + compTypeName + portName] + 1)}>
-    </#if>
-  ASSERT_TRUE (portSpy${compTypeName}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + portName]}).has_value();
-  EXPECT_EQ (portSpy${compTypeName}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + portName]}).value(), ${connection.getValue(0).getValue()});
+  ASSERT_TRUE (portSpy${compTypeName}${portName}.getRecordedMessages().back().has_value());
+  EXPECT_EQ (portSpy${compTypeName}${portName}.getRecordedMessages().back().value(), ${connection.getValue(0).getValue()});
 
   <#elseif connection.getType() == "DEFAULT">
     <#list connection.getTargetList() as portAccess>
@@ -199,7 +196,7 @@ TEST_F (${ast.getTestDiagram().getName()}, Wiring)
       <#else >
         <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + compName + portName : (refCounterList["portSpy" + compTypeName + compName + portName] + 1)}>
       </#if>
-  ASSERT_TRUE (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).has_value();
+  ASSERT_TRUE (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).has_value());
       <#if connection.getValueList()?size < 2 >
   EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value(), ${connection.getValue(0).getValue()});
       <#else>

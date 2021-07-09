@@ -7,7 +7,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CConnection;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingArtifactScope;
-import de.monticore.lang.sd4componenttesting.util.ConnectionType;
+import de.monticore.lang.sd4componenttesting.util.SD4CElementType;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
 import de.se_rwth.commons.logging.Log;
 
@@ -21,7 +21,7 @@ public class SD4CConnectionPortsDirectionValid implements SD4ComponentTestingAST
 
     //Case 4: PORTACCESS -> PORTACCESS : VALUE;
     // will checked in case 2 or 3
-    if (node.getType() != ConnectionType.DEFAULT) {
+    if (node.getType() != SD4CElementType.DEFAULT) {
       return;
     }
 
