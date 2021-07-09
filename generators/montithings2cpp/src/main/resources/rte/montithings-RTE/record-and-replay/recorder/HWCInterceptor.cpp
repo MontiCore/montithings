@@ -10,24 +10,14 @@ namespace montithings {
             int indexNDCallsRecording = 0;
             int indexNDCallsReplaying = 0;
 
-            unsigned long long timestampFirstComputation = 0;
-
             std::unordered_map<int, nlohmann::json> storageCalls;
             std::unordered_map<int, long> storageComputationLatency;
-
-            void setLastComputeTs(unsigned long long ts) {
-                if (timestampFirstComputation == 0) {
-                    timestampFirstComputation = ts;
-                }
-            }
 
             void
             startNondeterministicRecording() {
                 isRecording = true;
                 indexLatencyRecording = 0;
                 indexNDCallsRecording = 0;
-
-                timestampFirstComputation = 0;
 
                 storageCalls.clear();
                 storageComputationLatency.clear();

@@ -22,7 +22,7 @@ void
 log (const std::string& message)
 {
     LOG(INFO) << message;
-    montithings::handleLogEntry(message);
+    montithings::logtracing::handleLogEntry(message);
 }
 
 }

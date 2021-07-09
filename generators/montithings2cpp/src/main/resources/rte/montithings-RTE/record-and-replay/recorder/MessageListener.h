@@ -23,23 +23,14 @@
 #include <dds/DCPS/StaticIncludes.h>
 
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
+#include "DDSConstants.h"
 
-#define LOG_ID "DDS_RECORDER"
+#define DDS_RECORDER_LISTENER_LOG_ID "DDS_RECORDER_LISTENER"
 
 class MessageListener
-      : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>
+      : public DDSConstants, public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>
 {
 private:
-    const char* RECORDER_MESSAGE_TYPE = "Message Type";
-    const char* RECORDER_MESSAGE_TOPIC = "Messages";
-    const char* RECORDER_COMMAND_TYPE = "Command Type";
-    const char* RECORDER_COMMAND_TOPIC = "Commands";
-    const char* RECORDER_COMMANDREPLY_TYPE = "CommandReply Type";
-    const char* RECORDER_COMMANDREPLY_TOPIC = "Command Replies";
-    const char* RECORDER_ACKNOWLEDGE_TYPE = "Acknowledge Type";
-    const char* RECORDER_ACKNOWLEDGE_TOPIC = "Acknowledgements";
-
-
     // Allow setting a callback function which is triggered whenever new data arrives
     std::function<void(DDSRecorderMessage::Message)> onRecorderMessageCallback;
     std::function<void(DDSRecorderMessage::Command)> onCommandMessageCallback;
@@ -60,7 +51,6 @@ private:
 
 public:
     MessageListener() = default;
-    ~MessageListener() = default;
 
     void addOnRecorderMessageCallback (std::function<void(DDSRecorderMessage::Message)> callback);
     void addOnCommandMessageCallback(std::function<void(DDSRecorderMessage::Command)> callback);

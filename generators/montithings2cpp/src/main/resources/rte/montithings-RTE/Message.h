@@ -11,6 +11,9 @@
 #include "sole/sole.hpp"
 #include "tl/optional.hpp"
 
+// for sole::uuid serialization methods
+#include "Utils.h"
+
 template <class T>
 class Message {
 private:
@@ -18,7 +21,7 @@ private:
     sole::uuid uuid{};
 
 public:
-    // For simplier use, multiple constructors are allowed. The payload can be empty but the uuid cannot be null. 
+    // For more convenient use, multiple constructors are allowed. The payload can be empty but the uuid cannot be null.
     Message(T payload, const sole::uuid &uuid) : payload(tl::optional<T>(payload)), uuid(uuid) {}
 
     explicit Message(T payload) : payload(tl::optional<T>(payload)), uuid(sole::uuid4()) {}
@@ -52,4 +55,31 @@ public:
         return *this;
     }
 };
+
+namespace cereal {
+    // serialization methods for cereal
+    template<class Archive, typename T>
+    void
+    save(Archive &archive, Message<T> const &msg) {
+        archive(CEREAL_NVP_("payload", msg.getPayload()),
+                CEREAL_NVP_("uuid", msg.getUuid()));
+    }
+
+    template<class Archive, typename T>
+    void
+    load(Archive &archive,
+         Message<T> &msg) {
+        sole::uuid msgUuid{};
+        tl::optional<T> msgPayload;
+
+        archive(CEREAL_NVP_("payload", msgPayload),
+                CEREAL_NVP_("uuid", msgUuid));
+
+        if (msgPayload.has_value()) {
+            msg = Message<T>(msgPayload.value(), msgUuid);
+        } else {
+            msg = Message<T>(msgUuid);
+        }
+    }
+}
 

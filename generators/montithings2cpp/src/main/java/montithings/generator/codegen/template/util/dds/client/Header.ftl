@@ -78,7 +78,6 @@ class ${className} : public DDSClient
             }
 
             DDSMessage::MessageTypeSupport_var ts = new DDSMessage::MessageTypeSupportImpl;
-            type_name = ts->get_type_name();
 
             if (ts->register_type(participant, "") != DDS::RETCODE_OK) {
                 std::cerr << "DDS creation of the message type support failed." << std::endl;

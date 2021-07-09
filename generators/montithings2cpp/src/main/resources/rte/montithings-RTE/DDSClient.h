@@ -26,7 +26,7 @@
 #include "easyloggingpp/easylogging++.h"
 #include "json/json.hpp"
 
-#include "dds/message-types/DDSMessageTypeSupportImpl.h"
+#include "record-and-replay/message-types/DDSMessageTypeSupportImpl.h"
 
 // Supporting all transport types with a statically built OpenDDS
 #include <dds/DCPS/transport/tcp/TcpInst.h>
@@ -47,9 +47,6 @@ protected:
     DDS::DomainParticipant_var participant;
     DDS::Publisher_var publisher;
     DDS::Subscriber_var subscriber;
-    
-    // TODO
-    CORBA::String_var type_name;
 
 public:
     DDS::DomainParticipant_var getParticipant() { return participant; }
@@ -58,18 +55,21 @@ public:
 
     DDS::Subscriber_var getSubscriber() { return subscriber; }
 
-    CORBA::String_var getMessageTypeName() { return type_name; }
-
-
-    // The DDSClient is passed to several instances.
-    // E.g. The port instance makes use of it, but also instantiates and maintains 
-    // the recording module, which in turn, makes use of the DDSClient as well.
-    // Unfortunately the port instance has no knowledge about the component instance name.
-    // This however, is required by the recording module which is maintained by the port.
-    // Hence the support for retrieving the instance name from the DDSClient
+    /* The DDSClient is passed to several instances.
+     * E.g. The port instance makes use of it, but also instantiates and maintains
+     * the recording module, which in turn, makes use of the DDSClient as well.
+     * Unfortunately the port instance has no knowledge about the component instance name.
+     * This however, is required by the recording module which is maintained by the port.
+     * Hence the support for retrieving the instance name from the DDSClient
+     */
     virtual std::string getInstanceName() = 0;
 
-    // TODO
+    /* Support for retrieving the serialized state of the component instance.
+     * Is used by the recording module to send the state before starting a recording phase.
+     *
+     * Note that the DDSClient class had a different purpose in the past but this method was left in.
+     * Retrieving the state should be outsourced in future.
+     */
     virtual json getSerializedState() = 0;
 };
 

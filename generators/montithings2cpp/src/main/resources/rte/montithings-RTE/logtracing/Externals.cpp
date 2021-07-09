@@ -4,16 +4,18 @@
 #include "Externals.h"
 
 namespace montithings {
-    std::vector<LogTracer*> subscribers;
+    namespace logtracing {
+        std::vector<LogTracer *> attachedTracers;
 
-    void
-    handleLogEntry(const std::string &message) {
-        for (auto& tracer : subscribers) {
-            ((LogTracer*)tracer)->handleLogEntry(message);
+        void
+        handleLogEntry(const std::string &message) {
+            for (auto &tracer : attachedTracers) {
+                ((LogTracer *) tracer)->handleLogEntry(message);
+            }
         }
-    }
 
-    void subscribeLogTracer(LogTracer* logTracer) {
-        subscribers.push_back(logTracer);
+        void attachLogTracer(LogTracer *logTracer) {
+            attachedTracers.push_back(logTracer);
+        }
     }
 }

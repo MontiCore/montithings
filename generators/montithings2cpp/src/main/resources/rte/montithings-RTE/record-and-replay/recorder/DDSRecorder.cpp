@@ -66,7 +66,7 @@ void DDSRecorder::initParticipant(int argc, char *argv[]) {
 
 void
 DDSRecorder::start() {
-    CLOG (INFO, LOG_ID) << "DDSRecorder | starting recording... ";
+    CLOG (INFO, RECORDER_LOG_ID) << "DDSRecorder | starting recording... ";
 
     montithings::library::hwcinterceptor::startNondeterministicRecording();
 
@@ -85,14 +85,14 @@ DDSRecorder::start() {
 
 void
 DDSRecorder::stop() {
-    CLOG (INFO, LOG_ID) << "DDSRecorder | stopping recording... ";
+    CLOG (INFO, RECORDER_LOG_ID) << "DDSRecorder | stopping recording... ";
     montithings::library::hwcinterceptor::stopNondeterministicRecording();
 
-    CLOG (INFO, LOG_ID) << "DDSRecorder | sending queue of unsent internal data (system calls, network delay, ...)";
+    CLOG (INFO, RECORDER_LOG_ID) << "DDSRecorder | sending queue of unsent internal data (system calls, network delay, ...)";
     DDSMessage::Message emptyMessage;
     recordMessage(emptyMessage, "NOTOPIC", VectorClock::getVectorClock(), false);
 
-    CLOG (INFO, LOG_ID) << "DDSRecorder | Cleaning up... ";
+    CLOG (INFO, RECORDER_LOG_ID) << "DDSRecorder | Cleaning up... ";
     ddsCommunicator.cleanupRecorderMessageWriter();
 }
 
@@ -106,7 +106,7 @@ DDSRecorder::sendState(json state) {
 
     recorderMessageId++;
 
-    CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending internal state:" << recorderMessage.msg_content;
+    CLOG (DEBUG, RECORDER_LOG_ID) << "DDSRecorder | sending internal state:" << recorderMessage.msg_content;
     ddsCommunicator.send(recorderMessage);
 }
 
@@ -131,7 +131,7 @@ DDSRecorder::sendInternalRecords() {
 
     recorderMessageId++;
 
-    CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending internal records:" << recorderMessage.msg_content;
+    CLOG (DEBUG, RECORDER_LOG_ID) << "DDSRecorder | sending internal records:" << recorderMessage.msg_content;
     ddsCommunicator.send(recorderMessage);
 }
 
@@ -154,13 +154,13 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
             std::string sendingInstance = Util::Topic::getSendingInstanceNameFromTopic(topicName);
             std::string pName = Util::Topic::getPortNameFromTopic(topicName);
             VectorClock::updateVectorClock(newVectorClock, sendingInstance);
-            CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
+            CLOG (DEBUG, RECORDER_LOG_ID) << "DDSRecorder | recordMessage | ACKing received message: message.id=" << message.id
                                  << " to=" << sendingInstance << " from=" << instanceName;
             ddsCommunicator.sendAck(sendingInstance, message.id, instanceName, pName,
                                     VectorClock::getSerializedVectorClock());
         } else {
             // message was sent and not received. Thus, add message to the map of unacked messages
-            CLOG (DEBUG, LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id
+            CLOG (DEBUG, RECORDER_LOG_ID) << "DDSRecorder | recordMessage | adding message with id=" << message.id
                                  << " to unackedMessageTimestampMap and unackedRecordedMessageTimestampMap";
 
             unackedMessageTimestampMap[message.id] = timestamp;
@@ -191,7 +191,7 @@ DDSRecorder::recordMessage(DDSMessage::Message message, const char *topicName,
                 recorderMessage.msg_content = content.c_str();
             }
 
-            CLOG (DEBUG, LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << recorderMessageId
+            CLOG (DEBUG, RECORDER_LOG_ID) << "DDSRecorder | sending to recorder: msg_id=" << recorderMessageId
                                  << " topic=" << topicName << " instance_name=" << instanceName.c_str()
                                  << " #delays (comp<->comp)=" << jUnsentDelays["messages"].size()
                                  << " #delays (comp<->comp)=" << jUnsentDelays["record_messages"].size();
@@ -219,13 +219,13 @@ DDSRecorder::onCommandMessage(const DDSRecorderMessage::Command &command) {
             sendInternalRecords();
             break;
         default:
-            CLOG (ERROR, LOG_ID) << "DDSRecorder | onCommandMessage: unknown command";
+            CLOG (ERROR, RECORDER_LOG_ID) << "DDSRecorder | onCommandMessage: unknown command";
     }
 }
 
 void
 DDSRecorder::onAcknowledgementMessage(const DDSRecorderMessage::Acknowledgement &ack) {
-    CLOG (DEBUG, LOG_ID) << "Received ACK | from=" << ack.sending_instance.in() << ", clock="
+    CLOG (DEBUG, RECORDER_LOG_ID) << "Received ACK | from=" << ack.sending_instance.in() << ", clock="
                          << ack.serialized_vector_clock.in() << ", receiving_instance=" << ack.receiving_instance.in()
                          << ", acked_id=" << ack.acked_id << ", portName=" << ack.port_name;
 
@@ -251,10 +251,10 @@ DDSRecorder::handleAck(unackedMap &unackedMap,
     long long timestamp_ack_received = Util::Time::getCurrentTimestampNano();
 
     if (unackedMap.count(ackedId) == 0) {
-        CLOG (ERROR, LOG_ID) << "handleAck | no entry found for acked_id " << ackedId
+        CLOG (ERROR, RECORDER_LOG_ID) << "handleAck | no entry found for acked_id " << ackedId
                              << " in unackedMessageTimestampMap!";
         for (auto x : unackedMap) {
-            CLOG (DEBUG, LOG_ID) << x.first << " " << x.second;
+            CLOG (DEBUG, RECORDER_LOG_ID) << x.first << " " << x.second;
         }
         return;
     }

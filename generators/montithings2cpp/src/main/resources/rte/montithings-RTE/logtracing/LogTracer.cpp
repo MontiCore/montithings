@@ -9,7 +9,7 @@ namespace montithings {
     LogTracer::LogTracer(std::string instanceName, LogTracerInterface &interface)
             : instanceName(std::move(instanceName)), interface(&interface) {
         logEntryIndex = 0;
-        montithings::subscribeLogTracer(this);
+        montithings::logtracing::attachLogTracer(this);
 
         interface.addOnRequestCallback(std::bind(&LogTracer::onRequest, this, std::placeholders::_1,
                                                  std::placeholders::_2,

@@ -1,24 +1,24 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
-#include "Configurator.h"
+#include "DDSEntities.h"
 
 void
-Configurator::setDcpsInfoRepoHost(std::string host) {
+DDSEntities::setDcpsInfoRepoHost(std::string host) {
     this->dcpsInfoHost = std::move(host);
 }
 
 void
-Configurator::setTopicName(std::string name) {
+DDSEntities::setTopicName(std::string name) {
     topicName = std::move(name);
 }
 
 void
-Configurator::setInstanceName(std::string name) {
+DDSEntities::setInstanceName(std::string name) {
     instanceName = std::move(name);
 }
 
 void
-Configurator::initMessageTypes() {
+DDSEntities::initMessageTypes() {
     typeRecorderMessage = new DDSRecorderMessage::MessageTypeSupportImpl();
     typeCommandMessage = new DDSRecorderMessage::CommandTypeSupportImpl();
     typeCommandReplyMessage = new DDSRecorderMessage::CommandReplyTypeSupportImpl();
@@ -42,12 +42,12 @@ Configurator::initMessageTypes() {
 }
 
 
-void Configurator::setParticipant(const DDS::DomainParticipant_var& p) {
+void DDSEntities::setParticipant(const DDS::DomainParticipant_var& p) {
     participant = p;
 }
 
 bool
-Configurator::initParticipant(int argc, char *argv[]) {
+DDSEntities::initParticipant(int argc, char *argv[]) {
     // Initialize DomainParticipantFactory
     dpf = TheParticipantFactoryWithArgs (argc, argv);
 
@@ -65,7 +65,7 @@ Configurator::initParticipant(int argc, char *argv[]) {
 }
 
 void
-Configurator::initTopics() {
+DDSEntities::initTopics() {
     topicRecorder = participant->create_topic(RECORDER_MESSAGE_TOPIC,
             // Topics are type-specific
                                               RECORDER_MESSAGE_TYPE,
@@ -114,7 +114,7 @@ Configurator::initTopics() {
 }
 
 void
-Configurator::initSubscriber() {
+DDSEntities::initSubscriber() {
     subscriber = participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT, nullptr,
                                                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
@@ -125,7 +125,7 @@ Configurator::initSubscriber() {
 }
 
 void
-Configurator::initPublisher() {
+DDSEntities::initPublisher() {
     publisher = participant->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr,
                                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
@@ -136,7 +136,7 @@ Configurator::initPublisher() {
 }
 
 void
-Configurator::initReaderRecorderMessage() {
+DDSEntities::initReaderRecorderMessage() {
     DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
@@ -165,7 +165,7 @@ Configurator::initReaderRecorderMessage() {
 }
 
 void
-Configurator::initReaderAcknowledgement() {
+DDSEntities::initReaderAcknowledgement() {
     DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
@@ -196,7 +196,7 @@ Configurator::initReaderAcknowledgement() {
 }
 
 void
-Configurator::initReaderCommandMessage() {
+DDSEntities::initReaderCommandMessage() {
     DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
@@ -230,7 +230,7 @@ Configurator::initReaderCommandMessage() {
 }
 
 void
-Configurator::initReaderCommandReplyMessage() {
+DDSEntities::initReaderCommandReplyMessage() {
     DDS::DataReaderListener_var listener(new MessageListener());
     // Definitions of the QoS settings
     DDS::DataReaderQos dataReaderQos;
@@ -260,7 +260,7 @@ Configurator::initReaderCommandReplyMessage() {
 
 
 void
-Configurator::initWriterRecorder() {
+DDSEntities::initWriterRecorder() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
@@ -286,7 +286,7 @@ Configurator::initWriterRecorder() {
 }
 
 void
-Configurator::initWriterCommand() {
+DDSEntities::initWriterCommand() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
@@ -321,7 +321,7 @@ Configurator::initWriterCommand() {
 }
 
 void
-Configurator::initWriterCommandReply() {
+DDSEntities::initWriterCommandReply() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 
@@ -348,7 +348,7 @@ Configurator::initWriterCommandReply() {
 }
 
 void
-Configurator::initWriterAcknowledgement() {
+DDSEntities::initWriterAcknowledgement() {
     DDS::DataWriterQos dataWriterQoS;
     publisher->get_default_datawriter_qos(dataWriterQoS);
 

@@ -27,9 +27,12 @@ namespace montithings {
     // forward declaring
     class LogTracer;
 
-    extern std::vector<LogTracer*> subscribers;
+    namespace logtracing {
 
-    void subscribeLogTracer(LogTracer* logTracer);
-    void handleLogEntry(const std::string &message);
+        extern std::vector<LogTracer *> attachedTracers;
 
+        void attachLogTracer(LogTracer *logTracer);
+
+        void handleLogEntry(const std::string &message);
+    }
 }

@@ -13,7 +13,7 @@ ReqResMessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSLogTracerMessage::RequestDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOGTRACER_LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSRecorderMessage failed!";
+            CLOG (ERROR, DDS_LOGTRACER_LISTENER_LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSRecorderMessage failed!";
             exit(EXIT_FAILURE);
         }
 
@@ -28,7 +28,7 @@ ReqResMessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSLogTracerMessage::ResponseDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOGTRACER_LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSCommandMessage failed!";
+            CLOG (ERROR, DDS_LOGTRACER_LISTENER_LOG_ID) << "ReqResMessageListener | on_data_available _narrow DDSCommandMessage failed!";
             exit(EXIT_FAILURE);
         }
 
@@ -93,7 +93,7 @@ ReqResMessageListener::on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
 void
 ReqResMessageListener::on_subscription_matched(DDS::DataReader_ptr reader,
                                          const DDS::SubscriptionMatchedStatus & status) {
-    std::cout << "DDSEntities | on_subscription_matched... " << std::endl;
+    CLOG (DEBUG, DDS_LOGTRACER_LISTENER_LOG_ID) << "ReqResMessageListener | on_subscription_matched...";
 }
 
 void

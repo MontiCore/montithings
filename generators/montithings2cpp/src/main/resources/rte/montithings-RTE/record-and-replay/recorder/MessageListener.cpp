@@ -14,7 +14,7 @@ MessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSRecorderMessage::MessageDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow DDSRecorderMessage failed!";
+            CLOG (ERROR, DDS_RECORDER_LISTENER_LOG_ID) << "MessageListener | on_data_available _narrow DDSRecorderMessage failed!";
             exit(EXIT_FAILURE);
         }
 
@@ -29,7 +29,7 @@ MessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSRecorderMessage::CommandDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow DDSCommandMessage failed!";
+            CLOG (ERROR, DDS_RECORDER_LISTENER_LOG_ID) << "MessageListener | on_data_available _narrow DDSCommandMessage failed!";
             exit(EXIT_FAILURE);
         }
 
@@ -45,7 +45,7 @@ MessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSRecorderMessage::CommandReplyDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow DDSCommandMessage failed!";
+            CLOG (ERROR, DDS_RECORDER_LISTENER_LOG_ID) << "MessageListener | on_data_available _narrow DDSCommandMessage failed!";
             exit(EXIT_FAILURE);
         }
 
@@ -60,7 +60,7 @@ MessageListener::on_data_available(DDS::DataReader_ptr reader) {
                 = DDSRecorderMessage::AcknowledgementDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, LOG_ID) << "MessageListener | on_data_available _narrow AcknowledgementMessage failed!";
+            CLOG (ERROR, DDS_RECORDER_LISTENER_LOG_ID) << "MessageListener | on_data_available _narrow AcknowledgementMessage failed!";
             exit(EXIT_FAILURE);
         }
 
@@ -152,7 +152,7 @@ MessageListener::on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
 void
 MessageListener::on_subscription_matched(DDS::DataReader_ptr reader,
                                          const DDS::SubscriptionMatchedStatus &status) {
-    // CLOG (DEBUG, LOG_ID) << "Change detected on topic " << reader->get_topicdescription()->get_name() << ".
+    // CLOG (DEBUG, DDS_RECORDER_LISTENER_LOG_ID) << "Change detected on topic " << reader->get_topicdescription()->get_name() << ".
     // Todal amount of writers: " <<  status.current_count;
 }
 

@@ -91,33 +91,6 @@ std::string getEnclosingComponentName (const std::string& input);
 /* Additional serialization functions for cereal */
 namespace cereal
 {
-    // for type Message.h
-    template <class Archive, typename T>
-    void
-    save(Archive & archive, Message<T> const & msg)
-    {
-        archive(CEREAL_NVP_("payload", msg.getPayload()),
-                CEREAL_NVP_("uuid", msg.getUuid()));
-    }
-
-    template <class Archive, typename T>
-    void
-    load(Archive & archive,
-         Message<T> & msg)
-    {
-        sole::uuid msgUuid{};
-        tl::optional<T> msgPayload;
-
-        archive(CEREAL_NVP_("payload", msgPayload),
-                CEREAL_NVP_("uuid", msgUuid));
-
-        if (msgPayload.has_value()) {
-            msg = Message<T>(msgPayload.value(), msgUuid);
-        } else {
-            msg = Message<T>(msgUuid);
-        }
-    }
-
     // for type sole::uuid
     template<class Archive>
     std::string

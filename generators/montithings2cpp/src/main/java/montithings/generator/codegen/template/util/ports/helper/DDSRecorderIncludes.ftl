@@ -4,6 +4,6 @@ ${tc.signature("config", "portSymbol")}
 
 <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
   #include ${"<dds/recorder/DDSRecorder.h>"}
-  #include "dds/recorder/MessageWithClockContainer.h"
-  #include "dds/recorder/VectorClock.h"
+  #include "record-and-replay/recorder/MessageWithClockContainer.h"
+  #include "record-and-replay/recorder/VectorClock.h"
 </#if>

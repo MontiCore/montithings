@@ -6,7 +6,7 @@
  * which is not already covered by the recording module.
  * Variables and methods are declared external so that no complex dependency is introduced.
  * 
- * This significantly simplifies managing non-derterministic calls, as this header is included in hwc blocks.
+ * This significantly simplifies managing non-deterministic calls, as this header is included in hwc blocks.
  * The nd() method can be used standalone.
  */
 
@@ -32,9 +32,6 @@ namespace montithings {
             extern int indexNDCallsRecording;
             extern int indexNDCallsReplaying;
 
-            // TODO CHECK
-            extern unsigned long long timestampFirstComputation;
-
             // Storages for non-deterministic calls and computation latency.
             // A map keyed by an index is used.
             // This is possible, as the replayed version behaves fully deterministic in 
@@ -50,9 +47,6 @@ namespace montithings {
 
             // provides interface to fill storage at the beginning of a replay execution
             extern void addRecordedCall(int index, nlohmann::json value);
-
-            // TODO CHECK
-            extern void setLastComputeTs(unsigned long long ts);
 
             // While recording, non-deterministic values are stored away before returning it.
             // While replaying, however, whatever is passed as a argument is discarded.

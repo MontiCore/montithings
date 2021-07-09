@@ -18,7 +18,7 @@ ${Utils.printIncludes(comp,config)}
 using namespace montithings::library;
 
 <#if config.getReplayMode().toString() == "ON">
-  #include "dds/replayer/MTReplayLibrary.h"
+  #include "record-and-replay/mtlibrary-extenstion/MTReplayLibrary.h"
 
   using namespace montithings::library::replayer;
 
@@ -27,7 +27,7 @@ using namespace montithings::library;
 </#if>
 
 // provides nd() method which can be used to wrap non-deterministic calls
-#include "dds/recorder/HWCInterceptor.h"
+#include "record-and-replay/recorder/HWCInterceptor.h"
 using namespace montithings::library::hwcinterceptor;
 
 ${Utils.printNamespaceStart(comp)}

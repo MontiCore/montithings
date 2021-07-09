@@ -14,17 +14,16 @@
 #include <utility>
 #include "easyloggingpp/easylogging++.h"
 
-#include "dds/message-types/DDSMessageTypeSupportC.h"
-#include "dds/message-types/DDSMessageTypeSupportImpl.h"
-#include "dds/recorder/DDSRecorder.h"
-#include "dds/recorder/MessageWithClockContainer.h"
-#include "dds/recorder/VectorClock.h"
+#include "record-and-replay/message-types/DDSMessageTypeSupportC.h"
+#include "record-and-replay/recorder/DDSRecorder.h"
+#include "record-and-replay/recorder/MessageWithClockContainer.h"
+#include "record-and-replay/recorder/VectorClock.h"
 
 #include "DDSClient.h"
 #include "Port.h"
 #include "Utils.h"
 
-#define DDS_LOG_ID "DDS"
+#define DDS_PORT_LOG_ID "DDS_PORT"
 
 template<typename T>
 class DDSPort
@@ -90,7 +89,7 @@ public:
 
     void init() {
     	if (isRecordingEnabled) {
-            ddsRecorder = std::make_unique<DDSRecorder>();
+            ddsRecorder = std::unique_ptr<DDSRecorder>();
             ddsRecorder->setInstanceName(client->getInstanceName());
             ddsRecorder->setDDSClient(*client);
             ddsRecorder->setTopicName(topicName);
@@ -102,7 +101,7 @@ public:
         topic = createTopic();
 
         if (!topic) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: DDSPort() - OpenDDS topic creation failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: DDSPort() - OpenDDS topic creation failed.";
         } else {
             if (direction == INCOMING) {
                 messageReader = initReader();
@@ -116,12 +115,14 @@ public:
 
 
     DDS::Topic_var createTopic() {
+        DDSMessage::MessageTypeSupport_var ts = new DDSMessage::MessageTypeSupportImpl;
+
         DDS::Topic_var topicVar = client->getParticipant()->create_topic(
                 // sets unique topicVar name which is associated with the publishers port
                 // name
                 topicName.c_str(),
                 // Topics are type-specific
-                client->getMessageTypeName(),
+                ts->get_type_name(),
                 TOPIC_QOS_DEFAULT,
                 // no topicVar listener required
                 nullptr,
@@ -166,7 +167,7 @@ public:
                         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
         if (!reader) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS data reader creation failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initReader() - OpenDDS data reader creation failed.";
             return 0;
         }
 
@@ -176,7 +177,7 @@ public:
                 DDSMessage::MessageDataReader::_narrow(reader);
 
         if (!messageReaderVar) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS message reader narrowing failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initReader() - OpenDDS message reader narrowing failed.";
         }
         return messageReaderVar;
     }
@@ -204,7 +205,7 @@ public:
                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
         if (!writer) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer creation failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer creation failed.";
             exit (EXIT_FAILURE);
         }
 
@@ -213,7 +214,7 @@ public:
                 DDSMessage::MessageDataWriter::_narrow(writer);
 
         if (!messageWriterVar) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. ";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. ";
         }
 
         return messageWriterVar;
@@ -227,7 +228,7 @@ public:
     void sendToExternal(tl::optional<T> nextVal) override {
         if (nextVal && direction == Direction::OUTGOING) {
             if (!messageWriter) {
-                CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - writer not initialized ";
+                CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: sendToExternal() - writer not initialized ";
                 return;
             }
 
@@ -249,7 +250,7 @@ public:
             DDS::ReturnCode_t error = messageWriter->write(message, DDS::HANDLE_NIL);
 
             if (error != DDS::RETCODE_OK) {
-                CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - write returned " << error;
+                CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: sendToExternal() - write returned " << error;
             }
 
             if (isRecordingEnabled) {
@@ -274,7 +275,7 @@ public:
                 DDSMessage::MessageDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: on_data_available() - _narrow failed!";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: on_data_available() - _narrow failed!";
             return;
         }
 
@@ -309,7 +310,7 @@ public:
                 onDataAvailableCallback(result);
             }
         } else {
-            CLOG (ERROR, DDS_LOG_ID) << "on_data_available() - _take_next_sample failed!";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "on_data_available() - _take_next_sample failed!";
             return;
         }
     }
@@ -318,33 +319,33 @@ public:
     // Event triggers are logged for inspection purposes
     void on_requested_deadline_missed(DDS::DataReader_ptr /*reader*/,
                                       const DDS::RequestedDeadlineMissedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_requested_deadline_missed";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_requested_deadline_missed";
     }
 
     void on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
                                const DDS::LivelinessChangedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_liveliness_changed";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_liveliness_changed";
     }
 
     void on_requested_incompatible_qos(
             DDS::DataReader_ptr /*reader*/,
             const DDS::RequestedIncompatibleQosStatus & status) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_requested_incompatible_qos";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_requested_incompatible_qos";
     }
 
     void on_sample_rejected(DDS::DataReader_ptr /*reader*/,
                             const DDS::SampleRejectedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_sample_rejected";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_sample_rejected";
     }
 
     void
     on_subscription_matched(DDS::DataReader_ptr /*reader*/,
                             const DDS::SubscriptionMatchedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_subscription_matched";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_subscription_matched";
     }
 
     void on_sample_lost(DDS::DataReader_ptr /*reader*/,
                         const DDS::SampleLostStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_sample_lost";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_sample_lost";
     }
 };

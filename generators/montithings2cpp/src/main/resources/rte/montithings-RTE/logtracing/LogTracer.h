@@ -6,6 +6,7 @@
  */
 
 #pragma once
+
 #include <string>
 #include <map>
 #include <vector>
@@ -23,12 +24,11 @@
 #include "data/InternalDataResponse.h"
 #include "Externals.h"
 
-
 namespace montithings {
     class LogTracer {
     private:
         // interface for communication with the middleware and components
-        LogTracerInterface* interface;
+        LogTracerInterface *interface;
 
         std::string instanceName;
 
@@ -61,10 +61,13 @@ namespace montithings {
         std::map<std::string, vSnapshot> variableSnapshots;
 
         std::vector<LogEntry> getAllLogEntries();
-        tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid, tl::optional<sole::uuid> outputUuid);
+
         tl::optional<LogEntry> getLogEntryByUuid(sole::uuid uuid);
+
         tl::optional<TraceInput> getInputByUuid(sole::uuid uuid);
+
         tl::optional<TraceOutput> getOutputByUuid(sole::uuid uuid);
+
         tl::optional<TraceOutput> getOutputByInputUuid(sole::uuid uuid);
 
         // creates new UUIDs
@@ -76,7 +79,7 @@ namespace montithings {
             return value;
         }
 
-        template <typename T>
+        template<typename T>
         static std::string toString(T value) {
             return std::to_string(value);
         }
@@ -86,9 +89,7 @@ namespace montithings {
 
         ~LogTracer() = default;
 
-        LogTracerInterface * getInterface();
-
-        sole::uuid getCurrUuidAndMarkOutput();
+        LogTracerInterface *getInterface();
 
         sole::uuid getCurrOutputUuid();
 
@@ -104,9 +105,10 @@ namespace montithings {
 
         void resetCurrentInput();
 
-        void handleLogEntry(const std::string& content);
+        void handleLogEntry(const std::string &content);
 
-        void onRequest(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid, LogTracerInterface::Request reqType, long fromTimestamp);
+        void onRequest(sole::uuid reqUuid, sole::uuid logUuid, sole::uuid inputUuid, sole::uuid outputUuid,
+                       LogTracerInterface::Request reqType, long fromTimestamp);
 
         void sendLogEntries(sole::uuid reqUuid, long fromTimestamp);
 
@@ -124,15 +126,15 @@ namespace montithings {
 
         std::multimap<sole::uuid, std::string> getTraceUuidsDecomposed(sole::uuid outputUuid);
 
-        template <typename T>
-        void handleVariableStateChange(const std::string& variableName, const T& valueBefore, const T& valueAfter) {
+        template<typename T>
+        void handleVariableStateChange(const std::string &variableName, const T &valueBefore, const T &valueAfter) {
             if (valueBefore != valueAfter) {
                 variableSnapshots[variableName][time(nullptr)] = toString(valueAfter);
             }
         }
 
-        template <typename T>
-        void handleInput(const T& input, const std::multimap<sole::uuid, std::string>& traceUUIDs) {
+        template<typename T>
+        void handleInput(const T &input, const std::multimap<sole::uuid, std::string> &traceUUIDs) {
             // stores the log entries which are grouped to the previous input
             currTraceInput.setLogEntries(currInputLogs);
 

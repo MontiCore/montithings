@@ -25,7 +25,7 @@
 
 #include "message-types/DDSLogTracerMessageTypeSupportImpl.h"
 
-#define LOGTRACER_LOG_ID "DDS_LOGTRACER"
+#define DDS_LOGTRACER_LISTENER_LOG_ID "DDS_LOGTRACER_LISTENER"
 
 class ReqResMessageListener
       : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>

@@ -26,7 +26,7 @@
 #include "VectorClock.h"
 #include "utils.h"
 
-#define LOG_ID "RECORDER"
+#define RECORDER_LOG_ID "RECORDER"
 
 class DDSRecorder {
 private:

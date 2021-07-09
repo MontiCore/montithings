@@ -1,9 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 
 /**
- * Class dedicated for maintaning and instantiating DDS entities. 
+ * Class dedicated for maintaining and instantiating DDS entities.
  * The recording module should not have many dependencies.
- * However, it instantiates its own subsciber and publisher, but uses the DDS participant of the DDSClient.
+ * However, it instantiates its own subscriber and publisher, but uses the DDS participant of the DDSClient.
  * 
  * This was a design decision made after the performance evaluation showed significant overhead 
  * which might be caused by instantiating too many DDS participants.
@@ -11,7 +11,7 @@
  * 
  * Also note, that initialization of a new DDS participant is still supported and used by the recording tool.
  * 
- * Unfortunately, the way OpenDDS handles topics and corresponding data readers and writers lead to quite a lot boilercode.
+ * Unfortunately, the way OpenDDS handles topics and corresponding data readers and writers lead to quite a lot boilerplate code.
  */
 
 #pragma once
@@ -42,26 +42,18 @@
 
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "MessageListener.h"
+#include "DDSConstants.h"
 
-#define DDS_LOG_ID "DDS"
+#define DDS_LOG_ID "DDS_RECORDER"
 
 using namespace OpenDDS::DCPS;
 
-class Configurator {
+class DDSEntities : public DDSConstants {
 private:
     TransportConfig_rch cfg;
     TransportInst_rch inst;
 
 protected:
-    const char *RECORDER_MESSAGE_TYPE = "Message Type";
-    const char *RECORDER_MESSAGE_TOPIC = "Messages";
-    const char *RECORDER_COMMAND_TYPE = "Command Type";
-    const char *RECORDER_COMMAND_TOPIC = "Commands";
-    const char *RECORDER_COMMANDREPLY_TYPE = "CommandReply Type";
-    const char *RECORDER_COMMANDREPLY_TOPIC = "Command Replies";
-    const char *RECORDER_ACKNOWLEDGE_TYPE = "Acknowledge Type";
-    const char *RECORDER_ACKNOWLEDGE_TOPIC = "Acknowledgements";
-
     std::string dcpsInfoHost;
     std::string topicName;
     std::string instanceName;
@@ -94,9 +86,9 @@ protected:
     DDS::Publisher_var publisher;
 
 public:
-    Configurator() = default;
+    DDSEntities() = default;
 
-    ~Configurator() = default;
+    ~DDSEntities() = default;
 
     void setDcpsInfoRepoHost(std::string host);
 

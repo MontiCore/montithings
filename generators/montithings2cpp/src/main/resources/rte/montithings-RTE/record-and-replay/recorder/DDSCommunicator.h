@@ -26,11 +26,11 @@
 #include <unordered_map>
 
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
-#include "Configurator.h"
+#include "DDSEntities.h"
 
 using vclock = std::unordered_map<std::string, long>;
 
-class DDSCommunicator : public Configurator {
+class DDSCommunicator : public DDSEntities {
 
 public:
     DDSCommunicator() = default;
