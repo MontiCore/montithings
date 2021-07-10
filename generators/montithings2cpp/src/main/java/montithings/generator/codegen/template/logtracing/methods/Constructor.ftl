@@ -1,8 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
-<#include "/template/component/helper/GeneralPreamble.ftl">
+<#include "/template/logtracing/helper/GeneralPreamble.ftl">
 
-${className}LogTraceObserver::${className}LogTraceObserver (${className} *comp)
+${className}::${className} (${compname} *comp)
     : comp(comp) {
         ${tc.includeArgs("template.logtracing.helper.GenerateAttachStatements", [comp, config])}
 }

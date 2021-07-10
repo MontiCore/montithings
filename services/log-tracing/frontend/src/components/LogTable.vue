@@ -105,6 +105,9 @@ export default {
         {
           key: 'time',
           formatter: ts => {
+            // Timestamp resolution: nanoseconds
+            ts = ts/1000000000
+
             return moment.unix(ts).format("DD.MM.YYYY HH:mm:ss");
           },
           thStyle: {

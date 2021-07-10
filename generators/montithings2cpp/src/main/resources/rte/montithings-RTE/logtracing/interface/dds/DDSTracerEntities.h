@@ -19,7 +19,7 @@
 
 #define LOGTRACER_LOG_ID "DDS_LOGTRACER"
 
-class DDSEntities {
+class DDSTracerEntities {
 
 private:
     const char *REQ_MESSAGE_TYPE = "Request Type";
@@ -43,9 +43,9 @@ private:
 protected:
     DDSClient *ddsClient;
 
-    DDSEntities() = default;
+    DDSTracerEntities() = default;
 
-    ~DDSEntities() = default;
+    ~DDSTracerEntities() = default;
 
     void setInstanceName(std::string name);
 

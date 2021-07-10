@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#include "/template/component/helper/GeneralPreamble.ftl">
+<#include "/template/logtracing/helper/GeneralPreamble.ftl">
 
 <#list comp.getIncomingPorts() as p>
   if(${Identifier.getInputName()}.get${p.getName()?cap_first}().has_value()) {

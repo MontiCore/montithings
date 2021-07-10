@@ -17,6 +17,7 @@
 
 #include "sole/sole.hpp"
 #include "Utils.h"
+#include "TimeUtils.h"
 
 #include "interface/LogTracerInterface.h"
 #include "data/LogEntry.h"
@@ -57,7 +58,7 @@ namespace montithings {
 
         // in order to store variable states, a map (key=variable name) holds a map where the variable value is keyed by the timestamp which indicates when it was changed
         // the variable value is stored as a string to avoid type clashes
-        using vSnapshot = std::map<time_t, std::string>;
+        using vSnapshot = std::map<long long, std::string>;
         std::map<std::string, vSnapshot> variableSnapshots;
 
         std::vector<LogEntry> getAllLogEntries();
@@ -101,8 +102,6 @@ namespace montithings {
 
         void handleOutput();
 
-        void resetCurrentOutput();
-
         void resetCurrentInput();
 
         void handleLogEntry(const std::string &content);
@@ -120,7 +119,7 @@ namespace montithings {
 
         void registerExternalPort(std::string portName);
 
-        std::map<std::string, std::string> getVariableSnapshot(time_t time);
+        std::map<std::string, std::string> getVariableSnapshot(long long time);
 
         std::multimap<sole::uuid, std::string> getTraceUuids(sole::uuid inputUuid);
 
@@ -129,7 +128,7 @@ namespace montithings {
         template<typename T>
         void handleVariableStateChange(const std::string &variableName, const T &valueBefore, const T &valueAfter) {
             if (valueBefore != valueAfter) {
-                variableSnapshots[variableName][time(nullptr)] = toString(valueAfter);
+                variableSnapshots[variableName][logtracing::Time::getTSNanoseconds()] = toString(valueAfter);
             }
         }
 
@@ -144,7 +143,7 @@ namespace montithings {
             // store serialized input
             currTraceInput.setSerializedInput(dataToJson(input));
 
-            currTraceInput.setArrivalTime(time(nullptr));
+            currTraceInput.setArrivalTime(logtracing::Time::getTSNanoseconds());
 
             // Add reference to uuids sent along with the input
             for (auto const &trace : traceUUIDs) {

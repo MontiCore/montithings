@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
-<#include "/template/component/helper/GeneralPreamble.ftl">
+<#include "/template/logtracing/helper/GeneralPreamble.ftl">
 <#include "/template/Copyright.ftl">
 
 ${Identifier.createInstance(comp)}
@@ -12,20 +12,20 @@ ${Identifier.createInstance(comp)}
 
 ${Utils.printNamespaceStart(comp)}
 
-class ${className}; // forward declaration to avoid cyclic include
+class ${compname}; // forward declaration to avoid cyclic include
 
 ${Utils.printTemplateArguments(comp)}
-class ${className}LogTraceObserver : public EventObserver {
+class ${className} : public EventObserver {
 
 private:
     ${comp.getName()}* comp;
 
 public:
-    ${className}LogTraceObserver(${className} *comp);
+    ${className}(${compname} *comp);
 
-    ~${className}LogTraceObserver() = default;
+    ~${className}() = default;
 
-    void checkInput (${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()});
+    void checkInput (${compname}Input ${Identifier.getInputName()});
 
     void checkOutput ();
 

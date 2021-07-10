@@ -119,5 +119,5 @@ void LogTracerDDSClient::addOnRequestCallback(std::function<void(sole::uuid, sol
 
 
 void LogTracerDDSClient::waitUntilReadersConnected(int number) {
-    DDSEntities::waitUntilReadersConnected(number);
+    DDSTracerEntities::waitUntilReadersConnected(number);
 }

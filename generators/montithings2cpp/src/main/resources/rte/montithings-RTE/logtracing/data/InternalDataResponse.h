@@ -26,12 +26,12 @@ namespace montithings {
                              std::vector<std::string> externalPorts,
                              std::multimap<sole::uuid, std::string> tracesUuidsWithPortNames,
                              std::multimap<sole::uuid, std::string> tracesUuidsWithPortNamesDecomposed)
-                             :  sourcesOfPortsMap(std::move(sourcesOfPortsMap)),
-                                varSnapshot(std::move(varSnapshot)),
-                                input(std::move(input)),
-                                externalPorts(std::move(externalPorts)),
-                                tracesUuidsWithPortNames(std::move(tracesUuidsWithPortNames)),
-                                tracesUuidsWithPortNamesDecomposed(std::move(tracesUuidsWithPortNamesDecomposed)) {}
+                :  sourcesOfPortsMap(std::move(sourcesOfPortsMap)),
+                   varSnapshot(std::move(varSnapshot)),
+                   input(std::move(input)),
+                   externalPorts(std::move(externalPorts)),
+                   tracesUuidsWithPortNames(std::move(tracesUuidsWithPortNames)),
+                   tracesUuidsWithPortNamesDecomposed(std::move(tracesUuidsWithPortNamesDecomposed)) {}
 
         InternalDataResponse() = default;
 

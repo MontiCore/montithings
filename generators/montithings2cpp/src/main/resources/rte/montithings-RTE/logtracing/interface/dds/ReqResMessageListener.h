@@ -28,7 +28,7 @@
 #define DDS_LOGTRACER_LISTENER_LOG_ID "DDS_LOGTRACER_LISTENER"
 
 class ReqResMessageListener
-      : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>
+        : public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>
 {
 private:
     const char *REQ_MESSAGE_TYPE = "Request Type";

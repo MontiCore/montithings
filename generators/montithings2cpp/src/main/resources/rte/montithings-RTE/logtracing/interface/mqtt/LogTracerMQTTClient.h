@@ -45,4 +45,3 @@ public:
 
     void onMessage(mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
 };
-

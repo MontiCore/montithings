@@ -1,9 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
-<#include "/template/component/helper/GeneralPreamble.ftl">
+<#include "/template/logtracing/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
-void ${className}LogTraceObserver::checkInput (${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()})
+void ${className}::checkInput (${compname}Input ${Identifier.getInputName()})
 {
     bool isInputPresent = false;
 

@@ -5,24 +5,25 @@
 
 #include <map>
 #include "sole/sole.hpp"
+#include "../TimeUtils.h"
 #include "LogEntry.h"
 
 namespace montithings {
     class TraceInput {
     private:
         sole::uuid uuid{};
-        time_t arrivalTime;
+        long long arrivalTime;
         std::vector<LogEntry> logEntries;
         sole::uuid outputRef{};
         std::string serializedInput;
 
-        // Traces always belong to a certain port. 
-        // Note that a trace can be linked to multiple incoming ports (e.g. Sum within the Doubler component) 
+        // Traces always belong to a certain port.
+        // Note that a trace can be linked to multiple incoming ports (e.g. Sum within the Doubler component)
         std::multimap<sole::uuid, std::string> traceIdsWithPortNames;
 
     public:
         TraceInput()  {
-            arrivalTime = time(nullptr);
+            arrivalTime = logtracing::Time::getTSNanoseconds();
             uuid = sole::uuid4();
         }
 
@@ -36,11 +37,11 @@ namespace montithings {
             TraceInput::uuid = id;
         }
 
-        time_t getArrivalTime() const {
+        long long getArrivalTime() const {
             return arrivalTime;
         }
 
-        void setArrivalTime(time_t aTime) {
+        void setArrivalTime(long long aTime) {
             arrivalTime = aTime;
         }
 

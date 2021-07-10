@@ -11,6 +11,7 @@ cd build/rte || exit
 cmake -D EXCLUDE_MQTT:BOOLEAN=0 \
       -D EXCLUDE_DDS:BOOLEAN=0 \
       -D EXCLUDE_COMM_MANAGER:BOOLEAN=1 \
+      -D ENABLE_LOG_TRACING:BOOLEAN=1 \
       -G Ninja \
       "../../../../generators/montithings2cpp/src/main/resources/rte/montithings-RTE"
 ninja

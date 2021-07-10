@@ -1,9 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
-<#include "/template/component/helper/GeneralPreamble.ftl">
+<#include "/template/logtracing/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
-void ${className}LogTraceObserver::onEvent ()
+void ${className}::onEvent ()
 {
     this->checkOutput();
 }

@@ -28,7 +28,7 @@ namespace montithings {
     void
     LogTracer::handleLogEntry(const std::string &content) {
         LogEntry logEntry(logEntryIndex,
-                          time(nullptr),
+                          logtracing::Time::getTSNanoseconds(),
                           content,
                           currTraceInput.getUuid(),
                           currTraceOutput.getUuid());
@@ -54,11 +54,6 @@ namespace montithings {
     }
 
     void
-    LogTracer::resetCurrentOutput() {
-        currInputGroup.clear();
-    }
-
-    void
     LogTracer::resetCurrentInput() {
         currInputGroup.clear();
     }
@@ -68,7 +63,7 @@ namespace montithings {
     }
 
     std::map<std::string, std::string>
-    LogTracer::getVariableSnapshot(time_t time) {
+    LogTracer::getVariableSnapshot(long long time) {
         std::map<std::string, std::string> snapshot;
 
         for (const auto &varSnap : variableSnapshots) {
@@ -87,6 +82,7 @@ namespace montithings {
             //otherwise find most closely recorded key
             auto itlow = varSnap.second.lower_bound(time);
 
+            // 1625919314572054037-
             if (itlow == varSnap.second.end() || itlow->first != time) {
                 if (itlow != varSnap.second.begin()) {
                     // no key found

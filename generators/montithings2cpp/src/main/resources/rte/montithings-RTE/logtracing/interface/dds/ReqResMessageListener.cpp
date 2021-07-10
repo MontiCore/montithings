@@ -82,21 +82,21 @@ ReqResMessageListener::on_requested_incompatible_qos(
 
 void
 ReqResMessageListener::on_sample_rejected(DDS::DataReader_ptr /*reader*/,
-                                    const DDS::SampleRejectedStatus & /*status*/) {
+                                          const DDS::SampleRejectedStatus & /*status*/) {
 }
 
 void
 ReqResMessageListener::on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
-                                       const DDS::LivelinessChangedStatus & /*status*/) {
+                                             const DDS::LivelinessChangedStatus & /*status*/) {
 }
 
 void
 ReqResMessageListener::on_subscription_matched(DDS::DataReader_ptr reader,
-                                         const DDS::SubscriptionMatchedStatus & status) {
+                                               const DDS::SubscriptionMatchedStatus & status) {
     CLOG (DEBUG, DDS_LOGTRACER_LISTENER_LOG_ID) << "ReqResMessageListener | on_subscription_matched...";
 }
 
 void
 ReqResMessageListener::on_sample_lost(DDS::DataReader_ptr /*reader*/,
-                                const DDS::SampleLostStatus & /*status*/) {
+                                      const DDS::SampleLostStatus & /*status*/) {
 }
