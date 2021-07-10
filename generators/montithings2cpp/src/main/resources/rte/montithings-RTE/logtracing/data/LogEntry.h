@@ -17,13 +17,13 @@ namespace montithings {
         // in this case virtual log statements are generated in order to provide tracing via inputs/outputs
         long indexSecondary;
 
-        long long time;
+        time_t time;
         std::string content;
         sole::uuid inputUuid;
         sole::uuid outputUuid;
 
     public:
-        LogEntry(long index, long long time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid)
+        LogEntry(long index, time_t time, std::string content, sole::uuid inputUuid, sole::uuid outputUuid)
                 : index(index), time(time), content(std::move(content)), inputUuid(inputUuid), outputUuid(outputUuid) {
             uuid = sole::uuid4();
             indexSecondary = 0;
@@ -55,11 +55,11 @@ namespace montithings {
             LogEntry::indexSecondary = i2;
         }
 
-        long long getTime() const {
+        time_t getTime() const {
             return time;
         }
 
-        void setTime(long long t) {
+        void setTime(time_t t) {
             time = t;
         }
 

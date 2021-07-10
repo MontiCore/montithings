@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries && log_entries.length" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
+    <b-alert v-if="!isFilterRelevantEntries && log_entries.length" show variant="info">Be careful selecting previous log entries as they might add unrelated traces.</b-alert>
     <br>
     <b-table borderless small hover selectable show-empty
              :items="log_entries"

@@ -208,10 +208,6 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
         for (VariableSymbol stateVariable : stateVariables) {
           getPrinter().print("component.getLogTracer()->handleVariableStateChange(\"");
           getPrinter().print(stateVariable.getName() + "\",");
-          // state before
-          getPrinter().print(Identifier.getStateName() + "__at__pre.");
-          getPrinter().print("get" + capitalize(stateVariable.getName()) + "(),");
-          // state after
           getPrinter().print(Identifier.getStateName() + ".");
           getPrinter().print("get" + capitalize(stateVariable.getName()) + "());");
         }

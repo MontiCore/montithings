@@ -5,14 +5,13 @@
 
 #include <map>
 #include "sole/sole.hpp"
-#include "../TimeUtils.h"
 #include "LogEntry.h"
 
 namespace montithings {
     class TraceInput {
     private:
         sole::uuid uuid{};
-        long long arrivalTime;
+        time_t arrivalTime;
         std::vector<LogEntry> logEntries;
         sole::uuid outputRef{};
         std::string serializedInput;
@@ -23,7 +22,7 @@ namespace montithings {
 
     public:
         TraceInput()  {
-            arrivalTime = logtracing::Time::getTSNanoseconds();
+            arrivalTime = time(nullptr);
             uuid = sole::uuid4();
         }
 
@@ -37,11 +36,11 @@ namespace montithings {
             TraceInput::uuid = id;
         }
 
-        long long getArrivalTime() const {
+        time_t getArrivalTime() const {
             return arrivalTime;
         }
 
-        void setArrivalTime(long long aTime) {
+        void setArrivalTime(time_t aTime) {
             arrivalTime = aTime;
         }
 

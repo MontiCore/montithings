@@ -8,7 +8,9 @@
 namespace montithings {
     LogTracer::LogTracer(std::string instanceName, LogTracerInterface &interface)
             : instanceName(std::move(instanceName)), interface(&interface) {
-        logEntryIndex = 0;
+        // start with index==1, as variable assignment snapshots are referred to the previous index
+        logEntryIndex = 1;
+
         montithings::logtracing::attachLogTracer(this);
 
         interface.addOnRequestCallback(std::bind(&LogTracer::onRequest, this, std::placeholders::_1,
@@ -28,7 +30,7 @@ namespace montithings {
     void
     LogTracer::handleLogEntry(const std::string &content) {
         LogEntry logEntry(logEntryIndex,
-                          logtracing::Time::getTSNanoseconds(),
+                          time(nullptr),
                           content,
                           currTraceInput.getUuid(),
                           currTraceOutput.getUuid());
@@ -63,7 +65,7 @@ namespace montithings {
     }
 
     std::map<std::string, std::string>
-    LogTracer::getVariableSnapshot(long long time) {
+    LogTracer::getVariableSnapshot(long index) {
         std::map<std::string, std::string> snapshot;
 
         for (const auto &varSnap : variableSnapshots) {
@@ -73,23 +75,28 @@ namespace montithings {
             // retrieve the most closely recorded key which is equal or less than the given time
             // if only one entry is recorded, check if its suited or not
             if (varSnap.second.size() == 1) {
-                if (varSnap.second.begin()->first <= time) {
+                if (varSnap.second.begin()->first <= index) {
                     snapshot[varSnap.first] = varSnap.second.begin()->second;
                     continue;
                 }
             }
 
             //otherwise find most closely recorded key
-            auto itlow = varSnap.second.lower_bound(time);
+            auto itlow = varSnap.second.lower_bound(index);
 
-            // 1625919314572054037-
-            if (itlow == varSnap.second.end() || itlow->first != time) {
-                if (itlow != varSnap.second.begin()) {
-                    // no key found
-                    continue;
-                } else {
-                    --itlow; /* found prev */
-                }
+            if (varSnap.second.empty()) {
+                // no entry
+                continue;
+            }
+            else if (itlow == varSnap.second.begin()) {
+                // nothing to do
+            }
+            else if (itlow == varSnap.second.end()) {
+                // no entry
+                continue;
+            }
+            else {
+                --itlow;
             }
 
             snapshot[varSnap.first] = itlow->second;
@@ -289,7 +296,7 @@ namespace montithings {
         std::map<std::string, std::string> varSnapshot;
 
         if (logEntry.has_value()) {
-            varSnapshot = getVariableSnapshot(logEntry.value().getTime());
+            varSnapshot = getVariableSnapshot(logEntry.value().getIndex());
         }
 
         tl::optional<TraceInput> traceInput = getInputByUuid(inputUuid);
@@ -325,7 +332,11 @@ namespace montithings {
 
                 serializedInputs = lastInput.getSerializedInput();
                 traceUuids = getTraceUuids(lastInput.getUuid());
-                varSnapshot = getVariableSnapshot(lastInput.getArrivalTime());
+
+                if (!lastInput.getLogEntries().empty()) {
+                    LogEntry headEntry = lastInput.getLogEntries().front();
+                    varSnapshot = getVariableSnapshot(headEntry.getIndex());
+                }
             }
             traceUuidsDecomposed = getTraceUuidsDecomposed(relevantTraceOutput->getUuid());
         }

@@ -17,7 +17,6 @@
 
 #include "sole/sole.hpp"
 #include "Utils.h"
-#include "TimeUtils.h"
 
 #include "interface/LogTracerInterface.h"
 #include "data/LogEntry.h"
@@ -58,7 +57,7 @@ namespace montithings {
 
         // in order to store variable states, a map (key=variable name) holds a map where the variable value is keyed by the timestamp which indicates when it was changed
         // the variable value is stored as a string to avoid type clashes
-        using vSnapshot = std::map<long long, std::string>;
+        using vSnapshot = std::map<long, std::string>;
         std::map<std::string, vSnapshot> variableSnapshots;
 
         std::vector<LogEntry> getAllLogEntries();
@@ -119,17 +118,26 @@ namespace montithings {
 
         void registerExternalPort(std::string portName);
 
-        std::map<std::string, std::string> getVariableSnapshot(long long time);
+        std::map<std::string, std::string> getVariableSnapshot(long index);
 
         std::multimap<sole::uuid, std::string> getTraceUuids(sole::uuid inputUuid);
 
         std::multimap<sole::uuid, std::string> getTraceUuidsDecomposed(sole::uuid outputUuid);
 
         template<typename T>
-        void handleVariableStateChange(const std::string &variableName, const T &valueBefore, const T &valueAfter) {
-            if (valueBefore != valueAfter) {
-                variableSnapshots[variableName][logtracing::Time::getTSNanoseconds()] = toString(valueAfter);
+        void handleVariableStateChange(const std::string &variableName, const T &newValue) {
+            std::string newValueStr = toString(newValue);
+
+            if(!variableSnapshots[variableName].empty()) {
+                // if its the first call it is assumed to be a variable change
+                // otherwise retrieve the last value an compare it
+                std::string oldValue = std::prev(variableSnapshots[variableName].end())->second;
+
+                if (newValueStr == oldValue) {
+                    return;
+                }
             }
+            variableSnapshots[variableName][logEntryIndex-1] = newValueStr;
         }
 
         template<typename T>
@@ -143,7 +151,7 @@ namespace montithings {
             // store serialized input
             currTraceInput.setSerializedInput(dataToJson(input));
 
-            currTraceInput.setArrivalTime(logtracing::Time::getTSNanoseconds());
+            currTraceInput.setArrivalTime(time(nullptr));
 
             // Add reference to uuids sent along with the input
             for (auto const &trace : traceUUIDs) {
