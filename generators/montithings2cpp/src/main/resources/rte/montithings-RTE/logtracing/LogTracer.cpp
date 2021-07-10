@@ -334,8 +334,8 @@ namespace montithings {
                 traceUuids = getTraceUuids(lastInput.getUuid());
 
                 if (!lastInput.getLogEntries().empty()) {
-                    LogEntry headEntry = lastInput.getLogEntries().front();
-                    varSnapshot = getVariableSnapshot(headEntry.getIndex());
+                    LogEntry lastEntry = lastInput.getLogEntries().back();
+                    varSnapshot = getVariableSnapshot(lastEntry.getIndex());
                 }
             }
             traceUuidsDecomposed = getTraceUuidsDecomposed(relevantTraceOutput->getUuid());

@@ -23,6 +23,7 @@
     <module>dds-ports</module>
     <module>retain-state</module>
     <module>sensor-actuator-access</module>
+    <module>log-filtering</module>
   </modules>
 
 </project>

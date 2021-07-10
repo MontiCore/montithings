@@ -13,7 +13,7 @@ Communication with the application instances is done over predefined topics usin
 Scripts are provided to build the recorder.
 Use `dockerBuild.sh` to build a docker container, otherwise execute `build.sh`.
 Even though MQTT is used, make sure that OpenDDS is sourced in the latter case (`source OpenDDS/setenv.sh`).
-The frontend is build using `yarn install`.
+The frontend is build using `dockerBuild.sh` in `frontend/`, or locally with `yarn install`.
 
 ## Usage
 

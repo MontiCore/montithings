@@ -362,7 +362,7 @@ export default {
       for (let trace of this.traces.reverse()) {
         let shouldMergeDecomposedTrace = false;
         // if the current selected operator is decomposed we have to merge the flow back to the main branch at some point
-        if(store.state.trace_data["operators"][selected_operator]["properties"]["is_decomposed"]) {
+        if (store.state.trace_data["operators"][selected_operator]["properties"]["is_decomposed"]) {
           // the decomposition ends when the trace points to an operator with a different prefix in the title
           // or, more precisely, if there exists an operator marked with the same trace
           for (const op_name of Object.keys(store.state.trace_data["operators"])) {
@@ -390,7 +390,7 @@ export default {
               }
             }
           }
-        }
+        } else {
           let name = trace.trace_uuid + "_" + trace.source;
           if (!store.state.trace_data["operators"][name] && !this.external_ports.includes(trace.target_port)) {
 
@@ -430,10 +430,11 @@ export default {
           }
 
 
-        if (this.external_ports.includes(trace.target_port)) {
-          // if trace points to an external port simply annotate the corresponding port, but do not create a link
-          store.state.trace_data["operators"][target_name]["properties"]["inputs"]["in_" + trace.target_port]["label"] =
-              trace.target_port + "=" + trace.value;
+          if (this.external_ports.includes(trace.target_port)) {
+            // if trace points to an external port simply annotate the corresponding port, but do not create a link
+            store.state.trace_data["operators"][target_name]["properties"]["inputs"]["in_" + trace.target_port]["label"] =
+                trace.target_port + "=" + trace.value;
+          }
         }
       }
 /*

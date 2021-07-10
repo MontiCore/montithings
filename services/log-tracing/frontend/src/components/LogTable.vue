@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-button block pill variant="outline-primary" v-if="isFilterRelevantEntries && log_entries.length" @click="isFilterRelevantEntries=false">Show previous log entries</b-button>
-    <b-alert v-if="!isFilterRelevantEntries && log_entries.length" show variant="info">Be careful selecting previous log entries as they might add unrelated traces.</b-alert>
+    <b-alert v-if="!isFilterRelevantEntries && is_tracing" show variant="info">Be careful selecting previous log entries as they might add unrelated traces.</b-alert>
     <br>
     <b-table borderless small hover selectable show-empty
              :items="log_entries"
@@ -106,9 +106,6 @@ export default {
         {
           key: 'time',
           formatter: ts => {
-            // Timestamp resolution: nanoseconds
-            ts = ts/1000000000
-
             return moment.unix(ts).format("DD.MM.YYYY HH:mm:ss");
           },
           thStyle: {
