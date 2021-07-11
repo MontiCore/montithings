@@ -12,8 +12,8 @@
 #include "../montithings-RTE/json/json.hpp"
 #include "lib/loguru.hpp"
 
-#include "../montithings-RTE/dds/recorder/DDSCommunicator.h"
-#include "../montithings-RTE/dds/recorder/utils.h"
+#include "../montithings-RTE/record-and-replay/recorder/DDSCommunicator.h"
+#include "../montithings-RTE/record-and-replay/recorder/utils.h"
 #include "RecordProcessor.h"
 
 class MessageFlowRecorder {

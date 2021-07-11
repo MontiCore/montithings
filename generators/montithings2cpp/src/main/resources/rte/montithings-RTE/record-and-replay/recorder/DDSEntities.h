@@ -44,7 +44,7 @@
 #include "MessageListener.h"
 #include "DDSConstants.h"
 
-#define DDS_LOG_ID "DDS_RECORDER"
+#define DDS_LOG_ID "RECORDER"
 
 using namespace OpenDDS::DCPS;
 

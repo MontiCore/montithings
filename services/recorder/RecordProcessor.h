@@ -10,13 +10,12 @@
 #include <vector>
 #include <limits.h>
 
-
-#include "../montithings-RTE/dds/recorder/utils.h"
-#include "../montithings-RTE/dds/recorder/MessageWithClockContainer.h"
+#include "../montithings-RTE/record-and-replay/recorder/utils.h"
+#include "../montithings-RTE/record-and-replay/recorder/MessageWithClockContainer.h"
+#include "../montithings-RTE/record-and-replay/message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "../montithings-RTE/json/json.hpp"
-#include "../montithings-RTE/Utils.h"
 
-#include "../montithings-RTE/dds/message-types/DDSRecorderMessageTypeSupportImpl.h"
+#include "../montithings-RTE/Utils.h"
 
 using vclock = std::unordered_map<std::string, long>;
 using json = nlohmann::json;

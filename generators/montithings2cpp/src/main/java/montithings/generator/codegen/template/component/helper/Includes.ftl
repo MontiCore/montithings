@@ -39,5 +39,5 @@ ${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
     ${tc.includeArgs("template.result.hooks.Include", [comp])}
 </#if>
 <#if config.getRecordingMode().toString() == "ON">
-  #include "record-and-replays/recorder/HWCInterceptor.h"
+  #include "record-and-replay/recorder/HWCInterceptor.h"
 </#if>

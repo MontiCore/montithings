@@ -25,7 +25,7 @@
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "DDSConstants.h"
 
-#define DDS_RECORDER_LISTENER_LOG_ID "DDS_RECORDER_LISTENER"
+#define DDS_RECORDER_LISTENER_LOG_ID "RECORDER"
 
 class MessageListener
       : public DDSConstants, public virtual OpenDDS::DCPS::LocalObject<DDS::DataReaderListener>

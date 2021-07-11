@@ -45,7 +45,8 @@ DDSRecorder::setInstanceName(const std::string &name) {
     ddsCommunicator.setInstanceName(name);
 }
 
-void DDSRecorder::setDDSClient(DDSClient &client) {
+void
+DDSRecorder::setDDSClient(DDSClient &client) {
     ddsClient = &client;
 }
 

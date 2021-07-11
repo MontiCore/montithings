@@ -23,7 +23,7 @@
 #include "Port.h"
 #include "Utils.h"
 
-#define DDS_PORT_LOG_ID "DDS_PORT"
+#define DDS_PORT_LOG_ID "DDS"
 
 template<typename T>
 class DDSPort
@@ -89,7 +89,7 @@ public:
 
     void init() {
     	if (isRecordingEnabled) {
-            ddsRecorder = std::unique_ptr<DDSRecorder>();
+            ddsRecorder = std::make_unique<DDSRecorder>();
             ddsRecorder->setInstanceName(client->getInstanceName());
             ddsRecorder->setDDSClient(*client);
             ddsRecorder->setTopicName(topicName);

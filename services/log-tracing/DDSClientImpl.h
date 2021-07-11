@@ -22,8 +22,6 @@
 #include "DDSPort.h"
 #include "DDSClient.h"
 
-
-
 class DDSClientImpl : public DDSClient
 {
     private:
