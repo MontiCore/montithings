@@ -245,11 +245,11 @@
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <!--<platform>DSA</platform>-->
                         <main>hierarchy.Example</main>
-                        <splitting>OFF</splitting>
-                        <messageBroker>OFF</messageBroker>
-                        <recording>OFF</recording>
-                        <replayMode>ON</replayMode>
-                        <replayDataPath>${basedir}/recordings.json</replayDataPath>
+                        <splitting>DISTRIBUTED</splitting>
+                        <messageBroker>DDS</messageBroker>
+                        <recording>ON</recording>
+                        <replayMode>OFF</replayMode>
+                        <replayDataPath>${basedir}/target/generated-test-sources/recordings.json</replayDataPath>
                         <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>
