@@ -1,7 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 
-package de.monticore.lang.sd4componenttesting.prettyprint;
+package de.monticore.lang.sd4componenttesting._visitor;
 
+import arcbasis._ast.ASTComponentType;
+import arcbasis._ast.ASTPortAccess;
 import arcbasis._visitor.ArcBasisPrettyPrinter;
 import comfortablearc._visitor.ComfortableArcPrettyPrinter;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
@@ -93,6 +95,8 @@ public class SD4ComponentTestingFullPrettyPrinter {
     SCTransitions4CodePrettyPrinter scTransitions4CodePrettyPrinter = new SCTransitions4CodePrettyPrinter(printer);
     traverser.setSCTransitions4CodeHandler(scTransitions4CodePrettyPrinter);
 
+    SD4ComponentTestingPrettyPrinter sd4ComponentTestingPrettyPrinter = new SD4ComponentTestingPrettyPrinter(printer);
+    traverser.setSD4ComponentTestingHandler(sd4ComponentTestingPrettyPrinter);
 
   }
 
@@ -102,7 +106,7 @@ public class SD4ComponentTestingFullPrettyPrinter {
     return getPrinter().getContent();
   }
 
-  public String prettyprint(ASTMontiArcNode a) {
+  public String prettyprint(ASTPortAccess a) {
     getPrinter().clearBuffer();
     a.accept(getTraverser());
     return getPrinter().getContent();
@@ -114,29 +118,13 @@ public class SD4ComponentTestingFullPrettyPrinter {
     return getPrinter().getContent();
   }
 
-  public String prettyprint(ASTMCJavaBlock a) {
+  public String prettyprint(ASTComponentType a) {
     getPrinter().clearBuffer();
     a.accept(getTraverser());
     return getPrinter().getContent();
   }
 
-  public String prettyprint(ASTMCBlockStatement a) {
-    getPrinter().clearBuffer();
-    a.accept(getTraverser());
-    return getPrinter().getContent();
-  }
 
-  public String prettyprint(ASTSCTransition a) {
-    getPrinter().clearBuffer();
-    a.accept(getTraverser());
-    return getPrinter().getContent();
-  }
-
-  public String prettyprint(ASTMCType a) {
-    getPrinter().clearBuffer();
-    a.accept(getTraverser());
-    return getPrinter().getContent();
-  }
 
   public IndentPrinter getPrinter() {
     return this.printer;
