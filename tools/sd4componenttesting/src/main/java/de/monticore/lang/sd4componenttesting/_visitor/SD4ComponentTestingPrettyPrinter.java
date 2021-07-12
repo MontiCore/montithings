@@ -73,16 +73,18 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
     this.getPrinter().print(node.getMainComponent());
     this.getPrinter().print(" {\n");
     this.getTraverser().traverse(node);
-    this.getPrinter().print("}");
+    this.getPrinter().print("}\n");
   }
 
 
   @Override
   public void handle(@NotNull ASTSD4CConnection node) {
+    this.getPrinter().print("  ");
     if(node.isPresentSource()) {
       node.getSource().accept(this.getTraverser());
+      this.getPrinter().print(" ");
     }
-    this.getPrinter().print(" -> ");
+    this.getPrinter().print("-> ");
     if(!node.getTargetList().isEmpty()) {
       int counter = 0;
       for(ASTPortAccess target: node.getTargetList()) {
@@ -92,8 +94,9 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
           this.getPrinter().print(", ");
         }
       }
+      this.getPrinter().print(" ");
     }
-    this.getPrinter().print(" : ");
+    this.getPrinter().print(": ");
     if(!node.getValueList().isEmpty()) {
       int counter = 0;
       for(ASTLiteral value: node.getValueList()) {
