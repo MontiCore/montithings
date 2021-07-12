@@ -280,6 +280,57 @@ public class MTGenerator {
       "template/adapter/ImplementationFile.ftl", packageName, simpleName, config);
   }
 
+
+  public void generateSensorActuatorPort(String portName, String packageName, ConfigParams config) {
+
+    //TODO: ignore if neither Sensor nor Actuator appear
+    boolean isSensor = portName.contains("Sensor") ? true : false;
+    Path templatePath = config.getHwcTemplatePath();
+
+    File target = new File(genSrcDir + File.separator + packageName + "." + portName);
+
+    Path sensorActuatorPortTarget = Paths.get(target + File.separator + portName + "Port.cpp");
+    fg.generate(target, portName + "MontiThingsConnector", ".cpp",
+            "template/util/ports/sensorActuatorPortMontiThingsConnector.ftl");
+
+
+    Optional<ASTEveryTag> everyTag = Optional.empty();
+    //TODO: What to do with this?
+    /*if (config.getMtConfigScope() != null) {
+      Optional<PortTemplateTagSymbol> portTag = config.getMtConfigScope()
+              .resolvePortTemplateTag(config.getTargetPlatform().name(), portSymbol);
+      if (portTag.isPresent() && portTag.get().getAstNode().hasEveryTag()) {
+        everyTag = portTag.get().getAstNode().getEveryTag();
+      }
+    }*/
+
+
+    Log.debug("Writing to file " + sensorActuatorPortTarget + ".", "");
+    // Template environment setup.
+    GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
+    setup.setAdditionalTemplatePaths(
+            Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
+
+
+    // Set of templates that follow a defined naming scheme that will be used if no specific template for a port is given.
+    // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume|Init"].ftl,
+    // if the portName equals a.b.c.ComponentnamePortnamePort.
+    Set<File> templates = FileHelper.getPortImplementation(Paths
+                    .get(templatePath.toFile().getAbsolutePath(),
+                            Names.getPathFromPackage(packageName)).toFile(),
+            Names.getSimpleName(portName));
+    // Bind hookpoints to templates when possible, that will be used by the generator engine.
+    bindSAPortTemplate(portName, setup, templates, "include", packageName);
+    bindSAPortTemplate(portName, setup, templates, "body", packageName);
+    bindSAPortTemplate(portName, setup, templates, "provide", packageName);
+    bindSAPortTemplate(portName, setup, templates, "consume", packageName);
+    bindSAPortTemplate(portName, setup, templates, "init", packageName);
+
+    GeneratorEngine engine = new GeneratorEngine(setup);
+    engine.generateNoA("template/util/ports/newSensorActuatorPort.ftl", sensorActuatorPortTarget, config, isSensor, portName, everyTag);
+  }
+
   /**
    * Generates port artifact, based on template template/util/ports/sensorActuatorPort.ftl,
    * if the file does not already exists.
@@ -403,4 +454,16 @@ public class MTGenerator {
       }
     }
   }
+
+  protected static void bindSAPortTemplate(String portName, GeneratorSetup setup, Set<File> templates,
+                                           String hookpoint, String packageName) {
+    hookpoint = StringUtils.capitalize(hookpoint);
+    for (File template : templates) {
+        if (template.getName().endsWith(Names.getSimpleName(portName) + hookpoint + ".ftl")) {
+          setup.getGlex()
+                  .bindTemplateHookPoint("<CppBlock>?portTemplate:" + StringUtils.uncapitalize(hookpoint),
+                          packageName + "." + portName + hookpoint);
+        }
+      }
+    }
 }

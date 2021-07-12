@@ -221,6 +221,26 @@ public class FileHelper {
     return result;
   }
 
+  public static Set<String> getSensorActuatorPorts(File hwcPath) {
+    Set<String> result = new HashSet<>();
+    Set<String> fileEndings = new HashSet<>();
+    fileEndings.add("Include.ftl");
+    fileEndings.add("Body.ftl");
+    fileEndings.add("Provide.ftl");
+    fileEndings.add("Consume.ftl");
+    fileEndings.add("Init.ftl");
+
+    if (hwcPath.isDirectory()) {
+      for (String ending : fileEndings) {
+        String[] files = Stream.of(hwcPath.listFiles((d, name) -> name.endsWith(ending))).map(file -> file.getName().split(ending)[0]).toArray(String[]::new);
+        for (String file : files) {
+          result.add(file);
+        }
+      }
+    }
+    return result;
+  }
+
   /**
    * Returns list of all subpackages paths
    *

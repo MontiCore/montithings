@@ -87,6 +87,21 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
     copyHwcToTarget(target, hwcPath, config);
 
+
+    Log.info("HWCPATH:" + hwcPath.getAbsolutePath(), "");
+    /* ============================================================ */
+    /* ============== Generating SensorActuatorPorts ============== */
+    /* ============================================================ */
+    File[] packages = hwcPath.listFiles();
+    for(File pckg : packages){
+      Log.info("packages:" + new File(hwcPath + File.separator + pckg.getName()), "");
+      Set<String> sensorActuatorPorts = getSensorActuatorPorts(new File(hwcPath + File.separator + pckg.getName()));
+      for(String port : sensorActuatorPorts){
+        mtg.generateSensorActuatorPort(port, pckg.getName(), config);
+      }
+    }
+
+
     /* ============================================================ */
     /* ======================== Find Models ======================= */
     /* ============================================================ */
