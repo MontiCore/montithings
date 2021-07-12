@@ -8,6 +8,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CConnection;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingArtifactScope;
+import de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
 import de.se_rwth.commons.logging.Log;
 
@@ -40,9 +41,11 @@ public class SD4CConnectionConnectorValid implements SD4ComponentTestingASTSD4CC
       }
 
       if (!found) {
+        SD4ComponentTestingFullPrettyPrinter sd4ComponentTestingFullPrettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+        String nodeString = sd4ComponentTestingFullPrettyPrinter.prettyprint(node);
         Log.error(String.format(
           SD4ComponentTestingError.CONNECTION_NOT_DEFINED_AS_CONNECTOR.toString(),
-          node,
+          nodeString,
           mainComponent.getName()));
         return;
       }

@@ -6,6 +6,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CConnection;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingArtifactScope;
+import de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter;
 import de.monticore.lang.sd4componenttesting.util.SD4CElementType;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
 import de.se_rwth.commons.logging.Log;
@@ -29,10 +30,12 @@ public class SD4CConnectionMainInputValid implements SD4ComponentTestingASTSD4CC
     // check if one target defines a component
     for (ASTPortAccess target : targetList) {
       if (target.isPresentComponent()) {
+        SD4ComponentTestingFullPrettyPrinter sd4ComponentTestingFullPrettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+        String nodeString = sd4ComponentTestingFullPrettyPrinter.prettyprint(node);
         Log.error(String.format(
           SD4ComponentTestingError.MAIN_INPUT_COMPONENT_GIVEN.toString(),
           target.getComponent(),
-          node));
+          nodeString));
         return;
       }
     }
@@ -42,10 +45,12 @@ public class SD4CConnectionMainInputValid implements SD4ComponentTestingASTSD4CC
       Optional<PortSymbol> portSymbol = mainComponent.getIncomingPort(target.getPort());
 
       if (!portSymbol.isPresent()) {
+        SD4ComponentTestingFullPrettyPrinter sd4ComponentTestingFullPrettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+        String nodeString = sd4ComponentTestingFullPrettyPrinter.prettyprint(node);
         Log.error(String.format(
           SD4ComponentTestingError.MAIN_INPUT_UNKNOWN_PORT.toString(),
           target.getPort(),
-          node,
+          nodeString,
           mainComponent.getName()));
       }
     }

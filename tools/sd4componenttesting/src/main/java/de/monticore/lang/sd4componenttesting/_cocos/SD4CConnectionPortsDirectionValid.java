@@ -7,6 +7,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CConnection;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingArtifactScope;
+import de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter;
 import de.monticore.lang.sd4componenttesting.util.SD4CElementType;
 import de.monticore.lang.sd4componenttesting.util.SD4ComponentTestingError;
 import de.se_rwth.commons.logging.Log;
@@ -30,10 +31,12 @@ public class SD4CConnectionPortsDirectionValid implements SD4ComponentTestingAST
       Optional<PortSymbol> portSymbol = mainComponent.getIncomingPort(node.getSource().getPort());
 
       if (!portSymbol.isPresent()) {
+        SD4ComponentTestingFullPrettyPrinter sd4ComponentTestingFullPrettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+        String nodeString = sd4ComponentTestingFullPrettyPrinter.prettyprint(node);
         Log.error(String.format(
           SD4ComponentTestingError.MAIN_INPUT_UNKNOWN_PORT.toString(),
           node.getSource().getPort(),
-          node,
+          nodeString,
           mainComponent.getName()));
         return;
       }
@@ -44,10 +47,12 @@ public class SD4CConnectionPortsDirectionValid implements SD4ComponentTestingAST
       Optional<PortSymbol> portSymbol = component.get().getType().getOutgoingPort(node.getSource().getPort());
 
       if (!portSymbol.isPresent()) {
+        SD4ComponentTestingFullPrettyPrinter sd4ComponentTestingFullPrettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+        String nodeString = sd4ComponentTestingFullPrettyPrinter.prettyprint(node);
         Log.error(String.format(
           SD4ComponentTestingError.CONNECTION_SOURCE_UNKNOWN_PORT.toString(),
           node.getSource().getPort(),
-          node,
+          nodeString,
           node.getSource().getComponent()));
         return;
       }
@@ -62,10 +67,12 @@ public class SD4CConnectionPortsDirectionValid implements SD4ComponentTestingAST
         Optional<PortSymbol> portSymbol = mainComponent.getOutgoingPort(target.getPort());
 
         if (!portSymbol.isPresent()) {
+          SD4ComponentTestingFullPrettyPrinter sd4ComponentTestingFullPrettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+          String nodeString = sd4ComponentTestingFullPrettyPrinter.prettyprint(node);
           Log.error(String.format(
             SD4ComponentTestingError.MAIN_OUTPUT_UNKNOWN_PORT.toString(),
             target.getPort(),
-            node,
+            nodeString,
             mainComponent.getName()));
           return;
         }
@@ -76,10 +83,12 @@ public class SD4CConnectionPortsDirectionValid implements SD4ComponentTestingAST
         Optional<PortSymbol> portSymbol = component.get().getType().getIncomingPort(target.getPort());
 
         if (!portSymbol.isPresent()) {
+          SD4ComponentTestingFullPrettyPrinter sd4ComponentTestingFullPrettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+          String nodeString = sd4ComponentTestingFullPrettyPrinter.prettyprint(node);
           Log.error(String.format(
             SD4ComponentTestingError.CONNECTION_TARGET_UNKNOWN_PORT.toString(),
             target.getPort(),
-            node,
+            nodeString,
             target.getComponent()));
           return;
         }
