@@ -14,3 +14,7 @@ target
 generated-test-sources
 
 .gradle
+gradlew
+gradlew.bat
+gradle-wrapper.jar
+gradle-wrapper.properties
