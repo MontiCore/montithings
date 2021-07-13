@@ -16,7 +16,7 @@ rootProject.name = 'applications'
 
 include(':basic-input-output')
 
-includeBuild '../../mt7'
+includeBuild '../'
 /*
 include(':fireAlarm')
 include(':hierarchy')

@@ -1,10 +1,7 @@
 /* (c) https://github.com/MontiCore/monticore */
 
 plugins {
-  //plugin is only resolved, not applied here -> no need to separately specify version in every subproject
-  id 'monticore' version "$monticore_version" apply false
   id 'com.adarshr.test-logger' version "2.0.0"
-  id "de.set.ecj" version "1.4.1" // Eclipse compiler as it's faster than javac
 }
 
 allprojects {

@@ -3,12 +3,13 @@
 buildscript {
   dependencies {
     classpath "montithings.generators:montithings2cpp:$version"
+    classpath "de.monticore:monticore-runtime:$monticore_version"
   }
 }
 
 
 plugins {
-  id "monticore"
+  id "monticore" version "$monticore_version"
 }
 
 group = "montithings.applications"
@@ -30,32 +31,52 @@ configurations {
 }
 
 dependencies {
-  mt_rte ("montithings.generators:montithings2cpp:$version:$montithings_rte_classifier") {
+  mt_rte ("montithings.generators:montithings2cpp:$version") {  
+    capabilities {
+     requireCapability("montithings.generators:montithings2cpp-$montithings_rte_classifier")
+    }
     transitive = false
   }
-  mt_libs ("montithings.generators:montithings2cpp:$version:$montithings_libs_classifier") {
+  mt_libs ("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_libs_classifier")
+    }
     transitive = false
   }
-  mt_headers ("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+  mt_headers ("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_headers_classifier")
+    }
     transitive = false
   }
-  mt_rte_tests ("montithings.generators:montithings2cpp:$version:$montithings_rte_classifier") {
+  mt_rte_tests ("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_rte_classifier")
+    }
     transitive = false
   }
-  mt_libs_tests ("montithings.generators:montithings2cpp:$version:$montithings_libs_classifier") {
+  mt_libs_tests ("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_libs_classifier")
+    }
     transitive = false
   }
-  mt_headers_tests ("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+  mt_headers_tests ("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_headers_classifier")
+    }
     transitive = false
   }
-  mt_tests ("montithings.generators:montithings2cpp:$version:$montithings_tests_classifier") {
+  mt_tests ("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_tests_classifier")
+    }
     transitive = false
   }
 
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
-  implementation "de.monticore:monticore-runtime:$monticore_version"
-  implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation "de.monticore:monticore-generator:$monticore_version"
+//  implementation "de.monticore:monticore-runtime:$monticore_version"
+//  implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "montithings.generators:cd2cpp:$version"
   implementation "montithings.generators:montithings2cpp:$version"
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
@@ -116,6 +137,9 @@ task unpackHeaders(type: Sync) {
 }
 
 task groovyTask(type: GroovyTask) {
+  doFirst{
+    buildscript.configurations.classpath.each { println it }
+  }
   baseClass = "montithings.generator.codegen.MontiThingsGeneratorScript"
   
   outputDir = file "$buildDir/generated-sources"
@@ -127,6 +151,8 @@ task groovyTask(type: GroovyTask) {
   )
   script = "montithings/generator/mtgenerator.groovy"
   arguments.put("mainComponent", "hierarchy.Example")
+  arguments.put("out", "$buildDir/generated-sources")
+  arguments.put("hwc", "$projectDir/src/main/resources/models")
 }
 
 unpackHeaders.mustRunAfter unpackRte
