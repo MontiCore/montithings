@@ -1,3 +1,9 @@
+import de.se_rwth.commons.logging.Finding
+import de.se_rwth.commons.logging.Log
+
+import java.security.Permission
+import java.util.stream.Collectors
+
 /* (c) https://github.com/MontiCore/monticore */
 
 buildscript {
@@ -137,8 +143,23 @@ task unpackHeaders(type: Sync) {
 }
 
 task groovyTask(type: GroovyTask) {
+  
+ 
   doFirst{
-    buildscript.configurations.classpath.each { println it }
+    // workaround so delay system exit:
+    System.setSecurityManager(new SecurityManager() {
+      @Override public void checkExit(int status) {
+        String error = Log.getFindings().stream().
+                filter({f -> f.getType().equals(Finding.Type.ERROR)})
+                .map({f -> f.getMsg()})
+                .collect(Collectors.joining("\n"))
+        ant.fail(error)
+      }
+      
+      @Override public void checkPermission(Permission perm) {
+        // Allow other activities by default
+      }
+    })
   }
   baseClass = "montithings.generator.codegen.MontiThingsGeneratorScript"
   
