@@ -56,8 +56,8 @@ dependencies {
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "de.monticore:monticore-generator:$monticore_version"
-  implementation project(":generators:cd2cpp")
-  implementation project(":generators:montithings2cpp")
+  implementation "montithings.generators:cd2cpp:$version"
+  implementation "montithings.generators:montithings2cpp:$version"
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
   testImplementation "junit:junit:$junit_version"
   testImplementation "de.monticore:monticore-runtime:$monticore_version"

@@ -1,0 +1,43 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+pluginManagement {
+  repositories {
+    maven {
+      credentials.username mavenUser
+      credentials.password mavenPassword
+      url sePublicRepo
+    }
+    gradlePluginPortal()
+  }
+}
+
+rootProject.name = 'applications'
+
+
+include(':basic-input-output')
+
+includeBuild '../../mt7'
+/*
+include(':fireAlarm')
+include(':hierarchy')
+include(':language-features:behavior')
+include(':language-features:class-diagrams')
+include(':language-features:error-handling')
+include(':language-features:interface-components')
+include(':language-features:pre-postconditions')
+include(':language-features')
+include(':mqtt-ports')
+include(':retain-state')
+include(':sensor-actuator-ports')
+
+project(':basic-input-output').projectDir = file('basic-input-output')
+project(':fireAlarm').projectDir = file('fireAlarm')
+project(':hierarchy').projectDir = file('hierarchy')
+project(':language-features:behavior').projectDir = file('language-features/behavior')
+project(':language-features:class-diagrams').projectDir = file('language-features/class-diagrams')
+project(':language-features:error-handling').projectDir = file('language-features/error-handling')
+project(':language-features:interface-components').projectDir = file('language-features/interface-components')
+project(':language-features:pre-postconditions').projectDir = file('language-features/pre-postconditions')
+project(':language-features').projectDir = file('language-features')
+
+*/
