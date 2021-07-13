@@ -232,7 +232,12 @@ public class FileHelper {
 
     if (hwcPath.isDirectory()) {
       for (String ending : fileEndings) {
-        String[] files = Stream.of(hwcPath.listFiles((d, name) -> name.endsWith(ending))).map(file -> file.getName().split(ending)[0]).toArray(String[]::new);
+        String[] files = new String[0];
+        try {
+          files = Files.walk(hwcPath.toPath()).filter(name -> name.toString().endsWith(ending)).map(path -> path.getFileName().toString().split(ending)[0]).toArray(String[]::new);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         for (String file : files) {
           result.add(file);
         }

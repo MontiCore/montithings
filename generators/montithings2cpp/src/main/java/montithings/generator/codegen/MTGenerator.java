@@ -6,7 +6,6 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
-import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.utils.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.util.Identifier;
