@@ -1,10 +1,10 @@
+/* (c) https://github.com/MontiCore/monticore */
+
 import de.se_rwth.commons.logging.Finding
 import de.se_rwth.commons.logging.Log
 
 import java.security.Permission
 import java.util.stream.Collectors
-
-/* (c) https://github.com/MontiCore/monticore */
 
 buildscript {
   dependencies {
@@ -81,13 +81,11 @@ dependencies {
   }
 
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
-//  implementation "de.monticore:monticore-runtime:$monticore_version"
-//  implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "montithings.generators:cd2cpp:$version"
   implementation "montithings.generators:montithings2cpp:$version"
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
-  testImplementation "junit:junit:$junit_version"
-  testImplementation "de.monticore:monticore-runtime:$monticore_version"
+  //testImplementation "junit:junit:$junit_version"
+  //testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
 task unpackRte(type: Sync) {
@@ -110,35 +108,46 @@ task unpackLibs(type: Sync) {
 
 task unpackHeaders(type: Sync) {
   def genSrcDir = "$buildDir/generated-sources"
-  def genTestDir = "$buildDir/generated-test-sources"
   exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_headers
   from configurations.mt_headers.collect { zipTree(it) }
   into "$genSrcDir/header"
+}
+
+task unpackRteTests(type: Sync) {
+  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_rte_tests
-  from {
-    configurations.mt_rte_tests.collect { zipTree(it) }
-  }
+  from configurations.mt_rte_tests.collect { zipTree(it) }
   into genTestDir
+}
+
+task unpackLibsTests(type: Sync) {
+  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_libs_tests
-  from {
-    configurations.mt_libs_tests.collect { zipTree(it) }
-  }
+  from configurations.mt_libs_tests.collect { zipTree(it) }
   into "$genTestDir/lib"
+}
+
+task unpackHeaderTests(type: Sync) {
+  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_headers_tests
-  from {
-    configurations.mt_headers_tests.collect { zipTree(it) }
-  }
+  from configurations.mt_headers_tests.collect { zipTree(it) }
   into "$genTestDir/header"
+}
+
+task unpackTests(type: Sync) {
+  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**'
 
   dependsOn configurations.mt_tests
-  from {
-    configurations.mt_tests.collect { zipTree(it) }
-  }
+  from configurations.mt_tests.collect { zipTree(it) }
   into "$genTestDir/test"
 }
 
@@ -173,7 +182,7 @@ task groovyTask(type: GroovyTask) {
   script = "montithings/generator/mtgenerator.groovy"
   arguments.put("mainComponent", "hierarchy.Example")
   arguments.put("out", "$buildDir/generated-sources")
-  arguments.put("hwc", "$projectDir/src/main/resources/models")
+  arguments.put("hwc", "$projectDir/src/main/resources/hwc")
 }
 
 unpackHeaders.mustRunAfter unpackRte
