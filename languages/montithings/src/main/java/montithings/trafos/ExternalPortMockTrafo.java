@@ -191,10 +191,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
     for (JsonObject recording : recordings) {
       long timestamp = recording.getJsonNumber("timestamp").longValue();
 
-      // returns serialized value e.g. { "value0": 726}
-      String valueSerialized = recording.getString("msg_content");
-
-      String value = TrafoUtil.parseJson(valueSerialized).get("value0").toString();
+      String value = recording.getString("msg_content");
 
       // Determine if a number or a string is present
       boolean isNumeric = true;

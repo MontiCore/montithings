@@ -18,7 +18,7 @@ ${Utils.printIncludes(comp,config)}
 using namespace montithings::library;
 
 <#if config.getReplayMode().toString() == "ON">
-  #include "record-and-replay/mtlibrary-extenstion/MTReplayLibrary.h"
+  #include "record-and-replay/mtlibrary-extension/MTReplayLibrary.h"
 
   using namespace montithings::library::replayer;
 
@@ -49,7 +49,7 @@ ${compname}Interface${generics}& ${Identifier.getInterfaceName()};
 <#list comp.getOutgoingPorts() as port>
   <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
   <#assign name = port.getName()>
-  InOutPort<${type}>* port${name?cap_first};
+  InOutPort<Message<${type}>>* port${name?cap_first};
 </#list>
 
 public:
@@ -60,7 +60,7 @@ void setInstanceName (const std::string &instanceName);
 <#list comp.getOutgoingPorts() as port>
   <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
   <#assign name = port.getName()>
-  void setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first});
+  void setPort${name?cap_first} (InOutPort<Message<${type}>> *port${name?cap_first});
 </#list>
 
 <#if ComponentHelper.hasBehavior(comp) || ComponentHelper.hasStatechart(comp)>

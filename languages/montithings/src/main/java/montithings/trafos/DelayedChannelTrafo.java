@@ -270,7 +270,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
       .callExpressionBuilder();
     thenCallDelayExpressionBuilder.setExpression(delayNameExpression);
     thenCallDelayExpressionBuilder.setArguments(delayArgsBulder.build());
-    thenCallDelayExpressionBuilder.setName("ABC"); // arbitrary value; unclear what this is about
+    thenCallDelayExpressionBuilder.setName("delayNanoseconds"); // arbitrary value; unclear what this is about
 
     ASTExpressionStatementBuilder thenExpressionStatementBuilder = MontiThingsMill
       .expressionStatementBuilder();

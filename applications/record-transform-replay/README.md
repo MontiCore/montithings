@@ -50,7 +50,10 @@ This changes the options as follows:
 Note that no DDS is used anymore and that it will output a single binary. 
 This way, usual debugging tools can be used while replaying the distributed application including all environmental influences from the physical world.
 
-Again, generate (`mvn clean install`), build (`./build.sh`/`./dockerBuild.sh`) and run the application as usual (`./run.sh`/`./dockerRun.sh`).
+Again, generate (`mvn clean install`), build (`./build.sh`/`./dockerBuild.sh`).
 The generation step will now add multiple components dedicated for replaying purposes.
 
-Execute the application. It should replay the original execution.
+Run the application as usual, but make sure the `recordings.json` file is in the working directory: 
+`./target/generated-sources/build/bin/hierarchy.Example -n hiearachy.Example`
+
+It should now replay the original execution.

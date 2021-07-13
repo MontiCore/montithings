@@ -41,11 +41,9 @@ namespace montithings {
             }
 
             // support for delays with a high resolution
-            void
-            delayNanoseconds(unsigned long nanoseconds);
+            void delayNanoseconds(unsigned long nanoseconds);
 
-            unsigned long long
-            getNanoTimestamp();
+            unsigned long long getNanoTimestamp();
         }
     }
 }

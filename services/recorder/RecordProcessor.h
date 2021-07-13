@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include <limits.h>
+#include "../montithings-RTE/Message.h"
 
 #include "../montithings-RTE/record-and-replay/recorder/utils.h"
 #include "../montithings-RTE/record-and-replay/recorder/MessageWithClockContainer.h"
@@ -30,6 +31,8 @@ private:
                          const std::string &identifier);
 
     static json sortRecords(json records, int minSpacing);
+
+    static std::string getPayload(DDSRecorderMessage::Message message);
 
 public:
     RecordProcessor() = default;
