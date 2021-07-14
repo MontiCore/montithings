@@ -180,8 +180,6 @@ task groovyTask(type: SEGroovyTask) {
   )
   script = "montithings/generator/mtgenerator.groovy"
   arguments.put("mainComponent", "hierarchy.Example")
-  arguments.put("out", "$buildDir/generated-sources")
-  arguments.put("hwc", "$projectDir/src/main/resources/hwc")
 }
 
 unpackHeaders.mustRunAfter unpackRte
