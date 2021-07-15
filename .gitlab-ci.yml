@@ -198,7 +198,7 @@ Generator Test DDS:
   <<: *generator_test_definition
 
 Compile Applications:
-  image: $CI_REGISTRY_IMAGE/mtcmakedds
+  image: $CI_REGISTRY_IMAGE/mtcmake
   stage: generator-test
   dependencies:
     - Unit Test JDK 11 #download generated-test-sources
