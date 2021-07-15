@@ -40,7 +40,7 @@ ${tc.signature("comp", "config")}
 
   <#list comp.getParameters() as variable>
     <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>
-    ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config[instanceNameArg.getValue()]["${variable.getName()}"]);
+    ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config["${variable.getName()}"]);
   </#list>
   <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
     double ${portName}ConversionFactor = jsonToData${"<"}double${">"}(config["${portName}ConversionFactor"]);

@@ -19,7 +19,9 @@ SinkImpl::compute (SinkInput input)
       std::cout << input.getValue ().value () << std::endl;
     }
   else
-    { std::cout << "No data." << std::endl; }
+    {
+      std::cout << "No data." << std::endl;
+    }
   return {};
 }
 

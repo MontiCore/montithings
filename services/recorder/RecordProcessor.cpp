@@ -53,6 +53,16 @@ RecordProcessor::collectMessageDelays(const std::vector<DDSRecorderMessage::Mess
     return allMessageDelays;
 }
 
+std::string
+RecordProcessor::getPayload(DDSRecorderMessage::Message message) {
+    if (strcmp(message.msg_content.in(), "") == 0) {
+        return "";
+    }
+
+    json parsed = json::parse(message.msg_content.in());
+    return parsed["value0"]["payload"]["data"].dump();
+}
+
 json
 RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &messageStorage, int minSpacing) {
     LOG_SCOPE_F (INFO, "Processing records...");
@@ -76,8 +86,7 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
         jRecord["_recorder_id"] = record.id;
         jRecord["msg_id"] = record.msg_id;
 
-        jRecord["msg_content"] = record.msg_content.in();
-
+        jRecord["msg_content"] = getPayload(record);
 
         // clock skew can lead to negative values
         long long ts_adjusted =
@@ -99,7 +108,7 @@ RecordProcessor::process(const std::vector<DDSRecorderMessage::Message> &message
         }
 
         for (auto &item : messageDelays[record.topic.in()][msgId].items()) {
-            jRecord["delay"][ item.key()] =  item.value();
+            jRecord["delay"][item.key()] = item.value();
         }
 
         jRecord["topic"] = record.topic.in();
@@ -175,7 +184,7 @@ json RecordProcessor::sortRecords(json records, int minSpacing) {
         bool isFirst = true;
 
         // spacing is given in ms, not ns
-        long long spacing = (long long)minSpacing * 1000000;
+        long long spacing = (long long) minSpacing * 1000000;
 
         long long lastTimestamp = sortedRecords[0]["timestamp"].get<long long>();
 

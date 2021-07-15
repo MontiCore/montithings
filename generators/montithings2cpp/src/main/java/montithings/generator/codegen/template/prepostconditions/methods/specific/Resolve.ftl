@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "statement", "config", "number", "isPrecondition", "existsHWC")}
 <#include "/template/prepostconditions/helper/SpecificPreamble.ftl">
+<#assign isLogTracingEnabled = config.getLogTracing().toString() == "ON">
 
 ${Utils.printTemplateArguments(comp)}
 void
@@ -12,6 +13,6 @@ ${compname}Input${generics} &${Identifier.getInputName()}
 </#if>)
 {
 <#if catch.isPresent()>
-    ${ComponentHelper.printJavaBlock(catch.get().handler, true)}
+    ${ComponentHelper.printJavaBlock(catch.get().handler, isLogTracingEnabled, true)}
 </#if>
 }

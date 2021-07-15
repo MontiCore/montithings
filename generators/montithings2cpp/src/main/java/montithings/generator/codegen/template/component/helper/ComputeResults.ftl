@@ -12,6 +12,6 @@ ${className}Result${Utils.printFormalTypeParameters(comp)} result;
 
 <#else>
     this->uuid
-</#if>).value());
+</#if>)->getPayload().value());
     }
 </#list>

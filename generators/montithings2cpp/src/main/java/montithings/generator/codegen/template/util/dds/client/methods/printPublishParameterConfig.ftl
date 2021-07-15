@@ -20,7 +20,9 @@ if (!config.empty())
     initializeParameterConfigPortPub();
 
     for (auto &paraConfig : config.items()) {
-        configPortOut->sendToExternal(config[paraConfig.key()].dump());
+        json payload;
+        payload[paraConfig.key()] = config[paraConfig.key()];
+        configPortOut->sendToExternal(payload.dump());
     }
 
     CLOG(DEBUG, "DDS")  << "Published parameter config: " << config.dump();

@@ -822,12 +822,12 @@ public class ComponentHelper {
     return Arrays.asList(packages);
   }
 
-  public static String printJavaBlock(ASTMCJavaBlock block) {
-    return printJavaBlock(block, false);
+  public static String printJavaBlock(ASTMCJavaBlock block, boolean isLogTracingEnabled) {
+    return printJavaBlock(block, isLogTracingEnabled, false);
   }
 
-  public static String printJavaBlock(ASTMCJavaBlock block, boolean suppressPostconditions) {
-    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(suppressPostconditions);
+  public static String printJavaBlock(ASTMCJavaBlock block, boolean isLogTracingEnabled, boolean suppressPostconditions) {
+    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(isLogTracingEnabled, suppressPostconditions);
     return printer.prettyprint(block);
   }
 
@@ -1015,8 +1015,8 @@ public class ComponentHelper {
     return behaviors.get(0).getMCJavaBlock();
   }
 
-  public static String printStatementBehavior(ComponentTypeSymbol component) {
-    return printJavaBlock(getBehavior(component));
+  public static String printStatementBehavior(ComponentTypeSymbol component, boolean isLogTracingEnabled) {
+    return printJavaBlock(getBehavior(component), isLogTracingEnabled);
   }
 
   public static Set<PortSymbol> getPublishedPortsForBehavior(ComponentTypeSymbol component) {

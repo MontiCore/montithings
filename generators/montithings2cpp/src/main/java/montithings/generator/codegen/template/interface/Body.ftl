@@ -4,6 +4,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 <#list comp.getPorts() as port>
   <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = "Message<" + type + ">">
   <#assign name = port.getName()>
   ${tc.includeArgs("template.interface.methods.GetPort", [comp, config, name, type, existsHWC])}
   ${tc.includeArgs("template.interface.methods.AddInPort", [comp, config, name, type, existsHWC])}

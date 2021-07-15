@@ -3,7 +3,7 @@
 
 #include "MqttClient.h"
 #include "easyloggingpp/easylogging++.h"
-#define MQTT_LOG_ID "MQTT"
+#define MQTT_LOG_ID "MQTT_PORT"
 
 MqttClient *
 MqttClient::instance (const std::string &brokerHostname, int brokerPort)

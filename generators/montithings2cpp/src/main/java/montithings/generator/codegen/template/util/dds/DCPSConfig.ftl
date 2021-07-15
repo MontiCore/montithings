@@ -16,5 +16,9 @@ transport_type=tcp
 transport_type=rtps_udp
 
 <#else>
+DCPSGlobalTransportConfig=$file
 DCPSDefaultDiscovery=DEFAULT_RTPS
+
+[transport/the_rtps_transport]
+transport_type=rtps_udp
 </#if>

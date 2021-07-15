@@ -11,6 +11,11 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<list>"}
 #include ${"<set>"}
 #include ${"<deque>"}
+
+#include "Message.h"
+
+${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
+
 ${Utils.printIncludes(comp, config)}
 
 ${Utils.printNamespaceStart(comp)}

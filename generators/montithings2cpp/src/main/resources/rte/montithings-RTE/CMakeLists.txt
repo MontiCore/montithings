@@ -57,19 +57,37 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 file(GLOB_RECURSE RTE_SOURCES "./*.cpp" "./*.h")
 include_directories(".")
 
+# swap out log() method from MTLibrary if log tracing is enabled
+list(FILTER RTE_SOURCES EXCLUDE REGEX "Log.cpp")
+if (ENABLE_LOG_TRACING)
+    list(APPEND RTE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/logtracing/mtlibrary-overwrites/Log.cpp")
+else ()
+    list(APPEND RTE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/mtlibrary/Log.cpp")
+
+    # remove all related files
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/data/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/message-types/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/mqtt/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/mqtt/message-types/*")
+endif ()
+
 # Exclude DDS files
 if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.cpp")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/message-types/*")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/recorder/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/message-types/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/recorder/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/message-types/*")
 endif ()
 
 # Keep hwc interceptor in case of replaying
 set(RTE_SOURCES
     ${RTE_SOURCES}
-    "dds/recorder/HWCInterceptor.h"
-    "dds/recorder/HWCInterceptor.cpp"
+    "record-and-replay/recorder/HWCInterceptor.h"
+    "record-and-replay/recorder/HWCInterceptor.cpp"
 ) 
 
 
@@ -77,6 +95,8 @@ set(RTE_SOURCES
 if (EXCLUDE_MQTT)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "Mqtt.*.cpp")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/mqtt/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/mqtt/message-types/*")
 endif ()
 
 if (EXCLUDE_COMM_MANAGER)
@@ -94,7 +114,6 @@ if (NOT EXCLUDE_MQTT)
 endif ()
 
 if (NOT EXCLUDE_DDS)
-    # Generates type support code
     target_link_libraries(MontiThingsRTE ${opendds_libs})
 endif ()
 

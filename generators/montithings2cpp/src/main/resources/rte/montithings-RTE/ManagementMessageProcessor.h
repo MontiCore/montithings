@@ -2,7 +2,7 @@
 // (c) https://github.com/MontiCore/monticore
 
 #pragma once
-#include "messages/Message.h"
+#include "messages/PortToSocketMessage.h"
 
 class ManagementMessageProcessor {
   public:

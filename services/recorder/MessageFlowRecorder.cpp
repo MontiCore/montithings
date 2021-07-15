@@ -112,10 +112,6 @@ MessageFlowRecorder::start() {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         std::this_thread::yield();
     }
-
-    cleanup();
-    process();
-    saveToFile();
 }
 
 void
@@ -141,9 +137,9 @@ MessageFlowRecorder::stop() {
     }
     LOG_F (INFO, "RECORDING_STOP command was ACKed by all subscribers.");
 
-    LOG_F (INFO, "Waiting until all participants disconnect...");
-    ddsCommunicator.waitUntilRecorderWritersDisconnect();
-    LOG_F (INFO, "All participants disconnected.");
+    process();
+    saveToFile();
+    cleanup();
 }
 
 void

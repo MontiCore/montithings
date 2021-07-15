@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.visitor;
 
+import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.assignmentexpressions._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
@@ -8,19 +9,22 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
+import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.codegen.util.Identifier;
+import montithings.generator.helper.ComponentHelper;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import javax.measure.converter.UnitConverter;
+import java.util.List;
 import java.util.Optional;
 
-import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
-import static montithings.generator.visitor.CppPrettyPrinterUtils.isStateVariable;
+import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
 import static montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter.*;
 import static montithings.util.IdentifierUtils.getPortForName;
 
@@ -32,11 +36,16 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
   // catch condition of a postcondition
   protected boolean suppressPostconditionCheck = false;
 
-  public CppAssignmentPrettyPrinter(IndentPrinter printer, boolean suppressPostconditionCheck) {
+  // When log tracing is enabled the exchanged messages are wrapped into a Pair type which holds the corresponding ID
+  // Therefore, the argument of setNextValue() has to be adapted accordingly
+  protected boolean isLogTracingEnabled = false;
+
+  public CppAssignmentPrettyPrinter(IndentPrinter printer, boolean isLogTracingEnabled, boolean suppressPostconditionCheck) {
     super(printer);
     tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
       new DeriveSymTypeOfMontiThingsCombine());
     this.suppressPostconditionCheck = suppressPostconditionCheck;
+    this.isLogTracingEnabled = isLogTracingEnabled;
   }
 
   @Override public void handle(ASTIncSuffixExpression node) {
@@ -86,6 +95,8 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       getPrinter().print(")");
     }
   }
+
+
 
   @Override
   public void handle(ASTAssignmentExpression node) {
@@ -189,6 +200,19 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       }
       getPrinter().println(" );");
 
+      if (isLogTracingEnabled && suppressPostconditionCheck) {
+        IMontiThingsScope componentScope = getScopeOfEnclosingComponent(node);
+        ComponentTypeSymbol component = (ComponentTypeSymbol) componentScope.getSpanningSymbol();
+        List<VariableSymbol> stateVariables = ComponentHelper.getVariablesAndParameters(component);
+
+        for (VariableSymbol stateVariable : stateVariables) {
+          getPrinter().print("component.getLogTracer()->handleVariableStateChange(\"");
+          getPrinter().print(stateVariable.getName() + "\",");
+          getPrinter().print(Identifier.getStateName() + ".");
+          getPrinter().print("get" + capitalize(stateVariable.getName()) + "());");
+        }
+      }
+
       if (port.isPresent() && port.get().isOutgoing() && !suppressPostconditionCheck) {
         // check postconditions and send value
         String portname = capitalize(nameExpression.getName());
@@ -197,8 +221,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
             + ", " + Identifier.getResultName() + ", " + Identifier.getStateName() + ", state__at__pre);");
         getPrinter().print(
           "interface.getPort" + portname + "()->setNextValue(" + Identifier.getResultName() +
-            ".get" + portname + "());");
-
+            ".get" + portname + "Message(" + (isLogTracingEnabled ? "component.getLogTracer()->getCurrOutputUuid()" : "" ) + "));");
       }
       getPrinter().print("}");
     }

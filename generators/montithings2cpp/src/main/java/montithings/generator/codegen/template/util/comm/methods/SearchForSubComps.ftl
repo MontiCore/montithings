@@ -33,13 +33,15 @@ ${className}::searchSubcomponents ()
         <#list connector.targetList as target>
           <#if !target.isPresentComponent() && subcomponent.getName() == connector.getSource().getComponent()>
             <#list subcomponentSymbol.ports as p>
+              <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
+
               <#if p.getName() == connector.getSource().port>
                 // set receiver
                 std::string communicationPort = j["${subcomponent.getName()}"]["communication"].get${"<std::string>"} ();
                 std::string ${subcomponent.getName()}_uri = "ws://" + ${subcomponent.getName()}_ip + ":" + communicationPort + "/" + comp->getInstanceName () + ".${subcomponent.getName()}/out/${p.getName()}";
 
                 // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
-                comp->getInterface()->addInPort${target.port?cap_first}(new WSPort<${ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)}>(INCOMING, ${subcomponent.getName()}_uri));
+                comp->getInterface()->addInPort${target.port?cap_first}(new WSPort<Message<${type}>>(INCOMING, ${subcomponent.getName()}_uri));
 
               </#if>
             </#list>
