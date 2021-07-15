@@ -16,10 +16,12 @@ SinkImpl::compute (SinkInput input)
 {
   if (input.getValue ())
     {
-      log("Sink | in: " +  input.getValue ().value ());
+      std::cout << input.getValue ().value () << std::endl;
     }
   else
-    { std::cout << "No data." << std::endl; }
+    {
+      std::cout << "No data." << std::endl;
+    }
   return {};
 }
 

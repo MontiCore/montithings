@@ -7,7 +7,5 @@ component Converter {
 
   behavior {
     outport = inport ?: 0;
-
-    if (!inport?) log("Converter | no input!");
   }
 }

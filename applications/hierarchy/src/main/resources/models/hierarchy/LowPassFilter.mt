@@ -7,10 +7,7 @@ component LowPassFilter (int threshold) {
 
   behavior {
     if (inport < threshold)  outport = inport;
-    else {
-      log("LowPassFilter | out: 0 due to threshold");
-      outport = 0;
-    }
+    else outport = 0;
   }
 
 }
