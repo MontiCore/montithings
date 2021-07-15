@@ -1,6 +1,11 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 
+/**
+ * Implementation of a DDS port.
+ * 
+ */
+
 #pragma once
 
 #include <ace/OS_NS_stdlib.h>
@@ -9,17 +14,16 @@
 #include <utility>
 #include "easyloggingpp/easylogging++.h"
 
-#include "dds/message-types/DDSMessageTypeSupportC.h"
-#include "dds/message-types/DDSMessageTypeSupportImpl.h"
-#include "dds/recorder/DDSRecorder.h"
-#include "dds/recorder/MessageWithClockContainer.h"
-#include "dds/recorder/VectorClock.h"
+#include "record-and-replay/message-types/DDSMessageTypeSupportC.h"
+#include "record-and-replay/recorder/DDSRecorder.h"
+#include "record-and-replay/recorder/MessageWithClockContainer.h"
+#include "record-and-replay/recorder/VectorClock.h"
 
 #include "DDSClient.h"
 #include "Port.h"
 #include "Utils.h"
 
-#define DDS_LOG_ID "DDS"
+#define DDS_PORT_LOG_ID "DDS"
 
 template<typename T>
 class DDSPort
@@ -30,23 +34,33 @@ private:
     std::string portName;
     Direction direction;
 
-    // DDS specific variables
+    // DDS client which manages the DDS participant, subscriber, and publisher instance
     DDSClient *client;
+
+    // DDS specific instances
     DDS::Topic_var topic;
     DDSMessage::MessageDataWriter_var messageWriter;
     DDSMessage::MessageDataReader_var messageReader;
+    
+    // Flag whether or not QoS configuration should be changed to keep all messages in case late joiners should be supported.
+    // This way components can publish the configuration for their subcomponents only one time.
+    // Later deployed subcomponents will receive earlier published configurations.
     bool setQoSTransientDurability;
+
+    // Flag whether or not to enable recording-specific behavior. 
+    // If enabled, a recording module is instantiated and a vector clock is piggybacked to exchanged messages
     bool isRecordingEnabled;
 
-    // The DDS message type is keyed by a message id
-    // After each message write the messageId is incremented so that each message can be identified uniquely
+    // The DDS message type is annotated by an integer ID.
+    // This is not necessary anymore, as each message carries an UUID.
+    // However, for legacy reasons, this is left in.
+    // The recorder module makes use of it.
     int messageId = 1;
 
-    // Allow setting a callback function which is triggered whenever new data
-    // arrives
+    // Allow setting a callback function which is triggered whenever new data arrives.
     std::function<void(T)> onDataAvailableCallback;
 
-    // Using pointer to avoid initializing it despite not being enabled in pom.xml
+    // Using pointer to avoid initializing it despite not being enabled
     std::unique_ptr<DDSRecorder> ddsRecorder;
 
 public:
@@ -74,7 +88,6 @@ public:
     }
 
     void init() {
-
     	if (isRecordingEnabled) {
             ddsRecorder = std::make_unique<DDSRecorder>();
             ddsRecorder->setInstanceName(client->getInstanceName());
@@ -83,11 +96,12 @@ public:
             ddsRecorder->setPortName(portName);
             ddsRecorder->init();
         }
+
         // independently of the port direction, a topic instance is required
         topic = createTopic();
 
         if (!topic) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: DDSPort() - OpenDDS topic creation failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: DDSPort() - OpenDDS topic creation failed.";
         } else {
             if (direction == INCOMING) {
                 messageReader = initReader();
@@ -101,14 +115,14 @@ public:
 
 
     DDS::Topic_var createTopic() {
+        DDSMessage::MessageTypeSupport_var ts = new DDSMessage::MessageTypeSupportImpl;
+
         DDS::Topic_var topicVar = client->getParticipant()->create_topic(
                 // sets unique topicVar name which is associated with the publishers port
                 // name
                 topicName.c_str(),
                 // Topics are type-specific
-                client->getMessageTypeName(),
-                // QoS includes KEEP_LAST_HISTORY_QOS which might be changed
-                // when log traces are inspected
+                ts->get_type_name(),
                 TOPIC_QOS_DEFAULT,
                 // no topicVar listener required
                 nullptr,
@@ -136,6 +150,7 @@ public:
         dataReaderQos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
 
         if (setQoSTransientDurability) {
+            // if enabled, late joiners can retrieve all previous sent messages
             dataReaderQos.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
             dataReaderQos.resource_limits.max_samples_per_instance =
                     DDS::LENGTH_UNLIMITED;
@@ -152,7 +167,7 @@ public:
                         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
         if (!reader) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS data reader creation failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initReader() - OpenDDS data reader creation failed.";
             return 0;
         }
 
@@ -162,7 +177,7 @@ public:
                 DDSMessage::MessageDataReader::_narrow(reader);
 
         if (!messageReaderVar) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initReader() - OpenDDS message reader narrowing failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initReader() - OpenDDS message reader narrowing failed.";
         }
         return messageReaderVar;
     }
@@ -172,6 +187,7 @@ public:
         client->getPublisher()->get_default_datawriter_qos(dataWriterQoS);
 
         if (setQoSTransientDurability) {
+            // if enabled, late joiners can retrieve all previous sent messages
             dataWriterQoS.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
             dataWriterQoS.resource_limits.max_samples_per_instance =
                     DDS::LENGTH_UNLIMITED;
@@ -189,7 +205,7 @@ public:
                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
         if (!writer) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer creation failed.";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer creation failed.";
             exit (EXIT_FAILURE);
         }
 
@@ -198,7 +214,7 @@ public:
                 DDSMessage::MessageDataWriter::_narrow(writer);
 
         if (!messageWriterVar) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. ";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: initWriter() - OpenDDS Data Writer narrowing failed. ";
         }
 
         return messageWriterVar;
@@ -212,7 +228,7 @@ public:
     void sendToExternal(tl::optional<T> nextVal) override {
         if (nextVal && direction == Direction::OUTGOING) {
             if (!messageWriter) {
-                CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - writer not initialized ";
+                CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: sendToExternal() - writer not initialized ";
                 return;
             }
 
@@ -220,6 +236,7 @@ public:
             message.id = messageId;
 
             if (isRecordingEnabled) {
+                // if recording is enabled, piggyback a vector clock to the message
                 MessageWithClockContainer <T> container;
                 container.message = nextVal.value();
                 container.vectorClock = VectorClock::getVectorClock();
@@ -233,12 +250,13 @@ public:
             DDS::ReturnCode_t error = messageWriter->write(message, DDS::HANDLE_NIL);
 
             if (error != DDS::RETCODE_OK) {
-                CLOG (ERROR, DDS_LOG_ID) << "ERROR: sendToExternal() - write returned " << error;
+                CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: sendToExternal() - write returned " << error;
             }
 
             if (isRecordingEnabled) {
-                // remove vector clock
+                // remove vector clock by overwriting the content
                 message.content = dataToJson(nextVal).c_str();
+                
                 ddsRecorder->recordMessage(message, messageWriter->get_topic()->get_name(),
                                            VectorClock::getVectorClock(), false);
             }
@@ -257,7 +275,7 @@ public:
                 DDSMessage::MessageDataReader::_narrow(reader);
 
         if (!reader_i) {
-            CLOG (ERROR, DDS_LOG_ID) << "ERROR: on_data_available() - _narrow failed!";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "ERROR: on_data_available() - _narrow failed!";
             return;
         }
 
@@ -276,7 +294,7 @@ public:
 
                 const char *topicId = reader_i->get_topicdescription()->get_name();
 
-                // remove vector clock
+                // remove vector clock by overwriting the content
                 message.content = dataToJson(container.message).c_str();
 
                 ddsRecorder->recordMessage(message, topicId, container.vectorClock, false);
@@ -292,43 +310,42 @@ public:
                 onDataAvailableCallback(result);
             }
         } else {
-            CLOG (ERROR, DDS_LOG_ID) << "on_data_available() - _take_next_sample failed!";
+            CLOG (ERROR, DDS_PORT_LOG_ID) << "on_data_available() - _take_next_sample failed!";
             return;
         }
     }
 
     // Mandatory interface implementations which are left empty as we do not make use of them
-    // Event triggers are logged nonetheless for potential inspection purposes
-
+    // Event triggers are logged for inspection purposes
     void on_requested_deadline_missed(DDS::DataReader_ptr /*reader*/,
                                       const DDS::RequestedDeadlineMissedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_requested_deadline_missed";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_requested_deadline_missed";
     }
 
     void on_liveliness_changed(DDS::DataReader_ptr /*reader*/,
                                const DDS::LivelinessChangedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_liveliness_changed";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_liveliness_changed";
     }
 
     void on_requested_incompatible_qos(
             DDS::DataReader_ptr /*reader*/,
             const DDS::RequestedIncompatibleQosStatus & status) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_requested_incompatible_qos";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_requested_incompatible_qos";
     }
 
     void on_sample_rejected(DDS::DataReader_ptr /*reader*/,
                             const DDS::SampleRejectedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_sample_rejected";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_sample_rejected";
     }
 
     void
     on_subscription_matched(DDS::DataReader_ptr /*reader*/,
                             const DDS::SubscriptionMatchedStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_subscription_matched";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_subscription_matched";
     }
 
     void on_sample_lost(DDS::DataReader_ptr /*reader*/,
                         const DDS::SampleLostStatus & /*status*/) override {
-        CLOG (DEBUG, DDS_LOG_ID) << "DDSPort::on_sample_lost";
+        CLOG (DEBUG, DDS_PORT_LOG_ID) << "DDSPort::on_sample_lost";
     }
 };

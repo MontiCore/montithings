@@ -6,6 +6,8 @@ ${tc.signature("comp", "config", "existsHWC")}
 #pragma once
 #include "InOutPort.h"
 #include "easyloggingpp/easylogging++.h"
+#include "Message.h"
+
 ${Utils.printIncludes(comp, config)}
 
 ${Utils.printNamespaceStart(comp)}

@@ -6,6 +6,8 @@ ${tc.signature("comp", "config")}
     cmp.setDDSCmdArgs(ddsArgc, ddsArgv);
 </#if>
 
+${tc.includeArgs("template.logtracing.hooks.InitLogTracer", [comp, config])}
+
 <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   ddsClient.setComp(&cmp);
 

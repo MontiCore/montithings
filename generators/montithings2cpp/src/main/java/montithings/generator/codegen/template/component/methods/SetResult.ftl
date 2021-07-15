@@ -5,6 +5,13 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result){
 <#list comp.getOutgoingPorts() as portOut >
-  this->${Identifier.getInterfaceName()}.getPort${portOut.getName()?cap_first}()->setNextValue(result.get${portOut.getName()?cap_first}());
+
+  if(result.get${portOut.getName()?cap_first}().has_value()) {
+    this->${Identifier.getInterfaceName()}.getPort${portOut.getName()?cap_first}()->setNextValue(
+      result.get${portOut.getName()?cap_first}Message(
+          ${tc.includeArgs("template.logtracing.hooks.GetCurrOutputUuid", [comp, config, portOut])}
+        )
+    );
+  }
 </#list>
 }

@@ -41,6 +41,7 @@ public class MontiThingsConfiguration implements Configuration {
     OUT_SHORT("o"),
     PLATFORM("platform"),
     SPLITTING("splitting"),
+    LOGTRACING("logtracing"),
     RECORDING("recording"),
     MESSAGEBROKER("messageBroker"),
     MESSAGEBROKER_SHORT("broker"),
@@ -83,6 +84,7 @@ public class MontiThingsConfiguration implements Configuration {
       .add(DelegatingConfigurationContributor.with(internal)).build();
     configParams.setTargetPlatform(getPlatform());
     configParams.setSplittingMode(getSplittingMode());
+    configParams.setLogTracing(getLogTracing());
     configParams.setRecordingMode(getRecordingMode());
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker(getSplittingMode()));
@@ -349,6 +351,23 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "off"
     return ConfigParams.SplittingMode.OFF;
+  }
+
+  public ConfigParams.LogTracing getLogTracing() {
+    Optional<String> logTracing = getAsString(Options.LOGTRACING);
+    if (logTracing.isPresent()) {
+      switch (logTracing.get()) {
+        case "OFF":
+          return ConfigParams.LogTracing.OFF;
+        case "ON":
+          return ConfigParams.LogTracing.ON;
+        default:
+          throw new IllegalArgumentException(
+                  "0xMT302 Log tracing mode " + logTracing + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "off"
+    return ConfigParams.LogTracing.OFF;
   }
 
   public ConfigParams.MessageBroker getMessageBroker(ConfigParams.SplittingMode splittingMode) {

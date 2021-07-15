@@ -121,7 +121,7 @@ ManagementCommunication::registerMessageProcessor (ManagementMessageProcessor *p
 }
 
 void
-ManagementCommunication::sendManagementMessage (std::string receiverIp, std::string receiverPort, Message *message)
+ManagementCommunication::sendManagementMessage (std::string receiverIp, std::string receiverPort, PortToSocketMessage *message)
 {
   sendManagementMessage (receiverIp, receiverPort, message->toString ());
 }

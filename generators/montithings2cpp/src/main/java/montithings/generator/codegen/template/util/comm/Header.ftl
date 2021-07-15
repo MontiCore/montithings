@@ -9,6 +9,8 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include "ManagementMessageProcessor.h"
 #include "easyloggingpp/easylogging++.h"
 
+#include "Message.h"
+
 ${Utils.printNamespaceStart(comp)}
 
 class ${className} : public ManagementMessageProcessor

@@ -21,6 +21,7 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
   if (shouldCompute())
   {
 </#if>
+
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
@@ -32,14 +33,13 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   ${tc.includeArgs("template.component.helper.RecorderComputationMeasurementStart", [comp, config])}
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
   ${tc.includeArgs("template.component.helper.RecorderComputationMeasurementEnd", [comp, config])}
-    
+
+  ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
+  ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
-  
   setResult(${Identifier.getResultName()});
-<#if !ComponentHelper.isEveryBlock(computeName, comp)>
   }
-</#if>
 <#else>
   <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
@@ -47,6 +47,9 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, behavior])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+
+  ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
+  ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
   setResult(${Identifier.getResultName()});
@@ -59,6 +62,8 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
     ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+    ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
+    ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     if (timeMode == TIMESYNC) {
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
     setResult(${Identifier.getResultName()});
@@ -86,8 +91,9 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   </#if>
   ${Identifier.getStateName()}.storeState (json__state);
 </#if>
-}
+
 <#if !ComponentHelper.isEveryBlock(computeName, comp)>
+}
 remainingComputes--;
 }
 </#if>

@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("comp", "hostclassName")}
+${tc.signature("comp","hostclassName")}
 <#include "/template/interface/helper/GeneralPreamble.ftl">
 
 

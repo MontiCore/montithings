@@ -7,7 +7,9 @@ ${tc.signature("comp", "config", "existsHWC")}
   ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}
   (
   <#list comp.getAllOutgoingPorts() as port>
-    ${ComponentHelper.getRealPortCppTypeString(comp, port, config)} ${port.getName()} <#sep>,</#sep>
+    <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+
+    ${type} ${port.getName()} <#sep>,</#sep>
   </#list>
   ){
   <#if comp.isPresentParentComponent()>

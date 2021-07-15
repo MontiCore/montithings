@@ -19,14 +19,14 @@ public class CppPrettyPrinter {
   }
 
   public static MontiThingsFullPrettyPrinter getPrinter() {
-    return getPrinter(false);
+    return getPrinter(false, false);
   }
 
-  public static MontiThingsFullPrettyPrinter getPrinter(boolean suppressPostConditionCheck) {
+  public static MontiThingsFullPrettyPrinter getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck) {
     MontiThingsFullPrettyPrinter printer = new MontiThingsFullPrettyPrinter();
     printer.getTraverser().setExpressionsBasisHandler(new CppExpressionPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setCommonExpressionsHandler(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
-    printer.getTraverser().setAssignmentExpressionsHandler(new CppAssignmentPrettyPrinter(printer.getPrinter(), suppressPostConditionCheck));
+    printer.getTraverser().setAssignmentExpressionsHandler(new CppAssignmentPrettyPrinter(printer.getPrinter(), isLogTracingEnabled, suppressPostConditionCheck));
     printer.getTraverser().setOCLExpressionsHandler(new CppOCLExpressionsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setOptionalOperatorsHandler(new CppOptionalOperatorsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setSIUnitLiteralsHandler(new MontiThingsSIUnitLiteralsPrettyPrinter(printer.getPrinter()));

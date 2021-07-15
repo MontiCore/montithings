@@ -6,7 +6,8 @@ ${className}() = default;
 <#if comp.getAllIncomingPorts()?has_content && !isBatch>
   explicit ${className}(
     <#list comp.getAllIncomingPorts() as port>
-      tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
+      <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+      tl::optional<Message<${type}>> ${port.getName()}
         <#sep>,</#sep>
     </#list>);
 </#if>

@@ -33,9 +33,9 @@ public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {
   @Override public void handle(ASTPublishPort node) {
     CommentPrettyPrinter.printPreComments(node, getPrinter());
     for (String port : node.getPublishedPortsList()) {
-      getPrinter().print("port" + capitalize(port) +
-        "->setNextValue(" + Identifier.getResultName() +
-        ".get" + capitalize(port) + "());");
+      getPrinter().print("interface.getPort" + capitalize(port) +
+        "()->setNextValue(" + Identifier.getResultName() +
+        ".get" + capitalize(port) + "Message());");
     }
     CommentPrettyPrinter.printPostComments(node, getPrinter());
   }

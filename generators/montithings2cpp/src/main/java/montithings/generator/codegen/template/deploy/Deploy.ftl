@@ -10,6 +10,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   #include "${compname}DDSClient.h"
 </#if>
+
 #include "tclap/CmdLine.h"
 #include "easyloggingpp/easylogging++.h"
 #include ${"<chrono>"}
@@ -23,7 +24,7 @@ INITIALIZE_EASYLOGGINGPP
 int main<#if existsHWC>TOP</#if>(int argc, char* argv[])
 {
 
-el::Loggers::getLogger("MQTT");
+el::Loggers::getLogger("MQTT_PORT");
 el::Loggers::getLogger("DDS");
 el::Loggers::getLogger("RECORDER");
 
