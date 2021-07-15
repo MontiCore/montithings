@@ -38,11 +38,8 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
-
   setResult(${Identifier.getResultName()});
-<#if !ComponentHelper.isEveryBlock(computeName, comp)>
   }
-</#if>
 <#else>
   <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
@@ -95,8 +92,8 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   ${Identifier.getStateName()}.storeState (json__state);
 </#if>
 
-}
 <#if !ComponentHelper.isEveryBlock(computeName, comp)>
+}
 remainingComputes--;
 }
 </#if>
