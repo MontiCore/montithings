@@ -10,10 +10,7 @@ sourceSets {
       srcDirs += templateDir
     }
   }
-  rte.resources.srcDirs "$projectDir/src/main/resources/rte"
-  headers.resources.srcDirs "$projectDir/src/main/resources/header"
-  libs.resources.srcDirs "$projectDir/src/main/resources/lib"
-  tests.resources.srcDirs "$projectDir/src/main/resources/test"
+  res.resources.srcDirs "$projectDir/src/main/resources"
 }
 
 test { useJUnitPlatform() }
@@ -33,7 +30,6 @@ dependencies {
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
   implementation "de.monticore:monticore-runtime:$monticore_version"
   implementation "de.monticore:monticore-grammar:$monticore_version"
-  //implementation "de.monticore:monticore-generator:$monticore_version"
   implementation "org.jscience:jscience:$jscience_version"
   implementation "javax.json:javax.json-api:$javax_json_version"
   implementation project(":languages:bindings")
@@ -61,17 +57,8 @@ dependencies {
 
 
 java {
-  registerFeature("$montithings_rte_classifier") {
-    usingSourceSet(sourceSets.rte)
-  }
-  registerFeature("$montithings_headers_classifier") {
-    usingSourceSet(sourceSets.headers)
-  }
-  registerFeature("$montithings_libs_classifier") {
-    usingSourceSet(sourceSets.libs)
-  }
-  registerFeature("$montithings_tests_classifier") {
-    usingSourceSet(sourceSets.tests)
+  registerFeature("$montithings_resources_classifier") {
+    usingSourceSet(sourceSets.res)
   }
   //withJavadocJar()
   withSourcesJar()
