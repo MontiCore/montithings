@@ -112,7 +112,7 @@ Validate Maven:
     expire_in: 1 week
     
 Validate Gradle:
-  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.5.1-jdk8
+  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
   stage: build
   allow_failure: true
   artifacts:
@@ -130,7 +130,7 @@ Validate Gradle:
     - gradle clean assemble
     
 Unit Test Gradle:
-  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.5.1-jdk8
+  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
   stage: test
   allow_failure: true
   dependencies: 
