@@ -17,16 +17,21 @@ rootProject.name = 'applications'
 include(':basic-input-output')
 
 includeBuild '../'
-/*
-include(':fireAlarm')
+//include(':fireAlarm')
 include(':hierarchy')
 include(':language-features:behavior')
 include(':language-features:class-diagrams')
 include(':language-features:error-handling')
 include(':language-features:interface-components')
+include(':language-features:interface-componentsMTB')
+include(':language-features:ocl')
 include(':language-features:pre-postconditions')
+include(':language-features:si-units')
+include(':language-features:statecharts')
 include(':language-features')
+include(':dds-ports')
+include(':log-filtering')
 include(':mqtt-ports')
 include(':retain-state')
-include(':sensor-actuator-ports')
- */
+include(':record-transform-replay')
+include(':sensor-actuator-access')
