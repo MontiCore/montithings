@@ -99,7 +99,6 @@
 									<artifact>*:*</artifact>
 									<excludes>
 										<include>**/*.java</include>
-										<include>**/*.ftl</include>
 										<excludes>META-INF/*.SF</excludes>
 										<excludes>META-INF/*.DSA</excludes>
 										<excludes>META-INF/*.RSA</excludes>
