@@ -158,6 +158,7 @@ Unit Test Gradle:
       - ./languages/montithings/target/surefire-reports/TEST-*.xml
     paths:
       - generators/montithings2cpp/target/
+      - "applications/**/target/generated-sources"
 
 Unit Test JDK 8:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
@@ -197,6 +198,16 @@ Generator Test Alpine:
 Generator Test DDS:
   image: $CI_REGISTRY_IMAGE/mtcmakedds
   <<: *generator_test_definition
+
+Compile Applications:
+  image: $CI_REGISTRY_IMAGE/mtcmake
+  stage: generator-test
+  dependencies:
+    - Unit Test JDK 11 #download generated-test-sources
+  needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
+  script:
+    - cd applications
+    - ./compile.sh
 
 Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
