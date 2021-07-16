@@ -128,6 +128,8 @@ Validate Gradle:
       - languages/mtconfig/target/
   script:
     - gradle clean assemble
+    - cd applications
+    - gradle clean assemble
     
 Unit Test Gradle:
   image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
