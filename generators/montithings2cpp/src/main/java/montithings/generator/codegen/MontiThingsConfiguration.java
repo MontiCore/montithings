@@ -35,9 +35,11 @@ public class MontiThingsConfiguration implements Configuration {
     MODELPATH("modelPath"),
     MODELPATH_SHORT("mp"),
     TESTPATH("testPath"),
-    HANDWRITTENCODEPATH("handcodedPath"),
+    HANDWRITTENCODEPATH("handwrittenCode"),
+    HANDWRITTENCODEPATH_MONTICORE("handcodedPath"),
     HANDWRITTENCODEPATH_SHORT("hwc"),
-    OUT("outputDir"),
+    OUT("out"),
+    OUT_MONTICORE("outputDir"),
     OUT_SHORT("o"),
     PLATFORM("platform"),
     SPLITTING("splitting"),
@@ -273,6 +275,11 @@ public class MontiThingsConfiguration implements Configuration {
       Path hwc = Paths.get(hwcPath.get());
       return hwc.toFile();
     }
+    hwcPath = getAsString(Options.HANDWRITTENCODEPATH_MONTICORE);
+    if (hwcPath.isPresent()) {
+      Path hwc = Paths.get(hwcPath.get());
+      return hwc.toFile();
+    }
     hwcPath = getAsString(Options.HANDWRITTENCODEPATH_SHORT);
     if (hwcPath.isPresent()) {
       Path hwc = Paths.get(hwcPath.get());
@@ -293,6 +300,10 @@ public class MontiThingsConfiguration implements Configuration {
    */
   public File getOut() {
     Optional<String> out = getAsString(Options.OUT);
+    if (out.isPresent()) {
+      return new File(out.get());
+    }
+    out = getAsString(Options.OUT_MONTICORE);
     if (out.isPresent()) {
       return new File(out.get());
     }
