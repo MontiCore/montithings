@@ -339,6 +339,7 @@ public class MTCLI {
     modelPath.setLongOpt("modelpath");
     modelPath.setArgName("directory");
     modelPath.setOptionalArg(true);
+    modelPath.setRequired(true);
     modelPath.setArgs(1);
     options.addOption(modelPath);
 
@@ -348,6 +349,7 @@ public class MTCLI {
     hwcPath.setArgName("directory");
     hwcPath.setOptionalArg(true);
     hwcPath.setArgs(1);
+    hwcPath.setRequired(true);
     options.addOption(hwcPath);
 
     Option targetPath = new Option("t", "Set the directory in which to place the"
@@ -356,6 +358,7 @@ public class MTCLI {
     targetPath.setArgName("directory");
     targetPath.setOptionalArg(true);
     targetPath.setArgs(1);
+    targetPath.setRequired(true);
     options.addOption(targetPath);
 
     Option testPath = new Option("tp", "Sets the path containing the test case "
@@ -372,6 +375,7 @@ public class MTCLI {
     mainComp.setArgName("directory");
     mainComp.setOptionalArg(false);
     mainComp.setArgs(1);
+    mainComp.setRequired(true);
     options.addOption(mainComp);
 
     Option platform = Option.builder("pf").
