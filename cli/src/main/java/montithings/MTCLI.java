@@ -11,14 +11,12 @@ import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.MontiThingsGeneratorTool;
 import montithings.generator.codegen.MontiThingsConfiguration;
 import org.apache.commons.cli.*;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -142,6 +140,9 @@ public class MTCLI {
       // ann unexpected error from the apache CLI parser:
       Log.error("0xA7101 Could not process CLI parameters: " + e.getMessage());
     }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   protected void addCmdParameter(CommandLine cmd, Map<String, Iterable<String>> params,
@@ -247,11 +248,8 @@ public class MTCLI {
    * @param targetName a subfolder of the target directory, i.e. the new name of the copied folder
    */
   public void unpackResources(String srcName, File targetDirectory, String targetName) {
-    // TODO: Does not work outside of Intellij
     try {
-      FileUtils.copyDirectory(
-        new File(getClass().getResource(srcName).toURI().getPath()),
-        new File(targetDirectory.toPath() + File.separator + targetName));
+      copyFromJar(srcName, Paths.get(targetDirectory.toPath() + File.separator + targetName));
     }
     catch (IOException e) {
       e.printStackTrace();
@@ -259,6 +257,37 @@ public class MTCLI {
     catch (URISyntaxException e) {
       e.printStackTrace();
     }
+  }
+
+  public void copyFromJar(String source, final Path target) throws URISyntaxException, IOException {
+    URI resource = getClass().getResource("").toURI();
+    FileSystem fileSystem;
+    try {
+      fileSystem = FileSystems.newFileSystem(resource, Collections.<String, String>emptyMap());
+    } catch (FileSystemAlreadyExistsException e) {
+      fileSystem = FileSystems.getFileSystem(resource);
+    }
+
+    final Path jarPath = fileSystem.getPath(source);
+
+    Files.walkFileTree(jarPath, new SimpleFileVisitor<Path>() {
+
+      private Path currentTarget;
+
+      @Override
+      public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        currentTarget = target.resolve(jarPath.relativize(dir).toString());
+        Files.createDirectories(currentTarget);
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.copy(file, target.resolve(jarPath.relativize(file).toString()), StandardCopyOption.REPLACE_EXISTING);
+        return FileVisitResult.CONTINUE;
+      }
+
+    });
   }
 
   /*=================================================================*/
