@@ -1,7 +1,17 @@
 /* (c) https://github.com/MontiCore/monticore */
+import de.se_rwth.commons.logging.Finding
+import de.se_rwth.commons.logging.Log
+import java.security.Permission
+import java.util.stream.Collectors
+
+buildscript {
+  dependencies {
+    classpath "montithings.generators:montithings2cpp:$version"
+  }
+}
 
 plugins {
-  id "monticore"
+  id "se-groovy" version "7.2.0-SNAPSHOT"
 }
 
 group = "montithings.applications"
@@ -13,66 +23,78 @@ sourceSets {
 }
 
 configurations {
-  mt_rte
-  mt_libs
-  mt_headers
+  mt_resources
 }
 
 dependencies {
-  mt_rte("montithings.generators:montithings2cpp:$version:$montithings_rte_classifier") {
-    transitive = false
-  }
-  mt_libs("montithings.generators:montithings2cpp:$version:$montithings_libs_classifier") {
-    transitive = false
-  }
-  mt_headers("montithings.generators:montithings2cpp:$version:$montithings_headers_classifier") {
+  mt_resources("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_resources_classifier")
+    }
     transitive = false
   }
 
-  implementation project(":languages:montithings")
   implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
-  implementation "de.monticore:monticore-runtime:$monticore_version"
-  implementation "de.monticore:monticore-grammar:$monticore_version"
-  implementation project(":generators:cd2cpp")
-  //implementation "de.monticore:monticore-generator:$monticore_version"
+  implementation "montithings.generators:cd2cpp:$version"
+  implementation "montithings.generators:montithings2cpp:$version"
   runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
-  testImplementation "junit:junit:$junit_version"
-  testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
-task unpack_mt2cppGenerators(type: Sync) {
-  def mt2cpp = "montithings.generators:montithings2cpp:$version"
+task unpackResources(type: Sync) {
   def genSrcDir = "$buildDir/generated-sources"
+  exclude 'META-INF', 'META-INF/**', "montithings/**", "test/**"
 
-  exclude 'META-INF', 'META-INF/**'
-
-  dependsOn configurations.mt_rte
-  from {
-    configurations.mt_rte.collect { zipTree(it) }
+  dependsOn configurations.mt_resources
+  from configurations.mt_resources.collect { zipTree(it) }
+  // the "rte" folder's subfolder 'montithings-RTE' should be
+  // unpacked directly without being in an 'rte' folder
+  eachFile { fcd ->
+    if (fcd.relativePath.segments[0] == "rte")
+      fcd.relativePath = new RelativePath(true, fcd.relativePath.segments.drop(1))
   }
-  into genSrcDir
-
-  dependsOn configurations.mt_libs
-  from {
-    configurations.mt_libs.collect { zipTree(it) }
-  }
-  into "$genSrcDir/lib"
-
-  dependsOn configurations.mt_headers
-  from {
-    configurations.mt_headers.collect { zipTree(it) }
-  }
-  into "$genSrcDir/header"
+  includeEmptyDirs = false
+  into "$genSrcDir"
 }
 
-task groovyTask(type: GroovyTask) {
+task unpackTests(type: Sync) {
+  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**', '**'
+  include 'test/**'
+
+  dependsOn configurations.mt_resources
+  from configurations.mt_resources.collect { zipTree(it) }
+  into "$genTestDir/test"
+}
+
+task groovyTask(type: SEGroovyTask) {
+
+  doFirst {
+    // workaround so delay system exit:
+    System.setSecurityManager(new SecurityManager() {
+      @Override
+      public void checkExit(int status) {
+        String error = Log.getFindings().stream().
+            filter({ f -> f.getType().equals(Finding.Type.ERROR) })
+            .map({ f -> f.getMsg() })
+            .collect(Collectors.joining("\n"))
+        ant.fail(error)
+      }
+
+      @Override
+      public void checkPermission(Permission perm) {
+        // Allow other activities by default
+      }
+    })
+  }
   baseClass = "montithings.generator.codegen.MontiThingsGeneratorScript"
-  outputDir = file "$buildDir/generated-sources"
-  modelPath(
-      file("$projectDir/src/main/resources/models")
-  )
-  handcodedPath(
-      file("$projectDir/src/main/resources/hwc")
-  )
   script = "montithings/generator/mtgenerator.groovy"
+
+  outputDir = file "$buildDir/generated-sources"
+  modelPath(file("$projectDir/src/main/resources/models"))
+  handcodedPath(file("$projectDir/src/main/resources/hwc"))
+  arguments.put("mainComponent", "hierarchy.Example")
+  arguments.put("version", "$version")
 }
+
+groovyTask.mustRunAfter unpackResources
+build.dependsOn unpackResources, groovyTask//, unpackRte

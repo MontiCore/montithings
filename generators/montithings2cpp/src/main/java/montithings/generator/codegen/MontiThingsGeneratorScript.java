@@ -26,6 +26,7 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
   public void run(String script, Configuration configuration) {
     GroovyInterpreter.Builder builder = GroovyInterpreter.newInterpreter()
         .withScriptBaseClass(MontiThingsGeneratorScript.class)
+        .withClassLoader(getClass().getClassLoader())
         .withImportCustomizer(new ImportCustomizer().addStarImports(DEFAULT_IMPORTS));
 
     // configuration
