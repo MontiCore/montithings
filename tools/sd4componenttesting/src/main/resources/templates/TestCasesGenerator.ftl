@@ -1,5 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 <#import "/templates/PortSpy.ftl" as portSpy>
+<#import "/templates/Expressions.ftl" as exp>
 #include "easyloggingpp/easylogging++.h"
 #include "gtest/gtest.h"
 #include <chrono>
@@ -188,10 +189,9 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
 
     </#list>
   <#elseif connection.getType() == "EXPRESSION">
-  <#--TODO Expressions behandeln-->
-
-  LOG(INFO) << "check expression";
-
+  <#assign expression = connection.getExpression()>
+  LOG(INFO) << "check expression ${PrettyPrinter.prettyprint(expression)}";
+  <@exp.print expression=expression pp=PrettyPrinter />
   </#if>
 </#list>
 }

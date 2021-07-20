@@ -52,7 +52,7 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
       node.getPackageDeclaration().accept(getTraverser());
       this.getPrinter().print(";\n\n");
     }
-    { // TODO werden aktuell nicht betarchtet
+    {
       Iterator<de.monticore.types.mcbasictypes._ast.ASTMCImportStatement> iter_mCImportStatements = node.getMCImportStatementList().iterator();
       while (iter_mCImportStatements.hasNext()) {
         iter_mCImportStatements.next().accept(getTraverser());
