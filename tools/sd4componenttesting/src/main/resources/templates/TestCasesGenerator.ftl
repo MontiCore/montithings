@@ -1,9 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
+<#import "/templates/PortSpy.ftl" as portSpy>
 #include "easyloggingpp/easylogging++.h"
 #include "gtest/gtest.h"
 #include <chrono>
 #include <thread>
 
+<#assign PrettyPrinter = tc.instantiate("de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter")>
 <#assign mainComp = ast.getEnclosingScope().getMainComponentTypeSymbol()>
 <#assign mainCompName = mainComp.getName()>
 <#assign package = "montithings">
@@ -38,7 +40,7 @@ struct ${mainComp.getName()}Test : testing::Test
 
   ${ast.getTestDiagram().getName()} ()
   {
-    cmp${mainCompName} = new ${package}${mainComp.getName()} ("example");
+    cmp${mainCompName} = new ${package}${mainComp.getName()} ("${ast.getTestDiagram().getName()}");
 
 <#list mainComp.getSubComponents() as component>
     ${component.getName()}Cmp = cmp${mainCompName}->getSubcomp__${component.getName()?cap_first}();
@@ -82,21 +84,7 @@ public:
 <#list mainComp.getPorts() as port>
   <#assign compTypeName = mainComp.getName()>
   <#assign portName = port.getName()>
-/**
- * This class records values of the "${compTypeName}" component's "${portName}" port
- */
-class PortSpy_${compTypeName}_${portName?cap_first} : public PortSpy<${package}${compTypeName}, ${port.getType().getTypeInfo().getName()}>
-{
-public:
-  using PortSpy::PortSpy;
-
-  void onEvent () override
-  {
-    tl::optional<${port.getType().getTypeInfo().getName()}> value
-        = component->getInterface ()->getPort${portName?cap_first} ()->getCurrentValue (this->getUuid ());
-    recordedMessages.push_back (value);
-  }
-};
+  <@portSpy.printPortSpy compTypeName=compTypeName portName=portName package=package port=port/>
 
 </#list>
 
@@ -106,23 +94,10 @@ public:
     <#assign compTypeName = component.getType().getName()>
     <#assign compName = component.getName()>
     <#assign portName = port.getName()>
-/**
- * This class records values of the "${compName}" component's "${portName}" port
- */
-class PortSpy_${compTypeName}_${compName?cap_first}_${portName?cap_first} : public PortSpy<${package}${compTypeName}, ${port.getType().getTypeInfo().getName()}>
-{
-public:
-  using PortSpy::PortSpy;
-
-  void onEvent () override
-  {
-    tl::optional<${port.getType().getTypeInfo().getName()}> value
-        = component->getInterface ()->getPort${portName?cap_first} ()->getCurrentValue (this->getUuid ());
-    recordedMessages.push_back (value);
-  }
-};
+    <@portSpy.printPortSpy compTypeName=compTypeName portName=portName package=package port=port compName=compName isComponent=true/>
 
   </#list>
+
 
 </#list>
 
@@ -135,6 +110,9 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   // PortSpy of the "${compTypeName}" component
   <#list mainComp.getPorts() as port>
     <#assign portName = port.getName()?cap_first>
+
+  LOG(INFO) << "PortSpy to port ${portName} of main component cmp${mainCompName} attached";
+
   PortSpy_${compTypeName}_${portName} portSpy${compTypeName}${portName}(cmp${mainCompName});
   cmp${mainCompName}->getInterface()->getPort${portName}()->attach(&portSpy${compTypeName}${portName});
 
@@ -146,6 +124,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   // PortSpy of the "${compName}" component
   <#list component.getType().getPorts() as port>
     <#assign portName = port.getName()?cap_first>
+  LOG(INFO) << "PortSpy to port ${portName} of sub component ${compName}Cmp attached";
   PortSpy_${compTypeName}_${compName?cap_first}_${portName} portSpy${compTypeName}${compName?cap_first}${portName}(${compName}Cmp);
   ${compName}Cmp->getInterface()->getPort${portName}()->attach(&portSpy${compTypeName}${compName?cap_first}${portName});
 
@@ -162,6 +141,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
 <#assign testDiagramSymbol = ast.getEnclosingScope().getDiagramSymbols().values()[0]>
 <#assign testDiagramComp = testDiagramSymbol.getAstNode()>
 <#if testDiagramComp.getSD4CElementList()[0].getType() != "MAIN_INPUT">
+  LOG(INFO) << "start computing";
   cmp${mainCompName}->compute();
 </#if>
 
@@ -170,17 +150,20 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   <#if connection.getType() == "MAIN_INPUT">
   // Input von mainComp setzen
     <#assign portName = connection.getTarget(0).getPort()?cap_first>
+  LOG(INFO) << "start computing with next value ${connection.getValue(0).getValue()}";
   cmp${mainCompName}->getInterface()->getPort${portName}()->setNextValue(${connection.getValue(0).getValue()});
 
   <#elseif connection.getType() == "MAIN_OUTPUT">
   // Output von mainComp prüfen
     <#assign compTypeName = mainComp.getName()>
     <#assign portName = connection.getSource().getPort()?cap_first>
+  LOG(INFO) << "check main output";
   ASSERT_TRUE (portSpy${compTypeName}${portName}.getRecordedMessages().back().has_value());
   EXPECT_EQ (portSpy${compTypeName}${portName}.getRecordedMessages().back().value(), ${connection.getValue(0).getValue()});
 
   <#elseif connection.getType() == "DEFAULT">
     <#list connection.getTargetList() as portAccess>
+    LOG(INFO) << "check ${PrettyPrinter.prettyprint(connection)}";
       <#if portAccess.isPresentComponent()>
   // Input von Target ${portAccess.getComponent()}.${portAccess.getPort()} prüfen
         <#assign compName = portAccess.getComponent()>
@@ -206,6 +189,8 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
     </#list>
   <#elseif connection.getType() == "EXPRESSION">
   <#--TODO Expressions behandeln-->
+
+  LOG(INFO) << "check expression";
 
   </#if>
 </#list>
