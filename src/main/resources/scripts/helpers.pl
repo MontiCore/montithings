@@ -5,7 +5,7 @@ merge_list([H|T],L,[H|M]):-
 
 % Adapted from https://stackoverflow.com/questions/4578755/permuted-combinations-of-the-elements-of-a-list-prolog
 % returns all possible combinations of a given list which length is less than equal a specific number
-list_combinations_of_length_lte(Input,0,[]).
+list_combinations_of_length_lte(_,0,[]).
 
 list_combinations_of_length_lte(Input,N,Output) :-
    findall(Num, between(1, N, Num), List_of_length_N),
@@ -18,7 +18,7 @@ list_combinations_of_length_lte(Input,N,Output) :-
 
 % get list of all devices that are online
 list_online_devices(L) :-
-    include(property("state","online"),Devices,L).
+    include(property("state","online"),_,L).
 
 % filter list on property
 filter_list(Input, Key, Value, Output) :-
@@ -47,8 +47,8 @@ check_dependency_distinct(ComponentDistributionA,ComponentDistributionB, N) :-
   length(ComponentDistributionB,LenB),
   LenB >= N*LenA.
 
-check_dependency(ComponentDistributionA,ComponentDistributionB, N) :-
-  % dismiss ComponentDistributionA
+check_dependency(_,ComponentDistributionB, N) :-
+  % dismiss ComponentDistributionA (_)
   length(ComponentDistributionB,LenB),
   LenB >= N.
 
@@ -56,7 +56,7 @@ check_dependency(ComponentDistributionA,ComponentDistributionB, N) :-
 get_available_devices(Devices) :-
   findall(X,property("device",1,X), Devices).
 
-selection_disjunction([], InputList, OutputList):-
+selection_disjunction([], _, OutputList):-
     OutputList = [].
 selection_disjunction([[Key,Value, Boolean] | RestList], InputList, OutputList):-
     filter_list_by_property(property(Key,Value), Boolean, InputList, OutputListFiltered1),
@@ -103,3 +103,4 @@ check_include_all(property(Key, Value), AllPossibleList, InputList) :-
   length(InputListIntersection, List_length),
   length(ListDevicesThatMatchProperty, List_length2),
   List_length == List_length2.
+
