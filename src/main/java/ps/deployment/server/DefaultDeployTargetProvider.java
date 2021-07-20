@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-
 import com.google.common.base.Charsets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -24,16 +22,17 @@ import ps.deployment.server.data.DeployClient;
 import ps.deployment.server.data.DeployClientLocation;
 import ps.deployment.server.distribution.listener.IDeployStatusListener;
 import ps.deployment.server.distribution.listener.VoidDeployStatusListener;
+import ps.deployment.server.exception.DeploymentException;
 
-public class DeploymentServer {
+public class DefaultDeployTargetProvider implements IDeployTargetProvider {
   
   public static void main(String[] args) throws Exception {
     // test code, will be removed (TODO)
-    String mqttHost = "node4.se.rwth-aachen.de";
+    String mqttHost = "node4.se.rwth-aachen.de"; //;"127.0.0.1";
     
     MqttClient mqttClient = new MqttClient("tcp://" + mqttHost + ":1883", "orchestrator");
     mqttClient.connect();
-    DeploymentServer ds = new DeploymentServer(mqttClient);
+    DefaultDeployTargetProvider ds = new DefaultDeployTargetProvider(mqttClient);
     
     boolean deploy = false;
     String deployOnclientID = "bfb9531471e8";
@@ -54,13 +53,13 @@ public class DeploymentServer {
   private final Map<String, DeployClient> clients = new HashMap<>();
   private IDeployStatusListener listener;
   
-  public DeploymentServer(MqttClient mqttClient, IDeployStatusListener listener) throws MqttException {
+  public DefaultDeployTargetProvider(MqttClient mqttClient, IDeployStatusListener listener) throws MqttException {
     this.mqttClient = mqttClient;
     this.listener = listener;
     this.prepare();
   }
   
-  public DeploymentServer(MqttClient mqttClient) throws MqttException {
+  public DefaultDeployTargetProvider(MqttClient mqttClient) throws MqttException {
     this(mqttClient, new VoidDeployStatusListener());
   }
   
@@ -79,7 +78,7 @@ public class DeploymentServer {
   }
   
   /**
-   * Starts the Watchdog for this {@link DeploymentServer}. Detects timeouts of
+   * Starts the Watchdog for this {@link DefaultDeployTargetProvider}. Detects timeouts of
    * clients.
    */
   private void runWatchdog() {
@@ -167,28 +166,24 @@ public class DeploymentServer {
     
     System.out.println("received heartbeat from client " + clientID);
     DeployClient client = clients.get(clientID);
-    if (client == null) {
-      // This client has not been registered yet. Register it now.
-      DeployClientLocation location = new DeployClientLocation();
-      location.setBuilding("b01");
-      location.setFloor("f02");
-      location.setRoom("r03");
-      client = DeployClient.create(clientID, false, location);
-      clients.put(clientID, client);
-    }
-    
-    client.setLastSeen(System.currentTimeMillis());
-    if (!client.isOnline()) {
-      client.setOnline(true);
-      this.listener.onClientOnline(client);
+    if (client != null) {
+      client.setLastSeen(System.currentTimeMillis());
+      if (!client.isOnline()) {
+        client.setOnline(true);
+        this.listener.onClientOnline(client);
+      }
     }
   }
   
-  public void deploy(String clientID, String ymlCompose) throws MqttPersistenceException, MqttException {
-    MqttMessage msg = new MqttMessage();
-    if (ymlCompose != null)
-      msg.setPayload(ymlCompose.getBytes(Charsets.UTF_8));
-    this.mqttClient.publish("deployment/" + clientID + "/push", msg);
+  public void deploy(String clientID, String ymlCompose) throws DeploymentException {
+    try {
+      MqttMessage msg = new MqttMessage();
+      if (ymlCompose != null)
+        msg.setPayload(ymlCompose.getBytes(Charsets.UTF_8));
+      this.mqttClient.publish("deployment/" + clientID + "/push", msg);
+    } catch(MqttException e) {
+      throw new DeploymentException(e);
+    }
   }
   
   public Collection<DeployClient> getClients() {
