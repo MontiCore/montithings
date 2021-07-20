@@ -30,4 +30,8 @@ public class NetworkInfo {
     this.dockerRepositoryPrefix = dockerRepository;
   }
   
+  public String getMqttURI() {
+    return "tcp://"+this.getMqttHost() + ":" + this.getMqttPort();
+  }
+  
 }
