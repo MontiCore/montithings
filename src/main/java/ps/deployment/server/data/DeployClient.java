@@ -4,7 +4,7 @@ public class DeployClient {
   
   private String clientID;
   private boolean online;
-  private DeployClientLocation location = new DeployClientLocation();
+  private LocationSpecifier location = new LocationSpecifier();
   private String[] hardware = new String[0];
   private long lastSeen;
   
@@ -24,11 +24,11 @@ public class DeployClient {
     this.online = online;
   }
   
-  public DeployClientLocation getLocation() {
+  public LocationSpecifier getLocation() {
     return location;
   }
   
-  public void setLocation(DeployClientLocation location) {
+  public void setLocation(LocationSpecifier location) {
     this.location = location;
   }
   
@@ -51,7 +51,7 @@ public class DeployClient {
     this.lastSeen = lastSeen;
   }
   
-  public static DeployClient create(String clientID, boolean online, DeployClientLocation location, String... hardware) {
+  public static DeployClient create(String clientID, boolean online, LocationSpecifier location, String... hardware) {
     DeployClient client = new DeployClient();
     client.setClientID(clientID);
     client.setOnline(online);

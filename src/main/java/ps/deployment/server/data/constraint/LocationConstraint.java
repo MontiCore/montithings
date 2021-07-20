@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import ps.deployment.server.data.DeployClientLocation;
+import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.distribution.config.DeployConfigBuilder;
 
 public class LocationConstraint implements Constraint {
@@ -51,7 +51,7 @@ public class LocationConstraint implements Constraint {
     // For more information, consult the documentation of the Prolog-Generator.
     JsonArray json = new JsonArray(3);
     json.add("location");
-    json.add(DeployClientLocation.create(buildingSelector, floorSelector, roomSelector).toPrologString());
+    json.add(LocationSpecifier.create(buildingSelector, floorSelector, roomSelector).toPrologString());
     json.add(this.constraintType.prologValue);
     builder.distributionSelectionFor(instanceName).add(json);
   }

@@ -19,7 +19,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 import ps.deployment.server.data.DeployClient;
-import ps.deployment.server.data.DeployClientLocation;
+import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.distribution.listener.IDeployStatusListener;
 import ps.deployment.server.distribution.listener.VoidDeployStatusListener;
 import ps.deployment.server.exception.DeploymentException;
@@ -139,7 +139,7 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
       // update device config
       if (client == null) {
         // This client has not been registered yet. Register it now.
-        DeployClientLocation location = new DeployClientLocation();
+        LocationSpecifier location = new LocationSpecifier();
         location.setBuilding(building);
         location.setFloor(floor);
         location.setRoom(room);

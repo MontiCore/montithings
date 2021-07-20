@@ -23,7 +23,7 @@ import com.google.gson.JsonParser;
 
 import ps.deployment.server.Utils;
 import ps.deployment.server.data.DeployClient;
-import ps.deployment.server.data.DeployClientLocation;
+import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.data.DeploymentInfo;
 import ps.deployment.server.data.Distribution;
 import ps.deployment.server.data.NetworkInfo;
@@ -52,7 +52,7 @@ public class TestDistribution {
     for (int building = 1; building <= 3; building++) {
       for (int floor = 1; floor <= 3; floor++) {
         for (int room = 301; room <= 303; room++) {
-          DeployClientLocation loc = DeployClientLocation.create(String.valueOf(building), String.valueOf(floor), String.valueOf(room));
+          LocationSpecifier loc = LocationSpecifier.create(String.valueOf(building), String.valueOf(floor), String.valueOf(room));
           targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_temp_"+(room-300), true, loc));
           targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_controller_"+(room-300), true, loc));
         }
@@ -74,8 +74,8 @@ public class TestDistribution {
   @Test(timeout = 10_000L)
   public void testRestPrologGenerator() throws Exception {
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("2fa84e32", true, DeployClientLocation.create("1", "1", "101"), "sensor_temperature"));
-    clients.add(DeployClient.create("713fa127", true, DeployClientLocation.create("1", "1", "101"), "heat_controller"));
+    clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), "sensor_temperature"));
+    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), "heat_controller"));
     
     String jsonConfig = new String(Utils.readAllBytes(getClass().getResourceAsStream("/scripts/ex1_config.json")), StandardCharsets.UTF_8);
     
@@ -120,8 +120,8 @@ public class TestDistribution {
     
     // example data
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("2fa84e32", true, DeployClientLocation.create("1", "1", "101"), "HighPerformanceAdditionComputeUnit"));
-    clients.add(DeployClient.create("713fa127", true, DeployClientLocation.create("1", "1", "101")));
+    clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), "HighPerformanceAdditionComputeUnit"));
+    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101")));
     
     JsonObject jsonDeploy = null;
     try (Reader reader = new InputStreamReader(getClass().getResourceAsStream("/json/deployment-info.json"))) {

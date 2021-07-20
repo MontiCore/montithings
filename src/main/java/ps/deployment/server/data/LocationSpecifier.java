@@ -1,6 +1,6 @@
 package ps.deployment.server.data;
 
-public class DeployClientLocation {
+public class LocationSpecifier {
   
   private String building, floor, room;
   
@@ -30,7 +30,7 @@ public class DeployClientLocation {
   
   @Override
   public String toString() {
-    return "DeployClientLocation [building=" + building + ", floor=" + floor + ", room=" + room + "]";
+    return "LocationSpecifier [building=" + building + ", floor=" + floor + ", room=" + room + "]";
   }
   
   /**
@@ -53,8 +53,8 @@ public class DeployClientLocation {
     return sb.toString();
   }
   
-  public static DeployClientLocation create(String building, String floor, String room) {
-    DeployClientLocation loc = new DeployClientLocation();
+  public static LocationSpecifier create(String building, String floor, String room) {
+    LocationSpecifier loc = new LocationSpecifier();
     loc.setBuilding(building);
     loc.setFloor(floor);
     loc.setRoom(room);

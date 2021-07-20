@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
-import ps.deployment.server.data.DeployClientLocation;
+import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.data.DeploymentConfiguration;
 
 public interface Suggestion {
@@ -72,8 +72,8 @@ public interface Suggestion {
    * portion of this string must be specified. For example, building1_floor1 is
    * also a valid location specifier.
    */
-  public static DeployClientLocation parseLocation(String prologStr) {
-    DeployClientLocation location = new DeployClientLocation();
+  public static LocationSpecifier parseLocation(String prologStr) {
+    LocationSpecifier location = new LocationSpecifier();
     
     // register location specifiers
     Map<String, Consumer<String>> pats = new HashMap<>();

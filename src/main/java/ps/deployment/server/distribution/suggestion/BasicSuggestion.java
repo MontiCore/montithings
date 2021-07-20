@@ -1,7 +1,7 @@
 package ps.deployment.server.distribution.suggestion;
 
 import java.util.ListIterator;
-import ps.deployment.server.data.DeployClientLocation;
+import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.constraint.BasicConstraint;
 import ps.deployment.server.data.constraint.Constraint;
@@ -10,7 +10,7 @@ import ps.deployment.server.data.constraint.BasicConstraint.Type;
 public class BasicSuggestion implements Suggestion {
   
   protected final String instanceName;
-  protected final DeployClientLocation location;
+  protected final LocationSpecifier location;
   protected final int orgCount;
   protected final int satCount;
   protected final Type type;
@@ -19,7 +19,7 @@ public class BasicSuggestion implements Suggestion {
    * @param satCount The count that would be satisfiable or -1 if there is not
    *          such (sensible) value.
    */
-  public BasicSuggestion(String instanceName, DeployClientLocation location, int orgCount, int satCount, Type type) {
+  public BasicSuggestion(String instanceName, LocationSpecifier location, int orgCount, int satCount, Type type) {
     super();
     this.instanceName = instanceName;
     this.location = location;
@@ -32,7 +32,7 @@ public class BasicSuggestion implements Suggestion {
     return instanceName;
   }
   
-  public DeployClientLocation getLocation() {
+  public LocationSpecifier getLocation() {
     return location;
   }
   
