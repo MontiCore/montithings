@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import ps.deployment.server.data.DeploymentInfo;
 import ps.deployment.server.data.InstanceInfo;
 
+@Deprecated
 public class DeployConfigGenerator {
   
   private final DeploymentInfo deployment;
