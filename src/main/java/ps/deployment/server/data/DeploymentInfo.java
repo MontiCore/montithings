@@ -7,6 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import ps.deployment.server.exception.DeploymentException;
+
 public class DeploymentInfo {
   
   private InstanceInfo[] instances;
@@ -33,33 +35,37 @@ public class DeploymentInfo {
     return res;
   }
   
-  public static DeploymentInfo fromJson(JsonObject json) {
-    LinkedList<InstanceInfo> instances = new LinkedList<>();
-    
-    JsonArray jInstances = json.getAsJsonArray("instances");
-    if (jInstances == null || !jInstances.isJsonArray()) {
-      // TODO throw
-    }
-    
-    for (JsonElement jeInstance : jInstances) {
-      JsonObject jInstance = jeInstance.getAsJsonObject();
-      String componentType = jInstance.get("componentType").getAsString();
-      String instanceName = jInstance.get("instanceName").getAsString();
+  public static DeploymentInfo fromJson(JsonObject json) throws DeploymentException {
+    try {
+      LinkedList<InstanceInfo> instances = new LinkedList<>();
       
-      List<String> requirements = new LinkedList<String>();
-      JsonElement jeReqs = jInstance.get("requirements");
-      // collect requirements
-      if (jeReqs != null && jeReqs.isJsonArray()) {
-        JsonArray jReqs = jeReqs.getAsJsonArray();
-        for (JsonElement jReq : jReqs) {
-          requirements.add(jReq.getAsString());
-        }
+      JsonArray jInstances = json.getAsJsonArray("instances");
+      if (jInstances == null || !jInstances.isJsonArray()) {
+        // TODO throw
       }
       
-      instances.add(new InstanceInfo(componentType, instanceName, requirements.toArray(new String[requirements.size()])));
+      for (JsonElement jeInstance : jInstances) {
+        JsonObject jInstance = jeInstance.getAsJsonObject();
+        String componentType = jInstance.get("componentType").getAsString();
+        String instanceName = jInstance.get("instanceName").getAsString();
+        
+        List<String> requirements = new LinkedList<String>();
+        JsonElement jeReqs = jInstance.get("requirements");
+        // collect requirements
+        if (jeReqs != null && jeReqs.isJsonArray()) {
+          JsonArray jReqs = jeReqs.getAsJsonArray();
+          for (JsonElement jReq : jReqs) {
+            requirements.add(jReq.getAsString());
+          }
+        }
+        
+        instances.add(new InstanceInfo(componentType, instanceName, requirements.toArray(new String[requirements.size()])));
+      }
+      
+      return new DeploymentInfo(instances.toArray(new InstanceInfo[instances.size()]));
+    } catch(ClassCastException | NullPointerException e) {
+      throw new DeploymentException(e);
     }
-    
-    return new DeploymentInfo(instances.toArray(new InstanceInfo[instances.size()]));
   }
   
 }
