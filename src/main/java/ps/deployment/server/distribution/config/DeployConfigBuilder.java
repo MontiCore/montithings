@@ -12,6 +12,7 @@ public class DeployConfigBuilder {
   
   private final DeploymentConfiguration config;
   private JsonObject jsonBase;
+  private JsonArray jsonDependencies;
   
   public DeployConfigBuilder(DeploymentConfiguration deployment) {
     this.config = deployment;
@@ -48,8 +49,10 @@ public class DeployConfigBuilder {
       jsonDistribution.add(instance.getInstanceName(), jsonComp);
     }
     
+    jsonDependencies = new JsonArray();
+    
     jsonBase.add("distribution", jsonDistribution);
-    jsonBase.add("dependencies", new JsonArray()); // TODO add dependencies
+    jsonBase.add("dependencies", jsonDependencies);
     jsonBase.add("incompatibilities", new JsonArray()); // TODO add incompatibilities
     
     return jsonBase;
@@ -82,6 +85,10 @@ public class DeployConfigBuilder {
   
   public JsonArray distributionConstraintsFor(String instanceName) {
     return this.getJsonArrayForInstance(instanceName, "distribution_constraints");
+  }
+  
+  public JsonArray dependencies() {
+    return this.jsonDependencies;
   }
   
   public JsonObject build() {

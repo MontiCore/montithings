@@ -1,7 +1,10 @@
 package ps.deployment.server.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,7 +12,10 @@ import com.google.gson.JsonParser;
 
 import ps.deployment.server.data.constraint.BasicConstraint;
 import ps.deployment.server.data.constraint.Constraint;
+import ps.deployment.server.data.constraint.DependencyConstraint;
+import ps.deployment.server.data.constraint.LocationConstraint;
 import ps.deployment.server.exception.DeploymentException;
+import ps.deployment.server.util.ThrowingFunction;
 
 public class DeploymentConfiguration {
   
@@ -37,8 +43,10 @@ public class DeploymentConfiguration {
     JsonArray jarr = new JsonArray();
     json.add("entries", jarr);
     
+    System.out.println("CONSTRAINTS:");
     for(Constraint con : this.constraints) {
       jarr.add(con.serializeJson());
+      System.out.println(con);
     }
     
     return json;
@@ -59,13 +67,25 @@ public class DeploymentConfiguration {
     DeploymentInfo info = DeploymentInfo.fromJson(jsonInfo);
     List<Constraint> constraints = new ArrayList<>();
     
-    JsonElement jeConstraints = jsonConfig.getAsJsonArray("deploymentConstraint");
-    if(jeConstraints != null && jeConstraints.isJsonArray()) {
-      JsonArray jConstraints = jeConstraints.getAsJsonArray();
-      
-      for(JsonElement jeConsraint : jConstraints) {
-        JsonObject jConstraint = jeConsraint.getAsJsonObject();
-        constraints.add(BasicConstraint.fromJson(jConstraint));
+    // declare parsers for constraint types
+    Map<String, ThrowingFunction<JsonObject, Constraint, DeploymentException>> constraintParsers = new HashMap<>();
+    constraintParsers.put("deploymentConstraint", BasicConstraint::fromJson);
+    constraintParsers.put("deploymentDependencyConstraint", DependencyConstraint::fromJson);
+    constraintParsers.put("deploymentLocationConstraint", LocationConstraint::fromJson);
+    
+    // parse constraints for each constraint type
+    for(Entry<String, ThrowingFunction<JsonObject, Constraint, DeploymentException>> e : constraintParsers.entrySet()) {
+      // find array for this constraint type
+      JsonElement jeConstraints = jsonConfig.get(e.getKey());
+      if(jeConstraints != null && jeConstraints.isJsonArray()) {
+        JsonArray jConstraints = jeConstraints.getAsJsonArray();
+        
+        for(JsonElement jeConsraint : jConstraints) {
+          JsonObject jConstraint = jeConsraint.getAsJsonObject();
+          // parse constraint by corresponding parser
+          Constraint constraint = e.getValue().apply(jConstraint);
+          constraints.add(constraint);
+        }
       }
     }
     

@@ -163,6 +163,10 @@ public class DeploymentManager implements IDeployStatusListener {
         return null;
       }).get();
       
+      if(results == null) {
+        throw new DeploymentException("Could not compute a valid suggestion.");
+      }
+      
       // Clone config so we do not alter the original.
       DeploymentConfiguration cloned = config.clone();
       
@@ -172,6 +176,7 @@ public class DeploymentManager implements IDeployStatusListener {
         Entry<Distribution, List<Suggestion>> e = it.next();
         if(index == suggestionIndex) {
           List<Suggestion> suggs = e.getValue();
+          // Apply suggestions to cloned config.
           suggs.forEach(s->s.applyTo(cloned));
           break;
         }
