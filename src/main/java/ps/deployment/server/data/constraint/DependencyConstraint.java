@@ -43,7 +43,7 @@ public class DependencyConstraint implements Constraint {
   @Override
   public void applyConstraint(DeployConfigBuilder builder) {
     JsonObject json = new JsonObject();
-    json.addProperty("type", this.exclusive ? "simple" : "distinct");
+    json.addProperty("type", this.exclusive ? "distinct" : "simple");
     json.addProperty("dependent", this.dependent);
     json.addProperty("dependency", this.dependency);
     json.addProperty("amount_at_least", this.count);
