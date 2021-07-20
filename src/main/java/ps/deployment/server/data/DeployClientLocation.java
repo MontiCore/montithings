@@ -28,6 +28,11 @@ public class DeployClientLocation {
     this.room = room;
   }
   
+  @Override
+  public String toString() {
+    return "DeployClientLocation [building=" + building + ", floor=" + floor + ", room=" + room + "]";
+  }
+  
   public static DeployClientLocation create(String building, String floor, String room) {
     DeployClientLocation loc = new DeployClientLocation();
     loc.setBuilding(building);
