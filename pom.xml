@@ -31,7 +31,7 @@
               <archive>
                 <manifest>
                   <mainClass>
-                    ps.deployment.server.ProofOfConcept
+                    ps.deployment.server.DeploymentServer
                   </mainClass>
                 </manifest>
               </archive>
@@ -90,6 +90,14 @@
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.28</version>
+    </dependency>
+    
+    <!-- Framework for a simple web server -->
+    <!-- https://mvnrepository.com/artifact/com.sparkjava/spark-core -->
+    <dependency>
+        <groupId>com.sparkjava</groupId>
+        <artifactId>spark-core</artifactId>
+        <version>2.9.3</version>
     </dependency>
 
 
