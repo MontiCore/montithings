@@ -16,6 +16,7 @@
 		<module>generators</module>
 		<module>languages</module>
 		<module>services</module>
+		<module>cli</module>
 	</modules>
 
 	<!-- == PROJECT PROPERTIES ============================================== -->
@@ -55,6 +56,7 @@
 		<plexus.plugin>2.8.8</plexus.plugin>
 		<se-groovy.maven.version>1.2.4-SNAPSHOT</se-groovy.maven.version>
 		<source.plugin>3.2.1</source.plugin>
+		<shade.plugin>2.4.3</shade.plugin>
 		<jacoco.plugin>0.8.5</jacoco.plugin>
 		<jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
 		<surefire.plugin>3.0.0-M4</surefire.plugin>
@@ -70,6 +72,7 @@
 		<montithings-headers.classifier>montithings-headers</montithings-headers.classifier>
 		<montithings-libs.classifier>montithings-libs</montithings-libs.classifier>
 		<montithings-tests.classifier>montithings-tests</montithings-tests.classifier>
+		<cli.classifier>cli</cli.classifier>
 
 		<!-- .. Misc .......................................................... -->
 		<java.version>1.8</java.version>
@@ -82,6 +85,12 @@
 	<!-- == DEPENDENCIES ==================================================== -->
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+				<groupId>commons-cli</groupId>
+				<artifactId>commons-cli</artifactId>
+				<version>1.4</version>
+			</dependency>
 
 			<dependency>
 				<groupId>javax.json</groupId>
