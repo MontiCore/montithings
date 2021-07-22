@@ -124,7 +124,7 @@ shadowJar {
   }
   archiveFileName = "MTCLI.${archiveExtension.get()}"
   archiveClassifier = "cli"
-  minimize()
+  //minimize()
 }
 
 jar.dependsOn shadowJar
