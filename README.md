@@ -17,15 +17,23 @@ For composed components the behavior emerges from the behavior of their subcompo
 
 While MontiArc generates code for simulations, MontiThings generates code to be executed on real devices.
 
-# Getting Started (native installation)
+<img src="docs/Process.png" alt="drawing" width="700px"/>
 
-## Is this the right installation type for you?
+MontiThings takes models and handwritten code from its users together with a control script.
+MontiThings uses these elements to generate a C++ project including various scripts, e.g., for building the project, or packaging it in Docker images.
+
+
+# Installation
+
+## Native installation
+
+### Is this the right installation type for you?
 The native installation takes more time to set up, but it runs considerably faster than Docker. 
 Docker takes about 3-4 times longer to execute. 
 If you will use this project for a full semester (e.g. for a thesis or a practical course) 
 you'll most likely want the native installation - it will save you time in the long run. 
 
-## Prerequisites 
+### Prerequisites 
 - Git (for checking out the project)
 - Maven (for building the project); Gradle is still under development, use Maven!
 - Java 8 or 11 or 14 (other versions are not checked by the CI pipeline)
@@ -43,7 +51,7 @@ cd core
 ./installLinux.sh
 ```
 
-## Installation
+### Installation
 
 ```
 git clone git@git.rwth-aachen.de:monticore/montithings/core.git
@@ -65,9 +73,9 @@ cmake -G Ninja ..; ninja
 ```
 You should then be able to find the binaries in the `bin` folder. 
 
-# Quick Start (using Docker)
+## Quick Start (using Docker)
 
-## Is this the right installation type for you?
+### Is this the right installation type for you?
 The Docker-based execution is slower to execute, but has almost no requirements. 
 Docker execution takes about 3-4 times longer than the native installation. 
 If you just want to try this project, but haven't decided if you will use it for 
@@ -76,10 +84,10 @@ If you later decide to use this project for a longer period of time, you can sti
 the native installation.
 
 
-## Prerequisites
+### Prerequisites
 - [Docker][docker] (for running the compilers that build this project)
 
-## Installation
+### Installation
 
 Log in to this GitLab's docker registry using your credentials you use to log in this GitLab:
 ```
@@ -126,6 +134,154 @@ then starting the application (`./hierarchy` in this example case).
 
 Leave the Docker container by pressing `Ctrl+D` or by typing `exit`.
 
+# Building and Running Your First Application
+
+This sections guides you through building and executing your first application.
+We will use the example under `applications/basic-input-output`.
+It consists of only three components, with the main purpose of showcasing the 
+MontiThings build process.
+The `Example` component contains two subcomponents. The `Source` component produces
+values, the `Sink` component consumes these values and displays them on the
+terminal.
+
+<img src="docs/BasicInputOutput.png" alt="drawing" height="200px"/>
+
+We support three ways of building an application:
+1. Using the command line
+1. Using the [CLion][clion] IDE
+1. Using [Docker](docker)
+
+The following will guide you through each of these possibilities. 
+Choose your favorite method—they're all equivalent for the purpose of 
+this introduction.
+
+### Building and Running an Application using the Command Line
+
+*Note: If you're using Windows, please use PowerShell, not the default command line*
+
+After building the project with `mvn clean install` and thus generating 
+the C++ code, go to the `target/generated-sources` folder. 
+There you can execute the build script:
+```bash
+./build.sh hierarchy
+```
+
+`hierarchy` refers to the folder name in which the generated C++ classes 
+can be found.
+The folder name is the package name of the outermost component 
+(if the generator is set to splitting mode `OFF`) or the 
+fully qualified name of the outermost component (if the 
+generator is set to splitting mode  that is not `OFF`).
+
+After building the project you can go to the new folder `build/bin`.
+There you will find the generated binaries.
+Execute them like this:
+```bash
+./hierarchy.Example -n hierarchy.Example
+```
+
+The `-n hierarchy.Example` defines the instance name of the component you'll instantiate by executing the application.
+You can stop the application by pressing CTRL+C.
+
+Every generated MontiThings component also comes with a generated command line interface that can tell you more about the available parameters, if you use the `-h` option.
+In this case, it looks like this:
+```
+$ ./hierarchy.Example -h
+
+USAGE: 
+
+   hierarchy.Example  [-h] [--version] -n <string>
+
+
+Where: 
+
+   -n <string>,  --name <string>
+     (required) Fully qualified instance name of the component
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+   Example MontiThings component
+```
+
+Depending on the generator configuration, other options will be available.
+For example, if you're using MQTT as message broker, you'll also get options like `--brokerHostname` to set the IP address or hostname of the broker.
+
+In case you've configured the generator with a splitting mode other than `OFF`, you will find multiple binaries in this folder.
+In this case, you will also find two scripts `run.sh` and `kill.sh` in the `build/bin` folder which will start and stop all of the generated components so that you dont have to open a huge number of terminal windows.
+You can inspect their outputs by looking at the log files, that have the components instance name followed by the file extension `.log` (e.g. `hierarchy.Example.log`).
+
+## Building and Running an Application using CLion
+
+It's also possible to option generated MontiThings Projects in IDEs.
+Here, we'll show the process for CLion (which is the Intellij equivalent for C++).
+First open the `target/generated-sources` folder as the root folder of a new project.
+After CLion is done configuring, your window should look like this:
+
+<img src="docs/Clion1.png" alt="Clion Screenshot" width="700px" />
+
+Now, please open the `Edit configurations...` popup:
+
+<img src="docs/Clion2.png" alt="Clion Screenshot" width="700px" />
+
+In the popup, set the instance name of the component instance that will be instantiated by the application:
+
+<img src="docs/Clion3.png" alt="Clion Screenshot" width="700px" />
+
+Now, you just need to press the green play button and a window will show up that first compiles the code and then shows you the application's output:
+
+<img src="docs/Clion4.png" alt="Clion Screenshot" width="700px" />
+
+## Building and Running an Application using Docker
+
+In order to run an application using Docker, make sure that Docker is installed and running first.
+
+Next, open a terminal in the *generated-sources* folder and use the following command in order to build the application:
+
+```bash
+./dockerBuild.sh
+```
+
+After, run the application using:
+
+```bash
+./dockerRun.sh
+```
+
+The application is now running inside of a docker container with the name `hierarchy.example:latest`. In order to verify that the container is instantiated correctly, you can run:
+
+```bash
+docker ps
+```
+
+In the resulting list, there should be a container with the correct name.
+
+You can also look at the current logs of any instance. For our example, this would be done using the following command:
+
+```bash
+docker logs -f hierarchy.example
+```
+
+In this case, `hierarchy.example` is the fully qualified instance name. If your application is split (by using the `Splitting = LOCAL` mode in the `pom.xml` of the application), the fully qualified instance names would be `hierarchy.Example.sink`, for example.
+
+After running the command above, the output should look similar to this:
+
+<img src="container-logs.PNG" alt="drawing" style="zoom:150%;" />
+
+As you can see, the Source component is sending a new value every second, which is then received by the Sink component.
+
+If you want to stop the application you can do the following:
+
+```bash
+./dockerStop.sh
+```
+
 # FAQs
 
 **Q:** "CMake cant find my compiler. Whats wrong?"<br>
@@ -134,7 +290,7 @@ Visual Studio's variable script under `C:\Program Files (x86)\Microsoft Visual S
 (your path might be a little different depending on you installation location and Visual Studio version).
 
 **Q:** "Docker says something like 'denied: access forbidden'"<br>
-**A:** You forgot to log in first. Call `docker login registry.git.rwth-aachen.de` and the credentials you
+**A:** You need to log in first. Call `docker login registry.git.rwth-aachen.de` and the credentials you
 use to log into this GitLab.
 
 **Q:** "I don't know my credentials. I always log in through the RWTH single-sign on"<br>
@@ -157,7 +313,19 @@ time to waste, you can read more about the different file formats on Wikipedia:
 
 © https://github.com/MontiCore/monticore
 
-This repository is currently non-public. 
+For details on the MontiCore 3-Level License model, visit
+https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md
+
+# Further Information
+
+* [Project root: MontiCore @github](https://github.com/MontiCore/monticore)
+* [MontiCore documentation](http://www.monticore.de/)
+* [**List of languages**](https://github.com/MontiCore/monticore/blob/dev/docs/Languages.md)
+* [**MontiCore Core Grammar Library**](https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/Grammars.md)
+* [CD4Analysis Project](https://github.com/MontiCore/cd4analysis)
+* [Best Practices](https://github.com/MontiCore/monticore/blob/dev/docs/BestPractices.md)
+* [Publications about MBSE and MontiCore](https://www.se-rwth.de/publications/)
+* [Licence definition](https://github.com/MontiCore/monticore/blob/master/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md)
 
 [se-rwth]: http://www.se-rwth.de
 [montiarc]: https://git.rwth-aachen.de/monticore/montiarc/core
@@ -171,3 +339,4 @@ This repository is currently non-public.
 [mach-o]: https://en.wikipedia.org/wiki/Mach-O
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
 [password]: https://git.rwth-aachen.de/profile/password/edit
+[clion]: https://www.jetbrains.com/clion
