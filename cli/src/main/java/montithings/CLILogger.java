@@ -90,4 +90,14 @@ public class CLILogger extends Log {
   @Override protected boolean doIsNonZeroExitEnabled() {
     return isNonZeroExit;
   }
+
+  /*
+    This method is copy pasted from Log. If this class does not contain
+    it the CLI will print everything into the same line if its build using
+    Gradle. This is only a Gradle problem. The CLI built using Maven works
+    as intended without this method.
+   */
+  protected void doPrint(String msg) {
+    System.out.println(msg);
+  }
 }
