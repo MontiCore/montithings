@@ -24,6 +24,7 @@ include(':languages')
 include(':generators:montithings2cpp')
 include(':generators:cd2cpp')
 include(':generators')
+include(':cli')
 
 project(':languages:montithings').projectDir = file('languages/montithings')
 //project(':languages:bindings').projectDir = file('languages/bindings')
