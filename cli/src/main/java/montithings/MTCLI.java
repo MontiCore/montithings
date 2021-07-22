@@ -12,7 +12,9 @@ import montithings.generator.MontiThingsGeneratorTool;
 import montithings.generator.codegen.MontiThingsConfiguration;
 import org.apache.commons.cli.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
@@ -21,6 +23,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MTCLI {
+
+  public static final String DEFAULT_MODEL_PATH = "src/main/resources/models";
+
+  public static final String DEFAULT_HWC_PATH = "src/main/resources/hwc";
+
+  public static final String DEFAULT_TEST_PATH = "src/test/resources/gtests";
+
+  public static final String DEFAULT_TARGET_PATH = "target/generated-sources";
+
   /*=================================================================*/
   /* Part 1: Handling the arguments and options
   /*=================================================================*/
@@ -44,7 +55,6 @@ public class MTCLI {
   public void run(String[] args) {
 
     Options options = initOptions();
-
     MontiThingsGeneratorTool tool = new MontiThingsGeneratorTool();
 
     try {
@@ -105,33 +115,28 @@ public class MTCLI {
         return;
       }
 
-      // we need the global scope for symbols and cocos
-      ModelPath modelPath = new ModelPath(Paths.get(System.getProperty("user.dir")));
-      if (cmd.hasOption("mp")) {
-        modelPath = new ModelPath(Arrays.stream(cmd.getOptionValues("mp"))
-          .map(Paths::get)
-          .collect(Collectors.toList())
-        );
+      if (!cmd.hasOption("main")) {
+        Log.error("0xMTCLI0104 Parameter 'main' not present but required for everything "
+          + "other than CoCo checks.");
       }
 
-      File testPath = getDirectoryOrWorkingDirectory(cmd, "tp");
-      File hwcPath = getDirectoryOrWorkingDirectory(cmd, "hwc");
-      File targetDirectory = getDirectoryOrWorkingDirectory(cmd, "t");
+      // Coco check configuration
+      if (cmd.hasOption("c")) {
+        tool.setStopAfterCoCoCheck(true);
+      }
 
-      List<String> hwc = new ArrayList<>();
-      hwc.add(hwcPath.getAbsolutePath());
-      Map<String, Iterable<String>> params = new HashMap<>();
-      params.put("handwrittenCode", hwc);
-      params.put("main", Arrays.stream(cmd.getOptionValues("main"))
-        .collect(Collectors.toList()));
-      addCmdParameter(cmd, params, "pf", "platform");
-      addCmdParameter(cmd, params, "sp", "splitting");
-      addCmdParameter(cmd, params, "br", "messageBroker");
+      // Extract paths from command line
+      ModelPath modelPath = new ModelPath(
+        getDirectoryOrDefault(cmd, "mp", Paths.get(DEFAULT_MODEL_PATH)).toPath());
+      File testPath = getDirectoryOrDefault(cmd, "tp", Paths.get(DEFAULT_TEST_PATH));
+      File hwcPath = getDirectoryOrDefault(cmd, "hwc", Paths.get(DEFAULT_HWC_PATH));
+      File targetDirectory = getDirectoryOrDefault(cmd, "t", Paths.get(DEFAULT_TARGET_PATH));
+      MontiThingsConfiguration mtcfg = getMontiThingsConfigurationFromCliParams(cmd);
 
-      Configuration cfg = new ConfigurationPropertiesMapContributor(params);
-      MontiThingsConfiguration mtcfg = MontiThingsConfiguration.withConfiguration(cfg);
-
+      // Unpack RTE from JAR
       unpackAllResources(targetDirectory);
+
+      // Execute generator
       tool.generate(modelPath.getFullPathOfEntries().stream().findFirst().get().toFile(),
         targetDirectory, hwcPath, testPath, mtcfg.configParams);
 
@@ -145,6 +150,37 @@ public class MTCLI {
     }
   }
 
+  /**
+   * Extract a MontiThingsConfiguration from the command line arguments
+   *
+   * @param cmd the command line instance
+   * @return a MontiThingsConfiguration containing the generator configuration
+   */
+  protected MontiThingsConfiguration getMontiThingsConfigurationFromCliParams(CommandLine cmd) {
+    File hwcPath = getDirectoryOrDefault(cmd, "hwc", Paths.get(DEFAULT_HWC_PATH));
+    List<String> hwc = new ArrayList<>();
+    hwc.add(hwcPath.getAbsolutePath());
+    Map<String, Iterable<String>> params = new HashMap<>();
+    params.put("handwrittenCode", hwc);
+    params.put("main", Arrays.stream(cmd.getOptionValues("main"))
+      .collect(Collectors.toList()));
+    addCmdParameter(cmd, params, "pf", "platform");
+    addCmdParameter(cmd, params, "sp", "splitting");
+    addCmdParameter(cmd, params, "br", "messageBroker");
+
+    Configuration cfg = new ConfigurationPropertiesMapContributor(params);
+    MontiThingsConfiguration mtcfg = MontiThingsConfiguration.withConfiguration(cfg);
+    return mtcfg;
+  }
+
+  /**
+   * Adds a CLI argument to a list of params that can be used by the Groovy Configuration Script
+   *
+   * @param cmd             command line instance
+   * @param params          map of parameters expected by ConfigurationPropertiesMapContributor
+   * @param cmdParamName    name of the flag in the CLI
+   * @param configParamName name of the parameter in the groovy configuration
+   */
   protected void addCmdParameter(CommandLine cmd, Map<String, Iterable<String>> params,
     String cmdParamName, String configParamName) {
     if (cmd.hasOption(cmdParamName)) {
@@ -214,20 +250,31 @@ public class MTCLI {
     }
   }
 
-  public static File getDirectoryOrWorkingDirectory(CommandLine cmd, String paramName) {
-    File result = Paths.get(System.getProperty("user.dir")).toFile();
+  /**
+   * Return the path given by the paramName argument via CLI, or the current working directory
+   * if the parameter is not set in the CLI
+   *
+   * @param cmd         the command line instance
+   * @param paramName   name of the command line parameter
+   * @param defaultPath path to be used if cmd parameter does not exist
+   * @return the path in the argument (if present), the current working directory (otherwise)
+   */
+  public static File getDirectoryOrDefault(CommandLine cmd, String paramName, Path defaultPath) {
+    File result = defaultPath.toFile();
     if (cmd.hasOption(paramName)) {
       result = Arrays.stream(cmd.getOptionValues(paramName))
         .findFirst()
         .map(Paths::get)
         .map(Path::toFile)
         .get();
+      checkPathExists(result, paramName);
     }
     return result;
   }
 
   /**
    * Copy all resources (i.e. RTE and other code) from the JAR to the target directory
+   *
    * @param targetDirectory the directory to place the generated code in
    */
   protected void unpackAllResources(File targetDirectory) {
@@ -243,9 +290,10 @@ public class MTCLI {
 
   /**
    * Copy a single directory from the JAR to the destination
-   * @param srcName folder within the JAR
+   *
+   * @param srcName         folder within the JAR
    * @param targetDirectory directory to which the directory shall be copied
-   * @param targetName a subfolder of the target directory, i.e. the new name of the copied folder
+   * @param targetName      a subfolder of the target directory, i.e. the new name of the copied folder
    */
   public void unpackResources(String srcName, File targetDirectory, String targetName) {
     try {
@@ -259,12 +307,20 @@ public class MTCLI {
     }
   }
 
+  /**
+   * Copy folder from current JAR.
+   * Adapted from https://stackoverflow.com/a/24316335
+   *
+   * @param source path within JAR
+   * @param target copy destination directory
+   */
   public void copyFromJar(String source, final Path target) throws URISyntaxException, IOException {
     URI resource = getClass().getResource("").toURI();
     FileSystem fileSystem;
     try {
       fileSystem = FileSystems.newFileSystem(resource, Collections.<String, String>emptyMap());
-    } catch (FileSystemAlreadyExistsException e) {
+    }
+    catch (FileSystemAlreadyExistsException e) {
       fileSystem = FileSystems.getFileSystem(resource);
     }
 
@@ -275,7 +331,8 @@ public class MTCLI {
       private Path currentTarget;
 
       @Override
-      public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+      public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+        throws IOException {
         currentTarget = target.resolve(jarPath.relativize(dir).toString());
         Files.createDirectories(currentTarget);
         return FileVisitResult.CONTINUE;
@@ -283,11 +340,32 @@ public class MTCLI {
 
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        Files.copy(file, target.resolve(jarPath.relativize(file).toString()), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(file, target.resolve(jarPath.relativize(file).toString()),
+          StandardCopyOption.REPLACE_EXISTING);
         return FileVisitResult.CONTINUE;
       }
 
     });
+  }
+
+  /**
+   * Checks that a given path exists and points to a directory.
+   * Calls Log.error if path does not refer to a valid directory.
+   *
+   * @param file      the path to check
+   * @param paramName name of the parameter with which this path was given to the CLI
+   */
+  protected static void checkPathExists(File file, String paramName) {
+    if (!file.exists()) {
+      try {
+        Files.createDirectories(file.toPath());
+      }
+      catch (IOException e) {
+        Log.error("0xMTCLI0102 Could not create directory '" + file.toPath() +
+          "' for parameter '" + paramName + "'.");
+        e.printStackTrace();
+      }
+    }
   }
 
   /*=================================================================*/
@@ -302,6 +380,10 @@ public class MTCLI {
   protected Options initOptions() {
     Options options = new Options();
 
+    ///
+    /// GENERAL FLAGS
+    ///
+
     // help dialog
     Option help = new Option("h", "Prints this help dialog");
     help.setLongOpt("help");
@@ -313,72 +395,101 @@ public class MTCLI {
     dev.setLongOpt("dev");
     options.addOption(dev);
 
-    // parse input file
-    Option parse = Option.builder("i")
+    // pretty print
+    options.addOption(Option.builder("pp")
+      .desc("Prints the OCL model to stdout or the specified file(s) (optional). "
+        + "Multiple files should be separated by spaces and will be used in the same order "
+        + "in which the input files (-i option) are provided.")
+      .longOpt("prettyprint")
+      .argName("files")
+      .optionalArg(true)
+      .numberOfArgs(Option.UNLIMITED_VALUES)
+      .build()
+    );
+
+    // check cocos only - no generation
+    options.addOption(Option.builder("c").
+      longOpt("coco").
+      optionalArg(true).
+      desc("Checks the CoCos for the input.")
+      .build()
+    );
+
+    ///
+    /// PATHS
+    ///
+
+    // parse single input file
+    options.addOption(Option.builder("i")
       .longOpt("input")
       .argName("files")
       .hasArgs()
       .desc("Processes the list of MontiThings input artifacts. " +
         "Argument list is space separated. CoCos are not checked automatically (see -c).")
-      .build();
-    options.addOption(parse);
+      .build()
+    );
 
-    // model paths
-    Option path = new Option("p", "Sets the artifact path for imported symbols. "
-      + "Directory will be searched recursively for files with the ending "
-      + "\".*sym\" (for example \".cdsym\" or \".sym\"). Defaults to the current folder.");
-    path.setLongOpt("path");
-    path.setArgName("directory");
-    path.setOptionalArg(true);
-    path.setArgs(1);
-    options.addOption(path);
+    // model path
+    options.addOption(Option.builder("mp")
+      .longOpt("modelpath")
+      .argName("directory")
+      .optionalArg(true)
+      .numberOfArgs(1)
+      .desc("Sets the model path for the project. "
+        + "Directory will be searched recursively for files with the ending "
+        + "\".*mt\". Defaults to the current folder + '" + DEFAULT_MODEL_PATH + "'.")
+      .build()
+    );
 
-    Option modelPath = new Option("mp", "Sets the model path for the project. "
-      + "Directory will be searched recursively for files with the ending "
-      + "\".*mt\". Defaults to the current folder.");
-    modelPath.setLongOpt("modelpath");
-    modelPath.setArgName("directory");
-    modelPath.setOptionalArg(true);
-    modelPath.setRequired(true);
-    modelPath.setArgs(1);
-    options.addOption(modelPath);
+    // handwritten code
+    options.addOption(Option.builder("hwc")
+      .longOpt("handcodedPath")
+      .argName("directory")
+      .optionalArg(true)
+      .numberOfArgs(1)
+      .desc("Sets the path containing the handwritten code. "
+        + "Defaults to the current folder + '" + DEFAULT_HWC_PATH + "'.")
+      .build()
+    );
 
-    Option hwcPath = new Option("hwc", "Sets the path containing the handwritten "
-      + "code. Defaults to the current folder.");
-    hwcPath.setLongOpt("handcodedPath");
-    hwcPath.setArgName("directory");
-    hwcPath.setOptionalArg(true);
-    hwcPath.setArgs(1);
-    hwcPath.setRequired(true);
-    options.addOption(hwcPath);
+    // target
+    options.addOption(Option.builder("t")
+      .longOpt("target")
+      .argName("directory")
+      .optionalArg(true)
+      .numberOfArgs(1)
+      .desc("Set the directory in which to place the "
+        + "generated code. Defaults to the current folder + '" + DEFAULT_TARGET_PATH + "'.")
+      .build()
+    );
 
-    Option targetPath = new Option("t", "Set the directory in which to place the"
-      + "generated code. Defaults to the current folder + target/generated-sources.");
-    targetPath.setLongOpt("target");
-    targetPath.setArgName("directory");
-    targetPath.setOptionalArg(true);
-    targetPath.setArgs(1);
-    targetPath.setRequired(true);
-    options.addOption(targetPath);
+    // test cases
+    options.addOption(Option.builder("tp")
+      .longOpt("testPath")
+      .argName("directory")
+      .optionalArg(true)
+      .numberOfArgs(1)
+      .desc("Sets the path containing the test case code. "
+        + "Defaults to the current folder + '" + DEFAULT_TEST_PATH + "'.")
+      .build()
+    );
 
-    Option testPath = new Option("tp", "Sets the path containing the test case "
-      + "code. Defaults to the current folder.");
-    testPath.setLongOpt("testPath");
-    testPath.setArgName("directory");
-    testPath.setOptionalArg(true);
-    testPath.setArgs(1);
-    options.addOption(testPath);
+    ///
+    /// GENERATOR ARGUMENTS
+    ///
 
-    Option mainComp = new Option("main", "Specifies the fully qualified name of the"
-      + "main, i.e., outermost, component.");
-    mainComp.setLongOpt("mainComp");
-    mainComp.setArgName("directory");
-    mainComp.setOptionalArg(false);
-    mainComp.setArgs(1);
-    mainComp.setRequired(true);
-    options.addOption(mainComp);
+    // main component
+    options.addOption(Option.builder("main")
+      .longOpt("mainComp")
+      .argName("directory")
+      .optionalArg(false)
+      .numberOfArgs(1)
+      .desc("Specifies the fully qualified name of the main, i.e., outermost, component.")
+      .build()
+    );
 
-    Option platform = Option.builder("pf").
+    // platform
+    options.addOption(Option.builder("pf").
       longOpt("platform").
       optionalArg(true).
       numberOfArgs(1).
@@ -386,21 +497,23 @@ public class MTCLI {
         + "-pf generic to generate for generic Linux / Windows / Mac systems,\n"
         + "-pf dsa to generate for DSA VCG,\n"
         + "-pf raspi to generate for Raspberry Pi.")
-      .build();
-    options.addOption(platform);
+      .build()
+    );
 
-    Option splitting = Option.builder("sp").
-      longOpt("splitting").
-      optionalArg(true).
-      numberOfArgs(1).
-      desc("Set the splitting mode of the generator. Possible arguments are:\n"
+    // splitting mode
+    options.addOption(Option.builder("sp")
+      .longOpt("splitting")
+      .optionalArg(true)
+      .numberOfArgs(1)
+      .desc("Set the splitting mode of the generator. Possible arguments are:\n"
         + "-sp off to generate a single binary containing all components,\n"
         + "-sp local to generate one binary per component (for execution on the same device),\n"
         + "-sp distributed to generate one binary per component (for execution on multiple devices)")
-      .build();
-    options.addOption(splitting);
+      .build()
+    );
 
-    Option broker = Option.builder("b").
+    // message broker
+    options.addOption(Option.builder("b").
       longOpt("messageBroker").
       optionalArg(true).
       numberOfArgs(1).
@@ -408,27 +521,8 @@ public class MTCLI {
         + "-sp off to use a proprietary one,\n"
         + "-sp mqtt to use Message Queuing Telemetry Transport (Mosquitto MQTT),\n"
         + "-sp dds to Data Distribution Service (OpenDDS)")
-      .build();
-    options.addOption(broker);
-
-    // pretty print MontiThings
-    Option prettyprint = new Option("pp",
-      "Prints the OCL model to stdout or the specified file(s) (optional). "
-        + "Multiple files should be separated by spaces and will be used in the same order "
-        + "in which the input files (-i option) are provided.");
-    prettyprint.setLongOpt("prettyprint");
-    prettyprint.setArgName("files");
-    prettyprint.setOptionalArg(true);
-    prettyprint.setArgs(Option.UNLIMITED_VALUES);
-    options.addOption(prettyprint);
-
-    // check CoCos
-    Option cocos = Option.builder("c").
-      longOpt("coco").
-      optionalArg(true).
-      desc("Checks the CoCos for the input.")
-      .build();
-    options.addOption(cocos);
+      .build()
+    );
 
     return options;
   }

@@ -76,6 +76,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected MTGenerator mtg;
 
+  protected boolean stopAfterCoCoCheck = false;
+
   public void generate(File modelPath, File target, File hwcPath, File testPath,
     ConfigParams config) {
 
@@ -183,6 +185,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkCdExtensionModels(models.getCdextensions(), modelPath, config, cdExtensionTool);
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
     checkMTConfig(models.getMTConfig(), config, mtConfigTool, mtConfigGlobalScope);
+
+    if (stopAfterCoCoCheck) {
+      return;
+    }
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -600,5 +606,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected ComponentTypeSymbol modelToSymbol(String model, IMontiThingsScope symTab) {
     String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
     return symTab.resolveComponentType(qualifiedModelName).get();
+  }
+
+  public boolean isStopAfterCoCoCheck() {
+    return stopAfterCoCoCheck;
+  }
+
+  public void setStopAfterCoCoCheck(boolean stopAfterCoCoCheck) {
+    this.stopAfterCoCoCheck = stopAfterCoCoCheck;
   }
 }
