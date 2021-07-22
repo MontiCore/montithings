@@ -17,7 +17,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * CLI tool providing functionality for processing SD4ComponentTesting artifacts.
+ * CLI tool providing functionality for processing SD4ComponentTesting
+ * artifacts.
  */
 public class SD4ComponentTestingCLI {
 
@@ -52,7 +53,7 @@ public class SD4ComponentTestingCLI {
         ASTSD4Artifact ast = parse(inputFileName);
         inputSD4CTs.add(ast);
       }
-      if(Log.getErrorCount()>0){
+      if (Log.getErrorCount() > 0) {
         return;
       }
 
@@ -63,12 +64,15 @@ public class SD4ComponentTestingCLI {
             prettyPrint(sd4ct, "");
             System.out.println();
           }
-        }
-        else if (cmd.getOptionValues("pp").length != inputSD4CTs.size()) {
-          Log.error(String.format("Received '%s' output files for the prettyprint option. " + "Expected that '%s' many output files are specified. " + "If output files for the prettyprint option are specified, then the number " + " of specified output files must be equal to the number of specified input files.", cmd.getOptionValues("pp").length, inputSD4CTs.size()));
+        } else if (cmd.getOptionValues("pp").length != inputSD4CTs.size()) {
+          Log.error(String.format(
+              "Received '%s' output files for the prettyprint option. "
+                  + "Expected that '%s' many output files are specified. "
+                  + "If output files for the prettyprint option are specified, then the number "
+                  + " of specified output files must be equal to the number of specified input files.",
+              cmd.getOptionValues("pp").length, inputSD4CTs.size()));
           return;
-        }
-        else {
+        } else {
           for (int i = 0; i < inputSD4CTs.size(); i++) {
             ASTSD4Artifact sd4ct_i = inputSD4CTs.get(i);
             prettyPrint(sd4ct_i, cmd.getOptionValues("pp")[i]);
@@ -88,7 +92,7 @@ public class SD4ComponentTestingCLI {
         for (ASTSD4Artifact sd4ct : inputSD4CTs) {
           createSymbolTable(sd4ct);
         }
-        if(Log.getErrorCount()>0){
+        if (Log.getErrorCount() > 0) {
           return;
         }
       }
@@ -112,12 +116,15 @@ public class SD4ComponentTestingCLI {
             SD4ComponentTestingGenerator.generate(sd4ct, sd4ct.getTestDiagram().getName() + ".cpp");
             System.out.println("Generator: Generated " + sd4ct.getTestDiagram().getName() + ".cpp");
           }
-        }
-        else if (cmd.getOptionValues("g").length != inputSD4CTs.size()) {
-          Log.error(String.format("Received '%s' output files for the generator option. " + "Expected that '%s' many output files are specified. " + "If output files for the generator option are specified, then the number " + " of specified output files must be equal to the number of specified input files.", cmd.getOptionValues("g").length, inputSD4CTs.size()));
+        } else if (cmd.getOptionValues("g").length != inputSD4CTs.size()) {
+          Log.error(String.format(
+              "Received '%s' output files for the generator option. "
+                  + "Expected that '%s' many output files are specified. "
+                  + "If output files for the generator option are specified, then the number "
+                  + " of specified output files must be equal to the number of specified input files.",
+              cmd.getOptionValues("g").length, inputSD4CTs.size()));
           return;
-        }
-        else {
+        } else {
           for (int i = 0; i < inputSD4CTs.size(); i++) {
             ASTSD4Artifact sd4ct_i = inputSD4CTs.get(i);
             SD4ComponentTestingGenerator.generate(sd4ct_i, cmd.getOptionValues("g")[i]);
@@ -128,8 +135,7 @@ public class SD4ComponentTestingCLI {
 
       // fail quick in case of symbol storing
       Log.enableFailQuick(true);
-    }
-    catch (ParseException e) {
+    } catch (ParseException e) {
       // unexpected error from apache CLI parser
       Log.error("0xA7101 Could not process CLI parameters: " + e.getMessage());
     }
@@ -156,7 +162,6 @@ public class SD4ComponentTestingCLI {
     SD4ComponentTestingScopesGenitorDelegator genitor = SD4ComponentTestingMill.scopesGenitorDelegator();
     return genitor.createFromAST(ast);
   }
-
 
   /**
    * Checks whether ast satisfies all CoCos.
@@ -188,7 +193,7 @@ public class SD4ComponentTestingCLI {
 
   public Options addAdditionalOptions(Options options) {
     // cocos
-    options.addOption(Option.builder("c").longOpt("coco").optionalArg(true).numberOfArgs(3).desc("Checks the CoCos for the input. Optional arguments are:\n" + "-c intra to check only the intra-model CoCos,\n" + "-c inter checks also inter-model CoCos,\n" + "-c type (default) checks all CoCos.").build());
+    options.addOption(Option.builder("c").longOpt("coco").desc("Checks all CoCos for the input.").build());
 
     return options;
   }
