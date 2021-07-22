@@ -1,14 +1,12 @@
 /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.lang.sd4componenttesting;
 
-//import de.monticore.io.paths.MCPath;
-import de.monticore.io.paths.ModelPath;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingArtifactScope;
-import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingGlobalScope;
 import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingScopesGenitorDelegator;
 import de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter;
+import de.monticore.lang.sd4componenttesting.generator.SD4ComponentTestingGenerator;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.cli.*;
@@ -16,21 +14,18 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * CLI tool providing functionality for processing SD4ComponentTesting artifacts.
  */
-public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
+public class SD4ComponentTestingCLI {
 
   public static void main(String[] args) {
     SD4ComponentTestingCLI cli = new SD4ComponentTestingCLI();
     cli.run(args);
   }
 
-  //@Override
   public void run(String[] args) {
     Options options = initOptions();
 
@@ -57,6 +52,9 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
         ASTSD4Artifact ast = parse(inputFileName);
         inputSD4CTs.add(ast);
       }
+      if(Log.getErrorCount()>0){
+        return;
+      }
 
       // pretty print
       if (cmd.hasOption("pp")) {
@@ -74,27 +72,19 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
           for (int i = 0; i < inputSD4CTs.size(); i++) {
             ASTSD4Artifact sd4ct_i = inputSD4CTs.get(i);
             prettyPrint(sd4ct_i, cmd.getOptionValues("pp")[i]);
+            System.out.println("Pretty Printer: Saved " + cmd.getOptionValues("pp")[i]);
           }
         }
       }
 
-      // we need the global scope for symbols and cocos
-      //MCPath symbolPath = new MCPath(Paths.get(""));
-      ModelPath modelPath = new ModelPath(Paths.get(""));
       if (cmd.hasOption("path")) {
-        //symbolPath = new MCPath(Arrays.stream(cmd.getOptionValues("path")).map(x -> Paths.get(x)).collect(Collectors.toList()));
-        modelPath = new ModelPath(Arrays.stream(cmd.getOptionValues("path")).map(x -> Paths.get(x)).collect(Collectors.toList()));
+        sd4ctTool.initSymbolTable(Arrays.stream(cmd.getOptionValues("path")).map(x -> new File(x)).toArray(File[]::new));
+      } else {
+        sd4ctTool.initSymbolTable(new File("./"));
       }
 
-      //ISD4ComponentTestingGlobalScope globalScope = SD4ComponentTestingMill.globalScope();
-      //globalScope.setSymbolPath(symbolPath);
-      //globalScope.setModelPath(modelPath);
-
-      sd4ctTool.initSymbolTable(new File(cmd.hasOption("path") ? cmd.getOptionValues("path")[0] : "./"));
-
-
       // handle CoCos and symbol storage: build symbol table as far as needed
-      if (cmd.hasOption("c")) {
+      if (cmd.hasOption("c") || cmd.hasOption("g")) {
         for (ASTSD4Artifact sd4ct : inputSD4CTs) {
           createSymbolTable(sd4ct);
         }
@@ -108,11 +98,32 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
         for (ASTSD4Artifact sd4ct : inputSD4CTs) {
           checkAllCoCos(sd4ct);
         }
+        System.out.println("CoCos: All Checked!");
       }
 
       if (Log.getErrorCount() > 0) {
         // if the model is not well-formed, then stop before generating anything
         return;
+      }
+
+      if (cmd.hasOption("g")) {
+        if (cmd.getOptionValues("g") == null || cmd.getOptionValues("g").length == 0) {
+          for (ASTSD4Artifact sd4ct : inputSD4CTs) {
+            SD4ComponentTestingGenerator.generate(sd4ct, sd4ct.getTestDiagram().getName() + ".cpp");
+            System.out.println("Generator: Generated " + sd4ct.getTestDiagram().getName() + ".cpp");
+          }
+        }
+        else if (cmd.getOptionValues("g").length != inputSD4CTs.size()) {
+          Log.error(String.format("Received '%s' output files for the generator option. " + "Expected that '%s' many output files are specified. " + "If output files for the generator option are specified, then the number " + " of specified output files must be equal to the number of specified input files.", cmd.getOptionValues("g").length, inputSD4CTs.size()));
+          return;
+        }
+        else {
+          for (int i = 0; i < inputSD4CTs.size(); i++) {
+            ASTSD4Artifact sd4ct_i = inputSD4CTs.get(i);
+            SD4ComponentTestingGenerator.generate(sd4ct_i, cmd.getOptionValues("g")[i]);
+            System.out.println("Generator: Generated " + cmd.getOptionValues("g")[i]);
+          }
+        }
       }
 
       // fail quick in case of symbol storing
@@ -131,7 +142,6 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
    * @param ast The ast to be printed
    * @return Pretty-printed ast.
    */
-  //@Override
   public void prettyPrint(ASTSD4Artifact ast, String file) {
     SD4ComponentTestingFullPrettyPrinter prettyPrinter = new SD4ComponentTestingFullPrettyPrinter(new IndentPrinter());
     print(prettyPrinter.prettyprint(ast), file);
@@ -142,7 +152,6 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
    *
    * @param ast The ast of the SD4CT.
    */
-  //@Override
   public ISD4ComponentTestingArtifactScope createSymbolTable(ASTSD4Artifact ast) {
     SD4ComponentTestingScopesGenitorDelegator genitor = SD4ComponentTestingMill.scopesGenitorDelegator();
     return genitor.createFromAST(ast);
@@ -158,7 +167,6 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
     SD4ComponentTestingCoCos.createChecker().checkAll(ast);
   }
 
-  //@Override
   public Options addStandardOptions(Options options) {
     // help info
     options.addOption(Option.builder("h").longOpt("help").desc("Prints this help informations.").build());
@@ -167,7 +175,10 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
     options.addOption(Option.builder("i").longOpt("input").hasArgs().desc("Processes the list of SD4CT input artifacts. " + "Argument list is space separated. " + "CoCos are not checked automatically (see -c).").build());
 
     // pretty print
-    options.addOption(Option.builder("pp").longOpt("prettyprint").argName("file").optionalArg(true).numberOfArgs(1).desc("Prints the input SD4CTs to stdout or to the specified file (optional).").build());
+    options.addOption(Option.builder("pp").longOpt("prettyprint").argName("file").optionalArg(true).hasArgs().desc("Prints the input SD4CTs to stdout or to the specified file (optional).").build());
+  
+    // generator
+    options.addOption(Option.builder("g").longOpt("generate").argName("file").optionalArg(true).hasArgs().desc("Generate c++ tests for each SD4CT and save them in specified files (optional) or based on the sd4c file name.").build());
 
     // model paths
     options.addOption(Option.builder("path").hasArgs().desc("Sets the artifact path for imported symbols, space separated.").build());
@@ -175,7 +186,6 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
     return options;
   }
 
-  //@Override
   public Options addAdditionalOptions(Options options) {
     // cocos
     options.addOption(Option.builder("c").longOpt("coco").optionalArg(true).numberOfArgs(3).desc("Checks the CoCos for the input. Optional arguments are:\n" + "-c intra to check only the intra-model CoCos,\n" + "-c inter checks also inter-model CoCos,\n" + "-c type (default) checks all CoCos.").build());
@@ -183,7 +193,6 @@ public class SD4ComponentTestingCLI /*extends SD4ComponentTestingCLITOP*/ {
     return options;
   }
 
-  // Will be in next version
   public void printHelp(org.apache.commons.cli.Options options) {
     org.apache.commons.cli.HelpFormatter formatter = new org.apache.commons.cli.HelpFormatter();
     formatter.setWidth(80);
