@@ -35,7 +35,6 @@ you'll most likely want the native installation - it will save you time in the l
 - [Docker][docker] (for executing generator tests)
 - [Mosquitto][mosquitto] (only for MQTT message broker)
 - [OpenDDS][opendds] (only for DDS communication)
-- A `settings.xml` file from the SE chair (for accessing the dependencies of this project)
 
 On Ubuntu 20.04, you can use our script for installing everything except OpenDDS:
 ```
@@ -45,10 +44,6 @@ cd core
 ```
 
 ## Installation
-
-Place the `settings.xml` file in a folder called `.m2` within your home folder; 
-for example this folder might look like this `/home/kirchhof/.m2` (on Linux), 
-`/Users/kirchhof/.m2` (on macOS), `C:\Users\Kirchhof\.m2` (on Windows).
 
 ```
 git clone git@git.rwth-aachen.de:monticore/montithings/core.git
@@ -83,13 +78,8 @@ the native installation.
 
 ## Prerequisites
 - [Docker][docker] (for running the compilers that build this project)
-- A `settings.xml` file from the SE chair (for accessing the dependencies of this project)
 
 ## Installation
-
-Place the `settings.xml` file in a folder called `.m2` within your home folder; 
-for example this folder might look like this `/home/kirchhof/.m2` (on Linux), `/Users/kirchhof/.m2` (on macOS), 
-`C:\Users\Kirchhof\.m2` (on Windows).
 
 Log in to this GitLab's docker registry using your credentials you use to log in this GitLab:
 ```
