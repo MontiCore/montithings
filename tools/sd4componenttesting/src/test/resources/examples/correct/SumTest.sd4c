@@ -1,6 +1,6 @@
 package examples.correct;
 
 testdiagram SumTest for Sum {
-  -> first : 12
-  result -> : 22
+  -> first : 12;
+  result -> : 22;
 }
