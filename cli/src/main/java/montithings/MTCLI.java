@@ -74,7 +74,7 @@ public class MTCLI {
         Log.initDEBUG();
       }
       else {
-        Log.init();
+        CLILogger.init();
       }
 
       // parse input file, which is now available
