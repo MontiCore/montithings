@@ -272,7 +272,7 @@ In this case, `hierarchy.example` is the fully qualified instance name. If your 
 
 After running the command above, the output should look similar to this:
 
-<img src="container-logs.PNG" alt="drawing" style="zoom:150%;" />
+<img src="docs/DockerRunScreenshot.png" alt="drawing" width="700px" />
 
 As you can see, the Source component is sending a new value every second, which is then received by the Sink component.
 
