@@ -6,13 +6,6 @@ set -e
 
 MONTITHINGS_DIRECTORY=$PWD
 
-# Check that settings.xml exists
-if [ ! -f ~/.m2/settings.xml ]
-then
-echo "There is no settings.xml in your '~/.m2' Folder. Aborting."
-exit 1
-fi
-
 # Leave MontiThings Project for installing dependencies
 cd ..
 
