@@ -10,7 +10,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::publishConnectors ()
   <#list connector.getTargetList() as target>
     // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
     MqttClient::instance()->publish(replaceDotsBySlashes("/connectors/" + instanceName + "/${target.getQName()}"), replaceDotsBySlashes(instanceName + "/${connector.getSource().getQName()}"));
-    CLOG (DEBUG, "MQTT") << "Published connector via MQTT. "
+    CLOG (DEBUG, "MQTT_PORT") << "Published connector via MQTT. "
     << replaceDotsBySlashes("/connectors/" + instanceName + "/${target.getQName()}")
     << " "
     << replaceDotsBySlashes(instanceName + "/${connector.getSource().getQName()}");
