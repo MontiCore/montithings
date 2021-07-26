@@ -6,7 +6,8 @@
 #include <chrono>
 #include <thread>
 
-<#assign PrettyPrinter = tc.instantiate("de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter")>
+${tc.signature("prettyPrinter", "cppPrettyPrinter")}
+
 <#assign mainComp = ast.getEnclosingScope().getMainComponentTypeSymbol()>
 <#assign mainCompName = mainComp.getName()>
 <#assign package = "montithings">
@@ -180,7 +181,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
       <#else >
         <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + compName + portName : (refCounterList["portSpy" + compTypeName + compName + portName] + 1)}>
       </#if>
-  LOG(INFO) << "check ${PrettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";
+  LOG(INFO) << "check ${prettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";
   ASSERT_TRUE (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).has_value());
       <#if sD4CElement.getValueList()?size < 2 >
   EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value().getPayload(), ${sD4CElement.getValue(0).getValue()});
@@ -191,8 +192,8 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
     </#list>
   <#elseif sD4CElement.getType() == "EXPRESSION">
   <#assign expression = sD4CElement.getExpression()>
-  LOG(INFO) << "check expression ${PrettyPrinter.prettyprint(expression)?replace("\n", "")?replace("\r", "")}";
-  <@exp.print expression=expression pp=PrettyPrinter />
+  LOG(INFO) << "check expression ${prettyPrinter.prettyprint(expression)?replace("\n", "")?replace("\r", "")}";
+  <@exp.print expression=expression pp=cppPrettyPrinter />
   </#if>
 </#list>
 }

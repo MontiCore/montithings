@@ -20,6 +20,7 @@
         <sequencediagram.version>${monticore.version}</sequencediagram.version>
         <ocl.version>${monticore.version}</ocl.version>
         <montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
+        <montithings.version>7.0.0-SNAPSHOT</montithings.version>
         <se-commons.version>1.7.9</se-commons.version>
         <mc.grammars.assembly.version>0.0.10</mc.grammars.assembly.version>
 
@@ -175,6 +176,12 @@
           <groupId>montiarc.languages</groupId>
           <artifactId>behavior-fe</artifactId>
           <classifier>${grammars.classifier}</classifier>
+          <version>${montiarc.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>montithings.generators</groupId>
+          <artifactId>montithings2cpp</artifactId>
           <version>${montiarc.version}</version>
         </dependency>
 

@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
+import de.monticore.lang.sd4componenttesting._visitor.CppPrettyPrinter;
+import de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter;
 
 /**
  * Generates a c++ file that contains test cases
@@ -36,10 +38,13 @@ public class SD4ComponentTestingGenerator {
 
     GeneratorEngine engine = new GeneratorEngine(setup);
 
+    SD4ComponentTestingFullPrettyPrinter prettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
+    SD4ComponentTestingFullPrettyPrinter cppPrettyPrinter = CppPrettyPrinter.getPrinter();
+
     // Generate CPP file
     File outputDir = new File(System.getProperty("user.dir") + File.separator + "target");
     Path TestCasesOutputFile = Paths.get(outputDir.getAbsolutePath(), path);
-    engine.generate("templates/TestCasesGenerator.ftl", TestCasesOutputFile, ast);
+    engine.generate("templates/TestCasesGenerator.ftl", TestCasesOutputFile, ast, prettyPrinter, cppPrettyPrinter);
 
     return TestCasesOutputFile;
   }

@@ -5,6 +5,9 @@ testdiagram MainTest for Main {
   value -> sumCom.first, sumComp.first : 14;
   value -> sumCom.second, sumComp.second : 14, 14;
   sumCom.result -> foo : 28;
+
+  assert test;
+
   -> value : 33;
   value -> sumCom.first : 33;
   value -> sumCom.second : 33;

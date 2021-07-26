@@ -12,7 +12,6 @@ import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.lang.sd4componenttesting.SD4ComponentTestingMill;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4ComponentTestingNode;
-import de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingTraverser;
 import de.monticore.literals.prettyprint.MCCommonLiteralsPrettyPrinter;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
 import de.monticore.ocl.optionaloperators.prettyprint.OptionalOperatorsPrettyPrinter;
@@ -20,17 +19,12 @@ import de.monticore.ocl.setexpressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.prettyprint.SCBasisPrettyPrinter;
 import de.monticore.prettyprint.SCTransitions4CodePrettyPrinter;
-import de.monticore.scbasis._ast.ASTSCTransition;
-import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
-import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
-import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCSimpleGenericTypesPrettyPrinter;
 import genericarc._visitor.GenericArcPrettyPrinter;
-import montiarc._ast.ASTMontiArcNode;
 import montiarc._visitor.MontiArcPrettyPrinter;
 
 
@@ -123,7 +117,6 @@ public class SD4ComponentTestingFullPrettyPrinter {
     a.accept(getTraverser());
     return getPrinter().getContent();
   }
-
 
 
   public IndentPrinter getPrinter() {
