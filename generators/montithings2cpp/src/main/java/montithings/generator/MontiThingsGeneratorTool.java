@@ -88,16 +88,18 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     copyHwcToTarget(target, hwcPath, config);
 
 
-    Log.info("HWCPATH:" + hwcPath.getAbsolutePath(), "");
     /* ============================================================ */
     /* ============== Generating SensorActuatorPorts ============== */
     /* ============================================================ */
     File[] packages = hwcPath.listFiles();
+    List<String> executableSensorActuatorPorts = new ArrayList<>();
+
     for(File pckg : packages){
       Log.info("packages:" + new File(hwcPath + File.separator + pckg.getName()), "");
       Set<String> sensorActuatorPorts = getSensorActuatorPorts(new File(hwcPath + File.separator + pckg.getName()));
       for(String port : sensorActuatorPorts){
         mtg.generateSensorActuatorPort(port, pckg.getName(), config);
+        executableSensorActuatorPorts.add(pckg.getName() + "." + port);
       }
     }
 
@@ -232,6 +234,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       executableSubdirs.add(comp.getFullName());
     }
 
+
     // determine the packs of components for each (base) model
     Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks = new HashMap<>();
 
@@ -262,7 +265,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-      mtg.generateMakeFileForSubdirs(target, executableSubdirs, config);
+      mtg.generateMakeFileForSubdirs(target, executableSubdirs, executableSensorActuatorPorts, config);
     }
 
     for (Entry<ComponentTypeSymbol, Set<ComponentTypeSymbol>> e : modelPacks.entrySet()) {
