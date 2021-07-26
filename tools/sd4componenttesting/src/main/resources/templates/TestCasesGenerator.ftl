@@ -41,7 +41,7 @@ struct ${mainComp.getName()}Test : testing::Test
 
   ${ast.getTestDiagram().getName()} ()
   {
-    cmp${mainCompName} = new ${package}${mainComp.getName()} ("${ast.getTestDiagram().getName()}");
+    cmp${mainCompName} = new ${package}${mainComp.getName()} ("${mainComp.getFullName()}");
 
 <#list mainComp.getSubComponents() as component>
     ${component.getName()}Cmp = cmp${mainCompName}->getSubcomp__${component.getName()?cap_first}();
@@ -69,12 +69,12 @@ template <typename ComponentType, typename PortType> class PortSpy : public Even
 {
 protected:
   ComponentType *component;
-  std::vector<tl::optional<PortType>> recordedMessages;
+  std::vector<tl::optional<Message<PortType>>> recordedMessages;
 
 public:
   explicit PortSpy (ComponentType *component) : component (component) {}
 
-  const std::vector<tl::optional<PortType>> &
+  const std::vector<tl::optional<Message<PortType>>> &
   getRecordedMessages () const
   {
     return recordedMessages;
@@ -86,7 +86,6 @@ public:
   <#assign compTypeName = mainComp.getName()>
   <#assign portName = port.getName()>
   <@portSpy.printPortSpy compTypeName=compTypeName portName=portName package=package port=port/>
-
 </#list>
 
 
@@ -111,9 +110,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   // PortSpy of the "${compTypeName}" component
   <#list mainComp.getPorts() as port>
     <#assign portName = port.getName()?cap_first>
-
   LOG(INFO) << "PortSpy to port ${portName} of main component cmp${mainCompName} attached";
-
   PortSpy_${compTypeName}_${portName} portSpy${compTypeName}${portName}(cmp${mainCompName});
   cmp${mainCompName}->getInterface()->getPort${portName}()->attach(&portSpy${compTypeName}${portName});
 
@@ -147,24 +144,27 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
 </#if>
 
 <#assign refCounterList = {}>
-<#list testDiagramComp.getSD4CElementList() as connection>
-  <#if connection.getType() == "MAIN_INPUT">
+<#list testDiagramComp.getSD4CElementList() as sD4CElement>
+  <#if sD4CElement.getType() == "MAIN_INPUT">
   // Input von mainComp setzen
-    <#assign portName = connection.getTarget(0).getPort()?cap_first>
-  LOG(INFO) << "start computing with next value ${connection.getValue(0).getValue()}";
-  cmp${mainCompName}->getInterface()->getPort${portName}()->setNextValue(${connection.getValue(0).getValue()});
+    <#assign portName = sD4CElement.getTarget(0).getPort()?cap_first>
+    <#assign portType = mainComp.getPort(sD4CElement.getTarget(0).getPort()).get().getType().getTypeInfo().getName()>
+  LOG(INFO) << "start computing with next value ${sD4CElement.getValue(0).getValue()}";
+  Message<${portType}> message${mainCompName}${portName}${sD4CElement?counter} = Message<${portType}>();
+  message${mainCompName}${portName}${sD4CElement?counter}.setUuid(sole::uuid4());
+  message${mainCompName}${portName}${sD4CElement?counter}.setPayload(${sD4CElement.getValue(0).getValue()});
+  cmp${mainCompName}->getInterface()->getPort${portName}()->setNextValue(message${mainCompName}${portName}${sD4CElement?counter});
 
-  <#elseif connection.getType() == "MAIN_OUTPUT">
+  <#elseif sD4CElement.getType() == "MAIN_OUTPUT">
   // Output von mainComp prüfen
     <#assign compTypeName = mainComp.getName()>
-    <#assign portName = connection.getSource().getPort()?cap_first>
+    <#assign portName = sD4CElement.getSource().getPort()?cap_first>
   LOG(INFO) << "check main output";
   ASSERT_TRUE (portSpy${compTypeName}${portName}.getRecordedMessages().back().has_value());
-  EXPECT_EQ (portSpy${compTypeName}${portName}.getRecordedMessages().back().value(), ${connection.getValue(0).getValue()});
+  EXPECT_EQ (portSpy${compTypeName}${portName}.getRecordedMessages().back().value().getPayload(), ${sD4CElement.getValue(0).getValue()});
 
-  <#elseif connection.getType() == "DEFAULT">
-    <#list connection.getTargetList() as portAccess>
-    LOG(INFO) << "check ${PrettyPrinter.prettyprint(connection)}";
+  <#elseif sD4CElement.getType() == "DEFAULT">
+    <#list sD4CElement.getTargetList() as portAccess>
       <#if portAccess.isPresentComponent()>
   // Input von Target ${portAccess.getComponent()}.${portAccess.getPort()} prüfen
         <#assign compName = portAccess.getComponent()>
@@ -180,17 +180,18 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
       <#else >
         <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + compName + portName : (refCounterList["portSpy" + compTypeName + compName + portName] + 1)}>
       </#if>
+  LOG(INFO) << "check ${PrettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";
   ASSERT_TRUE (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).has_value());
-      <#if connection.getValueList()?size < 2 >
-  EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value(), ${connection.getValue(0).getValue()});
+      <#if sD4CElement.getValueList()?size < 2 >
+  EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value().getPayload(), ${sD4CElement.getValue(0).getValue()});
       <#else>
-  EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value(), ${connection.getValue(portAccess?index).getValue()});
+  EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value().getPayload(), ${sD4CElement.getValue(portAccess?index).getValue()});
       </#if>
 
     </#list>
-  <#elseif connection.getType() == "EXPRESSION">
-  <#assign expression = connection.getExpression()>
-  LOG(INFO) << "check expression ${PrettyPrinter.prettyprint(expression)}";
+  <#elseif sD4CElement.getType() == "EXPRESSION">
+  <#assign expression = sD4CElement.getExpression()>
+  LOG(INFO) << "check expression ${PrettyPrinter.prettyprint(expression)?replace("\n", "")?replace("\r", "")}";
   <@exp.print expression=expression pp=PrettyPrinter />
   </#if>
 </#list>

@@ -6,7 +6,7 @@
   <#if type="de.monticore.expressions.assignmentsexpressions._ast.ASTAssignmentExpression">
     ${pp.prettyprint(expression)};
   <#elseif type="de.monticore.expressions.commonexpressions._ast.ASTEqualsExpression">
-   EXPECT_EQ(${pp.prettyprint(left)}, ${pp.prettyprint(right)});
+    EXPECT_EQ(${pp.prettyprint(left)}, ${pp.prettyprint(right)});
   <#elseif type="de.monticore.expressions.commonexpressions._ast.ASTLessEqualsExpression">
     EXPECT_LE(${pp.prettyprint(left)}, ${pp.prettyprint(right)});
   <#elseif type="de.monticore.expressions.commonexpressions._ast.ASTGreaterEqualsExpression">

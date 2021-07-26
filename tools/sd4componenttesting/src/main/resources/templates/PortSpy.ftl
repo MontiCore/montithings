@@ -16,7 +16,7 @@
 
     void onEvent () override
     {
-      tl::optional<${port.getType().getTypeInfo().getName()}> value
+      tl::optional<Message<${port.getType().getTypeInfo().getName()}>> value
           = component->getInterface()->getPort${portName?cap_first}()->getCurrentValue(this->getUuid ());
       recordedMessages.push_back (value);
     }
