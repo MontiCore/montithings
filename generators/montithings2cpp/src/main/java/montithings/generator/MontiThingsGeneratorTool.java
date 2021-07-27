@@ -95,10 +95,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     List<String> executableSensorActuatorPorts = new ArrayList<>();
 
     for(File pckg : packages){
-      Log.info("packages:" + new File(hwcPath + File.separator + pckg.getName()), "");
       Set<String> sensorActuatorPorts = getSensorActuatorPorts(new File(hwcPath + File.separator + pckg.getName()));
       for(String port : sensorActuatorPorts){
         mtg.generateSensorActuatorPort(port, pckg.getName(), config);
+        generateCMakeForSensorActuatorPort(pckg.getName(), port, target, config);
         executableSensorActuatorPorts.add(pckg.getName() + "." + port);
       }
     }
@@ -507,6 +507,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           mtg.generateScripts(target, comp, executableInstanceNames);
         }
       }
+    }
+  }
+
+  protected void generateCMakeForSensorActuatorPort(String pckg, String port, File target, ConfigParams config) {
+    // 6 generate make file
+    if (config.getTargetPlatform()
+            != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
+      Log.info("Generate CMake file for " + port, "MontiThingsGeneratorTool");
+      mtg.generateMakeFileForSensorActuatorPort(pckg, port, "montithings-RTE");
+     //TODO: splitting mode - off
     }
   }
 

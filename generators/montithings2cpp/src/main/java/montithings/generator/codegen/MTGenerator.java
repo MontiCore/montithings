@@ -185,6 +185,12 @@ public class MTGenerator {
         .toString(), subPackagesPath, config, false);
   }
 
+  public void generateMakeFileForSensorActuatorPort(String pckg, String port, String libraryPath) {
+    fg.generate(new File(genSrcDir, pckg + "." + port), "CMakeLists", ".txt",
+            "template/util/cmake/SensorActuatorCMake.ftl",
+            pckg, port, libraryPath, config, false);
+  }
+
   public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories, List<String> sensorActuatorPorts, ConfigParams config) {
     List sortedDirs = new ArrayList<String>();
     sortedDirs.addAll(subdirectories);
