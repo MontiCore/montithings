@@ -11,6 +11,9 @@ public class SD4ComponentTestingCoCos {
     checker.addCoCo(new SD4CConnectionMainInputValid());
     checker.addCoCo(new SD4CConnectionPortsDirectionValid());
     checker.addCoCo(new SD4CConnectionConnectorValid());
+    checker.addCoCo(new NameExpressionsAreResolvable());
+    checker.addCoCo(new OCLExpressionsValid());
+    checker.addCoCo(new FieldAccessExpressionsAreResolvable());
     return checker;
   }
 }
