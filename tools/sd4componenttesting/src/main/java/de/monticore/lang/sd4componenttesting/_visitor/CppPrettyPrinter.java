@@ -29,6 +29,8 @@ public class CppPrettyPrinter {
     printer.getTraverser().setCommonExpressionsHandler(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setAssignmentExpressionsHandler(new CppAssignmentPrettyPrinter(printer.getPrinter(), isLogTracingEnabled, suppressPostConditionCheck));
     printer.getTraverser().setOCLExpressionsHandler(new CppOCLExpressionsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setMCVarDeclarationStatementsHandler(new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setMCCommonStatementsHandler(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
 
     Stack<ASTExpression> expressions = new Stack<>();
     CppSetDefinitionsPrettyPrinter setDefinitionsPrettyPrinter = new CppSetDefinitionsPrettyPrinter(printer.getPrinter());

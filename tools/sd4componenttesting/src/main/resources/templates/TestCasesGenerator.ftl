@@ -134,6 +134,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   // When
   cmp${mainCompName}->setUp(EVENTBASED);
   cmp${mainCompName}->init();
+  cmp${mainCompName}->start();
 
 
   // tests:
@@ -151,10 +152,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
     <#assign portName = sD4CElement.getTarget(0).getPort()?cap_first>
     <#assign portType = mainComp.getPort(sD4CElement.getTarget(0).getPort()).get().getType().getTypeInfo().getName()>
   LOG(INFO) << "start computing with next value ${sD4CElement.getValue(0).getValue()}";
-  Message<${portType}> message${mainCompName}${portName}${sD4CElement?counter} = Message<${portType}>();
-  message${mainCompName}${portName}${sD4CElement?counter}.setUuid(sole::uuid4());
-  message${mainCompName}${portName}${sD4CElement?counter}.setPayload(${sD4CElement.getValue(0).getValue()});
-  cmp${mainCompName}->getInterface()->getPort${portName}()->setNextValue(message${mainCompName}${portName}${sD4CElement?counter});
+  cmp${mainCompName}->getInterface()->getPort${portName}()->setNextValue(Message<${portType}>(${sD4CElement.getValue(0).getValue()}));
 
   <#elseif sD4CElement.getType() == "MAIN_OUTPUT">
   // Output von mainComp prüfen

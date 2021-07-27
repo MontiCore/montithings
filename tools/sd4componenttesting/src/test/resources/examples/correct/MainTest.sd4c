@@ -6,7 +6,8 @@ testdiagram MainTest for Main {
   value -> sumCom.second, sumComp.second : 14, 14;
   sumCom.result -> foo : 28;
 
-  assert test;
+  assert sumCom.result < 29;
+  assert sumCom.result > 12;
 
   -> value : 33;
   value -> sumCom.first : 33;
