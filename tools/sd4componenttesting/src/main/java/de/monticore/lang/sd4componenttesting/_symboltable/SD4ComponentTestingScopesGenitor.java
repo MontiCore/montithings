@@ -4,6 +4,7 @@ package de.monticore.lang.sd4componenttesting._symboltable;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CConnection;
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4CDelay;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4CExpression;
 import de.monticore.lang.sd4componenttesting.util.SD4CElementType;
 
@@ -41,5 +42,12 @@ public class SD4ComponentTestingScopesGenitor extends SD4ComponentTestingScopesG
     super.visit(node);
 
     node.setType(SD4CElementType.EXPRESSION);
+  }
+
+  @Override
+  public void visit (ASTSD4CDelay node) {
+    super.visit(node);
+
+    node.setType(SD4CElementType.DELAY);
   }
 }

@@ -11,6 +11,8 @@ public class SD4ComponentTestingCoCos {
     checker.addCoCo(new SD4CConnectionMainInputValid());
     checker.addCoCo(new SD4CConnectionPortsDirectionValid());
     checker.addCoCo(new SD4CConnectionConnectorValid());
+    checker.addCoCo(new SD4CDelayGTZero());
+    checker.addCoCo(new SD4CDelayValidUnit());
     return checker;
   }
 }

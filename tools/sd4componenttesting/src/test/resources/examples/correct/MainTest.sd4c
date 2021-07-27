@@ -29,5 +29,6 @@ testdiagram MainTest for Main {
   foo -> : 50;
   -> value : 42;
   foo -> : 84;
+  delay 500ms;
   foo -> : 84;
 }

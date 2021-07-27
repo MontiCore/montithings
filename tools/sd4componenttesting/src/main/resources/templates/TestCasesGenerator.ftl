@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 
+<#assign ComponentHelper = tc.instantiate("de.monticore.lang.sd4componenttesting.util.ComponentHelper")>
 <#assign PrettyPrinter = tc.instantiate("de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter")>
 <#assign mainComp = ast.getEnclosingScope().getMainComponentTypeSymbol()>
 <#assign mainCompName = mainComp.getName()>
@@ -193,6 +194,15 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   <#assign expression = sD4CElement.getExpression()>
   LOG(INFO) << "check expression ${PrettyPrinter.prettyprint(expression)?replace("\n", "")?replace("\r", "")}";
   <@exp.print expression=expression pp=PrettyPrinter />
+  <#elseif sD4CElement.getType() == "DELAY">
+  auto end_${sD4CElement?index} = std::chrono::high_resolution_clock::now () + std::chrono::${ComponentHelper.printTime(sD4CElement.getSIUnitLiteral())};
+  do
+    {
+      std::this_thread::yield ();
+      std::this_thread::sleep_for (std::chrono::milliseconds (1));
+    }
+  while (std::chrono::high_resolution_clock::now () < end_${sD4CElement?index});
+
   </#if>
 </#list>
 }
