@@ -295,9 +295,9 @@ public class MTGenerator {
 
     File target = new File(genSrcDir + File.separator + packageName + "." + portName);
 
-    Path sensorActuatorPortTarget = Paths.get(target + File.separator + portName + "Port.cpp");
+    Path sensorActuatorPortTarget = Paths.get(target + File.separator + portName + ".h");
     fg.generate(target, portName + "MontiThingsConnector", ".cpp",
-            "template/util/ports/sensorActuatorPortMontiThingsConnector.ftl");
+            "template/util/ports/sensorActuatorPortMontiThingsConnector.ftl", portName);
 
 
     Optional<ASTEveryTag> everyTag = Optional.empty();
