@@ -215,18 +215,19 @@ public class MTGenerator {
         .toString(), subPackagesPath, config, true);
   }
 
-  public void generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> subdirectories) {
+  public void generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> sensorActuatorPorts, List<String> subdirectories) {
     List<String> sortedDirs = new ArrayList<>(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
     fg.generate(targetPath, "run", ".sh",
-      "template/util/scripts/RunScript.ftl", comp, config);
+      "template/util/scripts/RunScript.ftl", comp, sensorActuatorPorts, config);
     makeExecutable(targetPath, "run", ".sh");
 
     fg.generate(targetPath, "kill", ".sh",
-      "template/util/scripts/KillScript.ftl", sortedDirs, config);
+      "template/util/scripts/KillScript.ftl", sortedDirs,sensorActuatorPorts, config);
     makeExecutable(targetPath, "kill", ".sh");
 
+    //TODO: Add sensorActuatorPorts to dockerRun
     // Docker scripts
     fg.generate(targetPath, "dockerRun", ".sh",
             "template/util/scripts/DockerRun.ftl", comp, config);

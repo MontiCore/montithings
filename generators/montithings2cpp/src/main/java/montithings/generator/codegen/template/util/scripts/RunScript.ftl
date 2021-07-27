@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("comp", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
@@ -25,6 +25,12 @@ echo "Starting components..."
   ./${pair.getKey().fullName} --name ${pair.getValue()} --managementPort ${config.getComponentPortMap().getManagementPort(pair.getValue())} --dataPort ${config.getComponentPortMap().getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
   </#if>
 </#list>
+<#-- TODO: OTHER BROKERS -->
+<#if config.getMessageBroker().toString() == "MQTT">
+  <#list sensorActuatorPorts as port >
+  ./${port} --name ${port} --brokerHostname localhost --brokerPort 1883 > ${port}.log 2>&1 &
+  </#list>
+</#if>
 
 # Run Python Ports
 if [ -d "hwc" ]; then

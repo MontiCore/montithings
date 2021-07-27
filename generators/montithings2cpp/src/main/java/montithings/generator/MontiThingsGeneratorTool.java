@@ -25,14 +25,12 @@ import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMACompilationUnit;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
-import montithings._symboltable.MontiThingsArtifactScope;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
@@ -98,7 +96,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Set<String> sensorActuatorPorts = getSensorActuatorPorts(new File(hwcPath + File.separator + pckg.getName()));
       for(String port : sensorActuatorPorts){
         mtg.generateSensorActuatorPort(port, pckg.getName(), config);
-        generateCMakeForSensorActuatorPort(pckg.getName(), port, target, config);
+        generateCMakeForSensorActuatorPort(pckg.getName(), port, config);
         executableSensorActuatorPorts.add(pckg.getName() + "." + port);
       }
     }
@@ -309,7 +307,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       config.setSplittingMode(orgSplit);
       config.setMessageBroker(orgBroker);
 
-      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, hwcPath, config, models, executableSubdirs);
+      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, config, executableSensorActuatorPorts ,executableSubdirs);
 
       mtg = new MTGenerator(target, hwcPath, config);
     }
@@ -489,7 +487,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
-    File target, File hwcPath, ConfigParams config, Models models, List<String> executableInstanceNames) {
+                                           File target, ConfigParams config, List<String> sensorActuatorPorts, List<String> executableInstanceNames) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
 
     if (ComponentHelper.isApplication(comp, config)
@@ -504,13 +502,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
         mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          mtg.generateScripts(target, comp, executableInstanceNames);
+          mtg.generateScripts(target, comp, sensorActuatorPorts, executableInstanceNames);
         }
       }
     }
   }
 
-  protected void generateCMakeForSensorActuatorPort(String pckg, String port, File target, ConfigParams config) {
+  protected void generateCMakeForSensorActuatorPort(String pckg, String port, ConfigParams config) {
     // 6 generate make file
     if (config.getTargetPlatform()
             != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
