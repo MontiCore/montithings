@@ -3,6 +3,6 @@ package examples.incorrect;
 testdiagram MainTest for Main {
   value -> sumCom.first : 12;
   value -> sumCom.second: 13;
-  delay 0km;
+  delay 500km;
   sumCom.result -> result : 25;
 }

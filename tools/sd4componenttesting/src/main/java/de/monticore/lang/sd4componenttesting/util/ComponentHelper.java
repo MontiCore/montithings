@@ -40,6 +40,8 @@ public class ComponentHelper {
                 return (int) (value * 1000 * 1000);
             case ("min"):
                 return (int) (value * 1000 * 1000 * 60);
+            case ("h"):
+                return (int) (value * 1000 * 1000 * 60 * 60);
         }
         return 0;
     }

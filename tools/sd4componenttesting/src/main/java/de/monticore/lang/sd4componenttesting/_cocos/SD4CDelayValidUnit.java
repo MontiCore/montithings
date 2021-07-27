@@ -16,6 +16,7 @@ public class SD4CDelayValidUnit implements SD4ComponentTestingASTSD4CDelayCoCo {
       case ("ms"):
       case ("s"):
       case ("min"):
+      case ("h"):
         return;
       default:
         Log.error(String.format(SD4ComponentTestingError.DELAY_UNIT_UNKNOWN.toString(), unit));
