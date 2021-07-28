@@ -19,7 +19,10 @@ public enum SD4ComponentTestingError implements Error {
   CONNECTION_SOURCE_UNKNOWN_PORT("0xSD4CPT1110", "Output Port '%s' of Connection '%s' could not be found in Component '%s'"),
   CONNECTION_TARGET_UNKNOWN_PORT("0xSD4CPT1120", "Input Port '%s' of Connection '%s' could not be found in Component '%s'"),
 
-  CONNECTION_NOT_DEFINED_AS_CONNECTOR("0xSD4CPT1130", "Connection '%s' is not defined in MainComponent '%s' as connector");
+  CONNECTION_NOT_DEFINED_AS_CONNECTOR("0xSD4CPT1130", "Connection '%s' is not defined in MainComponent '%s' as connector"),
+  
+  DELAY_GREATER_THAN_ZERO("0xSD4CPT1140", "Delay '%s' must be greater than zero."),
+  DELAY_UNIT_UNKNOWN("0xSD4CPT1150", "The unit '%s' is unknown.");
 
   protected final String errorCode;
   protected final String errorMessage;
