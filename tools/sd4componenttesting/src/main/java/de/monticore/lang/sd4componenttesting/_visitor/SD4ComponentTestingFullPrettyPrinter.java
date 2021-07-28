@@ -11,6 +11,7 @@ import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
 import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
 import de.monticore.expressions.prettyprint.ExpressionsBasisPrettyPrinter;
 import de.monticore.lang.sd4componenttesting.SD4ComponentTestingMill;
+import de.monticore.lang.sd4componenttesting._ast.ASTSD4CExpression;
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4ComponentTestingNode;
 import de.monticore.literals.prettyprint.MCCommonLiteralsPrettyPrinter;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
@@ -107,6 +108,12 @@ public class SD4ComponentTestingFullPrettyPrinter {
   }
 
   public String prettyprint(ASTExpression a) {
+    getPrinter().clearBuffer();
+    a.accept(getTraverser());
+    return getPrinter().getContent();
+  }
+
+  public String prettyprint(ASTSD4CExpression a) {
     getPrinter().clearBuffer();
     a.accept(getTraverser());
     return getPrinter().getContent();

@@ -1,6 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
 <#import "/templates/PortSpy.ftl" as portSpy>
-<#import "/templates/Expressions.ftl" as exp>
 #include "easyloggingpp/easylogging++.h"
 #include "gtest/gtest.h"
 #include <chrono>
@@ -189,9 +188,10 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
 
     </#list>
   <#elseif sD4CElement.getType() == "EXPRESSION">
-  <#assign expression = sD4CElement.getExpression()>
-  LOG(INFO) << "check expression ${prettyPrinter.prettyprint(expression)?replace("\n", "")?replace("\r", "")}";
-  <@exp.print expression=expression pp=cppPrettyPrinter />
+  // test Expression
+  LOG(INFO) << "check expression ${prettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";
+  ASSERT_TRUE(${cppPrettyPrinter.prettyprint(sD4CElement)});
+
   </#if>
 </#list>
 }

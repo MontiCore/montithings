@@ -24,7 +24,6 @@ public class CppPrettyPrinter {
 
   public static SD4ComponentTestingFullPrettyPrinter getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck) {
     SD4ComponentTestingFullPrettyPrinter printer = new SD4ComponentTestingFullPrettyPrinter();
-    //TODO adjust Methods to write correct CPP Code
     printer.getTraverser().setExpressionsBasisHandler(new CppExpressionPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setCommonExpressionsHandler(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setAssignmentExpressionsHandler(new CppAssignmentPrettyPrinter(printer.getPrinter(), isLogTracingEnabled, suppressPostConditionCheck));

@@ -41,6 +41,8 @@ public enum SD4ComponentTestingError implements Error {
   EXPRESSION_FIELD_ACCESS_EXPRESSION_NO_COMPONENT_NAME("0xSD4CPT1837", "FieldAccessExpressions are only allowed to access Ports of Components"),
   EXPRESSION_FIELD_ACCESS_EXPRESSION_NO_COMPONENT_FOUND("0xSD4CPT1838", "'%s' not found as FieldAccessExpression"),
 
+  ASSIGNMENT_EXPRESSIONS("0xSD4CPT1839", "SD4Component testing currently not supporting assignment expressions"),
+
   IDENTIFIER_UNKNOWN("0xSD4CPT1510", "The identifier '%s' cannot be resolved.");
 
   protected final String errorCode;
