@@ -7,7 +7,6 @@ import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingAr
 import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingScopesGenitorDelegator;
 import de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter;
 import de.monticore.lang.sd4componenttesting.generator.SD4ComponentTestingGenerator;
-import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.cli.*;
 
@@ -57,6 +56,22 @@ public class SD4ComponentTestingCLI {
         return;
       }
 
+      if (cmd.hasOption("path")) {
+        sd4ctTool.initSymbolTable(Arrays.stream(cmd.getOptionValues("path")).map(x -> new File(x)).toArray(File[]::new));
+      } else {
+        sd4ctTool.initSymbolTable(new File("./"));
+      }
+
+      // handle CoCos and symbol storage: build symbol table as far as needed
+      if (cmd.hasOption("pp") || cmd.hasOption("c") || cmd.hasOption("g")) {
+        for (ASTSD4Artifact sd4ct : inputSD4CTs) {
+          createSymbolTable(sd4ct);
+        }
+        if (Log.getErrorCount() > 0) {
+          return;
+        }
+      }
+
       // pretty print
       if (cmd.hasOption("pp")) {
         if (cmd.getOptionValues("pp") == null || cmd.getOptionValues("pp").length == 0) {
@@ -78,22 +93,6 @@ public class SD4ComponentTestingCLI {
             prettyPrint(sd4ct_i, cmd.getOptionValues("pp")[i]);
             System.out.println("Pretty Printer: Saved " + cmd.getOptionValues("pp")[i]);
           }
-        }
-      }
-
-      if (cmd.hasOption("path")) {
-        sd4ctTool.initSymbolTable(Arrays.stream(cmd.getOptionValues("path")).map(x -> new File(x)).toArray(File[]::new));
-      } else {
-        sd4ctTool.initSymbolTable(new File("./"));
-      }
-
-      // handle CoCos and symbol storage: build symbol table as far as needed
-      if (cmd.hasOption("c") || cmd.hasOption("g")) {
-        for (ASTSD4Artifact sd4ct : inputSD4CTs) {
-          createSymbolTable(sd4ct);
-        }
-        if (Log.getErrorCount() > 0) {
-          return;
         }
       }
 
@@ -149,7 +148,7 @@ public class SD4ComponentTestingCLI {
    * @return Pretty-printed ast.
    */
   public void prettyPrint(ASTSD4Artifact ast, String file) {
-    SD4ComponentTestingFullPrettyPrinter prettyPrinter = new SD4ComponentTestingFullPrettyPrinter(new IndentPrinter());
+    SD4ComponentTestingFullPrettyPrinter prettyPrinter = new SD4ComponentTestingFullPrettyPrinter();
     print(prettyPrinter.prettyprint(ast), file);
   }
 
