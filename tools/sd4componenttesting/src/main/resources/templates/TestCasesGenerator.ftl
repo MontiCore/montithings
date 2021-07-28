@@ -32,27 +32,25 @@ INITIALIZE_EASYLOGGINGPP
 struct ${mainComp.getName()}Test : testing::Test
 {
   ${package}${mainComp.getName()} *cmp${mainCompName};
-
 <#list mainComp.getSubComponents() as component>
+
   ${package}${component.getType().getName()} *${component.getName()}Cmp;
   ${package}${component.getType().getName()}Impl *${component.getName()}Impl;
   ${package}${component.getType().getName()}State *${component.getName()}State;
-
 </#list>
 
-  ${ast.getTestDiagram().getName()} ()
+  ${mainComp.getName()}Test ()
   {
     cmp${mainCompName} = new ${package}${mainComp.getName()} ("${mainComp.getFullName()}");
-
 <#list mainComp.getSubComponents() as component>
+
     ${component.getName()}Cmp = cmp${mainCompName}->getSubcomp__${component.getName()?cap_first}();
     ${component.getName()}Impl = ${component.getName()}Cmp->getImpl();
     ${component.getName()}State = ${component.getName()}Cmp->getState();
-
 </#list>
   }
 
-  ~${ast.getTestDiagram().getName()} ()
+  ~${mainComp.getName()}Test ()
   {
     delete cmp${mainCompName};
   }
@@ -134,6 +132,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   // When
   cmp${mainCompName}->setUp(EVENTBASED);
   cmp${mainCompName}->init();
+  cmp${mainCompName}->start();
 
 
   // tests:
@@ -194,14 +193,9 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   <#assign expression = sD4CElement.getExpression()>
   LOG(INFO) << "check expression ${PrettyPrinter.prettyprint(expression)?replace("\n", "")?replace("\r", "")}";
   <@exp.print expression=expression pp=PrettyPrinter />
+
   <#elseif sD4CElement.getType() == "DELAY">
-  auto end_${sD4CElement?index} = std::chrono::high_resolution_clock::now () + std::chrono::${ComponentHelper.printTime(sD4CElement.getSIUnitLiteral())};
-  do
-    {
-      std::this_thread::yield ();
-      std::this_thread::sleep_for (std::chrono::milliseconds (1));
-    }
-  while (std::chrono::high_resolution_clock::now () < end_${sD4CElement?index});
+  std::this_thread::sleep_for(std::chrono::${ComponentHelper.printTime(sD4CElement.getSIUnitLiteral())});
 
   </#if>
 </#list>

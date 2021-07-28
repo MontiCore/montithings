@@ -19,7 +19,7 @@
         <monticore.version>7.0.0</monticore.version>
         <sequencediagram.version>${monticore.version}</sequencediagram.version>
         <ocl.version>${monticore.version}</ocl.version>
-		<siunits.version>7.0.0</siunits.version>
+        <siunits.version>7.0.0</siunits.version>
         <montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
         <se-commons.version>1.7.9</se-commons.version>
         <mc.grammars.assembly.version>0.0.10</mc.grammars.assembly.version>
