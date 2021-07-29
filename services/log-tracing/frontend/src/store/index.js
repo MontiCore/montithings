@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
