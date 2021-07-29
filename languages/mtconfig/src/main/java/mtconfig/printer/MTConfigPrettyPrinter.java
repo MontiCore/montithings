@@ -13,19 +13,11 @@ import java.util.Iterator;
 
 /**
  * PrettyPrinter for the MTConfig Language.
- * TODO write test for the prettyPrinter and update it since the grammar changed.
- *
- * @author Julian Krebber
  */
 public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements MTConfigHandler {
 
   protected MTConfigTraverser traverser;
 
-  /**
-   * Constructor.
-   *
-   * @param printer the printer to write to.
-   */
   public MTConfigPrettyPrinter(IndentPrinter printer) {
     super(printer);
   }

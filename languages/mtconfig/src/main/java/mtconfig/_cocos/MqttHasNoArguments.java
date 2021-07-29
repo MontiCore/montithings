@@ -8,7 +8,7 @@ import mtconfig.util.MTConfigError;
 public class MqttHasNoArguments implements MTConfigASTHookpointCoCo {
 
   @Override public void check(ASTHookpoint node) {
-    if (node.getName().toLowerCase().equals("mqtt")
+    if (node.getName().equalsIgnoreCase("mqtt")
       && node.isPresentArguments()
       && node.getArguments().sizeExpressions() != 0) {
       Log.error(String.format(MTConfigError.MQTT_NO_ARGS.toString(),

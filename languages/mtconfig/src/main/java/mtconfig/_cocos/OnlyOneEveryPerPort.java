@@ -9,12 +9,15 @@ import mtconfig.util.MTConfigError;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Checks that at most one "every" tag exists for every port.
+ */
 public class OnlyOneEveryPerPort implements MTConfigASTPortTemplateTagCoCo {
 
   @Override public void check(ASTPortTemplateTag node) {
     List<ASTEveryTag> tags = node.getSinglePortTagList().stream()
       .filter(t -> t instanceof ASTEveryTag)
-      .map(e -> (ASTEveryTag)e)
+      .map(e -> (ASTEveryTag) e)
       .collect(Collectors.toList());
 
     if (tags.size() > 1) {

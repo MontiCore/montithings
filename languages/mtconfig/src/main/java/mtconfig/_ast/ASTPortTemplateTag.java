@@ -23,10 +23,10 @@ public class ASTPortTemplateTag extends ASTPortTemplateTagTOP {
     return getPort();
   }
 
-  public List<mtconfig._ast.ASTHookpoint> getHookpointList() {
+  public List<ASTHookpoint> getHookpointList() {
     return getSinglePortTagList().stream()
-      .filter(e -> e instanceof mtconfig._ast.ASTHookpoint)
-      .map(e -> (mtconfig._ast.ASTHookpoint) e)
+      .filter(e -> e instanceof ASTHookpoint)
+      .map(e -> (ASTHookpoint) e)
       .collect(Collectors.toList());
   }
 
