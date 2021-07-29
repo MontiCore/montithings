@@ -35,7 +35,10 @@ component grammar PortExtensions extends ArcBasis {
    *
    * Priority higher than 100 to prevent MontiCore from trying to
    * interpret "sync" as a component type's name.
+   *
+   * Deprecated! Reference multiple ports before behavior block instead.
    */
+  @Deprecated
   SyncStatement implements ArcElement <110> =
       key("sync") syncedPort:(Name || ",")+ ";";
 

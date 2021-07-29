@@ -10,8 +10,6 @@ import java.util.Optional;
 
 /**
  * Checks if import names refer to CDTypeSymbols.
- *
- * @author Julian Krebber
  */
 public class ImportNameExists implements CDLangExtensionASTCDEImportStatementCoCo {
 

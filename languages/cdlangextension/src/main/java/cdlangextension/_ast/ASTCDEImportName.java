@@ -14,7 +14,10 @@ public  class ASTCDEImportName extends ASTCDEImportNameTOP {
   public ASTCDEImportName() {
   }
 
-  public ASTCDEImportName(Optional<String> string, Optional<String> angledString, Optional<ASTMCQualifiedName> qualifiedName, Optional<ASTCDEQualifiedColonName> cDEQualifiedColonName, Optional<ASTCDEQualifiedDoubleColonName> cDEQualifiedDoubleColonName) {
+  public ASTCDEImportName(Optional<String> string, Optional<String> angledString,
+    Optional<ASTMCQualifiedName> qualifiedName,
+    Optional<ASTCDEQualifiedColonName> cDEQualifiedColonName,
+    Optional<ASTCDEQualifiedDoubleColonName> cDEQualifiedDoubleColonName) {
     this.string = string;
     this.angledString = angledString;
     this.mCQualifiedName = qualifiedName;
