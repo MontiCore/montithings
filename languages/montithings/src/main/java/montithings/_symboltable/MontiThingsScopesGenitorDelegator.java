@@ -4,9 +4,10 @@ package montithings._symboltable;
 public class MontiThingsScopesGenitorDelegator extends MontiThingsScopesGenitorDelegatorTOP {
 
   ArcBasisSTCForMontiThings arcBasis;
-  OCLExpressionsSTCForMontiThingsTemp ocl;
-  SetExpressionsSTCForMontiThingsTemp setExpr;
 
+  OCLExpressionsSTCForMontiThingsTemp ocl;
+
+  SetExpressionsSTCForMontiThingsTemp setExpr;
 
   public MontiThingsScopesGenitorDelegator() {
     super();
@@ -15,7 +16,6 @@ public class MontiThingsScopesGenitorDelegator extends MontiThingsScopesGenitorD
     arcBasis.setScopeStack(scopeStack);
     traverser.setArcBasisHandler(arcBasis);
     traverser.add4ArcBasis(arcBasis);
-
 
     traverser.getOCLExpressionsVisitorList().clear();
     ocl = new OCLExpressionsSTCForMontiThingsTemp();

@@ -12,9 +12,7 @@ import montithings.util.MontiThingsError;
 
 /**
  * Checks that all name expressions in a behavior block actually refer to something
- * useful and thus prevent, e.g.,
- *
- * @since 06.01.21
+ * useful and thus prevent
  */
 public class NameExpressionsAreResolvable implements ExpressionsBasisASTNameExpressionCoCo {
   @Override public void check(ASTNameExpression node) {

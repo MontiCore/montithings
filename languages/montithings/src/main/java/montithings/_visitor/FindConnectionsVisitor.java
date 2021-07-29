@@ -42,6 +42,10 @@ public class FindConnectionsVisitor implements ArcBasisVisitor2 {
     }
   }
 
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
   public FindConnectionsVisitor() {
   }
 

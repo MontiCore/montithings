@@ -15,7 +15,8 @@ import montithings._auxiliary.BasicSymbolsMillForMontiThings;
 public class SymbolUtil {
 
   public static FunctionSymbol createFunction(String name, IBasicSymbolsScope enclosingScope) {
-    return createFunction(name, SymTypeExpressionFactory.createTypeConstant("void"), enclosingScope);
+    return createFunction(name, SymTypeExpressionFactory.createTypeConstant("void"),
+      enclosingScope);
   }
 
   public static FunctionSymbol createFunction(String name, SymTypeExpression returnType,

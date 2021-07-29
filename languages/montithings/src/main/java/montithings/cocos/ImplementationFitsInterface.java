@@ -21,10 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Checks if implementation of interface components is correct.
- *
- * @author Julian Krebber
- * @version , 01.05.2020
+ * Checks if implementation of interface components is correct
  */
 public class ImplementationFitsInterface implements ArcBasisASTComponentTypeCoCo {
 

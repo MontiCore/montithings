@@ -37,8 +37,11 @@ public class MTConnectorSourceAndTargetExistAndFit
       final Optional<PortSymbol> sourcePort;
       final List<Optional<PortSymbol>> targetPorts = new ArrayList<>();
       try {
-        sourcePort = getPortSymbol(connector.getSource(), component, ()->printConnector(connector), true);
-        connector.streamTarget().map(target -> getPortSymbol(target, component, ()->printConnector(connector), false)).forEach(targetPorts::add);
+        sourcePort = getPortSymbol(connector.getSource(), component,
+          () -> printConnector(connector), true);
+        connector.streamTarget()
+          .map(target -> getPortSymbol(target, component, () -> printConnector(connector), false))
+          .forEach(targetPorts::add);
       }
       catch (ResolvedSeveralEntriesForSymbolException e) {
         // none of this coco's business
@@ -65,11 +68,10 @@ public class MTConnectorSourceAndTargetExistAndFit
     });
   }
 
-
   /**
    * @return a nice string that can be used to enhance error messages
    */
-  private static String printConnector(ASTConnector connector){
+  private static String printConnector(ASTConnector connector) {
     return new ArcBasisFullPrettyPrinter().prettyprint(connector)
       .replaceAll("[;\n]", "");
   }
@@ -78,13 +80,15 @@ public class MTConnectorSourceAndTargetExistAndFit
    * Retrieves the symbol of a port and logs an error if that is not possible.
    * Also calls {@link #checkDirection(PortSymbol, ASTPortAccess, boolean, Supplier)}
    * to ensure the port is not connected backwards
+   *
    * @param portAccess the port for which the symbol should be found
-   * @param component the component that contains the port
-   * @param isSource identifies whether the port is the source or the target of an connector
-   * @param connector string representation of the connector to use in error messages
+   * @param component  the component that contains the port
+   * @param isSource   identifies whether the port is the source or the target of an connector
+   * @param connector  string representation of the connector to use in error messages
    * @return symbol of the port, may be {@link Optional#empty()}, if {@link Log#enableFailQuick(boolean)} is disabled
    */
-  private static Optional<PortSymbol> getPortSymbol(ASTPortAccess portAccess, ComponentTypeSymbol component, Supplier<String> connector, boolean isSource){
+  private static Optional<PortSymbol> getPortSymbol(ASTPortAccess portAccess,
+    ComponentTypeSymbol component, Supplier<String> connector, boolean isSource) {
     Optional<PortSymbol> portSymbol;
     // is the port is a port of the surrounding component?
     if (!portAccess.isPresentComponent()) {
@@ -92,17 +96,21 @@ public class MTConnectorSourceAndTargetExistAndFit
     }
     else {
       // is the port the port of a sub-component?
-      portSymbol = component.getSubComponent(portAccess.getComponent()).flatMap(componentInstanceSymbol -> componentInstanceSymbol.getType().getPort(portAccess.getPort(), true));
+      portSymbol = component.getSubComponent(portAccess.getComponent()).flatMap(
+        componentInstanceSymbol -> componentInstanceSymbol.getType()
+          .getPort(portAccess.getPort(), true));
     }
     // some checks with the resulting port-optional
     if (!portSymbol.isPresent()) {
       Log.error(
-        String.format((isSource?ArcError.SOURCE_PORT_NOT_EXISTS:ArcError.TARGET_PORT_NOT_EXISTS).toString(),
+        String.format(
+          (isSource ? ArcError.SOURCE_PORT_NOT_EXISTS : ArcError.TARGET_PORT_NOT_EXISTS).toString(),
           portAccess.getQName(),
           connector.get(),
           component.getFullName()),
         portAccess.get_SourcePositionStart());
-    } else {
+    }
+    else {
       checkDirection(portSymbol.get(), portAccess, isSource, connector);
     }
     return portSymbol;

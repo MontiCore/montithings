@@ -21,7 +21,8 @@ public class DeriveSymTypeOfOCLExpressionsForMT extends DeriveSymTypeOfOCLExpres
       typeCheckResult.reset();
     }
     else {
-      Log.error("0xA3080 The type of the expression of the OCLTypeCastExpression could not be calculated");
+      Log.error(
+        "0xA3080 The type of the expression of the OCLTypeCastExpression could not be calculated");
       return;
     }
 
@@ -34,14 +35,16 @@ public class DeriveSymTypeOfOCLExpressionsForMT extends DeriveSymTypeOfOCLExpres
       typeCheckResult.reset();
     }
     else {
-      Log.error("0xA3081 The type of the MCType of the OCLTypeCastExpression could not be calculated");
+      Log.error(
+        "0xA3081 The type of the MCType of the OCLTypeCastExpression could not be calculated");
       return;
     }
 
     //check whether typecast is possible
     if (!MontiThingsTypeCheck.castCompatible(typeResult, exprResult)) {
       typeCheckResult.reset();
-      Log.error("0xA3082 The type of the expression of the OCLTypeCastExpression can't be cast to given type");
+      Log.error(
+        "0xA3082 The type of the expression of the OCLTypeCastExpression can't be cast to given type");
       return;
     }
     else {

@@ -314,7 +314,8 @@ public class MontiThingsTool implements IMontiThingsTool {
 
   public void checkCoCos(@NotNull ASTMACompilationUnit ast, boolean shouldLog) {
     Preconditions.checkArgument(ast != null);
-    Log.info("Check model: " + ast.getPackage() + "." + ast.getComponentType().getName(), TOOL_NAME);
+    Log
+      .info("Check model: " + ast.getPackage() + "." + ast.getComponentType().getName(), TOOL_NAME);
     this.checker.checkAll(ast);
   }
 

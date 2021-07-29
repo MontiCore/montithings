@@ -20,7 +20,6 @@ import java.util.List;
 public class MCVarDeclarationStatementsSTCForMontiThings
   extends MCVarDeclarationStatementsSTCompleteTypes {
 
-
   @Override
   public void endVisit(ASTLocalVariableDeclaration ast) {
     List<FieldSymbol> symbols = Lists.newArrayList();

@@ -9,6 +9,9 @@ import montithings.util.MontiThingsError;
 
 import java.util.List;
 
+/**
+ * Checks that log function cannot reference variables that do not exist
+ */
 public class LoggedVariablesAreResolvable implements BehaviorASTLogStatementCoCo {
   @Override public void check(ASTLogStatement node) {
     List<String> referencedVariables = node.getReferencedVariables();

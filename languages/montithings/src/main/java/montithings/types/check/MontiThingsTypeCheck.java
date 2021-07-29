@@ -16,12 +16,12 @@ public class MontiThingsTypeCheck extends OCLTypeCheck {
     condition = false;
   }
 
-
   public void setCondition(boolean b) {
     if (iDerive instanceof DeriveSymTypeOfMontiThingsCombine) {
       DeriveSymTypeOfMontiThingsCombine mTCalculator = (DeriveSymTypeOfMontiThingsCombine) iDerive;
       if (mTCalculator.getTraverser().getMontiThingsHandler().isPresent() &&
-        mTCalculator.getTraverser().getMontiThingsHandler().get() instanceof DeriveSymTypeOfMontiThings) {
+        mTCalculator.getTraverser().getMontiThingsHandler()
+          .get() instanceof DeriveSymTypeOfMontiThings) {
         DeriveSymTypeOfMontiThings.setCondition(b);
       }
     }

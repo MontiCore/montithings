@@ -13,15 +13,18 @@ import java.util.List;
 
 public class MontiThingsFullSymbolTableCreator {
   protected MontiThingsScopesGenitorDelegator delegator;
+
   protected List<MontiThingsTraverser> traversers;
 
   public MontiThingsFullSymbolTableCreator() {
     delegator = MontiThingsMill.scopesGenitorDelegator();
     traversers = new ArrayList<>();
     DeriveSymTypeOfMontiThingsCombine typeVisitor = new DeriveSymTypeOfMontiThingsCombine();
-    OCLExpressionsSymbolTableCompleterForMontiThings ocl = new OCLExpressionsSymbolTableCompleterForMontiThings(null, null);
+    OCLExpressionsSymbolTableCompleterForMontiThings ocl =
+      new OCLExpressionsSymbolTableCompleterForMontiThings(null, null);
     ocl.setTypeVisitor(typeVisitor);
-    SetExpressionsSymbolTableCompleterForMontiThings set = new SetExpressionsSymbolTableCompleterForMontiThings(null, null);
+    SetExpressionsSymbolTableCompleterForMontiThings set =
+      new SetExpressionsSymbolTableCompleterForMontiThings(null, null);
     set.setTypeVisitor(typeVisitor);
     MontiThingsTraverser t = MontiThingsMill.traverser();
     t.add4MCVarDeclarationStatements(new MCVarDeclarationStatementsSTCForMontiThings());
