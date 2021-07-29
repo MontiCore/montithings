@@ -25,15 +25,18 @@ variables:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-Docker Alpine:
+.docker_build_template: &docker_build_definition
   stage: build
   variables:
     DOCKER_DRIVER: overlay2
-  cache: {}
+  cache: { }
   tags:
     - shell
     - docker
     - node2
+
+Docker Alpine:
+  <<: *docker_build_definition
   only:
     refs:
       - merge_requests
@@ -52,14 +55,7 @@ Docker Alpine:
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest --push .
 
 Docker DDS:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
-    - node2
+  <<: *docker_build_definition
   only:
     refs:
       - merge_requests
@@ -78,13 +74,7 @@ Docker DDS:
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
 
 Docker OpenDDSDCPSInfoRepo:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
+  <<: *docker_build_definition
   only:
     refs:
      - merge_requests
@@ -97,14 +87,7 @@ Docker OpenDDSDCPSInfoRepo:
     - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
 
 Docker Recorder:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: { }
-  tags:
-    - shell
-    - docker
-    - node2
+  <<: *docker_build_definition
   only:
     refs:
       - merge_requests
@@ -117,14 +100,7 @@ Docker Recorder:
 
 
 Docker Log Tracing:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: { }
-  tags:
-    - shell
-    - docker
-    - node2
+  <<: *docker_build_definition
   only:
     refs:
       - merge_requests
