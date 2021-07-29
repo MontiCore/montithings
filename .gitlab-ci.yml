@@ -96,6 +96,48 @@ Docker OpenDDSDCPSInfoRepo:
     - docker build -t $CI_REGISTRY_IMAGE/openddsdcpsinforepo .
     - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
 
+Docker Recorder:
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay2
+  cache: { }
+  tags:
+    - shell
+    - docker
+    - node2
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - services/recorder/**/*
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t monithings.recorder -f services/recorder/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/monithings.recorder
+
+
+Docker Log Tracing:
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay2
+  cache: { }
+  tags:
+    - shell
+    - docker
+    - node2
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - services/log-tracing/**/*
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t monithings.logtracer_middleware -f services/log-tracing/Dockerfile .
+    - cd services/log-tracing/frontend
+    - docker build -t monithings.logtracer_frontend .
+    - docker push $CI_REGISTRY_IMAGE/monithings.logtracer_middleware
+    - docker push $CI_REGISTRY_IMAGE/monithings.logtracer_frontend
+
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
