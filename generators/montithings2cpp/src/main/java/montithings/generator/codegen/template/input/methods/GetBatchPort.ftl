@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("port", "comp", "config", "existsHWC")}
 <#include "/template/input/helper/GeneralPreamble.ftl">
-<#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+<#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
 
 ${Utils.printTemplateArguments(comp)}
 std::vector<Message<${type}>>

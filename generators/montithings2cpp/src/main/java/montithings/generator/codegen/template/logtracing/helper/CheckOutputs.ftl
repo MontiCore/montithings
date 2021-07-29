@@ -3,7 +3,7 @@ ${tc.signature("comp","config")}
 <#include "/template/logtracing/helper/GeneralPreamble.ftl">
 
 <#list comp.getOutgoingPorts() as p>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
 
   if(comp->getInterface()->getPort${p.getName()?cap_first}()->hasValue(this->uuid)) {
     isOutputPresent = true;

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.visitor;
+package montithings.generator.prettyprinter;
 
 import behavior._ast.ASTAgoQualification;
 import de.monticore.expressions.commonexpressions._ast.*;

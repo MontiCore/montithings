@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 <#if config.getSplittingMode().toString() != "OFF">
 free(ddsArgv[0]);

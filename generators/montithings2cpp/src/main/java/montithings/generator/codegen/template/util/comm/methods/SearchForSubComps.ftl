@@ -33,7 +33,7 @@ ${className}::searchSubcomponents ()
         <#list connector.targetList as target>
           <#if !target.isPresentComponent() && subcomponent.getName() == connector.getSource().getComponent()>
             <#list subcomponentSymbol.ports as p>
-              <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
+              <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
 
               <#if p.getName() == connector.getSource().port>
                 // set receiver

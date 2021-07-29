@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.visitor;
+package montithings.generator.prettyprinter;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;

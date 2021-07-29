@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 json config;
 

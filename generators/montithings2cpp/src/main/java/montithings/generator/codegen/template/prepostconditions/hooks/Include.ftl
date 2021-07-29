@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp")}
-<#assign compname = comp.getName()>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 #include "${compname}Precondition.h"
 #include "${compname}Postcondition.h"

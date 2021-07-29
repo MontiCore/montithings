@@ -1,12 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.visitor;
+package montithings.generator.prettyprinter;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.siunits._ast.ASTSIUnit;
-import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import montithings._ast.ASTIsPresentExpression;
 import montithings._ast.ASTPublishPort;
 import montithings._symboltable.IMontiThingsScope;
@@ -20,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
+import static montithings.generator.prettyprinter.CppPrettyPrinterUtils.*;
 import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppMontiThingsPrettyPrinter extends MontiThingsPrettyPrinter {

@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 <#if config.getMessageBroker().toString() == "MQTT">
   MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
@@ -19,7 +19,7 @@ ${tc.signature("comp", "config")}
 
     json config = configRequester.getConfig();
     <#list comp.getParameters() as variable>
-      <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>
+      <#assign typeName = TypesPrinter.printCPPTypeName(variable.getType())>
       ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config["${variable.getName()}"]);
     </#list>
     <#list ComponentHelper.getSIUnitPortNames(comp) as portName>

@@ -3,7 +3,7 @@ ${tc.signature("var", "comp", "config", "existsHWC")}
 <#include "/template/state/helper/GeneralPreamble.ftl">
 
 <#assign varName = var.getName()>
-<#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+<#assign type = TypesPrinter.printCPPTypeName(var.getType(), comp, config)>
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${generics}::cleanDequeOf${varName?cap_first}(std::chrono::time_point<std::chrono::system_clock> now)

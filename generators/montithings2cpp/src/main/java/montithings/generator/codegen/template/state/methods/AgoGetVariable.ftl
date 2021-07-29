@@ -3,7 +3,7 @@ ${tc.signature("var", "comp", "config", "existsHWC")}
 <#include "/template/state/helper/GeneralPreamble.ftl">
 
 <#assign varName = var.getName()>
-<#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+<#assign type = TypesPrinter.printCPPTypeName(var.getType(), comp, config)>
 
 ${Utils.printTemplateArguments(comp)}
 ${type} ${className}${generics}::agoGet${varName?cap_first}(const std::chrono::nanoseconds ago_time)

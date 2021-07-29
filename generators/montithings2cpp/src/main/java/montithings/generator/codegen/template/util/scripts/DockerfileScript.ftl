@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 # (c) https://github.com/MontiCore/monticore
 ${tc.signature("comp", "config", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getInstances(comp)>
 
 # Build Image -----------------------------

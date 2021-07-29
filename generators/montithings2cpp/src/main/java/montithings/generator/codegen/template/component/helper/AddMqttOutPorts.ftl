@@ -3,7 +3,7 @@ ${tc.signature("comp","config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#list comp.getOutgoingPorts() as p>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
 
   // outgoing port ${p.getName()}
   MqttPort<Message<${type}>> *${p.getName()} = new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}");

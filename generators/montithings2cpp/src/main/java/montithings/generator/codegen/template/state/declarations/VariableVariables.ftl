@@ -3,7 +3,7 @@ ${tc.signature("var", "comp", "config", "existsHWC")}
 <#include "/template/state/helper/GeneralPreamble.ftl">
 
 <#assign varName = var.getName()>
-<#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+<#assign varType = TypesPrinter.printCPPTypeName(var.getType(), comp, config)>
 
 <#if ComponentHelper.hasAgoQualification(comp, var)>
   std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${varType}>> dequeOf__${varName?cap_first};

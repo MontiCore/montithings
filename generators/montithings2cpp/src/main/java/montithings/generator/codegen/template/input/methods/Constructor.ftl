@@ -5,7 +5,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
 <#list comp.getAllIncomingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
   tl::optional<Message<${type}>> ${port.getName()}
   <#sep>,</#sep>
 </#list>){
@@ -16,7 +16,7 @@ ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
     </#list>);
 </#if>
 <#list comp.getIncomingPorts() as port >
-  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
 
   if(${port.getName()}.has_value()) {this->${port.getName()} = std::move(${port.getName()}.value());}
   else {this->${port.getName()} = Message<${type}>(tl::nullopt);}

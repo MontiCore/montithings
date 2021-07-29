@@ -2,7 +2,7 @@
 ${tc.signature("var", "comp", "config", "existsHWC")}
 <#include "/template/state/helper/GeneralPreamble.ftl">
 
-<#assign type = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+<#assign type = TypesPrinter.printCPPTypeName(var.getType(), comp, config)>
 <#assign varName = var.getName()>
 
 ${Utils.printTemplateArguments(comp)}

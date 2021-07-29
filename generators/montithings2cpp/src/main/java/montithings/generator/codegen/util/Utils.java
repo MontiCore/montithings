@@ -21,7 +21,8 @@ import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
-import montithings.generator.helper.CppPrettyPrinter;
+import montithings.generator.helper.TypesPrinter;
+import montithings.generator.prettyprinter.CppPrettyPrinter;
 import montithings.generator.helper.TypesHelper;
 import montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
@@ -31,6 +32,9 @@ import org.assertj.core.util.Lists;
 import org.assertj.core.util.Preconditions;
 
 import java.util.*;
+
+import static montithings.generator.helper.TypesHelper.getConversionFactorFromSourceAndTarget;
+import static montithings.generator.helper.TypesHelper.isSIUnitPort;
 
 public class Utils {
 
@@ -81,12 +85,12 @@ public class Utils {
   public static String printSIParameters(ComponentTypeSymbol comp, ComponentInstanceSymbol compInstance){
     String result = "";
     for (PortSymbol ps : compInstance.getType().getAllPorts()){
-      if (ComponentHelper.isSIUnitPort(ps) && ps.isIncoming()){
+      if (isSIUnitPort(ps) && ps.isIncoming()){
         for (ASTConnector c : comp.getAstNode().getConnectors()){
           for (ASTPortAccess portAccess : c.getTargetList()){
             Optional<PortSymbol> ops = ComponentHelper.getPortSymbolFromPortAccess(portAccess);
             if(ops.isPresent() && ops.get().equals(ps)){
-              result += "config[\"" + ps.getName() + "ConversionFactor\"]" + " = dataToJson (" + ComponentHelper.
+              result += "config[\"" + ps.getName() + "ConversionFactor\"]" + " = dataToJson (" +
                 getConversionFactorFromSourceAndTarget(c.getSource(), portAccess) + ");\n";
             }
           }
@@ -137,16 +141,16 @@ public class Utils {
       if (param.getAstNode() instanceof ASTArcParameter) {
         ASTArcParameter parameter = (ASTArcParameter) param.getAstNode();
         if(param.getType() instanceof SymTypeOfNumericWithSIUnit){
-          s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+          s.append(printMember(TypesPrinter.printCPPTypeName(param.getType(), comp, config),
                   param.getName(), printSIExpression(parameter.getDefault(), param.getType())));
         }
         else {
-          s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+          s.append(printMember(TypesPrinter.printCPPTypeName(param.getType(), comp, config),
                   param.getName(), printExpression(parameter.getDefault())));
         }
       }
       else {
-        s.append(printMember(ComponentHelper.printCPPTypeName(param.getType(), comp, config),
+        s.append(printMember(TypesPrinter.printCPPTypeName(param.getType(), comp, config),
           param.getName()));
       }
     }
@@ -171,7 +175,7 @@ public class Utils {
       if (!printStateVariablePrefix) {
         initialValue = initialValue.replaceAll(Identifier.getStateName() + ".", "");
       }
-      String typeName = ComponentHelper.printCPPTypeName(variable.getType(), comp, config);
+      String typeName = TypesPrinter.printCPPTypeName(variable.getType(), comp, config);
       s.append(printMember(typeName, variable.getName(), initialValue));
     }
     return s.toString();
@@ -409,10 +413,10 @@ public class Utils {
 
 
     for (PortSymbol port : comp.getPorts()) {
-      if (ComponentHelper.portUsesCdType(port)) {
-        Optional<ASTCDEImportStatement> cdeImportStatementOpt = ComponentHelper
+      if (TypesHelper.portUsesCdType(port)) {
+        Optional<ASTCDEImportStatement> cdeImportStatementOpt = TypesHelper
           .getCDEReplacement(port, config);
-        String portNamespace = ComponentHelper.printCdPortFQN(comp, port, config);
+        String portNamespace = TypesPrinter.printCdPortFQN(comp, port, config);
         if (cdeImportStatementOpt.isPresent()) {
           includeStatements.add(cdeImportStatementOpt.get());
           String[] adapterName = portNamespace.split("::");

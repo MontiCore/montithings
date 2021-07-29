@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("port", "comp", "config", "existsHWC")}
 <#include "/template/result/helper/GeneralPreamble.ftl">
-<#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+<#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
 
 ${Utils.printTemplateArguments(comp)}
 tl::optional<${type}> ${className}${Utils.printFormalTypeParameters(comp, false)}::agoGet${port.getName()?cap_first}(const std::chrono::nanoseconds ago_time)

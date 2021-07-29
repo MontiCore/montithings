@@ -27,7 +27,7 @@ protected:
     while (true)
     {
     auto end = std::chrono::high_resolution_clock::now()
-    + std::chrono::${ComponentHelper.printTime(everyTagOpt.get().getSIUnitLiteral())};
+    + std::chrono::${TypesPrinter.printTime(everyTagOpt.get().getSIUnitLiteral())};
 
     this->getExternalMessages();
 

@@ -58,7 +58,7 @@ void initialize();
 public:
 ${className}(std::string instanceName
 <#if comp.getParameters()?has_content>,</#if>
-${ComponentHelper.printConstructorArguments(comp)});
+${TypesPrinter.printConstructorArguments(comp)});
 
 <#if config.getMessageBroker().toString() == "MQTT">
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;

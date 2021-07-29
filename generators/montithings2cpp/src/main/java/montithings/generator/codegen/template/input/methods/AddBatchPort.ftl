@@ -4,7 +4,7 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 
 ${Utils.printTemplateArguments(comp)}
 void
-${className}${Utils.printFormalTypeParameters(comp, false)}::add${port.getName()?cap_first}Element(tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> element)
+${className}${Utils.printFormalTypeParameters(comp, false)}::add${port.getName()?cap_first}Element(tl::optional<${TypesPrinter.getRealPortCppTypeString(comp, port, config)}> element)
 {
 if (element)
 {
