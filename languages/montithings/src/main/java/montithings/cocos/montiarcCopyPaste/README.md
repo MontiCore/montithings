@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 CoCos in this directory are copy-paste from MontiArc.
 
 MontiArc hardcoded ArcTypeCheck in CoCos. 

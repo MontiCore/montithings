@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Class Diagrams
 
 <img src="docs/CDExampleMT.png" alt="drawing" height="200px"/>

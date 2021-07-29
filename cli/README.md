@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # MontiThings CLI
 
 The MontiThings CLI can be used to validate, pretty-print, 

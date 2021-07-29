@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Record-Transform-Replay
 
 A simple application adapted from the sensor-actuator-access example.

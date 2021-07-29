@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Log Filtering
 
 In oder to use the log filtering feature make sure log tracing is enabled in the pom.xml of the application.
