@@ -45,7 +45,7 @@ public class HttpAPIController {
       
       return newConfig.getConstraintsAsJson();
     } catch(JsonParseException | DeploymentException | NumberFormatException e) {
-      e.printStackTrace();
+      /// e.printStackTrace();
       return "{\"success\":false}";
     }
   }
