@@ -27,7 +27,9 @@ public interface Suggestion {
     // register different suggestion types
     List<Function<String, ? extends Suggestion>> providers = Lists.newArrayList(
         SuggestionGEQ::parseProlog,
-        SuggestionEQ::parseProlog
+        SuggestionEQ::parseProlog,
+        SuggestionIncomp::parseProlog,
+        SuggestionDependency::parseProlog
     );
     
     // test if droppedMsg can be parsed to any registered type of suggestion.
@@ -37,6 +39,8 @@ public interface Suggestion {
         return sugg;
       }
     }
+    
+    System.err.println("Could not parse: "+droppedMsg);
     
     // message could not be parsed
     return null;

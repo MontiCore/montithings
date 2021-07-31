@@ -1,6 +1,9 @@
 package ps.deployment.server.distribution.suggestion;
 
 import java.util.ListIterator;
+
+import com.google.common.base.Objects;
+
 import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.constraint.BasicConstraint;
@@ -48,9 +51,9 @@ public class BasicSuggestion implements Suggestion {
     return
         con.getInstanceSelector().toLowerCase().equals(this.instanceName) &&
         con.getReferenceValue() == this.orgCount &&
-        con.getBuildingSelector().equals(this.location.getBuilding()) &&
-        con.getFloorSelector().equals(this.location.getFloor()) &&
-        con.getRoomSelector().equals(this.location.getRoom()) &&
+        Objects.equal(con.getBuildingSelector(), this.location.getBuilding()) &&
+        Objects.equal(con.getFloorSelector(), this.location.getFloor()) &&
+        Objects.equal(con.getRoomSelector(), this.location.getRoom()) &&
         con.getConstraintType() == this.type;
   }
   

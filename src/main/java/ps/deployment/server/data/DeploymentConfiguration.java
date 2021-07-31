@@ -41,15 +41,23 @@ public class DeploymentConfiguration {
   
   public JsonObject getConstraintsAsJson() throws DeploymentException {
     JsonObject json = new JsonObject();
-    JsonArray jarr = new JsonArray();
-    json.add("entries", jarr);
+    JsonArray jBasic = new JsonArray();
+    json.add("basicConstraints", jBasic);
     
-    System.out.println("CONSTRAINTS:");
+    JsonArray jDep = new JsonArray();
+    json.add("dependencyConstraints", jDep);
+    
+    JsonArray jIncomp = new JsonArray();
+    json.add("incompConstraints", jIncomp);
+    
     for(Constraint con : this.constraints) {
-      // TODO REMOVE THE FOLLOWING LINE
-      if(!(con instanceof BasicConstraint)) continue;
-      jarr.add(con.serializeJson());
-      System.out.println(con);
+      if(con instanceof BasicConstraint) {
+        jBasic.add(con.serializeJson());        
+      } else if(con instanceof DependencyConstraint) {
+        jDep.add(con.serializeJson());
+      } else if(con instanceof IncompConstraint) {
+        jIncomp.add(con.serializeJson());
+      }
     }
     
     return json;

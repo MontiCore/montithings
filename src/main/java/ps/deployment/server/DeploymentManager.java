@@ -214,6 +214,10 @@ public class DeploymentManager implements IDeployStatusListener {
     this.targetProvider.setStatusListener(this);
   }
   
+  public IDeployTargetProvider getTargetProvider() {
+    return this.targetProvider;
+  }
+  
   @Override
   public void onClientOnline(DeployClient client) {
     this.listener.onClientOnline(client);
