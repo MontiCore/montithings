@@ -57,6 +57,7 @@ public class BasicSuggestion implements Suggestion {
   @Override
   public void applyTo(DeploymentConfiguration config) {
     ListIterator<Constraint> it = config.getConstraints().listIterator();
+    boolean foundMatch = false;
     while(it.hasNext()) {
       Constraint con = it.next();
       if(con instanceof BasicConstraint) {
@@ -64,12 +65,19 @@ public class BasicSuggestion implements Suggestion {
         if(this.matches(bcon)) {
           // replace original constraint
           it.remove();
+          foundMatch = true;
           // If the satCount is -1, the constraint should be removed completely.
           if(this.satCount != -1) {            
             it.add(bcon.withAlteredReference(this.satCount));
           }
         }
       }
+    }
+    
+    // If we did not find a match, we'll add this as a new constraint instead.
+    // This can happen for example, when the EVERY wildcard is used.
+    if(!foundMatch) {
+      it.add(new BasicConstraint(instanceName, type, orgCount, location.getBuilding(), location.getFloor(), location.getRoom()).withAlteredReference(this.satCount));      
     }
   }
   
