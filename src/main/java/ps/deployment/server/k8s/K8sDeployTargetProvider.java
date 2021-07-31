@@ -195,52 +195,63 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
             .restartPolicy("Always")
             .addImagePullSecretsItem(new V1LocalObjectReference().name("regcred"));
         
-        // Add a container for each application instance.
-        for(String instanceName : instances) {
-          InstanceInfo instance = instanceInfos.get(instanceName);
-          if(instance == null) {
-            throw new RuntimeException("Found invalid instance name in distribution!");
+        String labelValue = "iot-pod-"+k8sClientID;
+        
+        if(instances.length == 0) {
+          // remove deployment if no instance is scheduled
+          try {
+            apiApps.deleteNamespacedDeployment(labelValue, "default", null, null, null, null, null, null);
+          }
+          catch (ApiException e1) { }
+        } else {
+          // otherwise deploy instances
+          
+          // Add a container for each application instance.
+          for(String instanceName : instances) {
+            InstanceInfo instance = instanceInfos.get(instanceName);
+            if(instance == null) {
+              throw new RuntimeException("Found invalid instance name in distribution!");
+            }
+            
+            V1Container con = new V1Container()
+                .name(instanceName.toLowerCase().replace('.', '-'))
+                .image(net.getDockerRepositoryPrefix()+instance.getComponentType().toLowerCase())
+                .args(MontiThingsUtil.getRunArguments(instanceName, net.getMqttHost(), net.getMqttPort()));
+            
+            podSpec.addContainersItem(con);
           }
           
-          V1Container con = new V1Container()
-              .name(instanceName.toLowerCase().replace('.', '-'))
-              .image(net.getDockerRepositoryPrefix()+instance.getComponentType().toLowerCase())
-              .args(MontiThingsUtil.getRunArguments(instanceName, net.getMqttHost(), net.getMqttPort()));
           
-          podSpec.addContainersItem(con);
-        }
-        
-        String labelValue = "iot-pod-"+k8sClientID; 
-        
-        V1ObjectMeta podMeta = new V1ObjectMeta()
-            .putLabelsItem("iotdeployment", labelValue);
-        
-        V1PodTemplateSpec template = new V1PodTemplateSpec()
-            .metadata(podMeta)
-            .spec(podSpec);
-        
-        V1DeploymentSpec deploySpec = new V1DeploymentSpec()
-          .replicas(1)
-          .template(template)
-          .selector(new V1LabelSelector().putMatchLabelsItem("iotdeployment", labelValue));
-        
-        V1Deployment deployment = new V1Deployment()
-            .spec(deploySpec)
-            .metadata(new V1ObjectMeta().name(labelValue));
-        
-        try {
-          apiApps.deleteNamespacedDeployment(labelValue, "default", null, null, null, null, null, null);
-        } catch(ApiException ex) {
-          // This may fail. Checking whether a deployment already exists with
-          // this name and then deleting it would be more expensive.
-        }
-        
-        try {
-          apiApps.createNamespacedDeployment("default", deployment, null, null, null);
-        }
-        catch (ApiException e1) {
-          System.out.println(e1.getResponseBody());
-          e1.printStackTrace();
+          V1ObjectMeta podMeta = new V1ObjectMeta()
+              .putLabelsItem("iotdeployment", labelValue);
+          
+          V1PodTemplateSpec template = new V1PodTemplateSpec()
+              .metadata(podMeta)
+              .spec(podSpec);
+          
+          V1DeploymentSpec deploySpec = new V1DeploymentSpec()
+            .replicas(1)
+            .template(template)
+            .selector(new V1LabelSelector().putMatchLabelsItem("iotdeployment", labelValue));
+          
+          V1Deployment deployment = new V1Deployment()
+              .spec(deploySpec)
+              .metadata(new V1ObjectMeta().name(labelValue));
+          
+          try {
+            apiApps.deleteNamespacedDeployment(labelValue, "default", null, null, null, null, null, null);
+          } catch(ApiException ex) {
+            // This may fail. Checking whether a deployment already exists with
+            // this name and then deleting it would be more expensive.
+          }
+          
+          try {
+            apiApps.createNamespacedDeployment("default", deployment, null, null, null);
+          }
+          catch (ApiException e1) {
+            System.out.println(e1.getResponseBody());
+            e1.printStackTrace();
+          }
         }
       }
     }
