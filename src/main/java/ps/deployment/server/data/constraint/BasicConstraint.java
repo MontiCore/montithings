@@ -8,6 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
+import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.distribution.config.DeployConfigBuilder;
 import ps.deployment.server.exception.DeploymentException;
 
@@ -83,6 +84,10 @@ public class BasicConstraint implements Constraint {
     
     // add the constraint to the instance
     builder.distributionConstraintsFor(instanceSelector).add(json);
+  }
+  
+  public LocationSpecifier getLocationSpecifier() {
+    return new LocationSpecifier(buildingSelector, floorSelector, roomSelector);
   }
   
   public static BasicConstraint fromJson(JsonObject json) throws DeploymentException {
@@ -165,6 +170,11 @@ public class BasicConstraint implements Constraint {
   
   public void setRoomSelector(String roomSelector) {
     this.roomSelector = roomSelector;
+  }
+  
+  @Override
+  public BasicConstraint clone() {
+    return new BasicConstraint(instanceSelector, constraintType, referenceValue, buildingSelector, floorSelector, roomSelector);
   }
   
   public static enum Type {
