@@ -13,6 +13,7 @@ import com.google.gson.JsonParser;
 import ps.deployment.server.data.constraint.BasicConstraint;
 import ps.deployment.server.data.constraint.Constraint;
 import ps.deployment.server.data.constraint.DependencyConstraint;
+import ps.deployment.server.data.constraint.IncompConstraint;
 import ps.deployment.server.data.constraint.LocationConstraint;
 import ps.deployment.server.exception.DeploymentException;
 import ps.deployment.server.util.ThrowingFunction;
@@ -45,6 +46,8 @@ public class DeploymentConfiguration {
     
     System.out.println("CONSTRAINTS:");
     for(Constraint con : this.constraints) {
+      // TODO REMOVE THE FOLLOWING LINE
+      if(!(con instanceof BasicConstraint)) continue;
       jarr.add(con.serializeJson());
       System.out.println(con);
     }
@@ -72,6 +75,7 @@ public class DeploymentConfiguration {
     constraintParsers.put("deploymentConstraint", BasicConstraint::fromJson);
     constraintParsers.put("deploymentDependencyConstraint", DependencyConstraint::fromJson);
     constraintParsers.put("deploymentLocationConstraint", LocationConstraint::fromJson);
+    constraintParsers.put("deploymentIncompConstraint", IncompConstraint::fromJson);
     
     // parse constraints for each constraint type
     for(Entry<String, ThrowingFunction<JsonObject, Constraint, DeploymentException>> e : constraintParsers.entrySet()) {

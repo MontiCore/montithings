@@ -1,5 +1,7 @@
 package ps.deployment.server.distribution.config;
 
+import ps.deployment.server.util.MontiThingsUtil;
+
 public class DockerComposeService {
   
   private String image;
@@ -13,7 +15,7 @@ public class DockerComposeService {
   
   public DockerComposeService(String image, String instanceName, String mqttHost, int mqttPort) {
     this.image = image;
-    this.command = "--name " + instanceName + " --brokerHostname " + mqttHost + " --brokerPort " + mqttPort;
+    this.command = MontiThingsUtil.getRunArgumentsAsString(instanceName, mqttHost, mqttPort);
   }
   
   public String getImage() {

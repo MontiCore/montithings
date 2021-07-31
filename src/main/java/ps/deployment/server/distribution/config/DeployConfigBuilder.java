@@ -12,7 +12,7 @@ public class DeployConfigBuilder {
   
   private final DeploymentConfiguration config;
   private JsonObject jsonBase;
-  private JsonArray jsonDependencies;
+  private JsonArray jsonDependencies, jsonIncompatibilities;
   
   public DeployConfigBuilder(DeploymentConfiguration deployment) {
     this.config = deployment;
@@ -50,10 +50,11 @@ public class DeployConfigBuilder {
     }
     
     jsonDependencies = new JsonArray();
+    jsonIncompatibilities = new JsonArray();
     
     jsonBase.add("distribution", jsonDistribution);
     jsonBase.add("dependencies", jsonDependencies);
-    jsonBase.add("incompatibilities", new JsonArray()); // TODO add incompatibilities
+    jsonBase.add("incompatibilities", jsonIncompatibilities);
     
     return jsonBase;
   }
@@ -89,6 +90,10 @@ public class DeployConfigBuilder {
   
   public JsonArray dependencies() {
     return this.jsonDependencies;
+  }
+  
+  public JsonArray incompatibilities() {
+    return this.jsonIncompatibilities;
   }
   
   public JsonObject build() {

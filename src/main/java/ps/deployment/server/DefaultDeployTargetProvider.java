@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +20,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 import ps.deployment.server.data.DeployClient;
+import ps.deployment.server.data.DeploymentInfo;
+import ps.deployment.server.data.Distribution;
 import ps.deployment.server.data.LocationSpecifier;
+import ps.deployment.server.data.NetworkInfo;
+import ps.deployment.server.distribution.config.DockerComposeConfig;
 import ps.deployment.server.distribution.listener.IDeployStatusListener;
 import ps.deployment.server.distribution.listener.VoidDeployStatusListener;
 import ps.deployment.server.exception.DeploymentException;
@@ -164,7 +169,7 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
     if(clientID == null)
       return; // invalid topic
     
-    System.out.println("received heartbeat from client " + clientID);
+    /// System.out.println("received heartbeat from client " + clientID);
     DeployClient client = clients.get(clientID);
     if (client != null) {
       client.setLastSeen(System.currentTimeMillis());
@@ -172,6 +177,14 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
         client.setOnline(true);
         this.listener.onClientOnline(client);
       }
+    }
+  }
+  
+  @Override
+  public void deploy(Distribution distribution, DeploymentInfo deploymentInfo, NetworkInfo net) throws DeploymentException {
+    Map<String, DockerComposeConfig> composes = DockerComposeConfig.fromDistribution(distribution, deploymentInfo, net);
+    for (Entry<String, DockerComposeConfig> e : composes.entrySet()) {
+      this.deploy(e.getKey(), e.getValue().serializeYaml());
     }
   }
   
