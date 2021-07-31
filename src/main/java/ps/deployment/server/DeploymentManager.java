@@ -1,6 +1,7 @@
 package ps.deployment.server;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,13 +11,14 @@ import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.DeploymentInfo;
 import ps.deployment.server.data.Distribution;
 import ps.deployment.server.data.NetworkInfo;
+import ps.deployment.server.data.constraint.processor.ConstraintContext;
+import ps.deployment.server.data.constraint.processor.ConstraintPipeline;
 import ps.deployment.server.distribution.DefaultDistributionCalculator;
 import ps.deployment.server.distribution.DistributionSuggestionRequest;
 import ps.deployment.server.distribution.IDistributionCalculator;
 import ps.deployment.server.distribution.IPrologGenerator;
 import ps.deployment.server.distribution.RestPrologGenerator;
 import ps.deployment.server.distribution.config.DeployConfigBuilder;
-import ps.deployment.server.distribution.config.DockerComposeConfig;
 import ps.deployment.server.distribution.listener.IDeployStatusListener;
 import ps.deployment.server.distribution.listener.VoidDeployStatusListener;
 import ps.deployment.server.distribution.suggestion.Suggestion;
@@ -68,13 +70,11 @@ public class DeploymentManager implements IDeployStatusListener {
     if(targetProvider == null)
       return;
     
-    for (DeployClient client : targetProvider.getClients()) {
-      try {
-        targetProvider.deploy(client.getClientID(), null);
-      }
-      catch (DeploymentException e) {
-        e.printStackTrace();
-      }
+    try {
+      targetProvider.deploy(new Distribution(new HashMap<>(0)), new DeploymentInfo(), network);
+    }
+    catch (DeploymentException e) {
+      e.printStackTrace();
     }
   }
   
@@ -88,25 +88,8 @@ public class DeploymentManager implements IDeployStatusListener {
     }
     System.out.println("Updating deployment...");
     try {
-      // Generate Prolog files.
-      IPrologGenerator gen = new RestPrologGenerator();
-      String plFacts = gen.generateFacts(targetProvider.getClients()).exceptionally((t) -> {
-        return null;
-      }).get();
-      if (plFacts == null) {
-        throw new DeploymentException("Could not generate Prolog facts");
-      }
-      
-      String configStr = new DeployConfigBuilder(currentDeploymentConfig).applyConfigConstraints().build().toString();
-      String plQuery = gen.generateQuery(configStr).exceptionally((t) -> {
-        return null;
-      }).get();
-      if (plQuery == null) {
-        throw new DeploymentException("Could not generate Prolog query");
-      }
-      
       // Compute distribution.
-      IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
+      IDistributionCalculator calc = prepareDistributionCalculator(currentDeploymentConfig);
       List<String> instanceNames = this.currentDeploymentInfo.getInstanceNames();
       this.currentDistribution = calc.computeDistribution(targetProvider.getClients(), instanceNames).exceptionally((t) -> {
         return null;
@@ -121,12 +104,20 @@ public class DeploymentManager implements IDeployStatusListener {
       }
     }
     catch (Exception e) {
+      System.err.println("Failed to update the deployment!");
       throw new DeploymentException(e);
     }
   }
   
   private IDistributionCalculator prepareDistributionCalculator(DeploymentConfiguration config) throws DeploymentException {
     try {
+      // Pre-process config.
+      System.out.println("XXX BEFORE: "+config.getConstraints());
+      ConstraintContext ctx = new ConstraintContext(config, this.targetProvider.getClients());
+      config = config.clone();
+      ConstraintPipeline.DEFAULT_PIPELINE.apply(ctx, config);
+      System.out.println("XXX AFTER: "+config.getConstraints());
+      
       // Generate Prolog files.
       IPrologGenerator gen = new RestPrologGenerator();
       String plFacts = gen.generateFacts(targetProvider.getClients()).exceptionally((t) -> {
@@ -144,7 +135,7 @@ public class DeploymentManager implements IDeployStatusListener {
         throw new DeploymentException("Could not generate Prolog query");
       }
       
-     return new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
+      return new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
     } catch(DeploymentException e) {
       throw e;
     } catch(Exception e) {
@@ -183,6 +174,9 @@ public class DeploymentManager implements IDeployStatusListener {
         index++;
       }
       
+      ConstraintContext ctx = new ConstraintContext(config, targetProvider.getClients());
+      ConstraintPipeline.DEFAULT_PIPELINE.clean(ctx, cloned);
+      
       return cloned;
     } catch(DeploymentException e) {
       throw e;
@@ -209,10 +203,7 @@ public class DeploymentManager implements IDeployStatusListener {
   }
   
   private void deploy(Distribution distribution, DeploymentInfo deploymentInfo) throws DeploymentException {
-    Map<String, DockerComposeConfig> composes = DockerComposeConfig.fromDistribution(distribution, deploymentInfo, network);
-    for (Entry<String, DockerComposeConfig> e : composes.entrySet()) {
-      targetProvider.deploy(e.getKey(), e.getValue().serializeYaml());
-    }
+    targetProvider.deploy(distribution, deploymentInfo, network);
   }
   
   public void setTargetProvider(IDeployTargetProvider provider) {
