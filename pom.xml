@@ -99,6 +99,13 @@
         <artifactId>spark-core</artifactId>
         <version>2.9.3</version>
     </dependency>
+    
+    <!-- For Kubernetes (k8s) support -->
+    <dependency>
+      <groupId>io.kubernetes</groupId>
+      <artifactId>client-java</artifactId>
+      <version>13.0.0</version>
+    </dependency>
 
 
   </dependencies>
