@@ -11,6 +11,9 @@ import spark.Spark;
 
 public class HttpAPIController {
   
+  private final static String RESPONSE_JSON_SUCCESS = "{\"success\":true}";
+  private final static String RESPONSE_JSON_FAILED = "{\"success\":false}";
+  
   private final DeploymentManager manager;
   
   public HttpAPIController(DeploymentManager manager) {
@@ -22,6 +25,7 @@ public class HttpAPIController {
       Spark.port(4210);
       Spark.put("/suggestions", this::handlePathSuggestions);
       Spark.put("/validate", this::handlePathValidate);
+      Spark.put("/deploy", this::handleDeployRequest);
       
       return true;
     } catch(Exception e) {
@@ -46,7 +50,7 @@ public class HttpAPIController {
       return newConfig.getConstraintsAsJson();
     } catch(JsonParseException | DeploymentException | NumberFormatException e) {
       /// e.printStackTrace();
-      return "{\"success\":false}";
+      return RESPONSE_JSON_FAILED;
     }
   }
   
@@ -68,6 +72,26 @@ public class HttpAPIController {
     
     response.status(success ? 200 : 409);
     return "";
+  }
+  
+  private Object handleDeployRequest(Request request, Response response) {
+    String body = request.body();
+    if (body != null) {
+      try {
+        DeploymentConfiguration config = DeploymentConfiguration.fromJson(body);
+        if (manager.validate(config)) {
+          manager.setDeploymentInfo(config.getDeploymentInfo());
+          manager.setDeploymentConfig(config);
+          manager.updateDeployment();
+          return RESPONSE_JSON_SUCCESS;
+        }
+      }
+      catch (JsonParseException | DeploymentException e) {
+        e.printStackTrace();
+      }
+    }
+    // This is only executed when the above does not succeed in any way.
+    return RESPONSE_JSON_FAILED;
   }
   
 }
