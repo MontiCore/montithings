@@ -5,9 +5,6 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.reflections.serializers.JsonSerializer;
-
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -56,6 +53,11 @@ public class MqttAPIController implements IDeployStatusListener {
       this.mqtt.subscribe(TOPIC_SETCONFIG_REQUEST, this::handleSetDeployConfig);
       this.mqtt.subscribe(TOPIC_SETINFO_REQUEST, this::handleSetDeployInfo);
       this.mqtt.subscribe(TOPIC_UPDATEDEPLOYMENT_REQUEST, this::handleUpdateDeployment);
+      
+      // update devices
+      for(DeployClient c : manager.getTargetProvider().getClients()) {
+        sendDeviceUpdate(c);
+      }
     }
     catch (MqttException e) {
       e.printStackTrace();
