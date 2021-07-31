@@ -28,7 +28,6 @@ import io.kubernetes.client.openapi.models.V1PodSpec;
 import io.kubernetes.client.openapi.models.V1PodTemplateSpec;
 import io.kubernetes.client.util.CallGeneratorParams;
 import io.kubernetes.client.util.Config;
-import io.kubernetes.client.util.Yaml;
 import ps.deployment.server.IDeployTargetProvider;
 import ps.deployment.server.data.DeployClient;
 import ps.deployment.server.data.DeploymentInfo;
@@ -51,6 +50,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
   
   private static final String LITERAL_NODE_READY = "Ready";
   private static final String PREFIX_CLIENTID = "k8s-";
+  private static final String K8S_NAMESPACE = "default";
   
   private final ApiClient client;
   private final CoreV1Api apiCore;
@@ -200,7 +200,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
         if(instances.length == 0) {
           // remove deployment if no instance is scheduled
           try {
-            apiApps.deleteNamespacedDeployment(labelValue, "default", null, null, null, null, null, null);
+            apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
           }
           catch (ApiException e1) { }
         } else {
@@ -239,14 +239,14 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
               .metadata(new V1ObjectMeta().name(labelValue));
           
           try {
-            apiApps.deleteNamespacedDeployment(labelValue, "default", null, null, null, null, null, null);
+            apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
           } catch(ApiException ex) {
             // This may fail. Checking whether a deployment already exists with
             // this name and then deleting it would be more expensive.
           }
           
           try {
-            apiApps.createNamespacedDeployment("default", deployment, null, null, null);
+            apiApps.createNamespacedDeployment(K8S_NAMESPACE, deployment, null, null, null);
           }
           catch (ApiException e1) {
             System.out.println(e1.getResponseBody());
