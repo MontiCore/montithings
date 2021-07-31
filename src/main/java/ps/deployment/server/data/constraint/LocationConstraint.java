@@ -66,8 +66,8 @@ public class LocationConstraint implements Constraint {
     Type constraintType = Type.forName(json.get("constraintType").getAsString());
     
     String buildingSelector = json.get("buildingSelector").getAsString();
-    String floorSelector = json.get("buildingSelector").getAsString();
-    String roomSelector = json.get("buildingSelector").getAsString();
+    String floorSelector = json.get("floorSelector").getAsString();
+    String roomSelector = json.get("roomSelector").getAsString();
     
     return new LocationConstraint(instanceName, constraintType, buildingSelector, floorSelector, roomSelector);
   }
