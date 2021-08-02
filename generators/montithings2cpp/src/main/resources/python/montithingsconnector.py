@@ -12,16 +12,19 @@ class MontiThingsConnector:
         else:
             self._receive = receive
         self.connected = False
-        self.connect_to_broker()
+        self.connect_to_broker(receive)
         self.wait_for_connection()
 
-    def connect_to_broker(self):
+    def connect_to_broker(self, receive):
         self.mqttc.on_message = self.on_message
         self.mqttc.on_connect = self.on_connect
         self.mqttc.on_disconnect = self.on_disconnect
         self.mqttc.connect("localhost", 1883)
         self.mqttc.subscribe("/sensorActuator/" + self.topic_name, qos=0)
-        self.mqttc.loop_start()
+        if receive is None:
+            self.mqttc.loop_start()
+        else:
+            self.mqttc.loop_forever()
 
     def on_connect(self, mqttc, obj, flags, rc):
         print("Connected MQTT broker.")
