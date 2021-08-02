@@ -17,4 +17,7 @@ public interface IDeployTargetProvider {
   
   public void setStatusListener(IDeployStatusListener listener);
   
+  public void initialize() throws DeploymentException;
+  public void close() throws DeploymentException;
+  
 }

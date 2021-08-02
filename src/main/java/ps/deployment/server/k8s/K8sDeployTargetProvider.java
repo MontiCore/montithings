@@ -42,42 +42,39 @@ import ps.deployment.server.util.MontiThingsUtil;
 
 public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceEventHandler<V1Node> {
   
-  public static void main(String[] args) throws IOException, ApiException {
-    String hostURL = "https://localhost:6443";
-    String token = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImpvRXFtY2Q3ZHJ3Q001OElWNXI1ME1vRElrUmw5eElFd0dCMk83a3VFMkkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImlvdC10b2tlbi1jOXJyaCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJpb3QiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI1ZmY3Zjc5Zi0xNjQxLTRiYTctOGZjNC03MDIzMDVkNWEzZjEiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDppb3QifQ.STCH2LLFlyhTXd5mA1IppKW2-mYUBpwNdQm3QxEP3qgMKJNK0vBJqgD26861CqFo8UwHAom4ZBj3a_jnvazVakYLWUz-qR-9Wzvco8li3yNfZWRCZR5QAUUX2drnajtLIf8-CErw282Y4UPZrGrSWKBJfYOG_CMW_ZVwDE1aAQFw9nfDFj2TZb7CyL5WccoUVKptqsJYkUqLjcV0d3rzuFyquXMdCWVp5tvyys8KU1f3he8uuLYYXGJhqZ3OziVmULX0SA1dWU7VJ9sFjJknsyfl_Q8X0HQ6Lb9j_QkUOPh_PntrVR56Oyw6-C5KBQRx3p-wVyvjLfeUUuQQgtlwfw";
-    new K8sDeployTargetProvider(Config.fromToken(hostURL, token, false));
-  }
-  
   private static final String LITERAL_NODE_READY = "Ready";
   private static final String PREFIX_CLIENTID = "k8s-";
   private static final String K8S_NAMESPACE = "default";
+  
+  private final long providerID;
   
   private final ApiClient client;
   private final CoreV1Api apiCore;
   private final AppsV1Api apiApps;
   
+  private SharedInformerFactory informerFactory;
+  
   private final Map<V1Node, K8sDeployClient> clients = new HashMap<>();
   private IDeployStatusListener listener = new VoidDeployStatusListener();
   
-  public K8sDeployTargetProvider(String hostURL, String token) throws IOException {
-    this(Config.fromToken(hostURL, token, false));
+  public K8sDeployTargetProvider(long providerID, String hostURL, String token) throws IOException {
+    this(providerID, Config.fromToken(hostURL, token, false));
   }
   
-  public K8sDeployTargetProvider(ApiClient client) throws IOException {
+  public K8sDeployTargetProvider(long providerID, ApiClient client) throws IOException {
     this.client = client;
+    this.providerID = providerID;
     this.apiCore = new CoreV1Api(client);
     this.apiApps = new AppsV1Api(client);
-    
-    this.startListening();
   }
   
   private void startListening() {
-    SharedInformerFactory factory = new SharedInformerFactory(this.client);
-    SharedIndexInformer<V1Node> nodeInformer = factory.sharedIndexInformerFor((CallGeneratorParams params) -> {
+    informerFactory = new SharedInformerFactory(this.client);
+    SharedIndexInformer<V1Node> nodeInformer = informerFactory.sharedIndexInformerFor((CallGeneratorParams params) -> {
       return this.apiCore.listNodeCall(null, null, null, null, null, null, params.resourceVersion, null, params.timeoutSeconds, params.watch, null);
     }, V1Node.class, V1NodeList.class);
     nodeInformer.addEventHandler(this);
-    factory.startAllRegisteredInformers();
+    informerFactory.startAllRegisteredInformers();
   }
   
   /**
@@ -123,6 +120,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
       dc.setClientID(PREFIX_CLIENTID + meta.getName());
       dc.setOnline(online);
       dc.setHardware(new String[0]);
+      dc.setTargetProviderID(this.providerID);
       if (online)
         dc.setLastSeen(System.currentTimeMillis());
       
@@ -294,6 +292,16 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
     if(client != null) {
       clients.put(obj, client);      
     }
+  }
+
+  @Override
+  public void initialize() throws DeploymentException {
+    this.startListening();
+  }
+
+  @Override
+  public void close() throws DeploymentException {
+    this.informerFactory.stopAllRegisteredInformers();
   }
   
 }

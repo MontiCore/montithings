@@ -1,8 +1,12 @@
 package ps.deployment.server.api;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
+import ps.deployment.server.DeployTargetProviderParser;
 import ps.deployment.server.DeploymentManager;
+import ps.deployment.server.IDeployTargetProvider;
 import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.exception.DeploymentException;
 import spark.Request;
@@ -26,6 +30,9 @@ public class HttpAPIController {
       Spark.put("/suggestions", this::handlePathSuggestions);
       Spark.put("/validate", this::handlePathValidate);
       Spark.put("/deploy", this::handleDeployRequest);
+      Spark.put("/stopDeployment", this::handleStopDeployment);
+      
+      Spark.put("/providers", this::handlePutProviders);
       
       return true;
     } catch(Exception e) {
@@ -92,6 +99,27 @@ public class HttpAPIController {
     }
     // This is only executed when the above does not succeed in any way.
     return RESPONSE_JSON_FAILED;
+  }
+  
+  private Object handleStopDeployment(Request req, Response resp) {
+    manager.terminate();
+    return "";
+  }
+  
+  private Object handlePutProviders(Request req, Response resp) {
+    try {
+      String bodyStr = req.body();
+      JsonElement json = JsonParser.parseString(bodyStr);
+      
+      IDeployTargetProvider provider = DeployTargetProviderParser.parse(json);
+      manager.setTargetProvider(provider);
+      
+      return RESPONSE_JSON_SUCCESS;
+    } catch(Exception e) {
+      e.printStackTrace();
+      resp.status(400);
+      return RESPONSE_JSON_FAILED;
+    }
   }
   
 }

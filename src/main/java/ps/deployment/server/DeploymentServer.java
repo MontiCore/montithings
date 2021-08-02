@@ -25,12 +25,13 @@ public class DeploymentServer {
     network.setDockerRepositoryPrefix("registry.git.rwth-aachen.de/monticore/montithings/deployment/ba-schneider/deployexampleapp/");
     
     DeploymentManager manager = new DeploymentManager(workingDir, network);
-    try {
+    /*try {
       System.out.println("Connecting to MQTT broker...");
       MqttClient mqttClient = new MqttClient(network.getMqttURI(), "orchestrator");
       MqttConnectOptions options = new MqttConnectOptions();
       // allow more messages being sent with QOS>0
       options.setMaxInflight(1_000);
+      options.setAutomaticReconnect(true);
       mqttClient.connect(options);
       //manager.setTargetProvider(new DefaultDeployTargetProvider(mqttClient));
       try {
@@ -47,7 +48,7 @@ public class DeploymentServer {
     }
     catch (MqttException e1) {
       e1.printStackTrace();
-    }
+    }*/
     
     System.out.println("Starting HTTP API controller...");
     

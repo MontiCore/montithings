@@ -7,6 +7,7 @@ public class DeployClient {
   private LocationSpecifier location = new LocationSpecifier();
   private String[] hardware = new String[0];
   private long lastSeen;
+  private long targetProviderID;
   
   public String getClientID() {
     return clientID;
@@ -51,13 +52,22 @@ public class DeployClient {
     this.lastSeen = lastSeen;
   }
   
-  public static DeployClient create(String clientID, boolean online, LocationSpecifier location, String... hardware) {
+  public static DeployClient create(String clientID, boolean online, LocationSpecifier location, long targetProviderID, String... hardware) {
     DeployClient client = new DeployClient();
     client.setClientID(clientID);
     client.setOnline(online);
     client.setLocation(location);
     client.setHardware(hardware);
+    client.setTargetProviderID(targetProviderID);
     return client;
+  }
+
+  public long getTargetProviderID() {
+    return targetProviderID;
+  }
+
+  public void setTargetProviderID(long targetProviderID) {
+    this.targetProviderID = targetProviderID;
   }
   
 }

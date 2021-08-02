@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import com.google.common.base.Charsets;
@@ -31,41 +32,23 @@ import ps.deployment.server.exception.DeploymentException;
 
 public class DefaultDeployTargetProvider implements IDeployTargetProvider {
   
-  public static void main(String[] args) throws Exception {
-    // test code, will be removed (TODO)
-    String mqttHost = "node4.se.rwth-aachen.de"; //;"127.0.0.1";
-    
-    MqttClient mqttClient = new MqttClient("tcp://" + mqttHost + ":1883", "orchestrator");
-    mqttClient.connect();
-    DefaultDeployTargetProvider ds = new DefaultDeployTargetProvider(mqttClient);
-    
-    boolean deploy = false;
-    String deployOnclientID = "bfb9531471e8";
-    
-    if (deploy) {
-      ds.deploy(deployOnclientID, "version: \"3.7\"\n" + "services:\n" + "    app:\n" + "        image: hierarchy.temperaturecontroller\n" + "        command: --name test --brokerHostname " + mqttHost + " --brokerPort 1883\n" + "        network_mode: \"host\"\n" + "        restart: always");
-    }
-    else {
-      ds.deploy(deployOnclientID, null);
-    }
-  }
-  
   private static final long CLIENT_TIMEOUT = 15 * 1000L;
   
   private static final Pattern patternClientID = Pattern.compile("deployment\\/([\\w\\d]+)\\/.*");
   
+  private final long providerID;
   private final MqttClient mqttClient;
   private final Map<String, DeployClient> clients = new HashMap<>();
   private IDeployStatusListener listener;
   
-  public DefaultDeployTargetProvider(MqttClient mqttClient, IDeployStatusListener listener) throws MqttException {
+  public DefaultDeployTargetProvider(long providerID, MqttClient mqttClient, IDeployStatusListener listener) throws MqttException {
+    this.providerID = providerID;
     this.mqttClient = mqttClient;
     this.listener = listener;
-    this.prepare();
   }
   
-  public DefaultDeployTargetProvider(MqttClient mqttClient) throws MqttException {
-    this(mqttClient, new VoidDeployStatusListener());
+  public DefaultDeployTargetProvider(long providerID, MqttClient mqttClient) throws MqttException {
+    this(providerID, mqttClient, new VoidDeployStatusListener());
   }
   
   private void prepare() throws MqttException {
@@ -148,7 +131,7 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
         location.setBuilding(building);
         location.setFloor(floor);
         location.setRoom(room);
-        client = DeployClient.create(clientID, false, location, hardware);
+        client = DeployClient.create(clientID, false, location, providerID, hardware);
         clients.put(clientID, client);
       }
       else {
@@ -205,6 +188,33 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
   
   public void setStatusListener(IDeployStatusListener listener) {
     this.listener = listener;
+  }
+
+  @Override
+  public void initialize() throws DeploymentException {
+    try {
+      MqttConnectOptions options = new MqttConnectOptions();
+      // allow more messages being sent with QOS>0
+      options.setMaxInflight(1_000);
+      options.setAutomaticReconnect(true);
+      mqttClient.connect(options);
+      this.prepare();
+    } catch(MqttException e) {
+      e.printStackTrace();
+      throw new DeploymentException("Could not initialize basic target provider", e);
+    }
+  }
+
+  @Override
+  public void close() throws DeploymentException {
+    try {
+      if(mqttClient.isConnected()) {
+        mqttClient.disconnect();
+      }
+      mqttClient.close();
+    } catch(MqttException e) {
+      // We can ignore this, since the client is already dead if this failes.
+    }
   }
   
 }

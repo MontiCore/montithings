@@ -70,5 +70,26 @@ public class PoolDeployTargetProvider implements IDeployTargetProvider {
       provider.setStatusListener(listener);
     }
   }
+
+  @Override
+  public void initialize() throws DeploymentException {
+    for(IDeployTargetProvider prov : providers) {
+      try {
+        prov.initialize();
+      } catch(DeploymentException e) {
+        // If one provider fails to initialize, this should not hinder the other providers from working.
+        System.err.println("Failed to initialize provider: "+e.getMessage());
+      }
+    }
+  }
+
+  @Override
+  public void close() throws DeploymentException {
+    for(IDeployTargetProvider prov : providers) {
+      try {
+        prov.close();
+      } catch(DeploymentException e) { }
+    }
+  }
   
 }

@@ -33,6 +33,7 @@ public class MqttAPIController implements IDeployStatusListener {
   private static final String TOPIC_UPDATEDEPLOYMENT_REQUEST = MQTT_PREFIX + "/updateDeployment/request";
   private static final String TOPIC_UPDATEDEPLOYMENT_RESPONSE = MQTT_PREFIX + "/updateDeployment/response";
   private static final String TOPIC_UPDATE_DEVICES = MQTT_PREFIX + "/updateDevice";
+  private static final String TOPIC_UPDATE_STATE = MQTT_PREFIX + "/updateState";
   
   private final DeploymentManager manager;
   
@@ -53,6 +54,9 @@ public class MqttAPIController implements IDeployStatusListener {
       this.mqtt.subscribe(TOPIC_SETCONFIG_REQUEST, this::handleSetDeployConfig);
       this.mqtt.subscribe(TOPIC_SETINFO_REQUEST, this::handleSetDeployInfo);
       this.mqtt.subscribe(TOPIC_UPDATEDEPLOYMENT_REQUEST, this::handleUpdateDeployment);
+      
+      // notify others that we're online
+      this.mqtt.publish(TOPIC_UPDATE_STATE, new MqttMessage());
       
       // update devices
       for(DeployClient c : manager.getTargetProvider().getClients()) {

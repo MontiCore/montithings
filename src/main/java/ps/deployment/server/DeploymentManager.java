@@ -31,7 +31,7 @@ public class DeploymentManager implements IDeployStatusListener {
   private final NetworkInfo network;
   
   // dynamic configuration
-  private IDeployTargetProvider targetProvider = null;
+  private IDeployTargetProvider targetProvider = new NullDeployTargetProvider();
   
   // current state
   private DeploymentInfo currentDeploymentInfo = null;
@@ -71,7 +71,14 @@ public class DeploymentManager implements IDeployStatusListener {
       return;
     
     try {
-      targetProvider.deploy(new Distribution(new HashMap<>(0)), new DeploymentInfo(), network);
+      Map<String, String[]> dmap = new HashMap<>(0);
+      // deploy nothing to every client
+      for(DeployClient client : targetProvider.getClients()) {
+        dmap.put(client.getClientID(), new String[0]);
+      }
+      targetProvider.deploy(new Distribution(dmap), new DeploymentInfo(), network);
+      this.currentDeploymentConfig = null;
+      this.currentDeploymentInfo = null;
     }
     catch (DeploymentException e) {
       e.printStackTrace();
@@ -207,11 +214,38 @@ public class DeploymentManager implements IDeployStatusListener {
   }
   
   public void setTargetProvider(IDeployTargetProvider provider) {
-    if (this.targetProvider != provider) {
-      terminate();
-    }
+    // Close old target provider
+    try {
+      this.terminate();
+      this.targetProvider.close();
+    } catch(DeploymentException e) {}
+    
+    // Replace with new one
     this.targetProvider = provider;
     this.targetProvider.setStatusListener(this);
+    
+    // Initialize new target provider
+    try {
+      provider.initialize();
+    } catch(DeploymentException e) {
+      System.err.println("Failed to initialize deployment provider.");
+    }
+    
+    // send device update to listener
+    for(DeployClient client : targetProvider.getClients()) {
+      if(client.isOnline()) this.listener.onClientOnline(client);
+      else this.listener.onClientOffline(client);
+    }
+    
+    System.out.println("Changed deployment target provider.");
+    
+    // update deployment
+    try {
+      this.updateDeployment();
+    }
+    catch (DeploymentException e) {
+      e.printStackTrace();
+    }
   }
   
   public IDeployTargetProvider getTargetProvider() {
