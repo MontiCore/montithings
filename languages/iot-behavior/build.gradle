@@ -51,12 +51,7 @@ dependencies {
   implementation "org.apache.commons:commons-lang3:3.9"
   implementation "org.assertj:assertj-core:$assertj_version"
   implementation "org.codehaus.janino:janino:$janino_version"
-  /*testImplementation "junit:junit:$junit_version"
-  testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
-  testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
-  testImplementation "de.monticore:monticore-runtime:$monticore_version"
-  testImplementation "ch.qos.logback:logback-classic:$logback_version"*/
+  implementation "org.jscience:jscience:$jscience_version"
 }
 
 task generateGrammarSetDefinitions(type: MCTask) {
