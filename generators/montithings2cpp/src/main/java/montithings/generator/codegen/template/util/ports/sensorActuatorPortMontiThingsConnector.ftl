@@ -1,12 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("port", "config", "existsHWC")}
+${tc.signature("port", "isSensor", "config", "existsHWC")}
 
 #include<iostream>
 #include "${port}.h"
+#include "${port}Interface.h"
 #include "tclap/CmdLine.h"
 #include "MqttClient.h"
 
 INITIALIZE_EASYLOGGINGPP
+
 
 int main(int argc, char* argv[]) {
 
@@ -52,10 +54,23 @@ int main(int argc, char* argv[]) {
   MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
 
   // Wait for initial connection
-  while(!MqttClient::instance()->isConnected())
-  ;
+  while(!MqttClient::instance()->isConnected());
 
-  LOG(DEBUG) << "Started PORT ${port}.";
+  LOG(DEBUG) << "MQTT Connection Setup.";
+
+
+  ${port} port (
+  instanceNameArg.getValue ()
+  );
+
+  port.setUp(EVENTBASED);
+  port.init();
+  port.start();
+
+  LOG(DEBUG) << "SensorActuator Port ${port} started.";
+
+  port.threadJoin();
+  MqttClient::instance()->wait();
 
   }
   catch (TCLAP::ArgException &e) // catch exceptions

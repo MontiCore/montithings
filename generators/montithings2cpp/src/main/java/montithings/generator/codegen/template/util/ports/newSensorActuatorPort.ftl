@@ -13,7 +13,7 @@ ${tc.signature("config", "isSensor", "portTemplateName", "everyTagOpt")}
 
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
-class ${Names.getSimpleName(portTemplateName)?cap_first} : public Port${r"<T>"}{
+class ${Names.getSimpleName(portTemplateName)?cap_first}Port : public Port${r"<T>"}{
 protected:
 
   std::string instanceName;
@@ -66,9 +66,9 @@ protected:
 
 
   <#if config.getMessageBroker().toString() == "DDS">
-    ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
+    ${Names.getSimpleName(portTemplateName)?cap_first}Port (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
   <#else>
-    ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)
+    ${Names.getSimpleName(portTemplateName)?cap_first}Port (std::string instanceName) : instanceName(instanceName)
   </#if>
   {
     ${defineHookPoint("<CppBlock>?portTemplate:init")}

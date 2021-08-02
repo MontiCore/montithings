@@ -295,10 +295,16 @@ public class MTGenerator {
 
     File target = new File(genSrcDir + File.separator + packageName + "." + portName);
 
-    Path sensorActuatorPortTarget = Paths.get(target + File.separator + portName + ".h");
+    //TODO: real topic name and type
+    Path sensorActuatorPortTarget = Paths.get(target + File.separator + portName + "Port.h");
     fg.generate(target, portName + "MontiThingsConnector", ".cpp",
-            "template/util/ports/sensorActuatorPortMontiThingsConnector.ftl", portName);
+            "template/util/ports/sensorActuatorPortMontiThingsConnector.ftl", portName, isSensor, config);
 
+    fg.generate(target, portName + "Interface", ".h",
+            "template/util/ports/sensorActuatorInterface.ftl", portName, "int", config);
+
+    fg.generate(target, portName, ".h",
+            "template/util/ports/sensorActuator.ftl", portName, isSensor, "superTestTopic", "int", config);
 
     Optional<ASTEveryTag> everyTag = Optional.empty();
     //TODO: What to do with this?
