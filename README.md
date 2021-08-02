@@ -8,7 +8,7 @@
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
 
-<img src="docs/MontiThingsOverview.png" alt="drawing" width="700px"/>
+<img src="docs/MontiThingsOverview.png" width="700px"/>
 
 In MontiArc, architectures are described as component and connector systems in which autonomously acting components perform 
 computations. Communication between components is regulated by connectors between the components’ interfaces, which are stable 
@@ -25,6 +25,12 @@ MontiThings uses these elements to generate a C++ project including various scri
 
 
 # Installation
+
+This section describes some of the many possible ways to use MontiThings.
+For the purpose of this tutorial, you can choose between the following options:
+1. a native installation on your machine
+2. an installation in a VM of the Microsoft Azure Cloud
+3. using MontiThings' Docker containers to avoid an installation
 
 ## Native installation
 

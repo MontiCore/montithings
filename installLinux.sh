@@ -44,7 +44,6 @@ sudo ln -s /snap/bin/cmake /usr/bin/cmake
 fi
 
 # Install NNG
-# Install NNG
 if [ ! -d nng ]
 then
 git clone https://github.com/nanomsg/nng.git
