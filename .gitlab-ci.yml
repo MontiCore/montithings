@@ -95,8 +95,8 @@ Docker Recorder:
       - services/recorder/**/*
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/monithings.recorder -f services/recorder/Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE/monithings.recorder
+    - docker build -t $CI_REGISTRY_IMAGE/recorder -f services/recorder/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/recorder
 
 
 Docker Log Tracing:
@@ -108,11 +108,11 @@ Docker Log Tracing:
       - services/log-tracing/**/*
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/monithings.logtracer_middleware -f services/log-tracing/Dockerfile .
+    - docker build -t $CI_REGISTRY_IMAGE/logtracer_middleware -f services/log-tracing/Dockerfile .
     - cd services/log-tracing/frontend
-    - docker build -t $CI_REGISTRY_IMAGE/monithings.logtracer_frontend .
-    - docker push $CI_REGISTRY_IMAGE/monithings.logtracer_middleware
-    - docker push $CI_REGISTRY_IMAGE/monithings.logtracer_frontend
+    - docker build -t $CI_REGISTRY_IMAGE/logtracer_frontend .
+    - docker push $CI_REGISTRY_IMAGE/logtracer_middleware
+    - docker push $CI_REGISTRY_IMAGE/logtracer_frontend
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
