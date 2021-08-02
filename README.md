@@ -74,6 +74,92 @@ cmake -G Ninja ..; ninja
 ```
 You should then be able to find the binaries in the `bin` folder. 
 
+## Microsoft Azure
+
+### Is this the right installation type for you?
+In case you do not want to install MontiThings on your own machine, you can try
+MontiThings in a virtual machine provided by Microsoft Azure. 
+**Note: Costs may be incurred in the process! Use at your own responsibility!**
+This guide is based on the guide from the 
+[Microsoft Azure Docs][azure-terraform-docs], but adapted for MontiThings.
+
+### Prerequisites
+* [Microsoft Azure CLI][azure-cli] 
+* [Terraform][terraform-cli] 
+* An SSH key (by default it is expected at `~/.ssh/id_rsa.pub`)
+
+### Installation
+First you need to log into Azure and initialize Terraform to make sure 
+everything is correctly installed and setup:
+```
+az login
+terraform init
+```
+
+If your public SSH key is not at `~/.ssh/id_rsa.pub`, please change the 
+following part in the `terraform_azure.tf` file to match your key's location. 
+You can also directly provide the key as a String.
+```
+admin_ssh_key {
+  username       = "azureuser"
+  public_key     = file("~/.ssh/id_rsa.pub")
+}
+```
+
+Then you can plan your deployment, i.e. dry-run it and get a preview of what 
+Terraform will actually do:
+```
+terraform plan -out terraform_azure.tfplan
+```
+
+Here, make sure that you're happy with all the services Terraform will install. 
+If you want to know more about the individual services, refer to the excellent 
+documentation from the [Microsoft Azure Docs][azure-terraform-docs]. 
+At least, make sure that Terraform found your SSH key:
+```
+admin_ssh_key {
+  - public_key = <<-EOT
+    ssh-rsa AAAAB3NzaC monti@example.com
+    EOT -> null
+  - username   = "azureuser" -> null
+}
+```
+
+If you're happy, deploy the virtual machine by calling: 
+```
+terraform apply terraform_azure.tfplan
+```
+
+To find out the virtual machine's IP address, call:
+```
+az vm show --resource-group montithingsResourceGroup --name montithings -d --query [publicIps] -o tsv
+```
+
+To connect to the machine, call:
+```
+ssh azureuser@20.30.40.50
+```
+
+Once you're on the machine, you can download and install MontiThings:
+```
+git clone https://git.rwth-aachen.de/monticore/montithings/core.git
+cd core
+./installLinux.sh
+```
+
+After the installation you can use MontiThings as if it was installed using 
+a native installation.
+For example 
+[build your first application](#Building and Running Your First Application).
+
+When you are done, you can instruct Terraform to destroy all resources so that 
+no further costs are incurred:
+```
+terraform destroy
+```
+Double check that everything was correctly deleted in your Azure account just to
+make sure no further costs are incurred.
+
 ## Quick Start (using Docker)
 
 ### Is this the right installation type for you?
@@ -134,6 +220,7 @@ After building the code, you try to run it by going into the folder with the bin
 then starting the application (`./hierarchy` in this example case). 
 
 Leave the Docker container by pressing `Ctrl+D` or by typing `exit`.
+
 
 # Building and Running Your First Application
 
@@ -310,6 +397,9 @@ time to waste, you can read more about the different file formats on Wikipedia:
 **Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
 **A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
 
+**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?"
+**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
+
 # License
 
 © https://github.com/MontiCore/monticore
@@ -341,3 +431,6 @@ https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICOR
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
 [password]: https://git.rwth-aachen.de/profile/password/edit
 [clion]: https://www.jetbrains.com/clion
+[azure-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+[terraform-cli]: https://www.terraform.io/downloads.html
+[azure-terraform-docs]: https://docs.microsoft.com/en-us/azure/developer/terraform/create-linux-virtual-machine-with-infrastructure
