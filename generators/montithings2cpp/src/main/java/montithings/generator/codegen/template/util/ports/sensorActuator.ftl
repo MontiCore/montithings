@@ -111,7 +111,18 @@ void ${port}::start(){
 }
 void ${port}::run(){
     <#if isSensor>
-    //TODO: get sensor values in TimeInterval
+    LOG(DEBUG) << "Thread for ${port} started";
+    while (true)
+    {
+        auto end = std::chrono::high_resolution_clock::now()
+        + std::chrono::milliseconds(50);
+        this->compute();
+
+        do {
+            std::this_thread::yield();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        } while (std::chrono::high_resolution_clock::now()  < end);
+    }
     </#if>
 }
 void ${port}::onEvent(){
