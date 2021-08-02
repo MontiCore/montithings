@@ -61,7 +61,7 @@ public class DeployTargetProviderParser {
       }
       long providerID = json.get("id").getAsLong();
       
-      MqttClient client = new MqttClient(mqttURI, mqttAddress);
+      MqttClient client = new MqttClient(mqttURI, MqttClient.generateClientId());
       return new DefaultDeployTargetProvider(providerID, client);
     }
     catch (Exception e) {

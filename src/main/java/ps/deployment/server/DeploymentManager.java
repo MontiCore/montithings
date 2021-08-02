@@ -80,9 +80,7 @@ public class DeploymentManager implements IDeployStatusListener {
       this.currentDeploymentConfig = null;
       this.currentDeploymentInfo = null;
     }
-    catch (DeploymentException e) {
-      e.printStackTrace();
-    }
+    catch (DeploymentException e) { }
   }
   
   /**
