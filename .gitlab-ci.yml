@@ -95,7 +95,7 @@ Docker Recorder:
       - services/recorder/**/*
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t monithings.recorder -f services/recorder/Dockerfile .
+    - docker build -t $CI_REGISTRY_IMAGE/monithings.recorder -f services/recorder/Dockerfile .
     - docker push $CI_REGISTRY_IMAGE/monithings.recorder
 
 
@@ -108,9 +108,9 @@ Docker Log Tracing:
       - services/log-tracing/**/*
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t monithings.logtracer_middleware -f services/log-tracing/Dockerfile .
+    - docker build -t $CI_REGISTRY_IMAGE/monithings.logtracer_middleware -f services/log-tracing/Dockerfile .
     - cd services/log-tracing/frontend
-    - docker build -t monithings.logtracer_frontend .
+    - docker build -t $CI_REGISTRY_IMAGE/monithings.logtracer_frontend .
     - docker push $CI_REGISTRY_IMAGE/monithings.logtracer_middleware
     - docker push $CI_REGISTRY_IMAGE/monithings.logtracer_frontend
 
