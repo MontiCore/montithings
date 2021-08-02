@@ -27,7 +27,7 @@ public class SD4ComponentTestingGenerator {
    */
 
   public static Path generate(ASTSD4Artifact ast) {
-    return generate(ast, "Test.cpp");
+    return generate(ast, "target/Test.cpp");
   }
 
   public static Path generate(ASTSD4Artifact ast, String path ) {
@@ -37,7 +37,7 @@ public class SD4ComponentTestingGenerator {
     GeneratorEngine engine = new GeneratorEngine(setup);
 
     // Generate CPP file
-    File outputDir = new File(System.getProperty("user.dir") + File.separator + "target");
+    File outputDir = new File(System.getProperty("user.dir"));
     Path TestCasesOutputFile = Paths.get(outputDir.getAbsolutePath(), path);
     engine.generate("templates/TestCasesGenerator.ftl", TestCasesOutputFile, ast);
 
