@@ -50,7 +50,7 @@ public class RestPrologGenerator implements IPrologGenerator {
   
   private String sendPost(String endpoint, String content) {
     try {
-      URL url = new URL("http://localhost:5004/" + endpoint);
+      URL url = new URL("http://iotmngr:5004/" + endpoint);
       byte[] payload = content.getBytes(StandardCharsets.UTF_8);
       
       HttpURLConnection con = (HttpURLConnection) url.openConnection();
