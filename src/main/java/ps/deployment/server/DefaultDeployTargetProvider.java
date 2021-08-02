@@ -32,7 +32,7 @@ import ps.deployment.server.exception.DeploymentException;
 
 public class DefaultDeployTargetProvider implements IDeployTargetProvider {
   
-  private static final long CLIENT_TIMEOUT = 15 * 1000L;
+  private static final long CLIENT_TIMEOUT = 20 * 1000L;
   
   private static final Pattern patternClientID = Pattern.compile("deployment\\/([\\w\\d]+)\\/.*");
   
@@ -40,6 +40,8 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
   private final MqttClient mqttClient;
   private final Map<String, DeployClient> clients = new HashMap<>();
   private IDeployStatusListener listener;
+  
+  private boolean active = true;
   
   public DefaultDeployTargetProvider(long providerID, MqttClient mqttClient, IDeployStatusListener listener) throws MqttException {
     this.providerID = providerID;
@@ -73,6 +75,8 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
     try {
       while (true) {
         Thread.sleep(CLIENT_TIMEOUT);
+        if(!active) return;
+        
         long now = System.currentTimeMillis();
         
         for (DeployClient client : clients.values()) {
@@ -212,6 +216,7 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
         mqttClient.disconnect();
       }
       mqttClient.close();
+      this.active = false;
     } catch(MqttException e) {
       // We can ignore this, since the client is already dead if this failes.
     }
