@@ -232,7 +232,32 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>exec-generated-test-sources</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>docker</executable>
+							<arguments>
+								<argument>run</argument>
+								<argument>--rm</argument>
+								<argument>-v</argument>
+								<argument>${basedir}/target/generated-test-sources/:/root/test/</argument>
+								<argument>-w</argument>
+								<argument>/root/test/</argument>
+								<argument>registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake</argument>
+								<argument>./runTests.sh</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
