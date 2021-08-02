@@ -149,8 +149,8 @@ cd core
 
 After the installation you can use MontiThings as if it was installed using 
 a native installation.
-For example 
-[build your first application](#Building and Running Your First Application).
+For example, you can follow the "Building and Running Your First Application" 
+tutorial below.
 
 When you are done, you can instruct Terraform to destroy all resources so that 
 no further costs are incurred:
