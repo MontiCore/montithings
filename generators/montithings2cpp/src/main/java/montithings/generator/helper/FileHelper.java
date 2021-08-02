@@ -24,8 +24,6 @@ import java.util.stream.Stream;
 
 /**
  * Utility class for file-related actions of the generator
- *
- * @since 27.07.20
  */
 public class FileHelper {
 

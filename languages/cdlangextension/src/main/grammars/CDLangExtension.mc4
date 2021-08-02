@@ -12,6 +12,7 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes,
 
   /**
    * CDLangExtensionUnit represents the complete language extension
+   *
    * @attribute package  The package declaration of this extension
    * @attribute DepLanguage List of programming languages.
   */
@@ -19,6 +20,7 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes,
 
   /**
    * DepLanguage represents different programming languages like java or cpp.
+   *
    * @attribute Name The language name.
    * @attribute CDEImportStatement List of language specific import statements.
    */
@@ -32,7 +34,9 @@ grammar CDLangExtension extends de.monticore.types.MCBasicTypes,
   interface CDEElement;
 
   /**
-   * CDEImportStatement contains the package, class, and the name of a classdiagram element.
+   * CDEImportStatement contains the package, class, and the name of a
+   * class diagram element.
+   *
    * @attribute package qualified CDType package name.
    * @attribute Name CDType Name.
    * @attribute importSource package from which to import.

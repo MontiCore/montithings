@@ -12,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * PrettyPrinter for the CDLangExtension Language.
- *
- * @author Julian Krebber
  */
 public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter implements
   CDLangExtensionHandler {
@@ -62,7 +60,10 @@ public class CDLangExtensionPrettyPrinter extends MCBasicTypesPrettyPrinter impl
    */
   @Override
   public void traverse(ASTCDEImportStatement a){
-    String s = "from " + a.getImportSource() + " import " + a.getImportClass() + " as " + a.getName() + ";";
+    String s = "from " + a.getImportSource() +
+      " import " + a.getImportClass() +
+      " as " + a.getName() +
+      ";";
     getPrinter().println(s);
   }
 

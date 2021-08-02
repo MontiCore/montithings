@@ -79,6 +79,7 @@ dependencies {
   implementation "org.apache.commons:commons-lang3:3.9"
   implementation "com.google.guava:guava:$guava_version"
   implementation "org.assertj:assertj-core:$assertj_version"
+  implementation "org.jscience:jscience:$jscience_version"
   testImplementation "montiarc:util:$montiarc_version:tests"
   testImplementation "junit:junit:$junit_version"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"

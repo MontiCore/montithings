@@ -22,11 +22,16 @@ public class MontiThingsGlobalScope extends MontiThingsGlobalScopeTOP {
   public void init() {
     super.init();
     this.putSymbolDeSer("de.monticore.cdbasis._symboltable.CDTypeSymbol", new OOTypeSymbolDeSer());
-    this.putSymbolDeSer("de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol", new MethodSymbolDeSer());
-    this.putSymbolDeSer("de.monticore.cdassociation._symboltable.CDRoleSymbol", new FieldSymbolDeSer());
+    this.putSymbolDeSer("de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+      new MethodSymbolDeSer());
+    this.putSymbolDeSer("de.monticore.cdassociation._symboltable.CDRoleSymbol",
+      new FieldSymbolDeSer());
   }
 
-  //TODO: Default tries to load montiarc component models instead of serialized symbol tables. Remove once fixed.
+  /*
+   * Default implementation tries to load montiarc component models instead of serialized symbol tables.
+   * Remove this once it's fixed.
+   */
   @Override
   public void loadFileForModelName(@NotNull String modelName) {
     Preconditions.checkNotNull(modelName);

@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 <#assign className = comp.getName() + "DDSClient">
 
 

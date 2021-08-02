@@ -1,9 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.helper;
+package montithings.generator.prettyprinter;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import montithings._ast.ASTMontiThingsNode;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
+import montithings.generator.prettyprinter.*;
 import montithings.generator.visitor.*;
 
 import java.util.Stack;

@@ -25,7 +25,8 @@ public class ArcBasisSTCForMontiThings extends ArcBasisScopesGenitor {
   TypeCheck tc;
 
   public ArcBasisSTCForMontiThings() {
-    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+    tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
+      new DeriveSymTypeOfMontiThingsCombine());
   }
 
   public void setTypeVisitor(MCBasicTypesFullPrettyPrinter typePrinter) {

@@ -16,9 +16,6 @@ import java.util.Map;
 
 /**
  * Checks that Interface component exists.
- *
- * @author Julian Krebber
- * @version , 01.05.2020
  */
 public class InterfaceExists implements ArcBasisASTComponentTypeCoCo {
 

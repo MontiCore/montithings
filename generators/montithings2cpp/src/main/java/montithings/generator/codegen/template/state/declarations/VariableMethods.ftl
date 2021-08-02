@@ -3,7 +3,7 @@ ${tc.signature("var", "comp", "config", "existsHWC")}
 <#include "/template/state/helper/GeneralPreamble.ftl">
 
 <#assign varName = var.getName()>
-<#assign varType = ComponentHelper.printCPPTypeName(var.getType(), comp, config)>
+<#assign varType = TypesPrinter.printCPPTypeName(var.getType(), comp, config)>
 
 ${varType} get${varName?cap_first} () const;
 void set${varName?cap_first} (${varType} ${varName});

@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # DDS Data Type Definition
 DDS follow a data-centric principle. 
 Exchanged messages of MT components are typed as defined in `DDSMessage.idl`.

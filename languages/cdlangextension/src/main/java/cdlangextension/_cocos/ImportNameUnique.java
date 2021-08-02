@@ -16,16 +16,19 @@ import java.util.Set;
  *
  * @author Julian Krebber
  */
-public class ImportNameUnique implements CDLangExtensionASTDepLanguageCoCo, CDLangExtensionASTCDLangExtensionUnitCoCo {
+public class ImportNameUnique
+  implements CDLangExtensionASTDepLanguageCoCo, CDLangExtensionASTCDLangExtensionUnitCoCo {
   @Override
   public void check(ASTDepLanguage node) {
     Set<String> names = new HashSet<>();
-    for(ASTCDEImportStatement name : node.getCDEImportStatementList()){
-      if(!names.contains(name.getName())){
+    for (ASTCDEImportStatement name : node.getCDEImportStatementList()) {
+      if (!names.contains(name.getName())) {
         names.add(name.getName());
       }
-      else{
-        Log.error(String.format(CDLangExtensionError.AMBIGUOUS_IMPORT_NAME.toString(),name.getName(),name.get_SourcePositionStart().toString(),node.getName()));
+      else {
+        Log.error(String.format(CDLangExtensionError.AMBIGUOUS_IMPORT_NAME.toString(),
+          name.getName(),
+          name.get_SourcePositionStart().toString(), node.getName()));
       }
     }
   }
@@ -33,12 +36,14 @@ public class ImportNameUnique implements CDLangExtensionASTDepLanguageCoCo, CDLa
   @Override
   public void check(ASTCDLangExtensionUnit node) {
     Set<String> names = new HashSet<>();
-    for(ASTDepLanguage name : node.getDepLanguageList()){
-      if(!names.contains(name.getName())){
+    for (ASTDepLanguage name : node.getDepLanguageList()) {
+      if (!names.contains(name.getName())) {
         names.add(name.getName());
       }
-      else{
-        Log.error(String.format(CDLangExtensionError.AMBIGUOUS_LANGUAGE_NAME.toString(),name.getName(),name.get_SourcePositionStart().toString()));
+      else {
+        Log.error(String
+          .format(CDLangExtensionError.AMBIGUOUS_LANGUAGE_NAME.toString(), name.getName(),
+            name.get_SourcePositionStart().toString()));
       }
     }
   }

@@ -2,7 +2,7 @@
 ${tc.signature("port", "comp", "config", "existsHWC")}
 <#include "/template/input/helper/AdapterPreamble.ftl">
 
-<#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+<#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
 
 void
 ${className}${Utils.printFormalTypeParameters(comp, false)}::set${port.getName()?cap_first}(${cdeImportStatementOpt.get().getImportClass().toString()} element)

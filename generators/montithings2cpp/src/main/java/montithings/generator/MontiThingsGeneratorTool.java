@@ -25,14 +25,12 @@ import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montiarc._ast.ASTMACompilationUnit;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
-import montithings._symboltable.MontiThingsArtifactScope;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
@@ -211,7 +209,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // may only be included in other components and thus do not need an own
     // executable).
     ComponentTypeSymbol mainCompSymbol = modelToSymbol(config.getMainComponent(), symTab);
-    List<Pair<ComponentTypeSymbol, String>> instances = ComponentHelper.getExecutableInstances(mainCompSymbol, config);
+    List<Pair<ComponentTypeSymbol, String>> instances = ComponentHelper
+      .getExecutableInstances(mainCompSymbol, config);
     HashSet<ComponentTypeSymbol> executableComponents = new HashSet<>();
     for(Pair<ComponentTypeSymbol, String> instance : instances) {
       executableComponents.add(instance.getKey());

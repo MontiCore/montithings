@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Find all incoming ports referenced by NameExpressions
+ */
 public class FindIncomingPorts implements ExpressionsBasisVisitor2 {
   protected Set<PortSymbol> referencedPorts = new HashSet<>();
 
@@ -31,6 +34,10 @@ public class FindIncomingPorts implements ExpressionsBasisVisitor2 {
       referencedPortsAstNodes.add(node);
     }
   }
+
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
 
   public Set<PortSymbol> getReferencedPorts() {
     return referencedPorts;

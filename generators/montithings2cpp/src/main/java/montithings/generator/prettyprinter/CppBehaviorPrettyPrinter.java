@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.visitor;
+package montithings.generator.prettyprinter;
 
 import arcbasis._symboltable.PortSymbol;
 import behavior._ast.ASTAfterStatement;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
+import static montithings.generator.prettyprinter.CppPrettyPrinterUtils.capitalize;
 import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppBehaviorPrettyPrinter

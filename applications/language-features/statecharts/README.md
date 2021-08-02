@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Statecharts
 
 This example shows an atomic component with a statechart to define its behavior. 

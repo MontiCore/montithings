@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 CLOG(DEBUG, "DDS") << "DDSClient | Received connection configuration: " << payload;
 std::string connection = payload;
@@ -12,7 +12,7 @@ bool isRecordingEnabled = false;
 
 // check if this message informs us about new component instances
 <#list comp.getPorts() as p>
-    <#assign type = ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)>
+    <#assign type = TypesPrinter.getRealPortCppTypeString(p.getComponent().get(), p, config)>
     <#if p.isIncoming()>
 
         CLOG(DEBUG, "DDS") << "Searching for own port: " << instanceName + ".${p.getName()}/in";

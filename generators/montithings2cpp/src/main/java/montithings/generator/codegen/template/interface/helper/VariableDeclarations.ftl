@@ -3,7 +3,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#include "/template/interface/helper/GeneralPreamble.ftl">
 
 <#list comp.getPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
 
   <#assign name = port.getName()>
   InOutPort<Message<${type}>>* ${name} = new InOutPort<Message<${type}>>();

@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 std::string topic = "";
 
 bool isRecordingEnabled = false;
@@ -10,7 +10,7 @@ bool isRecordingEnabled = false;
 
 <#list comp.getPorts() as p>
     <#if p.isOutgoing()>
-        <#assign type = ComponentHelper.getRealPortCppTypeString(p.getComponent().get(), p, config)>
+        <#assign type = TypesPrinter.getRealPortCppTypeString(p.getComponent().get(), p, config)>
         // outgoing port ${p.getName()}
         comp->getInterface()->addOutPort${p.getName()?cap_first}(new DDSPort<Message<${type}>>(*this, OUTGOING, comp->getInstanceName() + ".${p.getName()}/out", "${p.getName()}", isRecordingEnabled, false));
 

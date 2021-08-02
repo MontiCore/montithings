@@ -9,7 +9,7 @@ import java.util.List;
 import static com.google.common.collect.Iterables.transform;
 
 /**
- * AST for Strings seperated by ':'
+ * AST for Strings separated by ':'
  */
 public  class ASTCDEQualifiedColonName extends ASTCDEQualifiedColonNameTOP {
   public ASTCDEQualifiedColonName() {

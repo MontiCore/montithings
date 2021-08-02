@@ -47,7 +47,7 @@ ${compname}State${generics}& ${Identifier.getStateName()};
 ${compname}Interface${generics}& ${Identifier.getInterfaceName()};
 
 <#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
   <#assign name = port.getName()>
   InOutPort<Message<${type}>>* port${name?cap_first};
 </#list>
@@ -58,7 +58,7 @@ ${className}(std::string instanceName, ${compname}${generics}& component, ${comp
 
 void setInstanceName (const std::string &instanceName);
 <#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
   <#assign name = port.getName()>
   void setPort${name?cap_first} (InOutPort<Message<${type}>> *port${name?cap_first});
 </#list>

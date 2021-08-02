@@ -10,6 +10,9 @@ import prepostcondition._cocos.PrePostConditionASTPostconditionCoCo;
 
 import java.util.stream.Collectors;
 
+/**
+ * Each postcondition can only reference one outgoing port
+ */
 public class PostcondUsesOnlyOneOutport implements PrePostConditionASTPostconditionCoCo {
 
   @Override public void check(ASTPostcondition node) {

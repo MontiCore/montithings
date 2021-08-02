@@ -1,33 +1,27 @@
 // (c) https://github.com/MontiCore/monticore
-grammar Bindings extends MontiArc,
-                         de.monticore.types.MCBasicTypes {
+
+import de.monticore.types.*;
+
+grammar Bindings extends MontiArc, MCBasicTypes {
   start BindingsCompilationUnit;
   BindingsCompilationUnit = Element*;
 
   interface Element;
 
   /**
-    * Rule that binds either a MontiThings interface component,
-    * or a MontiThings interface subcomponent instance
-    * to another non interface component.
-    * @attribute instance Determines if a subcomponent instance is used.
-    * @attribute interfaceInstance The Qualified name of a MontiThings interface subcomponent instance.
-    * @attribute interfaceComponent The Qualified name of a MontiThings interface component.
-    * @attribute implementationComponent The Qualified name of a MontiThings non-interface component.
-    */
-/*
-    BindingRule implements Element =
-    (
-      (["instance"] interfaceInstance:Name@ComponentInstance)
-    | interfaceComponent:Name@ComponentType
-    )
-    "->"
-    implementationComponent:Name@ComponentType";";
-*/
-
+   * Rule that binds either a MontiThings interface component,
+   * or a MontiThings interface subcomponent instance
+   * to another non interface component.
+   *
+   * @attribute instance Determines if a subcomponent instance is used.
+   * @attribute interfaceInstance The Qualified name of a MontiThings interface subcomponent instance.
+   * @attribute interfaceComponent The Qualified name of a MontiThings interface component.
+   * @attribute implementationComponent The Qualified name of a MontiThings non-interface component.
+   */
   BindingRule implements Element =
-    ((["instance"] interfaceInstance:MCQualifiedName)|interfaceComponent:MCQualifiedName)
+    ((["instance"] interfaceInstance:MCQualifiedName) | interfaceComponent:MCQualifiedName)
     "->"
-    implementationComponent:MCQualifiedName";";
+    implementationComponent:MCQualifiedName
+    ";";
 
 }

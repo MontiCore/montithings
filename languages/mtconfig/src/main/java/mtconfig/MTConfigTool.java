@@ -68,7 +68,7 @@ public class MTConfigTool {
 
     final ModelPath mp = new ModelPath(p);
 
-    if(this.mtGlobalScope == null) {
+    if (this.mtGlobalScope == null) {
       MontiThingsMill.reset();
       MontiThingsMill.init();
       IMontiThingsGlobalScope newMtGlobalScope = MontiThingsMill.globalScope();
@@ -79,8 +79,10 @@ public class MTConfigTool {
       tool.processModels(mp);
     }
 
-    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate = new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
-    MCQualifiedName2PortResolvingDelegate portResolvingDelegate = new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
+    MCQualifiedName2ComponentTypeResolvingDelegate componentTypeResolvingDelegate =
+      new MCQualifiedName2ComponentTypeResolvingDelegate(this.mtGlobalScope);
+    MCQualifiedName2PortResolvingDelegate portResolvingDelegate =
+      new MCQualifiedName2PortResolvingDelegate(this.mtGlobalScope);
 
     MTConfigMill.reset();
     MTConfigMill.init();
@@ -98,27 +100,27 @@ public class MTConfigTool {
   /**
    * Creates a GlobalScope from a given model path and adds the given AST to it.
    *
-   * @param ast node used to create symboltable
+   * @param ast        node used to create symboltable
    * @param modelPaths path that contains all models
    * @return created global scope
    */
   public IMTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
-      File... modelPaths) {
+    File... modelPaths) {
 
     IMTConfigGlobalScope globalScope = initSymbolTable(modelPaths);
 
-    return createSymboltable(ast,globalScope);
+    return createSymboltable(ast, globalScope);
   }
 
   /**
    * Creates the symbol table for a given AST and adds it to the given global scope.
    *
-   * @param ast node used to create symboltable
+   * @param ast         node used to create symboltable
    * @param globalScope globalScope used for the symbolTable
    * @return extended global scope
    */
   public IMTConfigGlobalScope createSymboltable(ASTMTConfigUnit ast,
-      IMTConfigGlobalScope globalScope) {
+    IMTConfigGlobalScope globalScope) {
 
     MTConfigScopesGenitorDelegator stc = new MTConfigScopesGenitorDelegator();
     IMTConfigArtifactScope artifactScope = stc.createFromAST(ast);
@@ -133,6 +135,7 @@ public class MTConfigTool {
 
   /**
    * Setter for the global scope that should be used for resolving non native symbols.
+   *
    * @param mtGlobalScope globalScope used for resolving non native symbols
    */
   public void setMtGlobalScope(IMontiThingsGlobalScope mtGlobalScope) {

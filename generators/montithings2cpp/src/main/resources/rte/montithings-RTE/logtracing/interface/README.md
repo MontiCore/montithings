@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # LogTracer
 
 <img src="docs/CDLogTracer.png" alt="drawing" height="400px"/>

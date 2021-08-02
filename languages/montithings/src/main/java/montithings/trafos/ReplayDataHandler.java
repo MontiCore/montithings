@@ -69,7 +69,7 @@ class ReplayDataHandler {
     HashMap<Integer, Long> delays = new HashMap<Integer, Long>();
 
     if (!this.data.containsKey("computation_latency") ||
-            !this.data.getJsonObject("computation_latency").containsKey(qCompName)) {
+      !this.data.getJsonObject("computation_latency").containsKey(qCompName)) {
       return delays;
     }
 

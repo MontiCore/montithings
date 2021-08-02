@@ -9,7 +9,7 @@ ${className}::process (std::string msg)
 PortToSocket message(msg);
 
 <#list comp.getPorts() as p>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, p, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
 
   <#if !p.isOutgoing()>
     if (message.getLocalPort() == "${p.getName()}")

@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # SI Unit Support
 
 This example shows how to components can uses SI units. 

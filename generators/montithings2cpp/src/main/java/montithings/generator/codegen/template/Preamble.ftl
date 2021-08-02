@@ -6,6 +6,7 @@
 <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
 <#assign PrettyPrinter = tc.instantiate("montithings._visitor.MontiThingsFullPrettyPrinter")>
 <#assign TypesHelper = tc.instantiate("montithings.generator.helper.TypesHelper")>
+<#assign TypesPrinter = tc.instantiate("montithings.generator.helper.TypesPrinter")>
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 <#assign compname = comp.getName()>
 <#assign generics = Utils.printFormalTypeParameters(comp)>

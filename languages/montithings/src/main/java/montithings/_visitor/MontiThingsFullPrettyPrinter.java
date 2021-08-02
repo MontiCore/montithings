@@ -79,26 +79,33 @@ public class MontiThingsFullPrettyPrinter {
     MCCommonLiteralsPrettyPrinter mccommonliteralspp = new MCCommonLiteralsPrettyPrinter(printer);
     traverser.setMCCommonLiteralsHandler(mccommonliteralspp);
     traverser.add4MCCommonLiterals(mccommonliteralspp);
-    CommonExpressionsPrettyPrinter commonExpressionsPrettyPrinter = new CommonExpressionsPrettyPrinter(printer);
+    CommonExpressionsPrettyPrinter commonExpressionsPrettyPrinter =
+      new CommonExpressionsPrettyPrinter(printer);
     traverser.setCommonExpressionsHandler(commonExpressionsPrettyPrinter);
     traverser.add4CommonExpressions(commonExpressionsPrettyPrinter);
-    AssignmentExpressionsPrettyPrinter assignmentExpressionsPrettyPrinter = new AssignmentExpressionsPrettyPrinter(printer);
+    AssignmentExpressionsPrettyPrinter assignmentExpressionsPrettyPrinter =
+      new AssignmentExpressionsPrettyPrinter(printer);
     traverser.setAssignmentExpressionsHandler(assignmentExpressionsPrettyPrinter);
     traverser.add4AssignmentExpressions(assignmentExpressionsPrettyPrinter);
-    MCSimpleGenericTypesPrettyPrinter mcSimpleGenericTypesPrettyPrinter = new MCSimpleGenericTypesPrettyPrinter(printer);
+    MCSimpleGenericTypesPrettyPrinter mcSimpleGenericTypesPrettyPrinter =
+      new MCSimpleGenericTypesPrettyPrinter(printer);
     traverser.setMCSimpleGenericTypesHandler(mcSimpleGenericTypesPrettyPrinter);
     traverser.add4MCSimpleGenericTypes(mcSimpleGenericTypesPrettyPrinter);
-    MCCommonStatementsPrettyPrinter mcCommonStatementsPrettyPrinter = new MCCommonStatementsPrettyPrinter(printer);
+    MCCommonStatementsPrettyPrinter mcCommonStatementsPrettyPrinter =
+      new MCCommonStatementsPrettyPrinter(printer);
     traverser.setMCCommonStatementsHandler(mcCommonStatementsPrettyPrinter);
     traverser.add4MCCommonStatements(mcCommonStatementsPrettyPrinter);
-    MCVarDeclarationStatementsPrettyPrinter mcVarDeclarationStatementsPrettyPrinter = new MCVarDeclarationStatementsPrettyPrinter(printer);
+    MCVarDeclarationStatementsPrettyPrinter mcVarDeclarationStatementsPrettyPrinter =
+      new MCVarDeclarationStatementsPrettyPrinter(printer);
     traverser.setMCVarDeclarationStatementsHandler(mcVarDeclarationStatementsPrettyPrinter);
     traverser.add4MCVarDeclarationStatements(mcVarDeclarationStatementsPrettyPrinter);
 
-    ExpressionsBasisPrettyPrinter expressionsBasisPrettyPrinter = new ExpressionsBasisPrettyPrinter(printer);
+    ExpressionsBasisPrettyPrinter expressionsBasisPrettyPrinter =
+      new ExpressionsBasisPrettyPrinter(printer);
     traverser.setExpressionsBasisHandler(expressionsBasisPrettyPrinter);
     traverser.add4ExpressionsBasis(expressionsBasisPrettyPrinter);
-    MCCollectionTypesPrettyPrinter mcCollectionTypesPrettyPrinter = new MCCollectionTypesPrettyPrinter(printer);
+    MCCollectionTypesPrettyPrinter mcCollectionTypesPrettyPrinter =
+      new MCCollectionTypesPrettyPrinter(printer);
     traverser.setMCCollectionTypesHandler(mcCollectionTypesPrettyPrinter);
     traverser.add4MCCollectionTypes(mcCollectionTypesPrettyPrinter);
     MCBasicTypesPrettyPrinter mcBasicTypesPrettyPrinter = new MCBasicTypesPrettyPrinter(printer);
@@ -106,12 +113,14 @@ public class MontiThingsFullPrettyPrinter {
     traverser.add4MCBasicTypes(mcBasicTypesPrettyPrinter);
     ArcBasisPrettyPrinter arcBasisPrettyPrinter = new ArcBasisPrettyPrinter(printer);
     traverser.setArcBasisHandler(arcBasisPrettyPrinter);
-    ComfortableArcPrettyPrinter comfortableArcPrettyPrinter = new ComfortableArcPrettyPrinter(printer);
+    ComfortableArcPrettyPrinter comfortableArcPrettyPrinter =
+      new ComfortableArcPrettyPrinter(printer);
     traverser.setComfortableArcHandler(comfortableArcPrettyPrinter);
     GenericArcPrettyPrinter genericArcPrettyPrinter = new GenericArcPrettyPrinter(printer);
     traverser.setGenericArcHandler(genericArcPrettyPrinter);
 
-    SIUnitTypes4ComputingPrettyPrinter siunittypes4computingpp = new SIUnitTypes4ComputingPrettyPrinter(printer);
+    SIUnitTypes4ComputingPrettyPrinter siunittypes4computingpp =
+      new SIUnitTypes4ComputingPrettyPrinter(printer);
     traverser.setSIUnitTypes4ComputingHandler(siunittypes4computingpp);
     SIUnitsPrettyPrinter siunitspp = new SIUnitsPrettyPrinter(printer);
     traverser.setSIUnitsHandler(siunitspp);
@@ -121,7 +130,8 @@ public class MontiThingsFullPrettyPrinter {
 
     SCBasisPrettyPrinter scBasisPrettyPrinter = new SCBasisPrettyPrinter(printer);
     traverser.setSCBasisHandler(scBasisPrettyPrinter);
-    SCTransitions4CodePrettyPrinter scTransitions4CodePrettyPrinter = new SCTransitions4CodePrettyPrinter(printer);
+    SCTransitions4CodePrettyPrinter scTransitions4CodePrettyPrinter =
+      new SCTransitions4CodePrettyPrinter(printer);
     traverser.setSCTransitions4CodeHandler(scTransitions4CodePrettyPrinter);
 
     MontiThingsPrettyPrinter montithingspp = new MontiThingsPrettyPrinter(printer);
@@ -169,6 +179,10 @@ public class MontiThingsFullPrettyPrinter {
     a.accept(getTraverser());
     return getPrinter().getContent();
   }
+
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
 
   public IndentPrinter getPrinter() {
     return this.printer;

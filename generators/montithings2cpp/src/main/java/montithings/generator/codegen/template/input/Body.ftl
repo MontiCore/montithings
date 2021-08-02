@@ -22,13 +22,13 @@ ${tc.signature("comp", "config", "className")}
     ${tc.includeArgs("template.input.methods.GetPort", [port, comp, config, existsHWC])}
     ${tc.includeArgs("template.input.methods.SetPort", [port, comp, config, existsHWC])}
 
-    <#if ComponentHelper.getCDEReplacement(port, config).isPresent()>
+    <#if TypesHelper.getCDEReplacement(port, config).isPresent()>
       ${tc.includeArgs("template.input.methods.GetPortAdap", [port, comp, config, existsHWC])}
       ${tc.includeArgs("template.input.methods.SetPortAdap", [port, comp, config, existsHWC])}
     </#if>
 
     <#if ComponentHelper.hasAgoQualification(comp, port)>
-      std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}>> ${className}${Utils.printFormalTypeParameters(comp, false)}::dequeOf__${port.getName()?cap_first};
+      std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${TypesPrinter.getRealPortCppTypeString(comp, port, config)}>> ${className}${Utils.printFormalTypeParameters(comp, false)}::dequeOf__${port.getName()?cap_first};
       ${tc.includeArgs("template.input.methods.AgoGetPort", [port, comp, config, existsHWC])}
       ${tc.includeArgs("template.input.methods.CleanDequeOfPort", [port, comp, config, existsHWC])}
     </#if>

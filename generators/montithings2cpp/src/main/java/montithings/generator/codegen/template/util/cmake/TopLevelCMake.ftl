@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "">
 <#if config.getSplittingMode().toString() != "OFF">

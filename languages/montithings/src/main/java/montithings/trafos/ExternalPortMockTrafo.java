@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 /**
  * Trafo which replaces templated ports (external inputs).
  * <p>
- * For each port which should be mocked, a new component is generated and connected to the port.
+ * For each port which should be mocked, a new component is generated and
+ * connected to the port.
  * The newly created component then yields recorded messages.
  */
 
@@ -211,7 +212,8 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
     comp.getComponentType().getBody().addArcElement(mtEveryBlock.build());
   }
 
-  protected ASTAfterStatement addAfterBehaviorBlock(long timestamp, String value, boolean isNumeric) {
+  protected ASTAfterStatement addAfterBehaviorBlock(long timestamp, String value,
+    boolean isNumeric) {
     ASTAfterStatementBuilder afterStatement = MontiThingsMill.afterStatementBuilder();
     afterStatement.setSIUnitLiteral(TrafoUtil.createSIUnitLiteral(timestamp, "ns"));
 

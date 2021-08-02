@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Log Filtering
 
 <img src="docs/LogFilteringExample.png" alt="drawing" height="200px"/>

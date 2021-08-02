@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.visitor;
+package montithings.generator.prettyprinter;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static montithings.generator.visitor.CppPrettyPrinterUtils.*;
+import static montithings.generator.prettyprinter.CppPrettyPrinterUtils.*;
 import static montithings.util.IdentifierUtils.getPortForName;
 
 /**

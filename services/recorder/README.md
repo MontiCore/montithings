@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Recorder
 
 The recorder is a central entity which captures exchanged data between components.

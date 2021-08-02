@@ -16,6 +16,4 @@ public class CDLangExtensionGlobalScope extends CDLangExtensionGlobalScopeTOP {
     this.putSymbolDeSer("de.monticore.cdbasis._symboltable.CDTypeSymbol", new OOTypeSymbolDeSer());
     this.putSymbolDeSer("de.monticore.cdassociation._symboltable.CDRoleSymbol", new FieldSymbolDeSer());
   }
-
-
 }

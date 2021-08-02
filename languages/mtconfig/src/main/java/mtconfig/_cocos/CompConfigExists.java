@@ -7,8 +7,6 @@ import mtconfig.util.MTConfigError;
 
 /**
  * Checks if component names refer to ComponentTypeSymbols.
- *
- * @author Julian Krebber
  */
 public class CompConfigExists implements MTConfigASTCompConfigCoCo {
   @Override

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.visitor;
+package montithings.generator.prettyprinter;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
@@ -19,8 +19,8 @@ import setdefinitions._ast.ASTSetValueRange;
 import java.util.ArrayList;
 import java.util.List;
 
-import static montithings.generator.helper.ComponentHelper.printCPPTypeName;
-import static montithings.generator.visitor.CppPrettyPrinterUtils.capitalize;
+import static montithings.generator.helper.TypesPrinter.printCPPTypeName;
+import static montithings.generator.prettyprinter.CppPrettyPrinterUtils.capitalize;
 
 public class CppOCLExpressionsPrettyPrinter extends OCLExpressionsPrettyPrinter {
 

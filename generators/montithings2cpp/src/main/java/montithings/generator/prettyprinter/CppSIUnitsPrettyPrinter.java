@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.visitor;
+package montithings.generator.prettyprinter;
 
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunits._ast.ASTSIUnit;

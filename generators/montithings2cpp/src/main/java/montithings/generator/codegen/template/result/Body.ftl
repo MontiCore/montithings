@@ -6,13 +6,13 @@ ${tc.signature("comp", "config", "className")}
 ${tc.includeArgs("template.result.methods.Constructor", [comp, config, existsHWC])}
 
 <#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
 
   ${tc.includeArgs("template.result.methods.GetPort", [port, comp, config, existsHWC])}
   ${tc.includeArgs("template.result.methods.GetPortMessage", [port, comp, config, existsHWC])}
   ${tc.includeArgs("template.result.methods.SetPort", [port, comp, config, existsHWC])}
 
-  <#if ComponentHelper.getCDEReplacement(port, config).isPresent()>
+  <#if TypesHelper.getCDEReplacement(port, config).isPresent()>
     ${tc.includeArgs("template.result.methods.GetPortAdap", [port, comp, config, existsHWC])}
     ${tc.includeArgs("template.result.methods.SetPortAdap", [port, comp, config, existsHWC])}
   </#if>
