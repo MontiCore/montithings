@@ -173,14 +173,14 @@ public class MTGenerator {
   }
 
   public void generateMakeFile(File targetPath, ComponentTypeSymbol comp, File libraryPath,
-                               File[] subPackagesPath) {
+                               File[] subPackagesPath, List<String> sensorActuatorPorts) {
     fg.generate(targetPath, "CMakeLists", ".txt",
             "template/util/cmake/TopLevelCMake.ftl",
             targetPath.listFiles(),
             comp,
             targetPath.toPath().toAbsolutePath().relativize(hwcDir.toPath().toAbsolutePath()).toString(),
             targetPath.toPath().toAbsolutePath().relativize(libraryPath.toPath().toAbsolutePath())
-                    .toString(), subPackagesPath, config, false);
+                    .toString(), subPackagesPath, config, false, sensorActuatorPorts);
   }
 
   public void generateMakeFileForSensorActuatorPort(String pckg, String port, String libraryPath) {
@@ -210,7 +210,7 @@ public class MTGenerator {
             comp,
             targetPath.toPath().toAbsolutePath().relativize(hwcDir.toPath().toAbsolutePath()).toString(),
             targetPath.toPath().toAbsolutePath().relativize(libraryPath.toPath().toAbsolutePath())
-                    .toString(), subPackagesPath, config, true);
+                    .toString(), subPackagesPath, config, true, new ArrayList<>());
   }
 
   public void generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> sensorActuatorPorts, List<String> subdirectories) {

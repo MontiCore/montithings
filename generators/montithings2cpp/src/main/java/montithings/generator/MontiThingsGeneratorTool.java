@@ -500,7 +500,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       if (config.getTargetPlatform()
         != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
         Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
-        mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath);
+        mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath, sensorActuatorPorts);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
           mtg.generateScripts(target, comp, sensorActuatorPorts, executableInstanceNames);
         }
@@ -514,7 +514,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
             != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
       Log.info("Generate CMake file for " + port, "MontiThingsGeneratorTool");
       mtg.generateMakeFileForSensorActuatorPort(pckg, port, "montithings-RTE");
-     //TODO: splitting mode - off
     }
   }
 
