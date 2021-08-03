@@ -46,13 +46,11 @@ public class DeriveSymTypeOfMontiThingsCombine
 
   private SynthesizeSymTypeFromMCCollectionTypes synthesizeSymTypeFromMCCollectionTypes;
 
-
   private TypeCheckResult typeCheckResult = new TypeCheckResult();
 
   public DeriveSymTypeOfMontiThingsCombine() {
     init();
   }
-
 
   /**
    * set the last result of all calculators to the same object
@@ -76,7 +74,7 @@ public class DeriveSymTypeOfMontiThingsCombine
   }
 
   @Override public Optional<SymTypeExpression> getResult() {
-    if(typeCheckResult.isPresentCurrentResult()){
+    if (typeCheckResult.isPresentCurrentResult()) {
       return Optional.ofNullable(typeCheckResult.getCurrentResult());
     }
     return Optional.empty();

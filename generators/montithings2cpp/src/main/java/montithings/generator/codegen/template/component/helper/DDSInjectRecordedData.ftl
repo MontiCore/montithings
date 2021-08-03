@@ -2,7 +2,8 @@
 
 <#-- This is part of the initialization of the component if replaying is activated.
      Hereby, the vector which holds the recorded system calls is filled up.
-     As system calls are replayed on a lower level we have to do this in the generator instead of in transformations. -->
+     As system calls are replayed on a lower level we have to do this in the
+     generator instead of in transformations. -->
 
 ${tc.signature("comp", "config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">

@@ -12,6 +12,7 @@ import static de.monticore.ocl.types.check.OCLTypeCheck.compatible;
 
 public class DeriveSymTypeOfAssignmentExpressionsForMT
   extends DeriveSymTypeOfAssignmentExpressionsWithSIUnitTypes {
+
   /**
    * All methods in this class are identical to the methods in
    * de.monticore.types.check.DeriveSymTypeOfCommonExpressions.

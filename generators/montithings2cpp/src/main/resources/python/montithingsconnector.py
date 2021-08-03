@@ -37,7 +37,16 @@ class MontiThingsConnector:
         self._receive(message.payload)
 
     def send(self, msg):
-        j = json.dumps({'value0': msg})
+        import uuid
+        j = json.dumps({
+            'value0': {
+                'payload': {
+                    'nullopt': False,
+                    'data': msg
+                },
+                'uuid': str(uuid.uuid4())
+            }
+        })
         info = self.mqttc.publish("/sensorActuator/" + self.topic_name, j, qos=0)
         info.wait_for_publish()
 

@@ -8,6 +8,10 @@ import de.monticore.ocl.optionaloperators._ast.ASTOptionalSimilarExpression;
 import de.se_rwth.commons.logging.Log;
 import montithings.util.MontiThingsError;
 
+/**
+ * Prevents the ?~~ and ?!~ operators from the optional operators grammar.
+ * They have no use in MontiThings.
+ */
 public class UnsupportedOperator implements ExpressionsBasisASTExpressionCoCo {
 
   @Override public void check(ASTExpression node) {

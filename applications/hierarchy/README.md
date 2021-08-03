@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Hierarchy
 
 <img src="docs/HierarchyExample.png" alt="drawing" height="200px"/>

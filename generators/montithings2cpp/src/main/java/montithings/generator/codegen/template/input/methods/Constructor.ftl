@@ -5,7 +5,8 @@ ${tc.signature("comp", "config", "existsHWC")}
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
 <#list comp.getAllIncomingPorts() as port>
-  tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${port.getName()}
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
+  tl::optional<Message<${type}>> ${port.getName()}
   <#sep>,</#sep>
 </#list>){
 <#if comp.isPresentParentComponent()>
@@ -15,7 +16,10 @@ ${className}${Utils.printFormalTypeParameters(comp, false)}::${className}(
     </#list>);
 </#if>
 <#list comp.getIncomingPorts() as port >
-  this->${port.getName()} = std::move(${port.getName()});
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
+
+  if(${port.getName()}.has_value()) {this->${port.getName()} = std::move(${port.getName()}.value());}
+  else {this->${port.getName()} = Message<${type}>(tl::nullopt);}
     <#if ComponentHelper.hasAgoQualification(comp, port)>
       auto nowOf__${port.getName()?cap_first} = std::chrono::system_clock::now();
       dequeOf__${port.getName()?cap_first}.push_back(std::make_pair(nowOf__${port.getName()?cap_first}, ${port.getName()}.value()));

@@ -25,15 +25,18 @@ variables:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-Docker Alpine:
+.docker_build_template: &docker_build_definition
   stage: build
   variables:
     DOCKER_DRIVER: overlay2
-  cache: {}
+  cache: { }
   tags:
     - shell
     - docker
     - node2
+
+Docker Alpine:
+  <<: *docker_build_definition
   only:
     refs:
       - merge_requests
@@ -52,14 +55,7 @@ Docker Alpine:
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest --push .
 
 Docker DDS:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
-    - node2
+  <<: *docker_build_definition
   only:
     refs:
       - merge_requests
@@ -78,13 +74,7 @@ Docker DDS:
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
 
 Docker OpenDDSDCPSInfoRepo:
-  stage: build
-  variables:
-    DOCKER_DRIVER: overlay2
-  cache: {}
-  tags:
-    - shell
-    - docker
+  <<: *docker_build_definition
   only:
     refs:
      - merge_requests
@@ -95,6 +85,34 @@ Docker OpenDDSDCPSInfoRepo:
     - cd docker/openddsdcpsinforepo
     - docker build -t $CI_REGISTRY_IMAGE/openddsdcpsinforepo .
     - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
+
+Docker Recorder:
+  <<: *docker_build_definition
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - services/recorder/**/*
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/recorder -f services/recorder/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/recorder
+
+
+Docker Log Tracing:
+  <<: *docker_build_definition
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - services/log-tracing/**/*
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/logtracer_middleware -f services/log-tracing/Dockerfile .
+    - cd services/log-tracing/frontend
+    - docker build -t $CI_REGISTRY_IMAGE/logtracer_frontend .
+    - docker push $CI_REGISTRY_IMAGE/logtracer_middleware
+    - docker push $CI_REGISTRY_IMAGE/logtracer_frontend
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -112,7 +130,7 @@ Validate Maven:
     expire_in: 1 week
     
 Validate Gradle:
-  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.5.1-jdk8
+  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
   stage: build
   allow_failure: true
   artifacts:
@@ -128,9 +146,11 @@ Validate Gradle:
       - languages/mtconfig/target/
   script:
     - gradle clean assemble
+    - cd applications
+    - gradle clean assemble
     
 Unit Test Gradle:
-  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.5.1-jdk8
+  image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
   stage: test
   allow_failure: true
   dependencies: 
@@ -156,6 +176,7 @@ Unit Test Gradle:
       - ./languages/montithings/target/surefire-reports/TEST-*.xml
     paths:
       - generators/montithings2cpp/target/
+      - "applications/**/target/generated-sources"
 
 Unit Test JDK 8:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
@@ -195,6 +216,16 @@ Generator Test Alpine:
 Generator Test DDS:
   image: $CI_REGISTRY_IMAGE/mtcmakedds
   <<: *generator_test_definition
+
+Compile Applications:
+  image: $CI_REGISTRY_IMAGE/mtcmake
+  stage: generator-test
+  dependencies:
+    - Unit Test JDK 11 #download generated-test-sources
+  needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
+  script:
+    - cd applications
+    - ./compile.sh
 
 Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8

@@ -38,6 +38,10 @@ ${tc.includeArgs("template.component.methods.Initialize", [comp, config, classNa
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.GetterDefinition", [comp, config, className])}
+${tc.includeArgs("template.logtracing.hooks.InitLogTracerDefinition", [comp, config])}
+
 ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, config, className])}
 
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>

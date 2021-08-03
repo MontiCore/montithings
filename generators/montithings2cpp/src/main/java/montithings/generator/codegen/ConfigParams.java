@@ -94,7 +94,27 @@ public class ConfigParams {
     }
   }
 
-  public enum ReplayMode {
+  public enum LogTracing {
+    OFF("OFF"),
+    ON("ON");
+
+    String value;
+
+    LogTracing(String value) {
+      this.value = value;
+    }
+    
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+   public enum ReplayMode {
     OFF("OFF"),
     ON("ON");
 
@@ -134,6 +154,9 @@ public class ConfigParams {
 
   /** property for message brokers */
   protected MessageBroker messageBroker = MessageBroker.OFF;
+
+  /** property for log tracing */
+  protected LogTracing logTracing = LogTracing.OFF;
 
   /** property for replay mode */
   protected ReplayMode replayMode = ReplayMode.OFF;
@@ -350,6 +373,14 @@ public class ConfigParams {
 
   public void setSplittingMode(SplittingMode splittingMode) {
     this.splittingMode = splittingMode;
+  }
+
+  public LogTracing getLogTracing() {
+    return logTracing;
+  }
+
+  public void setLogTracing(LogTracing logTracing) {
+    this.logTracing = logTracing;
   }
 
   public RecordingMode getRecordingMode() {

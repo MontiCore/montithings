@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 <img src="docs/Banner.png" width="700px"/>
 
 # MontiThings Core Project
@@ -7,7 +8,7 @@
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
 
-<img src="docs/MontiThingsOverview.png" alt="drawing" width="700px"/>
+<img src="docs/MontiThingsOverview.png" width="700px"/>
 
 In MontiArc, architectures are described as component and connector systems in which autonomously acting components perform 
 computations. Communication between components is regulated by connectors between the components’ interfaces, which are stable 
@@ -17,15 +18,29 @@ For composed components the behavior emerges from the behavior of their subcompo
 
 While MontiArc generates code for simulations, MontiThings generates code to be executed on real devices.
 
-# Getting Started (native installation)
+<img src="docs/Process.png" alt="drawing" width="700px"/>
 
-## Is this the right installation type for you?
+MontiThings takes models and handwritten code from its users together with a control script.
+MontiThings uses these elements to generate a C++ project including various scripts, e.g., for building the project, or packaging it in Docker images.
+
+
+# Installation
+
+This section describes some of the many possible ways to use MontiThings.
+For the purpose of this tutorial, you can choose between the following options:
+1. a native installation on your machine
+2. an installation in a VM of the Microsoft Azure Cloud
+3. using MontiThings' Docker containers to avoid an installation
+
+## Native installation
+
+### Is this the right installation type for you?
 The native installation takes more time to set up, but it runs considerably faster than Docker. 
 Docker takes about 3-4 times longer to execute. 
 If you will use this project for a full semester (e.g. for a thesis or a practical course) 
 you'll most likely want the native installation - it will save you time in the long run. 
 
-## Prerequisites 
+### Prerequisites 
 - Git (for checking out the project)
 - Maven (for building the project); Gradle is still under development, use Maven!
 - Java 8 or 11 or 14 (other versions are not checked by the CI pipeline)
@@ -35,7 +50,6 @@ you'll most likely want the native installation - it will save you time in the l
 - [Docker][docker] (for executing generator tests)
 - [Mosquitto][mosquitto] (only for MQTT message broker)
 - [OpenDDS][opendds] (only for DDS communication)
-- A `settings.xml` file from the SE chair (for accessing the dependencies of this project)
 
 On Ubuntu 20.04, you can use our script for installing everything except OpenDDS:
 ```
@@ -44,11 +58,7 @@ cd core
 ./installLinux.sh
 ```
 
-## Installation
-
-Place the `settings.xml` file in a folder called `.m2` within your home folder; 
-for example this folder might look like this `/home/kirchhof/.m2` (on Linux), 
-`/Users/kirchhof/.m2` (on macOS), `C:\Users\Kirchhof\.m2` (on Windows).
+### Installation
 
 ```
 git clone git@git.rwth-aachen.de:monticore/montithings/core.git
@@ -70,9 +80,95 @@ cmake -G Ninja ..; ninja
 ```
 You should then be able to find the binaries in the `bin` folder. 
 
-# Quick Start (using Docker)
+## Microsoft Azure
 
-## Is this the right installation type for you?
+### Is this the right installation type for you?
+In case you do not want to install MontiThings on your own machine, you can try
+MontiThings in a virtual machine provided by Microsoft Azure. 
+**Note: Costs may be incurred in the process! Use at your own responsibility!**
+This guide is based on the guide from the 
+[Microsoft Azure Docs][azure-terraform-docs], but adapted for MontiThings.
+
+### Prerequisites
+* [Microsoft Azure CLI][azure-cli] 
+* [Terraform][terraform-cli] 
+* An SSH key (by default it is expected at `~/.ssh/id_rsa.pub`)
+
+### Installation
+First you need to log into Azure and initialize Terraform to make sure 
+everything is correctly installed and setup:
+```
+az login
+terraform init
+```
+
+If your public SSH key is not at `~/.ssh/id_rsa.pub`, please change the 
+following part in the `terraform_azure.tf` file to match your key's location. 
+You can also directly provide the key as a String.
+```
+admin_ssh_key {
+  username       = "azureuser"
+  public_key     = file("~/.ssh/id_rsa.pub")
+}
+```
+
+Then you can plan your deployment, i.e. dry-run it and get a preview of what 
+Terraform will actually do:
+```
+terraform plan -out terraform_azure.tfplan
+```
+
+Here, make sure that you're happy with all the services Terraform will install. 
+If you want to know more about the individual services, refer to the excellent 
+documentation from the [Microsoft Azure Docs][azure-terraform-docs]. 
+At least, make sure that Terraform found your SSH key:
+```
+admin_ssh_key {
+  - public_key = <<-EOT
+    ssh-rsa AAAAB3NzaC monti@example.com
+    EOT -> null
+  - username   = "azureuser" -> null
+}
+```
+
+If you're happy, deploy the virtual machine by calling: 
+```
+terraform apply terraform_azure.tfplan
+```
+
+To find out the virtual machine's IP address, call:
+```
+az vm show --resource-group montithingsResourceGroup --name montithings -d --query [publicIps] -o tsv
+```
+
+To connect to the machine, call:
+```
+ssh azureuser@20.30.40.50
+```
+
+Once you're on the machine, you can download and install MontiThings:
+```
+git clone https://git.rwth-aachen.de/monticore/montithings/core.git
+cd core
+./installLinux.sh
+```
+
+After the installation you can use MontiThings as if it was installed using 
+a native installation.
+For example, you can follow the "Building and Running Your First Application" 
+tutorial below.
+
+When you are done, you can instruct Terraform to destroy all resources so that 
+no further costs are incurred:
+```
+terraform destroy
+```
+Double check that everything was correctly deleted in your Azure account just to
+make sure no further costs are incurred.
+
+## Quick Start (using Docker)
+
+### Is this the right installation type for you?
 The Docker-based execution is slower to execute, but has almost no requirements. 
 Docker execution takes about 3-4 times longer than the native installation. 
 If you just want to try this project, but haven't decided if you will use it for 
@@ -81,15 +177,10 @@ If you later decide to use this project for a longer period of time, you can sti
 the native installation.
 
 
-## Prerequisites
+### Prerequisites
 - [Docker][docker] (for running the compilers that build this project)
-- A `settings.xml` file from the SE chair (for accessing the dependencies of this project)
 
-## Installation
-
-Place the `settings.xml` file in a folder called `.m2` within your home folder; 
-for example this folder might look like this `/home/kirchhof/.m2` (on Linux), `/Users/kirchhof/.m2` (on macOS), 
-`C:\Users\Kirchhof\.m2` (on Windows).
+### Installation
 
 Log in to this GitLab's docker registry using your credentials you use to log in this GitLab:
 ```
@@ -136,6 +227,155 @@ then starting the application (`./hierarchy` in this example case).
 
 Leave the Docker container by pressing `Ctrl+D` or by typing `exit`.
 
+
+# Building and Running Your First Application
+
+This sections guides you through building and executing your first application.
+We will use the example under `applications/basic-input-output`.
+It consists of only three components, with the main purpose of showcasing the 
+MontiThings build process.
+The `Example` component contains two subcomponents. The `Source` component produces
+values, the `Sink` component consumes these values and displays them on the
+terminal.
+
+<img src="docs/BasicInputOutput.png" alt="drawing" height="200px"/>
+
+We support three ways of building an application:
+1. Using the command line
+1. Using the [CLion][clion] IDE
+1. Using [Docker](docker)
+
+The following will guide you through each of these possibilities. 
+Choose your favorite method—they're all equivalent for the purpose of 
+this introduction.
+
+### Building and Running an Application using the Command Line
+
+*Note: If you're using Windows, please use PowerShell, not the default command line*
+
+After building the project with `mvn clean install` and thus generating 
+the C++ code, go to the `target/generated-sources` folder. 
+There you can execute the build script:
+```bash
+./build.sh hierarchy
+```
+
+`hierarchy` refers to the folder name in which the generated C++ classes 
+can be found.
+The folder name is the package name of the outermost component 
+(if the generator is set to splitting mode `OFF`) or the 
+fully qualified name of the outermost component (if the 
+generator is set to splitting mode  that is not `OFF`).
+
+After building the project you can go to the new folder `build/bin`.
+There you will find the generated binaries.
+Execute them like this:
+```bash
+./hierarchy.Example -n hierarchy.Example
+```
+
+The `-n hierarchy.Example` defines the instance name of the component you'll instantiate by executing the application.
+You can stop the application by pressing CTRL+C.
+
+Every generated MontiThings component also comes with a generated command line interface that can tell you more about the available parameters, if you use the `-h` option.
+In this case, it looks like this:
+```
+$ ./hierarchy.Example -h
+
+USAGE: 
+
+   hierarchy.Example  [-h] [--version] -n <string>
+
+
+Where: 
+
+   -n <string>,  --name <string>
+     (required) Fully qualified instance name of the component
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+   Example MontiThings component
+```
+
+Depending on the generator configuration, other options will be available.
+For example, if you're using MQTT as message broker, you'll also get options like `--brokerHostname` to set the IP address or hostname of the broker.
+
+In case you've configured the generator with a splitting mode other than `OFF`, you will find multiple binaries in this folder.
+In this case, you will also find two scripts `run.sh` and `kill.sh` in the `build/bin` folder which will start and stop all of the generated components so that you dont have to open a huge number of terminal windows.
+You can inspect their outputs by looking at the log files, that have the components instance name followed by the file extension `.log` (e.g. `hierarchy.Example.log`).
+
+## Building and Running an Application using CLion
+
+It's also possible to option generated MontiThings Projects in IDEs.
+Here, we'll show the process for CLion (which is the Intellij equivalent for C++).
+First open the `target/generated-sources` folder as the root folder of a new project.
+After CLion is done configuring, your window should look like this:
+
+<img src="docs/Clion1.png" alt="Clion Screenshot" width="700px" />
+
+Now, please open the `Edit configurations...` popup:
+
+<img src="docs/Clion2.png" alt="Clion Screenshot" width="700px" />
+
+In the popup, set the instance name of the component instance that will be instantiated by the application:
+
+<img src="docs/Clion3.png" alt="Clion Screenshot" width="700px" />
+
+Now, you just need to press the green play button and a window will show up that first compiles the code and then shows you the application's output:
+
+<img src="docs/Clion4.png" alt="Clion Screenshot" width="700px" />
+
+## Building and Running an Application using Docker
+
+In order to run an application using Docker, make sure that Docker is installed and running first.
+
+Next, open a terminal in the *generated-sources* folder and use the following command in order to build the application:
+
+```bash
+./dockerBuild.sh
+```
+
+After, run the application using:
+
+```bash
+./dockerRun.sh
+```
+
+The application is now running inside of a docker container with the name `hierarchy.example:latest`. In order to verify that the container is instantiated correctly, you can run:
+
+```bash
+docker ps
+```
+
+In the resulting list, there should be a container with the correct name.
+
+You can also look at the current logs of any instance. For our example, this would be done using the following command:
+
+```bash
+docker logs -f hierarchy.example
+```
+
+In this case, `hierarchy.example` is the fully qualified instance name. If your application is split (by using the `Splitting = LOCAL` mode in the `pom.xml` of the application), the fully qualified instance names would be `hierarchy.Example.sink`, for example.
+
+After running the command above, the output should look similar to this:
+
+<img src="docs/DockerRunScreenshot.png" alt="drawing" width="700px" />
+
+As you can see, the Source component is sending a new value every second, which is then received by the Sink component.
+
+If you want to stop the application you can do the following:
+
+```bash
+./dockerStop.sh
+```
+
 # FAQs
 
 **Q:** "CMake cant find my compiler. Whats wrong?"<br>
@@ -144,7 +384,7 @@ Visual Studio's variable script under `C:\Program Files (x86)\Microsoft Visual S
 (your path might be a little different depending on you installation location and Visual Studio version).
 
 **Q:** "Docker says something like 'denied: access forbidden'"<br>
-**A:** You forgot to log in first. Call `docker login registry.git.rwth-aachen.de` and the credentials you
+**A:** You need to log in first. Call `docker login registry.git.rwth-aachen.de` and the credentials you
 use to log into this GitLab.
 
 **Q:** "I don't know my credentials. I always log in through the RWTH single-sign on"<br>
@@ -163,11 +403,26 @@ time to waste, you can read more about the different file formats on Wikipedia:
 **Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
 **A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
 
+**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?"
+**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
+
 # License
 
 © https://github.com/MontiCore/monticore
 
-This repository is currently non-public. 
+For details on the MontiCore 3-Level License model, visit
+https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md
+
+# Further Information
+
+* [Project root: MontiCore @github](https://github.com/MontiCore/monticore)
+* [MontiCore documentation](http://www.monticore.de/)
+* [**List of languages**](https://github.com/MontiCore/monticore/blob/dev/docs/Languages.md)
+* [**MontiCore Core Grammar Library**](https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/Grammars.md)
+* [CD4Analysis Project](https://github.com/MontiCore/cd4analysis)
+* [Best Practices](https://github.com/MontiCore/monticore/blob/dev/docs/BestPractices.md)
+* [Publications about MBSE and MontiCore](https://www.se-rwth.de/publications/)
+* [Licence definition](https://github.com/MontiCore/monticore/blob/master/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md)
 
 [se-rwth]: http://www.se-rwth.de
 [montiarc]: https://git.rwth-aachen.de/monticore/montiarc/core
@@ -181,3 +436,7 @@ This repository is currently non-public.
 [mach-o]: https://en.wikipedia.org/wiki/Mach-O
 [portable-executable]: https://en.wikipedia.org/wiki/Portable_Executable
 [password]: https://git.rwth-aachen.de/profile/password/edit
+[clion]: https://www.jetbrains.com/clion
+[azure-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+[terraform-cli]: https://www.terraform.io/downloads.html
+[azure-terraform-docs]: https://docs.microsoft.com/en-us/azure/developer/terraform/create-linux-virtual-machine-with-infrastructure

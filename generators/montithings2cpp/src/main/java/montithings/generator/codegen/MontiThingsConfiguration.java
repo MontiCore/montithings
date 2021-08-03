@@ -36,11 +36,14 @@ public class MontiThingsConfiguration implements Configuration {
     MODELPATH_SHORT("mp"),
     TESTPATH("testPath"),
     HANDWRITTENCODEPATH("handwrittenCode"),
+    HANDWRITTENCODEPATH_MONTICORE("handcodedPath"),
     HANDWRITTENCODEPATH_SHORT("hwc"),
     OUT("out"),
+    OUT_MONTICORE("outputDir"),
     OUT_SHORT("o"),
     PLATFORM("platform"),
     SPLITTING("splitting"),
+    LOGTRACING("logtracing"),
     RECORDING("recording"),
     MESSAGEBROKER("messageBroker"),
     MESSAGEBROKER_SHORT("broker"),
@@ -83,6 +86,7 @@ public class MontiThingsConfiguration implements Configuration {
       .add(DelegatingConfigurationContributor.with(internal)).build();
     configParams.setTargetPlatform(getPlatform());
     configParams.setSplittingMode(getSplittingMode());
+    configParams.setLogTracing(getLogTracing());
     configParams.setRecordingMode(getRecordingMode());
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker(getSplittingMode()));
@@ -271,6 +275,11 @@ public class MontiThingsConfiguration implements Configuration {
       Path hwc = Paths.get(hwcPath.get());
       return hwc.toFile();
     }
+    hwcPath = getAsString(Options.HANDWRITTENCODEPATH_MONTICORE);
+    if (hwcPath.isPresent()) {
+      Path hwc = Paths.get(hwcPath.get());
+      return hwc.toFile();
+    }
     hwcPath = getAsString(Options.HANDWRITTENCODEPATH_SHORT);
     if (hwcPath.isPresent()) {
       Path hwc = Paths.get(hwcPath.get());
@@ -291,6 +300,10 @@ public class MontiThingsConfiguration implements Configuration {
    */
   public File getOut() {
     Optional<String> out = getAsString(Options.OUT);
+    if (out.isPresent()) {
+      return new File(out.get());
+    }
+    out = getAsString(Options.OUT_MONTICORE);
     if (out.isPresent()) {
       return new File(out.get());
     }
@@ -349,6 +362,23 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "off"
     return ConfigParams.SplittingMode.OFF;
+  }
+
+  public ConfigParams.LogTracing getLogTracing() {
+    Optional<String> logTracing = getAsString(Options.LOGTRACING);
+    if (logTracing.isPresent()) {
+      switch (logTracing.get()) {
+        case "OFF":
+          return ConfigParams.LogTracing.OFF;
+        case "ON":
+          return ConfigParams.LogTracing.ON;
+        default:
+          throw new IllegalArgumentException(
+                  "0xMT302 Log tracing mode " + logTracing + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "off"
+    return ConfigParams.LogTracing.OFF;
   }
 
   public ConfigParams.MessageBroker getMessageBroker(ConfigParams.SplittingMode splittingMode) {

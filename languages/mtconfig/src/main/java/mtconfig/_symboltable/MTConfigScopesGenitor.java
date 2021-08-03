@@ -15,13 +15,14 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 /**
- * Symbol table creator.
+ * Builds the symbol table.
  */
 public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
 
   /**
    * Creates MTConfigArtifactScope from ast.
    * The package is set in the ArtifactScope.
+   *
    * @param rootNode AST root used for creation.
    * @return scope created from given AST.
    */
@@ -39,6 +40,7 @@ public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
 
   /**
    * Adds node elements as directly accessible symbols to the artifact scope.
+   *
    * @param node astNode for the corresponding scope.
    */
   @Override
@@ -67,23 +69,27 @@ public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
 
   /**
    * Creates CompConfigSymbol with component_platform as name to prevent ambiguity.
+   *
    * @param ast AST containing name and platform used for symbol creation.
    * @return symbol with component_platform as name.
    */
-  protected CompConfigSymbol create_CompConfig (ASTCompConfig ast)  {
-    return MTConfigMill.compConfigSymbolBuilder().setName(ast.getName()+"_"+ast.getPlatform()).build();
+  protected CompConfigSymbol create_CompConfig(ASTCompConfig ast) {
+    return MTConfigMill.compConfigSymbolBuilder().setName(ast.getName() + "_" + ast.getPlatform())
+      .build();
   }
 
   @Override public void visit(ASTCompConfig node) {
     super.visit(node);
-    Optional<ComponentTypeSymbol> comp = node.getEnclosingScope().resolveComponentType(node.getComponentType());
+    Optional<ComponentTypeSymbol> comp = node.getEnclosingScope()
+      .resolveComponentType(node.getComponentType());
     comp.ifPresent(node::setComponentTypeSymbol);
   }
 
   @Override public void visit(ASTPortTemplateTag node) {
     super.visit(node);
     String packageName = node.getEnclosingScope().getSpanningSymbol().getPackageName();
-    String compName = ((ASTCompConfig)node.getEnclosingScope().getSpanningSymbol().getAstNode()).getName();
+    String compName = ((ASTCompConfig) node.getEnclosingScope().getSpanningSymbol().getAstNode())
+      .getName();
     String portFQN = packageName + "." + compName + "." + node.getPort();
 
     Optional<PortSymbol> port = node.getEnclosingScope().resolvePort(portFQN);

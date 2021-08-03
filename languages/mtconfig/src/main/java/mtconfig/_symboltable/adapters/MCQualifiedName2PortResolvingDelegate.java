@@ -12,8 +12,6 @@ import java.util.function.Predicate;
 
 /**
  * ResolvingDelegate that makes resolving of PortSymbols from MontiThings by a qualified name possible.
- *
- * @author Julian Krebber
  */
 public class MCQualifiedName2PortResolvingDelegate implements IPortSymbolResolver {
 

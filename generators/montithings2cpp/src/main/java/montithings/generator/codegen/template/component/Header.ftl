@@ -34,6 +34,8 @@ ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, con
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
 ${tc.includeArgs("template.component.declarations.DDS", [config])}
 
+${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config])}
+
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 ${tc.includeArgs("template.state.hooks.Member", [comp])}
 
@@ -56,7 +58,7 @@ void initialize();
 public:
 ${className}(std::string instanceName
 <#if comp.getParameters()?has_content>,</#if>
-${ComponentHelper.printConstructorArguments(comp)});
+${TypesPrinter.printConstructorArguments(comp)});
 
 <#if config.getMessageBroker().toString() == "MQTT">
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
@@ -89,6 +91,9 @@ ${ComponentHelper.printConstructorArguments(comp)});
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDeclaration", [comp])}
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.GetterDeclaration", [comp, config])}
+${tc.includeArgs("template.logtracing.hooks.InitLogTracerDeclaration", [comp, config])}
 
 void setUp(TimeMode enclosingComponentTiming) override;
 void init() override;

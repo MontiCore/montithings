@@ -4,7 +4,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 ${className}() = default;
 <#if !(comp.getAllOutgoingPorts()?size == 0)>
-    ${className}(<#list comp.getAllOutgoingPorts() as port > ${ComponentHelper.getRealPortCppTypeString(comp, port, config)}
-    ${port.getName()}<#sep>,</#sep>
+    ${className}(<#list comp.getAllOutgoingPorts() as port >
+        <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
+        ${type}
+        ${port.getName()}<#sep>,</#sep>
 </#list>);
 </#if>

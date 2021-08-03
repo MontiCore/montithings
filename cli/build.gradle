@@ -1,0 +1,141 @@
+// (c) https://github.com/MontiCore/monticore
+
+/* ============================================================ */
+/* ========================= Plugins ========================== */
+/* ============================================================ */
+
+buildscript {
+  dependencies {
+    classpath 'org.fusesource.jansi:jansi:2.3.2'
+  }
+}
+
+plugins {
+  id 'java'
+  id 'com.github.johnrengelman.shadow'
+  id 'de.set.ecj' // Eclipse compiler as it's faster than javac
+  id 'maven-publish'
+}
+
+/* ============================================================ */
+/* ========================= Project ========================== */
+/* ============================================================ */
+
+group = 'montithings.cli'
+buildDir = "$projectDir/target"
+
+/* ============================================================ */
+/* ======================== Constants ========================= */
+/* ============================================================ */
+
+
+/* ============================================================ */
+/* ======================= Configuration ====================== */
+/* ============================================================ */
+
+sourceSets {
+  main {
+    java.srcDirs += ["$buildDir/generated-sources/monticore/sourcecode"]
+  }
+  test {
+    java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+  }
+}
+
+task wrapper(type: Wrapper){
+  gradleVersion = '6.7'
+}
+
+repositories {
+  if(("true").equals(getProperty('useLocalRepo'))) {
+    mavenLocal()
+  }
+
+  maven {
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url sePublicRepo
+  }
+
+  maven {
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url sePrivateRepo
+  }
+
+  mavenCentral()
+}
+
+test {
+  useJUnitPlatform()
+}
+
+/* ============================================================ */
+/* ======================= Dependencies ======================= */
+/* ============================================================ */
+
+
+dependencies {
+
+  implementation "commons-cli:commons-cli:1.4"
+  implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
+  implementation "org.apache.commons:commons-lang3:3.9"
+  implementation "org.assertj:assertj-core:$assertj_version"
+  implementation project(":languages:error-handling")
+  implementation project(":languages:montiarc-extensions")
+  implementation project(":languages:montithings")
+  implementation project(":languages:iot-behavior")
+  implementation project(":generators:cd2cpp")
+  implementation project(":generators:montithings2cpp")
+  implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+  implementation "montiarc.languages:arc-fe:$montiarc_version"
+
+
+  testImplementation "junit:junit:$junit_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+  testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+  testImplementation "de.monticore:monticore-runtime:$monticore_version"
+}
+
+/* ============================================================ */
+/* ========================== Tasks =========================== */
+/* ============================================================ */
+
+tasks.withType(JavaCompile) {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+  options.encoding = 'UTF-8'
+  options.headerOutputDirectory.convention(null)
+  options.deprecation = false
+  options.warnings = false
+}
+
+// build sources jar in addition
+java {
+  withSourcesJar()
+}
+
+// all in one cli-jar
+shadowJar {
+  manifest {
+    attributes "Main-Class": "montithings.MTCLI"
+  }
+  archiveFileName = "MTCLI.${archiveExtension.get()}"
+  archiveClassifier = "cli"
+}
+
+jar.dependsOn shadowJar
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) { from components.java }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+  }
+}

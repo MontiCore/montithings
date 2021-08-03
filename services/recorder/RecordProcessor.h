@@ -9,14 +9,14 @@
 #include <algorithm>
 #include <vector>
 #include <limits.h>
+#include "../montithings-RTE/Message.h"
 
-
-#include "../montithings-RTE/dds/recorder/utils.h"
-#include "../montithings-RTE/dds/recorder/MessageWithClockContainer.h"
+#include "../montithings-RTE/record-and-replay/recorder/utils.h"
+#include "../montithings-RTE/record-and-replay/recorder/MessageWithClockContainer.h"
+#include "../montithings-RTE/record-and-replay/message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "../montithings-RTE/json/json.hpp"
-#include "../montithings-RTE/Utils.h"
 
-#include "../montithings-RTE/dds/message-types/DDSRecorderMessageTypeSupportImpl.h"
+#include "../montithings-RTE/Utils.h"
 
 using vclock = std::unordered_map<std::string, long>;
 using json = nlohmann::json;
@@ -31,6 +31,8 @@ private:
                          const std::string &identifier);
 
     static json sortRecords(json records, int minSpacing);
+
+    static std::string getPayload(DDSRecorderMessage::Message message);
 
 public:
     RecordProcessor() = default;

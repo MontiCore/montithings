@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 json config;
 
@@ -20,7 +19,9 @@ if (!config.empty())
     initializeParameterConfigPortPub();
 
     for (auto &paraConfig : config.items()) {
-        configPortOut->sendToExternal(config[paraConfig.key()].dump());
+        json payload;
+        payload[paraConfig.key()] = config[paraConfig.key()];
+        configPortOut->sendToExternal(payload.dump());
     }
 
     CLOG(DEBUG, "DDS")  << "Published parameter config: " << config.dump();

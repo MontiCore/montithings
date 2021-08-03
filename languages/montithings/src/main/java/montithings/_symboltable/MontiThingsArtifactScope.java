@@ -14,12 +14,12 @@ import java.util.function.Predicate;
 public class MontiThingsArtifactScope extends MontiThingsArtifactScopeTOP {
 
   @Override
-  public List<ComponentTypeSymbol> continueComponentTypeWithEnclosingScope(boolean foundSymbols, String name,
-    AccessModifier modifier,
-    Predicate<ComponentTypeSymbol> predicate) {
+  public List<ComponentTypeSymbol> continueComponentTypeWithEnclosingScope(boolean foundSymbols,
+    String name, AccessModifier modifier, Predicate<ComponentTypeSymbol> predicate) {
     List<ComponentTypeSymbol> result = new ArrayList<>();
     if (checkIfContinueWithEnclosingScope(foundSymbols) && getEnclosingScope() != null) {
-      final Set<String> potentialQualifiedNames = calculateQualifiedNames(name, getPackageName(), getImportsList());
+      final Set<String> potentialQualifiedNames = calculateQualifiedNames(name, getPackageName(),
+        getImportsList());
 
       for (final String potentialQualifiedName : potentialQualifiedNames) {
         final List<ComponentTypeSymbol> resolvedFromEnclosing = this.getEnclosingScope()
@@ -32,12 +32,13 @@ public class MontiThingsArtifactScope extends MontiThingsArtifactScopeTOP {
   }
 
   @Override
-  public List<TypeSymbol> continueTypeWithEnclosingScope(boolean foundSymbols, String name, AccessModifier modifier,
-    Predicate<TypeSymbol> predicate) {
+  public List<TypeSymbol> continueTypeWithEnclosingScope(boolean foundSymbols, String name,
+    AccessModifier modifier, Predicate<TypeSymbol> predicate) {
 
     List<TypeSymbol> result = new ArrayList<>();
     if (checkIfContinueWithEnclosingScope(foundSymbols) && getEnclosingScope() != null) {
-      final Set<String> potentialQualifiedNames = calculateQualifiedNames(name, getPackageName(), getImportsList());
+      final Set<String> potentialQualifiedNames = calculateQualifiedNames(name, getPackageName(),
+        getImportsList());
 
       for (final String potentialQualifiedName : potentialQualifiedNames) {
         final List<TypeSymbol> resolvedFromEnclosing = this.getEnclosingScope()
@@ -51,11 +52,11 @@ public class MontiThingsArtifactScope extends MontiThingsArtifactScopeTOP {
 
   @Override
   public List<OOTypeSymbol> continueOOTypeWithEnclosingScope(boolean foundSymbols, String name,
-    AccessModifier modifier,
-    Predicate<OOTypeSymbol> predicate) {
+    AccessModifier modifier, Predicate<OOTypeSymbol> predicate) {
     List<OOTypeSymbol> result = new ArrayList<>();
     if (checkIfContinueWithEnclosingScope(foundSymbols) && getEnclosingScope() != null) {
-      final Set<String> potentialQualifiedNames = calculateQualifiedNames(name, getPackageName(), getImportsList());
+      final Set<String> potentialQualifiedNames = calculateQualifiedNames(name, getPackageName(),
+        getImportsList());
 
       for (final String potentialQualifiedName : potentialQualifiedNames) {
         final List<OOTypeSymbol> resolvedFromEnclosing = this.getEnclosingScope()

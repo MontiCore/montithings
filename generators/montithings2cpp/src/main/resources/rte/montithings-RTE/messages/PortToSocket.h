@@ -1,11 +1,11 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // (c) https://github.com/MontiCore/monticore
 #pragma once
-#include "Message.h"
+#include "PortToSocketMessage.h"
 #include <iostream>
 #include <utility>
 
-class PortToSocket : public Message
+class PortToSocket : public PortToSocketMessage
 {
   protected:
   std::string localPort = "";

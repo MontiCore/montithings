@@ -49,7 +49,8 @@ public class OCLExpressionsSymbolTableCompleterForMontiThings implements BasicSy
     }
   }
 
-  public OCLExpressionsSymbolTableCompleterForMontiThings(List<ASTMCImportStatement> imports, String packageDeclaration) {
+  public OCLExpressionsSymbolTableCompleterForMontiThings(List<ASTMCImportStatement> imports,
+    String packageDeclaration) {
     this.imports = imports;
     this.packageDeclaration = packageDeclaration;
     typeVisitor = new DeriveSymTypeOfMontiThingsCombine();
@@ -74,8 +75,8 @@ public class OCLExpressionsSymbolTableCompleterForMontiThings implements BasicSy
   }
 
   @Override
-  public void endVisit(ASTInDeclaration ast){
-    for(ASTInDeclarationVariable node: ast.getInDeclarationVariableList()) {
+  public void endVisit(ASTInDeclaration ast) {
+    for (ASTInDeclarationVariable node : ast.getInDeclarationVariableList()) {
       VariableSymbol symbol = node.getSymbol();
       symbol.setIsReadOnly(false);
       Optional<SymTypeExpression> typeResult = Optional.empty();
@@ -83,8 +84,11 @@ public class OCLExpressionsSymbolTableCompleterForMontiThings implements BasicSy
         ast.getMCType().accept(typeVisitor.getTraverser());
         typeResult = typeVisitor.getResult();
         if (!typeResult.isPresent()) {
-          Log.error(String.format("The type (%s) of the object (%s) could not be calculated", ast.getMCType(), symbol.getName()));
-        } else {
+          Log.error(String
+            .format("The type (%s) of the object (%s) could not be calculated", ast.getMCType(),
+              symbol.getName()));
+        }
+        else {
           symbol.setType(typeResult.get());
         }
       }
@@ -94,51 +98,65 @@ public class OCLExpressionsSymbolTableCompleterForMontiThings implements BasicSy
           //if MCType present: check that type of expression and MCType are compatible
           if (typeResult.isPresent() && !OCLTypeCheck.compatible(typeResult.get(),
             OCLTypeCheck.unwrapSet(typeVisitor.getTypeCheckResult().getCurrentResult()))) {
-            Log.error(String.format("The MCType (%s) and the expression type (%s) in Symbol (%s) are not compatible",
-              ast.getMCType(), OCLTypeCheck.unwrapSet(typeVisitor.getTypeCheckResult().getCurrentResult()), symbol.getName()));
+            Log.error(String.format(
+              "The MCType (%s) and the expression type (%s) in Symbol (%s) are not compatible",
+              ast.getMCType(),
+              OCLTypeCheck.unwrapSet(typeVisitor.getTypeCheckResult().getCurrentResult()),
+              symbol.getName()));
           }
           //if no MCType present: symbol has type of expression
           if (!typeResult.isPresent()) {
-            symbol.setType(OCLTypeCheck.unwrapSet(typeVisitor.getTypeCheckResult().getCurrentResult()));
+            symbol
+              .setType(OCLTypeCheck.unwrapSet(typeVisitor.getTypeCheckResult().getCurrentResult()));
           }
           typeVisitor.getTypeCheckResult().reset();
-        } else {
-          Log.error(String.format("The type of the object (%s) could not be calculated", symbol.getName()));
+        }
+        else {
+          Log.error(
+            String.format("The type of the object (%s) could not be calculated", symbol.getName()));
         }
       }
       //node has neither MCType nor expression
       if (!typeResult.isPresent() && !ast.isPresentExpression()) {
-        symbol.setType(SymTypeExpressionFactory.createTypeObject("Object", ast.getEnclosingScope()));
+        symbol
+          .setType(SymTypeExpressionFactory.createTypeObject("Object", ast.getEnclosingScope()));
       }
     }
   }
 
   @Override
-  public void visit(ASTOCLVariableDeclaration ast){
+  public void visit(ASTOCLVariableDeclaration ast) {
     VariableSymbol symbol = ast.getSymbol();
     symbol.setIsReadOnly(false);
-    if(ast.isPresentMCType()) {
+    if (ast.isPresentMCType()) {
       ast.getMCType().setEnclosingScope(symbol.getEnclosingScope());
       ast.getMCType().accept(getTraverser());
       ast.getMCType().accept(typeVisitor.getTraverser());
       final Optional<SymTypeExpression> typeResult = typeVisitor.getResult();
       if (!typeResult.isPresent()) {
-        Log.error(String.format("The type (%s) of the object (%s) could not be calculated", ast.getMCType(), ast.getName()));
-      } else {
+        Log.error(String
+          .format("The type (%s) of the object (%s) could not be calculated", ast.getMCType(),
+            ast.getName()));
+      }
+      else {
         symbol.setType(typeResult.get());
       }
-    } else {
-      if(ast.isPresentExpression()){
+    }
+    else {
+      if (ast.isPresentExpression()) {
         ast.getExpression().accept(getTraverser());
         ast.getExpression().accept(typeVisitor.getTraverser());
-        if(typeVisitor.getTypeCheckResult().isPresentCurrentResult()){
+        if (typeVisitor.getTypeCheckResult().isPresentCurrentResult()) {
           symbol.setType(typeVisitor.getTypeCheckResult().getCurrentResult());
-        } else {
-          Log.error(String.format("The type of the object (%s) could not be calculated", ast.getName()));
+        }
+        else {
+          Log.error(
+            String.format("The type of the object (%s) could not be calculated", ast.getName()));
         }
       }
       else {
-        symbol.setType(SymTypeExpressionFactory.createTypeObject("Object", ast.getEnclosingScope()));
+        symbol
+          .setType(SymTypeExpressionFactory.createTypeObject("Object", ast.getEnclosingScope()));
       }
     }
   }

@@ -12,7 +12,9 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import static montithings.util.SymbolUtil.addParam;
 import static montithings.util.SymbolUtil.createFunction;
 
-
+/**
+ * Helpers to add function symbols for MontiThings' library to the symbol table
+ */
 public class LibraryFunctionsUtil {
 
   /* ============================================================ */
@@ -43,9 +45,6 @@ public class LibraryFunctionsUtil {
   /* ============================================================ */
   /* ========================= LIBRARY ========================== */
   /* ============================================================ */
-
-
-
 
   public static void addFunctionLog(@NotNull IMontiThingsScope scope) {
     FunctionSymbol log = createFunction("log", scope);
@@ -82,13 +81,15 @@ public class LibraryFunctionsUtil {
   }
 
   public static void addFunctionSubtract(@NotNull IMontiThingsScope scope) {
-    FunctionSymbol subtract = createFunction("subtract", SymTypeExpressionFactory.createTypeConstant("long"), scope);
+    FunctionSymbol subtract = createFunction("subtract",
+      SymTypeExpressionFactory.createTypeConstant("long"), scope);
     addParam(subtract, "v1", SymTypeExpressionFactory.createTypeConstant("long"));
     addParam(subtract, "v2", SymTypeExpressionFactory.createTypeConstant("long"));
   }
 
   public static void addFunctionGetNsFromMap(@NotNull IMontiThingsScope scope) {
-    FunctionSymbol getNsFromMap = createFunction("getNsFromMap", SymTypeExpressionFactory.createTypeConstant("long"), scope);
+    FunctionSymbol getNsFromMap = createFunction("getNsFromMap",
+      SymTypeExpressionFactory.createTypeConstant("long"), scope);
     addParam(getNsFromMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
   }
 

@@ -33,8 +33,8 @@ import java.util.NoSuchElementException;
 /**
  * Transformer for delaying channels.
  * <p>
- * Connections which should be delayed are intercepted by a new component which just forwards the messages,
- * but adds a certain delay.
+ * Connections which should be delayed are intercepted by a new component
+ * which just forwards the messages, but adds a certain delay.
  */
 
 public class DelayedChannelTrafo extends BasicTransformations implements MontiThingsTrafo {
@@ -270,7 +270,8 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
       .callExpressionBuilder();
     thenCallDelayExpressionBuilder.setExpression(delayNameExpression);
     thenCallDelayExpressionBuilder.setArguments(delayArgsBulder.build());
-    thenCallDelayExpressionBuilder.setName("ABC"); // arbitrary value; unclear what this is about
+    thenCallDelayExpressionBuilder
+      .setName("delayNanoseconds"); // arbitrary value; unclear what this is about
 
     ASTExpressionStatementBuilder thenExpressionStatementBuilder = MontiThingsMill
       .expressionStatementBuilder();

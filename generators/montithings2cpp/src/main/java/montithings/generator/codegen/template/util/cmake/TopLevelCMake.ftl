@@ -2,6 +2,7 @@
 ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "sensorActuatorPorts", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "">
 <#if config.getSplittingMode().toString() != "OFF">
@@ -131,6 +132,9 @@ include_directories("hwc" ${r"${dir_list}"})
   </#if>
   <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")>
     set(EXCLUDE_COMM_MANAGER 1)
+  </#if>
+  <#if (config.getLogTracing().toString() == "ON")>
+    set(ENABLE_LOG_TRACING 1)
   </#if>
   add_subdirectory(montithings-RTE)
 </#if>

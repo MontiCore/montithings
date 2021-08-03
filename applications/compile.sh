@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 set -e
 
 buildProject() {
@@ -21,3 +22,4 @@ buildProject "interface-componentsMTB" "hierarchy"
 buildProject "ocl" "hierarchy"
 buildProject "pre-postconditions" "hierarchy"
 buildProject "si-units" "hierarchy"
+buildProject "statecharts" "hierarchy"

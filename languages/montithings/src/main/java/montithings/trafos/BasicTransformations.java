@@ -159,8 +159,8 @@ public abstract class BasicTransformations {
    */
   protected ASTComponentInstantiation addSubComponentInstantiation(ASTMACompilationUnit comp,
     ASTMCQualifiedName qName, String instanceName, ASTArguments args) {
-    ASTComponentInstantiationBuilder instantiationBuilder = ComfortableArcMillForMontiThings
-      .componentInstantiationBuilder();
+    ASTComponentInstantiationBuilder instantiationBuilder =
+      ComfortableArcMillForMontiThings.componentInstantiationBuilder();
 
     instantiationBuilder.addInstance(instanceName);
     instantiationBuilder.getComponentInstance(0).setArguments(args);
@@ -178,15 +178,15 @@ public abstract class BasicTransformations {
     ASTNatLiteralBuilder natLiteralBuilder = MontiThingsMill.natLiteralBuilder();
     natLiteralBuilder.setDigits(String.valueOf(value));
 
-    ASTLiteralExpressionBuilder literalExpressionBuilder = MontiThingsMill
-      .literalExpressionBuilder();
+    ASTLiteralExpressionBuilder literalExpressionBuilder =
+      MontiThingsMill.literalExpressionBuilder();
     literalExpressionBuilder.setLiteral(natLiteralBuilder.build());
 
     ASTMCPrimitiveTypeBuilder mcPrimitiveTypeBuilder = MontiThingsMill.mCPrimitiveTypeBuilder();
     mcPrimitiveTypeBuilder.setPrimitive(ASTConstantsMCBasicTypes.LONG);
 
-    ASTArcFieldDeclarationBuilder fieldDeclarationBuilder = MontiThingsMill
-      .arcFieldDeclarationBuilder();
+    ASTArcFieldDeclarationBuilder fieldDeclarationBuilder =
+      MontiThingsMill.arcFieldDeclarationBuilder();
     fieldDeclarationBuilder.addArcField(name, literalExpressionBuilder.build());
     fieldDeclarationBuilder.setMCType(mcPrimitiveTypeBuilder.build());
 
@@ -268,18 +268,18 @@ public abstract class BasicTransformations {
       .build();
 
     ASTNatLiteral oneNatLiteral = MontiThingsMill.natLiteralBuilder().setDigits("1").build();
-    ASTLiteralExpressionBuilder incrementIndexExpressionBuilder = MontiThingsMill
-      .literalExpressionBuilder();
+    ASTLiteralExpressionBuilder incrementIndexExpressionBuilder =
+      MontiThingsMill.literalExpressionBuilder();
     incrementIndexExpressionBuilder.setLiteral(oneNatLiteral);
 
-    ASTAssignmentExpressionBuilder incrementAssignmentExpressionBuilder = MontiThingsMill
-      .assignmentExpressionBuilder();
+    ASTAssignmentExpressionBuilder incrementAssignmentExpressionBuilder =
+      MontiThingsMill.assignmentExpressionBuilder();
     incrementAssignmentExpressionBuilder.setLeft(indexNameExpression);
     incrementAssignmentExpressionBuilder.setOperator(ASTConstantsAssignmentExpressions.PLUSEQUALS);
     incrementAssignmentExpressionBuilder.setRight(incrementIndexExpressionBuilder.build());
 
-    ASTExpressionStatementBuilder incrementExpressionStatementBuilder = MontiThingsMill
-      .expressionStatementBuilder();
+    ASTExpressionStatementBuilder incrementExpressionStatementBuilder =
+      MontiThingsMill.expressionStatementBuilder();
     incrementExpressionStatementBuilder.setExpression(incrementAssignmentExpressionBuilder.build());
 
     return incrementExpressionStatementBuilder.build();

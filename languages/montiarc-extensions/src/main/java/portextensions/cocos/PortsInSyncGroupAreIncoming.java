@@ -3,64 +3,32 @@ package portextensions.cocos;
 
 import arcbasis._ast.ASTComponentType;
 import arcbasis._cocos.ArcBasisASTComponentTypeCoCo;
+import de.se_rwth.commons.logging.Log;
+import portextensions._ast.ASTSyncStatement;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Checks that ports in sync statements exist and are incoming
  */
 public class PortsInSyncGroupAreIncoming implements ArcBasisASTComponentTypeCoCo {
 
-
   @Override public void check(ASTComponentType node) {
-    //TODO: Write me
-  }
+    Set<String> syncedPorts = node.getBody().getArcElementList().stream()
+      .filter(e -> e instanceof ASTSyncStatement)
+      .map(e -> ((ASTSyncStatement) e).getSyncedPortList())
+      .flatMap(List::stream)
+      .collect(Collectors.toSet());
 
-  /*
-  @Override
-  public void check(ASTComponentType node) {
+    for (String portName : syncedPorts) {
+      if (!node.getSpannedScope().resolvePort(portName).isPresent() ||
+        !node.getSpannedScope().resolvePort(portName).get().isIncoming()) {
 
-    if (!node.getSpannedScopeOpt().isPresent()) {
-      Log.error(
-          String.format("0xMT020 ASTComponent node \"%s\" has no " +
-                  "spanned scope. Did you forget to run the " +
-                  "SymbolTableCreator before checking portextensions.cocos?",
-              node.getName()));
-      return;
-    }
-
-    Scope s = node.getSpannedScopeOpt().get();
-    for (ASTSyncStatement syncGroup : getSyncGroups(node)) {
-      for (String portName : syncGroup.getSyncedPortList()) {
-        Optional<Symbol> port = s.resolve(portName, PortSymbol.KIND);
-        if (!port.isPresent()) {
-          Log.error("0xMT113 The port " + portName + " in the sync group does not exist.",
-              syncGroup.get_SourcePositionStart());
-          continue;
-        }
-        if (!((PortSymbol) port.get()).isIncoming()) {
-          Log.error("0xMT114 The port " + portName + " in the sync group is not incoming.",
-              syncGroup.get_SourcePositionStart());
-        }
+        Log.error("0xMAE0020 Port '" + portName
+          + "' is in sync statement but does not refer to an incoming port");
       }
-
     }
-
   }
-  */
-
-
-  /**
-   * TODO modify since ASTControlBlock was removed.
-   * @param node
-   * @return
-   */
-  /*
-  public List<ASTSyncStatement> getSyncGroups(ASTComponent node) {
-    return new ArrayList<>();/*node.getBody().getElementList()
-        .stream()
-        .filter(e -> e instanceof ASTControlBlock)
-        .flatMap(e -> ((ASTControlBlock) e).getControlStatementList().stream())
-        .filter(ASTSyncStatement.class::isInstance)
-        .map(ASTSyncStatement.class::cast)
-        .collect(Collectors.toList());
-  }*/
 }

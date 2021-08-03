@@ -25,10 +25,6 @@ import java.util.Optional;
 
 /**
  * Helpful methods for using component bindings by generics
- *
- * @author Julian Krebber
- * @version , 01.05.2020
- * @since 5.0.2
  */
 public class GenericBindingUtil {
 

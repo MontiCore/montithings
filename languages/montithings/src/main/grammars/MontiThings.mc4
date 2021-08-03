@@ -1,4 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
+
+import de.monticore.ocl.*;
+import de.monticore.*;
+
 grammar MontiThings extends MontiArc,
                             ClockControl,
                             PortExtensions,
@@ -7,13 +11,25 @@ grammar MontiThings extends MontiArc,
                             ConditionCatch,
                             SetDefinitions,
                             Behavior,
-                            de.monticore.ocl.OCLExpressions,
-                            de.monticore.ocl.OptionalOperators,
-                            de.monticore.SIUnitTypes4Computing,
-                            de.monticore.SIUnitLiterals
+                            OCLExpressions,
+                            OptionalOperators,
+                            SIUnitTypes4Computing,
+                            SIUnitLiterals
 {
     start MACompilationUnit;
 
+    /**
+     * Component Types. Matches MontiArc's component types but additionally
+     * allows a "component modifier", i.e. an additional keyword.
+     *
+     * @attribute name The type name of this component.
+     * @attribute head Defines configuration options and extensions of this component.
+     * @attribute componentInstances List of identifiers used to create instances
+     *                               of this component type.
+     *                               Only available for inner components.
+     * @attribute body Contains the architectural elements of this component.
+
+     */
     MTComponentType extends ComponentType =
       MTComponentModifier Name
       head:ComponentHead
@@ -21,6 +37,12 @@ grammar MontiThings extends MontiArc,
       body:ComponentBody
     ;
 
+    /**
+     * An additional keyword for components.
+     * Interface keyword marks interface components, i.e. components without
+     * behavior.
+     * See [Wor16 Sec. 4.1.1]
+     */
     MTComponentModifier =  ["interface"]? "component";
 
     /* ============================================================ */
@@ -29,7 +51,6 @@ grammar MontiThings extends MontiArc,
 
     MTCondition implements ArcElement = Condition;
     MTCatch implements ArcElement = ConditionCatch;
-    MTEveryBlock implements ArcElement = EveryBlock;
 
     /**
      * Store and restore component states in case of failure
@@ -43,7 +64,18 @@ grammar MontiThings extends MontiArc,
     /* ========================= Behavior ========================= */
     /* ============================================================ */
 
+    /**
+     * Behavior of components get executed whenever all ports listed in front
+     * of the MCJavaBlock have a new message available. If no ports are listed
+     * the behavior is executed whenever any port has a new message available.
+     */
     Behavior implements ArcElement = "behavior" (Name@Port || ",")* MCJavaBlock;
+
+    /**
+     * Behavior that gets executed in regular time intervals independent of the
+     * availability of new messages.
+     */
+    MTEveryBlock implements ArcElement = EveryBlock;
 
     // In contrast to MontiArc, we use the "statechart" keyword from the
     // statechart language instead of "automaton"
@@ -53,18 +85,28 @@ grammar MontiThings extends MontiArc,
         SCStatechartElement*
       "}";
 
+    /**
+     * Used to re-send the last message on a port.
+     * Deprecated! Ports send a new message whenever they are assigned a new
+     * value. To resend a value, assign the same value again.
+     */
+    @Deprecated
     PublishPort implements MCStatement =
         "publish" publishedPorts:(Name@Port || ",")+ ";";
 
     /**
-     * ASTIsPresentExpression can be used use a port regardless of whether it
+     * IsPresentExpression can be used use a port regardless of whether it
      * has a value or to check if it has a value.
      * Hint: Directly accessing a port is allowed but means the value is
      * definitely accessed; if it doesn't exist, it will cause a run-time error
      *
      * Example: if (sensor?) actuator = sensor;
      * Example: actuator = sensor?;
+     *
+     * Deprecated! Name the ports which shall trigger a behavior block directly
+     * in front of the behavior block. See "Behavior" non-terminal.
      */
+    @Deprecated
     IsPresentExpression implements Expression <400>
         = NameExpression "?";
 }

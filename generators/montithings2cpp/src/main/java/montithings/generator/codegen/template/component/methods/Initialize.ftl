@@ -12,8 +12,8 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
   ${Identifier.getInterfaceName()}.getPort${port.getName()?cap_first} ()->attach (this);
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
   <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
-    <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-    ${Identifier.getInterfaceName()}.addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>(instanceName
+    <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+    ${Identifier.getInterfaceName()}.addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<Message<${type}>>(instanceName
     <#if config.getMessageBroker().toString() == "DDS">
         , argc, &argv
     </#if>));
@@ -22,8 +22,8 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
 <#list comp.outgoingPorts as port >
   <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
   <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
-    <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
-    ${Identifier.getInterfaceName()}.addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<${type}>(instanceName
+    <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+    ${Identifier.getInterfaceName()}.addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<Message<${type}>>(instanceName
     <#if config.getMessageBroker().toString() == "DDS">
             , argc, &argv
     </#if>));
@@ -38,4 +38,6 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
   setResult(result);
   }
 </#if>
+
+${tc.includeArgs("template.logtracing.hooks.RegisterExternalPort", [comp, config])}
 }

@@ -17,6 +17,11 @@ import montithings.util.MontiThingsError;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Checks that every blocks do not reference incoming ports.
+ * Every blocks are triggered by time, not by incoming messages.
+ * Hence, it's forbidden to reference incoming ports.
+ */
 public class NoIncomingPortsInEveryBlocks implements BehaviorASTEveryBlockCoCo {
   @Override public void check(ASTEveryBlock node) {
     node.getMCJavaBlock().accept(new NoIncomingPortsInEveryBlocksVisitor().createTraverser());

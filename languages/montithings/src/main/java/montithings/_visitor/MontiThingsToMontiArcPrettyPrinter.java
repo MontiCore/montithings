@@ -26,16 +26,16 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
     this.printer = printer;
   }
 
-  @Override 
+  @Override
   public MontiThingsTraverser getTraverser() {
     return traverser;
   }
 
   @Override
-public void setTraverser(@NotNull MontiThingsTraverser traverser) {
-  Preconditions.checkArgument(traverser != null);
-  this.traverser = traverser;
-}
+  public void setTraverser(@NotNull MontiThingsTraverser traverser) {
+    Preconditions.checkArgument(traverser != null);
+    this.traverser = traverser;
+  }
 
   public IndentPrinter getPrinter() {
     return this.printer;

@@ -7,35 +7,35 @@ grammar MTConfig extends MontiThings  {
 
   start MTConfigUnit;
 
-  /* ============================================================ */
-  /* ============ Requirement & Hookpointspecification ========== */
-  /* ============================================================ */
-
   /**
-   * MTConfigUnit represents the complete properties for MontiThings configuration.
+   * MTConfigUnit represents the complete properties for MontiThings
+   * configuration.
+   *
    * @attribute package  The package declaration of the elements.
    * @attribute Element List of elements.
    */
   scope MTConfigUnit = ("package" package:MCQualifiedName ";")?  Element+;
 
   /**
-   * Element is an extension point that is used for the main parts making up the MTConfig language.
+   * Element is an extension point that is used for the top-level elements in
+   * the MTConfig.
    */
   interface Element;
 
   /**
-   * MTCFGTag is an extension point that is used
-   * for providing component and platform dependent configuration properties.
+   * MTCFGTag is an extension point that is used for tags that refer to a
+   * specific component and platform combination
    */
   interface MTCFGTag;
 
   /**
    * CompConfig represents the configuration of a MontiThings Component for a specific platform.
+   *
    * @attribute Name Name of the MontiThings component.
    * @attribute platform Deployment platform. E.g. GENERIC, Windows, Arduino etc.
    */
   scope symbol CompConfig implements Element =
-    "config" componentType:Name "for" platform:Name /*TODO set appropriate reference when possible */
+    "config" componentType:Name "for" platform:Name
     "{"
     MTCFGTag*
     "}";
@@ -43,7 +43,9 @@ grammar MTConfig extends MontiThings  {
   interface SinglePortTag;
 
   /**
-   * PortTemplateTag specifies the templates that are used for processing of the specified port.
+   * PortTemplateTag specifies the templates that are used for processing of the
+   * specified port.
+   *
    * @attribute Name Name of the MontiThings port.
    */
   scope symbol PortTemplateTag implements MTCFGTag =
@@ -52,30 +54,49 @@ grammar MTConfig extends MontiThings  {
     "}";
 
   /**
-   * Hookpoint specifies the template and the arguments that should be supplied to the template.
+   * Hookpoint specifies the template and the arguments that should be supplied
+   * to the template.
+   *
    * @attribute Name Identification of the Hookpoint.
    * @attribute template Unqualified name of the template.
    * @attribute Arguments Attributes required by the template.
    */
   symbol Hookpoint implements SinglePortTag = Name "=" template:String Arguments? ";";
 
+  /**
+   * Specifies how often a port should be read out. This is important for
+   * analog inputs that do not have explicit messages.
+   */
   EveryTag implements SinglePortTag = "every" SIUnitLiteral ";";
 
   /**
-   *  RequirementStatement contain information about what physical requirements
-   *  a component has. E.g Sensors/Actuators etc.
+   * RequirementStatement contain information about what physical requirements
+   * a component has. E.g Sensors/Actuators etc.
    */
   scope RequirementStatement implements MTCFGTag =
     "requires" (propertiess:Property | "{" propertiess:Property+ "}");
 
+
+  /**
+   * A specific property a device needs to fulfill to execute a component.
+   * Properties have a name and a content. The content can either be a
+   * String or a number.
+   *
+   * @attribute Name Identifier of the property (e.g. "sensor")
+   * @attribute stringValue Content of the property (e.g. "DHT22")
+   * @attribute numericValue Content of the property
+   */
   symbol Property = Name& ":"
     (
       stringValue:StringLiteral | numericValue:SignedNumericLiteral
     ) ";";
 
   /**
-   *  A SeparationHint gives instructions about how the component should be split up if splitting 
-   *  is enabled. "None" means that the component and its subcomponents should not be splitted. 
+   *  A SeparationHint gives instructions about how the component should
+   *  be split up if splitting is enabled.
+   *  "none" means that the component and its subcomponents should not be
+   *  splitted. This can be useful to prevent creating container images with
+   *  almost no functionality (e.g. a component that adds two numbers).
    */
   SeparationHint implements MTCFGTag = "separate" "none" ";";
 }

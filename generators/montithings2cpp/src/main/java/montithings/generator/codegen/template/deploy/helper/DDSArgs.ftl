@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 TCLAP::ValueArg${"<"}std::string${">"} dcpsConfigArg ("","DCPSConfigFile","Config file for DCPS (e.g. dcpsconfig.ini)",true,"","string");
 cmd.add ( dcpsConfigArg );

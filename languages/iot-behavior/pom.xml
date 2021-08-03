@@ -14,6 +14,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.jscience</groupId>
+            <artifactId>jscience</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>de.se_rwth.commons</groupId>
             <artifactId>se-commons-logging</artifactId>
         </dependency>

@@ -12,7 +12,9 @@ component grammar ClockControl extends ArcBasis,
   /**
    * The calculation interval specifies in which
    * interval the component is executed.
+   * Deprecated! Use every blocks for time-triggered behavior.
    */
+  @Deprecated
   CalculationInterval implements ArcElement =
     key("update") key("interval") interval:SIUnitLiteral ";"
   ;

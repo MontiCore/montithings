@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Find all outgoing ports referenced by NameExpressions
+ */
 public class FindOutgoingPorts implements ExpressionsBasisVisitor2 {
   protected Set<PortSymbol> referencedPorts = new HashSet<>();
 

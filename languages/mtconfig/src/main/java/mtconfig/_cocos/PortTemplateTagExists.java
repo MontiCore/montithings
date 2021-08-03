@@ -7,8 +7,6 @@ import mtconfig.util.MTConfigError;
 
 /**
  * Checks if port names refer to PortSymbols.
- *
- * @author Julian Krebber
  */
 public class PortTemplateTagExists implements MTConfigASTPortTemplateTagCoCo {
   @Override

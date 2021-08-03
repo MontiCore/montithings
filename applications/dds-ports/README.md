@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Basic Input Output (DDS version)
 
 This example shows how to leverage the Data Distribution Service (DDS) standard to connect components to each other.

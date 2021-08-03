@@ -2,21 +2,34 @@
 package montithings.generator.helper;
 
 import arcbasis._ast.ASTComponentInstantiation;
+import arcbasis._ast.ASTComponentType;
+import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
+import cdlangextension._ast.ASTCDEImportStatement;
+import cdlangextension._symboltable.CDEImportStatementSymbol;
+import cdlangextension._symboltable.ICDLangExtensionScope;
+import de.monticore.ast.ASTNode;
 import de.monticore.siunits._ast.ASTSIUnit;
 import de.monticore.siunits.utility.Converter;
 import de.monticore.siunits.utility.UnitFactory;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
+import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
+import de.se_rwth.commons.logging.Log;
+import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.measure.unit.Unit;
 
-import static montithings.generator.helper.ComponentHelper.getInstantiation;
+import static montithings.generator.helper.ComponentHelper.getPortSymbolFromPortAccess;
 
 public class TypesHelper {
   /**
@@ -83,7 +96,7 @@ public class TypesHelper {
         List<ASTMCTypeArgument> types = new ArrayList<>(
           ((ASTMCBasicGenericType) instantiation.getMCType()).getMCTypeArgumentList());
         return types.stream()
-          .map(ComponentHelper::printTypeArgumentIterate)
+          .map(TypesPrinter::printTypeArgumentIterate)
           .collect(Collectors.joining(", "));
       }
     }
@@ -91,14 +104,133 @@ public class TypesHelper {
     return "";
   }
 
+  /**
+   * True if the given port uses a type from a class diagram (== OOTypeSymbol)
+   * @param portSymbol the port to check
+   * @return True if the given port uses a type from a class diagram, false otherwise
+   */
+  public static boolean portUsesCdType(PortSymbol portSymbol) {
+    return portSymbol.getTypeInfo() instanceof OOTypeSymbol;
+  }
+
+  //============================================================================
+  // region SI Units
+  //============================================================================
+
+  public static double getConversionFactorFromSourceAndTarget(ASTPortAccess source,
+    ASTPortAccess target) {
+    Optional<PortSymbol> pss = getPortSymbolFromPortAccess(source);
+    if (pss.isPresent() && pss.get().getType() instanceof SymTypeOfNumericWithSIUnit) {
+      Optional<PortSymbol> pst = getPortSymbolFromPortAccess(target);
+      if (pst.isPresent()) {
+        return getConversionFactor(((SymTypeOfNumericWithSIUnit) pss.get().getType()).getUnit(),
+          ((SymTypeOfNumericWithSIUnit) pst.get().getType()).getUnit());
+      }
+    }
+    return 1;
+  }
+
+  public static boolean isSIUnitPort(ASTPortAccess portAccess) {
+    Optional<PortSymbol> ps = getPortSymbolFromPortAccess(portAccess);
+    if (ps.isPresent()) {
+      return isSIUnitPort(ps.get());
+    }
+    return false;
+  }
+
+  public static boolean isSIUnitPort(PortSymbol portSymbol) {
+    if (portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit) {
+      return true;
+    }
+    return false;
+  }
+
+  public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance) {
+    ASTNode node = instance.getEnclosingScope().getSpanningSymbol().getAstNode();
+    if (!(node instanceof ASTComponentType)) {
+      Log.error("0xMT0789 instance is not spanned by ASTComponentType.");
+    }
+    Optional<ASTComponentInstantiation> result = ((ASTComponentType) node)
+      .getSubComponentInstantiations()
+      .stream().filter(i -> i.getComponentInstanceList().contains(instance.getAstNode()))
+      .findFirst();
+    if (!result.isPresent()) {
+      Log.error("0xMT0790 instance not found.");
+    }
+    return result.get();
+  }
+
+  public static List<String> getSIUnitPortNames(ComponentTypeSymbol comp) {
+    List names = new ArrayList();
+    for (PortSymbol ps : comp.getAllIncomingPorts()) {
+      if (ps.getType() instanceof SymTypeOfNumericWithSIUnit) {
+        names.add(ps.getName());
+      }
+    }
+    return names;
+  }
+
+  /**
+   * Get the factor by which source needs to be multiplied to be converted
+   * to target
+   */
   public static double getConversionFactor(ASTSIUnit source, ASTSIUnit target){
     Unit sourceUnit = UnitFactory.createUnit(source);
     Unit targetUnit =  UnitFactory.createUnit(target);
     return getConversionFactor(sourceUnit, targetUnit);
   }
 
+  /**
+   * Get the factor by which source needs to be multiplied to be converted
+   * to target
+   */
   public static double getConversionFactor(Unit sourceUnit, Unit targetUnit){
     double conversionFactor = Converter.convert(1, sourceUnit, targetUnit);
     return conversionFactor;
   }
+
+  // endregion
+  //============================================================================
+  // region CD Lang Extension
+  //============================================================================
+
+  /**
+   * Gets the c++ import statement for a given port type if available.
+   *
+   * @param typeSymbol type symbol that may be replaced in CDE file
+   * @param config     config containing a cdlangextension, that is used to search for import statements.
+   * @return c++ import statement of the port type if specified in the cde model. Otherwise empty.
+   */
+  public static Optional<ASTCDEImportStatement> getCDEReplacement(TypeSymbol typeSymbol,
+    ConfigParams config) {
+    ICDLangExtensionScope scope = config.getCdLangExtensionScope();
+
+    if (scope != null && typeSymbol instanceof OOTypeSymbol) {
+      Optional<CDEImportStatementSymbol> cdeImportStatementSymbol = scope
+        .resolveASTCDEImportStatement("Cpp", (OOTypeSymbol) typeSymbol);
+      if (cdeImportStatementSymbol.isPresent() && cdeImportStatementSymbol.get()
+        .isPresentAstNode()) {
+        return Optional.of(cdeImportStatementSymbol.get().getAstNode());
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Gets the c++ import statement for a given port type if available.
+   *
+   * @param portSymbol port using a class diagram type.
+   * @param config     config containing a cdlangextension, that is used to search for import statements.
+   * @return c++ import statement of the port type if specified in the cde model. Otherwise empty.
+   */
+  public static Optional<ASTCDEImportStatement> getCDEReplacement(PortSymbol portSymbol,
+    ConfigParams config) {
+    if (!portUsesCdType(portSymbol)) {
+      return Optional.empty();
+    }
+    TypeSymbol typeSymbol = portSymbol.getTypeInfo();
+    return getCDEReplacement(typeSymbol, config);
+  }
+
+
 }

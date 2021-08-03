@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # MontiThings -> C++ Generator
 
 This subproject contains the code generator that takes MontiThings models and 

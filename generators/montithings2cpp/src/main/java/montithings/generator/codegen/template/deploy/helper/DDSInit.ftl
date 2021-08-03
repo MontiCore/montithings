@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#include "/template/Preamble.ftl">
 
 <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   <#if config.getSplittingMode().toString() == "DISTRIBUTED">
@@ -39,8 +39,8 @@ ${tc.signature("comp", "config")}
   json config = ddsClient.getParameterConfig();
 
   <#list comp.getParameters() as variable>
-    <#assign typeName = ComponentHelper.printCPPTypeName(variable.getType())>
-    ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config[instanceNameArg.getValue()]["${variable.getName()}"]);
+    <#assign typeName = TypesPrinter.printCPPTypeName(variable.getType())>
+    ${typeName} ${variable.getName()} = jsonToData${"<"}${typeName}${">"}(config["${variable.getName()}"]);
   </#list>
   <#list ComponentHelper.getSIUnitPortNames(comp) as portName>
     double ${portName}ConversionFactor = jsonToData${"<"}double${">"}(config["${portName}ConversionFactor"]);

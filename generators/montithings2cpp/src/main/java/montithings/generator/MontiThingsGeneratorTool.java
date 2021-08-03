@@ -74,6 +74,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected MTGenerator mtg;
 
+  protected boolean stopAfterCoCoCheck = false;
+
   public void generate(File modelPath, File target, File hwcPath, File testPath,
     ConfigParams config) {
 
@@ -199,6 +201,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     checkBindings(models.getBindings(), config, bindingsTool, binTab);
     checkMTConfig(models.getMTConfig(), config, mtConfigTool, mtConfigGlobalScope);
 
+    if (stopAfterCoCoCheck) {
+      return;
+    }
+
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
     /* ============================================================ */
@@ -220,7 +226,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     // may only be included in other components and thus do not need an own
     // executable).
     ComponentTypeSymbol mainCompSymbol = modelToSymbol(config.getMainComponent(), symTab);
-    List<Pair<ComponentTypeSymbol, String>> instances = ComponentHelper.getExecutableInstances(mainCompSymbol, config);
+    List<Pair<ComponentTypeSymbol, String>> instances = ComponentHelper
+      .getExecutableInstances(mainCompSymbol, config);
     HashSet<ComponentTypeSymbol> executableComponents = new HashSet<>();
     for(Pair<ComponentTypeSymbol, String> instance : instances) {
       executableComponents.add(instance.getKey());
@@ -625,5 +632,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected ComponentTypeSymbol modelToSymbol(String model, IMontiThingsScope symTab) {
     String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
     return symTab.resolveComponentType(qualifiedModelName).get();
+  }
+
+  public boolean isStopAfterCoCoCheck() {
+    return stopAfterCoCoCheck;
+  }
+
+  public void setStopAfterCoCoCheck(boolean stopAfterCoCoCheck) {
+    this.stopAfterCoCoCheck = stopAfterCoCoCheck;
   }
 }

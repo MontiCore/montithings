@@ -35,13 +35,14 @@ import java.util.stream.Collectors;
  * Transformer for delaying computation times according to the recorded data.
  * <p>
  * This is done as follows:
- * The original component is moved into a new wrapping component where an additional DELAY subcomponent is interposed
- * after the ports. When a message is received, a timestamp is calculated by the DELAY component.
+ * The original component is moved into a new wrapping component where an
+ * additional DELAY subcomponent is interposed after the ports. When a message
+ * is received, a timestamp is calculated by the DELAY component.
  * The DELAY component is aware of how long the computation should take
  * and adds delay in case that the computation is completed too fast.
  * <p>
- * This transformation moves the original component into a wrapping one, creates the new subcomponent and
- * rewires all connections.
+ * This transformation moves the original component into a wrapping one, creates
+ * the new subcomponent and rewires all connections.
  */
 
 public class DelayedComputationTrafo extends BasicTransformations implements MontiThingsTrafo {
@@ -296,7 +297,9 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
       ASTNameExpression indexMsgNameExpression = MontiThingsMill.nameExpressionBuilder()
         .setName("index_msg").build();
       ASTTypeCastExpression typeCast = MontiThingsMill.typeCastExpressionBuilder()
-        .setMCType(MontiThingsMill.mCPrimitiveTypeBuilder().setPrimitive(ASTConstantsMCBasicTypes.INT).build())
+        .setMCType(
+          MontiThingsMill.mCPrimitiveTypeBuilder().setPrimitive(ASTConstantsMCBasicTypes.INT)
+            .build())
         .setExpression(indexMsgNameExpression)
         .build();
       storeNsInMapArgs.addExpression(typeCast);
@@ -388,7 +391,8 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
       .setName("index_msg_from_comp").build();
     ASTArgumentsBuilder getNsFromMapArgs = MontiThingsMill.argumentsBuilder();
     ASTTypeCastExpression typeCast = MontiThingsMill.typeCastExpressionBuilder()
-      .setMCType(MontiThingsMill.mCPrimitiveTypeBuilder().setPrimitive(ASTConstantsMCBasicTypes.INT).build())
+      .setMCType(
+        MontiThingsMill.mCPrimitiveTypeBuilder().setPrimitive(ASTConstantsMCBasicTypes.INT).build())
       .setExpression(indexMsgFromCompNameExpression)
       .build();
     getNsFromMapArgs.addExpression(typeCast);

@@ -3,7 +3,7 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#include "/template/input/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
-tl::optional<${ComponentHelper.getRealPortCppTypeString(comp, port, config)}> ${className}${Utils.printFormalTypeParameters(comp, false)}::agoGet${port.getName()?cap_first}(const std::chrono::nanoseconds ago_time)
+tl::optional<${TypesPrinter.getRealPortCppTypeString(comp, port, config)}> ${className}${Utils.printFormalTypeParameters(comp, false)}::agoGet${port.getName()?cap_first}(const std::chrono::nanoseconds ago_time)
 {
 if(dequeOf__${port.getName()?cap_first}.empty()){
 return tl::nullopt;

@@ -13,11 +13,12 @@ ${tc.includeArgs("template.interface.hooks.Include", [comp])}
 #include ${"<stdexcept>"}
 #include "easyloggingpp/easylogging++.h"
 ${Utils.printIncludes(comp,config)}
-#include "MTLibrary.h"
+#include "mtlibrary/MTLibrary.h"
+
 using namespace montithings::library;
 
 <#if config.getReplayMode().toString() == "ON">
-  #include "dds/replayer/MTReplayLibrary.h"
+  #include "record-and-replay/mtlibrary-extension/MTReplayLibrary.h"
 
   using namespace montithings::library::replayer;
 
@@ -26,7 +27,7 @@ using namespace montithings::library;
 </#if>
 
 // provides nd() method which can be used to wrap non-deterministic calls
-#include "dds/recorder/HWCInterceptor.h"
+#include "record-and-replay/recorder/HWCInterceptor.h"
 using namespace montithings::library::hwcinterceptor;
 
 ${Utils.printNamespaceStart(comp)}
@@ -46,9 +47,9 @@ ${compname}State${generics}& ${Identifier.getStateName()};
 ${compname}Interface${generics}& ${Identifier.getInterfaceName()};
 
 <#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
   <#assign name = port.getName()>
-  InOutPort<${type}>* port${name?cap_first};
+  InOutPort<Message<${type}>>* port${name?cap_first};
 </#list>
 
 public:
@@ -57,9 +58,9 @@ ${className}(std::string instanceName, ${compname}${generics}& component, ${comp
 
 void setInstanceName (const std::string &instanceName);
 <#list comp.getOutgoingPorts() as port>
-  <#assign type = ComponentHelper.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
   <#assign name = port.getName()>
-  void setPort${name?cap_first} (InOutPort<${type}> *port${name?cap_first});
+  void setPort${name?cap_first} (InOutPort<Message<${type}>> *port${name?cap_first});
 </#list>
 
 <#if ComponentHelper.hasBehavior(comp) || ComponentHelper.hasStatechart(comp)>

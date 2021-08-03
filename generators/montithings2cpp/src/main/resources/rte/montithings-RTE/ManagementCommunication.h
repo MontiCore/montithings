@@ -4,7 +4,7 @@
 #pragma once
 
 #include "UniqueElement.h"
-#include "messages/Message.h"
+#include "messages/PortToSocketMessage.h"
 #include "WSPort.h"
 #include "ManagementMessageProcessor.h"
 #include <iostream>
@@ -44,7 +44,7 @@ class ManagementCommunication : public UniqueElement
   void receiveMessage();
   void registerMessageProcessor(ManagementMessageProcessor* processor);
 
-  void sendManagementMessage(std::string receiverIp, std::string receiverPort, Message* message);
+  void sendManagementMessage(std::string receiverIp, std::string receiverPort, PortToSocketMessage* message);
   void sendManagementMessage(std::string receiverIp, std::string receiverPort, std::string message);
 
   /* ============================================================ */

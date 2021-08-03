@@ -3,11 +3,15 @@ ${tc.signature("port", "comp", "config", "existsHWC")}
 <#include "/template/result/helper/GeneralPreamble.ftl">
 
 <#assign name = port.getName()?cap_first>
-<#assign type = ComponentHelper.getRealPortCppTypeString(comp, port, config)>
-<#assign cdeImportStatementOpt = ComponentHelper.getCDEReplacement(port, config)>
+<#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
+<#assign cdeImportStatementOpt = TypesHelper.getCDEReplacement(port, config)>
 
 tl::optional<${type}> get${name}() const;
+Message<${type}> get${name}Message(sole::uuid id) const;
+Message<${type}> get${name}Message() const;
+
 void set${name}(tl::optional<${type}>);
+
 
 <#if cdeImportStatementOpt.isPresent()>
   <#assign cdType = cdeImportStatementOpt.get().getImportClass().toString()>

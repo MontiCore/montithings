@@ -35,4 +35,6 @@ publishConnectors ();
 }
 }
 
+${tc.includeArgs("template.logtracing.hooks.AddInstanceNameToPortRef", [comp, config, "_"])}
+
 }

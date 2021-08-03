@@ -1,0 +1,39 @@
+{
+  "name": "log-tracer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "PORT=3000 vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bootstrap": "^4.5.0",
+    "bootstrap-vue": "^2.16.0",
+    "core-js": "^3.6.5",
+    "express": "^4.17.1",
+    "jquery": "^3.6.0",
+    "jquery-ui-bundle": "^1.12.1-migrate",
+    "jquery.flowchart": "^1.1.0",
+    "moment": "^2.29.1",
+    "vue": "^2.6.11",
+    "vue-json-pretty": "^1.8.0",
+    "vue-router": "^3.2.0",
+    "vuex": "^3.4.0",
+    "vuex-map-fields": "^1.4.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.4.0",
+    "@vue/cli-plugin-eslint": "~4.4.0",
+    "@vue/cli-plugin-router": "~4.4.0",
+    "@vue/cli-plugin-vuex": "~4.4.0",
+    "@vue/cli-service": "~4.4.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-vue": "^7.9.0",
+    "vue-template-compiler": "^2.6.11"
+  }
+}

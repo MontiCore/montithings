@@ -9,6 +9,9 @@ import de.monticore.ocl.setexpressions._ast.*;
 import de.se_rwth.commons.logging.Log;
 import setdefinitions._ast.ASTSetValueRegEx;
 
+/**
+ * Forbids OCL Expressions that are not supported by the generator
+ */
 public class OCLExpressionsValid implements ExpressionsBasisASTExpressionCoCo {
 
   @Override

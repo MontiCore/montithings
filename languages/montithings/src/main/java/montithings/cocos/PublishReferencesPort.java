@@ -7,6 +7,9 @@ import montithings._ast.ASTPublishPort;
 import montithings._cocos.MontiThingsASTPublishPortCoCo;
 import montithings.util.MontiThingsError;
 
+/**
+ * Publish statement references only ports
+ */
 public class PublishReferencesPort implements MontiThingsASTPublishPortCoCo {
   @Override public void check(ASTPublishPort node) {
     Preconditions.checkArgument(node != null);

@@ -12,19 +12,18 @@ import java.util.Set;
 import static mtconfig.util.ASTMTConfigUnitUtil.findComponentNamesInConfigUnit;
 
 /**
- * TODO
- *
- * @since 09.12.20
+ * Checks that the file name matches the name of the component being configured
+ * in this file
  */
 public class FileNameMatchesReferencedComponent {
 
   public boolean check(@NotNull String relativeFilePath, @NotNull ASTMTConfigUnit ast) {
     String fileRoot = Files.getNameWithoutExtension(relativeFilePath);
     Set<String> referencedComponents = findComponentNamesInConfigUnit(ast);
+
     for (String component : referencedComponents) {
       if (!fileRoot.equals(component)) {
-        Log.error(String.format(MTConfigError.FILENAME_MATCHES_CONFIG.toString(),
-          component));
+        Log.error(String.format(MTConfigError.FILENAME_MATCHES_CONFIG.toString(), component));
         return false;
       }
     }

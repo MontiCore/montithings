@@ -10,9 +10,7 @@ import org.codehaus.commons.nullanalysis.NotNull;
 import java.util.ArrayList;
 
 /**
- * TODO
- *
- * @since 09.12.20
+ * Checks that file path matches package name
  */
 public class PackageNameMatchesPath {
   public boolean check(@NotNull String relativeFilePath, @NotNull ASTMTConfigUnit ast) {
