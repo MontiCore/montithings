@@ -4,7 +4,7 @@ import time
 
 
 # Set up MontiThings port connection
-mtc = MTC("example-sensor-topic", None)
+mtc = MTC("source-sensor-topic", None)
 
 while True:
     # Send a message to MontiThings (sensor port)

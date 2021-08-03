@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("port", "isSensor", "config", "existsHWC")}
+${tc.signature("port", "isSensor", "config")}
 
 #include<iostream>
 #include "${port}.h"

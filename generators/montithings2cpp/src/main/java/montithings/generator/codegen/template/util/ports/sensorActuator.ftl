@@ -1,4 +1,4 @@
-${tc.signature("port", "isSensor", "topic", "type", "config", "existsHWC")}
+${tc.signature("port", "isSensor", "config")}
 
 #include "${port}Port.h"
 #include "${port}Interface.h"
@@ -39,7 +39,7 @@ void start() override;
 void run();
 void onEvent() override;
 void threadJoin();
-void setResult(tl::optional<${type}> result);
+void setResult(tl::optional<${defineHookPoint("<CppBlock>?portTemplate:type")}> result);
 bool shouldCompute();
 };
 
@@ -57,9 +57,9 @@ void ${port}::initialize(){
 
 interface.getPortIn ()->attach (this);
 <#if isSensor>
-    interface.addInPortIn(new ${port}Port<${type}>(instanceName));
+    interface.addInPortIn(new ${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}>(instanceName));
 <#else>
-    interface.addOutPortOut(new ${port}Port<${type}>(instanceName));
+    interface.addOutPortOut(new ${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}>(instanceName));
 </#if>
 
 LOG(DEBUG) << "Initialized Mqtt Ports";
@@ -69,15 +69,15 @@ void ${port}::setUp(TimeMode enclosingComponentTiming){
 
 <#if isSensor>
 // outgoing port out
-MqttPort<${type}> *out = new MqttPort<${type}>("${port}/out");
+MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}> *out = new MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}>("${port}/out");
 this->interface.addOutPortOut (out);
-out->setSensorActuatorName ("${topic}", false);
+out->setSensorActuatorName (${defineHookPoint("<CppBlock>?portTemplate:topic")}, false);
 <#else>
 // port in incoming
-MqttPort<${type}> *in = new MqttPort<${type}>("${port}/in");
+MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}> *in = new MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}>("${port}/in");
 interface.getPortIn ()->attach (this);
 this->interface.addInPortIn (in);
-in->setSensorActuatorName ("${topic}", true);
+in->setSensorActuatorName (${defineHookPoint("<CppBlock>?portTemplate:topic")}, true);
 </#if>
 
 
@@ -135,7 +135,7 @@ void ${port}::threadJoin (){
         threads[i].join ();
     }
 }
-void ${port}::setResult(tl::optional<${type}> result){
+void ${port}::setResult(tl::optional<${defineHookPoint("<CppBlock>?portTemplate:type")}> result){
     this->interface.getPortOut()->setNextValue(result);
 }
 bool ${port}::shouldCompute() {

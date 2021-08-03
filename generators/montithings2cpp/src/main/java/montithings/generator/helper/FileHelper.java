@@ -202,12 +202,7 @@ public class FileHelper {
 
   public static Set<File> getPortImplementation(File hwcPath, String fqComponentName) {
     Set<File> result = new HashSet<>();
-    Set<String> fileEndings = new HashSet<>();
-    fileEndings.add("Include.ftl");
-    fileEndings.add("Body.ftl");
-    fileEndings.add("Provide.ftl");
-    fileEndings.add("Consume.ftl");
-    fileEndings.add("Init.ftl");
+    Set<String> fileEndings = getFileEndings();
 
     for (String ending : fileEndings) {
       File hwcFile = Paths.get(hwcPath.toString() + File.separator
@@ -223,12 +218,7 @@ public class FileHelper {
 
   public static Set<String> getSensorActuatorPorts(File hwcPath) {
     Set<String> result = new HashSet<>();
-    Set<String> fileEndings = new HashSet<>();
-    fileEndings.add("Include.ftl");
-    fileEndings.add("Body.ftl");
-    fileEndings.add("Provide.ftl");
-    fileEndings.add("Consume.ftl");
-    fileEndings.add("Init.ftl");
+    Set<String> fileEndings = getFileEndings();
 
     if (hwcPath.isDirectory()) {
       for (String ending : fileEndings) {
@@ -244,6 +234,18 @@ public class FileHelper {
       }
     }
     return result;
+  }
+
+  private static Set<String> getFileEndings() {
+    Set<String> fileEndings = new HashSet<>();
+    fileEndings.add("Include.ftl");
+    fileEndings.add("Body.ftl");
+    fileEndings.add("Provide.ftl");
+    fileEndings.add("Consume.ftl");
+    fileEndings.add("Init.ftl");
+    fileEndings.add("Topic.ftl");
+    fileEndings.add("Type.ftl");
+    return fileEndings;
   }
 
   /**

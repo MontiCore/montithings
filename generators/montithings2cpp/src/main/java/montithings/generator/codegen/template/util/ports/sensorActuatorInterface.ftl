@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("port", "type", "config", "existsHWC")}
+${tc.signature("port", "config")}
+<#assign type = defineHookPoint("<CppBlock>?portTemplate:type")>
 
 #pragma once
 #include "InOutPort.h"
@@ -29,18 +30,18 @@ double getPortOutConversionFactor();
 };
 
 
-${tc.includeArgs("template.util.ports.methods.GetPort", [port, config, "in", type, existsHWC])}
-${tc.includeArgs("template.util.ports.methods.GetPort", [port, config, "out", type, existsHWC])}
+${tc.includeArgs("template.util.ports.methods.GetPort", [port, config, "in", type])}
+${tc.includeArgs("template.util.ports.methods.GetPort", [port, config, "out", type])}
 
-${tc.includeArgs("template.util.ports.methods.AddInPort", [port, config, "in", type, existsHWC])}
-${tc.includeArgs("template.util.ports.methods.RemoveInPort", [port, config, "in", type, existsHWC])}
+${tc.includeArgs("template.util.ports.methods.AddInPort", [port, config, "in", type])}
+${tc.includeArgs("template.util.ports.methods.RemoveInPort", [port, config, "in", type])}
 
-${tc.includeArgs("template.util.ports.methods.AddOutPort", [port, config, "out", type, existsHWC])}
-${tc.includeArgs("template.util.ports.methods.RemoveOutPort", [port, config, "out", type, existsHWC])}
+${tc.includeArgs("template.util.ports.methods.AddOutPort", [port, config, "out", type])}
+${tc.includeArgs("template.util.ports.methods.RemoveOutPort", [port, config, "out", type])}
 
-${tc.includeArgs("template.util.ports.methods.GetPortConversionFactor", [port, config, "in", type, existsHWC])}
-${tc.includeArgs("template.util.ports.methods.GetPortConversionFactor", [port, config, "out", type, existsHWC])}
+${tc.includeArgs("template.util.ports.methods.GetPortConversionFactor", [port, config, "in", type])}
+${tc.includeArgs("template.util.ports.methods.GetPortConversionFactor", [port, config, "out", type])}
 
-${tc.includeArgs("template.util.ports.methods.SetPortConversionFactor", [port, config, "in", type, existsHWC])}
-${tc.includeArgs("template.util.ports.methods.SetPortConversionFactor", [port, config, "out", type, existsHWC])}
+${tc.includeArgs("template.util.ports.methods.SetPortConversionFactor", [port, config, "in", type])}
+${tc.includeArgs("template.util.ports.methods.SetPortConversionFactor", [port, config, "out", type])}
 
