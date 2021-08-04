@@ -42,7 +42,7 @@ you'll most likely want the native installation - it will save you time in the l
 
 ### Prerequisites 
 - Git (for checking out the project)
-- Maven (for building the project); Gradle is still under development, use Maven!
+- Maven (for building the project); Alternatively, you can also use Gradle.
 - Java 8 or 11 or 14 (other versions are not checked by the CI pipeline)
 - [NNG (for networking)][nng] (Please use [version 1.3.0][nng-1.3])
 - GCC and CMake (For compiling the generated C++ code)
