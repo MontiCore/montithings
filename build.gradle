@@ -36,6 +36,7 @@ subprojects {
   }
 
   sourceCompatibility = '1.8'
+  compileJava.options.encoding = 'UTF-8'
 
   tasks.withType(JavaCompile) {
     sourceCompatibility = JavaVersion.VERSION_1_8
