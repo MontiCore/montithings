@@ -2,12 +2,9 @@ target
 .project
 .settings
 .classpath
-/applications/bumperbot/.gitignore
 
 \.idea/
 \.vscode/
-
-/generators/maa2java/generated-test-sources/
 
 *.iml
 .DS_Store
@@ -18,3 +15,11 @@ gradlew
 gradlew.bat
 gradle-wrapper.jar
 gradle-wrapper.properties
+
+/.terraform.lock.hcl
+/.terraform.tfstate.lock.info
+/terraform.tfstate
+.terraform/
+terraform.tfstate.backup
+terraform_azure.tfplan
+

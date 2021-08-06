@@ -20,7 +20,7 @@ resource "azurerm_resource_group" "montithingsgroup" {
     location = "westeurope"
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -52,7 +52,7 @@ resource "azurerm_public_ip" "montithingspublicip" {
     allocation_method            = "Dynamic"
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -75,7 +75,7 @@ resource "azurerm_network_security_group" "montithingsnsg" {
     }
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -93,7 +93,7 @@ resource "azurerm_network_interface" "montithingsnic" {
     }
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -122,7 +122,7 @@ resource "azurerm_storage_account" "mystorageaccount" {
     account_replication_type    = "LRS"
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
