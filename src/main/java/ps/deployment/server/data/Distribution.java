@@ -17,6 +17,9 @@ public class Distribution {
     this.distributionMap.putAll(distribution);
   }
   
+  /**
+   * @return A map that assigns several executables (values) to each client (keys).
+   * */
   public Map<String, String[]> getDistributionMap() {
     return this.distributionMap;
   }
