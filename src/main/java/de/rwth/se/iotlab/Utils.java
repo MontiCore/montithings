@@ -22,7 +22,7 @@ public class Utils {
         Arrays.fill(binaryMax, "1");
         int binaryMaxInt = Integer.parseInt(String.join("", binaryMax), 2);
 
-        for (int i = binaryMaxInt; i > 0; i--) {
+        for (int i = binaryMaxInt; i >= 0; i--) {
             List<String> combination = new ArrayList<>();
             char[] binaryArray = new char[binaryMax.length];
             Arrays.fill(binaryArray, '0');
