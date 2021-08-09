@@ -139,6 +139,13 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
     this.getPrinter().print("  ");
     this.getPrinter().print("assert ");
     node.getExpression().accept(this.getTraverser());
+
+  @Override
+  public void handle(@NotNull ASTSD4CDelay node) {
+    this.getPrinter().print("  ");
+    this.getPrinter().print("delay");
+    this.getPrinter().print(" ");
+    node.getSIUnitLiteral().accept(this.getTraverser());
     this.getPrinter().print(";\n");
   }
 }

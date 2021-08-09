@@ -15,6 +15,8 @@ public class SD4ComponentTestingCoCos {
     checker.addCoCo(new NameExpressionsAreResolvable());
     checker.addCoCo(new OCLExpressionsValid());
     checker.addCoCo(new FieldAccessExpressionsAreResolvable());
+    checker.addCoCo(new SD4CDelayGTZero());
+    checker.addCoCo(new SD4CDelayValidUnit());
     return checker;
   }
 }

@@ -1,7 +1,8 @@
 package de.monticore.lang;
 
 grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
-                                    MontiArc  {
+                                    MontiArc,
+                                    de.monticore.SIUnitLiterals  {
     start SD4Artifact;
 
     SD4Artifact =
@@ -23,4 +24,7 @@ grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
 
     SD4CExpression implements SD4CElement =
       key("assert") Expression ";";
+
+    SD4CDelay implements SD4CElement =
+      key("delay") SIUnitLiteral ";";
 }

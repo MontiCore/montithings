@@ -20,6 +20,10 @@ import de.monticore.ocl.setexpressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.prettyprint.SCBasisPrettyPrinter;
 import de.monticore.prettyprint.SCTransitions4CodePrettyPrinter;
+import de.monticore.scbasis._ast.ASTSCTransition;
+import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
+import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
+import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
@@ -92,6 +96,10 @@ public class SD4ComponentTestingFullPrettyPrinter {
 
     SD4ComponentTestingPrettyPrinter sd4ComponentTestingPrettyPrinter = new SD4ComponentTestingPrettyPrinter(printer);
     traverser.setSD4ComponentTestingHandler(sd4ComponentTestingPrettyPrinter);
+
+    SIUnitsPrettyPrinter siUnitsPrettyPrinter = new SIUnitsPrettyPrinter(printer);
+    traverser.setSIUnitsHandler(siUnitsPrettyPrinter);
+    traverser.add4SIUnits(siUnitsPrettyPrinter);
 
   }
 

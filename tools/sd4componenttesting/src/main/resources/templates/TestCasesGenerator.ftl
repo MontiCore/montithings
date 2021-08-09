@@ -7,6 +7,9 @@
 
 ${tc.signature("prettyPrinter", "cppPrettyPrinter")}
 
+<#assign ComponentHelper = tc.instantiate("de.monticore.lang.sd4componenttesting.util.ComponentHelper")>
+<#assign PrettyPrinter = tc.instantiate("de.monticore.lang.sd4componenttesting._visitor.SD4ComponentTestingFullPrettyPrinter")>
+
 <#assign mainComp = ast.getEnclosingScope().getMainComponentTypeSymbol()>
 <#assign mainCompName = mainComp.getName()>
 <#assign package = "montithings">
@@ -31,27 +34,25 @@ INITIALIZE_EASYLOGGINGPP
 struct ${mainComp.getName()}Test : testing::Test
 {
   ${package}${mainComp.getName()} *cmp${mainCompName};
-
 <#list mainComp.getSubComponents() as component>
+
   ${package}${component.getType().getName()} *${component.getName()}Cmp;
   ${package}${component.getType().getName()}Impl *${component.getName()}Impl;
   ${package}${component.getType().getName()}State *${component.getName()}State;
-
 </#list>
 
-  ${ast.getTestDiagram().getName()} ()
+  ${mainComp.getName()}Test ()
   {
     cmp${mainCompName} = new ${package}${mainComp.getName()} ("${mainComp.getFullName()}");
-
 <#list mainComp.getSubComponents() as component>
+
     ${component.getName()}Cmp = cmp${mainCompName}->getSubcomp__${component.getName()?cap_first}();
     ${component.getName()}Impl = ${component.getName()}Cmp->getImpl();
     ${component.getName()}State = ${component.getName()}Cmp->getState();
-
 </#list>
   }
 
-  ~${ast.getTestDiagram().getName()} ()
+  ~${mainComp.getName()}Test ()
   {
     delete cmp${mainCompName};
   }
@@ -191,6 +192,9 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   // test Expression
   LOG(INFO) << "check expression ${prettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";
   ASSERT_TRUE(${cppPrettyPrinter.prettyprint(sD4CElement)});
+
+  <#elseif sD4CElement.getType() == "DELAY">
+  std::this_thread::sleep_for(std::chrono::${ComponentHelper.printTime(sD4CElement.getSIUnitLiteral())});
 
   </#if>
 </#list>
