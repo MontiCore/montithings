@@ -1,9 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
+<#import "/templates/Struct.ftl" as struct>
+<#import "/templates/Initialization.ftl" as initialization>
+<#import "/templates/PortSpyTemplate.ftl" as portSpyTemplate>
 <#import "/templates/PortSpy.ftl" as portSpy>
-#include "easyloggingpp/easylogging++.h"
-#include "gtest/gtest.h"
-#include <chrono>
-#include <thread>
 
 ${tc.signature("prettyPrinter", "cppPrettyPrinter")}
 
@@ -18,75 +17,20 @@ ${tc.signature("prettyPrinter", "cppPrettyPrinter")}
 </#list>
 <#assign package = package + "::" >
 
-#include "${mainComp.getName()}.h"
-
-<#assign typeList = {}>
-<#list mainComp.getSubComponents() as component>
-  <#assign compTypeName = component.getType().getName()>
-    <#if !typeList[compTypeName]?? >
-#include "${compTypeName}.h"
-      <#assign typeList = typeList + {compTypeName : 0}>
-    </#if>
-</#list>
-
-INITIALIZE_EASYLOGGINGPP
-
-struct ${mainComp.getName()}Test : testing::Test
-{
-  ${package}${mainComp.getName()} *cmp${mainCompName};
-<#list mainComp.getSubComponents() as component>
-
-  ${package}${component.getType().getName()} *${component.getName()}Cmp;
-  ${package}${component.getType().getName()}Impl *${component.getName()}Impl;
-  ${package}${component.getType().getName()}State *${component.getName()}State;
-</#list>
-
-  ${mainComp.getName()}Test ()
-  {
-    cmp${mainCompName} = new ${package}${mainComp.getName()} ("${mainComp.getFullName()}");
-<#list mainComp.getSubComponents() as component>
-
-    ${component.getName()}Cmp = cmp${mainCompName}->getSubcomp__${component.getName()?cap_first}();
-    ${component.getName()}Impl = ${component.getName()}Cmp->getImpl();
-    ${component.getName()}State = ${component.getName()}Cmp->getState();
-</#list>
-  }
-
-  ~${mainComp.getName()}Test ()
-  {
-    delete cmp${mainCompName};
-  }
-};
+<@initialization.printInitialization mainComp/>
 
 
-/**
- * This (abstract) class records all messages going through port.
- * The recorded messages can then be checked by the test case against the expected values.
- *
- * \tparam ComponentType class of the component this spy is attached to
- * \tparam PortType typename of the messages going through the port
- */
-template <typename ComponentType, typename PortType> class PortSpy : public EventObserver
-{
-protected:
-  ComponentType *component;
-  std::vector<tl::optional<Message<PortType>>> recordedMessages;
+<@struct.printStruct mainComp mainCompName package/>
 
-public:
-  explicit PortSpy (ComponentType *component) : component (component) {}
 
-  const std::vector<tl::optional<Message<PortType>>> &
-  getRecordedMessages () const
-  {
-    return recordedMessages;
-  }
-};
+<@portSpyTemplate.printPortSpyTemplate />
 
 
 <#list mainComp.getPorts() as port>
   <#assign compTypeName = mainComp.getName()>
   <#assign portName = port.getName()>
-  <@portSpy.printPortSpy compTypeName=compTypeName portName=portName package=package port=port/>
+<@portSpy.printPortSpy compTypeName=compTypeName portName=portName package=package port=port/>
+
 </#list>
 
 
@@ -95,15 +39,13 @@ public:
     <#assign compTypeName = component.getType().getName()>
     <#assign compName = component.getName()>
     <#assign portName = port.getName()>
-    <@portSpy.printPortSpy compTypeName=compTypeName portName=portName package=package port=port compName=compName isComponent=true/>
+<@portSpy.printPortSpy compTypeName=compTypeName portName=portName package=package port=port compName=compName isComponent=true/>
 
   </#list>
-
 
 </#list>
 
 
-// Check that is correctly connected to Sink (i.e. Sink receives Source's messages)
 TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
 {
   // Given
