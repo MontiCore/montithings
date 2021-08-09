@@ -133,7 +133,7 @@ TEST_F (${mainComp.getName()}Test, ${ast.getTestDiagram().getName()})
   <#elseif sD4CElement.getType() == "EXPRESSION">
   // test Expression
   LOG(INFO) << "check expression ${prettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";
-  ASSERT_TRUE(${cppPrettyPrinter.prettyprint(sD4CElement)});
+  ASSERT_TRUE(${cppPrettyPrinter.prettyprint(sD4CElement.getExpression())});
 
   <#elseif sD4CElement.getType() == "DELAY">
   std::this_thread::sleep_for(std::chrono::${ComponentHelper.printTime(sD4CElement.getSIUnitLiteral())});
