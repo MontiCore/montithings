@@ -1,11 +1,15 @@
 package ps.deployment.server.api;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map.Entry;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -14,9 +18,11 @@ import ps.deployment.server.DeploymentManager;
 import ps.deployment.server.data.DeployClient;
 import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.DeploymentInfo;
+import ps.deployment.server.data.Distribution;
 import ps.deployment.server.data.NetworkInfo;
 import ps.deployment.server.distribution.config.DeployConfigBuilder;
 import ps.deployment.server.distribution.listener.IDeployStatusListener;
+import ps.deployment.server.dto.DeploymentAssignmentDTO;
 import ps.deployment.server.exception.DeploymentException;
 
 /**
@@ -32,6 +38,7 @@ public class MqttAPIController implements IDeployStatusListener {
   private static final String TOPIC_SETINFO_RESPONSE = MQTT_PREFIX + "/setInfo/response";
   private static final String TOPIC_UPDATEDEPLOYMENT_REQUEST = MQTT_PREFIX + "/updateDeployment/request";
   private static final String TOPIC_UPDATEDEPLOYMENT_RESPONSE = MQTT_PREFIX + "/updateDeployment/response";
+  private static final String TOPIC_UPDATEDDEPLOYMENT = MQTT_PREFIX + "/updatedDeployment";
   private static final String TOPIC_UPDATE_DEVICES = MQTT_PREFIX + "/updateDevice";
   private static final String TOPIC_UPDATE_STATE = MQTT_PREFIX + "/updateState";
   
@@ -143,6 +150,24 @@ public class MqttAPIController implements IDeployStatusListener {
   @Override
   public void onClientOffline(DeployClient client) {
     this.sendDeviceUpdate(client);
+  }
+
+  @Override
+  public void onDeploymentUpdated(Distribution dist) {
+    // Send array of deployment assignments representing the new distribution.
+    JsonArray jarr = new JsonArray();
+    Gson gson = new Gson();
+    for(Entry<String,String[]> e : dist.getDistributionMap().entrySet()) {
+      jarr.add(gson.toJsonTree(new DeploymentAssignmentDTO(e.getKey(), e.getValue())));
+    }
+    try {
+      MqttMessage msg = new MqttMessage(jarr.toString().getBytes(StandardCharsets.UTF_8));
+      msg.setRetained(true);
+      this.mqtt.publish(TOPIC_UPDATEDDEPLOYMENT, msg);
+    }
+    catch (MqttException e) {
+      e.printStackTrace();
+    }
   }
   
 }

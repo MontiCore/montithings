@@ -76,6 +76,7 @@ public class DeploymentManager implements IDeployStatusListener {
       for(DeployClient client : targetProvider.getClients()) {
         dmap.put(client.getClientID(), new String[0]);
       }
+      this.onDeploymentUpdated(new Distribution(dmap));
       targetProvider.deploy(new Distribution(dmap), new DeploymentInfo(), network);
       this.currentDeploymentConfig = null;
       this.currentDeploymentInfo = null;
@@ -102,6 +103,7 @@ public class DeploymentManager implements IDeployStatusListener {
       
       // Perform deployment.
       if (this.currentDistribution != null) {
+        this.onDeploymentUpdated(currentDistribution);
         this.deploy(this.currentDistribution, this.currentDeploymentInfo);
       }
       else {
@@ -270,6 +272,11 @@ public class DeploymentManager implements IDeployStatusListener {
     catch (DeploymentException e) {
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public void onDeploymentUpdated(Distribution distribution) {
+    this.listener.onDeploymentUpdated(distribution);
   }
   
 }
