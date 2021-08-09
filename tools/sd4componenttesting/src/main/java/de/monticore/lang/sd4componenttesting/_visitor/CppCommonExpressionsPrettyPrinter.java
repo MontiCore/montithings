@@ -7,7 +7,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.lang.sd4componenttesting._symboltable.ISD4ComponentTestingArtifactScope;
 import de.monticore.prettyprint.IndentPrinter;
 
-public class CppCommonExpressionsPrettyPrinter extends montithings.generator.visitor.CppCommonExpressionsPrettyPrinter {
+public class CppCommonExpressionsPrettyPrinter extends montithings.generator.prettyprinter.CppCommonExpressionsPrettyPrinter {
 
   public CppCommonExpressionsPrettyPrinter(IndentPrinter printer) {
     super(printer);

@@ -3,7 +3,7 @@ package de.monticore.lang.sd4componenttesting._visitor;
 import de.monticore.expressions.assignmentexpressions._ast.*;
 import de.monticore.prettyprint.IndentPrinter;
 
-public class CppAssignmentPrettyPrinter extends montithings.generator.visitor.CppAssignmentPrettyPrinter {
+public class CppAssignmentPrettyPrinter extends montithings.generator.prettyprinter.CppAssignmentPrettyPrinter {
   public CppAssignmentPrettyPrinter(IndentPrinter printer, boolean isLogTracingEnabled, boolean suppressPostconditionCheck) {
     super(printer, isLogTracingEnabled, suppressPostconditionCheck);
   }

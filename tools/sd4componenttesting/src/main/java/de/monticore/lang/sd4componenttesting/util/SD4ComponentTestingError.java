@@ -43,7 +43,7 @@ public enum SD4ComponentTestingError implements Error {
 
   ASSIGNMENT_EXPRESSIONS("0xSD4CPT1839", "SD4Component testing currently not supporting assignment expressions"),
 
-  IDENTIFIER_UNKNOWN("0xSD4CPT1510", "The identifier '%s' cannot be resolved.");
+  IDENTIFIER_UNKNOWN("0xSD4CPT1510", "The identifier '%s' cannot be resolved."),
   
   DELAY_GREATER_THAN_ZERO("0xSD4CPT1140", "Delay '%s' must be greater than zero."),
   DELAY_UNIT_UNKNOWN("0xSD4CPT1150", "The unit '%s' is unknown.");
