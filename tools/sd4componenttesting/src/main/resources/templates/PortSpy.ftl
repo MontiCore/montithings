@@ -11,14 +11,14 @@
  */
 class PortSpy_${displayClass}_${portName?cap_first} : public PortSpy<${package}${compTypeName}, ${port.getType().getTypeInfo().getName()}>
 {
-public:
-  using PortSpy::PortSpy;
+  public:
+    using PortSpy::PortSpy;
 
-  void onEvent () override
-  {
-    tl::optional<Message<${port.getType().getTypeInfo().getName()}>> value
-        = component->getInterface()->getPort${portName?cap_first}()->getCurrentValue(this->getUuid ());
-    recordedMessages.push_back (value);
-  }
+    void onEvent () override
+    {
+      tl::optional<Message<${port.getType().getTypeInfo().getName()}>> value
+          = component->getInterface()->getPort${portName?cap_first}()->getCurrentValue(this->getUuid ());
+      recordedMessages.push_back (value);
+    }
 };
 </#macro>

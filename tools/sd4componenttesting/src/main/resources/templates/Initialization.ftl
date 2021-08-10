@@ -1,4 +1,5 @@
 <#macro printInitialization mainComp>
+// initialization
 #include "easyloggingpp/easylogging++.h"
 #include "gtest/gtest.h"
 #include <chrono>
