@@ -5,7 +5,7 @@ import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 
 public class ComponentHelper {
-    public static String printTime(ASTSIUnitLiteral lit) {
+    public String printTime(ASTSIUnitLiteral lit) {
         String time = "milliseconds";
         if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")) {
             time = "nanoseconds";

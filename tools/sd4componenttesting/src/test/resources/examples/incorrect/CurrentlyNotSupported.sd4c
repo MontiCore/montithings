@@ -1,0 +1,10 @@
+package examples.incorrect;
+
+testdiagram MainTest for Main {
+  -> value : 14;
+
+  assert i = 13;
+  assert i++;
+  assert ++i;
+  assert value < i;
+}
