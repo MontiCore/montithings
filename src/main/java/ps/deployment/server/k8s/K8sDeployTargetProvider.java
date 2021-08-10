@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -135,9 +137,17 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
         this.listener.onClientOffline(dc);
       }
       
-      // TODO implement hardware info from k8s nodes
-      // TODO remove stub impl:
-      dc.setHardware(new String[] { "sensorTemperature", "actuatorTemperature" });
+      
+      // Load hardware. In k8s, we store it as as labels whose keys are prefixed
+      // with "hardware". The value of the label represents the hardware. 
+      List<String> hardware = new LinkedList<String>();
+      for(Entry<String, String> label : node.getMetadata().getLabels().entrySet()) {
+        if(label.getKey().startsWith("hardware")) {
+          String hw = label.getValue();
+          hardware.add(hw);
+        }
+      }
+      dc.setHardware(hardware.toArray(new String[hardware.size()]));
     }
     
     return dc;
@@ -301,7 +311,9 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
 
   @Override
   public void close() throws DeploymentException {
-    this.informerFactory.stopAllRegisteredInformers();
+    if(this.informerFactory != null) {
+      this.informerFactory.stopAllRegisteredInformers();      
+    }
   }
   
 }

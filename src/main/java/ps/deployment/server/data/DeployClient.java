@@ -1,5 +1,9 @@
 package ps.deployment.server.data;
 
+/**
+ * An instance of {@link DeployClient} is considered a host
+ * device (physical or logical) that one can deploy software to.
+ */
 public class DeployClient {
   
   private String clientID;

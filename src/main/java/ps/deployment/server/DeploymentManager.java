@@ -24,6 +24,10 @@ import ps.deployment.server.distribution.listener.VoidDeployStatusListener;
 import ps.deployment.server.distribution.suggestion.Suggestion;
 import ps.deployment.server.exception.DeploymentException;
 
+/**
+ * Main class for managing the deployment.
+ * Software components are deployed to {@link IDeployTargetProvider}s according to a {@link Distribution}.
+ * */
 public class DeploymentManager implements IDeployStatusListener {
   
   // static configuration

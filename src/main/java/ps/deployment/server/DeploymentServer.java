@@ -7,6 +7,10 @@ import ps.deployment.server.data.NetworkInfo;
 
 public class DeploymentServer {
   
+  /**
+   * Main entry point for deployment server.
+   * Starts a {@link DeploymentManager} with HTTP & MQTT API.
+   * */
   public static void main(String[] args) {
     System.out.println("DeploymentServer is starting...");
     
@@ -26,7 +30,9 @@ public class DeploymentServer {
     MqttAPIController controller = new MqttAPIController(manager);
     controller.start();
     
-    
+    // Shut down deployment after termination request.
+    // Note: IDEs often just kill the process, so this might not be called in
+    // your development environment.
     Runtime.getRuntime().addShutdownHook(new Thread(()->{
       try {
         manager.terminate();

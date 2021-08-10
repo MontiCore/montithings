@@ -23,6 +23,7 @@ import com.google.gson.JsonParser;
 
 import ps.deployment.server.Utils;
 import ps.deployment.server.data.DeployClient;
+import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.data.DeploymentInfo;
 import ps.deployment.server.data.Distribution;
@@ -31,7 +32,7 @@ import ps.deployment.server.distribution.DefaultDistributionCalculator;
 import ps.deployment.server.distribution.IDistributionCalculator;
 import ps.deployment.server.distribution.IPrologGenerator;
 import ps.deployment.server.distribution.RestPrologGenerator;
-import ps.deployment.server.distribution.config.DeployConfigGenerator;
+import ps.deployment.server.distribution.config.DeployConfigBuilder;
 import ps.deployment.server.distribution.config.DockerComposeConfig;
 import ps.deployment.server.distribution.config.DockerComposeService;
 
@@ -103,7 +104,10 @@ public class TestDistribution {
     }
     
     DeploymentInfo deployment = DeploymentInfo.fromJson(jsonDeploy);
-    JsonObject config = new DeployConfigGenerator(deployment).generateConfig();
+    DeploymentConfiguration conf = new DeploymentConfiguration();
+    conf.setDeploymentInfo(deployment);
+    conf.setConstraints(new ArrayList<>(0));
+    JsonObject config = new DeployConfigBuilder(conf).build();
     assertNotNull(config);
     
     IPrologGenerator gen = new RestPrologGenerator();
@@ -129,7 +133,10 @@ public class TestDistribution {
     }
     
     DeploymentInfo deployment = DeploymentInfo.fromJson(jsonDeploy);
-    JsonObject config = new DeployConfigGenerator(deployment).generateConfig();
+    DeploymentConfiguration conf = new DeploymentConfiguration();
+    conf.setDeploymentInfo(deployment);
+    conf.setConstraints(new ArrayList<>(0));
+    JsonObject config = new DeployConfigBuilder(conf).build();
     assertNotNull(config);
     
     File workingDir = new File("tmp");

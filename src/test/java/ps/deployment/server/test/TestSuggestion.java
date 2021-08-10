@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -30,7 +29,6 @@ import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.DeploymentInfo;
 import ps.deployment.server.data.Distribution;
-import ps.deployment.server.data.NetworkInfo;
 import ps.deployment.server.data.constraint.BasicConstraint;
 import ps.deployment.server.data.constraint.Constraint;
 import ps.deployment.server.distribution.DefaultDistributionCalculator;
@@ -39,8 +37,6 @@ import ps.deployment.server.distribution.IDistributionCalculator;
 import ps.deployment.server.distribution.IPrologGenerator;
 import ps.deployment.server.distribution.RestPrologGenerator;
 import ps.deployment.server.distribution.config.DeployConfigBuilder;
-import ps.deployment.server.distribution.config.DeployConfigGenerator;
-import ps.deployment.server.distribution.config.DockerComposeConfig;
 import ps.deployment.server.distribution.suggestion.Suggestion;
 
 public class TestSuggestion {

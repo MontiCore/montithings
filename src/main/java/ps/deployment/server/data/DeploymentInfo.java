@@ -41,7 +41,7 @@ public class DeploymentInfo {
       
       JsonArray jInstances = json.getAsJsonArray("instances");
       if (jInstances == null || !jInstances.isJsonArray()) {
-        // TODO throw
+        throw new DeploymentException("Invalid deployment info.");
       }
       
       for (JsonElement jeInstance : jInstances) {

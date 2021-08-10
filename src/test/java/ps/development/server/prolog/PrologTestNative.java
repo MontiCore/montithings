@@ -40,7 +40,7 @@ public class PrologTestNative {
           String[] components = Util.atomListToStringArray(term);
           System.out.println(Arrays.toString(components));
         } else {
-          // TODO throw error
+          System.err.println("Unexpected response from Prolog.");
         }
       }
     }

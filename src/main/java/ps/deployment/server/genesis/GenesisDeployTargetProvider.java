@@ -1,7 +1,6 @@
 package ps.deployment.server.genesis;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -34,15 +33,6 @@ import ps.deployment.server.exception.DeploymentException;
 import ps.deployment.server.util.MontiThingsUtil;
 
 public class GenesisDeployTargetProvider implements IDeployTargetProvider {
-  
-  public static void main(String[] args) {
-    try {
-      new GenesisDeployTargetProvider(0, new URL("http://127.0.0.1:8000")).initialize();
-    }
-    catch (DeploymentException | MalformedURLException e) {
-      e.printStackTrace();
-    }
-  }
   
   private final OkHttpClient httpClient;
   private final URL endpointURL;
@@ -96,7 +86,6 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
     // send update to GeneSIS server
     try {
       String modelStr = model.getModel().toString();
-      // modelStr += "wserdbgu832m8";
       Request req = new Request.Builder().url(new URL(endpointURL, "/genesis/deploy")).post(RequestBody.create(modelStr.getBytes(StandardCharsets.UTF_8), MediaType.parse("application/json; charset=utf-8"))).build();
       Response resp = httpClient.newCall(req).execute();
       if (resp.code() != 200) {
@@ -218,7 +207,6 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
       try {
         this.refreshModel();
         this.refreshClients();
-        System.out.println(this.clients);
         Thread.sleep(30_000);
       }
       catch (InterruptedException | DeploymentException e) {

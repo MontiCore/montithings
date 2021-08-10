@@ -70,7 +70,7 @@ public class DeploymentConfiguration {
   public static DeploymentConfiguration fromJson(JsonObject jsonConfig) throws DeploymentException {
     JsonObject jsonInfo = jsonConfig.getAsJsonObject("deploymentInfo");
     
-    // FIXME improve this
+    // rename "deployComponentInstance" to "instances" for easy parsing. 
     JsonElement jInstances = jsonInfo.get("deployComponentInstance");
     jsonInfo.remove("deployComponentInstance");
     jsonInfo.add("instances", jInstances);
