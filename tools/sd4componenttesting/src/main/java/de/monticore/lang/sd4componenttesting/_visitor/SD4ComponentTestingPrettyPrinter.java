@@ -138,6 +138,7 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
     this.getPrinter().print("  ");
     this.getPrinter().print("assert ");
     node.getExpression().accept(this.getTraverser());
+    this.getPrinter().print(";\n");
   }
 
   @Override
