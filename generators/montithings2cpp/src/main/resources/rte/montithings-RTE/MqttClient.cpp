@@ -81,6 +81,15 @@ MqttClient::publish (const std::string &topic, const std::string &message)
 }
 
 void
+MqttClient::publishRetainedMessage (const std::string &topic, const std::string &message)
+{
+  mosquitto_publish (mosq,
+                     nullptr, // could be used to set a msg id
+                     topic.c_str (), message.length (), message.c_str (), qos, true);
+}
+
+
+void
 MqttClient::subscribe (std::string topic)
 {
   int returnCode = mosquitto_subscribe (mosq, nullptr, topic.c_str (), qos);

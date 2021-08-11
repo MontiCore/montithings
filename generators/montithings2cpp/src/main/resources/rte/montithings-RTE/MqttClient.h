@@ -92,6 +92,13 @@ public:
    */
   void publish (const std::string &topic, const std::string &message);
 
+    /**
+     * Publish the given message as a retained message on the given port
+     * \param topic the topic to publish the message on
+     * \param message content of the message to publish
+     */
+    void publishRetainedMessage (const std::string &topic, const std::string &message);
+
   /**
    * Subscribe to the messages of the port with the provided name
    * \param topic fully qualified name of the port to subscribe to
