@@ -2,7 +2,7 @@ package examples.correct;
 
 testdiagram ProcedureExample for Main {
   -> value : 14;
-  value -> sumCom.first, sumComp.second : 14;
+  value -> sumCom.first, sumCom.second : 14;
   sumCom.result -> foo : 28;
 
   -> value : 33;
