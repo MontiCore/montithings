@@ -1,5 +1,19 @@
 package examples.correct;
 
 testdiagram ProcedureExample for Main {
-  
+  -> value : 14;
+  value -> sumCom.first, sumComp.second : 14;
+  sumCom.result -> foo : 28;
+
+  -> value : 33;
+  value -> sumCom.first : 33;
+  value -> sumCom.second : 33;
+  foo -> : 66;
+
+  delay 500ms;
+
+  assert sumCom.result < 67;
+  assert sumCom.result > 21;
+  assert sumCom.result > 21 && sumCom.result < 67;
+  assert sumCom.result * 2 > sumCom.result + 1;
 }
