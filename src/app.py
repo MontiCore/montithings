@@ -17,7 +17,6 @@ if __name__ == "__main__":
     myTopicStatus = f"deployment/{config.CLIENT_ID}/status"
     myTopicConfig = f"deployment/{config.CLIENT_ID}/config"
     myTopicPush = f"deployment/{config.CLIENT_ID}/push"
-    myTopicStop   = f"deployment/{config.CLIENT_ID}/stop"
     myTopicHeartbeat   = f"deployment/{config.CLIENT_ID}/heartbeat"
     topicPoll   = f"deployment/poll"
 
@@ -64,8 +63,6 @@ if __name__ == "__main__":
     def on_message(client, userdata, message:mqttc.MQTTMessage):
         if message.topic == myTopicPush:
             handleDeploy(client,userdata,message)
-        elif message.topic == myTopicStop:
-            pass
         elif message.topic == topicPoll:
             sendHeartbeat()
     mqtt.on_message = on_message
@@ -81,8 +78,6 @@ if __name__ == "__main__":
     status, test = mqtt.subscribe([
         # Listen for new deployments
         (myTopicPush, 2),
-        # Listen for stopping request
-        (myTopicStop, 2),
         # Listen for poll
         (topicPoll, 1)
     ])
