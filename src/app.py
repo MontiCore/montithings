@@ -22,10 +22,14 @@ if __name__ == "__main__":
 
     mngr = helpers.ComposeManager("../run/deployment")
 
-    def getStatus():
-        return {"status":"idle"}
+    curStatus = "idle"
 
-    def publishStatus():
+    def getStatus():
+        return {"status": curStatus}
+
+    def publishStatus(newStatus = curStatus):
+        global curStatus
+        curStatus = newStatus
         # Send status update. The MQTT-Broker shall retain this message.
         mqtt.publish(myTopicStatus, payload=json.dumps(getStatus()), qos=1, retain=True)
 
@@ -37,18 +41,17 @@ if __name__ == "__main__":
 
     def handleDeploy(client, userdata, message:mqttc.MQTTMessage):
         print("Received deployment request!")
-        # TODO update status to deploying...
-        if len(message.payload) > 0:
+        if len(message.payload) > 30:
             # message contains new docker-compose instructions
-            publishStatus()
+            publishStatus("starting")
             ymlCompose = str(message.payload,encoding="utf-8")
             mngr.pushCompose(ymlCompose)
-            publishStatus()
+            publishStatus("running")
         else:
             # deployment should be revoked
-            publishStatus()
+            publishStatus("stopping")
             mngr.undeploy()
-            publishStatus()
+            publishStatus("idle")
 
     def sendHeartbeat():
         mqtt.publish(myTopicHeartbeat, qos=0, retain=False)
@@ -84,5 +87,3 @@ if __name__ == "__main__":
         
 
     mqtt.loop_forever()
-    
-# %%
