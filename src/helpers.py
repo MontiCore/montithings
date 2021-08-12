@@ -10,6 +10,7 @@ import threading
 from functools import partial
 import subprocess
 
+# Utility class for accessing docker compose functionality
 class DockerCompose:
 
     def __init__(self,cfile : str):
@@ -23,10 +24,13 @@ class DockerCompose:
         return os.system(self.getCommand(args)) == 0
 
     def up(self):
-        return self.run("up -d")
+        # Start compose, detatch and remove old, unused containers
+        return self.run("up -d --remove-orphans")
 
     def down(self):
-        return self.run("down")
+        # Use "kill" instead of "down" since MontiThings components do not react to the "soft" 
+        # shutdown request. Docker would wait a few seconds and kill them after that anyway.
+        return self.run("kill")
 
 class DockerComposeListener:
     proc = None
@@ -46,7 +50,7 @@ class DockerComposeListener:
 
 
             
-
+# Class for managing the state of an active (local) deployment
 class ComposeManager:
 
     compose : DockerCompose = None

@@ -9,11 +9,11 @@ import threading
 # %%
 if __name__ == "__main__":
     mqtt = mqttc.Client(client_id=config.CLIENT_ID)
-
-    while mqtt.connect(config.MQTT_BROKER_HOST) != mqttc.MQTT_ERR_SUCCESS:
+    while mqtt.connect(config.MQTT_BROKER_HOST, port=1883) != mqttc.MQTT_ERR_SUCCESS:
         print("Connecting to MQTT-Broker failed. Retrying...")
         pass
 
+    # Define all topics relevant for us. Variables starting with "my" are topics "owned" by this client.
     myTopicStatus = f"deployment/{config.CLIENT_ID}/status"
     myTopicConfig = f"deployment/{config.CLIENT_ID}/config"
     myTopicPush = f"deployment/{config.CLIENT_ID}/push"
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         # Listen for new deployments
         (myTopicPush, 2),
         # Listen for stopping request
-        (myTopicStop,   2),
+        (myTopicStop, 2),
         # Listen for poll
         (topicPoll, 1)
     ])
