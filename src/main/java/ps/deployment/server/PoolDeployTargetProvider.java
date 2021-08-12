@@ -35,18 +35,6 @@ public class PoolDeployTargetProvider implements IDeployTargetProvider {
     }
   }
   
-  private IDeployTargetProvider getTargetForClient(String clientID) {
-    // Loop through each provider & search for client with this ID.
-    for(IDeployTargetProvider provider : providers) {
-      for(DeployClient client : provider.getClients()) {
-        if(clientID.equals(client.getClientID())) {
-          return provider;
-        }
-      }
-    }
-    return null;
-  }
-  
   @Override
   public void deploy(Distribution distribution, DeploymentInfo deploymentInfo, NetworkInfo net) throws DeploymentException {
     for(IDeployTargetProvider target : this.providers) {
