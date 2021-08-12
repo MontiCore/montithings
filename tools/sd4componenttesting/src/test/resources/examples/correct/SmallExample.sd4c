@@ -8,5 +8,5 @@ testdiagram SmallExample for Main {
 
   delay 500ms;
 
-  assert sumCom.result < 67 && sumCom.result > 68;
+  assert sumCom.result < 67 && sumCom.result > 65;
 }
