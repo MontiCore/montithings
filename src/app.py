@@ -8,8 +8,11 @@ import threading
 
 # %%
 if __name__ == "__main__":
+    print(f"Starting IoT-Client (ClientID={config.CLIENT_ID})")
+
+    print(f"Connecting to MQTT broker... ({config.MQTT_BROKER_HOST}:{config.MQTT_BROKER_PORT})")
     mqtt = mqttc.Client(client_id=config.CLIENT_ID)
-    while mqtt.connect(config.MQTT_BROKER_HOST, port=1883) != mqttc.MQTT_ERR_SUCCESS:
+    while mqtt.connect(config.MQTT_BROKER_HOST, port=config.MQTT_BROKER_PORT) != mqttc.MQTT_ERR_SUCCESS:
         print("Connecting to MQTT-Broker failed. Retrying...")
         pass
 
@@ -20,6 +23,7 @@ if __name__ == "__main__":
     myTopicHeartbeat   = f"deployment/{config.CLIENT_ID}/heartbeat"
     topicPoll   = f"deployment/poll"
 
+    print("Initializing components...")
     mngr = helpers.ComposeManager("../run/deployment")
 
     curStatus = "idle"
@@ -85,5 +89,5 @@ if __name__ == "__main__":
         (topicPoll, 1)
     ])
         
-
+    print("Finished.")
     mqtt.loop_forever()
