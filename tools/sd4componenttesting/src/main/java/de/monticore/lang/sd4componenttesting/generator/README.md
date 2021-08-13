@@ -21,21 +21,21 @@ For a better understanding of the functionality of the generated C++ test we dis
 
 The following Testdiagram shows the example in a kind of UML Sequencediagram:
 
-![](../../../../../../../../docs/TestdiagramSmallExample.jpeg)
+![](../../../../../../../../docs/TestdiagramSmallExample.svg)
 
 The example wants to test that the port _foo_ gets the message _66_ after getting the message _33_ on port _value_. During the calculation the component _Main_ should pass the message _33_ to the port _first_ and _second_ of the subcomponent _sumCom_, and the subcomponent should return the message _66_ to the port _foo_ of _Main_. After the execution the test should wait for 500ms and then the value of the port _result_ of _sumCom_ should be smaller then 67 and greater than 65.
 
 Since the computation of the behavior of MontiThings components don't log the messages which passes from one port to another, and the computation of the Main component can not pause to check the current port values, one need an observer to log the messages. The components of MontiThings offers the possibility to attach an observer to the ports. Every time the value of the port changed the method `onEvent` of every attached observer will call. The generated test contains an observer called PortSpy for every port of every component and subcomponent . They are attached to the ports, and log all messages which passes the ports in a list (see [The Observers](#the-observers) and [The initialization of the test method](#the-initialization-of-the-test-method) for further information). This enables the possibility to check if some messages are passed to a port. The following Sequencediagram shows the procedure of the test simplified to increase the readability.
 
-![](../../../../../../../../docs/SequencediagramSmallExamplePartOne.jpeg)
+![](../../../../../../../../docs/SequencediagramSmallExamplePartOne.svg)
 
 The first connection in the [SmallExample](../../../../../../../test/resources/examples/correct/SmallExample.sd4c) model `-> value : 33;` leads to the C++ code 
 
 `cmpMain->getInterface()->getPortValue()->setNextValue(Message<int>(33));`
 
-which is the first function call in the diagram. This leads to the function call `onEvent` on the _PortSpy_ `psMValue` for the _value_ port of the _Main_ component. Since the _value_ port of _Main_ is connected to the ports _first_ and _second_ of the _sumCom_ subcomponent they are also attached as observer for the _value_ port. This leads to the function call `onEvent` on the _Port_ `first` which includes the call `setNextValue` and therefore also the `onEvent` call of the attached _PortSpy_ `psSFirst` for the _first_ port of the _sumCom_ component. The `onEvent` call of the _Port_ `second` has the same procedure, but with a own _PortSpy_ `psSSecond` for the port _second_. Also the _Main_ `cmpMain` is attached as an observer to the `setNextValue` and will call if the value of the port _value_ changed. The next Sequencediagram shows the procedure of that function call.
+which is the first function call in the diagram (see [MAIN_INPUT](#main_input) for further informations). This leads to the function call `onEvent` on the _PortSpy_ `psMValue` for the _value_ port of the _Main_ component. Since the _value_ port of _Main_ is connected to the ports _first_ and _second_ of the _sumCom_ subcomponent they are also attached as observer for the _value_ port. This leads to the function call `onEvent` on the _Port_ `first` which includes the call `setNextValue` and therefore also the `onEvent` call of the attached _PortSpy_ `psSFirst` for the _first_ port of the _sumCom_ component. The `onEvent` call of the _Port_ `second` has the same procedure, but with a own _PortSpy_ `psSSecond` for the port _second_. Also the _Main_ `cmpMain` is attached as an observer to the `setNextValue` and will call if the value of the port _value_ changed. The next Sequencediagram shows the procedure of that function call.
 
-![](../../../../../../../../docs/SequencediagramSmallExamplePartTwo.jpeg)
+![](../../../../../../../../docs/SequencediagramSmallExamplePartTwo.svg)
 
 The `onEvent` method of `cmpMain` yields to the function call `compute` which calls all `compute` methods of the subcomponents of _Main_. The `compute` method of `sumComCmp` performs the behavior of the component, in this case it will calculates the sum of the ports _first_ and _second_ and sets the value of the port _result_ with the method call `interface->getPortResult()->setNextValue()` in the _Port_ `result`. This yields to the call of the `onEvent` methods of the attached observer `psSResult` (the _PortSpy_ for the _result_ port of the subcomponent _sumCom_) and since the _result_ port is connected to the _foo_ port of the _Main_ component also the _Port_ `foo`. In this call the method `setNextValue` of the _Port_ `foo` is called and therefore the `onEvent` of the _PortSpy_ `psMFoo` for the port _foo_ of _Main_.
 
