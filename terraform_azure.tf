@@ -14,6 +14,22 @@ provider "azurerm" {
   features {}
 }
 
+variable "gitlab_name" {
+    type        = string
+    description = "Your RWTH GitLab username"
+}
+
+variable "gitlab_password" {
+    type        = string
+    description = "Your RWTH GitLab password"
+}
+
+variable "rsa_key_location" {
+    type        = string
+    description = "Path to your private SSH key"
+    default     = "~/.ssh/id_rsa"
+}
+
 # Create a resource group if it doesn't exist
 resource "azurerm_resource_group" "montithingsgroup" {
     name     = "montithingsResourceGroup"
@@ -163,11 +179,60 @@ resource "azurerm_linux_virtual_machine" "montithingsvm" {
 
     admin_ssh_key {
         username       = "azureuser"
-        public_key     = file("~/.ssh/id_rsa.pub")
+        public_key     = file("${var.rsa_key_location}.pub")
     }
 
     boot_diagnostics {
         storage_account_uri = azurerm_storage_account.mystorageaccount.primary_blob_endpoint
+    }
+
+
+    # These three remote-exec provisioners include
+    # the code that the VM executes to set up MontiThings
+    # It is split up in three parts because Terraform hides
+    # all output if a config uses a sensitive variable.
+    # By splitting this into three parts only the console output
+    # of the first and last part are hidden.
+    # Also the last part needs a separate login to have docker
+    # available after the installation
+    provisioner "remote-exec" {
+        inline = [
+            "git clone https://${var.gitlab_name}:'${var.gitlab_password}'@git.rwth-aachen.de/monticore/montithings/core.git montithings"
+        ]
+
+        connection {
+          type        = "ssh"
+          user        = azurerm_linux_virtual_machine.montithingsvm.admin_username
+          private_key = file(var.rsa_key_location)
+          host        = azurerm_linux_virtual_machine.montithingsvm.public_ip_address
+        }
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "cd montithings",
+            "./installLinux.sh"
+        ]
+
+        connection {
+            type        = "ssh"
+            user        = azurerm_linux_virtual_machine.montithingsvm.admin_username
+            private_key = file(var.rsa_key_location)
+            host        = azurerm_linux_virtual_machine.montithingsvm.public_ip_address
+        }
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "echo '${var.gitlab_password}' | docker login registry.git.rwth-aachen.de --username ${var.gitlab_name} --password-stdin"
+        ]
+
+        connection {
+            type        = "ssh"
+            user        = azurerm_linux_virtual_machine.montithingsvm.admin_username
+            private_key = file(var.rsa_key_location)
+            host        = azurerm_linux_virtual_machine.montithingsvm.public_ip_address
+        }
     }
 
     tags = {
