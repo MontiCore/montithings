@@ -29,7 +29,7 @@ MontiThings uses these elements to generate a C++ project including various scri
 This section describes some of the many possible ways to use MontiThings.
 For the purpose of this tutorial, you can choose between the following options:
 1. a native installation on your machine
-2. an installation in a VM of the Microsoft Azure Cloud
+2. an installation in a virtual machine of the Microsoft Azure Cloud
 3. using MontiThings' Docker containers to avoid an installation
 
 ## Native installation
@@ -102,40 +102,32 @@ az login
 terraform init
 ```
 
-If your public SSH key is not at `~/.ssh/id_rsa.pub`, please change the 
-following part in the `terraform_azure.tf` file to match your key's location. 
-You can also directly provide the key as a String.
-```
-admin_ssh_key {
-  username       = "azureuser"
-  public_key     = file("~/.ssh/id_rsa.pub")
-}
-```
-
 Then you can plan your deployment, i.e. dry-run it and get a preview of what 
-Terraform will actually do:
+Terraform will actually do. 
+Terraform will also ask you for your GitLab login credentials.
+These will be used by the virtual machine to download MontiThings and log into
+MontiThings' Docker registry. 
 ```
 terraform plan -out terraform_azure.tfplan
 ```
 
+If your SSH key is not at `~/.ssh/id_rsa`, please provide its location as an 
+argument.
+```
+terraform plan -out terraform_azure.tfplan -var 'rsa_key_location=/path/to/id_rsa'
+```
+
 Here, make sure that you're happy with all the services Terraform will install. 
 If you want to know more about the individual services, refer to the excellent 
-documentation from the [Microsoft Azure Docs][azure-terraform-docs]. 
-At least, make sure that Terraform found your SSH key:
-```
-admin_ssh_key {
-  - public_key = <<-EOT
-    ssh-rsa AAAAB3NzaC monti@example.com
-    EOT -> null
-  - username   = "azureuser" -> null
-}
-```
+documentation from the [Microsoft Azure Docs][azure-terraform-docs].
 
 If you're happy, deploy the virtual machine by calling: 
 ```
 terraform apply terraform_azure.tfplan
 ```
 
+You will see how Terraform first instantiates the virtual machine and then 
+installs MontiThings on this machine.
 To find out the virtual machine's IP address, call:
 ```
 az vm show --resource-group montithingsResourceGroup --name montithings -d --query [publicIps] -o tsv
@@ -144,13 +136,6 @@ az vm show --resource-group montithingsResourceGroup --name montithings -d --que
 To connect to the machine, call:
 ```
 ssh azureuser@20.30.40.50
-```
-
-Once you're on the machine, you can download and install MontiThings:
-```
-git clone https://git.rwth-aachen.de/monticore/montithings/core.git
-cd core
-./installLinux.sh
 ```
 
 After the installation you can use MontiThings as if it was installed using 
@@ -163,6 +148,9 @@ no further costs are incurred:
 ```
 terraform destroy
 ```
+Terraform will ask again for your GitLab credentials, although they are not 
+needed. 
+You can just hit enter and leave the prompts empty.
 Double check that everything was correctly deleted in your Azure account just to
 make sure no further costs are incurred.
 
