@@ -40,6 +40,7 @@
         <#assign refCounterList = refCounterList + {"portSpy" + compTypeName + compName + portName : (refCounterList["portSpy" + compTypeName + compName + portName] + 1)}>
       </#if>
   LOG(INFO) << "check ${prettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";
+  ASSERT_TRUE (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().size() >= ${refCounterList["portSpy" + compTypeName + compName + portName] + 1});
   ASSERT_TRUE (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).has_value());
       <#if sD4CElement.getValueList()?size < 2 >
   EXPECT_EQ (portSpy${compTypeName}${compName?cap_first}${portName}.getRecordedMessages().at(${refCounterList["portSpy" + compTypeName + compName + portName]}).value().getPayload(), ${sD4CElement.getValue(0).getValue()});
