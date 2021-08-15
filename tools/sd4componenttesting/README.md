@@ -54,7 +54,7 @@ testdiagram MainTest for Main {
 
 This test diagram will then be used to generate the C++ files for testing the IoT application.
 
-If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out the [CoCo documentation](src/main/grammars/de/monticore/lang/README.md) for more information about Context Conditions.
+If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out the [CoCo documentation](src/main/java/de/monticore/lang/sd4componenttesting/_cocos/README.md#context-conditions) for more information about Context Conditions.
 
 For more information about the sd4c language please check out the [grammar](src/main/grammars/de/monticore/lang/README.md) documentation.
 
