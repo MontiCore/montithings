@@ -50,8 +50,6 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
 
   @Override
   public void traverse(de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact node) {
-
-
     if (node.isPresentPackageDeclaration()) {
       this.getPrinter().print("package ");
       node.getPackageDeclaration().accept(getTraverser());
@@ -66,8 +64,6 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
     if (null != node.getTestDiagram()) {
       node.getTestDiagram().accept(getTraverser());
     }
-
-
   }
 
 
@@ -77,7 +73,13 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
     this.getPrinter().print(" for ");
     this.getPrinter().print(node.getMainComponent());
     this.getPrinter().print(" {\n");
-    this.getTraverser().traverse(node);
+    this.getPrinter().indent(1);
+    for (int i = 0; i < node.getSD4CElementList().size(); i++) {
+      ASTSD4CElement c = node.getSD4CElement(i);
+      c.accept(this.getTraverser());
+      this.getPrinter().println(";");
+    }
+    this.getPrinter().unindent();
     this.getPrinter().print("}\n");
   }
 
@@ -85,7 +87,6 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
   @Override
   public void handle(@NotNull ASTSD4CConnection node) {
     groupByElementType(node);
-    this.getPrinter().print("  ");
     if (node.isPresentSource()) {
       node.getSource().accept(this.getTraverser());
       this.getPrinter().print(" ");
@@ -113,7 +114,6 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
         }
       }
     }
-    this.getPrinter().print(";\n");
 
   }
 
@@ -135,19 +135,16 @@ public class SD4ComponentTestingPrettyPrinter implements SD4ComponentTestingHand
   @Override
   public void handle(@NotNull ASTSD4CExpression node) {
     groupByElementType(node);
-    this.getPrinter().print("  ");
     this.getPrinter().print("assert ");
     node.getExpression().accept(this.getTraverser());
-    this.getPrinter().print(";\n");
   }
 
   @Override
   public void handle(@NotNull ASTSD4CDelay node) {
-    this.getPrinter().print("  ");
+    groupByElementType(node);
     this.getPrinter().print("delay");
     this.getPrinter().print(" ");
     node.getSIUnitLiteral().accept(this.getTraverser());
-    this.getPrinter().print(";\n");
   }
 }
 
