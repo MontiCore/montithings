@@ -54,7 +54,7 @@ testdiagram MainTest for Main {
 
 This test diagram will then be used to generate the C++ files for testing the IoT application.
 
-If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out [this documentation](src/main/grammars/de/monticore/lang/README.md) for more information about CoCos.
+If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out the [CoCo documentation](src/main/grammars/de/monticore/lang/README.md) for more information about Context Conditions.
 
 For more information about the sd4c language please check out the [grammar](src/main/grammars/de/monticore/lang/README.md) documentation.
 
@@ -78,7 +78,7 @@ Afterwards, this document contains a tutorial for using the CLI tool.
 
 It is possible to build an executable JAR of the CLI tool from the source files located in GitLab.
 The following describes the process for building the CLI tool from the source files using Bash.
-For building an executable Jar of the CLI with Bash from the source files available in GitLab, execute the following commands.cccc
+For building an executable Jar of the CLI with Bash from the source files available in GitLab, execute the following commands.
 
 First, clone the repository:
 
@@ -207,9 +207,9 @@ When you now execute the command to check the context conditions again you may n
 This means that the CLI now finds the model file for the Main component and satisfies all other context condtions.
 
 Let us now consider a more complex example.
-Recall the testdiagram `MainTest` from the `An Example Model` section above.
+Recall the testdiagram `MainTest` from the [An Example Model](#an-example-model) section above.
 For continuing, copy the textual representation of the SD4C `MainTest` and save it in a file `MainTest.sd4c` in the directory where the file `sd4componenttesting-cli.jar` is located.
-Additionally we need the model files for the Main and Sum component. You can find them in the `An Example Model` section above aswell. Save them as `Main.arc` and `Sum.arc` in the same directory.
+Additionally we need the model files for the Main and Sum component. You can find them in the [An Example Model](#an-example-model) section above aswell. Save them as `Main.arc` and `Sum.arc` in the same directory.
 
 Now you can check the context conditions, using the `-c,--coco` option:
 ```
@@ -220,6 +220,25 @@ After executing this command, you should not experience any errors. If you do en
 ### Step 4: Using the Model Path to Resolve Symbols
 
 [...]
+
+# License
+
+© https://github.com/MontiCore/monticore
+
+For details on the MontiCore 3-Level License model, visit
+https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md
+
+# Further Information
+
+* [Project root: MontiCore @github](https://github.com/MontiCore/monticore)
+* [MontiCore documentation](http://www.monticore.de/)
+* [**List of languages**](https://github.com/MontiCore/monticore/blob/dev/docs/Languages.md)
+* [**MontiCore Core Grammar Library**](https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/Grammars.md)
+* [CD4Analysis Project](https://github.com/MontiCore/cd4analysis)
+* [Best Practices](https://github.com/MontiCore/monticore/blob/dev/docs/BestPractices.md)
+* [Publications about MBSE and MontiCore](https://www.se-rwth.de/publications/)
+* [Licence definition](https://github.com/MontiCore/monticore/blob/master/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md)
+
 
 //
 
