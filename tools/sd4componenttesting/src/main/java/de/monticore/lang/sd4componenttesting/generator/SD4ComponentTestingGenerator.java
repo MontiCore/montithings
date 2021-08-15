@@ -30,7 +30,7 @@ public class SD4ComponentTestingGenerator {
    */
 
   public static Path generate(ASTSD4Artifact ast) {
-    return generate(ast, "target/Test.cpp");
+    return generate(ast, "target" + File.separator + "Test.cpp");
   }
 
   public static Path generate(ASTSD4Artifact ast, String path ) {

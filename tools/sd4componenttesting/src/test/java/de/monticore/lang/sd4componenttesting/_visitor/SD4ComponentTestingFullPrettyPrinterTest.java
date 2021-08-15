@@ -18,7 +18,7 @@ class SD4ComponentTestingFullPrettyPrinterTest {
   @Test
   void testPPViolation() throws IOException {
     SD4ComponentTestingTool tool = new SD4ComponentTestingTool();
-    ASTSD4Artifact ast = tool.loadModel(CORRECT_PATH, "MainTest.sd4c");
+    ASTSD4Artifact ast = tool.loadModel(CORRECT_PATH, CORRECT_PATH + "MainTest.sd4c");
 
     SD4ComponentTestingFullPrettyPrinter pp = new SD4ComponentTestingFullPrettyPrinter();
     String ppAST = pp.prettyprint(ast);

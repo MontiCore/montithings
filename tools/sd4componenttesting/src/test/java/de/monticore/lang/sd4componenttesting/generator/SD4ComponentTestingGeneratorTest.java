@@ -17,8 +17,6 @@ class SD4ComponentTestingGeneratorTest {
   @Test
   void generate() {
     SD4ComponentTestingTool tool = new SD4ComponentTestingTool();
-    ASTSD4Artifact ast = tool.loadModel(CORRECT_PATH, "MainTest.sd4c");
-
-    Path path = SD4ComponentTestingGenerator.generate(ast);
+    tool.generate(CORRECT_PATH, CORRECT_PATH + "MainTest.sd4c", "target/MainTest.cpp");
   }
 }

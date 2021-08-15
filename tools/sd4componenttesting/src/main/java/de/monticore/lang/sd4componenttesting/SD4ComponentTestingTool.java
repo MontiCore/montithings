@@ -13,6 +13,7 @@ import de.monticore.lang.sd4componenttesting._symboltable.SD4ComponentTestingSco
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentTypeResolvingDelegate;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2ComponentInstanceResolvingDelegate;
 import de.monticore.lang.sd4componenttesting._symboltable.adapters.Name2PortResolvingDelegate;
+import de.monticore.lang.sd4componenttesting.generator.SD4ComponentTestingGenerator;
 import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._symboltable.IMontiArcGlobalScope;
@@ -91,10 +92,10 @@ public class SD4ComponentTestingTool {
     return null;
   }
 
-  public ASTSD4Artifact loadModel(String modelPath, String model) {
+  public ASTSD4Artifact loadModel(String modelPath, String sd4cModelPath) {
     initSymbolTable(new File(modelPath));
 
-    ASTSD4Artifact ast = parseModel(modelPath + "/" + model);
+    ASTSD4Artifact ast = parseModel(sd4cModelPath);
 
     if (ast != null) {
       createSymbolTableFromAST(ast);
@@ -102,5 +103,10 @@ public class SD4ComponentTestingTool {
       return ast;
     }
     return null;
+  }
+
+  public Path generate(String modelPath, String sd4cModelFile, String outputFile) {
+    ASTSD4Artifact ast = loadModel(modelPath, sd4cModelFile);
+    return SD4ComponentTestingGenerator.generate(ast, outputFile);
   }
 }
