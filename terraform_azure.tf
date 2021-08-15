@@ -239,3 +239,36 @@ resource "azurerm_linux_virtual_machine" "montithingsvm" {
         environment = "MontiThings"
     }
 }
+
+resource "azurerm_container_group" "montithingscontainergroup" {
+    name                = "montithings-containers"
+    location            = azurerm_resource_group.montithingsgroup.location
+    resource_group_name = azurerm_resource_group.montithingsgroup.name
+    ip_address_type     = "public"
+    os_type             = "Linux"
+    dns_name_label      = random_id.randomId.hex
+
+    container {
+        name   = "hivemq-broker"
+        image  = "hivemq/hivemq-ce"
+        cpu    = "0.5"
+        memory = "1.5"
+
+        ports {
+            port     = 1883
+            protocol = "TCP"
+        }
+    }
+
+    tags = {
+        environment = "MontiThings"
+    }
+}
+
+output "vm_ip_address" {
+    value = azurerm_linux_virtual_machine.montithingsvm.public_ip_address
+}
+
+output "mqtt_broker_ip_address" {
+    value = azurerm_container_group.montithingscontainergroup.ip_address
+}
