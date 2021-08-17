@@ -13,7 +13,7 @@ This method generates the C++ test file for the given _ASTSD4Artifact ast_ of on
 
 The `generate` method can only generate a test file for one single SD4ComponentTesting model. If one want to generate several test files, one have to call the `generate` method several times.
 
-The second Method is to use the SD4ComponentTestingCLI via the CLI. Then the CLI calls the `generate` method of the _SD4ComponentTestingGenerator_ class with the given values and creates the AST for the given models. For further information, see [TODO verlinken auf den Abschnitt im Tutorial]().
+The second Method is to use the SD4ComponentTestingCLI via the CLI. Then the CLI calls the `generate` method of the _SD4ComponentTestingGenerator_ class with the given values and creates the AST for the given models. For further information, see [Tutorial: Getting Started Using the SD4ComponentTesting CLI Tool](https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/tree/develop#tutorial-getting-started-using-the-sd4componenttesting-cli-tool).
 
 # How the test works
 
