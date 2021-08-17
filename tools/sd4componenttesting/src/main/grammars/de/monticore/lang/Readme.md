@@ -40,7 +40,7 @@ grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
 ## Extension
 To describe tests for given models as easy as possible we decided to use an extension of a sequence diagram.
 That is why our _SD4ComponentTestingTool_ defines and uses a new grammar to offer an additional small set of functionality.
-Because we want to extend sequence diagrams with our own functionality, we choose the [_de.monticore.lang.SD4Development_](https://git.rwth-aachen.de/monticore/statechart/sd-language) extension to extend which is also part of the _de.monticore.lang_ package. In addition, to offer alredy existing functionality we extend [_MontiArc_](https://git.rwth-aachen.de/monticore/montiarc/core) and [_de.monticore.SIUnitLiterals_](https://github.com/MontiCore/siunits) for further opportuinites for future asserts and assignements.
+Because we want to extend sequence diagrams with our own functionality, we choose the [de.monticore.lang.SD4Development](https://git.rwth-aachen.de/monticore/statechart/sd-language) extension to extend which is also part of the _de.monticore.lang_ package. In addition, to offer alredy existing functionality we extend [MontiArc](https://git.rwth-aachen.de/monticore/montiarc/core) and [_de.monticore.SIUnitLiterals_](https://github.com/MontiCore/siunits) for further opportuinites for future asserts and assignements.
 
 ```
 package de.monticore.lang;
@@ -65,7 +65,7 @@ After all initializations, declarations and imports are done the actual test dia
 ```
 
 ## Interfaces
-To make things a bit easier and, i.e., easier to extend for future work, we use different interfaces to fill our test diagram with content and further grammar. Therefore, we use one the one hand our own interface _SD4CElement_ and on the other hand the interface _Diagram_ of the extension [_BasisSymbols_ of _MCBasis_] (https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/symbols/BasicSymbols.mc4#L44).
+To make things a bit easier and, i.e., easier to extend for future work, we use different interfaces to fill our test diagram with content and further grammar. Therefore, we use one the one hand our own interface _SD4CElement_ and on the other hand the interface _Diagram_ of the extension [BasisSymbols of MCBasis] (https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/symbols/BasicSymbols.mc4#L44).
 
 ### Diagram 
 At first, let us have a look at the interface _Diagram_ which we implemnt with our _TestDiagram_:
@@ -125,7 +125,7 @@ I.e., it is possible to check a range of a port.
     SD4CExpression implements SD4CElement =
       key("assert") Expression ";";
 ```
-E.g., assume you want to check whether the value of the subcomponent _Sub_ port _subPort_ is smaller than 6 but greater than 2 we can write somethinh like:
+E.g., assume you want to check whether the value of the subcomponent _Sub_ port _subPort_ is smaller than 6 but greater than 2 we can write something like:
 ```
     assert Sub.subPort >= 2 && Sub.subPort <= 6;
 ```
@@ -143,6 +143,72 @@ We assume we want to test the behavior of a component with a delay to test a bit
 ```
     delay 500 ms;
 ```
+
+# Example 
+Sometimes an example can explain things better. Therefore, we will have a closer look on the [SmallExample] (https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/blob/LucasDevelopReadmeGrammar/src/test/resources/examples/correct/SmallExample.sd4c).
+For this, we also need the _MontiArc_ models of the _mainComponent_ _Main_ and its subcomponent _Sum_.
+
+_MontiArc_ model of _Sum_
+```
+package examples.correct;
+
+component Sum {
+  port in int first;
+  port in int second;
+
+  port out int result;
+}
+```
+For the component _Sum_ three ports are defined: two input ports `first` and `second` and one output port `result`. All ports use and expect integer as datatype. Please notice, naming a port as _"result"_ may leed to some weird behavior and issues. However, using _result_ as port name for subcomponents seems to be fine to this point in time.
+
+
+_MontiArc_ model of _Main_
+```
+package examples.correct;
+
+component Main {
+  port in int value;
+
+  port out int foo;
+  port out int foo2;
+
+  Sum sumCom;
+  Sum sumComp;
+
+  value -> sumCom.first;
+  value -> sumCom.second;
+  sumCom.result -> foo;
+
+  value -> sumComp.first;
+  value -> sumComp.second;
+  sumComp.result -> foo2;
+}
+```
+As we can see here the _mainComponent_ _Main_ has three ports: `value` as input, `foo` and `foo2` as output. AS in the component _Sum_ all ports expect an integer as datatype too.
+Furthermore, _Main_ uses the component _Sum_ as subcomponent with variable _sumCom_ and _sumComp_.
+The next lines describe the connections of the _mainComponent_ _Main_ with the subcomponent _sumCom_ and _sumComp_. I.e., the main input is connected with the inputs of the subcomponent _sumCom_ `first` and `second`. The output of the subcomponent `result` is connected with the output of the _mainComponent_ `foo`. The same holds for the subcomponent _sumComp_.
+
+In a next step, we will have a look on the testdiagram model.
+
+```
+package examples.correct;
+
+testdiagram SmallExample for Main {
+  -> value : 33;
+  value -> sumCom.first : 33;
+  value -> sumCom.second : 33;
+  foo -> : 66;
+  foo -> : 66;
+
+  delay 500ms;
+
+  assert sumCom.result < 67 && sumCom.result > 65;
+}
+```
+
+
+
+
 
 # License
 
