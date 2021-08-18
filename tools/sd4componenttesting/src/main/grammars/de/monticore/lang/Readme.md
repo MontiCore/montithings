@@ -1,9 +1,9 @@
 # Overview
-As we have seen before, with our tool _SD4ComponentTestingTool_ we want to offer a new and easier way to describe tests for given models in an IoT scope. Therefore, it is necessary to extend an already existing grammar or to write a complete new one. Because of useability and, i.e., reusability we decided to extend an existing grammar.
+As we have seen before, with our tool _SD4ComponentTestingTool_ we want to offer a new and easier way to describe tests for given models in an IoT scope. Therefore, it is necessary to extend an already existing grammar or to write a complete new one. Because of usability and, i.e., reusability we decided to extend an existing grammar.
 In the following sections we will describe the structure and offered functionality of the extended grammar.
 
 # Grammar
-For a better understanding we will show the full grammar first and then, in a second step, we will describe the components of our grammar individualy. For this, we classify this section in extension, start point and the used interfaces.
+For a better understanding we will show the full grammar first and then, in a second step, we will describe the components of our grammar individually. For this, we classify this section in extension, start point and the used interfaces.
 ```
 package de.monticore.lang;
 
@@ -40,7 +40,7 @@ grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
 ## Extension
 To describe tests for given models as easy as possible we decided to use an extension of a sequence diagram.
 That is why our _SD4ComponentTestingTool_ defines and uses a new grammar to offer an additional small set of functionality.
-Because we want to extend sequence diagrams with our own functionality, we choose the [de.monticore.lang.SD4Development](https://git.rwth-aachen.de/monticore/statechart/sd-language) extension to extend which is also part of the _de.monticore.lang_ package. In addition, to offer alredy existing functionality we extend [MontiArc](https://git.rwth-aachen.de/monticore/montiarc/core) and [_de.monticore.SIUnitLiterals_](https://github.com/MontiCore/siunits) for further opportunities for future asserts and assignements.
+Because we want to extend sequence diagrams with our own functionality, we choose the [de.monticore.lang.SD4Development](https://git.rwth-aachen.de/monticore/statechart/sd-language) extension to extend which is also part of the _de.monticore.lang_ package. In addition, to offer already existing functionality we extend [MontiArc](https://git.rwth-aachen.de/monticore/montiarc/core) and [_de.monticore.SIUnitLiterals_](https://github.com/MontiCore/siunits) for further opportunities for future asserts and assignments.
 
 ```
 package de.monticore.lang;
@@ -65,7 +65,7 @@ After all initializations, declarations and imports are done the actual test dia
 ```
 
 ## Interfaces
-To make things a bit easier and, i.e., easier to extend for future work, we use different interfaces to fill our test diagram with content and further grammar. Therefore, we use on the one hand our own interface _SD4CElement_ and on the other hand the interface _Diagram_ of the extension [BasisSymbols of MCBasis] (https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/symbols/BasicSymbols.mc4#L44).
+To make things a bit easier and, i.e., easier to extend for future work, we use different interfaces to fill our test diagram with content and further grammar. Therefore, we use on the one hand our own interface _SD4CElement_ and on the other hand the interface _Diagram_ of the extension [BasisSymbols of MCBasis](https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/symbols/BasicSymbols.mc4#L44).
 
 ### Diagram 
 At first, let us have a look at the interface _Diagram_ which we implement with our _TestDiagram_:
@@ -74,7 +74,7 @@ At first, let us have a look at the interface _Diagram_ which we implement with 
         SD4CElement*
       "}";
 ```
-As we can see here, we start a testdiagram of our _SD4ComponentTestingTool_ with the keyword `testdiagram` followed by a selfchoosen name (_Name_), the keyword `for` and the _mainComponent_ as _Name_. In general, the _mainComponent_ will be the main model of the _MontiArc_ model which also describes and names the functions of the generated tests ([see generator] (https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/tree/develop/src/main/java/de/monticore/lang/sd4componenttesting/generator)).
+As we can see here, we start a testdiagram of our _SD4ComponentTestingTool_ with the keyword `testdiagram` followed by a selfchoosen name (_Name_), the keyword `for` and the _mainComponent_ as _Name_. In general, the _mainComponent_ will be the main model of the _MontiArc_ model which also describes and names the functions of the generated tests ([see generator](https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/tree/develop/src/main/java/de/monticore/lang/sd4componenttesting/generator)).
 After initiating the testdiagram, the actual test conditions can be placed inside the brackets `{ }`.
 
 
@@ -93,7 +93,7 @@ As second interface we use _SD4CElement_ which implements all test conditions an
 For a better overview we describe every implementation individual:
 
 #### SD4CConnection
-The _SD4CConnection_ describes the main part of the _SD4CElement_. This implementation denotes the connection between different components and subcomponents. For this, we use an optional _PortAccess_ as _source_ with the keyword `->` followed by a list of _PortAccess_ _targets_. After the keyword `:` a list of _values_ (_Literals_) must be appended and with `;` terminatd.
+The _SD4CConnection_ describes the main part of the _SD4CElement_. This implementation denotes the connection between different components and subcomponents. For this, we use an optional _PortAccess_ as _source_ with the keyword `->` followed by a list of _PortAccess_ _targets_. After the keyword `:` a list of _values_ (_Literals_) must be appended and with `;` terminated.
 ```
     SD4CConnection implements SD4CElement =
       (source:PortAccess)? "->" target:(PortAccess || ",")* ":" value:(Literal || ",")* ";";
@@ -103,11 +103,11 @@ For example, if the target is not present, there can be only exact one value.
 In addition, there are two other cases: if multiple targets are present they can either have exact one value or multiple values as well.
 But in this case, the number of targets must be equal to the number of values at all time.
 
-Further notice, that it is not inteded to only use a connection like `-> target : 2;`.
+Further notice, that it is not intended to only use a connection like `-> target : 2;`.
 Whenever the source is missing we assume the value is the input of target which is input of the _mainComponent_.
 On the other side, please notice that we always assume source is the output of the _mainComponent_ with value _value_, whenever _target_ is not present. 
 In all other cases we assume _source_ and _target_ are normal ports of either the _mainComponent_ or a subcomponent.
-To differentiate, we use port names like `subcomponent.port` and `mainComponentPort`. Please note here that the subcomponent is seperated with an `.` between subcomponent and port.
+To differentiate, we use port names like `subcomponent.port` and `mainComponentPort`. Please note here that the subcomponent is separated with an `.` between subcomponent and port.
 
 To clarify the different a bit more, here some short examples for MainInput and MainOutput of _mainComponent_ Test:
 
@@ -145,11 +145,11 @@ subcomponent.input -> : 12;
 ```
 There must be at least one port of the _mainComponent_. Therefore, it is not valid.
 
-For better reference a more [practical example] (#Example) can be found in a following section. 
+For better reference a more [practical example](#Example) can be found in a following section. 
 
 #### SD4CExpression
 With the next implementation _SD4CExpression_ we offer the functionality of [OCL](https://git.rwth-aachen.de/monticore/languages/OCL).
-After the keyword `assert` all _Expression_ can be inserted as soon as they are evaluateable to a boolean.
+After the keyword `assert` all _Expression_ can be inserted as soon as they are evaluable to a boolean.
 I.e., it is possible to check a range of a port.
 ```
     SD4CExpression implements SD4CElement =
@@ -175,10 +175,10 @@ We assume we want to test the behavior of a component with a delay to test a bit
 ```
 
 # Example 
-Sometimes an example can explain things better. Therefore, we will have a closer look at the [SmallExample] (https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/blob/LucasDevelopReadmeGrammar/src/test/resources/examples/correct/SmallExample.sd4c).
+Sometimes an example can explain things better. Therefore, we will have a closer look at the [SmallExample](https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/blob/LucasDevelopReadmeGrammar/src/test/resources/examples/correct/SmallExample.sd4c).
 For this, we also need the _MontiArc_ models of the _mainComponent_ _Main_ and its subcomponent _Sum_.
 
-_MontiArc_ model of _Sum_
+**_MontiArc_ model of _Sum_**
 ```
 package examples.correct;
 
@@ -192,7 +192,7 @@ component Sum {
 For the component _Sum_ three ports are defined: two input ports `first` and `second` and one output port `result`. All ports use and expect integer as datatype. Please notice, naming a port as _"result"_ may leed to some weird behavior and issues. However, using _result_ as port name for subcomponents seems to be fine to this point in time.
 
 
-_MontiArc_ model of _Main_
+**_MontiArc_ model of _Main_**
 ```
 package examples.correct;
 
@@ -214,12 +214,13 @@ component Main {
   sumComp.result -> foo2;
 }
 ```
-As we can see here the _mainComponent_ _Main_ has three ports: `value` as input, `foo` and `foo2` as output. AS in the component _Sum_ all ports expect an integer as datatype too.
+As we can see here the _mainComponent_ _Main_ has three ports: `value` as input, `foo` and `foo2` as output. As in the component _Sum_ all ports expect an integer as datatype too.
 Furthermore, _Main_ uses the component _Sum_ as subcomponent with variable _sumCom_ and _sumComp_.
 The next lines describe the connections of the _mainComponent_ _Main_ with the subcomponent _sumCom_ and _sumComp_. I.e., the main input is connected with the inputs of the subcomponent _sumCom_ `first` and `second`. The output of the subcomponent `result` is connected with the output of the _mainComponent_ `foo`. The same holds for the subcomponent _sumComp_.
 
 In a next step, we will have a look at the testdiagram model:
 
+**_MontiArc_ model _SmallExample_**
 ```
 package examples.correct;
 
@@ -236,7 +237,7 @@ testdiagram SmallExample for Main {
 }
 ```
 At first we can define a package name, as we have seen before, as _MCQualifiedName_. Here, we use `examples.correct` as our package which is also defined in both other _MontiArc_ models _Main_ and _Sum_. 
-In the next line we define a new testdiagram and call it `SmallExample` with `testdiagram SmallExample`. The appended `for Main` describes on which component this testdiagram _SmallExample_ should be relay. In this case, our testdiagram uses the _mainComponent_ _Main_ as basis for the tests. 
+In the next line we define a new testdiagram and call it `SmallExample` with `testdiagram SmallExample`. The appended `for Main` describes on which component this testdiagram _SmallExample_ should be rely. In this case, our testdiagram uses the _mainComponent_ _Main_ as basis for the tests. 
 With this, we have constructed the basic structure of a testdiagram. All we have to do next is to describe the test cases and the expected values or further conditions like _OCL_ (as described above).
 Taking a peak into the curly brackets we see a hand full of instructions. Some, about the same structure and some roughly different.
 To make this as easy as possible, we will have a look at each instructions individual.
@@ -245,8 +246,10 @@ The first instruction ` -> value : 33;` describes the first input. As we have se
 
 The next two instructions are almost equal: `value -> sumCom.first : 33;`.
 With this, we expect the port _value_ to give the port _first_ of the component _sumCom_ the value of _33_.
-Let have us a close look to this instruction. Because of the previous instruction we know that the _mainComponent_ _Main_ has the port _value_. Because the source port `value` has no additon seperated with a `.` we have to assume that this port is a port of the _mainComponent_. With this we also know that _value_ is an input port. But `sumCom.first` is a black box to this point in time. 
+Let have us a close look to this instruction. Because of the previous instruction we know that the _mainComponent_ _Main_ has the port _value_. Because the source port `value` has no addition seperated with a `.` we have to assume that this port is a port of the _mainComponent_. With this we also know that _value_ is an input port. But `sumCom.first` is a black box to this point in time. 
 If we look at the definition of the _MontiArc_ model of _Main_ 
+
+**_MontiArc_ model of _Main_**
 ```
 [...]
 component Main {  
@@ -258,9 +261,9 @@ component Main {
   sumCom.result -> foo;
 }
 ```
-we see that the component _Main_ has a subcomponent _Sum_ which is named _sumCom_. Because of the next instructions `value -> sumCom.first;` and `value -> sumCom.second;` we know that the input port _value_ of _Main_ is connected with the ports _first_ and _second_ of the subcomponent _sumCom_ of type _Sum_. With the defintion of the _MontiArc_ model of _Sum_ `[...] component Sum {  port in int first;  port in int second; [...] }` we know the ports _first_ and _second_ are input ports.
+we see that the component _Main_ has a subcomponent _Sum_ which is named _sumCom_. Because of the next instructions `value -> sumCom.first;` and `value -> sumCom.second;` we know that the input port _value_ of _Main_ is connected with the ports _first_ and _second_ of the subcomponent _sumCom_ of type _Sum_. With the definition of the _MontiArc_ model of _Sum_ `[...] component Sum {  port in int first;  port in int second; [...] }` we know the ports _first_ and _second_ are input ports.
 Therefore, we know that the input port _value_ of _Main_ is connected to the input port _first_ and _second_ of its subcomponent _sumCom_ of the type _Sum_. 
-With this, the expectation the value of _value_ is transferred to the input ports _first_ and _second_ semms to be legit. So, if _value_ has the value _33_ we can expect _first_ and _second_ to have the same value _33_.
+With this, the expectation the value of _value_ is transferred to the input ports _first_ and _second_ seams to be legit. So, if _value_ has the value _33_ we can expect _first_ and _second_ to have the same value _33_.
 
 The next different instruction `foo -> : 66;` describes the end of a calculation. With this instruction we want to test whether the port foo has the value _66_. Please note, this instruction always tests the very last entry of the calculation.
 As we have seen before `foo` has no additional content. Therefore this port must be a port of the _mainComponent_. The missing target port leads to the instruction of the main output. That is why we have to assume the main output port _foo_ of the _mainComponent_ _Main_ has the value _66_ as very last value. 
@@ -270,7 +273,7 @@ Please note, the instruction `sumCom.result -> foo : 66;` and `foo -> : 66;` hav
 
 Sometimes it must be necessary to wait a certain amount of time to emulate calculation time or transfer time of the real world application. That is why we use the next instruction `delay 500ms;`. With this, the calculation yields for about 500 ms and continues after the 500 ms as normal as before.
 
-The very last instruction strats with the keyword `assert`. With this keyword expressions are enabled and _OCL_ can be used too.
+The very last instruction starts with the keyword `assert`. With this keyword expressions are enabled and _OCL_ can be used too.
 In this case we only want to test whether the last result is in between a certain range of numbers.
 If we take a look at the expression `assert sumCom.result < 67 && sumCom.result > 65;` we see the value of the port _result_ (output port of the subcomponent _sumCom_ of type _Sum_) should be less than _67_ but also greater than _65_. In case of calculating the double of the value _33_, _66_ should be in between _65_ and _67_.
 
