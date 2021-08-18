@@ -90,7 +90,7 @@ testdiagram MainTest for Main {
   <b>inPort -> outPort</b> : 12;
 }
 </pre>
-- [ERROR] 0xSD4CPT1130: Connection 'inPort -> outPort : 12;' is not defined in MainComponent 'Main' as connector
+- [ERROR] 0xSD4CPT1130: Connection 'inPort -> outPort : 12' is not defined in MainComponent 'Main' as connector
 
 Correct:
 <pre>
@@ -109,8 +109,8 @@ testdiagram MainTestInvalid for Main {
   inPort -> sumCom.first : 12, 12;
 }
 </pre>
-- [ERROR] 0xSD4CPT1050: Connection '-> : 12;' is not valid
-- [ERROR] 0xSD4CPT1060: Connection 'inPort -> sumCom.first : 12, 12;' is not valid (wrong value amount)
+- [ERROR] 0xSD4CPT1050: Connection '-> : 12' is not valid
+- [ERROR] 0xSD4CPT1060: Connection 'inPort -> sumCom.first : 12, 12' is not valid (wrong value amount)
 
 Correct:
 <pre>
@@ -128,7 +128,7 @@ testdiagram MainTest for Main {
   <b>inPort</b> -> : 24;
 }
 </pre>
-- [ERROR] 0xSD4CPT1080: Output Port 'inPort' of Connection 'inPort -> : 24;' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1080: Output Port 'inPort' of Connection 'inPort -> : 24' could not be found in MainComponent 'Main'
 
 Correct:
 <pre>
@@ -145,7 +145,7 @@ testdiagram MainTest for Main {
   -> <b>outPort</b> : 12;
 }
 </pre>
-- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection '-> outPort : 12;' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection '-> outPort : 12' could not be found in MainComponent 'Main'
 
 Correct:
 <pre>
@@ -173,18 +173,18 @@ testdiagram MainTest for Main {
   <b>sumCom.first -> sumCom.outPort</b> : 24;
 }
 </pre>
-- [ERROR] 0xSD4CPT1080: Output Port 'inPort' of Connection 'inPort -> inPort : 12;' could not be found in MainComponent 'Main'
-- [ERROR] 0xSD4CPT1120: Input Port 'outPort' of Connection 'inPort -> sumCom.outPort : 12;' could not be found in Component 'sumCom'
-- [ERROR] 0xSD4CPT1080: Output Port 'inPort' of Connection 'sumCom.outPort -> inPort : 24;' could not be found in MainComponent 'Main'
-- [ERROR] 0xSD4CPT1120: Input Port 'outPort' of Connection 'sumCom.outPort -> sumCom.outPort : 24;' could not be found in Component 'sumCom'
-- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> inPort : 24;' could not be found in MainComponent 'Main'
-- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> outPort : 24;' could not be found in MainComponent 'Main'
-- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> sumCom.first : 24;' could not be found in MainComponent 'Main'
-- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> sumCom.outPort : 24;' could not be found in MainComponent 'Main'
-- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> inPort : 24;' could not be found in Component 'sumCom'
-- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> outPort : 24;' could not be found in Component 'sumCom'
-- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> sumCom.first : 24;' could not be found in Component 'sumCom'
-- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> sumCom.outPort : 24;' could not be found in Component 'sumCom'
+- [ERROR] 0xSD4CPT1080: Output Port 'inPort' of Connection 'inPort -> inPort : 12' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1120: Input Port 'outPort' of Connection 'inPort -> sumCom.outPort : 12' could not be found in Component 'sumCom'
+- [ERROR] 0xSD4CPT1080: Output Port 'inPort' of Connection 'sumCom.outPort -> inPort : 24' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1120: Input Port 'outPort' of Connection 'sumCom.outPort -> sumCom.outPort : 24' could not be found in Component 'sumCom'
+- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> inPort : 24' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> outPort : 24' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> sumCom.first : 24' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1100: Input Port 'outPort' of Connection 'outPort -> sumCom.outPort : 24' could not be found in MainComponent 'Main'
+- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> inPort : 24' could not be found in Component 'sumCom'
+- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> outPort : 24' could not be found in Component 'sumCom'
+- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> sumCom.first : 24' could not be found in Component 'sumCom'
+- [ERROR] 0xSD4CPT1110: Output Port 'first' of Connection 'sumCom.first -> sumCom.outPort : 24' could not be found in Component 'sumCom'
 
 Correct:
 <pre>

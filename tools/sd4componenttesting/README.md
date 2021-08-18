@@ -127,7 +127,7 @@ usage: SD4ComponentTestingCLI
                             specified file (optional).
 ```
 
-To work properly, the CLI tool needs the mandatory argument `-i,--input <file>`, which takes the file paths of at least one input file containing SD4C models.
+To work properly, the CLI tool needs the mandatory argument `-i,--input <file>`, which takes the file paths of at least one input file containing a SD4C model.
 If no other arguments are specified, the CLI tool solely parses the model(s). For trying this out, copy the `sd4componenttesting-cli.jar` into a directory of your choice.
 Afterwards, create a text file containing the following simple SD4C:
 
@@ -219,7 +219,60 @@ After executing this command, you should not experience any errors. If you do en
 
 ### Step 4: Using the Model Path to Resolve Symbols
 
+-path
+
 [...]
+
+### Step 5: Generate C++ Tests
+
+-g
+
+[...]
+
+# Tool
+
+This section describes the Tool of the SD4ComponentTesting Generator.
+The Tool provides typical functionality used when
+processing models. To this effect, it provides funcionality
+for
+
+- parsing,
+- coco-checking,
+- generating.
+
+The requirements for building and using the SD4C Tool are that JDK 8 (or JDK 11 or JDK 14), Git, and Maven are installed and available for use in Bash.
+This document describes how to build the Tool from the source files.
+Afterwards, this document contains a tutorial for using the Tool.
+
+## Building the Tool from the Sources
+
+It is possible to build an executable JAR of the Tool from the source files located in GitLab.
+The following describes the process for building the Tool from the source files using Bash.
+For building a Jar with the Tool with Bash from the source files available in GitLab, execute the following commands.
+
+First, clone the repository:
+
+```
+git clone https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting.git
+```
+
+Change the directory to the root directory of the cloned sources:
+
+```
+cd sd4componenttesting
+```
+
+Then build the project by running (Info: you need to have Maven installed for this):
+
+```
+maven clean install
+```
+
+Congratulations! You can now find the JAR file `sd4componenttesting-7.0.0-SNAPSHOT.jar` in the directory `target/` (accessible via `cd target/`).
+
+## Tutorial: Getting Started Using the SD4ComponentTesting Tool
+
+
 
 # License
 
