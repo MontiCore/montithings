@@ -3,7 +3,7 @@ As we have seen before, with our tool _SD4ComponentTestingTool_ we want to offer
 In the following sections we will describe the structure and offered functionality of the extended grammar.
 
 # Grammar
-For a better understanding we will show the full grammar first and then, in a second step, will describe the components of our grammar individualy.
+For a better understanding we will show the full grammar first and then, in a second step, we will describe the components of our grammar individualy. For this, we classify this section in extension, start point and the used interfaces.
 ```
 package de.monticore.lang;
 
@@ -40,7 +40,7 @@ grammar SD4ComponentTesting extends de.monticore.lang.SD4Development,
 ## Extension
 To describe tests for given models as easy as possible we decided to use an extension of a sequence diagram.
 That is why our _SD4ComponentTestingTool_ defines and uses a new grammar to offer an additional small set of functionality.
-Because we want to extend sequence diagrams with our own functionality, we choose the [de.monticore.lang.SD4Development](https://git.rwth-aachen.de/monticore/statechart/sd-language) extension to extend which is also part of the _de.monticore.lang_ package. In addition, to offer alredy existing functionality we extend [MontiArc](https://git.rwth-aachen.de/monticore/montiarc/core) and [_de.monticore.SIUnitLiterals_](https://github.com/MontiCore/siunits) for further opportuinites for future asserts and assignements.
+Because we want to extend sequence diagrams with our own functionality, we choose the [de.monticore.lang.SD4Development](https://git.rwth-aachen.de/monticore/statechart/sd-language) extension to extend which is also part of the _de.monticore.lang_ package. In addition, to offer alredy existing functionality we extend [MontiArc](https://git.rwth-aachen.de/monticore/montiarc/core) and [_de.monticore.SIUnitLiterals_](https://github.com/MontiCore/siunits) for further opportunities for future asserts and assignements.
 
 ```
 package de.monticore.lang;
@@ -65,10 +65,10 @@ After all initializations, declarations and imports are done the actual test dia
 ```
 
 ## Interfaces
-To make things a bit easier and, i.e., easier to extend for future work, we use different interfaces to fill our test diagram with content and further grammar. Therefore, we use one the one hand our own interface _SD4CElement_ and on the other hand the interface _Diagram_ of the extension [BasisSymbols of MCBasis] (https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/symbols/BasicSymbols.mc4#L44).
+To make things a bit easier and, i.e., easier to extend for future work, we use different interfaces to fill our test diagram with content and further grammar. Therefore, we use on the one hand our own interface _SD4CElement_ and on the other hand the interface _Diagram_ of the extension [BasisSymbols of MCBasis] (https://github.com/MontiCore/monticore/blob/dev/monticore-grammar/src/main/grammars/de/monticore/symbols/BasicSymbols.mc4#L44).
 
 ### Diagram 
-At first, let us have a look at the interface _Diagram_ which we implemnt with our _TestDiagram_:
+At first, let us have a look at the interface _Diagram_ which we implement with our _TestDiagram_:
 ``` TestDiagram implements Diagram =
       "testdiagram" Name "for" mainComponent:Name "{"
         SD4CElement*
@@ -76,7 +76,6 @@ At first, let us have a look at the interface _Diagram_ which we implemnt with o
 ```
 As we can see here, we start a testdiagram of our _SD4ComponentTestingTool_ with the keyword `testdiagram` followed by a selfchoosen name (_Name_), the keyword `for` and the _mainComponent_ as _Name_. In general, the _mainComponent_ will be the main model of the _MontiArc_ model which also describes and names the functions of the generated tests ([see generator] (https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/tree/develop/src/main/java/de/monticore/lang/sd4componenttesting/generator)).
 After initiating the testdiagram, the actual test conditions can be placed inside the brackets `{ }`.
-To terminate the testdiagram we also use the terminate symbol `;`. 
 
 
 ### SD4CElement
@@ -99,14 +98,20 @@ The _SD4CConnection_ describes the main part of the _SD4CElement_. This implemen
     SD4CConnection implements SD4CElement =
       (source:PortAccess)? "->" target:(PortAccess || ",")* ":" value:(Literal || ",")* ";";
 ```
-Please note that it is possible either one target with exact one value or multiple targets with exact one value or multiple targets with multiple values if the number of targets and number of values is equal.
-Further notice, that it is not inteded to only use a connection like `-> target:2;`.
-Whenever the source is missing we assume value is the input of target which is input of the _mainComponent_.
+Please note, that not all combinations of targets and values are allowed and reasonable.
+For example, if the target is not present, there can be only exact one value.
+In addition, there are two other cases: if multiple targets are present they can either have exact one value or multiple values as well.
+But in this case, the number of targets must be equal to the number of values at all time.
+
+Further notice, that it is not inteded to only use a connection like `-> target : 2;`.
+Whenever the source is missing we assume the value is the input of target which is input of the _mainComponent_.
 On the other side, please notice that we always assume source is the output of the _mainComponent_ with value _value_, whenever _target_ is not present. 
 In all other cases we assume _source_ and _target_ are normal ports of either the _mainComponent_ or a subcomponent.
 To differentiate, we use port names like `subcomponent.port` and `mainComponentPort`. Please note here that the subcomponent is seperated with an `.` between subcomponent and port.
 
-Some examples for MainInput and MainOutput of _mainComponent_ Test
+To clarify the different a bit more, here some short examples for MainInput and MainOutput of _mainComponent_ Test:
+
+**Valid examples**
 ```
  -> input : 12;
 ```
@@ -119,6 +124,29 @@ output -> : 12;
 With this expression we assume the output port of the _mainComponent_ Test has the value 12.
 Please note, that with this expression only the very last value of the calculation is considered.
 
+```
+input -> subcomponent.input : 12;
+```
+With this expression we assume the input port of the _mainComponent_ is connected with the input port _input_ of the subcomponent _subcomponent_ and the _mainComponent_ input transfers its value to the _subcomponent.input_. Therefore, we test whether _subcomponent.input_ has the value _12_.
+
+**Some invalid examples**
+```
+ -> subcomponent.input : 12;
+```
+`subcomponent.input` is no port of the _mainComponent_. Therefore, it is not valid.
+
+```
+subcomponent.input -> : 12;
+```
+`subcomponent.input` is no port of the _mainComponent_. Therefore, it is not valid.
+
+```
+ -> : 12;
+```
+There must be at least one port of the _mainComponent_. Therefore, it is not valid.
+
+For better reference a more [practical example] (#Example) can be found in a following section. 
+
 #### SD4CExpression
 With the next implementation _SD4CExpression_ we offer the functionality of [OCL](https://git.rwth-aachen.de/monticore/languages/OCL).
 After the keyword `assert` all _Expression_ can be inserted as soon as they are evaluateable to a boolean.
@@ -127,9 +155,9 @@ I.e., it is possible to check a range of a port.
     SD4CExpression implements SD4CElement =
       key("assert") Expression ";";
 ```
-E.g., assume you want to check whether the value of the subcomponent _Sub_ port _subPort_ is smaller than 6 but greater than 2 we can write something like:
+E.g., assume you want to check whether the value of the subcomponent _sub_ port _subPort_ is smaller than _6_ but greater than _2_ we can write something like:
 ```
-    assert Sub.subPort >= 2 && Sub.subPort <= 6;
+    assert sub.subPort >= 2 && sub.subPort <= 6;
 ```
 
 
@@ -147,7 +175,7 @@ We assume we want to test the behavior of a component with a delay to test a bit
 ```
 
 # Example 
-Sometimes an example can explain things better. Therefore, we will have a closer look on the [SmallExample] (https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/blob/LucasDevelopReadmeGrammar/src/test/resources/examples/correct/SmallExample.sd4c).
+Sometimes an example can explain things better. Therefore, we will have a closer look at the [SmallExample] (https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/blob/LucasDevelopReadmeGrammar/src/test/resources/examples/correct/SmallExample.sd4c).
 For this, we also need the _MontiArc_ models of the _mainComponent_ _Main_ and its subcomponent _Sum_.
 
 _MontiArc_ model of _Sum_
