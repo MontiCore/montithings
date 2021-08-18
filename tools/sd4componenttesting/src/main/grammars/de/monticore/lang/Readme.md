@@ -111,11 +111,13 @@ Some examples for MainInput and MainOutput of _mainComponent_ Test
  -> input : 12;
 ```
 With this expression we assume the input port of the _mainComponent_ Test has the value 12.
+Please note, that with this expression a new calculation of the component starts.
 
 ```
 output -> : 12;
 ```
 With this expression we assume the output port of the _mainComponent_ Test has the value 12.
+Please note, that with this expression only the very last value of the calculation is considered.
 
 #### SD4CExpression
 With the next implementation _SD4CExpression_ we offer the functionality of [OCL](https://git.rwth-aachen.de/monticore/languages/OCL).
@@ -188,7 +190,7 @@ As we can see here the _mainComponent_ _Main_ has three ports: `value` as input,
 Furthermore, _Main_ uses the component _Sum_ as subcomponent with variable _sumCom_ and _sumComp_.
 The next lines describe the connections of the _mainComponent_ _Main_ with the subcomponent _sumCom_ and _sumComp_. I.e., the main input is connected with the inputs of the subcomponent _sumCom_ `first` and `second`. The output of the subcomponent `result` is connected with the output of the _mainComponent_ `foo`. The same holds for the subcomponent _sumComp_.
 
-In a next step, we will have a look on the testdiagram model.
+In a next step, we will have a look at the testdiagram model:
 
 ```
 package examples.correct;
@@ -205,6 +207,44 @@ testdiagram SmallExample for Main {
   assert sumCom.result < 67 && sumCom.result > 65;
 }
 ```
+At first we can define a package name, as we have seen before, as _MCQualifiedName_. Here, we use `examples.correct` as our package which is also defined in both other _MontiArc_ models _Main_ and _Sum_. 
+In the next line we define a new testdiagram and call it `SmallExample` with `testdiagram SmallExample`. The appended `for Main` describes on which component this testdiagram _SmallExample_ should be relay. In this case, our testdiagram uses the _mainComponent_ _Main_ as basis for the tests. 
+With this, we have constructed the basic structure of a testdiagram. All we have to do next is to describe the test cases and the expected values or further conditions like _OCL_ (as described above).
+Taking a peak into the curly brackets we see a hand full of instructions. Some, about the same structure and some roughly different.
+To make this as easy as possible, we will have a look at each instructions individual.
+
+The first instruction ` -> value : 33;` describes the first input. As we have seen before, with this instruction we expect that the value _33_ lies against the port _value_. Because there is no source specified we have to assume the port _value_ must be an input port of the _mainComponent_ _Main_. If we take a look at the _MontiArc_ _Main_ model `[...] component Main {  port in int value; [...] }` we see that _Main_ has the input port _value_. Therefore, with this instruction, we can expect that the input port _value_ of the _mainComponent_ _Main_ has the value _33_.
+
+The next two instructions are almost equal: `value -> sumCom.first : 33;`.
+With this, we expect the port _value_ to give the port _first_ of the component _sumCom_ the value of _33_.
+Let have us a close look to this instruction. Because of the previous instruction we know that the _mainComponent_ _Main_ has the port _value_. Because the source port `value` has no additon seperated with a `.` we have to assume that this port is a port of the _mainComponent_. With this we also know that _value_ is an input port. But `sumCom.first` is a black box to this point in time. 
+If we look at the definition of the _MontiArc_ model of _Main_ 
+```
+[...]
+component Main {  
+  [...]
+  Sum sumCom; 
+  [...]
+  value -> sumCom.first;
+  value -> sumCom.second;
+  sumCom.result -> foo;
+}
+```
+we see that the component _Main_ has a subcomponent _Sum_ which is named _sumCom_. Because of the next instructions `value -> sumCom.first;` and `value -> sumCom.second;` we know that the input port _value_ of _Main_ is connected with the ports _first_ and _second_ of the subcomponent _sumCom_ of type _Sum_. With the defintion of the _MontiArc_ model of _Sum_ `[...] component Sum {  port in int first;  port in int second; [...] }` we know the ports _first_ and _second_ are input ports.
+Therefore, we know that the input port _value_ of _Main_ is connected to the input port _first_ and _second_ of its subcomponent _sumCom_ of the type _Sum_. 
+With this, the expectation the value of _value_ is transferred to the input ports _first_ and _second_ semms to be legit. So, if _value_ has the value _33_ we can expect _first_ and _second_ to have the same value _33_.
+
+The next different instruction `foo -> : 66;` describes the end of a calculation. With this instruction we want to test whether the port foo has the value _66_. Please note, this instruction always tests the very last entry of the calculation.
+As we have seen before `foo` has no additional content. Therefore this port must be a port of the _mainComponent_. The missing target port leads to the instruction of the main output. That is why we have to assume the main output port _foo_ of the _mainComponent_ _Main_ has the value _66_ as very last value. 
+Through the _MontiArc_ models of _Sum_ and _Main_ we know that the output port _result_ of _Sum_ is connected to the output port _foo_ of _Main_. 
+All values the port _result_ has must be transferred to the port _foo_ of _Main_. Therefore, the main output _foo_ should have the value _66_ if the initiated value _33_ has been doubled.
+Please note, the instruction `sumCom.result -> foo : 66;` and `foo -> : 66;` have the same meaning.
+
+Sometimes it must be necessary to wait a certain amount of time to emulate calculation time or transfer time of the real world application. That is why we use the next instruction `delay 500ms;`. With this, the calculation yields for about 500 ms and continues after the 500 ms as normal as before.
+
+The very last instruction strats with the keyword `assert`. With this keyword expressions are enabled and _OCL_ can be used too.
+In this case we only want to test whether the last result is in between a certain range of numbers.
+If we take a look at the expression `assert sumCom.result < 67 && sumCom.result > 65;` we see the value of the port _result_ (output port of the subcomponent _sumCom_ of type _Sum_) should be less than _67_ but also greater than _65_. In case of calculating the double of the value _33_, _66_ should be in between _65_ and _67_.
 
 
 
