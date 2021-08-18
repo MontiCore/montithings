@@ -272,7 +272,46 @@ Congratulations! You can now find the JAR file `sd4componenttesting-7.0.0-SNAPSH
 
 ## Tutorial: Getting Started Using the SD4ComponentTesting Tool
 
+### Step 1: First Steps
+First we need to import the JAR file to the maven project. This //TODO
+montithings modelle umwandeln in montiarc //verweis auf prettyprinter
+example.arc erstellen  /wie cli step4 //später
 
+```java
+de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool tool = new de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool();
+```
+
+Now that we are able to use the tool we can make use of our three basic tool functions, which will be explained in the following:
+
+### Step 2: Parse SD4C Model
+
+Tries to parse the model, checks the grammars correctness and reads in the model.
+
+### Step 3: Initialize Symbol Table
+
+folie 9&10 präsi / delegates /scope und ast adjustments?
+
+### Step 4: load SD4C Model
+erstellt symbol table und coco checks
+ermöglicht es die MontiArc zu referenzieren
+
+//anpassen obige beispiele
+argumente erklären. aktuell nur für einen test
+
+```java
+tool.loadModel("src/test/resources/example/models/", "src/test/resources/example/ExampleTest.sd4c");
+```
+
+### Step 5: generate SD4C Model
+argumente erklären. aktuell nur für einen test
+arcmodel_path, testdiagram_path, ausgabe für den cpp test path
+```java
+tool.generate("src/test/resources/example/models/", "src/test/resources/example/ExampleTest.sd4c", "target/test-path/ExampleTest.cpp");
+```
+
+## More Information on Internet of Things
+
+/oben verlinken
 
 # License
 
