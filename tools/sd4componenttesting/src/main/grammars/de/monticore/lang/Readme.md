@@ -145,7 +145,7 @@ subcomponent.input -> : 12;
 ```
 There must be at least one port of the _mainComponent_. Therefore, it is not valid.
 
-For better reference a more [practical example](#Example) can be found in a following section. 
+For better reference a more [practical example](#example) can be found in a following section. 
 
 #### SD4CExpression
 With the next implementation _SD4CExpression_ we offer the functionality of [OCL](https://git.rwth-aachen.de/monticore/languages/OCL).
