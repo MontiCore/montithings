@@ -60,9 +60,9 @@ testdiagram MainTest for Main {
 
 This test diagram will then be used to generate the C++ files for testing the IoT application.
 
-For more information about the SD4C language please check out the [grammar](src/main/grammars/de/monticore/lang/README.md) documentation.
+For more information about the SD4C language please check out the [grammar](src/main/grammars/de/monticore/lang/Readme.md) documentation.
 
-If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out the [CoCo documentation](src/main/java/de/monticore/lang/sd4componenttesting/_cocos/README.md#context-conditions) for more information about Context Conditions.
+If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out the [CoCo documentation](src/main/java/de/monticore/lang/sd4componenttesting/_cocos/README.md) for more information about Context Conditions.
 
 # Command Line Interface (CLI)
 
@@ -222,7 +222,8 @@ Save the text file as `Example.arc` in the newly created directory `models/examp
 When you now execute the command to check the context conditions again you may notice that the CLI prints only `CoCos: All Checked!` to the console while previously executing the command was showing the error.
 This means that the CLI now finds the model file for the Main component and satisfies all other context condtions. 
 
-Before explaing in [Step 4](#step-4-using-the-model-path-to-resolve-symbols), how the CLI will find the model file, let us first consider a more complex example.
+Before explaing in [Step 4](#step-4-using-the-model-path-to-resolve-symbols), how the CLI will find the model file, why the model files are `.arc` files and how you would get `.arc` files for your MontiThings project when you have `.mt` files, let us first consider a more complex example.
+
 Recall the testdiagram `MainTest` from the [An Example Model](#an-example-model) section above.
 For continuing, copy the textual representation of the SD4C `MainTest` and save it in a file `MainTest.sd4c` in the directory where the file `sd4componenttesting-cli.jar` is located.
 Additionally we need the model files for the Main and Sum component. You can find them in the [An Example Model](#an-example-model) section above aswell. Save them as `Main.arc` and `Sum.arc` in the same directory where `Example.arc` is located, in `models/example`.
@@ -244,6 +245,19 @@ java -jar sd4componenttesting-cli.jar -i MainTest.sd4c -path ./models/example/ -
 ```
 After executing this command, you should not experience any errors. The CLI prints only `CoCos: All Checked!` to the console.
 This again means that all context condtions are satisfied.
+
+At the moment the SD4ComponentTesting-CLI works only with MontiArc model files, thus requires the components to be stored as `.arc` files. When using the SD4ComponentTesting-CLI in a MontiThings Project the idea is that you can use the integrated pretty-printer to convert MontiThings models to MontiArc models and then use the converted MontiArc models to generate Tests with the CLI. For more Information about that please have a look [here](https://git.rwth-aachen.de/monticore/montithings/core/-/blob/develop/languages/montithings/src/main/java/montithings/_visitor/MontiThingsToMontiArcFullPrettyPrinter.java) and [here](https://git.rwth-aachen.de/monticore/montithings/core/-/blob/develop/languages/montithings/src/test/java/montithings/_visitor/MontiThingsPrettyPrinterDelegatorTest.java#L43).
+
+The pretty-printer can be used like this:
+
+```java
+montithings._parser.MontiThingsParser mtParser = new montithings._parser.MontiThingsParser();
+final java.util.Optional<montiarc._ast.ASTMACompilationUnit> ast = mtParser.parse("src/test/resources/examples/generatorTest/models/Source.mt");
+final montithings._visitor.MontiThingsToMontiArcFullPrettyPrinter printer = new montithings._visitor.MontiThingsToMontiArcFullPrettyPrinter();
+String arc = printer.prettyprint(ast.get());
+```
+
+_Unknown if this actually works, did not work for us - keywords and numbers missing in output_
 
 ### Step 5: Generate C++ Tests
 
