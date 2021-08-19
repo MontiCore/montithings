@@ -14,6 +14,8 @@ Suppose the project for which tests are to be generated has the following struct
 The connections from the diagram would be written down components as shown in the following two code sections.
 
 ```
+package example;
+
 component Main {
   port in int inPort;
   port out int outPort;
@@ -27,6 +29,8 @@ component Main {
 ```
 
 ```
+package example;
+
 component Sum {
   port in int first;
   port in int second;
@@ -44,7 +48,7 @@ An exemplary test case would be to check if the application returns 24 for an in
 Transforming this into textual syntax for generating tests would result in such a SD4C test diagram that we would save as `MainTest.sd4c`.
 
 ```
-package test;
+package example;
 
 testdiagram MainTest for Main {
   -> inPort : 12;
@@ -56,9 +60,9 @@ testdiagram MainTest for Main {
 
 This test diagram will then be used to generate the C++ files for testing the IoT application.
 
-If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out the [CoCo documentation](src/main/java/de/monticore/lang/sd4componenttesting/_cocos/README.md#context-conditions) for more information about Context Conditions.
-
 For more information about the SD4C language please check out the [grammar](src/main/grammars/de/monticore/lang/README.md) documentation.
+
+If the test diagram for some reason does not meet the application architecture (e. g. message exchange between components that are not connected in the architecture) the Context Condition checks will fail and throw an error before generating the test files. Check out the [CoCo documentation](src/main/java/de/monticore/lang/sd4componenttesting/_cocos/README.md#context-conditions) for more information about Context Conditions.
 
 # Command Line Interface (CLI)
 
@@ -130,11 +134,11 @@ usage: SD4ComponentTestingCLI
 ```
 
 To work properly, the CLI tool needs the mandatory argument `-i,--input <file>`, which takes the file paths of at least one input file containing a SD4C model.
-If no other arguments are specified, the CLI tool solely parses the model(s). For trying this out, copy the `sd4componenttesting-cli.jar` into a directory of your choice.
-Afterwards, create a text file containing the following simple SD4C:
+If no other arguments are specified, the CLI tool solely parses the model(s). For trying this out, if you have not done this yet, create a new folder anywhere you want and copy the `sd4componenttesting-cli.jar` into that directory.
+Afterwards, create a text file containing the following simple SD4C model:
 
 ```
-package test;
+package example;
 
 testdiagram ExampleTest for Example {
 }
@@ -168,7 +172,7 @@ java -jar sd4componenttesting-cli.jar -i Example.sd4c -pp
 The command prints the pretty-printed model contained in the input file to the console:
 
 ```
-package test;
+package example;
 
 testdiagram ExampleTest for Example {
 }
@@ -203,21 +207,25 @@ You may notice that the CLI prints an Error to the console when executing this c
 
 This means that the SD4C model does not satisfies all context condtions. It is missing the model file for the Main component.
 
-Create a text file containing the following simple component called Example:
+Create a new folder called `models` in the directory where `sd4componenttesting-cli.jar` is located.
+Inside this new folder create an additional new folder and call it `example`.
+Now create a text file containing the following simple component called Example:
 
 ```
+package example;
+
 component Example {
 }
 ```
 
-Save the text file as `Example.arc` in the directory where `sd4componenttesting-cli.jar` is located.
+Save the text file as `Example.arc` in the newly created directory `models/example/`.
 When you now execute the command to check the context conditions again you may notice that the CLI prints only `CoCos: All Checked!` to the console while previously executing the command was showing the error.
 This means that the CLI now finds the model file for the Main component and satisfies all other context condtions. 
 
 Before explaing in [Step 4](#step-4-using-the-model-path-to-resolve-symbols), how the CLI will find the model file, let us first consider a more complex example.
 Recall the testdiagram `MainTest` from the [An Example Model](#an-example-model) section above.
 For continuing, copy the textual representation of the SD4C `MainTest` and save it in a file `MainTest.sd4c` in the directory where the file `sd4componenttesting-cli.jar` is located.
-Additionally we need the model files for the Main and Sum component. You can find them in the [An Example Model](#an-example-model) section above aswell. Save them as `Main.arc` and `Sum.arc` in the same directory.
+Additionally we need the model files for the Main and Sum component. You can find them in the [An Example Model](#an-example-model) section above aswell. Save them as `Main.arc` and `Sum.arc` in the same directory where `Example.arc` is located, in `models/example`.
 
 Now you can check the context conditions, using the `-c,--coco` option:
 ```
@@ -229,11 +237,10 @@ After executing this command, you should not experience any errors. If you do en
 
 In the previous steps, we did not explicitly specify the model path. 
 However, by default, if the `-path` option is not specified, the directory from which the CLI is called, this is the current working directory, will be used as the model path.
-To make use of the `-path` option, create a new directory `models` in the directory where the CLI tool `sd4componenttesting-cli.jar` is located and move all `.arc` files from before (`Example.arc`, `Main.arc`, `Sum.arc`) into the `models` directory.
 
-Now you can specify the model path by using the `-path` option:
+You can manually specify the model path by using the `-path` option:
 ```
-java -jar sd4componenttesting-cli.jar -i MainTest.sd4c -path ./models/ -c
+java -jar sd4componenttesting-cli.jar -i MainTest.sd4c -path ./models/example/ -c
 ```
 After executing this command, you should not experience any errors. The CLI prints only `CoCos: All Checked!` to the console.
 This again means that all context condtions are satisfied.
@@ -247,7 +254,7 @@ Using this option generates the C++ tests for each SD4C testdiagram from the `-i
 Execute the following command for trying this out:
 
 ```
-java -jar sd4componenttesting-cli.jar -i MainTest.sd4c -path models -g MainTest.cpp
+java -jar sd4componenttesting-cli.jar -i MainTest.sd4c -path models/example -g
 ```
 
 The command generates the `MainTest.cpp` file in the directory where the CLI tool `sd4componenttesting-cli.jar` is located.
@@ -255,6 +262,12 @@ The command generates the `MainTest.cpp` file in the directory where the CLI too
 It is possible to provide the names of output files as arguments to the `-g,--generate` option.
 If arguments for output files are provided, then the number of output files must be equal to the number of input files.
 The i-th input file is generated into the i-th output file.
+
+For example the following command will generate `M.cpp` and `E.cpp` from `MainTest.sd4c` and `Example.sd4c` and stores the generated test files where the CLI tool `sd4componenttesting-cli.jar` is located in a new subfolder called `tests`.
+
+```
+java -jar sd4componenttesting-cli.jar -i MainTest.sd4c Example.sd4c -path models/example -g tests/M.cpp tests/E.cpp
+```
 
 For more Information about how the Generator works and how the generated C++ Test is structured read the [Generator](src/main/java/de/monticore/lang/sd4componenttesting/generator/README.md) documentation.
 
