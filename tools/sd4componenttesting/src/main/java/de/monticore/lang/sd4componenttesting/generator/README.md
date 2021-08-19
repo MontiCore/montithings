@@ -9,7 +9,7 @@ There are two possibilities to use the generator. The first way to generate the 
 
 `SD4ComponentTestingGenerator.generate(ast, path);`
 
-This method generates the C++ test file for the given _ASTSD4Artifact ast_ of one SD4ComponentTesting model and save the file in the given `path`. To create the AST for the method, one can use the method _loadModel_ from the class _SD4ComponentTestingTool_. The method creates the needed symboltable, creates the AST and also checks all CoCos that the given AST is valid. For further information, see [TODO auf den Abschnitt im Tutorial verlinken]().
+This method generates the C++ test file for the given _ASTSD4Artifact ast_ of one SD4ComponentTesting model and save the file in the given `path`. To create the AST for the method, one can use the method _loadModel_ from the class _SD4ComponentTestingTool_. The method creates the needed symboltable, creates the AST and also checks all CoCos that the given AST is valid. For further information, see [Tutorial: Getting Started Using the SD4ComponentTesting Tool](https://git.rwth-aachen.de/monticore/montithings/sd4componenttesting/-/tree/develop/#tutorial-getting-started-using-the-sd4componenttesting-tool).
 
 The `generate` method can only generate a test file for one single SD4ComponentTesting model. If one want to generate several test files, one have to call the `generate` method several times.
 
