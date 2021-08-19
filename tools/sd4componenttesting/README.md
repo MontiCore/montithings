@@ -386,7 +386,7 @@ Now that we are able to use the tool we can make use of our three basic tool fun
 Tries to parse the model, checks the grammars correctness and reads in the model.
 
 ```java
-tool.parseModel("path_to_modelFile");
+tool.parseModel("src/test/resources/example/ExampleModel.sd4c");
 ```
 
 ### Step 3: Initialize Symbol Table
