@@ -31,8 +31,10 @@
 
   <#assign testDiagramSymbol = ast.getEnclosingScope().getDiagramSymbols().values()[0]>
   <#assign testDiagramComp = testDiagramSymbol.getAstNode()>
+  <#if testDiagramComp.getSD4CElementList()[0]??>
   <#if testDiagramComp.getSD4CElementList()[0].getType() != "MAIN_INPUT">
   LOG(INFO) << "start computing";
   cmp${mainCompName}->compute();
+  </#if>
   </#if>
 </#macro>
