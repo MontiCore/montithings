@@ -359,7 +359,7 @@ Now specify the dependency like in any other repository. Now the pom repository 
     </dependency>
 ```
 
-In order to add the JAR file into the local repository, we can use -DlocalRepositoryPath switch:
+In order to add the JAR file into the local repository, we can use `-DlocalRepositoryPath`:
 
 ```
 mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file  \
@@ -371,7 +371,7 @@ mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file  \
 
 Once the JAR file is installed, the Maven repository can be committed to a code repository, and the whole set-up is system independent.
 
-In case that we use MontiThings models they can be converted to MontiArc models by using the MontiThingsToMontiArcPrettyPrinter located in the MontiThings repository. The instruction on how the prettyprinter can be used can be read in the CLI section step 4.
+In case that we use MontiThings models they can be converted to MontiArc models by using the MontiThingsToMontiArcPrettyPrinter located in the MontiThings repository. The instruction on how the prettyprinter can be used can be read in the CLI section [Step 4](#step-4-using-the-model-path-to-resolve-symbols).
 
 
 example.arc erstellen  /wie cli step4 //später
