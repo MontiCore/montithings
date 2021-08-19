@@ -365,9 +365,19 @@ arcmodel_path, testdiagram_path, ausgabe für den cpp test path
 tool.generate("src/test/resources/example/models/", "src/test/resources/example/ExampleTest.sd4c", "target/test-path/ExampleTest.cpp");
 ```
 
-## More Information on Internet of Things
+## Further Information
 
 /oben verlinken
+
+### Internet of Things
+
+The Internet of Things (IoT) describes a collection of network-enabled devices, excluding personal computers and servers. This relatively new technology has the goal of connecting everyday objects like thermostats, cars, fridges, microwaves, smartwatches, etc. This provides the possibility for easy communication between people, processes, and things. All connected things gather data via sensors and share data with other applications.
+In recent years the Internet of Things has become more and more feasible by low-cost and low-power sensor technology as well as advances in cloud computing. The gathered information can be used for running statistics, recognize patterns, make recommendations, and detect possible malfunctions in advance. In the context of IoT, the importance of data becomes clear. Many authors describe data as the “new Resource”. Collecting data about the usage of products from thousands or millions of consumers brings the possibility of improving these products in a new way.
+IoT is not only a technology for home use but very useful in Industry as well. It is an essential part of Industry 4.0. IoT enables things like Mass Customization, meaning the production of highly flexible products on a large scale. By combining production technology, sensor technology with internet technology, new possibilities arise to enable innovative products and services. One of the upcoming challenges is to implement and enforce technical standards and norms to make this approach more reliable and connectible.
+
+### Solar Power Example
+
+In the following, we have a somewhat more realistic Example Application. This more in-depth example should give an idea of the wide range of appliances for the tool. Let’s say we have installed a solar panel on the roof and a Battery in the House. This whole system is connected to the power grid. Now we want to decide where the energy from our solar panel goes. On the left, we have modeled a Control Unit for our Solar Power Panel. We have a few subcomponents that we can just consider as a Blackbox. We just know the inputs and outputs of this System. We have the electricity price (which we consider the same for buying and selling), the battery charge level, and the current house consumption level as inputs. Furthermore, the output is the instruction on how to use the energy. One Example for input can be seen in the Test diagram on the right side. If we have 0,31€ as the price we expect the prize Checker to value that as a high price. If we have 2 kWh the charge checker values that at 25% energy level for the battery (for a Battery with 8 kWh capacity). If we have 3kW as our current consumption the consumption checker values this as 50% because our solar panel currently outputs 6kW. With these inputs to the power distribution manager, we expect that 50% should be sold. SD4ComponentTesting is now able to generate a test case for this instance.
 
 # License
 
