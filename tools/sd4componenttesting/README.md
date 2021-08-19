@@ -373,8 +373,7 @@ Once the JAR file is installed, the Maven repository can be committed to a code 
 
 In case that we use MontiThings models they can be converted to MontiArc models by using the MontiThingsToMontiArcPrettyPrinter located in the MontiThings repository. The instruction on how the prettyprinter can be used can be read in the CLI section [Step 4](#step-4-using-the-model-path-to-resolve-symbols).
 
-
-example.arc erstellen  /wie cli step4 //später
+In order to use the tool we just do the following:
 
 ```java
 de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool tool = new de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool();
@@ -388,32 +387,27 @@ Tries to parse the model, checks the grammars correctness and reads in the model
 
 ### Step 3: Initialize Symbol Table
 
-folie 9&10 präsi / delegates /scope und ast adjustments?
-
+The symbol table is a data structure that maps a name to the corresponding symbol. A symbol is an abstraction of its defning model entity. It does not repeat the whole information from the AST. Initializing is automatically done in Step 4, when loading the Model, but not when parsing it in Step 2. More Information about the Symbol table and Scopes can be read in Chapter 9 of the Handbook.
 
 ### Step 4: load SD4C Model
-erstellt symbol table und coco checks
-ermöglicht es die MontiArc zu referenzieren
 
-This function creates the symbol table and performs the coco Checks. It furthermore enables us to reference the MontiArc model. 
-
-//anpassen obige beispiele
-argumente erklären. aktuell nur für einen test
+This function creates the symbol table and performs the coco Checks. It furthermore enables us to reference the MontiArc model.
+loadModel takes 2 arguments. The first argument ist the location for the MontiArc models. The second argument is the location of the testdiagram.
+Currently it is only possible to reference one Test Diagram.
 
 ```java
 tool.loadModel("src/test/resources/example/models/", "src/test/resources/example/ExampleTest.sd4c");
 ```
 
-### Step 5: generate SD4C Model
-argumente erklären. aktuell nur für einen test
-arcmodel_path, testdiagram_path, ausgabe für den cpp test path
+### Step 5: generate SD4C model
+
+The additional third argument gives the location for the generated C++ Test. use generate like so:
+
 ```java
 tool.generate("src/test/resources/example/models/", "src/test/resources/example/ExampleTest.sd4c", "target/test-path/ExampleTest.cpp");
 ```
 
-## Further Information
-
-/oben verlinken
+## Additional context Information 
 
 ### Internet of Things
 
