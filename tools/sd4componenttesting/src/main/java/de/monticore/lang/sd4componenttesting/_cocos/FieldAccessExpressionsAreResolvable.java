@@ -14,6 +14,7 @@ public class FieldAccessExpressionsAreResolvable implements CommonExpressionsAST
   @Override public void check(ASTFieldAccessExpression node) {
     if (!(node.getExpression() instanceof ASTNameExpression)) {
       Log.error(SD4ComponentTestingError.EXPRESSION_FIELD_ACCESS_EXPRESSION_NO_COMPONENT_NAME.toString());
+      return;
     }
 
     String portName = node.getName();
