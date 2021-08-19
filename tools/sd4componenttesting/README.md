@@ -5,6 +5,15 @@ The language for a SD4C model is derived from the [sd-language](https://git.rwth
 
 SLE 2021 Project
 
+#### SD-language
+
+SD language is a tool to model and specify sequence diagrams (SD). We used this language as a starting point to define test case diagrams. Test case diagrams (TD) are used to specify a test case which currently needs to be given as an input to generate the C++ tests with our tool.
+
+#### OCL-Expressions
+
+The Object Constraint Language (OCL) defines a set of various practical expressions. Examples are number expressions, equalities, boolean Expressions and more which can be read about in the OCL-documentation or,because it includes MontiCore's CommonExpressions, in the Handbook.
+
+
 # An Example Model
 
 Suppose the project for which tests are to be generated has the following structure, as shown in this diagram.
@@ -329,9 +338,42 @@ Congratulations! You can now find the JAR file `sd4componenttesting-7.0.0-SNAPSH
 ## Tutorial: Getting Started Using the SD4ComponentTesting Tool
 
 ### Step 1: First Steps
-First we need to import the JAR file to the maven project. This //TODO
-montithings modelle umwandeln in montiarc //verweis auf prettyprinter
-example.arc erstellen  /wie cli step4 //später
+First we need to import the JAR file to the maven project. The best option to do this, since we can't use a Nexus repository to this time, is probably by creating a local Maven repository. This Maven repository is just a normal directory structure with pom files in it. Let’s say the master Project is saved under `${master_project}` and subproject1 is on `${master_project}/${subproject1}`. Then create a Maven repository in: `${master_project}/local-maven-repo`. The pom file from subproject1 should be located at `${master_project}/${subproject1}/pom.xml`. Then specify the repository with file path as a URL parameter:
+
+```
+<repositories>
+    <repository>
+        <id>local-maven-repo</id>
+        <url>file:///${project.parent.basedir}/local-maven-repo</url>
+    </repository>
+</repositories>
+```
+
+Now specify the dependency like in any other repository. Now the pom repository is independent. When the JAR is available in Maven central, one just needs to delete it from the local repository in order to pull it from the default repository.
+
+```
+    <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.servicebinder</artifactId>
+        <version>0.9.0-SNAPSHOT</version>
+    </dependency>
+```
+
+In order to add the JAR file into the local repository, we can use `-DlocalRepositoryPath`:
+
+```
+mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file  \
+    -Dfile=/some/path/on/my/local/filesystem/felix/servicebinder/target/org.apache.felix.servicebinder-0.9.0-SNAPSHOT.jar \
+    -DgroupId=org.apache.felix -DartifactId=org.apache.felix.servicebinder \
+    -Dversion=0.9.0-SNAPSHOT -Dpackaging=jar \
+    -DlocalRepositoryPath=${master_project}/local-maven-repo
+```
+
+Once the JAR file is installed, the Maven repository can be committed to a code repository, and the whole set-up is system independent.
+
+In case that we use MontiThings models they can be converted to MontiArc models by using the MontiThingsToMontiArcPrettyPrinter located in the MontiThings repository. The instruction on how the prettyprinter can be used can be read in the CLI section [Step 4](#step-4-using-the-model-path-to-resolve-symbols).
+
+In order to use the tool we just do the following:
 
 ```java
 de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool tool = new de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool();
@@ -343,31 +385,33 @@ Now that we are able to use the tool we can make use of our three basic tool fun
 
 Tries to parse the model, checks the grammars correctness and reads in the model.
 
+```java
+tool.parseModel("src/test/resources/example/ExampleModel.sd4c");
+```
+
 ### Step 3: Initialize Symbol Table
 
-folie 9&10 präsi / delegates /scope und ast adjustments?
+The symbol table is a data structure that maps a name to the corresponding symbol. A symbol is an abstraction of its defning model entity. It does not repeat the whole information from the AST. Initializing is automatically done in Step 4, when loading the Model, but not when parsing it in Step 2. More Information about the Symbol table and Scopes can be read in Chapter 9 of the Handbook.
 
 ### Step 4: load SD4C Model
-erstellt symbol table und coco checks
-ermöglicht es die MontiArc zu referenzieren
 
-//anpassen obige beispiele
-argumente erklären. aktuell nur für einen test
+This function creates the symbol table and performs the coco Checks. It furthermore enables us to reference the MontiArc model.
+loadModel takes 2 arguments. The first argument ist the location for the MontiArc models. The second argument is the location of the testdiagram.
+Currently it is only possible to reference one Test Diagram.
 
 ```java
 tool.loadModel("src/test/resources/example/models/", "src/test/resources/example/ExampleTest.sd4c");
 ```
 
-### Step 5: generate SD4C Model
-argumente erklären. aktuell nur für einen test
-arcmodel_path, testdiagram_path, ausgabe für den cpp test path
+### Step 5: generate SD4C model
+
+The additional third argument gives the location for the generated C++ Test. use generate like so:
+
 ```java
 tool.generate("src/test/resources/example/models/", "src/test/resources/example/ExampleTest.sd4c", "target/test-path/ExampleTest.cpp");
 ```
 
-## Further Information
-
-/oben verlinken
+## Additional context Information 
 
 ### Internet of Things
 
@@ -378,6 +422,8 @@ IoT is not only a technology for home use but very useful in Industry as well. I
 ### Solar Power Example
 
 In the following, we have a somewhat more realistic Example Application. This more in-depth example should give an idea of the wide range of appliances for the tool. Let’s say we have installed a solar panel on the roof and a Battery in the House. This whole system is connected to the power grid. Now we want to decide where the energy from our solar panel goes. On the left, we have modeled a Control Unit for our Solar Power Panel. We have a few subcomponents that we can just consider as a Blackbox. We just know the inputs and outputs of this System. We have the electricity price (which we consider the same for buying and selling), the battery charge level, and the current house consumption level as inputs. Furthermore, the output is the instruction on how to use the energy. One Example for input can be seen in the Test diagram on the right side. If we have 0,31€ as the price we expect the prize Checker to value that as a high price. If we have 2 kWh the charge checker values that at 25% energy level for the battery (for a Battery with 8 kWh capacity). If we have 3kW as our current consumption the consumption checker values this as 50% because our solar panel currently outputs 6kW. With these inputs to the power distribution manager, we expect that 50% should be sold. SD4ComponentTesting is now able to generate a test case for this instance.
+
+![Diagram of the Solar Power Example](docs/solar_testdiagram.png)
 
 # License
 
