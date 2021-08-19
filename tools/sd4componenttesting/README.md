@@ -385,6 +385,10 @@ Now that we are able to use the tool we can make use of our three basic tool fun
 
 Tries to parse the model, checks the grammars correctness and reads in the model.
 
+```java
+tool.parseModel("src/test/resources/example/models/");
+```
+
 ### Step 3: Initialize Symbol Table
 
 The symbol table is a data structure that maps a name to the corresponding symbol. A symbol is an abstraction of its defning model entity. It does not repeat the whole information from the AST. Initializing is automatically done in Step 4, when loading the Model, but not when parsing it in Step 2. More Information about the Symbol table and Scopes can be read in Chapter 9 of the Handbook.
