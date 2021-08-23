@@ -20,12 +20,12 @@ CLIENT_CONFIG = {
     },
     "hardware": [
         "HighPerformanceAdditionComputeUnit",
-	    "sensorTemperature"
+	    "actuatorTemperature"
     ]
 }
 
 # host name / IP address of the MQTT broker
-MQTT_BROKER_HOST = "iot7.se.rwth-aachen.de"
+MQTT_BROKER_HOST = "node4.se.rwth-aachen.de"
 MQTT_BROKER_PORT = 1883
 
 # seconds between each heartbeat
