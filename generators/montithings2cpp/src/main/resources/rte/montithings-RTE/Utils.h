@@ -88,6 +88,15 @@ std::string replaceSlashesByDots (std::string input);
  */
 std::string getEnclosingComponentName (const std::string& input);
 
+/**
+ * In deployment, the name of instances may end with a number (e.g.
+ * hierarchy.test.1) to allow for multi-instantiation. This method removes
+ * such number (if present).
+ * \param instanceName the fully qualified name of a component
+ * \return the fully qualified name without last trailing number part
+ */
+std::string getModelInstanceName(const std::string& instanceName);
+
 /* Additional serialization functions for cereal */
 namespace cereal
 {
