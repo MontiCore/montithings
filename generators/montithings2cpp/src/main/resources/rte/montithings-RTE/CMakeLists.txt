@@ -82,6 +82,8 @@ if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/message-types/*")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/recorder/*")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/mtlibrary-extension/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/message-types/*")
 endif ()
 
 # Keep hwc interceptor. 
