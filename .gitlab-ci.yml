@@ -44,7 +44,7 @@ Docker Alpine:
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
-Validate:
+Validate Maven:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
   stage: build
   script:
