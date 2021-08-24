@@ -23,7 +23,12 @@ RUN rm -rf build
 # Build our binary/binaries
 RUN ./build.sh
 
-FROM ubuntu:groovy
+
+FROM debian:buster
+
+RUN apt-get update && apt-get install -y \
+    libboost-all-dev \
+    libmosquitto-dev
 
 COPY services/log-tracing/entrypoint.sh .
 
