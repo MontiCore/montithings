@@ -31,6 +31,7 @@ public class HttpAPIController {
       Spark.put("/validate", this::handlePathValidate);
       Spark.put("/deploy", this::handleDeployRequest);
       Spark.put("/stopDeployment", this::handleStopDeployment);
+      Spark.put("/setDockerRegistry", this::handleSetDockerRegistry);
       
       Spark.put("/providers", this::handlePutProviders);
       
@@ -98,6 +99,7 @@ public class HttpAPIController {
       }
     }
     // This is only executed when the above does not succeed in any way.
+    response.status(409);
     return RESPONSE_JSON_FAILED;
   }
   
@@ -120,6 +122,12 @@ public class HttpAPIController {
       resp.status(400);
       return RESPONSE_JSON_FAILED;
     }
+  }
+  
+  private Object handleSetDockerRegistry(Request req, Response resp) {
+    manager.getNetworkInfo().setDockerRepositoryPrefix(req.body());
+    System.out.println("Set docker registry: "+manager.getNetworkInfo().getDockerRepositoryPrefix());
+    return RESPONSE_JSON_SUCCESS;
   }
   
 }

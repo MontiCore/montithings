@@ -2,7 +2,6 @@ package ps.deployment.server.data;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,6 +22,17 @@ public class DeploymentInfo {
   
   public void setInstances(InstanceInfo[] instances) {
     this.instances = instances;
+  }
+  
+  public InstanceInfo getInstanceInfo(String instanceName) {
+    // transform to model instance name, e.g.: hierarchy.test__1 -> hierarchy.test 
+    String modelInstanceName = instanceName.replaceAll("__\\d+", "");
+    for(InstanceInfo info : instances) {
+      if(info.getInstanceName().equalsIgnoreCase(modelInstanceName)) {
+        return info;
+      }
+    }
+    return null;
   }
   
   public List<String> getInstanceNames() {

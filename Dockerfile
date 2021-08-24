@@ -10,4 +10,4 @@ COPY ./target/DeploymentServer-0.0.1-SNAPSHOT-jar-with-dependencies.jar /usr/app
 
 WORKDIR /usr/app
 
-CMD [ "java", "-jar", "DeploymentServer.jar" ]
+ENTRYPOINT [ "java", "-jar", "DeploymentServer.jar" ]

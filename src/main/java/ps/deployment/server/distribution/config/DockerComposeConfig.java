@@ -51,10 +51,10 @@ public class DockerComposeConfig {
   
   public static Map<String, DockerComposeConfig> fromDistribution(Distribution distribution, DeploymentInfo deploy, NetworkInfo net) {
     // index instance info for efficient access
-    HashMap<String, InstanceInfo> instanceInfos = new HashMap<>();
+    /*HashMap<String, InstanceInfo> instanceInfos = new HashMap<>();
     for(InstanceInfo info : deploy.getInstances()) {
       instanceInfos.put(info.getInstanceName(), info);
-    }
+    }*/
     
     // defaults
     
@@ -67,14 +67,15 @@ public class DockerComposeConfig {
       
       // include a service for each instance that should be run on this client
       for(String instanceName : e.getValue()) {
-        InstanceInfo instance = instanceInfos.get(instanceName);
+        InstanceInfo instance = deploy.getInstanceInfo(instanceName);
         if(instance == null) {
           throw new RuntimeException("Found invalid instance name in distribution!");
         }
         String dockerImage = net.getDockerRepositoryPrefix()+instance.getComponentType().toLowerCase();
-        DockerComposeService service = new DockerComposeService(dockerImage, instance.getInstanceName(), net.getMqttHost(), net.getMqttPort());
+        DockerComposeService service = new DockerComposeService(dockerImage, instanceName, net.getMqttHost(), net.getMqttPort());
         config.addService(instanceName, service);
       }
+      System.out.println(config.serializeYaml());
       
       res.put(clientID, config);
     }

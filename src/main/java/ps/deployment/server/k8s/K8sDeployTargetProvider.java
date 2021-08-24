@@ -182,12 +182,6 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
   
   @Override
   public void deploy(Distribution distribution, DeploymentInfo deploymentInfo, NetworkInfo net) throws DeploymentException {
-    // index instance info for efficient access
-    HashMap<String, InstanceInfo> instanceInfos = new HashMap<>();
-    for(InstanceInfo info : deploymentInfo.getInstances()) {
-      instanceInfos.put(info.getInstanceName(), info);
-    }
-    
     for(Entry<String, String[]> e : distribution.getDistributionMap().entrySet()) {
       String clientID = e.getKey();
       String[] instances = e.getValue();
@@ -216,7 +210,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
           
           // Add a container for each application instance.
           for(String instanceName : instances) {
-            InstanceInfo instance = instanceInfos.get(instanceName);
+            InstanceInfo instance = deploymentInfo.getInstanceInfo(instanceName);
             if(instance == null) {
               throw new RuntimeException("Found invalid instance name in distribution!");
             }

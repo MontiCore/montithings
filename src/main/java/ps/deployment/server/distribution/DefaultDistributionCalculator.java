@@ -32,11 +32,14 @@ import com.google.common.io.Files;
 import ps.deployment.server.data.DeployClient;
 import ps.deployment.server.data.Distribution;
 import ps.deployment.server.distribution.suggestion.Suggestion;
+import ps.deployment.server.exception.DeploymentException;
 import ps.deployment.server.exception.DistributionException;
+import ps.deployment.server.util.InstanceNameResolver;
 
 public class DefaultDistributionCalculator implements IDistributionCalculator {
   
   private static final String PROLOG_VAR_DROPPEDCONSTRAINTS = "DroppedConstraints";
+  private static final String PROLOG_VAR_DEPENDENCIES = "Dependencies";
   
   private String plFacts, plQuery;
   private File fileFacts, fileQuery, workingDir;
@@ -58,6 +61,9 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     Collection<DeployClient> deployTargets = param.getLeft();
     List<String> components = param.getRight();
     try {
+      if(deployTargets.size() == 0) {
+        throw new DeploymentException("no clients for deployment available");
+      }
       prepareWorkspace();
       
       // change working directory
@@ -72,6 +78,27 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       
       // parse solution
       if (solution != null) {
+        InstanceNameResolver nameResolver = new InstanceNameResolver(components);
+        
+        // parse dependencies
+        List<HierarchyResolver.Dependency> dependencies = new LinkedList<>();
+        for(Term depends : Util.listToTermArray(solution.get(PROLOG_VAR_DEPENDENCIES))) {
+          // construct dependency from prolog term
+          Term bind1 = depends.arg(1);
+          Term bind2 = depends.arg(2);
+          HierarchyResolver.Assignment assignment1 = new HierarchyResolver.Assignment(
+              bind1.arg(1).name(), // clientID
+              nameResolver.resolveFromPrologName(bind1.arg(2).name()) // instance name
+          );
+          HierarchyResolver.Assignment assignment2 = new HierarchyResolver.Assignment(
+              bind2.arg(1).name(), // clientID
+              nameResolver.resolveFromPrologName(bind2.arg(2).name()) // instance name
+          );
+          dependencies.add(new HierarchyResolver.Dependency(assignment1, assignment2));
+        }
+        solution.remove(PROLOG_VAR_DEPENDENCIES);
+        
+        // parse distribution
         Map<String, List<String>> dmap = new HashMap<>();
         
         // initialize empty list for every target 
@@ -90,6 +117,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
         }
         
         distribution = Distribution.from(dmap);
+        distribution = new HierarchyResolver(distribution, dependencies).resolve();
       }
       
       cleanup();
@@ -135,10 +163,11 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
           String[] droppedConstraints = Util.atomListToStringArray(solution.get(PROLOG_VAR_DROPPEDCONSTRAINTS));
           List<Suggestion> suggestions = new ArrayList<Suggestion>(droppedConstraints.length);
           Lists.newArrayList(droppedConstraints).stream()
-            .map(Suggestion::parseProlog)
+            .map((c)->Suggestion.parseProlog(c, request.getComponents()))
             .forEach(suggestions::add);
-          System.out.println(suggestions);
+          
           solution.remove(PROLOG_VAR_DROPPEDCONSTRAINTS);
+          solution.remove(PROLOG_VAR_DEPENDENCIES);
           
           Map<String, List<String>> dmap = new HashMap<>();
           
@@ -184,6 +213,8 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     if(withDroppedConstraints) {
       vars.add(new Variable(PROLOG_VAR_DROPPEDCONSTRAINTS));
     }
+    
+    vars.add(new Variable(PROLOG_VAR_DEPENDENCIES));
     
     // select proper goal
     String goalName = withDroppedConstraints ? "distribution_suggest" : "distribution";

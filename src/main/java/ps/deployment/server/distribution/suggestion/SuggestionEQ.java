@@ -6,10 +6,11 @@ import java.util.regex.Pattern;
 import ps.deployment.server.data.LocationSpecifier;
 import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.constraint.BasicConstraint.Type;
+import ps.deployment.server.util.InstanceNameResolver;
 
 public class SuggestionEQ extends BasicSuggestion {
   
-private static final Pattern patternProlog = Pattern.compile("\\[EQ\\] (?<instanceName>[\\w]+) location (?<locationSpec>[\\w]+) == (?<orgCount>\\d+)");
+private static final Pattern patternProlog = Pattern.compile("\\[EQ\\] (?<instanceName>[\\wäöüÄÖÜß]+) location (?<locationSpec>[\\wäöüÄÖÜß]*) == (?<orgCount>\\d+)");
   
   public SuggestionEQ(String instanceName, LocationSpecifier location, int orgCount) {
     // Satisfiable count is set to -1 since it is unclear whether it would be
@@ -32,10 +33,10 @@ private static final Pattern patternProlog = Pattern.compile("\\[EQ\\] (?<instan
       super.applyTo(config);
     }
   
-  public static SuggestionEQ parseProlog(String droppedMsg) {
+  public static SuggestionEQ parseProlog(String droppedMsg, InstanceNameResolver resolver) {
     Matcher matcher = patternProlog.matcher(droppedMsg);
     if (matcher.find()) {
-      String instanceName = Suggestion.transformInstanceName(matcher.group("instanceName"));
+      String instanceName = resolver.resolveFromPrologName(matcher.group("instanceName"));
       LocationSpecifier locationSpec = Suggestion.parseLocation(matcher.group("locationSpec"));
       int orgCount = Integer.parseInt(matcher.group("orgCount"));
       return new SuggestionEQ(instanceName, locationSpec, orgCount);

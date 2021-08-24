@@ -40,18 +40,38 @@ check_incompatible(ComponentDistributionA,ComponentDistributionB) :-
   length(IntersectionList,Len),
   Len =< 0.
 
-% the amount of devices in ComponentDistributionB should be at least N * ComponentDistributionA,
-% as each device in ComponentDistributionA depends on N devices in ComponentDistributionB
-check_dependency_distinct(ComponentDistributionA,ComponentDistributionB, N) :-
-  length(ComponentDistributionA,LenA),
-  length(ComponentDistributionB,LenB),
-  LenB >= N*LenA.
+check_dependency(_,[],_,_,[],_,_).
+check_dependency(MatchPredicate,[A|As],Bs,N,Dependencies,NameA,NameB) :-
+  find_prop_match(MatchPredicate,A,Bs,BsFiltered),
+  length(BsFiltered,LenBF),
+  LenBF >= N,
+  length(BsFilteredSub, N),
+  sublist(BsFilteredSub, BsFiltered),
+  % For performance reasons, we'll block backtracking here.
+  % We will not find all possible dependency assignments, however
+  % we do not need to, since this search is not distinct.
+  !, 
+  findall(dependsOn(bound(A,NameA),bound(B,NameB)), member(B,BsFilteredSub), OwnDeps),
+  check_dependency(MatchPredicate,As,Bs,N,RemDeps,NameA,NameB),
+  append(RemDeps,OwnDeps,Dependencies).
 
-check_dependency(_,ComponentDistributionB, N) :-
-  % dismiss ComponentDistributionA (_)
-  length(ComponentDistributionB,LenB),
-  LenB >= N.
 
+check_dependency_distinct(_,[],_,_,[],_,_).
+check_dependency_distinct(MatchPredicate,[A|As],Bs,N,Dependencies,NameA,NameB) :-
+  (
+    find_prop_match(MatchPredicate,A,Bs,BsFiltered),
+    length(BsFiltered,LenBF),
+    LenBF >= N,
+    !
+  ),
+  % Find all sublists with N elements
+  length(BsFilteredSub, N),
+  sublist(BsFilteredSub, BsFiltered),
+
+  findall(dependsOn(bound(A,NameA),bound(B,NameB)), member(B,BsFilteredSub), OwnDeps),
+  subtract(Bs,BsFilteredSub,BsRemoved),
+  check_dependency_distinct(MatchPredicate,As,BsRemoved,N,RemDeps,NameA,NameB),
+  append(RemDeps,OwnDeps,Dependencies).
 
 get_available_devices(Devices) :-
   findall(X,property("device",1,X), Devices).
@@ -104,3 +124,44 @@ check_include_all(property(Key, Value), AllPossibleList, InputList) :-
   length(ListDevicesThatMatchProperty, List_length2),
   List_length == List_length2.
 
+
+
+
+sublist_max(Xs,Xs).
+sublist_max(Xs,Ys) :- sublist_max_helper(Ys,Xs).
+sublist_max_helper([],[]).
+sublist_max_helper([H|T],[H|L]) :- sublist_max_helper(T,L).
+sublist_max_helper([_|T],L) :- sublist_max_helper(T,L).
+
+sublist([], _).
+sublist([X|Xs], [X|Ys]) :- sublist(Xs, Ys).
+sublist(Xs, [_|Ys]) :- sublist(Xs, Ys).
+
+% match predicates for location matching
+match_same_room(A,B) :-
+  property("location_building", Building, A),
+  property("location_building", Building, B),
+  property("location_floor", Floor, A),
+  property("location_floor", Floor, B),
+  property("location_room", Room, A),
+  property("location_room", Room, B).
+
+match_same_floor(A,B) :-
+  property("location_building", Building, A),
+  property("location_building", Building, B),
+  property("location_floor", Floor, A),
+  property("location_floor", Floor, B).
+
+match_same_building(A,B) :-
+  property("location_building", Building, A),
+  property("location_building", Building, B).
+
+match_any(_,_).
+
+find_prop_match(_,_,[],[]).
+find_prop_match(MatchPredicate,A,[B|Bs],Ms) :-
+  (
+    (call(MatchPredicate, A, B),!,Ms=[B|Msr]);
+    Ms=Msr
+  ),
+  find_prop_match(MatchPredicate,A,Bs,Msr).

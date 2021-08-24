@@ -6,8 +6,8 @@ public class AdaptedDependencyConstraint extends DependencyConstraint {
   
   private int originalCount;
   
-  public AdaptedDependencyConstraint(String dependent, String dependency, int count, boolean exclusive, int originalCount) {
-    super(dependent, dependency, count, exclusive);
+  public AdaptedDependencyConstraint(String dependent, String dependency, int count, boolean exclusive, LocationType locType, int originalCount) {
+    super(dependent, dependency, count, exclusive, locType);
     this.originalCount = originalCount;
   }
   
