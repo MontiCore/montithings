@@ -164,6 +164,7 @@ public class ASTConfig extends ASTConfigTOP {
                             String dependency = null;
                             String type = null;
                             Integer amount_at_least = null;
+                            String location = "any";
 
                             List<ASTJSONProperty> propList = ((ASTJSONObject) dependenciesArray).getPropList();
                             for (ASTJSONProperty dprop : propList) {
@@ -180,6 +181,9 @@ public class ASTConfig extends ASTConfigTOP {
                                     case "amount_at_least":
                                         amount_at_least = aSTJSONNumber2Int((ASTJSONNumber) dprop.getValue());
                                         break;
+                                    case "location": 
+                                        location = ((ASTJSONString) dprop.getValue()).getStringLiteral().getValue();
+                                        break;
                                     default:
                                         throw new IllegalStateException("Unexpected value: " + dprop.getKey());
                                 }
@@ -193,6 +197,7 @@ public class ASTConfig extends ASTConfigTOP {
                                 item.put("dependency", generatePrologCompliantName(dependency));
                                 item.put("dependent", generatePrologCompliantName(dependent));
                                 item.put("amount_at_least", amount_at_least.toString());
+                                item.put("location", location);
                                 result.add(item);
                             }
                         });
