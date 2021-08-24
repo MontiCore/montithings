@@ -31,7 +31,7 @@ public class FileHelper {
     try {
       FileFilter filefilter = new FileFilter(){
         public boolean accept(File pathname) {
-          if (pathname.getName().endsWith(".ftl")) {
+          if (pathname.getName().endsWith(".ftl") || pathname.getName().endsWith(".json")) {
             return false;
           } else {
             return true;
@@ -48,6 +48,18 @@ public class FileHelper {
     catch (IOException e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
+    }
+  }
+
+  public static void copyDeploymentConfigToTarget(File target, File hwcPath){
+    File deploymentConfig = new File(hwcPath + File.separator + "deployment-info.json");
+    if(deploymentConfig.exists()){
+      try {
+        FileUtils.copyFileToDirectory(deploymentConfig, target);
+      } catch (IOException e) {
+        System.err.println(e.getMessage());
+        e.printStackTrace();
+      }
     }
   }
 

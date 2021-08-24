@@ -330,9 +330,6 @@ public class MTGenerator {
 
     engine.generateNoA("template/util/ports/sensorActuatorPortMontiThingsConnector.ftl",Paths.get(target + File.separator + portName + "MontiThingsConnector.cpp"), portName, isSensor, config);
 
-    engine.generateNoA(
-            "template/util/ports/sensorActuatorInterface.ftl", Paths.get(target + File.separator + portName + "Interface.h"), portName, config);
-
     engine.generateNoA("template/util/ports/sensorActuator.ftl",Paths.get(target + File.separator + portName + ".h"), portName, isSensor, config);
 
     Optional<ASTEveryTag> everyTag = Optional.empty();

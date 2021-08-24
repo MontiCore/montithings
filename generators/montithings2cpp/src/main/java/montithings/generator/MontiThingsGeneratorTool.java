@@ -53,6 +53,7 @@ import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.json.Json;
@@ -86,7 +87,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
     copyHwcToTarget(target, hwcPath, config);
-
+    if(config.getSplittingMode() != SplittingMode.DISTRIBUTED){
+      copyDeploymentConfigToTarget(target, hwcPath);
+    }
 
     /* ============================================================ */
     /* ============== Generating SensorActuatorPorts ============== */
@@ -625,7 +628,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     // Serialize JSON and write it to a file.
     String jsonString = jsonBase.build().toString();
-    File jsonFile = new File(target, "deployment-info.json");
+    File jsonFile = new File(target, "deployment-config.json");
     FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
   }
 

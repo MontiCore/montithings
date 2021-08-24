@@ -3,7 +3,6 @@ ${tc.signature("port", "isSensor", "config")}
 
 #include<iostream>
 #include "${port}.h"
-#include "${port}Interface.h"
 #include "tclap/CmdLine.h"
 #include "MqttClient.h"
 
@@ -69,9 +68,10 @@ int main(int argc, char* argv[]) {
   instanceNameArg.getValue ()
   );
 
-  port.setUp(EVENTBASED);
-  port.init();
-  port.start();
+  port.setUp();
+  <#if isSensor>
+    port.start();
+  </#if>
 
   LOG(DEBUG) << "SensorActuator Port ${port} started.";
 

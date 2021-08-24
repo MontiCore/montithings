@@ -9,4 +9,4 @@ mtc = MTC("source-sensor-topic", None)
 while True:
     # Send a message to MontiThings (sensor port)
     mtc.send(32)
-    time.sleep(1)
+    time.sleep(2)

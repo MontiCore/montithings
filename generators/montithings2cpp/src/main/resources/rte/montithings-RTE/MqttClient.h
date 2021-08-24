@@ -105,6 +105,13 @@ public:
    */
   void subscribe (std::string topic);
 
+    /**
+     * Unsubscribe from the messages of the port with the provided name
+     * \param topic fully qualified name of the port to unsubscribe from
+     */
+    void unsubscribe (std::string topic);
+
+
   /**
    * Network loop from Mosquitto. We need to start this for Mosquitto to work
    */

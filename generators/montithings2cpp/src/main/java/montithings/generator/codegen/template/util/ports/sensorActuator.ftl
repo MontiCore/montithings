@@ -1,7 +1,6 @@
 ${tc.signature("port", "isSensor", "config")}
 
 #include "${port}Port.h"
-#include "${port}Interface.h"
 #include "easyloggingpp/easylogging++.h"
 #include "IComponent.h"
 #include "MqttClient.h"
@@ -10,105 +9,52 @@ ${tc.signature("port", "isSensor", "config")}
 #include <string>
 #include <thread>
 #include <vector>
-#include <mutex>
 #include <iostream>
 
-class ${port} : public IComponent
-    , public MqttUser
+class ${port} : public MqttUser
 {
 
 
-TimeMode timeMode = EVENTBASED ;
-
 
 protected:
-${port}Interface interface;
 std::vector<std::thread> threads;
-unsigned int remainingComputes = 0;
-std::mutex computeMutex;
-void initialize();
+MqttClient *  mqttClientInstance;
+std::string sensorActuatorTopic = ${defineHookPoint("<CppBlock>?portTemplate:topic")};
+${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}> * sensorActuatorPort;
+std::string instanceName;
 
 public:
 ${port}(std::string instanceName);
-void setUp(TimeMode enclosingComponentTiming) override;
-${port}Interface* getInterface();
+void setUp();
 void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
-void init() override;
-void compute() override;
-void start() override;
+void start();
 void run();
-void onEvent() override;
 void threadJoin();
-void setResult(tl::optional<${defineHookPoint("<CppBlock>?portTemplate:type")}> result);
-bool shouldCompute();
 };
 
 ${port}::${port}(std::string instanceName)
 {
+mqttClientInstance = MqttClient::instance ();
+mqttClientInstance->addUser (this);
 this->instanceName = instanceName;
 }
 
-${port}Interface* ${port}::getInterface(){
-return &interface;
-}
 
 
-void ${port}::initialize(){
+void ${port}::setUp(){
 
-interface.getPortIn ()->attach (this);
-<#if isSensor>
-    interface.addInPortIn(new ${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}>(instanceName));
-<#else>
-    interface.addOutPortOut(new ${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}>(instanceName));
+sensorActuatorPort = new ${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}>(instanceName);
+
+<#if !isSensor>
+mqttClientInstance->subscribe ("/sensorActuator/" + sensorActuatorTopic);
 </#if>
-
-LOG(DEBUG) << "Initialized Mqtt Ports";
 }
 
-void ${port}::setUp(TimeMode enclosingComponentTiming){
 
-<#if isSensor>
-// outgoing port out
-MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}> *out = new MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}>("${port}/out");
-this->interface.addOutPortOut (out);
-out->setSensorActuatorName (${defineHookPoint("<CppBlock>?portTemplate:topic")}, false);
-<#else>
-// port in incoming
-MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}> *in = new MqttPort<${defineHookPoint("<CppBlock>?portTemplate:type")}>("${port}/in");
-interface.getPortIn ()->attach (this);
-this->interface.addInPortIn (in);
-in->setSensorActuatorName (${defineHookPoint("<CppBlock>?portTemplate:topic")}, true);
-</#if>
-
-
-
-MqttClient::instance ()->addUser (this);
-
-
-initialize();
-}
-
-void ${port}::init(){
-}
-void ${port}::compute(){
-    // ensure there are no parallel compute() executions
-    if (remainingComputes > 0){
-        remainingComputes++;
-        return;
-    }
-    std::lock_guard<std::mutex> guard(computeMutex);
-
-    remainingComputes++;
-    while (remainingComputes > 0){
-        if (shouldCompute()){
-            setResult(interface.getPortIn()->getCurrentValue(this->uuid));
-        }
-        remainingComputes--;
-    }
-}
 void ${port}::start(){
     threads.push_back(std::thread{&${port}::run, this});
 }
+
 void ${port}::run(){
     <#if isSensor>
     LOG(DEBUG) << "Thread for ${port} started";
@@ -116,8 +62,9 @@ void ${port}::run(){
     {
         auto end = std::chrono::high_resolution_clock::now()
         + std::chrono::milliseconds(50);
-        this->compute();
-
+        if(sensorActuatorPort->hasValue(this->uuid)){
+            mqttClientInstance.publish("/sensorActuator/" + sensorActuatorTopic, sensorActuatorPort->getCurrentValue(this->uuid));
+        }
         do {
             std::this_thread::yield();
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -125,22 +72,15 @@ void ${port}::run(){
     }
     </#if>
 }
-void ${port}::onEvent(){
-    this->compute();
-}
+
 void ${port}::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message)
-{}
+{
+    std::string payload = std::string ((char *)message->payload, message->payloadlen);
+    sensorActuatorPort->setNextValue(payload);
+}
+
 void ${port}::threadJoin (){
     for (int i = 0; i < threads.size (); i++){
         threads[i].join ();
     }
-}
-void ${port}::setResult(tl::optional<${defineHookPoint("<CppBlock>?portTemplate:type")}> result){
-    this->interface.getPortOut()->setNextValue(result);
-}
-bool ${port}::shouldCompute() {
-    if (interface.getPortIn()->hasValue(this->uuid)){
-        return true;
-    }
-    return false;
 }

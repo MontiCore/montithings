@@ -123,6 +123,39 @@ MqttClient::subscribe (std::string topic)
 }
 
 void
+MqttClient::unsubscribe (std::string topic)
+{
+  int returnCode = mosquitto_unsubscribe (mosq, nullptr, topic.c_str ());
+  switch (returnCode)
+    {
+    case MOSQ_ERR_SUCCESS:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Unsubscribed from MQTT topic " << topic;
+      break;
+    case MOSQ_ERR_INVAL:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Invalid Input Parameters. Could not unsubscribe from MQTT topic "
+                                << topic;
+      break;
+    case MOSQ_ERR_NOMEM:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Out of memory. Could not unsubscribe from MQTT topic " << topic;
+      break;
+    case MOSQ_ERR_NO_CONN:
+      CLOG (DEBUG, MQTT_LOG_ID) << "No connection to broker. Could not unsubscribe from MQTT topic "
+                                << topic;
+      break;
+    case MOSQ_ERR_MALFORMED_UTF8:
+      CLOG (DEBUG, MQTT_LOG_ID) << "Topic is not UTF-8. Could not unsubscribe from MQTT topic " << topic;
+      break;
+      /*
+      // Not available on Raspberry Pi
+      case MOSQ_ERR_OVERSIZE_PACKET:
+        CLOG (DEBUG, MQTT_LOG_ID) << "Packet too large. Could not unsubscribe from MQTT topic " << topic;
+        break;
+      */
+    }
+  MqttClient::instance ()->subscriptions.erase(topic);
+}
+
+void
 MqttClient::onConnect (mosquitto *mosquitto, void *obj, int result)
 {
   CLOG (DEBUG, MQTT_LOG_ID) << "Connected to MQTT broker " << mosquitto;

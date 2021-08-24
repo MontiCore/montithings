@@ -5,11 +5,19 @@ ${tc.signature("comp","config")}
 <#list comp.getIncomingPorts() as p>
   <#assign type = TypesPrinter.getRealPortCppTypeString(p.getComponent().get(), p, config)>
   // incoming port ${p.getName()}
-  MqttPort<Message<${type}>> *${p.getName()} = new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}");
+  ${p.getName()} = new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", true, mqttClientInstance);
   interface.getPort${p.getName()?cap_first} ()->attach (this);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
-    <#assign topicName = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
-    ${p.getName()}->setSensorActuatorName ("${topicName}", true);
+    <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
+    std::vector< std::string > sensorActuatorTopics${p.getName()?cap_first} = sensorActuatorTypes["${sensorActuatorType}"];
+    std::string topicName = sensorActuatorTopics${p.getName()?cap_first}[0];
+
+    ${p.getName()}->setSensorActuatorName (topicName, true);
+    std::string fullTopic = "/sensorActuator/config/" + topicName;
+    mqttClientInstance->subscribe (fullTopic);
+
+    std::future<void> keepAliveFuture${p.getName()?cap_first} = exitSignal${p.getName()?cap_first}.get_future();
+    th${p.getName()?cap_first} = std::thread(&${className}::sendKeepAlive, this, fullTopic, "${p.getName()?cap_first}", std::move(keepAliveFuture${p.getName()?cap_first}));
   </#if>
   this->interface.addInPort${p.getName()?cap_first} (${p.getName()});
 

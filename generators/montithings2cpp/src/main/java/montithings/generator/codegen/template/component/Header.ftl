@@ -34,6 +34,18 @@ ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, con
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
 ${tc.includeArgs("template.component.declarations.DDS", [config])}
 
+MqttClient *  mqttClientInstance;
+json sensorActuatorTypes;
+
+<#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
+  MqttPort<Message<${type}>> *${p.getName()};
+  <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
+  std::thread th${p.getName()?cap_first};
+  std::promise<void> exitSignal${p.getName()?cap_first};
+  </#if>
+</#list>
+
 ${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config])}
 
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
@@ -111,6 +123,7 @@ void onEvent () override;
 <#if ComponentHelper.retainState(comp)>
   bool restoreState ();
 </#if>
+void sendKeepAlive(std::string sensorActuatorTopic, std::string portName, std::future<void> keepAliveFuture);
 <#if !comp.isDecomposed()>
   ${compname}Impl${generics}* getImpl();
 </#if>

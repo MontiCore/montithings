@@ -17,9 +17,14 @@ ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
 #include ${"<list>"}
 #include ${"<set>"}
 #include ${"<thread>"}
+#include ${"<algorithm>"}
+#include ${"<future>"}
+#include ${"<assert.h>"}
 #include "sole/sole.hpp"
+#include "json/json.hpp"
 #include "easyloggingpp/easylogging++.h"
 #include ${"<iostream>"}
+#include <fstream>
 <#if config.getMessageBroker().toString() == "MQTT">
   #include "MqttClient.h"
   #include "MqttPort.h"
