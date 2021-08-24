@@ -4,6 +4,7 @@ import de.rwth.se.iotlab.config.generator.QueryGenerator;
 
 public class Main {
     public static void main(String[] args) {
+        port(5004);
         post("/facts", ((request, response) -> {
             try {
                 String json = request.body();
