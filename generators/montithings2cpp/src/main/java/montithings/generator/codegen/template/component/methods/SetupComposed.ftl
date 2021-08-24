@@ -11,14 +11,11 @@ ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp, false)}::setUp(TimeMode enclosingComponentTiming){
 if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 
-mqttClientInstance = MqttClient::instance ();
 
 <#if comp.isPresentParentComponent()>
   super.setUp(enclosingComponentTiming);
 </#if>
 
-std::ifstream file_input("${deploymentConfigPath}");
-json sensorActuatorTypes = json::parse(file_input)["sensorActuatorTypes"];
 
 <#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp,config)>
   <#list comp.getSubComponents() as subcomponent >
@@ -36,6 +33,11 @@ json sensorActuatorTypes = json::parse(file_input)["sensorActuatorTypes"];
 </#if>
 
 <#if config.getMessageBroker().toString() == "MQTT">
+  mqttClientInstance = MqttClient::instance ();
+
+  std::ifstream file_input("${deploymentConfigPath}");
+  json sensorActuatorTypes = json::parse(file_input)["sensorActuatorTypes"];
+
   mqttClientInstance->addUser (this);
   ${tc.includeArgs("template.component.helper.AddMqttOutPorts", [comp, config])}
   ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
