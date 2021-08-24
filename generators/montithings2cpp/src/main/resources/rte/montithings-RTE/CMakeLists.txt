@@ -74,16 +74,18 @@ else ()
 endif ()
 
 # Exclude DDS files
+# Note that we still need record-and-replay/*/*, in case DDS is not excluded, as the recorder module is referenced in DDSPort.h
 if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.h")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "DDS.*.cpp")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "dds/message-types/*")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/message-types/*")
     list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/recorder/*")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/*")
-    list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/message-types/*")
+    list(FILTER RTE_SOURCES EXCLUDE REGEX "record-and-replay/mtlibrary-extension/*")
 endif ()
 
-# Keep hwc interceptor in case of replaying
+# Keep hwc interceptor. 
+# This makes sure that the nd() method is still present even if record and replay is not enabled.
 set(RTE_SOURCES
     ${RTE_SOURCES}
     "record-and-replay/recorder/HWCInterceptor.h"

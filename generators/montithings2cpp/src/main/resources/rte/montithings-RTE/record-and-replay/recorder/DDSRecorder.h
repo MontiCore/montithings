@@ -18,7 +18,7 @@
 #include "../../json/json.hpp"
 #include "../../tl/optional.hpp"
 #include "../../easyloggingpp/easylogging++.h"
-#include "../message-types/DDSMessageTypeSupportImpl.h"
+#include "../../dds/message-types/DDSMessageTypeSupportImpl.h"
 #include "../message-types/DDSRecorderMessageTypeSupportImpl.h"
 #include "../../DDSClient.h"
 #include "DDSCommunicator.h"
