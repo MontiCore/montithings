@@ -37,6 +37,10 @@ get_distribution_${distribution.name}(${distribution.name}) :-
     <#assign count++>
     </#if>
 
+    % allow for reduction of deployed instances (e.g. for incompatibilities)
+    sublist_max(AllAvailableDevicesFiltered${count+1},AllAvailableDevicesFiltered${count}),
+    <#assign count++>
+
     % apply distribution constraints
     % first constrains equal: ==
     <#list distribution.equalConstraints as constraint>
@@ -104,6 +108,10 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     apply_conjunction([<#list 1..count_conjunction-1 as i>ConjunctionOutput${i}<#sep>,</#sep></#list>],AllAvailableDevicesFiltered${count+1}),
     <#assign count++>
     </#if>
+
+    % allow for reduction of deployed instances (e.g. for incompatibilities)
+    sublist_max(AllAvailableDevicesFiltered${count+1},AllAvailableDevicesFiltered${count}),
+    <#assign count++>
 
     % apply distribution constraints
     % first constrains equal: ==
@@ -179,7 +187,7 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
 <#--        DISTRIBUTION QUERY        -->
 <#-- -------------------------------- -->
 
-distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>) :-
+distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>, Dependencies) :-
     % retrieve possible lists of devices
 <#list ast.distributions as distribution>
     (get_distribution_${distribution.name}(${distribution.name}); (!, false) ),
@@ -193,20 +201,27 @@ distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>
 </#list>
 
     % apply dependency checks
+<#assign dep_num = 0>
+    Dependencies0 = [],
 <#list ast.dependencies as dependency>
+    <#assign dep_num++>
     <#if dependency.type == "distinct">
-    check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+    check_dependency_distinct(match_${dependency.location},${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}, Dependencies${dep_num},"${dependency.dependent}","${dependency.dependency}"),
     <#else>
-    check_dependency(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+    check_dependency(match_${dependency.location},${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}, Dependencies${dep_num},"${dependency.dependent}","${dependency.dependency}"),
     </#if>
+    % aggregate dependencies
+    <#assign dep_num++>
+    append(Dependencies${dep_num-2},Dependencies${dep_num-1},Dependencies${dep_num}),
 </#list>
+    Dependencies = Dependencies${dep_num},
     % finishing query with a .
     1 == 1.
 
 <#-- -------------------------------- -->
 <#-- DISTRIBUTION QUERY (With Drops)  -->
 <#-- -------------------------------- -->
-distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>, DroppedConstraints) :-
+distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>, DroppedConstraints, Dependencies) :-
     % retrieve possible lists of devices
 <#assign current_constraint = 1>
 <#list ast.distributions as distribution>
@@ -227,18 +242,20 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
 </#list>
 
     % apply dependency checks
+<#assign dep_num = 0>
 <#list ast.dependencies as dependency>
+    <#assign dep_num++>
     <#if dependency.type == "distinct">
     (
         (
-        check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+        check_dependency_distinct(match_${dependency.location},${dependency.dependent},${dependency.dependency},${dependency.amount_at_least},Dependencies${dep_num},"${dependency.dependent}","${dependency.dependency}"),
         Constraint${current_constraint} = ''
         );
         (
         <#assign contraintnum = dependency.amount_at_least?number - 1>
         <#list contraintnum..0 as dep_satisfiable>
         (
-        check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dep_satisfiable}),
+        check_dependency_distinct(match_${dependency.location},${dependency.dependent},${dependency.dependency},${dep_satisfiable},Dependencies${dep_num},"${dependency.dependent}","${dependency.dependency}"),
         Constraint${current_constraint} = '[DEP-DIST] "${dependency.dependent}" depends on at least ${dependency.amount_at_least} distinct instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
         )<#sep>;</#sep>
         </#list>
@@ -247,14 +264,14 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
     <#else>
     (
         (   
-        check_dependency(${dependency.dependent},${dependency.dependency},${dependency.amount_at_least}),
+        check_dependency(match_${dependency.location},${dependency.dependent},${dependency.dependency},${dependency.amount_at_least},Dependencies${dep_num},"${dependency.dependent}","${dependency.dependency}"),
         Constraint${current_constraint} = ''
         );
         (
         <#assign contraintnum = dependency.amount_at_least?number - 1>
         <#list contraintnum..0 as dep_satisfiable>
         (
-        check_dependency(${dependency.dependent},${dependency.dependency},${dep_satisfiable}),
+        check_dependency(match_${dependency.location},${dependency.dependent},${dependency.dependency},${dep_satisfiable},Dependencies${dep_num},"${dependency.dependent}","${dependency.dependency}"),
         Constraint${current_constraint} = '[DEP] "${dependency.dependent}" depends on at least ${dependency.amount_at_least} (possibly shared) instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
         )<#sep>;</#sep>
         </#list>
@@ -264,6 +281,10 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
     <#assign current_constraint++>
     <#assign total_constraints++>
 </#list>
+
+    % aggregate dependencies into list of lists & flatten
+    NestedDependencies = [<#list 1..dep_num as i>Dependencies${i}<#sep>,</#sep></#list>],
+    flatten(NestedDependencies, Dependencies),
 
     % collect dropped constraints
 
