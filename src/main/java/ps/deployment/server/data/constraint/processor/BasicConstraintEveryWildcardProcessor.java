@@ -33,13 +33,13 @@ public class BasicConstraintEveryWildcardProcessor implements ConstraintProcesso
           // This constraint contains a wildcard. Remove it and add constraint for every fitting real location.
           it.remove();
           for(LocationSpecifier subloc : getMatchingLocations(context, loc)) {
+            BasicConstraint newCon = bcon.clone();
+            newCon.setBuildingSelector(subloc.getBuilding());
+            newCon.setFloorSelector(subloc.getFloor());
+            newCon.setRoomSelector(subloc.getRoom());
             // If there explicitly is a constraint that is more specific than this one, we'll not insert one for this location.
-            if(!containsConstraintLike(target, bcon)) {
+            if(!containsConstraintLike(target, newCon)) {
               // construct new constraint
-              BasicConstraint newCon = bcon.clone();
-              newCon.setBuildingSelector(subloc.getBuilding());
-              newCon.setFloorSelector(subloc.getFloor());
-              newCon.setRoomSelector(subloc.getRoom());
               // add it to the constraint list
               it.add(newCon);
             }
@@ -56,10 +56,12 @@ public class BasicConstraintEveryWildcardProcessor implements ConstraintProcesso
         if(reference.getInstanceSelector().equals(bcon.getInstanceSelector()) 
             && bcon.getLocationSpecifier().equals(reference.getLocationSpecifier()) 
             && bcon.getConstraintType() == reference.getConstraintType()) {
+          System.out.println(reference+" / "+con+": match");
           return true;
         }
       }
     }
+    System.out.println(reference+": no match");
     return false;
   }
   
