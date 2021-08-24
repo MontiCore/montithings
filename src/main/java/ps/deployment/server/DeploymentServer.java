@@ -12,11 +12,19 @@ public class DeploymentServer {
    * Starts a {@link DeploymentManager} with HTTP & MQTT API.
    * */
   public static void main(String[] args) {
+    String mqttHost = "";
+    if(args.length == 0) {
+      System.err.println("Missing required argument: MQTT Broker Hostname");
+      System.exit(1);
+    } else {
+      mqttHost = args[0];
+    }
+    
     System.out.println("DeploymentServer is starting...");
     
     File workingDir = new File("tmp");
     NetworkInfo network = new NetworkInfo();
-    network.setMqttHost("node4.se.rwth-aachen.de");
+    network.setMqttHost(mqttHost);
     network.setMqttPort(1883);
     network.setDockerRepositoryPrefix("registry.git.rwth-aachen.de/monticore/montithings/deployment/ba-schneider/deployexampleapp/");
     
