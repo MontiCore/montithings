@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.constraint.Constraint;
 import ps.deployment.server.data.constraint.IncompConstraint;
+import ps.deployment.server.util.InstanceNameResolver;
 
 public class SuggestionIncomp implements Suggestion {
   
@@ -41,11 +42,11 @@ public class SuggestionIncomp implements Suggestion {
     }
   }
   
-  public static SuggestionIncomp parseProlog(String droppedMsg) {
+  public static SuggestionIncomp parseProlog(String droppedMsg, InstanceNameResolver resolver) {
     Matcher matcher = patternProlog.matcher(droppedMsg);
     if (matcher.find()) {
-      String instanceName1 = Suggestion.transformInstanceName(matcher.group(1));
-      String instanceName2 = Suggestion.transformInstanceName(matcher.group(2));
+      String instanceName1 = resolver.resolveFromPrologName(matcher.group(1));
+      String instanceName2 = resolver.resolveFromPrologName(matcher.group(2));
       return new SuggestionIncomp(instanceName1, instanceName2);
     }
     else {

@@ -5,7 +5,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -52,12 +51,6 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
   
   @Override
   public void deploy(Distribution distribution, DeploymentInfo deploymentInfo, NetworkInfo net) throws DeploymentException {
-    // index instance info for efficient access
-    HashMap<String, InstanceInfo> instanceInfos = new HashMap<>();
-    for (InstanceInfo info : deploymentInfo.getInstances()) {
-      instanceInfos.put(info.getInstanceName(), info);
-    }
-    
     if (this.model == null) {
       // This may never be the case for a properly set up provider
       throw new DeploymentException("GeneSIS provider (" + this.providerID + ") is not properly set up.");
@@ -75,7 +68,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
       if (this.hasClientWithID(clientID)) {
         String[] instances = e.getValue();
         for (String instanceName : instances) {
-          InstanceInfo info = instanceInfos.get(instanceName);
+          InstanceInfo info = deploymentInfo.getInstanceInfo(instanceName);
           String dockerImage = net.getDockerRepositoryPrefix() + info.getComponentType().toLowerCase();
           String args = MontiThingsUtil.getRunArgumentsAsString(instanceName, net.getMqttHost(), net.getMqttPort());
           model.addMontiThingsDeployment(dockerImage, args, clientID);

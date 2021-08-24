@@ -4,14 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
 import ps.deployment.server.data.LocationSpecifier;
+import ps.deployment.server.util.InstanceNameResolver;
 import ps.deployment.server.data.DeploymentConfiguration;
 
 public interface Suggestion {
@@ -23,18 +24,21 @@ public interface Suggestion {
    * 
    * @return A parsed suggestion or null if it could not be parsed.
    */
-  public static Suggestion parseProlog(String droppedMsg) {
+  public static Suggestion parseProlog(String droppedMsg, List<String> instanceNames) {
     // register different suggestion types
-    List<Function<String, ? extends Suggestion>> providers = Lists.newArrayList(
+    List<BiFunction<String, InstanceNameResolver, ? extends Suggestion>> providers = Lists.newArrayList(
         SuggestionGEQ::parseProlog,
         SuggestionEQ::parseProlog,
         SuggestionIncomp::parseProlog,
         SuggestionDependency::parseProlog
     );
     
+    // create instance name resolver to resolve prolog names to MontiThings instance names
+    InstanceNameResolver resolver = new InstanceNameResolver(instanceNames);
+    
     // test if droppedMsg can be parsed to any registered type of suggestion.
-    for (Function<String, ? extends Suggestion> provider : providers) {
-      Suggestion sugg = provider.apply(droppedMsg);
+    for (BiFunction<String, InstanceNameResolver, ? extends Suggestion> provider : providers) {
+      Suggestion sugg = provider.apply(droppedMsg, resolver);
       if (sugg != null) {
         return sugg;
       }
@@ -44,31 +48,6 @@ public interface Suggestion {
     
     // message could not be parsed
     return null;
-  }
-  
-  /**
-   * Transforms an instance name from Prolog format (e.g. HierarchyExampleSink)
-   * to its model name (e.g. hierarchy.example.sink)
-   */
-  public static String transformInstanceName(String prologName) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < prologName.length(); i++) {
-      char c = prologName.charAt(i);
-      if (Character.isUpperCase(c)) {
-        // if this character is in upper case, also insert a dot
-        if (sb.length() > 0) {
-          // the first character should not be preceded by a dot
-          sb.append('.');
-        }
-        
-        sb.append(Character.toLowerCase(c));
-      }
-      else {
-        // if this character is in lower case, just append it
-        sb.append(c);
-      }
-    }
-    return sb.toString();
   }
   
   /**

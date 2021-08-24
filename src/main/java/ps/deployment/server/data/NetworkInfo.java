@@ -27,6 +27,7 @@ public class NetworkInfo {
   }
   
   public void setDockerRepositoryPrefix(String dockerRepository) {
+    if(!dockerRepository.endsWith("/")) dockerRepository += "/";
     this.dockerRepositoryPrefix = dockerRepository;
   }
   

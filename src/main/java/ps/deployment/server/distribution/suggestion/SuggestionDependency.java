@@ -8,6 +8,7 @@ import ps.deployment.server.data.DeploymentConfiguration;
 import ps.deployment.server.data.constraint.AdaptedDependencyConstraint;
 import ps.deployment.server.data.constraint.Constraint;
 import ps.deployment.server.data.constraint.DependencyConstraint;
+import ps.deployment.server.util.InstanceNameResolver;
 
 public class SuggestionDependency implements Suggestion {
   
@@ -43,17 +44,17 @@ public class SuggestionDependency implements Suggestion {
         if(this.matches(dcon)) {
           // replace original constraint with dropped one
           it.remove();
-          it.add(new AdaptedDependencyConstraint(dependent, dependency, satCount, distinct, orgCount));
+          it.add(new AdaptedDependencyConstraint(dependent, dependency, satCount, distinct, dcon.getLocationType(), orgCount));
         }
       }
     }
   }
   
-  public static SuggestionDependency parseProlog(String droppedMsg) {
+  public static SuggestionDependency parseProlog(String droppedMsg, InstanceNameResolver resolver) {
     Matcher matcher = patternProlog.matcher(droppedMsg);
     if (matcher.find()) {
-      String dependent = Suggestion.transformInstanceName(matcher.group("dependent"));
-      String dependency = Suggestion.transformInstanceName(matcher.group("dependency"));
+      String dependent = resolver.resolveFromPrologName(matcher.group("dependent"));
+      String dependency = resolver.resolveFromPrologName(matcher.group("dependency"));
       int satCount = Integer.parseInt(matcher.group("satCount"));
       int orgCount = Integer.parseInt(matcher.group("orgCount"));
       boolean distinct = matcher.group("distinct") != null;
