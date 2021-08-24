@@ -11,4 +11,4 @@ FROM openjdk:11-jre
 COPY --from=build /src/main/app/server/target/jar /src/main/app
 
 WORKDIR /src/main/app
-CMD [ "java", "-cp", "server.jar", "-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog", "Main" ]
+ENTRYPOINT [ "java", "-cp", "server.jar", "-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog", "Main" ]
