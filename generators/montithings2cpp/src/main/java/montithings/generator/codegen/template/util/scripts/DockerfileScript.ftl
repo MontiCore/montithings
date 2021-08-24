@@ -2,7 +2,7 @@
 # (c) https://github.com/MontiCore/monticore
 ${tc.signature("comp", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
-<#assign instances = ComponentHelper.getInstances(comp)>
+<#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
 # Build Image -----------------------------
 <#if config.getMessageBroker().toString() == "DDS">

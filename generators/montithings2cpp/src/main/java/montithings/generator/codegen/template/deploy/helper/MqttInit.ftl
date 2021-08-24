@@ -11,7 +11,7 @@ ${tc.signature("comp", "config")}
 
   <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0>
     MqttConfigRequester configRequester;
-    configRequester.requestConfig(instanceNameArg.getValue ());
+    configRequester.requestConfig(getModelInstanceName(instanceNameArg.getValue ()));
 
     // Wait for initial connection
     while (!configRequester.hasReceivedConfig())

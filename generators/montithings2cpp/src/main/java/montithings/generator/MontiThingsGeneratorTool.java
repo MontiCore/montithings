@@ -291,6 +291,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
 
         generateCppForComponent(model, symTab, compTarget, hwcPath, config, models, genDeploy);
+        
+        if(!genDeploy) {
+          // copy hwc for embedded component manually
+          copyHwcToTarget(new File(target, baseModel), hwcPath, model, config, models);
+        }
       }
       // reset splitting mode and message broker
       config.setSplittingMode(orgSplit);

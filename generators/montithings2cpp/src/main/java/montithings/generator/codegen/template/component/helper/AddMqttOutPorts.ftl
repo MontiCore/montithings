@@ -2,6 +2,7 @@
 ${tc.signature("comp","config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
+std::string modelInstanceNameOut = getModelInstanceName(this->getInstanceName());
 <#list comp.getOutgoingPorts() as p>
   <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
 
@@ -20,5 +21,5 @@ ${tc.signature("comp","config")}
     -->
     this->interface.addInPort${p.getName()?cap_first} (${p.getName()});
   </#if>
-  this->interface.addOutPort${p.getName()?cap_first} (new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", false));
+  this->interface.addOutPort${p.getName()?cap_first} (new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}", false));
 </#list>
