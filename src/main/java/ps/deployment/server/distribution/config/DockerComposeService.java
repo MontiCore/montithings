@@ -9,6 +9,12 @@ public class DockerComposeService {
   private String network_mode = "host";
   private String restart = "always";
   
+  // On some systems, MQTT will fail to connect to the broker when using
+  // cross-compiled images. This is related to the MUSL linker and unavailable
+  // SYSCALLs on e.g. ARM architectures. Giving the container privileged rights
+  // will prevent this from happening.
+  private final boolean privileged = true;
+  
   public DockerComposeService() {
     
   }
@@ -48,6 +54,10 @@ public class DockerComposeService {
   
   public void setRestart(String restart) {
     this.restart = restart;
+  }
+  
+  public boolean isPrivileged() {
+    return this.privileged;
   }
   
 }

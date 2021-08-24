@@ -204,7 +204,7 @@ protected String extractHost(String fullyQualifiedExecutionPort) {
     String cmdDownload = "docker pull \""+dockerImage+"\"";
     
     // We'll reuse the resourceName as the container name for docker.
-    String cmdStart = "docker run -d --rm -it --name \""+resourceName+"\" \""+dockerImage+"\" " + montiThingsArgs;
+    String cmdStart = "docker run -d --privileged --rm -it --name \""+resourceName+"\" \""+dockerImage+"\" " + montiThingsArgs;
     String cmdStop = "docker stop \""+resourceName+"\" || true";
     
     // Add SSH resource & assign it to the given host execution port
