@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map.Entry;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
@@ -56,7 +57,20 @@ public class MqttAPIController implements IDeployStatusListener {
     try {
       NetworkInfo net = manager.getNetworkInfo();
       this.mqtt = new MqttClient(net.getMqttURI(), "MqttAPIController");
-      this.mqtt.connect();
+      MqttConnectOptions opts = new MqttConnectOptions();
+      opts.setAutomaticReconnect(true);
+      while(true) {
+        try {
+          this.mqtt.connect(opts);
+          break;
+        } catch(MqttException e) {
+          System.err.println("Failed to connect to MQTT broker \""+net.getMqttURI()+"\". Trying again in 3 seconds...");
+          try {
+            Thread.sleep(3_000);
+          }
+          catch (InterruptedException e1) { e1.printStackTrace(); }
+        }
+      }
       
       this.mqtt.subscribe(TOPIC_SETCONFIG_REQUEST, this::handleSetDeployConfig);
       this.mqtt.subscribe(TOPIC_SETINFO_REQUEST, this::handleSetDeployInfo);
