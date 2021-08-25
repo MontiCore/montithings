@@ -31,8 +31,7 @@ Make sure to source OpenDDS, then execute `DCPSInfoRepo -ORBListenEndpoints iiop
 
 When the app is running start the recorder tool:
 
-- Make sure the tool is built: `cd ../../../../services/recorder && ./dockerBuild.sh && cd -`
-- Start it: `../../../../services/recorder/dockerRun.sh --minSpacing 5 --fileRecordings recordings.json -n 1`
+- Start the recorder tool: `../../../../services/recorder/dockerRun.sh --minSpacing 5 --fileRecordings recordings.json -n 1`
 - Stop it using `Ctrl+c`. There should be a `recordings.json` file after the recorder stopped. When docker is used check if the file is owned by the current user, otherwise `chown` it.
 - Move the recordings file: `mv recordings.json ../../`
 - Stop the application: `./dockerStop.sh`
