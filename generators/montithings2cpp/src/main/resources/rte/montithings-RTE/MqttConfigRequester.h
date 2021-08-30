@@ -27,6 +27,9 @@ class MqttConfigRequester : public MqttUser
   /// all instance names for which a configuration has been requested
   std::string instanceName;
 
+  MqttClient *  mqttClientInstance;
+
+
 public:
   MqttConfigRequester ();
 

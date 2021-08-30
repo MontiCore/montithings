@@ -122,8 +122,10 @@ MqttPort<T>::setSensorActuatorName (std::string sensorName, bool shouldSubscribe
   LOG (DEBUG) << "Set sensor actuator name '" << sensorName << "'";
 
   // cleanup
-  subscriptions.erase(sensorActuatorTopic);
-  mqttClientInstance->unsubscribe (sensorActuatorTopic);
+  if(sensorActuatorTopic.length() != 0){
+    subscriptions.erase(sensorActuatorTopic);
+    mqttClientInstance->unsubscribe (sensorActuatorTopic);
+  }
 
   // set new sensorActuatorName
   sensorActuatorTopic = "/sensorActuator/" + replaceDotsBySlashes (sensorName);

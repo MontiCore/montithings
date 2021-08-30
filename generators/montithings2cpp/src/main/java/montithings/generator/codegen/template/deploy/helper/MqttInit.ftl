@@ -3,10 +3,10 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if config.getMessageBroker().toString() == "MQTT">
-  MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
+  MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
 
   // Wait for initial connection
-  while(!MqttClient::instance()->isConnected())
+  while(!mqttClientInstance->isConnected())
   ;
 
   <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0>

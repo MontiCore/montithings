@@ -71,6 +71,9 @@ void initialize();
 
 public:
 ${className}(std::string instanceName
+<#if config.getMessageBroker().toString() == "MQTT">
+  , MqttClient* passedMqttClientInstance
+</#if>
 <#if comp.getParameters()?has_content>,</#if>
 ${TypesPrinter.printConstructorArguments(comp)});
 

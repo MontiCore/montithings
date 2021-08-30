@@ -119,7 +119,7 @@ MqttClient::subscribe (std::string topic)
         break;
       */
     }
-  MqttClient::instance ()->subscriptions.emplace (topic);
+  this->subscriptions.emplace (topic);
 }
 
 void
@@ -152,7 +152,7 @@ MqttClient::unsubscribe (std::string topic)
         break;
       */
     }
-  MqttClient::instance ()->subscriptions.erase(topic);
+  this->subscriptions.erase(topic);
 }
 
 void

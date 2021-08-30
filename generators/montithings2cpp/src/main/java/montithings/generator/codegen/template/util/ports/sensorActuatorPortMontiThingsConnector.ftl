@@ -11,7 +11,7 @@ INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char* argv[]) {
 
-  el::Loggers::getLogger("MQTT");
+  el::Loggers::getLogger("MQTT_PORT");
   el::Loggers::getLogger("RECORDER");
 
   el::Configurations defaultConf;
@@ -56,16 +56,17 @@ int main(int argc, char* argv[]) {
   }
   </#if>
 
-  MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
+  MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
 
   // Wait for initial connection
-  while(!MqttClient::instance()->isConnected());
+  while(!mqttClientInstance->isConnected());
 
   LOG(DEBUG) << "MQTT Connection Setup.";
 
 
   ${port} port (
-  instanceNameArg.getValue ()
+  instanceNameArg.getValue (),
+  mqttClientInstance
   );
 
   port.setUp();
@@ -76,7 +77,7 @@ int main(int argc, char* argv[]) {
   LOG(DEBUG) << "SensorActuator Port ${port} started.";
 
   port.threadJoin();
-  MqttClient::instance()->wait();
+  mqttClientInstance->wait();
 
   }
   catch (TCLAP::ArgException &e) // catch exceptions

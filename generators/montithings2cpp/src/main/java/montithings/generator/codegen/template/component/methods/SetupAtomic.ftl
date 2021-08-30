@@ -18,9 +18,6 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 
 
 <#if config.getMessageBroker().toString() == "MQTT">
-
-  mqttClientInstance = MqttClient::instance ();
-
   std::ifstream file_input("${deploymentConfigPath}");
   sensorActuatorTypes = json::parse(file_input)["sensorActuatorTypes"];
 

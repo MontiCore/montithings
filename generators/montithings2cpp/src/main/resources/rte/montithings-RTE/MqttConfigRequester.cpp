@@ -5,17 +5,18 @@
 
 MqttConfigRequester::MqttConfigRequester ()
 {
-  MqttClient::instance ()->addUser (this);
-  MqttClient::instance ()->subscribe ("/components");
+  mqttClientInstance = MqttClient::instance ();
+  mqttClientInstance->addUser (this);
+  mqttClientInstance->subscribe ("/components");
 }
 
 void
 MqttConfigRequester::requestConfig (std::string instanceName)
 {
   std::string instanceNameWithSlashes = replaceDotsBySlashes (instanceName);
-  MqttClient::instance ()->publish ("/prepareComponent", instanceNameWithSlashes);
+  mqttClientInstance->publish ("/prepareComponent", instanceNameWithSlashes);
   answerTopic += "/" + instanceNameWithSlashes;
-  MqttClient::instance ()->subscribe (answerTopic);
+  mqttClientInstance->subscribe (answerTopic);
   this->instanceName = instanceName;
 }
 
@@ -38,7 +39,7 @@ MqttConfigRequester::onMessage (mosquitto *mosquitto, void *obj,
       // re-request config if our parent just joined
       if (payload == replaceDotsBySlashes (getEnclosingComponentName (instanceName)))
         {
-          MqttClient::instance ()->publish ("/prepareComponent",
+          mqttClientInstance->publish ("/prepareComponent",
                                             replaceDotsBySlashes (instanceName));
         }
     }

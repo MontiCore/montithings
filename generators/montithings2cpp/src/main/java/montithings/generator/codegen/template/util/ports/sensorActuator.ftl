@@ -24,7 +24,7 @@ ${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}> * sensorActuator
 std::string instanceName;
 
 public:
-${port}(std::string instanceName);
+${port}(std::string instanceName, MqttClient* passedMqttClientInstance);
 void setUp();
 void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
 void start();
@@ -32,9 +32,9 @@ void run();
 void threadJoin();
 };
 
-${port}::${port}(std::string instanceName)
+${port}::${port}(std::string instanceName, MqttClient* passedMqttClientInstance)
 {
-mqttClientInstance = MqttClient::instance ();
+mqttClientInstance = passedMqttClientInstance;
 mqttClientInstance->addUser (this);
 this->instanceName = instanceName;
 }

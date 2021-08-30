@@ -5,5 +5,5 @@ ${tc.signature("comp", "className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${generics}::publishState (json state)
 {
-MqttClient::instance ()->publish ("/setState/" + replaceDotsBySlashes (this->instanceName), state.dump ());
+mqttClientInstance->publish ("/setState/" + replaceDotsBySlashes (this->instanceName), state.dump ());
 }
