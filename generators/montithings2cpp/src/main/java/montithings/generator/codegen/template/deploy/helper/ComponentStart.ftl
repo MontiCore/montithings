@@ -12,6 +12,7 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
   instanceNameArg.getValue ()
   <#if config.getMessageBroker().toString() == "MQTT">
   , mqttClientInstance
+  , mqttClientLocalInstance
   </#if>
   <#if comp.getParameters()?size gt 0>,</#if>
   <#list comp.getParameters() as variable>
@@ -49,6 +50,7 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
       instanceNameArg.getValue ()
       <#if config.getMessageBroker().toString() == "MQTT">
         , mqttClientInstance
+        , mqttClientLocalInstance
       </#if>
       <#if comp.getParameters()?size gt 0>,</#if>
       <#list comp.getParameters() as variable>

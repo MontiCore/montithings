@@ -4,15 +4,15 @@ ${tc.signature("comp","config","className")}
 
 
 ${Utils.printTemplateArguments(comp)}
-void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendKeepAlive(std::string sensorActuatorTopic, std::string portName, std::future<void> keepAliveFuture){
-  LOG(DEBUG) << "Start sending keepalive to " << sensorActuatorTopic;
+void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::future<void> keepAliveFuture){
+  LOG(DEBUG) << "Start sending keepalive to " << sensorActuatorConfigTopic;
   json j;
   j["occupiedBy"] = this->getInstanceName() + "." + portName;
   std::string message = j.dump();
-  mqttClientInstance->unsubscribe (sensorActuatorTopic);
+  mqttClientLocalInstance->unsubscribe (sensorActuatorConfigTopic);
   while (keepAliveFuture.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout){
-    mqttClientInstance->publishRetainedMessage (sensorActuatorTopic, message);
+    mqttClientLocalInstance->publishRetainedMessage (sensorActuatorConfigTopic, message);
     std::this_thread::sleep_for(std::chrono::seconds(5));
   }
-  LOG(DEBUG) << "Stop sending keepalive to " << sensorActuatorTopic;
+  LOG(DEBUG) << "Stop sending keepalive to " << sensorActuatorConfigTopic;
 }

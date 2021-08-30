@@ -4,10 +4,16 @@ ${tc.signature("comp", "config")}
 
 <#if config.getMessageBroker().toString() == "MQTT">
   MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
+  MqttClient* mqttClientLocalInstance;
+  if(brokerHostnameArg.getValue() == "localhost" && brokerPortArg.getValue() == 1883){
+    mqttClientLocalInstance = mqttClientInstance;
+  } else {
+    mqttClientLocalInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
+  }
 
   // Wait for initial connection
-  while(!mqttClientInstance->isConnected())
-  ;
+  while(!mqttClientInstance->isConnected());
+  while(!mqttClientLocalInstance->isConnected());
 
   <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0>
     MqttConfigRequester configRequester;

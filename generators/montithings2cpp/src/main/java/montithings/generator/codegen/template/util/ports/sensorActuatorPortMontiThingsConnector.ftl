@@ -30,10 +30,6 @@ int main(int argc, char* argv[]) {
   TCLAP::CmdLine cmd("${port} MontiThings SensorActuatorPort", ' ', "${config.getProjectVersion()}");
   TCLAP::ValueArg${"<"}std::string${">"} instanceNameArg ("n", "name","Fully qualified instance name of the sensorActuatorPort",true,"","string");
   cmd.add ( instanceNameArg );
-  TCLAP::ValueArg${"<"}std::string${">"} brokerHostnameArg ("","brokerHostname","Hostname (or IP address) of the MQTT broker",false,"localhost","string");
-  TCLAP::ValueArg${"<"}int${">"} brokerPortArg ("","brokerPort","Network port of the MQTT broker",false,1883,"int");
-  cmd.add ( brokerHostnameArg );
-  cmd.add ( brokerPortArg );
 
   TCLAP::SwitchArg muteMqttLogger ("", "muteMQTT", "Suppress all logs from MQTT broker", false);
   cmd.add (muteMqttLogger);
@@ -56,7 +52,7 @@ int main(int argc, char* argv[]) {
   }
   </#if>
 
-  MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
+  MqttClient* mqttClientInstance = MqttClient::localInstance("localhost", 1883);
 
   // Wait for initial connection
   while(!mqttClientInstance->isConnected());

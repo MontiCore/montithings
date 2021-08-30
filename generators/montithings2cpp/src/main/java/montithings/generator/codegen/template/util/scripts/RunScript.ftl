@@ -29,7 +29,7 @@ echo "Starting components..."
 <#-- TODO: OTHER BROKERS -->
 <#if config.getMessageBroker().toString() == "MQTT">
   <#list sensorActuatorPorts as port >
-  ./${port} --name ${port} --brokerHostname localhost --brokerPort 1883 > ${port}.log 2>&1 &
+  ./${port} --name ${port} > ${port}.log 2>&1 &
   </#list>
 </#if>
 

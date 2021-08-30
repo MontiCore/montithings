@@ -40,10 +40,11 @@ protected:
   * MQTT Clients
   */
   MqttClient *  mqttClientInstance;
+  MqttClient *  mqttClientLocalInstance;
 
 public:
   explicit MqttPort (std::string name, bool shouldSubscribe = true,
-                     MqttClient *client = MqttClient::instance ());
+                     MqttClient *client = MqttClient::instance (), MqttClient *localClient = MqttClient::localInstance ());
   ~MqttPort () = default;
 
   /**
@@ -88,12 +89,14 @@ public:
 };
 
 template <typename T>
-MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe, MqttClient *client)
+MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe, MqttClient *client, MqttClient *localClient)
     : fullyQualifiedName (std::move (name))
 {
   mqttClientInstance = client;
-
   mqttClientInstance->addUser (this);
+
+  mqttClientLocalInstance = localClient;
+  mqttClientLocalInstance->addUser (this);
 
   std::string connectorTopic = "/connectors/" + replaceDotsBySlashes (fullyQualifiedName);
   std::string manualInjectTopic = "/portsInject/" + replaceDotsBySlashes (fullyQualifiedName);
@@ -124,7 +127,7 @@ MqttPort<T>::setSensorActuatorName (std::string sensorName, bool shouldSubscribe
   // cleanup
   if(sensorActuatorTopic.length() != 0){
     subscriptions.erase(sensorActuatorTopic);
-    mqttClientInstance->unsubscribe (sensorActuatorTopic);
+    mqttClientLocalInstance->unsubscribe (sensorActuatorTopic);
   }
 
   // set new sensorActuatorName
@@ -133,7 +136,7 @@ MqttPort<T>::setSensorActuatorName (std::string sensorName, bool shouldSubscribe
   isSensorActuator = true;
   if (shouldSubscribe)
     {
-      mqttClientInstance->subscribe (sensorActuatorTopic);
+      mqttClientLocalInstance->subscribe (sensorActuatorTopic);
       subscriptions.emplace (sensorActuatorTopic);
       LOG (DEBUG) << "Subscribe to sensor '" << sensorActuatorTopic << "'";
     }

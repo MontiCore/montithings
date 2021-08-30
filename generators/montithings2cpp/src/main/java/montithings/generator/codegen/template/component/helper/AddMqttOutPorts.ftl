@@ -17,11 +17,11 @@ ${tc.signature("comp","config")}
 
     std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 50));
     ${p.getName()}->setSensorActuatorName (topicName, false);
-    std::string fullTopic = "/sensorActuator/config/" + topicName;
-    mqttClientInstance->subscribe (fullTopic);
+    std::string sensorActuatorConfigTopic = "/sensorActuator/config/" + topicName;
+    mqttClientLocalInstance->subscribe (sensorActuatorConfigTopic);
 
     std::future<void> keepAliveFuture${p.getName()?cap_first} = exitSignal${p.getName()?cap_first}.get_future();
-    th${p.getName()?cap_first} = std::thread(&${className}::sendKeepAlive, this, fullTopic, "${p.getName()}", std::move(keepAliveFuture${p.getName()?cap_first}));
+    th${p.getName()?cap_first} = std::thread(&${className}::sendKeepAlive, this, sensorActuatorConfigTopic, "${p.getName()}", std::move(keepAliveFuture${p.getName()?cap_first}));
 
   </#if>
   <#if !comp.isAtomic()>

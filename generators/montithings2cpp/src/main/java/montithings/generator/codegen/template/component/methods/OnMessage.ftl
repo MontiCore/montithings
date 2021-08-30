@@ -18,13 +18,12 @@ LOG(DEBUG) << "GOT MESSAGE ON TOPIC " + topic;
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
         // check if its message from sensorActuatorConfig topic
         if (topic == "/sensorActuator/config/" + ${p.getName()}->getSensorActuatorName()){
-            LOG(DEBUG) << "MESSAGE IS " + payload;
             json jsonMessage = json::parse(payload);
             std::string portIdentifier = this->getInstanceName() + ".${p.getName()}";
 
             if(jsonMessage["occupiedBy"] != portIdentifier && jsonMessage["occupiedBy"] != "False"){
                 LOG(DEBUG) << "Topic " + topic + "for sensorActuator ${p.getName()} is taken.";
-                mqttClientInstance->unsubscribe (topic);
+                mqttClientLocalInstance->unsubscribe (topic);
                 exitSignal${p.getName()?cap_first}.set_value();
                 th${p.getName()?cap_first}.join();
 
@@ -48,12 +47,12 @@ LOG(DEBUG) << "GOT MESSAGE ON TOPIC " + topic;
                 <#else>
                 ${p.getName()}->setSensorActuatorName (nextTopic, false);
                 </#if>
-                std::string fullTopic = "/sensorActuator/config/" + nextTopic;
-                mqttClientInstance->subscribe (fullTopic);
+                std::string sensorActuatorConfigTopic = "/sensorActuator/config/" + nextTopic;
+                mqttClientLocalInstance->subscribe (sensorActuatorConfigTopic);
 
                 exitSignal${p.getName()?cap_first} = std::promise<void>();
                 std::future<void> keepAliveFuture${p.getName()?cap_first} = exitSignal${p.getName()?cap_first}.get_future();
-                th${p.getName()?cap_first} = std::thread(&${className}::sendKeepAlive, this, fullTopic, "${p.getName()}", std::move(keepAliveFuture${p.getName()?cap_first}));
+                th${p.getName()?cap_first} = std::thread(&${className}::sendKeepAlive, this, sensorActuatorConfigTopic, "${p.getName()}", std::move(keepAliveFuture${p.getName()?cap_first}));
             }
         }
     </#if>

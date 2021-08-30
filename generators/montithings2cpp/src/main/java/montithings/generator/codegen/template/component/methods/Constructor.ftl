@@ -8,6 +8,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
 (std::string instanceName
 <#if config.getMessageBroker().toString() == "MQTT">
   , MqttClient* passedMqttClientInstance
+  , MqttClient* passedMqttClientLocalInstance
 </#if>
 <#if comp.getParameters()?has_content>
   , ${Utils.printConfigurationParametersAsList(comp)}
@@ -34,6 +35,7 @@ this->instanceName = instanceName;
 
 <#if config.getMessageBroker().toString() == "MQTT">
 mqttClientInstance = passedMqttClientInstance;
+mqttClientLocalInstance = passedMqttClientLocalInstance;
 </#if>
 
 <#list comp.getParameters() as param >

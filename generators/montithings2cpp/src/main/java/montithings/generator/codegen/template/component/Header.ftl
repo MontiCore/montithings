@@ -36,6 +36,7 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
 
 <#if config.getMessageBroker().toString() == "MQTT">
   MqttClient *  mqttClientInstance;
+  MqttClient *  mqttClientLocalInstance;
   json sensorActuatorTypes;
 
   <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
@@ -73,6 +74,7 @@ public:
 ${className}(std::string instanceName
 <#if config.getMessageBroker().toString() == "MQTT">
   , MqttClient* passedMqttClientInstance
+  , MqttClient* passedMqttClientLocalInstance
 </#if>
 <#if comp.getParameters()?has_content>,</#if>
 ${TypesPrinter.printConstructorArguments(comp)});
@@ -81,6 +83,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
   void publishConnectors();
   void publishConfigForSubcomponent (std::string instanceName);
+  void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::future<void> keepAliveFuture);
 </#if>
 
 <#if config.getMessageBroker().toString() == "DDS">
@@ -128,7 +131,6 @@ void onEvent () override;
 <#if ComponentHelper.retainState(comp)>
   bool restoreState ();
 </#if>
-void sendKeepAlive(std::string sensorActuatorTopic, std::string portName, std::future<void> keepAliveFuture);
 <#if !comp.isDecomposed()>
   ${compname}Impl${generics}* getImpl();
 </#if>
