@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 # (c) https://github.com/MontiCore/monticore
-${tc.signature("comp", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getInstances(comp)>
 
@@ -85,5 +85,26 @@ RUN ./build.sh ${comp.getFullName()}
             # Run our binary on container startup
             ENTRYPOINT [ "sh", "entrypoint.sh" ]
         </#if>
+    </#list>
+</#if>
+
+<#if config.getMessageBroker().toString() == "MQTT">
+    <#list sensorActuatorPorts as port >
+        
+            # SENSORACTUATOR: ${port}
+            FROM alpine AS ${port}
+
+            RUN apk add --update-cache g++
+
+            RUN apk add --update-cache mosquitto
+
+            COPY --from=build /usr/src/app/build/bin/${port} /usr/src/app/build/bin/
+
+            WORKDIR /usr/src/app/build/bin
+
+            RUN echo './${port} "$@"' > entrypoint.sh
+
+            # Run our binary on container startup
+            ENTRYPOINT [ "sh", "entrypoint.sh" ]
     </#list>
 </#if>

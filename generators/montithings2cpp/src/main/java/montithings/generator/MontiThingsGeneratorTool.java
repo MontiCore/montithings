@@ -331,7 +331,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
       if (ComponentHelper.isApplication(comp, config)) {
-        mtg.generateDockerfileScript(target, comp);
+        mtg.generateDockerfileScript(target, comp, executableSensorActuatorPorts);
       }
     }
 

@@ -234,21 +234,20 @@ public class MTGenerator {
             "template/util/scripts/KillScript.ftl", sortedDirs, sensorActuatorPorts, config);
     makeExecutable(targetPath, "kill", ".sh");
 
-    //TODO: Add sensorActuatorPorts to dockerRun
     // Docker scripts
     fg.generate(targetPath, "dockerRun", ".sh",
-            "template/util/scripts/DockerRun.ftl", comp, config);
+            "template/util/scripts/DockerRun.ftl", comp, sensorActuatorPorts, config);
     makeExecutable(targetPath, "dockerRun", ".sh");
   }
 
-  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp) {
+  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp,  List<String> sensorActuatorPorts) {
     fg.generate(targetPath, "Dockerfile", "",
-            "template/util/scripts/DockerfileScript.ftl", comp, config);
+            "template/util/scripts/DockerfileScript.ftl", comp, sensorActuatorPorts, config);
     fg.generate(targetPath, "dockerBuild", ".sh",
-            "template/util/scripts/DockerBuild.ftl", comp, config);
+            "template/util/scripts/DockerBuild.ftl", comp, sensorActuatorPorts, config);
     makeExecutable(targetPath, "dockerBuild", ".sh");
     fg.generate(targetPath, "dockerRun", ".sh",
-            "template/util/scripts/DockerRun.ftl", comp, config);
+            "template/util/scripts/DockerRun.ftl", comp, sensorActuatorPorts, config);
     makeExecutable(targetPath, "dockerRun", ".sh");
   }
 

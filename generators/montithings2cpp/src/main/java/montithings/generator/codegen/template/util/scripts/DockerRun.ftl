@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("comp", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
@@ -22,6 +22,11 @@ docker network ls | grep montithings > /dev/null || docker network create --driv
   <#list instances as pair >
       ${tc.includeArgs("template.util.scripts.DockerRunCommand", [pair.getKey().fullName, pair.getValue(), config])}
   </#list>
+</#if>
+<#if config.getMessageBroker().toString() == "MQTT">
+    <#list sensorActuatorPorts as port >
+        ${tc.includeArgs("template.util.scripts.DockerRunCommand", [port, port?lower_case, config])}
+    </#list>
 </#if>
 
 chmod +x dockerStop.sh
