@@ -10,9 +10,6 @@ ${className}${Utils.printFormalTypeParameters(comp)}::onMessage (mosquitto *mosq
 std::string topic = std::string ((char *)message->topic);
 std::string payload = std::string ((char *)message->payload, message->payloadlen);
 
-LOG(DEBUG) << "GOT MESSAGE ON TOPIC " + topic;
-
-
 <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
     <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
