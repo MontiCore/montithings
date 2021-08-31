@@ -39,6 +39,10 @@ cp ../../"$1"/*.sh .
 <#if config.getMessageBroker().toString() == "DDS">
 cp ../../"$1"/*.ini .
 </#if>
+<#if config.getMessageBroker().toString() == "MQTT">
+mkdir python
+cp ../../python/sensoractuatormanager.py python/.
+</#if>
 <#if config.getSplittingMode().toString() == "LOCAL">
 cp -r ../../"$1"/ports .
 </#if>

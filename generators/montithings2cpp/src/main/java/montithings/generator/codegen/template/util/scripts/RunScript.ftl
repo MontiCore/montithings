@@ -36,3 +36,7 @@ echo "Starting components..."
 if [ -d "hwc" ]; then
 find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "$0" > "$0.log" 2>&1 &' '{}' \;
 fi
+
+<#if config.getMessageBroker().toString() == "MQTT">
+exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
+</#if>

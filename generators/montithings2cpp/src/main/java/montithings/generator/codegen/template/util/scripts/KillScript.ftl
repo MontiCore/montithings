@@ -12,6 +12,10 @@ ${tc.signature("components", "sensorActuatorPorts", "config", "existsHWC")}
 if [ -d "hwc" ]; then
 find hwc -name "*.py" -exec pkill -f '{}' \;
 fi
+  
+<#if config.getMessageBroker().toString() == "MQTT">
+pkill -f python/sensoractuatormanager.py
+</#if>
 
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
   docker stop dcpsinforepo
