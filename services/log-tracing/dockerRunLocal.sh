@@ -15,4 +15,4 @@ case "${os}" in
     *)          echo "unknown os!" && exit 1
 esac
 
-docker run --rm ${network} -p 8080:8080 --name logtracer_middleware  registry.git.rwth-aachen.de/monticore/montithings/core/logtracer_middleware --DCPSConfigFile dcpsconfig.ini --mqtt-broker-host ${mqttip} "$@"
+docker run --rm -d ${network} -p 8080:8080 --name logtracer_middleware  registry.git.rwth-aachen.de/monticore/montithings/core/logtracer_middleware --DCPSConfigFile dcpsconfig.ini --mqtt-broker-host ${mqttip} "$@"
