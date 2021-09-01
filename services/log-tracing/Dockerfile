@@ -3,7 +3,7 @@
 # Build Image -----------------------------
 FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get --allow-releaseinfo-change-suite update && apt-get install -y \
     libboost-all-dev \
     libmosquitto-dev
 
