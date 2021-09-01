@@ -25,6 +25,9 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
+
+${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
+
 <#if ComponentHelper.isEveryBlock(computeName, comp)>
   ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
@@ -35,7 +38,6 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   ${tc.includeArgs("template.component.helper.RecorderComputationMeasurementEnd", [comp, config])}
 
   ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
-  ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
   setResult(${Identifier.getResultName()});
@@ -49,7 +51,6 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
 
   ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
-  ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
   setResult(${Identifier.getResultName()});
@@ -63,7 +64,6 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
     ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
-    ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     if (timeMode == TIMESYNC) {
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
     setResult(${Identifier.getResultName()});
