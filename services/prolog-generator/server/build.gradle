@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow'
+}
+
+group 'de.rwth.se.iotlab'
+version '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        url repo
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "com.sparkjava:spark-core:2.8.0"
+
+    compile rootProject
+}
+
+
+shadowJar {
+    destinationDirectory = file("$projectDir/target/jar")
+    archiveName = "server.jar"
+}
+
+release.dependsOn(shadowJar)
