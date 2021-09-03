@@ -110,13 +110,38 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     <#list distribution.equalConstraints as constraint>
         (
         include_equal(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}), Constraint${count_constraint} = '';
-        (\+include_equal(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count} , _), Constraint${count_constraint} = '${distribution.name} ${constraint.key} ${constraint.value} == ${constraint.number}')
+        (\+include_equal(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count} , _), Constraint${count_constraint} = '[EQ] ${distribution.name} ${constraint.key} ${constraint.value} == ${constraint.number}')
         ),
         <#assign count++>
         <#assign count_constraint++>
     </#list>
 
-    % then constrains less than equal: =<
+    <#assign count_constraint_backtrack=count_constraint>
+    % look for a set of devices that can satisfy every constraint
+    (
+        % constrains less than equal: =<
+    (
+    <#list distribution.lteConstraints as constraint>
+    include_lte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        <#assign count++>
+    </#list>
+
+        % then constrains greater than equal: >=
+    <#list distribution.gteConstraints as constraint>
+        (
+        check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}), Constraint${count_constraint} = ''
+        ),
+        <#assign count_constraint++>
+    </#list>
+
+    <#list distribution.checkAllConstraints as constraint>
+    check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
+    </#list>
+
+    true) ; (
+    % if there is no set of devices that can satisfy every constraint, we'll fallback to the original behavior of dropping constraints
+    <#assign count_constraint=count_constraint_backtrack>
+
     <#list distribution.lteConstraints as constraint>
     include_lte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
         <#assign count++>
@@ -131,12 +156,14 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
         (
         \+check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, _),
         check_gte(property("${constraint.key}", "${constraint.value}"), ${gte_satisfiable}, AllAvailableDevicesFiltered${count}),
-        Constraint${count_constraint} = '${distribution.name} ${constraint.key} ${constraint.value} >= ${constraint.number} (${gte_satisfiable} would be satisfiable)'
+        Constraint${count_constraint} = '[GEQ] ${distribution.name} ${constraint.key} ${constraint.value} >= ${constraint.number} (${gte_satisfiable} would be satisfiable)'
         )<#sep>;</#sep>
         </#list>
         ),
         <#assign count_constraint++>
     </#list>
+
+    true)), 
 
     % then constrains that check all equal
     <#list distribution.checkAllConstraints as constraint>
@@ -179,7 +206,7 @@ distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>
 <#-- -------------------------------- -->
 <#-- DISTRIBUTION QUERY (With Drops)  -->
 <#-- -------------------------------- -->
-distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>) :-
+distribution_suggest(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>, DroppedConstraints) :-
     % retrieve possible lists of devices
 <#assign current_constraint = 1>
 <#list ast.distributions as distribution>
@@ -192,7 +219,7 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
     <#list incompatibilitiesList as key, value>
     (
     (check_incompatible(${key}, ${value}), Constraint${current_constraint} = ''); 
-    (Constraint${current_constraint} = 'Incompatibility between "${key}" and "${value}"')
+    (Constraint${current_constraint} = '[INCOMP] Incompatibility between "${key}" and "${value}"')
     <#assign current_constraint++>
     <#assign total_constraints++>
     ),
@@ -212,7 +239,7 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
         <#list contraintnum..0 as dep_satisfiable>
         (
         check_dependency_distinct(${dependency.dependent},${dependency.dependency},${dep_satisfiable}),
-        Constraint${current_constraint} = '"${dependency.dependent}"" depends on at least ${dependency.amount_at_least} distinct instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
+        Constraint${current_constraint} = '[DEP-DIST] "${dependency.dependent}" depends on at least ${dependency.amount_at_least} distinct instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
         )<#sep>;</#sep>
         </#list>
         )
@@ -228,7 +255,7 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
         <#list contraintnum..0 as dep_satisfiable>
         (
         check_dependency(${dependency.dependent},${dependency.dependency},${dep_satisfiable}),
-        Constraint${current_constraint} = '"${dependency.dependent}"" depends on at least ${dependency.amount_at_least} (possibly shared) instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
+        Constraint${current_constraint} = '[DEP] "${dependency.dependent}" depends on at least ${dependency.amount_at_least} (possibly shared) instances of "${dependency.dependency}" (${dep_satisfiable} would be satisfiable)'
         )<#sep>;</#sep>
         </#list>
         )
@@ -238,9 +265,17 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
     <#assign total_constraints++>
 </#list>
 
-    <#list 1..total_constraints as i>
-    (Constraint${i} == '' ;(\+(Constraint${i} == ''), write('Dropped constraint: '), writeln(Constraint${i}))),
-    </#list>
+    % collect dropped constraints
+
+    DroppedConstraints0 = [],
+    <#if total_constraints gt 0>
+        <#list 1..total_constraints as i>
+        (Constraint${i} == '', DroppedConstraints${i} = DroppedConstraints${i-1};
+        (\+(Constraint${i} == ''), append(DroppedConstraints${i-1}, [Constraint${i}], DroppedConstraints${i}), write('Dropped constraint: '), writeln(Constraint${i}))),
+        
+        </#list>
+    </#if>
+    DroppedConstraints = DroppedConstraints${total_constraints},
 
     % finishing query with a .
     1 == 1.
