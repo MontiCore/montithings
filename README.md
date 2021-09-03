@@ -128,7 +128,8 @@ terraform apply terraform_azure.tfplan
 
 You will see how Terraform first instantiates the virtual machine and then 
 installs MontiThings on this machine.
-To find out the virtual machine's IP address, call:
+At the end, the script shows you the virtual machine's IP.
+In case you forget it, you can find out the virtual machine's IP address by calling:
 ```
 az vm show --resource-group montithingsResourceGroup --name montithings -d --query [publicIps] -o tsv
 ```
