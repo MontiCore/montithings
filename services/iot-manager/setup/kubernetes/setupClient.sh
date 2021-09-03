@@ -1,4 +1,5 @@
 #!/bin/bash
+# (c) https://github.com/MontiCore/monticore
 set -e
 
 KUBECTL="sudo k3s kubectl"

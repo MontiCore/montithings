@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package ps.deployment.server.distribution.suggestion;
 
 import java.util.ListIterator;

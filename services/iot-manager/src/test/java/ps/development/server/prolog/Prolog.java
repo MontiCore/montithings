@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package ps.development.server.prolog;
 
 import java.io.BufferedReader;

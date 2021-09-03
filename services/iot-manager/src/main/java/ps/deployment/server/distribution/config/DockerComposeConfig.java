@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package ps.deployment.server.distribution.config;
 
 import java.util.HashMap;

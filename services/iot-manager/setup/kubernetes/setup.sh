@@ -1,4 +1,5 @@
 #!/bin/bash
+# (c) https://github.com/MontiCore/monticore
 ACCOUNT_NAME=iot
 
 KUBECTL="sudo k3s kubectl"

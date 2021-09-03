@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 % helpers
 merge_list([],L,L).
 merge_list([H|T],L,[H|M]):-

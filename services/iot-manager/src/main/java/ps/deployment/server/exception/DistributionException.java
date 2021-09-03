@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package ps.deployment.server.exception;
 
 public class DistributionException extends RuntimeException {
