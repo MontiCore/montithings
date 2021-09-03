@@ -1,0 +1,15 @@
+bin/
+tmp/
+target/
+
+# eclipse IDE
+.settings/
+.classpath
+.project
+/facts.pl
+/helpers.pl
+/query.pl
+/test.pl
+
+# MQTT runtime files
+**.lck
