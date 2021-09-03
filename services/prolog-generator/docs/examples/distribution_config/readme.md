@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Examples
 
 The directory `world` contains facts about some dummy devices and necessary helper functions.

@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.json._symboltable;
 
 public class JSONLanguage extends JSONLanguageTOP {

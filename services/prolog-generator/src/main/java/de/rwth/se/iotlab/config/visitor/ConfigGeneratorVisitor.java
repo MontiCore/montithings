@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package de.rwth.se.iotlab.config.visitor;
 
 import de.monticore.ast.ASTNode;

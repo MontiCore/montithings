@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#list ast.properties as device, props>
 property("device", 1, "${device}").
     <#list props as key, values>

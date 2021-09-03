@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Configuration of the IoT-Manager
 
 ## App specific config

@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.json._symboltable;
 
 import static org.junit.Assert.assertEquals;

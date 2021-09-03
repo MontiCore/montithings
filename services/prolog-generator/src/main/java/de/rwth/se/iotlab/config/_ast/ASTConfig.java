@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package de.rwth.se.iotlab.config._ast;
 
 import de.monticore.lang.json._ast.*;

@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 This example should test a specific scenario with the following constraints:
 
 - The heat in `building1` should be controlled. Therefore, there should be at least one temperature controller on each floor.

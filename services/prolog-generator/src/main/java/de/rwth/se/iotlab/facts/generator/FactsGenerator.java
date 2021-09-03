@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package de.rwth.se.iotlab.facts.generator;
 
 import de.monticore.generating.GeneratorEngine;

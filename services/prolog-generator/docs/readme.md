@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Documentation 
 
 This is the documentation for the IoT-Manager and the software service which runs on the clients. 

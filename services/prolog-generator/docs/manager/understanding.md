@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Understanding the IoT-Manager
 
 The IoT-Manager consists of several components:
