@@ -1,52 +1,52 @@
-# IoT Client: Dokumentation
-Der IoT Client kommuniziert mittels MQTT mit einem Deployment Server, bzw. einem "Basic Deployment Target Provider" auf dem Deployment Server.
+# IoT Client: Documentation
+The IoT client communicates via MQTT with a deployment server or a "basic deployment target provider" on the deployment server.
 
-Dieser verwaltet die IoT Clients und sendet ihnen Befehle.
+This server manages the IoT clients and sends them commands.
 
 ## Client ID
-Jeder IoT Client besitzt eine eindeutige ID.
-Diese kann auf Wunsch manuell festgelegt werden;
-Standardmäßig wird allerdings eine MAC-Adresse des ausführenden Computers gewählt.
-Über diese ID kann der Deployment Server die einzelnen Clients individuell ansprechen.
+Each IoT client has a unique ID.
+This can be set manually if desired;
+However, a MAC address of the executing computer is selected by default.
+The deployment server can use this ID to address the individual clients individually.
 
 ## Client Location
-Der Standort eines IoT Clients wird mittels dem Tripel <b>building, floor & room</b> beschrieben.
-Jede Komponente des Tripels ist dabei ein beliebiger String.
+The location of an IoT client is described by means of the triple <b>building, floor & room</b>.
+Each component of the triple is an arbitrary string.
 
 ## MQTT Topics
 | Topic                             | Sender          | Beschreibung                    |
 |-----------------------------------|-----------------|---------------------------------|
-| deployment/<i>clientID</i>/status | Client | Status-Updates (s.u.)                    |
-| deployment/<i>clientID</i>/config | Client | Hardwarekonfiguration des Clients (s.u.) |
-| deployment/<i>clientID</i>/heatbeat| Client| Heartbeat für den Server Watchdog        |
-| deployment/<i>clientID</i>/push   | Server | Anweisungen für Deployment auf Client    |
-| deployment/poll                   | Server | siehe unten                              |
+| deployment/<i>clientID</i>/status | Client | Status-Updates (see below)                    |
+| deployment/<i>clientID</i>/config | Client | Hardware configuration of the client (see below) |
+| deployment/<i>clientID</i>/heatbeat| Client| Heartbeat for the server watchdog        |
+| deployment/<i>clientID</i>/push   | Server | Instructions for deployment to client    |
+| deployment/poll                   | Server | see below                              |
 
-Ein MQTT Topic wird von allen IoT-Clients abboniert: <b>deployment/poll</b>.
-Empfängt ein IoT Client eine Nachricht auf diesem Topic, so sendet er seinen aktuellen Status auf seinem zugehörigen Topic.
+One MQTT topic is subscribed to by all IoT clients: <b>deployment/poll</b>.
+If an IoT client receives a message on this topic, it sends its current status on its associated topic.
 
 ## Status
-Der Status von IoT Clients wird in einer einfachen JSON Nachricht gesendet. Ein Beispiel:
+The status of IoT clients is sent in a simple JSON message. Example:
 ```json
 {"status":"idle"}
 ```
 
 ## Heartbeat
-In regelmäßigen Abständen sendet der IoT Client einen Heartbeat um zu signalisieren, dass der noch online und verfügbar ist.
-Dabei handelt es sich um eine leere MQTT-Nachricht an das Heartbeat-Topic des Clients.
+The IoT client sends a heartbeat at regular intervals to signal that it is still online and available.
+This is an empty MQTT message to the heartbeat topic of the client.
 
-Wird zu lange kein Heartbeat des Clients empfangen, so wird er von dem Watchdog des Deployment Server als Offline angesehen und aus dem Deployment entfernt.
+If no heartbeat is received from the client for too long, it is considered offline by the deployment server watchdog and removed from the deployment.
 
 ## Push
-Der Deployment Server kann dem IoT Client mit einer Push-Nachricht dazu beauftragen, neue Komponenten zu starten, bzw. laufende Komponenten zu stoppen.
-Dazu sendet er eine Nachricht mit einer Docker-Compose Datei.
-Diese wird vom Client mittels ```docker-compose``` eingelesen und das aktive Deployment entsprechend angepasst.
+The deployment server can send a push message to the IoT client to start new components or stop running components.
+To do this, it sends a message with a Docker Compose file.
+The client reads this file using ```docker-compose``` and adjusts the active deployment accordingly.
 
 ## Docker Compose
-Eine Docker-Compose Datei beschreibt <b>alle</b> Komponenten, die Zeitgleich auf <b>einem</b> Client als Docker Container ausgeführt werden sollen.
-Dabei kann ```docker-compose``` die Differenzen zwischen einer vorherigen Docker-Compose Datei und einer neuen ermitteln und nur diese anwenden.
+A Docker-Compose file describes <b>all</b> components that are to be executed simultaneously on <b>a</b> client as a Docker container.
+In doing so, ```docker-compose``` can determine the differences between a previous Docker-Compose file and a new one and apply only it.
 
-Beispiel für eine Docker-Compose Datei. Es werden drei Komponenten auf diesem Client gestartet.
+Example of a Docker-Compose file. Three components are launched on this client.
 ```yaml
 version: '3.7'
 services:

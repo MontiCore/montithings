@@ -1,18 +1,18 @@
 # IoT Client
-Der IoT-Client ist das Gegenstück zum "Basic Deployment Target Provider".
-Er läuft auf den IoT-Geräten, auf welchen die Komponenten laufen sollen.
+The IoT client is the counterpart to the "Basic Deployment Target Provider".
+It runs on the IoT devices on which the components are to be executed.
 
-## Abhänigkeiten
+## Dependencies
 - Docker Engine & CLI
 - Python 3
 
 ## Setup
-1. Sicher stellen, dass alle Abhänigkeiten installiert sind.
-2. Mittels ```pip3 install -r requirements.txt``` alle Abhängigkeiten für die Python-Anwendung installieren.
-3. Config-Datei (src/config.py) nach Wünschen anpassen (MQTT Broker und Geräteeigenschaften festlegen).
-4. Der IoT-Client kann nun mittels ```./start.sh``` gestartet werden.
+1. Make sure that docker and python are installed.
+2. Using ``pip3 install -r requirements.txt`` install all dependencies for the Python application.
+3. Customize config file (src/config.py) as desired (set MQTT broker and device properties).
+4. The IoT client can now be started using ``./start.sh``.
 
-Beispiel für einen erfolgreichen Start:
+Example of a successful start:
 ```
 Starting IoT-Client (ClientID=c96a71a5e574)
 Connecting to MQTT broker... (node4.se.rwth-aachen.de:1883)
@@ -20,5 +20,5 @@ Initializing components...
 Finished.
 ```
 
-## Dokumentation
-Die Dokumentation ist [hier](docs/overview.md) zu finden.
+## Documentation
+The docs are [here](docs/overview.md).
