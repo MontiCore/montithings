@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # IoT Client: Documentation
 The IoT client communicates via MQTT with a deployment server or a "basic deployment target provider" on the deployment server.
 

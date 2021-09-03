@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # IoT Client
 The IoT client is the counterpart to the "Basic Deployment Target Provider".
 It runs on the IoT devices on which the components are to be executed.

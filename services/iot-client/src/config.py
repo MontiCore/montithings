@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 import uuid
 import json
 from pathlib import Path

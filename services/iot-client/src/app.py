@@ -1,3 +1,5 @@
+# (c) https://github.com/MontiCore/monticore
+
 # %%
 import helpers
 import paho.mqtt.client as mqttc
