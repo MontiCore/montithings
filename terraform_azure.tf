@@ -211,6 +211,7 @@ resource "azurerm_linux_virtual_machine" "montithingsvm" {
     provisioner "remote-exec" {
         inline = [
             "cd montithings",
+            "sudo cp docs/ascii-banner.txt /etc/motd",
             "./installLinux.sh"
         ]
 
