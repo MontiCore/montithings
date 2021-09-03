@@ -1,0 +1,6 @@
+# Runtime folders
+/run/
+__pycache__/
+
+# IDE
+.vscode/
