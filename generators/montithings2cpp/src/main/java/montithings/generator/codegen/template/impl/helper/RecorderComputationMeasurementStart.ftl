@@ -7,7 +7,6 @@ ${tc.signature("comp", "config")}
     if (montithings::library::hwcinterceptor::isRecording)
     {
       auto timeStartCalc = std::chrono::high_resolution_clock::now();
-      montithings::library::hwcinterceptor::setLastComputeTs(timeStartCalc.time_since_epoch().count());
 
     <#-- if statement is closed in the corresponding RecorderComputationMeasurementEnd.ftl file -->
 </#if>
