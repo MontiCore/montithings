@@ -25,7 +25,6 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
-
 ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
 
 <#if ComponentHelper.isEveryBlock(computeName, comp)>
@@ -33,9 +32,7 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
   
   
-  ${tc.includeArgs("template.component.helper.RecorderComputationMeasurementStart", [comp, config])}
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-  ${tc.includeArgs("template.component.helper.RecorderComputationMeasurementEnd", [comp, config])}
 
   ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
   if (timeMode == TIMESYNC) {
@@ -71,7 +68,6 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     <#if ComponentHelper.hasPortSpecificBehavior(comp)>}</#if>
   </#if>
 </#if>
-
 
 <#if ComponentHelper.retainState(comp)>
   json json__state = ${Identifier.getStateName()}.serializeState ();
