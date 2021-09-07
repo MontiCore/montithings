@@ -314,13 +314,13 @@ githubmirror:
     - rm script.deb.sh
     - apt-get -y install git-lfs
   script:
+    - git remote add github git@github.com:MontiCore/montithings.git
     - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
     - sh pre/mirror.sh
     - rm MDLinkChangerCLI.jar
-    - git remote add github git@github.com:MontiCore/montithings.git
     - git add --all
     - "(git commit -m 'Updated branch with most recent version.') || true"
-    - git push -f github "$CI_COMMIT_BRANCH"
+    - git push -f github HEAD:"$CI_COMMIT_BRANCH"
     - exit 0
   only:
     - develop
