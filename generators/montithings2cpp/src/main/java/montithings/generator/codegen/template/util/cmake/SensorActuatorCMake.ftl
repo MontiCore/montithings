@@ -74,7 +74,7 @@ include_directories("${commonCodePrefix}${libraryPath?replace("\\","/")}")
 
 # Include packages
 file(GLOB_RECURSE ${pckg?upper_case}_SOURCES "*.cpp" "*.h")
-list(FILTER ${pckg?upper_case}_SOURCES EXCLUDE REGEX ".*MontiThingsConnector.cpp")
+list(FILTER ${pckg?upper_case}_SOURCES EXCLUDE REGEX "Deploy.*")
 include_directories(".")
 
 <#if config.getMessageBroker().toString() == "MQTT">
@@ -100,14 +100,14 @@ include_directories(".")
   add_subdirectory(montithings-RTE)
 </#if>
 
-add_library(${pckg}_${port}Lib ${r"${SOURCES}"}${r"${"}${pckg?upper_case}_SOURCES})
+add_library(${pckg}_${port}Lib ${r"${SOURCES}"} ${r"${"}${pckg?upper_case}_SOURCES})
 target_link_libraries(${pckg}_${port}Lib MontiThingsRTE)
 target_link_libraries(${pckg}_${port}Lib nng::nng)
 set_target_properties(${pckg}_${port}Lib PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
 <#if !test>
-  add_executable(${pckg}.${port} ${port}MontiThingsConnector.cpp)
+  add_executable(${pckg}.${port} Deploy${port}.cpp)
   target_link_libraries(${pckg}.${port} ${pckg}_${port}Lib)
   <#if config.getTargetPlatform().toString() == "DSA_VCG"
   || config.getTargetPlatform().toString() == "DSA_LAB">

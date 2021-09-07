@@ -327,9 +327,10 @@ public class MTGenerator {
     File target = new File(genSrcDir + File.separator + packageName + "." + portName);
     GeneratorEngine engine = new GeneratorEngine(setup);
 
-    engine.generateNoA("template/util/ports/sensorActuatorPortMontiThingsConnector.ftl",Paths.get(target + File.separator + portName + "MontiThingsConnector.cpp"), portName, isSensor, config);
+    engine.generateNoA("template/sensoractuatorports/deploy/DeploySensorActuatorPort.ftl",Paths.get(target + File.separator + "Deploy" + portName + ".cpp"), portName, isSensor, config);
 
-    engine.generateNoA("template/util/ports/sensorActuator.ftl",Paths.get(target + File.separator + portName + ".h"), portName, isSensor, config);
+    engine.generateNoA("template/sensoractuatorports/mqttconnector/Header.ftl",Paths.get(target + File.separator + portName + "MqttConnector.h"), portName);
+    engine.generateNoA("template/sensoractuatorports/mqttconnector/Body.ftl",Paths.get(target + File.separator + portName + "MqttConnector.cpp"), portName, isSensor);
 
     Optional<ASTEveryTag> everyTag = Optional.empty();
     //TODO: What to do with this?
@@ -341,7 +342,7 @@ public class MTGenerator {
       }
     }*/
 
-    engine.generateNoA("template/util/ports/newSensorActuatorPort.ftl", Paths.get(target + File.separator + portName + "Port.h"), config, isSensor, portName, everyTag);
+    engine.generateNoA("template/sensoractuatorports/SensorActuatorPort.ftl", Paths.get(target + File.separator + portName + "Port.h"), config, isSensor, portName, everyTag);
   }
 
   /**
