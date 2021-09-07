@@ -297,6 +297,7 @@ Code Quality:
 githubmirror:
   image: maven:3-jdk-8
   stage: mirror
+  cache: []
   dependencies:
     - Deploy Nexus
   before_script:
