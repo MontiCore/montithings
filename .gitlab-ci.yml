@@ -297,8 +297,9 @@ Code Quality:
 githubmirror:
   image: maven:3-jdk-8
   stage: mirror
-  dependencies:
-    - Deploy Nexus
+  #dependencies:
+  #  - Deploy Nexus
+  needs: []
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
@@ -309,7 +310,7 @@ githubmirror:
     - mkdir -p ~/.ssh
     - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   script:
-    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
+    - curl --location --header "PRIVATE-TOKEN: $secibuildtoken" "https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build" --output MDLinkChangerCLI.jar
     - sh pre/mirror.sh
     - cd ..
     - "if [ -d \"tmp\" ]; then rm -rf tmp; fi"
