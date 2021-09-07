@@ -1,10 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package behavior._visitor;
 
-import behavior._ast.ASTAfterStatement;
-import behavior._ast.ASTAgoQualification;
-import behavior._ast.ASTEveryBlock;
-import behavior._ast.ASTLogStatement;
+import behavior._ast.*;
 import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -73,5 +70,19 @@ public class BehaviorPrettyPrinter implements BehaviorHandler {
     getPrinter().print("(");
     node.getSIUnitLiteral().accept(getTraverser());
     getPrinter().print(")");
+  }
+
+  @Override
+  public void handle(ASTConnectStatement node) {
+    getPrinter().print(node.getFrom() + " ");
+    getPrinter().print("->");
+    getPrinter().print(node.getTo() + ";");
+  }
+
+  @Override
+  public void handle(ASTDisconnectStatement node) {
+    getPrinter().print(node.getFrom() + " ");
+    getPrinter().print("-/");
+    getPrinter().print(node.getTo() + ";");
   }
 }

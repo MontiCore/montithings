@@ -10,6 +10,8 @@ import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._cocos.BindingsCoCos;
 import bindings._parser.BindingsParser;
 import bindings._symboltable.IBindingsGlobalScope;
+import cd4montithings.CD4MontiThingsMill;
+import cd4montithings._symboltable.ICD4MontiThingsGlobalScope;
 import cdlangextension.CDLangExtensionTool;
 import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCos;
@@ -18,8 +20,6 @@ import cdlangextension._symboltable.CDLangExtensionUnitSymbol;
 import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -113,11 +113,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
     }
 
-    CD4CodeMill.reset();
-    CD4CodeMill.init();
-    CD4CodeMill.globalScope().clear();
-    ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.globalScope();
-    cd4CGlobalScope.setModelPath(mp);
+    CD4MontiThingsMill.reset();
+    CD4MontiThingsMill.init();
+    CD4MontiThingsMill.globalScope().clear();
+    ICD4MontiThingsGlobalScope cd4MTGlobalScope = CD4MontiThingsMill.globalScope();
+    cd4MTGlobalScope.setModelPath(mp);
 
 
     MontiThingsMill.reset();

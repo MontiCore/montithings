@@ -23,6 +23,7 @@
 		<module>mtconfig</module>
 		<module>bindings</module>
 		<module>iot-behavior</module>
+		<module>cd-extensions</module>
 	</modules>
 
 	<build>

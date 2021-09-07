@@ -1,11 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
+import cd4montithings.CD4MontiThingsMill;
+import cd4montithings._symboltable.CD4MontiThingsGlobalScope;
+import cd4montithings._symboltable.CD4MontiThingsSymbolTableCompleter;
+import cd4montithings._symboltable.ICD4MontiThingsArtifactScope;
 import de.monticore.cd4analysis.CD4AnalysisMill;
 import de.monticore.cd4analysis._visitor.CD4AnalysisTraverser;
-import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
-import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCompleter;
 import de.monticore.cd4code._symboltable.CD4CodeSymbols2Json;
 import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4code.cocos.CD4CodeCoCosDelegator;
@@ -22,7 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
- * Tool to process CD4Code files and convert them to sym files
+ * Tool to process CD4MontiThings files and convert them to sym files
  */
 public class CD4MTTool {
 
@@ -41,11 +42,11 @@ public class CD4MTTool {
 
     for (String cd : cdFiles) {
       try {
-        CD4CodeMill.reset();
-        CD4CodeMill.init();
+        CD4MontiThingsMill.reset();
+        CD4MontiThingsMill.init();
         
         final ASTCDCompilationUnit ast = parse(cd);
-        ICD4CodeArtifactScope artifact = createSymbolTable(modelPath, ast);
+        ICD4MontiThingsArtifactScope artifact = createSymbolTable(modelPath, ast);
         applyRoleNameTrafo(ast);
         applyFieldsFromNavigableRolesTrafo(ast);
         checkCoCos(ast);
@@ -60,19 +61,19 @@ public class CD4MTTool {
   }
 
   protected static ASTCDCompilationUnit parse(String cd) throws IOException {
-    final ASTCDCompilationUnit ast = CD4CodeMill.parser().parse(cd).get();
+    final ASTCDCompilationUnit ast = CD4MontiThingsMill.parser().parse(cd).get();
     new CD4CodeDirectCompositionTrafo().transform(ast);
     Log.info("Successfully parsed " + ast.getCDDefinition().getName(), TOOL_NAME);
     return ast;
   }
 
-  protected static ICD4CodeArtifactScope createSymbolTable(File modelPath,
+  protected static ICD4MontiThingsArtifactScope createSymbolTable(File modelPath,
     ASTCDCompilationUnit ast) {
-    CD4CodeMill.globalScope().clear();
-    CD4CodeMill.globalScope().setModelPath(new ModelPath(modelPath.toPath()));
-    ((CD4CodeGlobalScope) CD4CodeMill.globalScope()).addBuiltInTypes();
-    ICD4CodeArtifactScope artifact = CD4CodeMill.scopesGenitorDelegator().createFromAST(ast);
-    ast.accept(new CD4CodeSymbolTableCompleter(ast).getTraverser());
+    CD4MontiThingsMill.globalScope().clear();
+    CD4MontiThingsMill.globalScope().setModelPath(new ModelPath(modelPath.toPath()));
+    ((CD4MontiThingsGlobalScope) CD4MontiThingsMill.globalScope()).addBuiltInTypes();
+    ICD4MontiThingsArtifactScope artifact = CD4MontiThingsMill.scopesGenitorDelegator().createFromAST(ast);
+    ast.accept(new CD4MontiThingsSymbolTableCompleter(ast).getTraverser());
     return artifact;
   }
 
@@ -98,7 +99,7 @@ public class CD4MTTool {
   }
 
   protected static void createSymbolFile(File modelPath, String symbolPath, String cd,
-    ASTCDCompilationUnit ast, ICD4CodeArtifactScope artifact) {
+    ASTCDCompilationUnit ast, ICD4MontiThingsArtifactScope artifact) {
     String symbolFileName = symbolPath
       + cd.substring(modelPath.toString().length() + 1, cd.length() - 2)
       + "sym";

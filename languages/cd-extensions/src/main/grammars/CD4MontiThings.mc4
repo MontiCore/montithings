@@ -1,0 +1,27 @@
+// (c) https://github.com/MontiCore/monticore
+
+import de.monticore.lang.cd4analysis.*;
+
+/**
+ * This grammar is used in order to be able to define ports in class diagrams.
+ */
+grammar CD4MontiThings extends de.monticore.CD4Code {
+
+  start CDCompilationUnit;
+
+  CDComponentInterface implements CDMember =
+    key("port") (CDPortDeclaration || ",")+ ";"
+  ;
+
+  CDPortDeclaration =
+    CDPortDirection MCType (CDPort || ",")+
+  ;
+
+  interface CDPortDirection;
+
+  CDPortDirectionIn implements CDPortDirection = key("in");
+
+  CDPortDirectionOut implements CDPortDirection = key("out");
+
+  CDPort = Name;
+}
