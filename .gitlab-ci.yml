@@ -317,8 +317,7 @@ githubmirror:
     - "if [ -d \"tmp\" ]; then rm -rf tmp; fi"
     - mkdir "tmp"
     - cd tmp
-    - git clone git@github.com:MontiCore/montithings.git
-    - git checkout "$CI_COMMIT_BRANCH"
+    - git clone -b "$CI_COMMIT_BRANCH" git@github.com:MontiCore/montithings.git
     - cd ..
     - rm -rf tmp/montithings/*
     - mv core/* tmp/montithings/
