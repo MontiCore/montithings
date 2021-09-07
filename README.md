@@ -31,6 +31,9 @@ For the purpose of this tutorial, you can choose between the following options:
 1. a native installation on your machine
 2. an installation in a virtual machine of the Microsoft Azure Cloud
 3. using MontiThings' Docker containers to avoid an installation
+4. using an online IDE by clicking this button (you will need to sign in with your GitHub account to Gitpod): \
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)
+
 
 ## Native installation
 
