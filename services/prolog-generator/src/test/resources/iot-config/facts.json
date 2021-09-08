@@ -1,0 +1,29 @@
+{
+    "devices": {
+        "aaaaaa": {
+            "hardware": [
+                "termostat_actuator",
+                "sensor_temperature",
+                "heat_controller"
+            ],
+            "heartbeat": 30,
+            "hostname": "pi",
+            "id": 1,
+            "ip": "192.168.178.33",
+            "is_docker": 1,
+            "last_seen": "2020-06-22 10:06:38.105859",
+            "location": {
+                "building": 1,
+                "floor": 1,
+                "room": 101
+            },
+            "mac": "aaaaaa",
+            "other_properties": null,
+            "running_services": [
+                "test"
+            ],
+            "state": "online",
+            "type": "RaspberryPi4"
+        }
+    }
+}
