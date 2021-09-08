@@ -1,2 +1,3 @@
 # (c) https://github.com/MontiCore/monticore
-docker build . --network host --tag registry.git.rwth-aachen.de/monticore/montithings/deployment/ba-schneider/prolog-generator:latest
+cd ../..
+docker build . --file services/prolog-generator/Dockerfile --network host --tag registry.git.rwth-aachen.de/monticore/montithings/core/prolog-generator:latest
