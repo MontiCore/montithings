@@ -325,7 +325,7 @@ githubmirror:
     - echo "*.png binary" >> .gitattributes
     - echo "*.jpg binary" >> .gitattributes
     - echo "*.pptx binary" >> .gitattributes
-    - git lfs migrate export --verbose --everything --yes --include "*.png"
+    - git lfs migrate export --verbose --everything --yes --include "*.*"
     - git add --all
     - "(git commit -m 'Updated branch with most recent version.') || true"
     - git push -f github HEAD:"$CI_COMMIT_BRANCH"
