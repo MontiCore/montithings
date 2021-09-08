@@ -20,7 +20,7 @@ CONTAINER=$(docker run -d --rm \
   --managementPort 30006 --dataPortArg 30007)
 </#if>
 <#if config.getMessageBroker().toString() == "MQTT">
-  --brokerHostname host.docker.internal --brokerPort 1883)
+  --brokerHostname ${r"${mqttip}"} --brokerPort 1883)
 </#if>
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
   --DCPSInfoRepo dcpsinforepo:12345 --DCPSConfigFile dcpsconfig.ini)

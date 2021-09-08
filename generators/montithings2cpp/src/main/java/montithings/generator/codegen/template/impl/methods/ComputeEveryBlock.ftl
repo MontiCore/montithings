@@ -10,7 +10,9 @@ ${className}${generics}::compute${ComponentHelper.getEveryBlockName(comp, everyB
 {
 ${compname}Result${generics} ${Identifier.getResultName()};
 ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
+${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [comp, config])}
 ${ComponentHelper.printJavaBlock(everyBlock.getMCJavaBlock(), isLogTracingEnabled)}
+${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementEnd", [comp, config])}
 <#list ComponentHelper.getPublishedPorts(comp, everyBlock.getMCJavaBlock()) as port>
     ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
 </#list>
