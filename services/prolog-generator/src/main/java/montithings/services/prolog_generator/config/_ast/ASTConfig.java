@@ -8,7 +8,6 @@ import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
 import static montithings.services.prolog_generator.Utils.astJsonValue2String;
 import static montithings.services.prolog_generator.Utils.generatePrologCompliantName;
 
-import javax.json.JsonValue;
 import java.util.*;
 
 public class ASTConfig extends ASTConfigTOP {

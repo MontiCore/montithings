@@ -9,7 +9,6 @@ plugins {
 
 group = "montithings.services"
 description = "prolog-generator"
-sourceCompatibility = "1.8"
 
 def grammarDir = "src/main/grammars"
 
@@ -46,7 +45,6 @@ dependencies {
     }
 
 
-    implementation "javax.json:javax.json-api:$javax_json_version"
     implementation "de.monticore:monticore-runtime:$monticore_version"
     implementation "de.monticore:monticore-grammar:$monticore_version"
     implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
@@ -54,7 +52,6 @@ dependencies {
     implementation "com.google.guava:guava:$guava_version"
     implementation "org.antlr:antlr4-runtime:$antlr_version"
     implementation "net.sourceforge.plantuml:plantuml:1.2018.12"
-    implementation "com.google.code.findbugs:jsr305:$jsr305_version"
     testImplementation "junit:junit:$junit_version"
     testImplementation "de.monticore:monticore-runtime:$monticore_version:tests"
     testImplementation "de.monticore:monticore-runtime:$monticore_version"
