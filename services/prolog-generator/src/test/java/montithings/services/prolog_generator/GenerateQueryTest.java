@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.services.iotlab;
+package montithings.services.prolog_generator;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,11 +10,11 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import de.monticore.lang.json._parser.JSONParser;
-import montithings.services.iotlab.config._ast.ASTConfig;
-import montithings.services.iotlab.config._parser.ConfigParser;
-import montithings.services.iotlab.config.generator.QueryGenerator;
-import montithings.services.iotlab.facts._ast.ASTFactsNode;
-import montithings.services.iotlab.facts._parser.FactsParser;
+import montithings.services.prolog_generator.config._ast.ASTConfig;
+import montithings.services.prolog_generator.config._parser.ConfigParser;
+import montithings.services.prolog_generator.config.generator.QueryGenerator;
+import montithings.services.prolog_generator.facts._ast.ASTFactsNode;
+import montithings.services.prolog_generator.facts._parser.FactsParser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.junit.Test;
 

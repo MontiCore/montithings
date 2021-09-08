@@ -53,21 +53,21 @@ dependencies {
 // execute MC
 
 task  generateFacts (type: MCTask) {
-    grammar = file("$projectDir/$grammarDir/de/rwth/se/iotlab/Facts.mc4")
+    grammar = file("$projectDir/$grammarDir/montithings/services/prolog_generator/Facts.mc4")
     outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
     handcodedPath += ["$projectDir/src/main/java", "$projectDir/json/src/main/java"]
     modelPath += ["$projectDir/json/$grammarDir"]
-    def uptoDate = incCheck(outputDir.toString() +"/de/rwth/se/iotlab/facts/IncGenGradleCheck.txt")
+    def uptoDate = incCheck(outputDir.toString() +"/montithings/services/prolog_generator/facts/IncGenGradleCheck.txt")
     outputs.upToDateWhen { uptoDate }
 }
 
 
 task  generateConfig (type: MCTask) {
-    grammar = file("$projectDir/$grammarDir/de/rwth/se/iotlab/Config.mc4")
+    grammar = file("$projectDir/$grammarDir/montithings/services/prolog_generator/Config.mc4")
     outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
     handcodedPath += ["$projectDir/src/main/java", "$projectDir/json/src/main/java"]
     modelPath += ["$projectDir/json/$grammarDir"]
-    def uptoDate = incCheck(outputDir.toString() +"/de/rwth/se/iotlab/config/IncGenGradleCheck.txt")
+    def uptoDate = incCheck(outputDir.toString() +"/montithings/services/prolog_generator/config/IncGenGradleCheck.txt")
     outputs.upToDateWhen { uptoDate }
 }
 compileJava.dependsOn(generateFacts)

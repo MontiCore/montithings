@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.services.iotlab.facts.generator;
+package montithings.services.prolog_generator.facts.generator;
 
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
-import montithings.services.iotlab.facts._ast.ASTDevices;
-import montithings.services.iotlab.facts._parser.FactsParser;
+import montithings.services.prolog_generator.facts._ast.ASTDevices;
+import montithings.services.prolog_generator.facts._parser.FactsParser;
 
 import java.io.IOException;
 import java.util.Optional;

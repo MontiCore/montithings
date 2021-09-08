@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.services.iotlab.facts.coco;
+package montithings.services.prolog_generator.facts.coco;
 
 public class StructureCoco {
 }

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.services.iotlab.config._ast;
+package montithings.services.prolog_generator.config._ast;
 
 import java.util.ArrayList;
 

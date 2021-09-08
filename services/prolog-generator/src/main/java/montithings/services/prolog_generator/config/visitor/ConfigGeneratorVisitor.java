@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.services.iotlab.config.visitor;
+package montithings.services.prolog_generator.config.visitor;
 
 import de.monticore.ast.ASTNode;
 import de.monticore.lang.json._ast.ASTJSONArray;
@@ -13,9 +13,9 @@ import de.monticore.lang.json._ast.ASTJSONProperty;
 import de.monticore.lang.json._ast.ASTJSONString;
 import de.monticore.lang.json._ast.ASTJSONValue;
 
-import montithings.services.iotlab.config._ast.ASTConfig;
-import montithings.services.iotlab.config._ast.ASTConfigNode;
-import montithings.services.iotlab.config._visitor.ConfigVisitor;
+import montithings.services.prolog_generator.config._ast.ASTConfig;
+import montithings.services.prolog_generator.config._ast.ASTConfigNode;
+import montithings.services.prolog_generator.config._visitor.ConfigVisitor;
 
 public class ConfigGeneratorVisitor implements ConfigVisitor {
     ConfigVisitor realThis = this;

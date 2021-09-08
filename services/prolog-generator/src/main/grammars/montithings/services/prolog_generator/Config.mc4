@@ -2,7 +2,7 @@
 /**
     This grammar is used to create a new type of parser etc for Config files
 */
-package de.rwth.se.iotlab;
+package montithings.services.prolog_generator;
 
 grammar Config extends de.monticore.lang.JSON {
 

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.services.iotlab.facts._ast;
+package montithings.services.prolog_generator.facts._ast;
 
 import de.monticore.lang.json._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
@@ -7,8 +7,8 @@ import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
 
 import java.util.*;
 
-import static montithings.services.iotlab.Utils.astJsonValue2String;
-import static montithings.services.iotlab.Utils.getSublists;
+import static montithings.services.prolog_generator.Utils.astJsonValue2String;
+import static montithings.services.prolog_generator.Utils.getSublists;
 
 public class ASTDevices extends ASTDevicesTOP {
     /**
