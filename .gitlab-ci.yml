@@ -298,6 +298,7 @@ githubmirror:
   image: maven:3-jdk-8
   stage: mirror
   cache: {}
+  needs: []
   variables:
     GIT_STRATEGY: clone
   dependencies:
@@ -320,6 +321,11 @@ githubmirror:
     - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
     - sh pre/mirror.sh
     - rm MDLinkChangerCLI.jar
+    - grep -v "lfs" .gitattributes > temp && mv temp .gitattributes
+    - echo "*.png binary" >> .gitattributes
+    - echo "*.jpg binary" >> .gitattributes
+    - echo "*.pptx binary" >> .gitattributes
+    - git lfs migrate export --verbose --everything --yes --include "*.png"
     - git add --all
     - "(git commit -m 'Updated branch with most recent version.') || true"
     - git push -f github HEAD:"$CI_COMMIT_BRANCH"
