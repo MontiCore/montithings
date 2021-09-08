@@ -1,15 +1,14 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab.facts._ast;
+package montithings.services.iotlab.facts._ast;
 
 import de.monticore.lang.json._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
-import sun.nio.cs.Surrogate;
 
 import java.util.*;
 
-import static de.rwth.se.iotlab.Utils.astJsonValue2String;
-import static de.rwth.se.iotlab.Utils.getSublists;
+import static montithings.services.iotlab.Utils.astJsonValue2String;
+import static montithings.services.iotlab.Utils.getSublists;
 
 public class ASTDevices extends ASTDevicesTOP {
     /**

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab;
+package montithings.services.iotlab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,10 +10,10 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import de.monticore.lang.json._parser.JSONParser;
-import de.rwth.se.iotlab.facts._ast.ASTDevices;
-import de.rwth.se.iotlab.facts._ast.ASTFactsNode;
-import de.rwth.se.iotlab.facts._parser.FactsParser;
-import de.rwth.se.iotlab.facts.generator.FactsGenerator;
+import montithings.services.iotlab.facts._ast.ASTDevices;
+import montithings.services.iotlab.facts._ast.ASTFactsNode;
+import montithings.services.iotlab.facts._parser.FactsParser;
+import montithings.services.iotlab.facts.generator.FactsGenerator;
 import org.antlr.v4.runtime.RecognitionException;
 import org.junit.Test;
 

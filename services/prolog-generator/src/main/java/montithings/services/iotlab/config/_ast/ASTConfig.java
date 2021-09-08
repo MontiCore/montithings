@@ -1,12 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab.config._ast;
+package montithings.services.iotlab.config._ast;
 
 import de.monticore.lang.json._ast.*;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedLiteral;
 import de.monticore.literals.mccommonliterals._ast.ASTSignedNatLiteral;
 
-import static de.rwth.se.iotlab.Utils.astJsonValue2String;
-import static de.rwth.se.iotlab.Utils.generatePrologCompliantName;
+import static montithings.services.iotlab.Utils.astJsonValue2String;
+import static montithings.services.iotlab.Utils.generatePrologCompliantName;
 
 import javax.json.JsonValue;
 import java.util.*;

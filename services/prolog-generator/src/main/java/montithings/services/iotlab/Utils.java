@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab;
+package montithings.services.iotlab;
 
 import de.monticore.lang.json._ast.ASTJSONNull;
 import de.monticore.lang.json._ast.ASTJSONNumber;

@@ -1,16 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab.config.generator;
+package montithings.services.iotlab.config.generator;
 
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
-import de.rwth.se.iotlab.config._ast.ASTConfig;
-import de.rwth.se.iotlab.config._parser.ConfigParser;
-import de.rwth.se.iotlab.facts._ast.ASTDevices;
-import de.rwth.se.iotlab.facts._parser.FactsParser;
+import montithings.services.iotlab.config._ast.ASTConfig;
+import montithings.services.iotlab.config._parser.ConfigParser;
+import montithings.services.iotlab.facts._parser.FactsParser;
 
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Map;
 import java.util.Optional;
 
 public class QueryGenerator {

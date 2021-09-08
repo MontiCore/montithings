@@ -1,14 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab.facts.generator;
+package montithings.services.iotlab.facts.generator;
 
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
-import de.rwth.se.iotlab.facts._ast.ASTDevices;
-import de.rwth.se.iotlab.facts._parser.FactsParser;
+import montithings.services.iotlab.facts._ast.ASTDevices;
+import montithings.services.iotlab.facts._parser.FactsParser;
 
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Map;
 import java.util.Optional;
 
 public class FactsGenerator {

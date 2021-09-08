@@ -1,9 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab.config._ast;
+package montithings.services.iotlab.config._ast;
 
 import java.util.ArrayList;
-
-import static de.rwth.se.iotlab.Utils.generatePrologCompliantName;
 
 public class Distribution {
     private String name;

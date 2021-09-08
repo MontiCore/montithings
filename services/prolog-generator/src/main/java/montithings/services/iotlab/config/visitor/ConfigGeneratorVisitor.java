@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package de.rwth.se.iotlab.config.visitor;
+package montithings.services.iotlab.config.visitor;
 
 import de.monticore.ast.ASTNode;
 import de.monticore.lang.json._ast.ASTJSONArray;
@@ -13,11 +13,9 @@ import de.monticore.lang.json._ast.ASTJSONProperty;
 import de.monticore.lang.json._ast.ASTJSONString;
 import de.monticore.lang.json._ast.ASTJSONValue;
 
-import de.rwth.se.iotlab.config._ast.ASTConfig;
-import de.rwth.se.iotlab.config._ast.ASTConfigNode;
-import de.rwth.se.iotlab.config._visitor.ConfigVisitor;
-
-import java.io.Console;
+import montithings.services.iotlab.config._ast.ASTConfig;
+import montithings.services.iotlab.config._ast.ASTConfigNode;
+import montithings.services.iotlab.config._visitor.ConfigVisitor;
 
 public class ConfigGeneratorVisitor implements ConfigVisitor {
     ConfigVisitor realThis = this;
