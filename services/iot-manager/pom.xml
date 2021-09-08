@@ -32,7 +32,7 @@
               <archive>
                 <manifest>
                   <mainClass>
-                    ps.deployment.server.DeploymentServer
+                    montithings.services.iot_manager.server.DeploymentServer
                   </mainClass>
                 </manifest>
               </archive>

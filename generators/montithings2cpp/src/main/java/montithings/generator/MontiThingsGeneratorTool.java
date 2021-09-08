@@ -237,14 +237,14 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Set<ComponentTypeSymbol> includeModels = new HashSet<>();
         modelPacks.put(comp, includeModels);
 
-        // the component itself should obviously be part of the deployment
+        // the component itself should obviously be part of the iot_manager
         includeModels.add(comp);
 
-        // all (in-)direct sub-components should be part of the deployment if
+        // all (in-)direct sub-components should be part of the iot_manager if
         // component should be deployed with its subcomponents
         if (ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
           for (ComponentTypeSymbol sub : ComponentHelper.getSubcompTypesRecursive(comp)) {
-            Log.debug("Including model \"" + sub.getFullName() + "\" with deployment of \"" + comp.getFullName() + "\"", TOOL_NAME);
+            Log.debug("Including model \"" + sub.getFullName() + "\" with iot_manager of \"" + comp.getFullName() + "\"", TOOL_NAME);
             includeModels.add(sub);
           }
         }
@@ -603,7 +603,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     // Serialize JSON and write it to a file.
     String jsonString = jsonBase.build().toString();
-    File jsonFile = new File(target, "deployment-info.json");
+    File jsonFile = new File(target, "iot_manager-info.json");
     FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
   }
 
