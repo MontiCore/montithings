@@ -14,6 +14,7 @@ stages:
   - post-test
   - security
   - build-applications
+  - mirror
 
 variables:
   # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -293,6 +294,48 @@ Code Quality:
 #    - docker buildx inspect --bootstrap
 #    - bash buildapplications.sh
 
+#githubmirror:
+#  image: maven:3-jdk-8
+#  stage: mirror
+#  cache: {}
+#  needs: []
+#  variables:
+#    GIT_STRATEGY: clone
+#  dependencies:
+#    - Deploy Nexus
+#  before_script:
+#    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+#    - eval $(ssh-agent -s)
+#    - ssh-add <(echo "$SE_CIBUILD_SSH_PRIV_KEY")
+#    - echo "$SE_CIBUILD_SSH_PRIV_KEY" | tr -d '\r' | ssh-add -
+#    - git config --global user.email "noreply-ci@se-rwth.de"
+#    - git config --global user.name "MontiCore Mirroring Bot"
+#    - mkdir -p ~/.ssh
+#    - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+#    - "curl -O https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh"
+#    - bash script.deb.sh
+#    - rm script.deb.sh
+#    - apt-get -y install git-lfs
+#  script:
+#    - git remote add github git@github.com:MontiCore/montithings.git
+#    - grep -v "lfs" .gitattributes > temp && mv temp .gitattributes
+#    - echo "*.png binary" >> .gitattributes
+#    - echo "*.jpg binary" >> .gitattributes
+#    - echo "*.pptx binary" >> .gitattributes
+#    - git lfs migrate export --verbose --everything --yes --include "*.*"
+#    - git lfs uninstall
+#    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/#monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output #MDLinkChangerCLI.jar"
+#    - sh pre/mirror.sh
+#    - rm MDLinkChangerCLI.jar
+#    - git add --all
+#    - "(git commit -m 'Updated branch with most recent version.') || true"
+#    - git push -f github HEAD:"$CI_COMMIT_BRANCH"
+#    - exit 0
+#  only:
+#    - develop
+#    - master
+
+
 ##########################################
 # Security Jobs
 ##########################################
@@ -315,7 +358,6 @@ flawfinder-sast:
       exists:
         - '**/*.c'
         - '**/*.cpp'
-
 
 ##########################################
 # Trigger other projects' pipelines

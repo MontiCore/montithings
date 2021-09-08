@@ -403,7 +403,6 @@ export default {
               left: left,
               properties: {
                 class: "flowchart-operator-no-fix-width",
-                body: this.var_assignments,
                 title: trace.source,
                 inputs: {},
                 outputs: {},

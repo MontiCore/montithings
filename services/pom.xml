@@ -17,6 +17,8 @@
 	<modules>
 		<module>replay-messages</module>
 		<module>iot-manager</module>
+		<module>prolog-generator</module>
+		<module>prolog-generator/server</module>
 	</modules>
 
 </project>

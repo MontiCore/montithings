@@ -1,0 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
+tasks:
+  - init: ./installLinux.sh
+    command: cat docs/ascii-banner.txt

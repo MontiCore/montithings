@@ -8,6 +8,9 @@ ${compname}Result${generics} ${className}${generics}::compute(${compname}Input${
 ${Identifier.getInputName()}){
 ${compname}Result${generics} ${Identifier.getResultName()};
 ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
+
+${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [comp, config])}
+
 <#if ComponentHelper.hasBehavior(comp)>
   ${ComponentHelper.printStatementBehavior(comp, isLogTracingEnabled)}
   <#list ComponentHelper.getPublishedPortsForBehavior(comp) as port>
@@ -16,5 +19,7 @@ ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 <#else>
   ${tc.includeArgs("template.util.statechart.hooks.Compute", [comp, config])}
 </#if>
+
+${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementEnd", [comp, config])}
 return ${Identifier.getResultName()};
 }

@@ -41,6 +41,8 @@ WORKDIR /usr/src/app
 # build opendds
 RUN git clone https://github.com/objectcomputing/OpenDDS.git opendds
 RUN cd /usr/src/app/opendds \
+&& git fetch && git fetch --tags \
+&& git checkout DDS-3.15 \
 && ./configure --static \
 && make \
 && ldconfig \

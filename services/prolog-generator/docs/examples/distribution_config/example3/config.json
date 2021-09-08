@@ -1,0 +1,40 @@
+{
+	"distribution": {
+		"test_less_than_equal": {
+			"distribution_selection": [],
+			"distribution_constraints": [
+				["location", "building1", "<=", 2],
+				["location", "building2", "<=", 3],
+				["location", "building3", "<=", 4]
+			]
+		},
+		"test_greater_than_equal": {
+			"distribution_selection": [],
+			"distribution_constraints": [
+				["location", "building1", ">=", 2],
+				["location", "building2", ">=", 3],
+				["location", "building3", ">=", 4]]
+			},
+		"test_equal": {
+			"distribution_selection": [],
+			"distribution_constraints": [
+				["location", "building1", "==", 2],
+				["location", "building2", "==", 3],
+				["location", "building3", "==", 4]]
+		},
+		"test_all": {
+			"distribution_selection": [],
+			"distribution_constraints": [
+				["location", "building1", "==", "all"]]
+		},
+		"test_disjunction": {
+			"distribution_selection": [
+				[
+					["location", "building2", 1],
+					["location", "building3", 1]
+				]
+			],
+			"distribution_constraints": []
+		}
+	}
+}

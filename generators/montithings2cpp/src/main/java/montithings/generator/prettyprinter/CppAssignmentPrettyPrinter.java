@@ -200,7 +200,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       }
       getPrinter().println(" );");
 
-      if (isLogTracingEnabled && suppressPostconditionCheck) {
+      if (isLogTracingEnabled && !suppressPostconditionCheck) {
         IMontiThingsScope componentScope = getScopeOfEnclosingComponent(node);
         ComponentTypeSymbol component = (ComponentTypeSymbol) componentScope.getSpanningSymbol();
         List<VariableSymbol> stateVariables = ComponentHelper.getVariablesAndParameters(component);
