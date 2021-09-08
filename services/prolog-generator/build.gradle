@@ -1,61 +1,70 @@
 /* (c) https://github.com/MontiCore/monticore */
 plugins {
     id "java"
-    id "monticore"  version "6.0.0" // MontiCore Plugin
+    id "monticore"
     id "maven-publish"
-    id "com.github.johnrengelman.shadow" version "4.0.4"
+    id "com.github.johnrengelman.shadow"
 //    id 'cz.malohlava.visteg' version '1.0.5'
 }
 
-group = "de.rwth.se.iotlab"
-version = "0.0.1-SNAPSHOT"
+group = "montithings.services"
 description = "prolog-generator"
 sourceCompatibility = "1.8"
 
-def emf_version = "2.15.0"
-def mc_version  = "6.0.0"
-def commons_version = "1.7.9"
-def grammar_classifier = "grammars"
 def grammarDir = "src/main/grammars"
 
 // configure non-standard source sets
+
 sourceSets {
-    main.java.srcDirs += [ "$projectDir/target/generated-sources/monticore/sourcecode"]
+    main {
+        java.srcDirs += ["$buildDir/generated-sources/monticore/sourcecode"]
+    }
+    test {
+        java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+    }
+    grammars {
+        resources {
+            srcDirs(grammarDir, reportsDir)
+            include("**/*.mc4", "**/*.cd")
+        }
+    }
 }
-buildDir = file("$projectDir/target")
 
 configurations {grammar}
 
 dependencies {
-    implementation "org.eclipse.emf:org.eclipse.emf.ecore:$emf_version"
-    implementation "org.eclipse.emf:org.eclipse.emf.ecore.xmi:$emf_version"
-    implementation "org.eclipse.emf:org.eclipse.emf.common:$emf_version"
-    implementation "de.monticore:monticore-runtime:$mc_version"
-    implementation "de.monticore:monticore-emf-runtime:$mc_version"
-    implementation "de.monticore:monticore-grammar:$mc_version"
-    grammar "de.monticore:monticore-grammar:$mc_version:$grammar_classifier"
-    implementation "de.se_rwth.commons:se-commons-logging:$commons_version"
-    implementation "de.se_rwth.commons:se-commons-utilities:$commons_version"
-    implementation "com.google.guava:guava:23.0"
-    implementation "org.antlr:antlr4-runtime:4.7.1"
+
+    grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+
+    grammar("de.monticore.lang:JSON:$monticore_version:$grammars_classifier"){
+        exclude group:'de.monticore', module:'monticore-grammar'
+        exclude group:'de.monticore', module:'monticore-generator'
+    }
+
+    implementation("de.monticore.lang:JSON:$monticore_version"){
+        exclude group:'de.monticore', module:'monticore-generator'
+    }
+
+
+    implementation "javax.json:javax.json-api:$javax_json_version"
+    implementation "de.monticore:monticore-runtime:$monticore_version"
+    implementation "de.monticore:monticore-grammar:$monticore_version"
+    implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+    implementation "de.se_rwth.commons:se-commons-utilities:$se_commons_version"
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "org.antlr:antlr4-runtime:$antlr_version"
     implementation "net.sourceforge.plantuml:plantuml:1.2018.12"
-    implementation "com.google.code.findbugs:jsr305:3.0.0"
-    implementation "ch.qos.logback:logback-classic:1.1.7"
-    testImplementation "junit:junit:4.11"
-    testImplementation "de.monticore:monticore-runtime:$mc_version:tests"
-    testImplementation "de.monticore:monticore-runtime:$mc_version"
-
-    implementation project(":json")
-
-
+    implementation "com.google.code.findbugs:jsr305:$jsr305_version"
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "de.monticore:monticore-runtime:$monticore_version:tests"
+    testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
 // execute MC
-
 task  generateFacts (type: MCTask) {
     grammar = file("$projectDir/$grammarDir/montithings/services/prolog_generator/Facts.mc4")
     outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
-    handcodedPath += ["$projectDir/src/main/java", "$projectDir/json/src/main/java"]
+    handcodedPath += ["$projectDir/src/main/java"]
     modelPath += ["$projectDir/json/$grammarDir"]
     def uptoDate = incCheck(outputDir.toString() +"/montithings/services/prolog_generator/facts/IncGenGradleCheck.txt")
     outputs.upToDateWhen { uptoDate }
@@ -65,7 +74,7 @@ task  generateFacts (type: MCTask) {
 task  generateConfig (type: MCTask) {
     grammar = file("$projectDir/$grammarDir/montithings/services/prolog_generator/Config.mc4")
     outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
-    handcodedPath += ["$projectDir/src/main/java", "$projectDir/json/src/main/java"]
+    handcodedPath += ["$projectDir/src/main/java"]
     modelPath += ["$projectDir/json/$grammarDir"]
     def uptoDate = incCheck(outputDir.toString() +"/montithings/services/prolog_generator/config/IncGenGradleCheck.txt")
     outputs.upToDateWhen { uptoDate }
@@ -78,16 +87,12 @@ tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
 
-// build sources jar in addition
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    archiveClassifier = "sources"
-}
-
-// build grammar jar as well
-task grammarJar(type: Jar) {
-    from ("$projectDir/src/main/grammars/"){ include "**/*.mc4" }
-    archiveClassifier = "grammars"
+java {
+    //withJavadocJar()
+    withSourcesJar()
+    registerFeature("grammars") {
+        usingSourceSet(sourceSets.grammars)
+    }
 }
 
 // configure deployment
@@ -111,21 +116,3 @@ task grammarJar(type: Jar) {
 //         url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
 //     }
 // }
-
-
-
-subprojects {
-    task release {
-        shadowJar
-    }
-
-    release.dependsOn(shadowJar)
-}
-
-repositories {
-    maven {
-        credentials.username mavenUser
-        credentials.password mavenPassword
-        url repo
-    }
-}
