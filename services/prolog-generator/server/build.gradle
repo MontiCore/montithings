@@ -1,31 +1,24 @@
+/* (c) https://github.com/MontiCore/monticore */
+
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow'
 }
 
-group 'de.rwth.se.iotlab'
-version '0.0.1-SNAPSHOT'
-
-repositories {
-    mavenLocal()
-    maven {
-        credentials.username mavenUser
-        credentials.password mavenPassword
-        url repo
-    }
-}
+group 'montithings.services.prolog-generator'
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile "com.sparkjava:spark-core:2.8.0"
-
-    compile rootProject
+    implementation "com.sparkjava:spark-core:2.8.0"
+    implementation project(":services:prolog-generator")
+    testImplementation "junit:junit:$junit_version"
 }
-
 
 shadowJar {
-    destinationDirectory = file("$projectDir/target/jar")
-    archiveName = "server.jar"
+    manifest {
+        attributes "Main-Class": "Main"
+    }
+    archiveFileName = "PrologGeneratorServer.${archiveExtension.get()}" // alternative: "server-${project.version}.${archiveExtension.get()}"
+    archiveClassifier = "server"
 }
 
-release.dependsOn(shadowJar)
+jar.dependsOn shadowJar

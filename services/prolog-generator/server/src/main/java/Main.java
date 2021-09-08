@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 import static spark.Spark.*;
-import de.rwth.se.iotlab.facts.generator.FactsGenerator;
-import de.rwth.se.iotlab.config.generator.QueryGenerator;
+import montithings.services.prolog_generator.facts.generator.FactsGenerator;
+import montithings.services.prolog_generator.config.generator.QueryGenerator;
 
 public class Main {
     public static void main(String[] args) {
