@@ -2,10 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <groupId>montithings.services</groupId>
+    <artifactId>services</artifactId>
+    <version>7.0.0-SNAPSHOT</version>
+  </parent>
+
   <modelVersion>4.0.0</modelVersion>
-  <groupId>DeploymentServer</groupId>
-  <artifactId>DeploymentServer</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>iot-manager</artifactId>
+
+  <properties>
+    <skipTests>true</skipTests>
+  </properties>
 
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -32,7 +41,7 @@
               <archive>
                 <manifest>
                   <mainClass>
-                    ps.deployment.server.DeploymentServer
+                    montithings.services.iot_manager.server.DeploymentServer
                   </mainClass>
                 </manifest>
               </archive>
@@ -42,6 +51,15 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire.plugin}</version>
+        <configuration>
+          <skipTests>${skipTests}</skipTests>
+          <argLine>${argLine}</argLine>
+          <useSystemClassLoader>false</useSystemClassLoader>
+        </configuration>
       </plugin>
     </plugins>
   </build>

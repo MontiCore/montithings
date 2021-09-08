@@ -6,7 +6,7 @@ RUN apt-get install -y swi-prolog-java
 RUN ln -s /usr/lib/swi-prolog/lib/x86_64-linux/libjpl.so /usr/lib/libjpl.so
 
 # Copy main JAR file
-COPY ./target/DeploymentServer-0.0.1-SNAPSHOT-jar-with-dependencies.jar /usr/app/DeploymentServer.jar
+COPY ./target/iot-manager-7.0.0-SNAPSHOT-jar-with-dependencies.jar /usr/app/DeploymentServer.jar
 
 WORKDIR /usr/app
 
