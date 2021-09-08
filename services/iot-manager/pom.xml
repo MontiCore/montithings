@@ -12,6 +12,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>iot-manager</artifactId>
 
+  <properties>
+    <skipTests>true</skipTests>
+  </properties>
+
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <plugins>
@@ -47,6 +51,15 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire.plugin}</version>
+        <configuration>
+          <skipTests>${skipTests}</skipTests>
+          <argLine>${argLine}</argLine>
+          <useSystemClassLoader>false</useSystemClassLoader>
+        </configuration>
       </plugin>
     </plugins>
   </build>
