@@ -323,6 +323,7 @@ githubmirror:
     - echo "*.jpg binary" >> .gitattributes
     - echo "*.pptx binary" >> .gitattributes
     - git lfs migrate export --verbose --everything --yes --include "*.*"
+    - git lfs uninstall
     - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
     - sh pre/mirror.sh
     - rm MDLinkChangerCLI.jar
