@@ -5,6 +5,7 @@
     <groupId>montithings.services</groupId>
     <artifactId>services</artifactId>
     <version>7.0.0-SNAPSHOT</version>
+    <relativePath>../..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
