@@ -1,30 +1,30 @@
 <!-- (c) https://github.com/MontiCore/monticore -->
 # IoT Manager
 
-## Allgemeines
-Der IoT Manager kümmert sich um die interne Orchestrierung des Deployments.
-Er kann mittels HTTP und MQTT kommunizieren und gesteuert werden.
-Im originalen Anwendungsfall kommuniziert dieser mit dem [MontiGem-Backend](https://git.rwth-aachen.de/se-student/theses/ba-schneider_philipp/exampleapplication).
+## General
+The IoT Manager takes care of the internal orchestration of the deployment.
+It can communicate and be controlled via HTTP and MQTT.
+In the original use case, it communicates with a [MontiGem-Backend](https://git.rwth-aachen.de/se-student/theses/ba-schneider_philipp/exampleapplication).
 
-Alternativ kann der Deployment-Manager auch in andere Java-Anwendungen integriert werden. 
-Betrachte dazu den Einstiegspunkt des IoT-Managers.
+Alternatively, the Deployment Manager can also be integrated into other Java applications. 
+To do this, consider the entry point of the IoT Manager.
 
 ## Kubernetes (k8s / k3s)
-Um Kubernetes Nodes in das Deployment einzuschließen, ist ein Service Account notwendig.
-Das folgende Skript legt einen solchen Account an, konfiguriert dessen Zugriffsrechte und gibt anschließend das Access Token aus.
+Including Kubernetes nodes in the deployment requires a service account.
+The following script creates such an account, configures its access rights, and then outputs the access token.
 
-Zu Beachten ist, dass dieses Skript auf einer berechtigten Node ausgeführt werden muss; am besten auf einem Master.
+Note that this script must be run on an authorized node; preferably a master.
 
 ```bash
 cd ./setup/kubernetes
 ./setup.sh
 ```
 
-Nodes können folgende Zusatzinformationen über Labels zugewiesen werden:
-1. Ihre Position (building, floor, room) <b>muss</b> spezifiziert sein.
-2. Hardware <b>kann</b> über labels deren Key mit "hardware" beginnt spezifiziert werden.
+The following additional information can be assigned to nodes via labels:
+1. Their location (building, floor, room) <b>must</b> be specified.
+2. Hardware <b>may</b> be specified via labels whose key starts with "hardware".
 
-Hierfür existiert ebenfalls ein Script, welches ebenfalls auf einer berechtigten Node ausgeführt werden muss. Dieses fragt nach und nach die notwendigen Informationen ab.
+There is also a script for this, which must also be executed on an authorized node. This script requests the necessary information bit by bit.
 ```bash
 cd ./Setup/kubernetes
 ./setupClient.sh
@@ -48,13 +48,13 @@ Applying configuration...
 Client has been configured successfully.
 ```
 
-<b>Hinweis:</b> Die Skipts sind auf k3s ausgelegt. Sollte ein anderes kubectl verwendet werden, so kann dies mittels der Variable $KUBECTL angepasst werden.
+<b>Note:</b> The scripts are designed for k3s. If another kubectl should be used, this can be adapted by settings the variable `$KUBECTL`.
 
 ## GeneSIS
-Um GeneSIS Hosts in das Deployment einzuschließen, kann der API-Endpunkt GeneSIS <b>Engine</b> genutzt werden.
-Für das Deployment werden ausschließlich Hosts beachtet, welche die folgenden Kriterien erfüllen:
-1. Der Host ist vom Typ "/infra/device", wird also per SSH angesprochen.
-2. Die Eigenschaft "device_type" des Hosts ist ein JSON-formatierter String mit (mindestens) den folgenden Eingenschaften ("hardware" ist optional):
+To include GeneSIS hosts in the deployment, the API endpoint GeneSIS <b>Engine</b> can be used.
+Only hosts that meet the following criteria are considered for deployment:
+1. The host is of type "/infra/device", so it is accessed via SSH.
+2. The `device_type` property of the host is a JSON formatted string with (at least) the following properties ("hardware" is optional):
 ```JSON
 {
     "building": "[...]",
@@ -66,8 +66,8 @@ Für das Deployment werden ausschließlich Hosts beachtet, welche die folgenden 
 }
 ```
 
-Um die Hosts zu registrieren, kann die grafische Oberfläche von GeneSIS genutzt werden.
-Dort kann man unter "Infrastructure Components" > "Device" einen Host hinzufügen.
-Hat man dort die gewünschten Geräte hinzugefügt, kann man mittels <i>Push model to server</i> <b>und</b> <i>Deploy model on server</i> die Änderungen anwenden.
+To register the hosts, the graphical interface of GeneSIS can be used.
+There you can add a host under "Infrastructure Components" > "Device".
+Once you have added the desired devices, you can use <i>Push model to server</i> <b>and</b> <i>Deploy model on server</i> to apply the changes.
 
-Hinweis: Wenn man Änderungen an einer Komponente  vornehmen möchte, muss die Versionsnummer dieser inkrementiert werden, sonst werden ggf. Änderungen nicht angewendet.
+Note: If you want to make changes to a component, the version number of this component must be incremented, otherwise changes may not be applied.
