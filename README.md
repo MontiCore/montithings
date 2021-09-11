@@ -3,7 +3,11 @@
 
 # MontiThings Core Project
 
-© https://github.com/MontiCore/monticore; Contact: @christian.kirchhof
+![Ubuntu workflow](https://github.com/monticore/montithings/actions/workflows/maven-ubuntu.yml/badge.svg)
+![Windows workflow](https://github.com/monticore/montithings/actions/workflows/maven-windows.yml/badge.svg)
+![macOS workflow](https://github.com/monticore/montithings/actions/workflows/maven-mac.yml/badge.svg)
+
+© https://github.com/MontiCore/monticore; Contact: [Christian Kirchhof](https://se-rwth.de/staff/kirchhof)
 
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
