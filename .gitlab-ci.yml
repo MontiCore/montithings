@@ -294,7 +294,7 @@ Code Quality:
 #    - docker buildx inspect --bootstrap
 #    - bash buildapplications.sh
 
-#githubmirror:
+#GitHub Mirror:
 #  image: maven:3-jdk-8
 #  stage: mirror
 #  cache: {}
@@ -317,20 +317,17 @@ Code Quality:
 #    - rm script.deb.sh
 #    - apt-get -y install git-lfs
 #  script:
+#    - git lfs fetch --all
 #    - git remote add github git@github.com:MontiCore/montithings.git
-#    - grep -v "lfs" .gitattributes > temp && mv temp .gitattributes
-#    - echo "*.png binary" >> .gitattributes
-#    - echo "*.jpg binary" >> .gitattributes
-#    - echo "*.pptx binary" >> .gitattributes
-#    - git lfs migrate export --verbose --everything --yes --include "*.*"
-#    - git lfs uninstall
+#    - git fetch --all
+#    - git switch -c github/"$CI_COMMIT_BRANCH" --track github/"$CI_COMMIT_BRANCH"
+#    - git merge --no-edit -s recursive -X theirs "$CI_COMMIT_BRANCH"
 #    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/#monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output #MDLinkChangerCLI.jar"
 #    - sh pre/mirror.sh
 #    - rm MDLinkChangerCLI.jar
 #    - git add --all
-#    - "(git commit -m 'Updated branch with most recent version.') || true"
-#    - git push -f github HEAD:"$CI_COMMIT_BRANCH"
-#    - exit 0
+#    - "(git commit -m 'Replace private README links.') || true"
+#    - git push github HEAD:"$CI_COMMIT_BRANCH"
 #  only:
 #    - develop
 #    - master
