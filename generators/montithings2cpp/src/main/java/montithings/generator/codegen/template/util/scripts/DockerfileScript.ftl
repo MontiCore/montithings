@@ -36,12 +36,12 @@ RUN ./build.sh ${comp.getFullName()}
     FROM ubuntu:groovy AS ${comp.getFullName()?lower_case}
     <#else>
     FROM alpine AS ${comp.getFullName()?lower_case}
-
-    RUN apk add --update-cache g++ 
+    
+    RUN apk add --update-cache libgcc libstdc++
     </#if>
 
     <#if config.getMessageBroker().toString() == "MQTT">
-    RUN apk add --update-cache mosquitto
+    RUN apk add --update-cache mosquitto-libs++
     </#if>
 
     COPY --from=build /usr/src/app/build/bin/${comp.getFullName()} /usr/src/app/build/bin/
@@ -68,13 +68,12 @@ RUN ./build.sh ${comp.getFullName()}
             <#else>
             FROM alpine AS ${pair.getKey().fullName}
 
-            RUN apk add --update-cache g++
+            RUN apk add --update-cache libgcc libstdc++
             </#if>
 
             <#if config.getMessageBroker().toString() == "MQTT">
-            RUN apk add --update-cache mosquitto
+            RUN apk add --update-cache mosquitto-libs++
             </#if>
-
 
             COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
 
