@@ -400,6 +400,13 @@ As the different operating systems use different formats for their binaries, thi
 time to waste, you can read more about the different file formats on Wikipedia: 
 [ELF][elf] (Linux), [Mach-O][mach-o] (macOS), [Portable Executable][portable-executable] (Windows).
 
+**Q:** "I can't execute the binary. It says something like `-bash: ./hierarchy.Example: No such file or directory`. But I can clearly see the file when running `ls`.<br>
+**A:** You likely compiled the binary using Docker and are now trying to call it from outside the container. 
+Please remove the `build/bin` folder: from `target/generated-sources` call `sudo rm -rf build` (you need `sudo` because the folder doesn't belong to you if its built with Docker). If you don't have `sudo` rights, you can also go back inside the Docker container (`docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake`) and remove the folder from within the container. After removing the folder, please rebuild the project without using Docker.
+
+**Q:** "How shall I refer to this project in a scientific publication?"<br>
+**A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
+> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann. MontiThings: Model-driven Development and Deployment of Reliable IoT Applications. To appear in Journal of Systems and Software.
 
 
 # License
