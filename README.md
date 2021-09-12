@@ -178,12 +178,7 @@ the native installation.
 
 ### Installation
 
-Log in to this GitLab's docker registry using your credentials you use to log in this GitLab:
-```
-docker login registry.git.rwth-aachen.de
-```
-
-Now you can build the project using this folder:
+You can build the project using this folder:
 
 Linux/macOS:
 ```
