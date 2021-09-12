@@ -36,6 +36,8 @@ RUN ./build.sh ${comp.getFullName()}
     FROM ubuntu:groovy AS ${comp.getFullName()?lower_case}
     <#else>
     FROM alpine AS ${comp.getFullName()?lower_case}
+    
+    RUN apk add --update-cache libgcc libstdc++
     </#if>
 
     <#if config.getMessageBroker().toString() == "MQTT">
@@ -65,6 +67,8 @@ RUN ./build.sh ${comp.getFullName()}
             FROM debian:buster AS ${pair.getKey().fullName}
             <#else>
             FROM alpine AS ${pair.getKey().fullName}
+
+            RUN apk add --update-cache libgcc libstdc++
             </#if>
 
             <#if config.getMessageBroker().toString() == "MQTT">
