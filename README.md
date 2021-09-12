@@ -205,12 +205,12 @@ Within the `target/generated-sources` folder you can try out the generated code 
 
 Linux/macOS:
 ```
-docker run -it --rm -v $PWD:$PWD -w $PWD registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake
 ```
 
 Windows:
 ```
-docker run -it --rm -v %CD%:/root/generated-sources -w /root/generated-sources registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+docker run -it --rm -v %CD%:/root/generated-sources -w /root/generated-sources montithings/mtcmake
 ```
 
 This command will bring you into a new shell where you can build the project. 
@@ -379,11 +379,20 @@ If you want to stop the application you can do the following:
 Visual Studio's variable script under `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxilliary\Build\vcvarsall.bat x64`
 (your path might be a little different depending on you installation location and Visual Studio version).
 
+**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
+**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
+
+**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?" <br>
+**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
+
 **Q:** "Docker says something like 'denied: access forbidden'"<br>
-**A:** You need to log in first. Call `docker login registry.git.rwth-aachen.de` and the credentials you
+**A:** You likely tried to execute an image that is provided via (our internal) the Docker registry from RWTH Aachen University's GitLab instance. 
+In most cases you can pull the images from Docker Hub by replacing the `registry.git.rwth-aachen.de/monticore/montithings/core` by just `montithings`.
+In case you have access to our internal repository, you likely forgot to log in first. 
+Call `docker login registry.git.rwth-aachen.de` and the credentials you
 use to log into this GitLab.
 
-**Q:** "I don't know my credentials. I always log in through the RWTH single-sign on"<br>
+**Q:** "I don't know my credentials to RWTH Aachen's GitLab's internal Docker registry. I always log in through the RWTH single-sign on"<br>
 **A:** "You can find your username by clicking on your icon in the top right corner. The dropdown should tell 
 you your username (something like `@christian.kirchhof`). If you haven't set a differnet password for GitLab
 your password is most likely the password you use everywhere else to login with you TIM id (TIM id has the 
@@ -396,11 +405,7 @@ As the different operating systems use different formats for their binaries, thi
 time to waste, you can read more about the different file formats on Wikipedia: 
 [ELF][elf] (Linux), [Mach-O][mach-o] (macOS), [Portable Executable][portable-executable] (Windows).
 
-**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
-**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
 
-**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?"
-**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
 
 # License
 
