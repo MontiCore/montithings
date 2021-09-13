@@ -26,7 +26,7 @@ import montithings.services.iot_manager.server.distribution.suggestion.Suggestio
 import montithings.services.iot_manager.server.exception.DeploymentException;
 
 /**
- * Main class for managing the iot_manager.
+ * Main class for managing the deployment.
  * Software components are deployed to {@link IDeployTargetProvider}s according to a {@link Distribution}.
  * */
 public class DeploymentManager implements IDeployStatusListener {
@@ -68,7 +68,7 @@ public class DeploymentManager implements IDeployStatusListener {
   }
   
   /**
-   * Terminates the whole iot_manager, i.e. every component on every iot_manager
+   * Terminates the whole deployment, i.e. every component on every deployment
    * target (client).
    */
   public void terminate() {
@@ -90,14 +90,14 @@ public class DeploymentManager implements IDeployStatusListener {
   }
   
   /**
-   * Compute iot_manager based on {@code currentDeploymentConfig} and
-   * {@code currentDeploymentInfo} and perform iot_manager.
+   * Compute deployment based on {@code currentDeploymentConfig} and
+   * {@code currentDeploymentInfo} and perform deployment.
    */
   public void updateDeployment() throws DeploymentException {
     if (this.currentDeploymentConfig == null || this.currentDeploymentInfo == null) {
       return;
     }
-    System.out.println("Updating iot_manager...");
+    System.out.println("Updating deployment...");
     try {
       // Compute distribution.
       IDistributionCalculator calc = prepareDistributionCalculator(currentDeploymentConfig);
@@ -106,17 +106,17 @@ public class DeploymentManager implements IDeployStatusListener {
         return null;
       }).get();
       
-      // Perform iot_manager.
+      // Perform deployment.
       if (this.currentDistribution != null) {
         this.onDeploymentUpdated(currentDistribution);
         this.deploy(this.currentDistribution, this.currentDeploymentInfo);
       }
       else {
-        throw new DeploymentException("Could not compute a valid iot_manager");
+        throw new DeploymentException("Could not compute a valid deployment");
       }
     }
     catch (Exception e) {
-      System.err.println("Failed to update the iot_manager!");
+      System.err.println("Failed to update the deployment!");
       throw new DeploymentException(e);
     }
   }
@@ -233,7 +233,7 @@ public class DeploymentManager implements IDeployStatusListener {
     try {
       provider.initialize();
     } catch(DeploymentException e) {
-      System.err.println("Failed to initialize iot_manager provider.");
+      System.err.println("Failed to initialize deployment provider.");
     }
     
     // send device update to listener
@@ -242,9 +242,9 @@ public class DeploymentManager implements IDeployStatusListener {
       else this.listener.onClientOffline(client);
     }
     
-    System.out.println("Changed iot_manager target provider.");
+    System.out.println("Changed deployment target provider.");
     
-    // update iot_manager
+    // update deployment
     try {
       this.updateDeployment();
     }

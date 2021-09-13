@@ -52,7 +52,7 @@ public class DeploymentInfo {
       
       JsonArray jInstances = json.getAsJsonArray("instances");
       if (jInstances == null || !jInstances.isJsonArray()) {
-        throw new DeploymentException("Invalid iot_manager info.");
+        throw new DeploymentException("Invalid deployment info.");
       }
       
       for (JsonElement jeInstance : jInstances) {

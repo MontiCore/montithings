@@ -60,12 +60,12 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
   }
   
   private void prepareMQTT() throws MqttException {
-    this.mqttClient.subscribe("iot_manager/+/status", this::onReceivedStatus);
-    this.mqttClient.subscribe("iot_manager/+/heartbeat", this::onReceivedHeartbeat);
-    this.mqttClient.subscribe("iot_manager/+/config", this::onReceivedConfig);
+    this.mqttClient.subscribe("deployment/+/status", this::onReceivedStatus);
+    this.mqttClient.subscribe("deployment/+/heartbeat", this::onReceivedHeartbeat);
+    this.mqttClient.subscribe("deployment/+/config", this::onReceivedConfig);
     
     // request current status from all active clients
-    this.mqttClient.publish("iot_manager/poll", new MqttMessage());
+    this.mqttClient.publish("deployment/poll", new MqttMessage());
   }
   
   /**
@@ -181,7 +181,7 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
       MqttMessage msg = new MqttMessage();
       if (ymlCompose != null)
         msg.setPayload(ymlCompose.getBytes(Charsets.UTF_8));
-      this.mqttClient.publish("iot_manager/" + clientID + "/push", msg);
+      this.mqttClient.publish("deployment/" + clientID + "/push", msg);
     } catch(MqttException e) {
       throw new DeploymentException(e);
     }

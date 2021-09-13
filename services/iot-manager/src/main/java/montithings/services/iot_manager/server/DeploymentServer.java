@@ -9,7 +9,7 @@ import montithings.services.iot_manager.server.data.NetworkInfo;
 public class DeploymentServer {
   
   /**
-   * Main entry point for iot_manager server.
+   * Main entry point for deployment server.
    * Starts a {@link DeploymentManager} with HTTP & MQTT API.
    * */
   public static void main(String[] args) {
@@ -27,7 +27,7 @@ public class DeploymentServer {
     NetworkInfo network = new NetworkInfo();
     network.setMqttHost(mqttHost);
     network.setMqttPort(1883);
-    network.setDockerRepositoryPrefix("registry.git.rwth-aachen.de/monticore/montithings/iot_manager/ba-schneider/deployexampleapp/");
+    network.setDockerRepositoryPrefix("registry.git.rwth-aachen.de/monticore/montithings/deployment/ba-schneider/deployexampleapp/");
     
     DeploymentManager manager = new DeploymentManager(workingDir, network);
     
@@ -39,7 +39,7 @@ public class DeploymentServer {
     MqttAPIController controller = new MqttAPIController(manager);
     controller.start();
     
-    // Shut down iot_manager after termination request.
+    // Shut down deployment after termination request.
     // Note: IDEs often just kill the process, so this might not be called in
     // your development environment.
     Runtime.getRuntime().addShutdownHook(new Thread(()->{

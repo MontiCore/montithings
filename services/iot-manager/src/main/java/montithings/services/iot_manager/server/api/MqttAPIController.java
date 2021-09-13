@@ -169,7 +169,7 @@ public class MqttAPIController implements IDeployStatusListener {
 
   @Override
   public void onDeploymentUpdated(Distribution dist) {
-    // Send array of iot_manager assignments representing the new distribution.
+    // Send array of deployment assignments representing the new distribution.
     JsonArray jarr = new JsonArray();
     Gson gson = new Gson();
     for(Entry<String,String[]> e : dist.getDistributionMap().entrySet()) {

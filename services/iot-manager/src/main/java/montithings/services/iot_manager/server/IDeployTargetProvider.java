@@ -12,7 +12,7 @@ import montithings.services.iot_manager.server.exception.DeploymentException;
 
 /**
  * An instance of {@link IDeployTargetProvider} is responsible for providing and
- * managing access to iot_manager clients.
+ * managing access to deployment clients.
  */
 public interface IDeployTargetProvider {
   

@@ -35,14 +35,14 @@ public class DeployTargetProviderParser {
         
         ThrowingFunction<JsonObject, IDeployTargetProvider, DeploymentException> constructor = constructors.get(type);
         if (constructor == null) {
-          throw new DeploymentException("Unknown iot_manager target type: " + type);
+          throw new DeploymentException("Unknown deployment target type: " + type);
         }
         
         return constructor.apply(jo);
       }
     }
     catch (Exception e) {
-      throw new DeploymentException("Could not parse iot_manager provider from json.", e);
+      throw new DeploymentException("Could not parse deployment provider from json.", e);
     }
   }
   

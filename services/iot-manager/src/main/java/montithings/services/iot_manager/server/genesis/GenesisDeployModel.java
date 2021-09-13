@@ -11,7 +11,7 @@ import com.google.gson.JsonObject;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 
 /**
- * Class for modifying a GENESIS iot_manager model. The model is kept in its
+ * Class for modifying a GENESIS deployment model. The model is kept in its
  * parsed JSON-form to allow for better forward compatibility (instead of parsing it to
  * a fixed data structure).
  */
@@ -43,14 +43,14 @@ public class GenesisDeployModel {
   
   /**
    * Extracts all components of given type from the model.
-   * @return List of resources with given type form the underlying iot_manager model.
+   * @return List of resources with given type form the underlying deployment model.
    * @throws DeploymentException when the model is invalid
    * */
   protected List<JsonObject> getComponentsOfType(String type) throws DeploymentException {
     List<JsonObject> resources = new ArrayList<JsonObject>();
     JsonArray jComponents = model.get("components").getAsJsonArray();
     for(JsonElement je : jComponents) {
-      if(!je.isJsonObject()) throw new DeploymentException("Invalid GeneSIS iot_manager model");
+      if(!je.isJsonObject()) throw new DeploymentException("Invalid GeneSIS deployment model");
       JsonObject jResource = je.getAsJsonObject();
       if(type.equals(jResource.get("_type").getAsString())) {
         resources.add(jResource);
@@ -128,7 +128,7 @@ public class GenesisDeployModel {
   }
   
   /**
-   * Adds a new software resource for iot_manager on SSH host.
+   * Adds a new software resource for deployment on SSH host.
    * @param name Name of the new resource
    * @param version Version of the new resource
    * @param credentials Credentials of the SSH host
