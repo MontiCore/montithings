@@ -192,6 +192,8 @@ main(int argc, char **argv) {
     options.add_options()
             ("message-broker", "The used MessageBroker (MQTT or DDS). Defaults to DDS.",
              cxxopts::value<std::string>()->default_value("DDS"))
+            ("mqtt-broker-host", "Hostname (or IP address) of the MQTT broker", cxxopts::value<std::string>()->default_value("localhost"))
+            ("mqtt-broker-port", "Network port of the MQTT broker", cxxopts::value<int>()->default_value("1883"))
             ("DCPSConfigFile", "DCPSConfigFile", cxxopts::value<std::string>()->default_value("dcpsconfig.ini"))
             ("DCPSInfoRepo", "DCPSInfoRepo host", cxxopts::value<std::string>()->default_value(""))
             ("h,help", "Print usage");
@@ -208,6 +210,9 @@ main(int argc, char **argv) {
 
     std::string dcpsConfigFile = result["DCPSConfigFile"].as<std::string>();
     std::string dcpsInfoHost = result["DCPSInfoRepo"].as<std::string>();
+
+    const std::string mqttBrokerHost = result["mqtt-broker-host"].as<std::string>();
+    const int mqttBrokerPort = result["mqtt-broker-port"].as<int>();
 
 
     // Rename named arguments since cxxopts does not allow a single "-" in front of multiple characters
@@ -231,6 +236,7 @@ main(int argc, char **argv) {
                                            false,
                                            true);
     } else if (messageBroker == "MQTT") {
+        MqttClient::instance(mqttBrokerHost, mqttBrokerPort);
         std::string instanceName = "middleware";
         interface = new LogTracerMQTTClient(instanceName, true);
     } else {

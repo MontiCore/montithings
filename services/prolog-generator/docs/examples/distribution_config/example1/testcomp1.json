@@ -1,0 +1,6 @@
+{
+    "name": "hierarchy.temperaturesensor",
+    "requirements": {
+        "has_hardware":"sensor_temperature"
+    }
+}

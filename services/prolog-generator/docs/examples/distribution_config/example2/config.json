@@ -1,0 +1,18 @@
+{
+	"distribution": {
+		"room_temp_sensor": {
+			"distribution_selection": [
+				["has_hardware", "sensor_temperature", 1]
+			],
+			"distribution_constraints": [
+				["location", "building1_floor1", "==", 1],
+				["location", "building2_floor1", "==", 1],
+				["location", "building3_floor1", "==", 1],
+				["location", "building1_floor2", "==", 1],
+				["location", "building2_floor2", "==", 1],
+				["location", "building3_floor2", "==", 1],
+				["location", "floor3", "==", 0]
+			]
+		}
+	}
+}

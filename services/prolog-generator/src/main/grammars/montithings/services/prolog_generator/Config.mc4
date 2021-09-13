@@ -1,0 +1,12 @@
+// (c) https://github.com/MontiCore/monticore
+/**
+    This grammar is used to create a new type of parser etc for Config files
+*/
+package montithings.services.prolog_generator;
+
+grammar Config extends de.monticore.lang.JSON {
+
+    Config = JSONDocument;
+
+
+}

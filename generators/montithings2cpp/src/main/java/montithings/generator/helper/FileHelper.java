@@ -135,6 +135,7 @@ public class FileHelper {
         try (Stream<Path> walk = Files.walk(target.toPath().getParent())) {
           executables = walk.filter(Files::isRegularFile)
             .filter(Files::isExecutable)
+            .filter(f -> !f.toAbsolutePath().toString().toLowerCase().endsWith(".jar"))
             .collect(Collectors.toSet());
         }
         for (Path executable : executables) {

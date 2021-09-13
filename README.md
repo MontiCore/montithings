@@ -3,7 +3,11 @@
 
 # MontiThings Core Project
 
-© https://github.com/MontiCore/monticore; Contact: @christian.kirchhof
+![Ubuntu workflow](https://github.com/monticore/montithings/actions/workflows/maven-ubuntu.yml/badge.svg)
+![Windows workflow](https://github.com/monticore/montithings/actions/workflows/maven-windows.yml/badge.svg)
+![macOS workflow](https://github.com/monticore/montithings/actions/workflows/maven-mac.yml/badge.svg)
+
+© https://github.com/MontiCore/monticore; Contact: [Christian Kirchhof](https://se-rwth.de/staff/kirchhof)
 
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
@@ -31,6 +35,9 @@ For the purpose of this tutorial, you can choose between the following options:
 1. a native installation on your machine
 2. an installation in a virtual machine of the Microsoft Azure Cloud
 3. using MontiThings' Docker containers to avoid an installation
+4. using an online IDE by clicking this button (you will need to sign in with your GitHub account to Gitpod): \
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)
+
 
 ## Native installation
 
@@ -128,7 +135,8 @@ terraform apply terraform_azure.tfplan
 
 You will see how Terraform first instantiates the virtual machine and then 
 installs MontiThings on this machine.
-To find out the virtual machine's IP address, call:
+At the end, the script shows you the virtual machine's IP.
+In case you forget it, you can find out the virtual machine's IP address by calling:
 ```
 az vm show --resource-group montithingsResourceGroup --name montithings -d --query [publicIps] -o tsv
 ```
@@ -170,12 +178,7 @@ the native installation.
 
 ### Installation
 
-Log in to this GitLab's docker registry using your credentials you use to log in this GitLab:
-```
-docker login registry.git.rwth-aachen.de
-```
-
-Now you can build the project using this folder:
+You can build the project using this folder:
 
 Linux/macOS:
 ```
@@ -197,12 +200,12 @@ Within the `target/generated-sources` folder you can try out the generated code 
 
 Linux/macOS:
 ```
-docker run -it --rm -v $PWD:$PWD -w $PWD registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake
 ```
 
 Windows:
 ```
-docker run -it --rm -v %CD%:/root/generated-sources -w /root/generated-sources registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+docker run -it --rm -v %CD%:/root/generated-sources -w /root/generated-sources montithings/mtcmake
 ```
 
 This command will bring you into a new shell where you can build the project. 
@@ -371,11 +374,20 @@ If you want to stop the application you can do the following:
 Visual Studio's variable script under `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxilliary\Build\vcvarsall.bat x64`
 (your path might be a little different depending on you installation location and Visual Studio version).
 
+**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
+**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
+
+**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?" <br>
+**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
+
 **Q:** "Docker says something like 'denied: access forbidden'"<br>
-**A:** You need to log in first. Call `docker login registry.git.rwth-aachen.de` and the credentials you
+**A:** You likely tried to execute an image that is provided via (our internal) the Docker registry from RWTH Aachen University's GitLab instance. 
+In most cases you can pull the images from Docker Hub by replacing the `registry.git.rwth-aachen.de/monticore/montithings/core` by just `montithings`.
+In case you have access to our internal repository, you likely forgot to log in first. 
+Call `docker login registry.git.rwth-aachen.de` and the credentials you
 use to log into this GitLab.
 
-**Q:** "I don't know my credentials. I always log in through the RWTH single-sign on"<br>
+**Q:** "I don't know my credentials to RWTH Aachen's GitLab's internal Docker registry. I always log in through the RWTH single-sign on"<br>
 **A:** "You can find your username by clicking on your icon in the top right corner. The dropdown should tell 
 you your username (something like `@christian.kirchhof`). If you haven't set a differnet password for GitLab
 your password is most likely the password you use everywhere else to login with you TIM id (TIM id has the 
@@ -388,11 +400,14 @@ As the different operating systems use different formats for their binaries, thi
 time to waste, you can read more about the different file formats on Wikipedia: 
 [ELF][elf] (Linux), [Mach-O][mach-o] (macOS), [Portable Executable][portable-executable] (Windows).
 
-**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
-**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
+**Q:** "I can't execute the binary. It says something like `-bash: ./hierarchy.Example: No such file or directory`. But I can clearly see the file when running `ls`.<br>
+**A:** You likely compiled the binary using Docker and are now trying to call it from outside the container. 
+Please remove the `build/bin` folder: from `target/generated-sources` call `sudo rm -rf build` (you need `sudo` because the folder doesn't belong to you if its built with Docker). If you don't have `sudo` rights, you can also go back inside the Docker container (`docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake`) and remove the folder from within the container. After removing the folder, please rebuild the project without using Docker.
 
-**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?"
-**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
+**Q:** "How shall I refer to this project in a scientific publication?"<br>
+**A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
+> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann. MontiThings: Model-driven Development and Deployment of Reliable IoT Applications. To appear in Journal of Systems and Software.
+
 
 # License
 
