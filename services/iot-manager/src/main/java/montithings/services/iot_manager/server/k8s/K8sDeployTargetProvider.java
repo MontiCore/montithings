@@ -201,7 +201,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
         String labelValue = "iot-pod-"+k8sClientID;
         
         if(instances.length == 0) {
-          // remove iot_manager if no instance is scheduled
+          // remove deployment if no instance is scheduled
           try {
             apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
           }
@@ -244,7 +244,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
           try {
             apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
           } catch(ApiException ex) {
-            // This may fail. Checking whether a iot_manager already exists with
+            // This may fail. Checking whether a deployment already exists with
             // this name and then deleting it would be more expensive.
           }
           

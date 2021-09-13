@@ -21,7 +21,7 @@ public class DeployConfigBuilder {
   }
   
   /**
-   * Applies the constraints from the base iot_manager config given in the constructor.
+   * Applies the constraints from the base deployment config given in the constructor.
    * */
   public DeployConfigBuilder applyConfigConstraints() {
     for(Constraint c : config.getConstraints()) {

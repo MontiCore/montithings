@@ -83,7 +83,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
       Request req = new Request.Builder().url(new URL(endpointURL, "/genesis/deploy")).post(RequestBody.create(modelStr.getBytes(StandardCharsets.UTF_8), MediaType.parse("application/json; charset=utf-8"))).build();
       Response resp = httpClient.newCall(req).execute();
       if (resp.code() != 200) {
-        throw new DeploymentException("GeneSIS failed to accept iot_manager");
+        throw new DeploymentException("GeneSIS failed to accept deployment");
       }
     }
     catch (IOException e) {

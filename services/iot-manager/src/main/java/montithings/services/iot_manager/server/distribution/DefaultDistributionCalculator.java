@@ -63,7 +63,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     List<String> components = param.getRight();
     try {
       if(deployTargets.size() == 0) {
-        throw new DeploymentException("no clients for iot_manager available");
+        throw new DeploymentException("no clients for deployment available");
       }
       prepareWorkspace();
       
