@@ -4,7 +4,7 @@
 ## General
 The IoT Manager takes care of the internal orchestration of the deployment.
 It can communicate and be controlled via HTTP and MQTT.
-In the original use case, it communicates with a [MontiGem-Backend](https://git.rwth-aachen.de/se-student/theses/ba-schneider_philipp/exampleapplication).
+In the original use case, it communicates with a [MontiGem-Backend (not yet publicly available)](https://git.rwth-aachen.de/se-student/theses/ba-schneider_philipp/exampleapplication).
 
 Alternatively, the Deployment Manager can also be integrated into other Java applications. 
 To do this, consider the entry point of the IoT Manager.
