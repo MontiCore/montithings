@@ -82,13 +82,13 @@ Useful type-of-change prefixes are (do not use abbreviations): `new-feature`, `a
         - [ ] All public API has [Javadoc](#javadoc-every--interface)
     - [ ] No TODOs left
 * **Post-Push**:
-    - [ ] Check that [the build pipeline (not yet publicly available)][RWTH's GitLab Pipeline] passes
+    - [ ] Check that the build pipeline passes
 
 ### Pull Request and Code Reviews
 
 The *master* and *develop* branches are read-only! So the only option is to [create a pull request][doc-pull-request] for your *feature* branch. Name your pull request with your *branch name*.
 
-Review code with all [design](#design-principles), [test](#checks-first-development), and [code style](#code-style) principles of this readme in mind. Further, make use of all the information you can get; e.g., investigate the [build (not yet publicly available)][RWTH's GitLab Pipeline], run checks with coverage, perform code analysis, calculate metrics, etc.
+Review code with all [design](#design-principles), [test](#checks-first-development), and [code style](#code-style) principles of this readme in mind. Further, make use of all the information you can get; e.g., investigate the CI pipeline, run checks with coverage, perform code analysis, calculate metrics, etc.
 
 For code reviews, a good starting point is the [check list for pre- and post-push](#pre--and-post-push).
 

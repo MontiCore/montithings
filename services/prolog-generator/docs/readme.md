@@ -13,10 +13,9 @@ It serves as the central entity which distributes docker images and monitors the
 
 ## IoT-Client
 
-- [Client Documentation (not yet publicly available)](https://git.rwth-aachen.de/se-student/ss20/labs/iot-smart-home/deployment/iot-client/-/blob/master/docs/readme.md): Takes you to the repository of the IoT-Client
+- [Client Documentation](../../iot-client/README.md): Takes you to the repository of the IoT-Client
 
 
 ## Examples
 
-- [Example of a deployable Application (not yet publicly available)](https://git.rwth-aachen.de/se-student/ss20/labs/iot-smart-home/deployment/applications/comm-example/-/blob/master/README.md)
 - [Distribution configuration examples](./examples/distribution_config)
