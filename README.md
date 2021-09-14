@@ -392,7 +392,7 @@ use to log into this GitLab.
 you your username (something like `@christian.kirchhof`). If you haven't set a differnet password for GitLab
 your password is most likely the password you use everywhere else to login with you TIM id (TIM id has the 
 form `xy123456`). In case you have never logged in using a manually set password, you maybe need to first
-[set a password][password].
+[set a password (not publicly available)][password].
 
 **Q:** "I cant execute the binary. It says something like 'cannot execute binary file' (or something similar)"<br>
 **A:** You most likely compiled the binary using Docker and are now trying to execute it outside of the container. 
@@ -428,7 +428,7 @@ https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICOR
 * [Licence definition](https://github.com/MontiCore/monticore/blob/master/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md)
 
 [se-rwth]: http://www.se-rwth.de
-[montiarc]: https://git.rwth-aachen.de/monticore/montiarc/core
+[montiarc]: https://www.se-rwth.de/topics/Software-Architecture.php
 [nng]: https://github.com/nanomsg/nng#quick-start 
 [nng-1.3]: https://github.com/nanomsg/nng/archive/v1.3.0.zip
 [docker]: https://www.docker.com/products/docker-desktop
