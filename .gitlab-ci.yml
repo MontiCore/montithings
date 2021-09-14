@@ -368,9 +368,10 @@ Code Quality:
 #    - git fetch --all
 #    - git switch -c github/"$CI_COMMIT_BRANCH" --track github/"$CI_COMMIT_BRANCH"
 #    - git merge --no-edit -s recursive -X theirs "$CI_COMMIT_BRANCH"
-#    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/#monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output #MDLinkChangerCLI.jar"
-#    - sh pre/mirror.sh
-#    - rm MDLinkChangerCLI.jar
+#    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
+#    - "curl \"https://raw.githubusercontent.com/MontiCore/monticore/dev/pre/mirror.sh\" --output mirror.sh"
+#    - sh mirror.sh
+#    - rm MDLinkChangerCLI.jar mirror.sh
 #    - git add --all
 #    - "(git commit -m 'Replace private README links.') || true"
 #    - git push github HEAD:"$CI_COMMIT_BRANCH"
