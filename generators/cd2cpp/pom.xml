@@ -52,6 +52,13 @@
       <version>${cd4a.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>montithings.languages</groupId>
+      <artifactId>cd4montithings</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- .. Test Libraries ............................................... -->
     <dependency>
       <groupId>junit</groupId>

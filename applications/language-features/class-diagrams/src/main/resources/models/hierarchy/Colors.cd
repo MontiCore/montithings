@@ -2,8 +2,10 @@
 package hierarchy;
 
 classdiagram Colors {
+  class Tests {
+    port out int test;
+  }
   package Colors {
     enum Color { RED, GREEN, BLUE, YELLOW; }
   }
-    port in int test;
 }

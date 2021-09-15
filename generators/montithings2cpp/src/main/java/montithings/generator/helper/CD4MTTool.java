@@ -4,11 +4,10 @@ package montithings.generator.helper;
 import cd4montithings.CD4MontiThingsMill;
 import cd4montithings._symboltable.CD4MontiThingsGlobalScope;
 import cd4montithings._symboltable.CD4MontiThingsSymbolTableCompleter;
+import cd4montithings._symboltable.CD4MontiThingsSymbols2Json;
 import cd4montithings._symboltable.ICD4MontiThingsArtifactScope;
 import de.monticore.cd4analysis.CD4AnalysisMill;
 import de.monticore.cd4analysis._visitor.CD4AnalysisTraverser;
-import de.monticore.cd4code._symboltable.CD4CodeSymbols2Json;
-import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4code.cocos.CD4CodeCoCosDelegator;
 import de.monticore.cd4code.trafo.CD4CodeDirectCompositionTrafo;
 import de.monticore.cdassociation._visitor.CDAssociationTraverser;
@@ -103,7 +102,7 @@ public class CD4MTTool {
     String symbolFileName = symbolPath
       + cd.substring(modelPath.toString().length() + 1, cd.length() - 2)
       + "sym";
-    final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
+    final CD4MontiThingsSymbols2Json symbols2Json = new CD4MontiThingsSymbols2Json();
     final String path = symbols2Json.store(artifact, symbolFileName);
     Log.info("Created symbol file '" + symbolFileName + "'", TOOL_NAME);
   }

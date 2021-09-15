@@ -1,13 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2cpp;
 
+import cd4montithings.CD4MontiThingsMill;
+import cd4montithings._symboltable.*;
 import com.google.common.collect.LinkedListMultimap;
 import de.monticore.cd4analysis._parser.CD4AnalysisParser;
-import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import de.monticore.cd4analysis.cocos.CD4AnalysisCoCos;
-import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._parser.CD4CodeParser;
-import de.monticore.cd4code._symboltable.*;
 import de.monticore.cd4code.prettyprint.CD4CodeFullPrettyPrinter;
 import de.monticore.cdassociation._ast.ASTCDAssociation;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
@@ -16,7 +14,6 @@ import de.monticore.cdbasis._symboltable.ICDBasisScope;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
 
 import java.io.File;
@@ -45,15 +42,15 @@ public class CppGenerator {
 
   protected CD4AnalysisParser p;
 
-  protected ICD4CodeGlobalScope globalScope;
+  protected ICD4MontiThingsGlobalScope globalScope;
 
-  protected CD4CodeScopesGenitorDelegator symbolTableCreator;
+  protected CD4MontiThingsScopesGenitorDelegator symbolTableCreator;
 
   protected CD4AnalysisCoCos cd4AnalyisCoCos;
 
   protected CD4CodeFullPrettyPrinter printer;
 
-  protected CD4CodeDeSer deSer;
+  protected CD4MontiThingsDeSer deSer;
 
   protected ASTCDCompilationUnit compilationUnit;
 
@@ -65,23 +62,23 @@ public class CppGenerator {
     String modelName) {
     this.outputDir = outputDir;
 
-    CD4CodeMill.init();
+    CD4MontiThingsMill.init();
 
-    CD4CodeMill.globalScope().clear();
-    globalScope = CD4CodeMill.globalScope();
+    CD4MontiThingsMill.globalScope().clear();
+    globalScope = CD4MontiThingsMill.globalScope();
     globalScope.setModelPath(new ModelPath(modelPath));
-    ((CD4CodeGlobalScope) CD4CodeMill.globalScope()).addBuiltInTypes();
-    CD4CodeMill.globalScope().add(CD4CodeMill.typeSymbolBuilder()
+    ((CD4MontiThingsGlobalScope) CD4MontiThingsMill.globalScope()).addBuiltInTypes();
+    CD4MontiThingsMill.globalScope().add(CD4MontiThingsMill.typeSymbolBuilder()
       .setName("String")
       .setFullName("String")
-      .setEnclosingScope(CD4CodeMill.globalScope())
-      .setSpannedScope(CD4CodeMill.scope())
+      .setEnclosingScope(CD4MontiThingsMill.globalScope())
+      .setSpannedScope(CD4MontiThingsMill.scope())
       .build());
-    symbolTableCreator = CD4CodeMill.scopesGenitorDelegator();
+    symbolTableCreator = CD4MontiThingsMill.scopesGenitorDelegator();
 
     final Optional<ASTCDCompilationUnit> astcdCompilationUnit;
     try {
-      astcdCompilationUnit = CD4CodeMill.parser()
+      astcdCompilationUnit = CD4MontiThingsMill.parser()
         .parse(modelPath.toFile().getPath() + "/" + modelName.replace(".", File.separator) + ".cd");
     }
     catch (IOException e) {
@@ -89,8 +86,8 @@ public class CppGenerator {
       return;
     }
     compilationUnit = astcdCompilationUnit.get();
-    final ICD4CodeArtifactScope scope = symbolTableCreator.createFromAST(compilationUnit);
-    compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
+    final ICD4MontiThingsArtifactScope scope = symbolTableCreator.createFromAST(compilationUnit);
+    compilationUnit.accept(new CD4MontiThingsSymbolTableCompleter(compilationUnit).getTraverser());
 
     cdSymbols.addAll(scope.getCDTypeSymbols().values());
 

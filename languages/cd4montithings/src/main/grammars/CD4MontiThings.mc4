@@ -1,7 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
 
-import de.monticore.lang.cd4analysis.*;
-
 /**
  * This grammar is used in order to be able to define ports in class diagrams.
  */
