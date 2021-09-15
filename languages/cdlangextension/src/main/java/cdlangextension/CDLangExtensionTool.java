@@ -1,6 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package cdlangextension;
 
+import cd4montithings.CD4MontiThingsMill;
+import cd4montithings._symboltable.CD4MontiThingsScopesGenitorDelegator;
+import cd4montithings._symboltable.ICD4MontiThingsArtifactScope;
+import cd4montithings._symboltable.ICD4MontiThingsGlobalScope;
 import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCoChecker;
 import cdlangextension._cocos.CDLangExtensionCoCos;
@@ -9,10 +13,6 @@ import cdlangextension._symboltable.*;
 import cdlangextension.util.CDLangExtensionError;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._symboltable.CD4CodeScopesGenitorDelegator;
-import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
-import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.cd4code.resolver.CD4CodeResolver;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.paths.ModelPath;
@@ -42,7 +42,7 @@ public class CDLangExtensionTool {
 
   protected boolean isSymTabInitialized;
 
-  protected ICD4CodeGlobalScope cdGlobalScope;
+  protected ICD4MontiThingsGlobalScope cdGlobalScope;
 
   public CDLangExtensionTool() {
     this(CDLangExtensionCoCos.createChecker());
@@ -78,17 +78,19 @@ public class CDLangExtensionTool {
     final ModelPath mp = new ModelPath(p);
 
     // Load all CD files
-    CD4CodeMill.globalScope().clear();
-    CD4CodeMill.reset();
-    CD4CodeMill.init();
-    CD4CodeMill.globalScope().setModelPath(mp);
+    CD4MontiThingsMill.globalScope().clear();
+    CD4MontiThingsMill.reset();
+    CD4MontiThingsMill.init();
+    CD4MontiThingsMill.globalScope().setModelPath(mp);
     for (File mP : modelPaths) {
-      Collection<ICD4CodeArtifactScope> scopes = loadAllCDs(mP.toPath());
-      for (ICD4CodeArtifactScope currentScope : scopes) {
-        CD4CodeMill.globalScope().addSubScope(currentScope);
+      Collection<ICD4MontiThingsArtifactScope> scopes = loadAllCDs(mP.toPath());
+      for (ICD4MontiThingsArtifactScope currentScope : scopes) {
+        CD4MontiThingsMill.globalScope().addSubScope(currentScope);
       }
     }
-    CD4CodeResolver resolver = new CD4CodeResolver(CD4CodeMill.globalScope());
+
+    //TODO: introduce CD4MontiThingsResolver?
+    CD4CodeResolver resolver = new CD4CodeResolver(CD4MontiThingsMill.globalScope());
 
     CDLangExtensionMill.reset();
     CDLangExtensionMill.init();
@@ -147,15 +149,15 @@ public class CDLangExtensionTool {
     return Collections.emptySet();
   }
 
-  public ICD4CodeArtifactScope loadCD(@NotNull Path file) {
+  public ICD4MontiThingsArtifactScope loadCD(@NotNull Path file) {
     Preconditions.checkArgument(file != null);
     Preconditions.checkArgument(file.toFile().exists(), file.toString());
     Preconditions.checkArgument(file.toFile().isFile(), file.toString());
     Preconditions.checkArgument(
       FilenameUtils.getExtension(file.getFileName().toString()).endsWith("cd"));
     try {
-      ASTCDCompilationUnit cdcu = CD4CodeMill.parser().parse(file.toString()).get();
-      CD4CodeScopesGenitorDelegator symTab = CD4CodeMill.scopesGenitorDelegator();
+      ASTCDCompilationUnit cdcu = CD4MontiThingsMill.parser().parse(file.toString()).get();
+      CD4MontiThingsScopesGenitorDelegator symTab = CD4MontiThingsMill.scopesGenitorDelegator();
       return symTab.createFromAST(cdcu);
     } catch (IOException e) {
       Log.error("Could not load CDE file '" + file + "'");
@@ -163,12 +165,12 @@ public class CDLangExtensionTool {
     return null;
   }
 
-  public ICD4CodeArtifactScope loadCD(@NotNull String filename) {
+  public ICD4MontiThingsArtifactScope loadCD(@NotNull String filename) {
     Preconditions.checkArgument(filename != null);
     return this.loadCD(Paths.get(filename));
   }
 
-  public Collection<ICD4CodeArtifactScope> loadAllCDs(@NotNull Path directory) {
+  public Collection<ICD4MontiThingsArtifactScope> loadAllCDs(@NotNull Path directory) {
     Preconditions.checkArgument(directory != null);
     Preconditions.checkArgument(directory.toFile().exists());
     Preconditions.checkArgument(directory.toFile().isDirectory());
@@ -218,7 +220,7 @@ public class CDLangExtensionTool {
     return globalScope;
   }
 
-  public ICD4CodeGlobalScope getCdGlobalScope() {
+  public ICD4MontiThingsGlobalScope getCdGlobalScope() {
     return cdGlobalScope;
   }
 
@@ -226,7 +228,7 @@ public class CDLangExtensionTool {
    * Setter for the global scope that should be used for resolving non native symbols.
    * @param cdGlobalScope globalScope used for resolving non native symbols
    */
-  public void setCdGlobalScope(ICD4CodeGlobalScope cdGlobalScope) {
+  public void setCdGlobalScope(ICD4MontiThingsGlobalScope cdGlobalScope) {
     this.cdGlobalScope = cdGlobalScope;
   }
 
