@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 /**
  * Replaces ArcTypeCheck with our own type check.
- * Everything else is copy paste becuase its either
+ * Everything else is copy paste because its either
  * in the same method as the ArcTypeCheck usage or has
  * private visibility
  */

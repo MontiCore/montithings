@@ -1,9 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
+import arcbasis.ArcBasisMill;
 import arcbasis._ast.ASTComponentType;
+import arcbasis._symboltable.PortSymbol;
 import com.google.common.base.Preconditions;
 import de.monticore.symboltable.ImportStatement;
+import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeExpressionFactory;
 import de.monticore.types.mcbasictypes._ast.ASTMCImportStatement;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
@@ -52,5 +56,14 @@ public class MontiThingsScopesGenitor extends MontiThingsScopesGenitorTOP {
   @Override
   public void endVisit(ASTMTComponentType node) {
     getTraverser().endVisit((ASTComponentType) node);
+
+    //create ports in order to send/receive Components
+    if (node.getSymbol().isAtomic()){
+      SymTypeExpression type = SymTypeExpressionFactory.createTypeObject("Object", node.getEnclosingScope());
+      PortSymbol newComponent = ArcBasisMill.portSymbolBuilder().setName("new_component").setIncoming(true).setType(type).build();
+      PortSymbol removeComponent = ArcBasisMill.portSymbolBuilder().setName("remove_component").setIncoming(true).setType(type).build();
+      node.getSymbol().getSpannedScope().add(newComponent);
+      node.getSymbol().getSpannedScope().add(removeComponent);
+    }
   }
 }
