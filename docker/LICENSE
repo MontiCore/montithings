@@ -1,0 +1,4 @@
+MontiThings uses NNG and OpenDDS for communication. 
+These libraries are also included in our Docker images.
+Accordingly, the licenses for these two libraries can be found in the files
+OPENDDS_LICENSE and NNG_LICENSE.

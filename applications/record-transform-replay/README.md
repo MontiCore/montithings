@@ -31,8 +31,7 @@ Make sure to source OpenDDS, then execute `DCPSInfoRepo -ORBListenEndpoints iiop
 
 When the app is running start the recorder tool:
 
-- Make sure the tool is built: `cd ../../../../services/recorder && ./dockerBuild.sh && cd -`
-- Start it: `../../../../services/recorder/dockerRun.sh --minSpacing 5 --fileRecordings recordings.json -n 1`
+- Start the recorder tool: `../../../../services/recorder/dockerRun.sh --minSpacing 5 --fileRecordings recordings.json -n 1`
 - Stop it using `Ctrl+c`. There should be a `recordings.json` file after the recorder stopped. When docker is used check if the file is owned by the current user, otherwise `chown` it.
 - Move the recordings file: `mv recordings.json ../../`
 - Stop the application: `./dockerStop.sh`
@@ -51,10 +50,11 @@ This changes the options as follows:
 Note that no DDS is used anymore and that it will output a single binary. 
 This way, usual debugging tools can be used while replaying the distributed application including all environmental influences from the physical world.
 
-Again, generate (`mvn clean install`), build (`./build.sh`/`./dockerBuild.sh`).
+Again, generate (`mvn clean install`), build (`./build.sh`).
 The generation step will now add multiple components dedicated for replaying purposes.
 
 Run the application as usual, but make sure the `recordings.json` file is in the working directory: 
-`./target/generated-sources/build/bin/hierarchy.Example -n hiearachy.Example`
+`cp ../../recordings.json build/bin/ && cd build/bin/`
 
+Then start `./hierarchy.Example -n hiearachy.Example`.
 It should now replay the original execution.

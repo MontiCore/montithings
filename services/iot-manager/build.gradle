@@ -1,0 +1,67 @@
+// (c) https://github.com/MontiCore/monticore
+
+plugins {
+  id "jacoco"
+  id 'com.github.johnrengelman.shadow'
+}
+
+group = "montithings.services"
+
+dependencies {
+  implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$eclipse_paho_client_version"
+  implementation "jpl:jpl:$jpl_version"
+  implementation "com.github.java-prolog-connectivity:jpc:$java_prolog_connectivity_version"
+  implementation "com.google.code.gson:gson:$gson_version"
+  implementation "org.yaml:snakeyaml:$snakeyaml_version"
+  implementation "com.sparkjava:spark-core:$sparkjava_version"
+  implementation "io.kubernetes:client-java:$kubernetes_client_version"
+  testImplementation "junit:junit:$junit_version"
+}
+
+test {
+  finalizedBy jacocoTestReport
+}
+test.onlyIf { false }
+
+repositories {
+
+  maven {
+    url = uri("https://maven.pkg.github.com/swi-prolog/packages-jpl")
+  }
+
+  maven {
+    url = uri("https://repo.eclipse.org/content/repositories/paho-releases/")
+  }
+}
+
+tasks.withType(JavaCompile) {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+  options.encoding = 'UTF-8'
+  options.headerOutputDirectory.convention(null)
+  options.deprecation = false
+  options.warnings = false
+}
+
+// all in one deployment jar
+shadowJar {
+  manifest {
+    attributes "Main-Class": "montithings.services.iot_manager.server.DeploymentServer"
+  }
+  archiveFileName = "DeploymentServer.${archiveExtension.get()}" // alternative: "iot-manager-${project.version}.${archiveExtension.get()}"
+  archiveClassifier = "iot-manager"
+}
+
+jar.dependsOn shadowJar
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) { from components.java }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+  }
+}

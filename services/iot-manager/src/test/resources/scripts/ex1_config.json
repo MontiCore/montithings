@@ -1,0 +1,46 @@
+{
+	"distribution": {
+		"room_temp_sensor:latest": {
+			"distribution_selection": [
+				["has_hardware", "sensor_temperature", 1],
+				["location", "building1", 1]
+			],
+			"distribution_constraints": [
+				["location", "building1_floor1", ">=", 1],
+				["location", "building1_floor2", ">=", 1],
+				["location", "building1_floor3", ">=", 1],
+				["location", "building1", "<=", 5]
+			]
+		},
+		"room_temp_controller:latest": {
+			"distribution_selection": [
+				["has_hardware", "heat_controller", 1],
+				["location", "building1", 1]
+			],
+			"distribution_constraints": [
+				["location", "building1_floor1", "==", 1],
+				["location", "building1_floor2", "==", 1],
+				["location", "building1_floor3", "==", 1],
+				["location", "building1_room301", "==", 1]
+			]
+		}
+	},
+	"dependencies": [
+		{
+			"type": "distinct",
+			"dependent": "room_temp_controller:latest",
+			"dependency": "room_temp_sensor:latest",
+			"amount_at_least": 1
+		},
+		{
+			"type": "simple",
+			"dependent": "room_temp_sensor:latest",
+			"dependency": "room_temp_controller:latest",
+			"amount_at_least": 1
+		}
+	],
+	"incompatibilities":[
+		["room_temp_sensor:latest","room_temp_controller:latest"]
+	]
+}
+

@@ -1,0 +1,12 @@
+// (c) https://github.com/MontiCore/monticore
+/**
+    This grammar is used to create a new type of parser etc for Facts files
+*/
+package montithings.services.prolog_generator;
+
+grammar Facts extends de.monticore.lang.JSON {
+
+    Devices = JSONDocument;
+
+
+}

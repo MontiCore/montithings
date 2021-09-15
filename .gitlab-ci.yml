@@ -14,6 +14,7 @@ stages:
   - post-test
   - security
   - build-applications
+  - mirror
 
 variables:
   # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
@@ -33,6 +34,10 @@ before_script:
   variables:
     DOCKER_DRIVER: overlay2
   cache: { }
+  before_script:
+    - docker login -u rwthse -p $dockerHubSe
+  after_script:
+    - docker logout
   tags:
     - shell
     - docker
@@ -42,7 +47,7 @@ Docker Alpine:
   <<: *docker_build_definition
   only:
     refs:
-      - merge_requests
+      - develop
     changes:
       - docker/mtcmake/**/*
   script:
@@ -55,13 +60,18 @@ Docker Alpine:
     - docker buildx create --name builder --driver docker-container --use
     - docker buildx inspect --bootstrap
 
+    - docker login -u rwthse -p $dockerHubSe
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t montithings/mtcmake:latest --push .
+    - docker logout
+
+    # Running this a second time will just use the cached layers
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest --push .
 
 Docker DDS:
   <<: *docker_build_definition
   only:
     refs:
-      - merge_requests
+      - develop
     changes:
       - docker/mtcmakedds/**/*
   script:
@@ -80,7 +90,7 @@ Docker OpenDDSDCPSInfoRepo:
   <<: *docker_build_definition
   only:
     refs:
-     - merge_requests
+     - develop
     changes:
       - docker/openddsdcpsinforepo/**/*
   script:
@@ -93,12 +103,14 @@ Docker Recorder:
   <<: *docker_build_definition
   only:
     refs:
-      - merge_requests
+      - develop
     changes:
       - services/recorder/**/*
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/recorder -f services/recorder/Dockerfile .
+    - docker tag $CI_REGISTRY_IMAGE/recorder montithings/recorder
+    - docker push montithings/recorder
     - docker push $CI_REGISTRY_IMAGE/recorder
 
 
@@ -106,16 +118,51 @@ Docker Log Tracing:
   <<: *docker_build_definition
   only:
     refs:
-      - merge_requests
+      - develop
     changes:
       - services/log-tracing/**/*
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/logtracer_middleware -f services/log-tracing/Dockerfile .
+    - docker build -t $CI_REGISTRY_IMAGE/logtracer-middleware -f services/log-tracing/Dockerfile .
     - cd services/log-tracing/frontend
-    - docker build -t $CI_REGISTRY_IMAGE/logtracer_frontend .
-    - docker push $CI_REGISTRY_IMAGE/logtracer_middleware
-    - docker push $CI_REGISTRY_IMAGE/logtracer_frontend
+    - docker build -t $CI_REGISTRY_IMAGE/logtracer-frontend .
+    - docker tag $CI_REGISTRY_IMAGE/logtracer-middleware montithings/logtracer-middleware
+    - docker tag $CI_REGISTRY_IMAGE/logtracer-frontend montithings/logtracer-frontend
+    - docker push montithings/logtracer-middleware
+    - docker push montithings/logtracer-frontend
+    - docker push $CI_REGISTRY_IMAGE/logtracer-middleware
+    - docker push $CI_REGISTRY_IMAGE/logtracer-frontend
+
+Docker Prolog Generator:
+  <<: *docker_build_definition
+  only:
+    refs:
+      - develop
+    changes:
+      - services/recorder/**/*
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build . --file services/prolog-generator/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/prolog-generator
+    - docker tag $CI_REGISTRY_IMAGE/prolog-generator montithings/prolog-generator
+    - docker push montithings/prolog-generator
+    - docker push $CI_REGISTRY_IMAGE/prolog-generator
+
+Docker IoT Manager:
+  <<: *docker_build_definition
+  only:
+    refs:
+      - develop
+    changes:
+      - services/iot-manager/**/*
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - cd services/iot-manager/
+    - mvn clean install -DskipTests
+    - docker build --network=host -t $CI_REGISTRY_IMAGE/iot-manager .
+    - docker tag $CI_REGISTRY_IMAGE/iot-manager montithings/iot-manager
+    - docker push montithings/iot-manager
+    - docker push $CI_REGISTRY_IMAGE/iot-manager
+
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -293,6 +340,46 @@ Code Quality:
 #    - docker buildx inspect --bootstrap
 #    - bash buildapplications.sh
 
+#GitHub Mirror:
+#  image: maven:3-jdk-8
+#  stage: mirror
+#  cache: {}
+#  needs: []
+#  variables:
+#    GIT_STRATEGY: clone
+#  dependencies:
+#    - Deploy Nexus
+#  before_script:
+#    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+#    - eval $(ssh-agent -s)
+#    - ssh-add <(echo "$SE_CIBUILD_SSH_PRIV_KEY")
+#    - echo "$SE_CIBUILD_SSH_PRIV_KEY" | tr -d '\r' | ssh-add -
+#    - git config --global user.email "noreply-ci@se-rwth.de"
+#    - git config --global user.name "MontiCore Mirroring Bot"
+#    - mkdir -p ~/.ssh
+#    - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+#    - "curl -O https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh"
+#    - bash script.deb.sh
+#    - rm script.deb.sh
+#    - apt-get -y install git-lfs
+#  script:
+#    - git lfs fetch --all
+#    - git remote add github git@github.com:MontiCore/montithings.git
+#    - git fetch --all
+#    - git switch -c github/"$CI_COMMIT_BRANCH" --track github/"$CI_COMMIT_BRANCH"
+#    - git merge --no-edit -s recursive -X theirs "$CI_COMMIT_BRANCH"
+#    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
+#    - "curl \"https://raw.githubusercontent.com/MontiCore/monticore/dev/pre/mirror.sh\" --output mirror.sh"
+#    - sh mirror.sh
+#    - rm MDLinkChangerCLI.jar mirror.sh
+#    - git add --all
+#    - "(git commit -m 'Replace private README links.') || true"
+#    - git push github HEAD:"$CI_COMMIT_BRANCH"
+#  only:
+#    - develop
+#    - master
+
+
 ##########################################
 # Security Jobs
 ##########################################
@@ -315,7 +402,6 @@ flawfinder-sast:
       exists:
         - '**/*.c'
         - '**/*.cpp'
-
 
 ##########################################
 # Trigger other projects' pipelines
