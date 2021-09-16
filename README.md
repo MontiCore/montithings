@@ -406,7 +406,24 @@ Please remove the `build/bin` folder: from `target/generated-sources` call `sudo
 
 **Q:** "How shall I refer to this project in a scientific publication?"<br>
 **A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
-> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann. MontiThings: Model-driven Development and Deployment of Reliable IoT Applications. To appear in Journal of Systems and Software.
+> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann. MontiThings: Model-driven Development and Deployment of Reliable IoT Applications. Journal of Systems and Software (2021), https://doi.org/10.1016/j.jss.2021.111087.
+
+```
+@article{KRS+21,
+    key={KRS+21},
+    author = {Kirchhof, J\"{o}erg Christian and Rumpe, Bernhard and Schmalzing, David and Wortmann, Andreas},
+    editor = {Martini, Antonio and Wimmer, Manuel and Felderer, Michael and Abrahao, Silvia},
+    title = {{MontiThings: Model-driven Development and Deployment of Reliable IoT Applications}},
+    journal = {{Journal of Systems and Software}},
+    year = {2021},
+    month = {September},
+    pages = {111087},
+    publisher = {Elsevier},
+    doi = {https://doi.org/10.1016/j.jss.2021.111087},
+    issn = {0164-1212},
+    url = {http://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf}
+}
+```
 
 
 # License
