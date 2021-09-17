@@ -110,10 +110,8 @@ terraform init
 ```
 
 Then you can plan your deployment, i.e. dry-run it and get a preview of what 
-Terraform will actually do. 
-Terraform will also ask you for your GitLab login credentials.
-These will be used by the virtual machine to download MontiThings and log into
-MontiThings' Docker registry. 
+Terraform will actually do.
+These will be used by the virtual machine to download and install MontiThings. 
 ```
 terraform plan -out terraform_azure.tfplan
 ```
@@ -156,9 +154,7 @@ no further costs are incurred:
 ```
 terraform destroy
 ```
-Terraform will ask again for your GitLab credentials, although they are not 
-needed. 
-You can just hit enter and leave the prompts empty.
+
 Double check that everything was correctly deleted in your Azure account just to
 make sure no further costs are incurred.
 

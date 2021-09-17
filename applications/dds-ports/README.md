@@ -5,7 +5,7 @@ This example shows how to leverage the Data Distribution Service (DDS) standard 
 Architecture-wise it uses the same models and hand-written code as the 
 Basic-Input-Output example:
 
-<img src="docs/BasicInputOutput.png" alt="drawing" height="200px"/>
+<img src="../../docs/BasicInputOutput.png" alt="drawing" height="200px"/>
 
 In the configuration, we however added two parameters to modify the generation:
 ```

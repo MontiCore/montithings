@@ -1,7 +1,7 @@
 <!-- (c) https://github.com/MontiCore/monticore -->
 # LogTracer
 
-<img src="docs/CDLogTracer.png" alt="drawing" height="400px"/>
+<img src="../../../../../../../../../docs/CDLogTracer.png" alt="drawing" height="400px"/>
 
 The LogTracer class is instantiated in all components and is the central instance which collects all trace data.
 It provides methods which are used within components to collect data.  

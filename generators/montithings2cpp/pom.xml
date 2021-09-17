@@ -252,7 +252,7 @@
 								<argument>${basedir}/target/generated-test-sources/:/root/test/</argument>
 								<argument>-w</argument>
 								<argument>/root/test/</argument>
-								<argument>registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake</argument>
+								<argument>montithings/mtcmake</argument>
 								<argument>./runTests.sh</argument>
 							</arguments>
 						</configuration>

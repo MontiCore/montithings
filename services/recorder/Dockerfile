@@ -1,7 +1,7 @@
 # (c) https://github.com/MontiCore/monticore
 
 # Build Image -----------------------------
-FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
+FROM montithings/mtcmakedds AS build
 
 # Switch into working directory
 WORKDIR /usr/src/app/services/recorder

@@ -1,7 +1,7 @@
 # (c) https://github.com/MontiCore/monticore
 
 # Build Image -----------------------------
-FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
+FROM montithings/mtcmakedds AS build
 
 RUN apt-get --allow-releaseinfo-change-suite update && apt-get install -y \
     libboost-all-dev \
