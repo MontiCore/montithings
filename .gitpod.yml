@@ -1,4 +1,7 @@
 # (c) https://github.com/MontiCore/monticore
+image:
+  file: .gitpod.Dockerfile
+
 tasks:
   - init: ./installLinux.sh
     command: cat docs/ascii-banner.txt

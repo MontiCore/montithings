@@ -59,6 +59,7 @@ sudo ninja install
 fi
 
 cd $MONTITHINGS_DIRECTORY
+rm -rf dependencies
 
 # Install MontiThings
 mvn clean install -Dexec.skip
