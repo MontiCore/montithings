@@ -6,14 +6,14 @@ The `Example` component contains two subcomponents. The `Source` component produ
 values, the `Sink` component consumes these values and displays them on the 
 terminal.
 
-<img src="docs/BasicInputOutput.png" alt="drawing" height="200px"/>
+<img src="../../docs/BasicInputOutput.png" alt="drawing" height="200px"/>
 
 MontiThings consists of a graphical notation and a textual notation. The 
 graphical notation exists solely for easier comprehensibility. Only the textual
 syntax can be processed by MontiThings. Here's the same `Example` component in 
 textual syntax:
 
-<img src="docs/BasicInputOutputExampleCode.png" alt="drawing" height="200px"/>
+<img src="../../docs/BasicInputOutputExampleCode.png" alt="drawing" height="200px"/>
 
 As you can see the `Example` component is marked with the `application` keyword.
 If the system is compiled to a single binary, the `application` component will
@@ -29,5 +29,5 @@ their behavior using code written in a Java-like language or in C++ classes that
 override the generated (empty) methods. More on this can be found in the 
 behavior example. 
 
-<img src="docs/BasicInputOutputSourceCode.png" alt="drawing" height="200px"/>
+<img src="../../docs/BasicInputOutputSourceCode.png" alt="drawing" height="200px"/>
 
