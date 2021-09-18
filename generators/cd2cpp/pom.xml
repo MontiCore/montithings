@@ -47,12 +47,6 @@
     </dependency>
 
     <dependency>
-      <groupId>de.monticore.lang</groupId>
-      <artifactId>cd4analysis</artifactId>
-      <version>${cd4a.version}</version>
-    </dependency>
-
-    <dependency>
       <groupId>montithings.languages</groupId>
       <artifactId>cd4montithings</artifactId>
       <version>${project.version}</version>

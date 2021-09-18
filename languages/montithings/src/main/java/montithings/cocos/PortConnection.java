@@ -38,8 +38,6 @@ public class PortConnection extends SubComponentsConnected {
       // --------- INCOMING PORTS ----------
       Collection<String> subInputPorts =
         this.getNames(subSymbol.getType().getAllIncomingPorts());
-      subInputPorts.remove("new_component");
-      subInputPorts.remove("remove_component");
       subInputPorts = subInputPorts.stream()
         .map(s -> subSymbol.getName() + "." + s)
         .collect(Collectors.toList());

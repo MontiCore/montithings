@@ -96,12 +96,8 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
         for (PortSymbol portSymbol : unusedIncomingPorts) {
           unusedIncomingPortsNames.add(portSymbol.getName());
         }
-        unusedIncomingPortsNames.remove("new_component");
-        unusedIncomingPortsNames.remove("remove_component");
-        if(!unusedIncomingPortsNames.isEmpty()){
-          Log.warn(String.format(MontiThingsError.INCOMING_PORTS_NOT_USED.toString(),
-              unusedIncomingPortsNames.toString(), node.getSymbol().getName()));
-        }
+        Log.warn(String.format(MontiThingsError.INCOMING_PORTS_NOT_USED.toString(),
+          unusedIncomingPortsNames.toString(), node.getSymbol().getName()));
       }
     }
   }

@@ -126,9 +126,6 @@ public class GenericBindingUtil {
     ComponentTypeSymbol componentSymbol2) {
     List<PortSymbol> interfacePortSymbols = componentSymbol1.getAllPorts();
     for (PortSymbol s : interfacePortSymbols) {
-      if (s.getName().equals("new_component") || s.getName().equals("remove_component")) {
-        continue;
-      }
       Optional<PortSymbol> similarS = componentSymbol2.getPort(s.getName());
       if (!similarS.isPresent()) {
         return false;

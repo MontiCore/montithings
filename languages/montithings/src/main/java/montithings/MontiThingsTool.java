@@ -1,6 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings;
 
+import cd4montithings._symboltable.CD4MontiThingsArtifactScope;
+import cd4montithings._symboltable.CD4MontiThingsSymbols2Json;
 import com.google.common.base.Preconditions;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -20,6 +22,7 @@ import montithings.util.MontiThingsError;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static montithings.util.ClassDiagramUtil.createClassDiagram;
 import static montithings.util.LibraryFunctionsUtil.addAllLibraryFunctions;
 
 public class MontiThingsTool implements IMontiThingsTool {
@@ -354,5 +358,28 @@ public class MontiThingsTool implements IMontiThingsTool {
     IMontiThingsGlobalScope mtScope = this.createMTGlobalScope(modelPath);
     this.processModels(mtScope);
     return mtScope;
+  }
+
+  public void createClassDiagrams(@NotNull IMontiThingsGlobalScope scope, String symbolPath) {
+    Preconditions.checkArgument(scope != null);
+    Set<MontiThingsArtifactScope> montiThingsArtifactScopes = new HashSet<>();
+    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+
+    //create scopes for class diagrams
+    Set<CD4MontiThingsArtifactScope> scopes = new HashSet<>();
+    for (ASTMACompilationUnit compilationUnit : models) {
+      if (compilationUnit.getComponentType().getConnectors().isEmpty()) {
+        scopes.add(createClassDiagram(compilationUnit));
+      }
+    }
+
+    //convert scopes to symbol files
+    for (CD4MontiThingsArtifactScope artifactScope : scopes) {
+      String symbolFileName = symbolPath
+          + artifactScope.getName()
+          + ".sym";
+      final CD4MontiThingsSymbols2Json symbols2Json = new CD4MontiThingsSymbols2Json();
+      final String path = symbols2Json.store(artifactScope, symbolFileName);
+    }
   }
 }

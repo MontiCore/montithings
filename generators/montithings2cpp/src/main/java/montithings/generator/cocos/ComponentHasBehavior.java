@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.cocos;
 
-import arcautomaton._ast.ASTArcStatechart;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;
@@ -12,7 +11,6 @@ import montithings.generator.helper.FileHelper;
 import montithings.util.MontiThingsError;
 
 import java.io.File;
-import java.util.stream.Collectors;
 
 /**
  * Checks that components have some kind of behavior (e.g. MCStatements or HWC)
@@ -42,9 +40,7 @@ public class ComponentHasBehavior implements MontiThingsASTMTComponentTypeCoCo {
       Log.error(String.format(MontiThingsError.NO_BEHAVIOR.toString(), compSymbol.getFullName()));
     }
 
-    boolean hasIncomingPorts = !compSymbol.getPorts().stream().filter(p -> p.isIncoming() == true &&
-      !p.getName().equals("new_component") && !p.getName().equals("remove_component"))
-      .collect(Collectors.toList()).isEmpty();
+    boolean hasIncomingPorts = !compSymbol.getIncomingPorts().isEmpty();
 
     if (!hasBehavior && hasEveryBlock && hasIncomingPorts) {
       Log.warn(String.format(MontiThingsError.NO_BEHAVIOR_ONLY_EVERY.toString(), compSymbol.getFullName()));

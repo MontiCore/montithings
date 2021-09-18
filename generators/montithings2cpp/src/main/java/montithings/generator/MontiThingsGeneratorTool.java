@@ -96,8 +96,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ======================= Serialize CDs ====================== */
     /* ============================================================ */
 
+    String symbolPath = target.toString() + File.separator + "symbols" + File.separator;
     if (!models.getClassdiagrams().isEmpty()) {
-      String symbolPath = target.toString() + File.separator + "symbols" + File.separator;
       CD4MTTool.convertToSymFile(modelPath, models.getClassdiagrams(), symbolPath);
       mp.addEntry(Paths.get(symbolPath));
     }
@@ -124,6 +124,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     IMontiThingsGlobalScope symTab = createMTGlobalScope(mp);
+    createClassDiagrams(symTab, symbolPath);
     createSymbolTable(symTab);
 
 
