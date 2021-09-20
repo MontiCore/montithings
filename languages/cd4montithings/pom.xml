@@ -57,6 +57,18 @@
             <classifier>${grammars.classifier}</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>siunits</artifactId>
+            <version>${siunits.version}</version>
+            <classifier>grammars</classifier>
+        </dependency>
         <!-- Java -->
 
         <dependency>

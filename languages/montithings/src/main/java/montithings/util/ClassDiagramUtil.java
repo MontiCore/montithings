@@ -8,9 +8,11 @@ import cd4montithings._ast.ASTCDPortDeclaration;
 import cd4montithings._ast.ASTCDPortDirection;
 import cd4montithings._symboltable.CD4MontiThingsArtifactScope;
 import cd4montithings._symboltable.ICD4MontiThingsArtifactScope;
+import cd4montithings.trafos.GeneratePortSymTypeTrafo;
 import de.monticore.cdbasis._ast.ASTCDClass;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._ast.ASTCDDefinition;
+import de.monticore.types.check.SymTypeExpressionFactory;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._ast.ASTMTComponentType;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
@@ -46,7 +48,7 @@ public class ClassDiagramUtil {
       }
       for (ASTPort astPort : astPortDeclaration.getPortList()){
         ASTCDPort port = CD4MontiThingsMill.cDPortBuilder().setName(astPort.getName()).build();
-        port.setType(tc.symTypeFromAST(astPortDeclaration.getMCType()));
+        port.setMCType(astPortDeclaration.getMCType());
         ASTCDPortDeclaration portDeclaration = CD4MontiThingsMill.cDPortDeclarationBuilder().
           setCDPortDirection(portDirection).setMCType(astPortDeclaration.getMCType()).
           addCDPort(port).build();
@@ -59,8 +61,9 @@ public class ClassDiagramUtil {
       addCDElement(astcdClass).setName(comp.getName()).build();
     ASTCDCompilationUnit astcdCompilationUnit = CD4MontiThingsMill.cDCompilationUnitBuilder().
       setCDDefinition(astcdDefinition).build();
-    CD4MontiThingsMill.globalScope();
     ICD4MontiThingsArtifactScope scope = CD4MontiThingsMill.scopesGenitorDelegator().createFromAST(astcdCompilationUnit);
+    GeneratePortSymTypeTrafo trafo = new GeneratePortSymTypeTrafo();
+    trafo.transform(astcdCompilationUnit, tc);
     return (CD4MontiThingsArtifactScope) scope;
   }
 }

@@ -3,7 +3,7 @@
 /**
  * This grammar is used in order to be able to define ports in class diagrams.
  */
-grammar CD4MontiThings extends de.monticore.CD4Code {
+grammar CD4MontiThings extends de.monticore.CD4Code, de.monticore.SIUnitTypes4Computing {
 
   start CDCompilationUnit;
 
