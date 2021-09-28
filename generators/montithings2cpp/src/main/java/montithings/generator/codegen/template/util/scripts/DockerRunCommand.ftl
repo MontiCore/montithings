@@ -5,7 +5,7 @@ ${tc.signature("typeName", "instanceName", "config")}
 <#else>
     <#assign lineBreak = ")">
 </#if>
-CONTAINER=$(docker create --rm \
+CONTAINER=$(docker run -d --rm \
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
 --net montithings \
 <#else>
@@ -20,8 +20,7 @@ CONTAINER=$(docker create --rm \
   --managementPort 30006 --dataPortArg 30007)
 </#if>
 <#if config.getMessageBroker().toString() == "MQTT">
-  --brokerHostname localhost --brokerPort 1883)
-   docker cp deployment-info.json $CONTAINER:/.montithings/deployment-info.json
+  --brokerHostname ${"$"}{mqttip} --brokerPort 1883 --localHostname ${"$"}{mqttip})
 </#if>
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
   --DCPSInfoRepo dcpsinforepo:12345 --DCPSConfigFile dcpsconfig.ini)
@@ -29,5 +28,4 @@ CONTAINER=$(docker create --rm \
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() != "DISTRIBUTED">
   --DCPSConfigFile dcpsconfig.ini)
 </#if>
-docker start $CONTAINER
 echo docker stop $CONTAINER >> dockerStop.sh

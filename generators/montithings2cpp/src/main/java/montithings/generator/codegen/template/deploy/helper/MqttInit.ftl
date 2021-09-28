@@ -4,11 +4,9 @@ ${tc.signature("comp", "config")}
 
 <#if config.getMessageBroker().toString() == "MQTT">
   MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
-  MqttClient* mqttClientLocalInstance;
-  if((brokerHostnameArg.getValue() == "localhost" || brokerHostnameArg.getValue() == "host.docker.internal")&& brokerPortArg.getValue() == 1883){
+  MqttClient* mqttClientLocalInstance = MqttClient::localInstance(localHostnameArg.getValue (), brokerPortArg.getValue ());
+  if((brokerHostnameArg.getValue() == "localhost" || brokerHostnameArg.getValue() == "host.docker.internal") && brokerPortArg.getValue() == 1883){
     mqttClientLocalInstance = mqttClientInstance;
-  } else {
-    mqttClientLocalInstance = MqttClient::instance("localhost", 1883);
   }
 
   // Wait for initial connection
