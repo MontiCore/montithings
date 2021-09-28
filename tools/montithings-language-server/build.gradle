@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id 'de.monticore.language-server' version '7.0.0.12-SNAPSHOT'
+    id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "4.0.4"
+}
+
+sourceCompatibility = 1.8
+
+def mclsg_version = '7.0.0.12-SNAPSHOT'
+def montithings_version = '7.0.0-SNAPSHOT'
+def junit_version = '4.11'
+def logback_version = '1.1.2'
+def grammars_classifier = "grammars"
+
+repositories {
+    mavenCentral()
+    maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        url repo
+    }
+    mavenLocal()
+}
+
+dependencies {
+    grammar("montithings.languages:montithings:$montithings_version:$grammars_classifier")
+    implementation("montithings.languages:montithings:$montithings_version")
+
+    // MCLSG
+    implementation("de.monticore.language-server:monticore-language-server-runtime:$mclsg_version")
+
+    // Annotations
+    compileOnly 'org.jetbrains:annotations:22.0.0'
+
+    // Testing
+    testImplementation group: 'junit', name: 'junit', version: junit_version
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
+}
+
+mclsg {
+    languageName = "MontiThings"
+    fileExtension = "mt"
+    outputDir = "$buildDir/generated-sources/mclsg/sourcecode"
+    handCodedDir = "$projectDir/src/main/java"
+    // Symbols that are added to the Language via Java, not the grammar
+    additionalSymbolNames = [
+        "arcbasis._symboltable.ComponentInstance",
+        "arcbasis._symboltable.Port",
+        "de.monticore.scbasis._symboltable.SCState",
+        "de.monticore.symbols.basicsymbols._symboltable.Variable"
+    ]
+}
+
+// configure non-standard source sets
+sourceSets {
+    main.java.srcDirs += [
+        "$buildDir/generated-sources/mclsg/sourcecode"
+    ]
+}
+
+compileJava {
+    dependsOn generateLanguageServer
+}
+
+
+shadowJar { // all in one jar
+    manifest {
+        attributes "Main-Class": "montithings._lsp.MontiThingsLanguageServerCLI"
+    }
+    archiveClassifier = "jar-with-dependencies"
+}
+
+tasks.build.dependsOn tasks.shadowJar // always build shadow jar
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = "$project.name"
+            from components.java
+            artifact shadowJar
+        }
+    }
+}
