@@ -65,6 +65,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static montithings.generator.helper.FileHelper.*;
 
@@ -108,7 +109,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     List<String> hwcPythonScripts = new ArrayList<>();
     for(File pckg : packages){
-      Set<String> pythonScriptsWithoutPckg = getFilesWithEnding(new File(hwcPath + File.separator + pckg.getName()), Set.of(".py"));
+      Set<String> pythonScriptsWithoutPckg = getFilesWithEnding(new File(hwcPath + File.separator + pckg.getName()), Stream.of(".py").collect(Collectors.toSet()));
       for(String script : pythonScriptsWithoutPckg){
         hwcPythonScripts.add(pckg.getName() + "." + script);
       }
