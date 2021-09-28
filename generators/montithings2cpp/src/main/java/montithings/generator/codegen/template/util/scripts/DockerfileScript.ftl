@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 # (c) https://github.com/MontiCore/monticore
-${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getInstances(comp)>
 
@@ -37,11 +37,13 @@ RUN ./build.sh ${comp.getFullName()}
     <#else>
     FROM alpine AS ${comp.getFullName()?lower_case}
 
-    RUN apk add --update-cache g++ 
+    RUN apk add --update-cache g++
     </#if>
 
     <#if config.getMessageBroker().toString() == "MQTT">
     RUN apk add --update-cache mosquitto
+
+    RUN mkdir .montithings
     </#if>
 
     COPY --from=build /usr/src/app/build/bin/${comp.getFullName()} /usr/src/app/build/bin/
@@ -73,6 +75,8 @@ RUN ./build.sh ${comp.getFullName()}
 
             <#if config.getMessageBroker().toString() == "MQTT">
             RUN apk add --update-cache mosquitto
+
+            RUN mkdir .montithings
             </#if>
 
 
@@ -90,13 +94,15 @@ RUN ./build.sh ${comp.getFullName()}
 
 <#if config.getMessageBroker().toString() == "MQTT">
     <#list sensorActuatorPorts as port >
-        
+
             # SENSORACTUATOR: ${port}
             FROM alpine AS ${port}
 
             RUN apk add --update-cache g++
 
             RUN apk add --update-cache mosquitto
+
+            RUN mkdir .montithings
 
             COPY --from=build /usr/src/app/build/bin/${port} /usr/src/app/build/bin/
 
@@ -107,4 +113,49 @@ RUN ./build.sh ${comp.getFullName()}
             # Run our binary on container startup
             ENTRYPOINT [ "sh", "entrypoint.sh" ]
     </#list>
+
+    <#list hwcPythonScripts as script >
+            <#assign splitScript  = script?split(".")>
+
+            # PYTHON SCRIPT: ${script}
+            FROM alpine AS ${script}
+
+            RUN apk add --no-cache python3 py3-pip
+
+            RUN apk add --update-cache mosquitto
+
+            RUN mkdir .montithings
+
+            COPY --from=build /usr/src/app/build/bin/python/montithingsconnector.py /usr/src/app/build/bin/
+
+            COPY --from=build /usr/src/app/build/bin/python/requirements.txt /usr/src/app/build/bin/
+
+            COPY --from=build /usr/src/app/build/bin/hwc/${splitScript[0]}/${splitScript[1]}.py /usr/src/app/build/bin/
+
+            WORKDIR /usr/src/app/build/bin
+
+            RUN pip install -r requirements.txt
+
+            # Run our binary on container startup
+            ENTRYPOINT [ "python3", "${splitScript[1]}.py" ]
+
+    </#list>
+
+            FROM alpine AS sensoractuatormanager
+
+            RUN apk add --no-cache python3 py3-pip
+
+            RUN apk add --update-cache mosquitto
+
+            RUN mkdir .montithings
+
+            COPY --from=build /usr/src/app/build/bin/python/requirements.txt /usr/src/app/build/bin/
+
+            COPY --from=build /usr/src/app/build/bin/python/sensoractuatormanager.py /usr/src/app/build/bin/
+
+            WORKDIR /usr/src/app/build/bin
+
+            RUN pip install -r requirements.txt
+
+            ENTRYPOINT [ "python3", "./sensoractuatormanager.py" ]
 </#if>

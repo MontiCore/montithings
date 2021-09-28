@@ -1,11 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
-<#if config.getSplittingMode().toString() == "DISTRIBUTED">
-  <#assign deploymentConfigPath = "~/.montithings/deployment-info.json">
-<#else>
-  <#assign deploymentConfigPath = "../../deployment-info.json">
-</#if>
 
 
 ${Utils.printTemplateArguments(comp)}
@@ -18,7 +13,15 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 
 
 <#if config.getMessageBroker().toString() == "MQTT">
-  std::ifstream file_input("${deploymentConfigPath}");
+  std::ifstream file_input("/.montithings/deployment-info.json");
+  if(!file_input.good()){
+    file_input.close();
+    file_input.open("../../deployment-info.json");
+    if(!file_input.good()){
+      LOG(ERROR) << "No deployment-info file provided.";
+    }
+  }
+
   sensorActuatorTypes = json::parse(file_input)["sensorActuatorTypes"];
 
   mqttClientInstance->addUser (this);

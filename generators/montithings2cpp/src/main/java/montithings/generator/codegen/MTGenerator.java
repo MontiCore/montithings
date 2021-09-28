@@ -222,7 +222,7 @@ public class MTGenerator {
                     .toString(), subPackagesPath, config, true, new ArrayList<>());
   }
 
-  public void generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> sensorActuatorPorts, List<String> subdirectories) {
+  public void generateScripts(File targetPath, ComponentTypeSymbol comp, List<String> sensorActuatorPorts, List<String> hwcPythonScripts,List<String> subdirectories) {
     List<String> sortedDirs = new ArrayList<>(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
@@ -236,18 +236,18 @@ public class MTGenerator {
 
     // Docker scripts
     fg.generate(targetPath, "dockerRun", ".sh",
-            "template/util/scripts/DockerRun.ftl", comp, sensorActuatorPorts, config);
+            "template/util/scripts/DockerRun.ftl", comp, sensorActuatorPorts, hwcPythonScripts , config);
     makeExecutable(targetPath, "dockerRun", ".sh");
   }
 
-  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp,  List<String> sensorActuatorPorts) {
+  public void generateDockerfileScript(File targetPath, ComponentTypeSymbol comp,  List<String> cppSensorActuatorPorts, List<String> hwcPythonScripts) {
     fg.generate(targetPath, "Dockerfile", "",
-            "template/util/scripts/DockerfileScript.ftl", comp, sensorActuatorPorts, config);
+            "template/util/scripts/DockerfileScript.ftl", comp, cppSensorActuatorPorts, hwcPythonScripts, config);
     fg.generate(targetPath, "dockerBuild", ".sh",
-            "template/util/scripts/DockerBuild.ftl", comp, sensorActuatorPorts, config);
+            "template/util/scripts/DockerBuild.ftl", comp, cppSensorActuatorPorts, hwcPythonScripts, config);
     makeExecutable(targetPath, "dockerBuild", ".sh");
     fg.generate(targetPath, "dockerRun", ".sh",
-            "template/util/scripts/DockerRun.ftl", comp, sensorActuatorPorts, config);
+            "template/util/scripts/DockerRun.ftl", comp, cppSensorActuatorPorts, hwcPythonScripts, config);
     makeExecutable(targetPath, "dockerRun", ".sh");
   }
 

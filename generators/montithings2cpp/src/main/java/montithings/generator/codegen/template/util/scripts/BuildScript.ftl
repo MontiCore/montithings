@@ -42,6 +42,8 @@ cp ../../"$1"/*.ini .
 <#if config.getMessageBroker().toString() == "MQTT">
 mkdir python
 cp ../../python/sensoractuatormanager.py python/.
+cp ../../python/montithingsconnector.py python/.
+cp ../../python/requirements.txt python/.
 </#if>
 <#if config.getSplittingMode().toString() == "LOCAL">
 cp -r ../../"$1"/ports .

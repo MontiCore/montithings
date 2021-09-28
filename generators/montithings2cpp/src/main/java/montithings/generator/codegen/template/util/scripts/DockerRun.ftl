@@ -1,8 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
+<#assign sensoractuatormanagerimage = "sensoractuatormanager">
 
 
 
@@ -27,6 +28,10 @@ docker network ls | grep montithings > /dev/null || docker network create --driv
     <#list sensorActuatorPorts as port >
         ${tc.includeArgs("template.util.scripts.DockerRunCommand", [port, port?lower_case, config])}
     </#list>
+    <#list hwcPythonScripts as script >
+        ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [script?lower_case, config])}
+    </#list>
+    ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [sensoractuatormanagerimage, config])}
 </#if>
 
 chmod +x dockerStop.sh

@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
@@ -23,4 +23,10 @@ ${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
 
       docker build --target ${port} -t ${port?lower_case}:latest .
   </#list>
+  <#list hwcPythonScripts as script >
+
+      docker build --target ${script} -t ${script?lower_case}:latest .
+  </#list>
+
+      docker build --target sensoractuatormanager -t sensoractuatormanager:latest .
 </#if>

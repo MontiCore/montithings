@@ -53,7 +53,6 @@ import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.json.Json;
@@ -91,6 +90,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       copyDeploymentConfigToTarget(target, hwcPath);
     }
 
+
     /* ============================================================ */
     /* ============== Generating SensorActuatorPorts ============== */
     /* ============================================================ */
@@ -98,11 +98,19 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     List<String> executableSensorActuatorPorts = new ArrayList<>();
 
     for(File pckg : packages){
-      Set<String> sensorActuatorPorts = getSensorActuatorPorts(new File(hwcPath + File.separator + pckg.getName()));
+      Set<String> sensorActuatorPorts = getFilesWithEnding(new File(hwcPath + File.separator + pckg.getName()), getFileEndings());
       for(String port : sensorActuatorPorts){
         mtg.generateSensorActuatorPort(port, pckg.getName(), config);
         generateCMakeForSensorActuatorPort(pckg.getName(), port, config);
         executableSensorActuatorPorts.add(pckg.getName() + "." + port);
+      }
+    }
+
+    List<String> hwcPythonScripts = new ArrayList<>();
+    for(File pckg : packages){
+      Set<String> pythonScriptsWithoutPckg = getFilesWithEnding(new File(hwcPath + File.separator + pckg.getName()), Set.of(".py"));
+      for(String script : pythonScriptsWithoutPckg){
+        hwcPythonScripts.add(pckg.getName() + "." + script);
       }
     }
 
@@ -317,7 +325,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       config.setSplittingMode(orgSplit);
       config.setMessageBroker(orgBroker);
 
-      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, config, executableSensorActuatorPorts ,executableSubdirs);
+      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, config, executableSensorActuatorPorts, hwcPythonScripts ,executableSubdirs);
 
       mtg = new MTGenerator(target, hwcPath, config);
     }
@@ -331,7 +339,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
       if (ComponentHelper.isApplication(comp, config)) {
-        mtg.generateDockerfileScript(target, comp, executableSensorActuatorPorts);
+        mtg.generateDockerfileScript(target, comp, executableSensorActuatorPorts, hwcPythonScripts);
       }
     }
 
@@ -497,7 +505,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
-                                           File target, ConfigParams config, List<String> sensorActuatorPorts, List<String> executableInstanceNames) {
+                                           File target, ConfigParams config, List<String> sensorActuatorPorts,List<String> hwcPythonScripts,  List<String> executableInstanceNames) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
 
     if (ComponentHelper.isApplication(comp, config)
@@ -512,7 +520,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
         mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath, sensorActuatorPorts);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          mtg.generateScripts(target, comp, sensorActuatorPorts, executableInstanceNames);
+          mtg.generateScripts(target, comp, sensorActuatorPorts, hwcPythonScripts, executableInstanceNames);
         }
       }
     }

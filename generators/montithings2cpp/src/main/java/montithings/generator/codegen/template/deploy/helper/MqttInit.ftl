@@ -8,7 +8,7 @@ ${tc.signature("comp", "config")}
   if((brokerHostnameArg.getValue() == "localhost" || brokerHostnameArg.getValue() == "host.docker.internal")&& brokerPortArg.getValue() == 1883){
     mqttClientLocalInstance = mqttClientInstance;
   } else {
-    mqttClientLocalInstance = MqttClient::instance(<#if config.getSplittingMode().toString() == "DISTRIBUTED">"host.docker.internal"<#else>"localhost"</#if>, 1883);
+    mqttClientLocalInstance = MqttClient::instance("localhost", 1883);
   }
 
   // Wait for initial connection

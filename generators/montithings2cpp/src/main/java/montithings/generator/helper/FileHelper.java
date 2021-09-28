@@ -226,9 +226,9 @@ public class FileHelper {
     return result;
   }
 
-  public static Set<String> getSensorActuatorPorts(File hwcPath) {
+
+  public static Set<String> getFilesWithEnding(File hwcPath, Set<String> fileEndings) {
     Set<String> result = new HashSet<>();
-    Set<String> fileEndings = getFileEndings();
 
     if (hwcPath.isDirectory()) {
       for (String ending : fileEndings) {
@@ -246,7 +246,7 @@ public class FileHelper {
     return result;
   }
 
-  private static Set<String> getFileEndings() {
+  public static Set<String> getFileEndings() {
     Set<String> fileEndings = new HashSet<>();
     fileEndings.add("Include.ftl");
     fileEndings.add("Body.ftl");
