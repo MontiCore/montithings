@@ -1,0 +1,11 @@
+pluginManagement {
+    repositories {
+        maven {
+            url "https://nexus.se.rwth-aachen.de/content/groups/public"
+        }
+        gradlePluginPortal()
+        mavenLocal()
+    }
+}
+include 'montithings-language-server'
+include 'montithings-vscode-plugin'

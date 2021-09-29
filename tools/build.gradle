@@ -1,0 +1,5 @@
+allprojects {
+  group = 'montithings'
+  version = '7.0.0-SNAPSHOT'
+  buildDir = "$projectDir/target"
+}
