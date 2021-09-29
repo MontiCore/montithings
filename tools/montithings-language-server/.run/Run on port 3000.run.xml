@@ -3,7 +3,7 @@
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="montithings._lsp.MontiThingsLanguageServerCLI" />
-    <module name="montithings-lsp.montithings-language-server.main" />
+    <module name="tools.montithings-language-server.main" />
     <option name="PROGRAM_PARAMETERS" value="--socket -port 3000" />
     <extension name="coverage">
       <pattern>

@@ -1,13 +1,13 @@
 plugins {
     id 'java'
-    id 'de.monticore.language-server' version '7.0.0.12-SNAPSHOT'
+    id 'de.monticore.language-server' version '7.0.0.13-SNAPSHOT'
     id 'maven-publish'
     id "com.github.johnrengelman.shadow" version "4.0.4"
 }
 
 sourceCompatibility = 1.8
 
-def mclsg_version = '7.0.0.12-SNAPSHOT'
+def mclsg_version = '7.0.0.13-SNAPSHOT'
 def montithings_version = '7.0.0-SNAPSHOT'
 def junit_version = '4.11'
 def logback_version = '1.1.2'
