@@ -52,7 +52,7 @@ public class FileHelper {
   }
 
   public static void copyDeploymentConfigToTarget(File target, File hwcPath){
-    File deploymentConfig = new File(hwcPath + File.separator + "deployment-info.json");
+    File deploymentConfig = new File(hwcPath + File.separator + "deployment-config.json");
     if(deploymentConfig.exists()){
       try {
         FileUtils.copyFileToDirectory(deploymentConfig, target);
