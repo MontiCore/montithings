@@ -43,7 +43,7 @@ RUN ./build.sh ${comp.getFullName()}
     <#if config.getMessageBroker().toString() == "MQTT">
     RUN apk add --update-cache mosquitto
 
-    ADD deployment-info.json /.montithings/deployment-info.json
+    ADD deployment-config.json /.montithings/deployment-config.json
     </#if>
 
     COPY --from=build /usr/src/app/build/bin/${comp.getFullName()} /usr/src/app/build/bin/
@@ -76,7 +76,7 @@ RUN ./build.sh ${comp.getFullName()}
             <#if config.getMessageBroker().toString() == "MQTT">
             RUN apk add --update-cache mosquitto
 
-            ADD deployment-info.json /.montithings/deployment-info.json
+            ADD deployment-config.json /.montithings/deployment-config.json
             </#if>
 
 
@@ -102,7 +102,7 @@ RUN ./build.sh ${comp.getFullName()}
 
             RUN apk add --update-cache mosquitto
 
-            ADD deployment-info.json /.montithings/deployment-info.json
+            ADD deployment-config.json /.montithings/deployment-config.json
 
             COPY --from=build /usr/src/app/build/bin/${port} /usr/src/app/build/bin/
 
@@ -124,7 +124,7 @@ RUN ./build.sh ${comp.getFullName()}
 
             RUN apk add --update-cache mosquitto
 
-            ADD deployment-info.json /.montithings/deployment-info.json
+            ADD deployment-config.json /.montithings/deployment-config.json
 
             COPY --from=build /usr/src/app/python/montithingsconnector.py /usr/src/app/build/bin/
             COPY --from=build /usr/src/app/python/parse_cmd.py /usr/src/app/build/bin/
@@ -148,7 +148,7 @@ RUN ./build.sh ${comp.getFullName()}
 
             RUN apk add --update-cache mosquitto
 
-            ADD deployment-info.json /.montithings/deployment-info.json
+            ADD deployment-config.json /.montithings/deployment-config.json
 
             COPY --from=build /usr/src/app/python/parse_cmd.py /usr/src/app/build/bin/
             COPY --from=build /usr/src/app/python/requirements.txt /usr/src/app/build/bin/

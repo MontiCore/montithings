@@ -28,12 +28,12 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 <#if config.getMessageBroker().toString() == "MQTT">
-  std::ifstream file_input("/.montithings/deployment-info.json");
+  std::ifstream file_input("/.montithings/deployment-config.json");
   if(!file_input.good()){
     file_input.close();
-    file_input.open("../../deployment-info.json");
+    file_input.open("../../deployment-config.json");
     if(!file_input.good()){
-      LOG(ERROR) << "No deployment-info file provided.";
+      LOG(ERROR) << "No deployment-config file provided.";
     }
   }
 

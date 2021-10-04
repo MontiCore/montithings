@@ -637,7 +637,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     // Serialize JSON and write it to a file.
     String jsonString = jsonBase.build().toString();
-    File jsonFile = new File(target, "deployment-config.json");
+    File jsonFile = new File(target, "deployment-info.json");
     FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
   }
 
