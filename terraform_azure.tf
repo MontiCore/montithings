@@ -14,13 +14,19 @@ provider "azurerm" {
   features {}
 }
 
+variable "rsa_key_location" {
+    type        = string
+    description = "Path to your private SSH key"
+    default     = "~/.ssh/id_rsa"
+}
+
 # Create a resource group if it doesn't exist
 resource "azurerm_resource_group" "montithingsgroup" {
     name     = "montithingsResourceGroup"
     location = "westeurope"
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -52,7 +58,7 @@ resource "azurerm_public_ip" "montithingspublicip" {
     allocation_method            = "Dynamic"
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -75,7 +81,7 @@ resource "azurerm_network_security_group" "montithingsnsg" {
     }
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -93,7 +99,7 @@ resource "azurerm_network_interface" "montithingsnic" {
     }
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -122,7 +128,7 @@ resource "azurerm_storage_account" "mystorageaccount" {
     account_replication_type    = "LRS"
 
     tags = {
-        environment = "Terraform Demo"
+        environment = "MontiThings"
     }
 }
 
@@ -163,14 +169,63 @@ resource "azurerm_linux_virtual_machine" "montithingsvm" {
 
     admin_ssh_key {
         username       = "azureuser"
-        public_key     = file("~/.ssh/id_rsa.pub")
+        public_key     = file("${var.rsa_key_location}.pub")
     }
 
     boot_diagnostics {
         storage_account_uri = azurerm_storage_account.mystorageaccount.primary_blob_endpoint
     }
 
+    provisioner "remote-exec" {
+        inline = [
+            "git clone https://github.com/monticore/montithings",
+            "cd montithings",
+            "sudo cp docs/ascii-banner.txt /etc/motd",
+            "./installLinux.sh"
+        ]
+
+        connection {
+            type        = "ssh"
+            user        = azurerm_linux_virtual_machine.montithingsvm.admin_username
+            private_key = file(var.rsa_key_location)
+            host        = azurerm_linux_virtual_machine.montithingsvm.public_ip_address
+        }
+    }
+
     tags = {
         environment = "MontiThings"
     }
+}
+
+resource "azurerm_container_group" "montithingscontainergroup" {
+    name                = "montithings-containers"
+    location            = azurerm_resource_group.montithingsgroup.location
+    resource_group_name = azurerm_resource_group.montithingsgroup.name
+    ip_address_type     = "public"
+    os_type             = "Linux"
+    dns_name_label      = random_id.randomId.hex
+
+    container {
+        name   = "hivemq-broker"
+        image  = "hivemq/hivemq-ce"
+        cpu    = "0.5"
+        memory = "1.5"
+
+        ports {
+            port     = 1883
+            protocol = "TCP"
+        }
+    }
+
+    tags = {
+        environment = "MontiThings"
+    }
+}
+
+output "vm_ip_address" {
+    value = azurerm_linux_virtual_machine.montithingsvm.public_ip_address
+}
+
+output "mqtt_broker_ip_address" {
+    value = azurerm_container_group.montithingscontainergroup.ip_address
 }

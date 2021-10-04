@@ -14,7 +14,7 @@
 #include <utility>
 #include "easyloggingpp/easylogging++.h"
 
-#include "record-and-replay/message-types/DDSMessageTypeSupportC.h"
+#include "dds/message-types/DDSMessageTypeSupportC.h"
 #include "record-and-replay/recorder/DDSRecorder.h"
 #include "record-and-replay/recorder/MessageWithClockContainer.h"
 #include "record-and-replay/recorder/VectorClock.h"

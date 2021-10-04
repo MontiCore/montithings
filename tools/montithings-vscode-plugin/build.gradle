@@ -1,0 +1,44 @@
+plugins{
+    id 'de.monticore.language-server' version '7.0.0.13-SNAPSHOT'
+    id "com.github.node-gradle.node" version "3.0.1"
+    id "base"
+}
+
+def genPostfix = "generated-source/mclsg/montithings-vscode-plugin"
+def relGenDir = "target/$genPostfix" // Used since GeneratorSetup can not handle absolute paths
+def genDir = "$buildDir/$genPostfix"
+
+dependencies {
+    lspserver project(path: ":montithings-language-server", configuration: 'shadow')
+}
+
+mclsg{
+    languageName "MontiThings"
+    outputDir relGenDir
+    fileExtension 'mt'
+}
+
+task copyLspserver(type: Copy) {
+    from configurations.lspserver
+    into "$genDir/bin"
+}
+
+task buildPlugin(type: NpmTask){
+    args = ['run', 'package']
+}
+
+task runVscodePlugin(type: Exec){
+    workingDir "$projectDir"
+    commandLine "code", "--extensionDevelopmentPath=$genDir", "$projectDir/example/"
+}
+
+// Build vscode plugin
+node {
+    download = true
+    nodeProjectDir = file("$genDir")
+}
+tasks.build.dependsOn 'buildPlugin'
+tasks.buildPlugin.dependsOn 'copyLspserver'
+tasks.buildPlugin.dependsOn 'npm_install'
+tasks.buildPlugin.dependsOn 'generateVscodePlugin'
+tasks.runVscodePlugin.dependsOn 'build'

@@ -3,7 +3,11 @@
 
 # MontiThings Core Project
 
-© https://github.com/MontiCore/monticore; Contact: @christian.kirchhof
+![Ubuntu workflow](https://github.com/monticore/montithings/actions/workflows/maven-ubuntu.yml/badge.svg)
+![Windows workflow](https://github.com/monticore/montithings/actions/workflows/maven-windows.yml/badge.svg)
+![macOS workflow](https://github.com/monticore/montithings/actions/workflows/maven-mac.yml/badge.svg)
+
+© https://github.com/MontiCore/monticore; Contact: [Christian Kirchhof](https://se-rwth.de/staff/kirchhof)
 
 The MontiThings Core repository contains everything related to the common basis of the MontiThings architecture description, 
 a [MontiArc][montiarc]-based architecture description language for rapid prototyping of Internet of Things applications.
@@ -29,8 +33,11 @@ MontiThings uses these elements to generate a C++ project including various scri
 This section describes some of the many possible ways to use MontiThings.
 For the purpose of this tutorial, you can choose between the following options:
 1. a native installation on your machine
-2. an installation in a VM of the Microsoft Azure Cloud
+2. an installation in a virtual machine of the Microsoft Azure Cloud
 3. using MontiThings' Docker containers to avoid an installation
+4. using an online IDE by clicking this button (you will need to sign in with your GitHub account to Gitpod): \
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)
+
 
 ## Native installation
 
@@ -42,7 +49,7 @@ you'll most likely want the native installation - it will save you time in the l
 
 ### Prerequisites 
 - Git (for checking out the project)
-- Maven (for building the project); Gradle is still under development, use Maven!
+- Maven (for building the project); Alternatively, you can also use Gradle.
 - Java 8 or 11 or 14 (other versions are not checked by the CI pipeline)
 - [NNG (for networking)][nng] (Please use [version 1.3.0][nng-1.3])
 - GCC and CMake (For compiling the generated C++ code)
@@ -102,41 +109,32 @@ az login
 terraform init
 ```
 
-If your public SSH key is not at `~/.ssh/id_rsa.pub`, please change the 
-following part in the `terraform_azure.tf` file to match your key's location. 
-You can also directly provide the key as a String.
-```
-admin_ssh_key {
-  username       = "azureuser"
-  public_key     = file("~/.ssh/id_rsa.pub")
-}
-```
-
 Then you can plan your deployment, i.e. dry-run it and get a preview of what 
-Terraform will actually do:
+Terraform will actually do.
+These will be used by the virtual machine to download and install MontiThings. 
 ```
 terraform plan -out terraform_azure.tfplan
 ```
 
+If your SSH key is not at `~/.ssh/id_rsa`, please provide its location as an 
+argument.
+```
+terraform plan -out terraform_azure.tfplan -var 'rsa_key_location=/path/to/id_rsa'
+```
+
 Here, make sure that you're happy with all the services Terraform will install. 
 If you want to know more about the individual services, refer to the excellent 
-documentation from the [Microsoft Azure Docs][azure-terraform-docs]. 
-At least, make sure that Terraform found your SSH key:
-```
-admin_ssh_key {
-  - public_key = <<-EOT
-    ssh-rsa AAAAB3NzaC monti@example.com
-    EOT -> null
-  - username   = "azureuser" -> null
-}
-```
+documentation from the [Microsoft Azure Docs][azure-terraform-docs].
 
 If you're happy, deploy the virtual machine by calling: 
 ```
 terraform apply terraform_azure.tfplan
 ```
 
-To find out the virtual machine's IP address, call:
+You will see how Terraform first instantiates the virtual machine and then 
+installs MontiThings on this machine.
+At the end, the script shows you the virtual machine's IP.
+In case you forget it, you can find out the virtual machine's IP address by calling:
 ```
 az vm show --resource-group montithingsResourceGroup --name montithings -d --query [publicIps] -o tsv
 ```
@@ -144,13 +142,6 @@ az vm show --resource-group montithingsResourceGroup --name montithings -d --que
 To connect to the machine, call:
 ```
 ssh azureuser@20.30.40.50
-```
-
-Once you're on the machine, you can download and install MontiThings:
-```
-git clone https://git.rwth-aachen.de/monticore/montithings/core.git
-cd core
-./installLinux.sh
 ```
 
 After the installation you can use MontiThings as if it was installed using 
@@ -163,6 +154,7 @@ no further costs are incurred:
 ```
 terraform destroy
 ```
+
 Double check that everything was correctly deleted in your Azure account just to
 make sure no further costs are incurred.
 
@@ -182,12 +174,7 @@ the native installation.
 
 ### Installation
 
-Log in to this GitLab's docker registry using your credentials you use to log in this GitLab:
-```
-docker login registry.git.rwth-aachen.de
-```
-
-Now you can build the project using this folder:
+You can build the project using this folder:
 
 Linux/macOS:
 ```
@@ -209,12 +196,12 @@ Within the `target/generated-sources` folder you can try out the generated code 
 
 Linux/macOS:
 ```
-docker run -it --rm -v $PWD:$PWD -w $PWD registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake
 ```
 
 Windows:
 ```
-docker run -it --rm -v %CD%:/root/generated-sources -w /root/generated-sources registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake
+docker run -it --rm -v %CD%:/root/generated-sources -w /root/generated-sources montithings/mtcmake
 ```
 
 This command will bring you into a new shell where you can build the project. 
@@ -383,16 +370,25 @@ If you want to stop the application you can do the following:
 Visual Studio's variable script under `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxilliary\Build\vcvarsall.bat x64`
 (your path might be a little different depending on you installation location and Visual Studio version).
 
+**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
+**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
+
+**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?" <br>
+**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
+
 **Q:** "Docker says something like 'denied: access forbidden'"<br>
-**A:** You need to log in first. Call `docker login registry.git.rwth-aachen.de` and the credentials you
+**A:** You likely tried to execute an image that is provided via (our internal) the Docker registry from RWTH Aachen University's GitLab instance. 
+In most cases you can pull the images from Docker Hub by replacing the `registry.git.rwth-aachen.de/monticore/montithings/core` by just `montithings`.
+In case you have access to our internal repository, you likely forgot to log in first. 
+Call `docker login registry.git.rwth-aachen.de` and the credentials you
 use to log into this GitLab.
 
-**Q:** "I don't know my credentials. I always log in through the RWTH single-sign on"<br>
+**Q:** "I don't know my credentials to RWTH Aachen's GitLab's internal Docker registry. I always log in through the RWTH single-sign on"<br>
 **A:** "You can find your username by clicking on your icon in the top right corner. The dropdown should tell 
 you your username (something like `@christian.kirchhof`). If you haven't set a differnet password for GitLab
 your password is most likely the password you use everywhere else to login with you TIM id (TIM id has the 
 form `xy123456`). In case you have never logged in using a manually set password, you maybe need to first
-[set a password][password].
+[set a password (not publicly available)][password].
 
 **Q:** "I cant execute the binary. It says something like 'cannot execute binary file' (or something similar)"<br>
 **A:** You most likely compiled the binary using Docker and are now trying to execute it outside of the container. 
@@ -400,11 +396,31 @@ As the different operating systems use different formats for their binaries, thi
 time to waste, you can read more about the different file formats on Wikipedia: 
 [ELF][elf] (Linux), [Mach-O][mach-o] (macOS), [Portable Executable][portable-executable] (Windows).
 
-**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
-**A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
+**Q:** "I can't execute the binary. It says something like `-bash: ./hierarchy.Example: No such file or directory`. But I can clearly see the file when running `ls`.<br>
+**A:** You likely compiled the binary using Docker and are now trying to call it from outside the container. 
+Please remove the `build/bin` folder: from `target/generated-sources` call `sudo rm -rf build` (you need `sudo` because the folder doesn't belong to you if its built with Docker). If you don't have `sudo` rights, you can also go back inside the Docker container (`docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake`) and remove the folder from within the container. After removing the folder, please rebuild the project without using Docker.
 
-**Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?"
-**A:** Probably you don't have enough memory. Check it using `dmesg -T| grep -E -i -B100 'killed process'`. 
+**Q:** "How shall I refer to this project in a scientific publication?"<br>
+**A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
+> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann. MontiThings: Model-driven Development and Deployment of Reliable IoT Applications. Journal of Systems and Software (2021), https://doi.org/10.1016/j.jss.2021.111087.
+
+```
+@article{KRS+21,
+    key={KRS+21},
+    author = {Kirchhof, J\"{o}erg Christian and Rumpe, Bernhard and Schmalzing, David and Wortmann, Andreas},
+    editor = {Martini, Antonio and Wimmer, Manuel and Felderer, Michael and Abrahao, Silvia},
+    title = {{MontiThings: Model-driven Development and Deployment of Reliable IoT Applications}},
+    journal = {{Journal of Systems and Software}},
+    year = {2021},
+    month = {September},
+    pages = {111087},
+    publisher = {Elsevier},
+    doi = {https://doi.org/10.1016/j.jss.2021.111087},
+    issn = {0164-1212},
+    url = {http://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf}
+}
+```
+
 
 # License
 
@@ -425,7 +441,7 @@ https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICOR
 * [Licence definition](https://github.com/MontiCore/monticore/blob/master/00.org/Licenses/LICENSE-MONTICORE-3-LEVEL.md)
 
 [se-rwth]: http://www.se-rwth.de
-[montiarc]: https://git.rwth-aachen.de/monticore/montiarc/core
+[montiarc]: https://www.se-rwth.de/topics/Software-Architecture.php
 [nng]: https://github.com/nanomsg/nng#quick-start 
 [nng-1.3]: https://github.com/nanomsg/nng/archive/v1.3.0.zip
 [docker]: https://www.docker.com/products/docker-desktop

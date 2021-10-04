@@ -9,6 +9,7 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 
 rm -f dockerStop.sh
 
+# Create a dedicated network named montithings. Skip if it is already present.
 docker network ls | grep montithings > /dev/null || docker network create --driver bridge montithings
 
 # Unfortunately, the docker option --net=host is not supported by macOS and is ignored.
@@ -16,7 +17,7 @@ docker network ls | grep montithings > /dev/null || docker network create --driv
 # On Linux, localhost is used since the host network is used (this is done to allow multicast, see the DDS broker).
 # On macOS, the montithings network is used instead. Therefore, we have to pass the ip of the host machine.
 os="$(uname -s)"
-case "${"$"}{os}" in
+case "${r"${os}"}" in
     Linux*)     mqttip=127.0.0.1;;
     Darwin*)    mqttip=host.docker.internal;;
     *)          echo "unknown os!" && exit 1

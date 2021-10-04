@@ -1,14 +1,11 @@
 # (c) https://github.com/MontiCore/monticore
 
 # Build Image -----------------------------
-FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
+FROM montithings/mtcmakedds AS build
 
-RUN apt-get update && apt-get install -y \
-    npm \
+RUN apt-get --allow-releaseinfo-change-suite update && apt-get install -y \
     libboost-all-dev \
     libmosquitto-dev
-
-RUN npm install --global yarn
 
 # Switch into working directory
 WORKDIR /usr/src/app/services/log-tracing
@@ -20,17 +17,22 @@ COPY services/log-tracing /usr/src/app/services/log-tracing
 COPY generators/montithings2cpp/src/main/resources/rte/montithings-RTE \
     /usr/src/app/generators/montithings2cpp/src/main/resources/rte/montithings-RTE
 
-COPY services/log-tracing/entrypoint.sh .
-
-RUN cd frontend
-
-RUN yarn install
-
 # In case it was build without docker before
 RUN rm -rf build
 
 # Build our binary/binaries
 RUN ./build.sh
+
+
+FROM debian:buster
+
+RUN apt-get update && apt-get install -y \
+    libboost-all-dev \
+    libmosquitto-dev
+
+COPY services/log-tracing/entrypoint.sh .
+
+COPY --from=build /usr/src/app/services/log-tracing/build/logtracer_middleware/bin/logtracer_middleware .
 
 # Run the container
 ENTRYPOINT [ "sh", "entrypoint.sh" ]

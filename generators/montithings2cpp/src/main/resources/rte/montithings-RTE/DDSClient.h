@@ -26,7 +26,7 @@
 #include "easyloggingpp/easylogging++.h"
 #include "json/json.hpp"
 
-#include "record-and-replay/message-types/DDSMessageTypeSupportImpl.h"
+#include "dds/message-types/DDSMessageTypeSupportImpl.h"
 
 // Supporting all transport types with a statically built OpenDDS
 #include <dds/DCPS/transport/tcp/TcpInst.h>

@@ -5,7 +5,7 @@ This example shows how to leverage the Data Distribution Service (DDS) standard 
 Architecture-wise it uses the same models and hand-written code as the 
 Basic-Input-Output example:
 
-<img src="docs/BasicInputOutput.png" alt="drawing" height="200px"/>
+<img src="../../docs/BasicInputOutput.png" alt="drawing" height="200px"/>
 
 In the configuration, we however added two parameters to modify the generation:
 ```
@@ -56,7 +56,7 @@ and a static discovery mechanism.
 ## Installation and running the Example
 
 
-1. Clone/Download and build [OpenDDS][opendds]
+1. Clone/Download and build [OpenDDS][opendds] (use version 3.15)
 2. Start the Docker container which runs the discovery service
 3. OpenDDS generated a `setenv.sh` script in the OpenDDS root directory. Execute `source setenv.sh`.
 4. Run `run.sh`

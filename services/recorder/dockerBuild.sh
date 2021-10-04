@@ -5,6 +5,6 @@
 # this is necessary, as we need to copy the rte directory which would have been out of context otherwise
 cd ../..
 
-docker build -t recorder -f services/recorder/Dockerfile .
+docker build -t montithings/recorder -f services/recorder/Dockerfile .
 
 cd - || exit

@@ -2,10 +2,12 @@
 ${tc.signature("comp","config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
+std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
 <#list comp.getIncomingPorts() as p>
   <#assign type = TypesPrinter.getRealPortCppTypeString(p.getComponent().get(), p, config)>
   // incoming port ${p.getName()}
-  ${p.getName()} = new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", true, mqttClientInstance);
+
+  ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameIn + "/${p.getName()}", true, mqttClientInstance);
   interface.getPort${p.getName()?cap_first} ()->attach (this);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>

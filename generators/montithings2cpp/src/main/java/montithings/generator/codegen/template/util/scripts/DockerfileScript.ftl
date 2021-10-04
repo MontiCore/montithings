@@ -2,13 +2,13 @@
 # (c) https://github.com/MontiCore/monticore
 ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
-<#assign instances = ComponentHelper.getInstances(comp)>
+<#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
 # Build Image -----------------------------
 <#if config.getMessageBroker().toString() == "DDS">
-    FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
+    FROM montithings/mtcmakedds AS build
 <#else>
-    FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake AS build
+    FROM montithings/mtcmake AS build
 </#if>
 
 # Switch into our apps working directory
@@ -37,13 +37,13 @@ RUN ./build.sh ${comp.getFullName()}
     <#else>
     FROM alpine AS ${comp.getFullName()?lower_case}
 
-    RUN apk add --update-cache g++
+    RUN apk add --update-cache libgcc libstdc++
     </#if>
 
     <#if config.getMessageBroker().toString() == "MQTT">
-    RUN apk add --update-cache mosquitto
-
     ADD deployment-config.json /.montithings/deployment-config.json
+
+    RUN apk add --update-cache mosquitto-libs++
     </#if>
 
     COPY --from=build /usr/src/app/build/bin/${comp.getFullName()} /usr/src/app/build/bin/
@@ -70,15 +70,14 @@ RUN ./build.sh ${comp.getFullName()}
             <#else>
             FROM alpine AS ${pair.getKey().fullName}
 
-            RUN apk add --update-cache g++
+            RUN apk add --update-cache libgcc libstdc++
             </#if>
 
             <#if config.getMessageBroker().toString() == "MQTT">
-            RUN apk add --update-cache mosquitto
-
             ADD deployment-config.json /.montithings/deployment-config.json
-            </#if>
 
+            RUN apk add --update-cache mosquitto-libs++
+            </#if>
 
             COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
 
@@ -91,7 +90,6 @@ RUN ./build.sh ${comp.getFullName()}
         </#if>
     </#list>
 </#if>
-
 <#if config.getMessageBroker().toString() == "MQTT">
     <#list sensorActuatorPorts as port >
 

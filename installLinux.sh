@@ -27,7 +27,8 @@ then
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 sudo usermod -aG docker $USER
-newgrp docker
+newgrp docker << SHELL
+SHELL
 fi
 
 # Check if we got a recent enough CMake version
@@ -58,6 +59,7 @@ sudo ninja install
 fi
 
 cd $MONTITHINGS_DIRECTORY
+rm -rf dependencies
 
 # Install MontiThings
 mvn clean install -Dexec.skip
