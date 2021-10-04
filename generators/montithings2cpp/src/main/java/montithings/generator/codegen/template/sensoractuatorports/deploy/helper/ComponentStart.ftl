@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("port", "isSensor")}
 
-MqttClient* mqttClientInstance = MqttClient::localInstance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
+MqttClient* mqttClientInstance = MqttClient::localInstance(localHostnameArg.getValue (), brokerPortArg.getValue ());
 
 // Wait for initial connection
 while(!mqttClientInstance->isConnected());

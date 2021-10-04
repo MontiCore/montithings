@@ -18,8 +18,12 @@ docker network ls | grep montithings > /dev/null || docker network create --driv
 # On macOS, the montithings network is used instead. Therefore, we have to pass the ip of the host machine.
 os="$(uname -s)"
 case "${r"${os}"}" in
-    Linux*)     mqttip=127.0.0.1;;
-    Darwin*)    mqttip=host.docker.internal;;
+    Linux*)
+            mqttip=127.0.0.1
+            localmqttip=127.0.0.1;;
+    Darwin*)
+            mqttip=host.docker.internal
+            localmqttip=host.docker.internal;;
     *)          echo "unknown os!" && exit 1
 esac
 
