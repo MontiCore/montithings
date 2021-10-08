@@ -402,22 +402,25 @@ Please remove the `build/bin` folder: from `target/generated-sources` call `sudo
 
 **Q:** "How shall I refer to this project in a scientific publication?"<br>
 **A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
-> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann. MontiThings: Model-driven Development and Deployment of Reliable IoT Applications. Journal of Systems and Software (2021), https://doi.org/10.1016/j.jss.2021.111087.
+> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann,
+MontiThings: Model-Driven Development and Deployment of Reliable IoT Applications, In: W.K. Chan, editor, Journal of Systems and Software (JSS), Volume 183, January 2022, 111087, Elsevier, https://doi.org/10.1016/j.jss.2021.111087.
 
 ```
 @article{KRS+21,
-    key={KRS+21},
-    author = {Kirchhof, J\"{o}erg Christian and Rumpe, Bernhard and Schmalzing, David and Wortmann, Andreas},
-    editor = {Martini, Antonio and Wimmer, Manuel and Felderer, Michael and Abrahao, Silvia},
-    title = {{MontiThings: Model-driven Development and Deployment of Reliable IoT Applications}},
-    journal = {{Journal of Systems and Software}},
-    year = {2021},
-    month = {September},
-    pages = {111087},
-    publisher = {Elsevier},
-    doi = {https://doi.org/10.1016/j.jss.2021.111087},
-    issn = {0164-1212},
-    url = {http://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf}
+  key       = {KRS+21},
+  title     = {{MontiThings: Model-driven Development and Deployment of Reliable IoT Applications}},
+  author    = {Kirchhof, J\"{o}rg Christian and Rumpe, Bernhard and Schmalzing, David and Wortmann, Andreas},
+  editor    = {Chan, Wing-Kwong},
+  year      = 2022,
+  month     = {January},
+  journal   = {{Journal of Systems and Software}},
+  publisher = {Elsevier},
+  volume    = 183,
+  pages     = 111087,
+  doi       = {https://doi.org/10.1016/j.jss.2021.111087},
+  issn      = {0164-1212},
+  url       = {http://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf},
+  keywords  = {Internet of Things, Model-driven engineering, Architecture modeling, Code generation, Deployment}
 }
 ```
 
