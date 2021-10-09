@@ -34,6 +34,12 @@ before_script:
   variables:
     DOCKER_DRIVER: overlay2
   cache: { }
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - '"$CHANGES_PATH"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
   before_script:
     - docker login -u rwthse -p $dockerHubSe
   after_script:
@@ -45,11 +51,8 @@ before_script:
 
 Docker Alpine:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - docker/mtcmake/**/*
+  variables:
+    CHANGES_PATH: 'docker/mtcmake/**/*'
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmake 
@@ -67,11 +70,8 @@ Docker Alpine:
 
 Docker DDS:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - docker/mtcmakedds/**/*
+  variables:
+    CHANGES_PATH: 'docker/mtcmakedds/**/*'
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmakedds
@@ -89,11 +89,8 @@ Docker DDS:
 
 Docker OpenDDSDCPSInfoRepo:
   <<: *docker_build_definition
-  only:
-    refs:
-     - develop
-    changes:
-      - docker/openddsdcpsinforepo/**/*
+  variables:
+    CHANGES_PATH: 'docker/openddsdcpsinforepo/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/openddsdcpsinforepo
@@ -102,11 +99,8 @@ Docker OpenDDSDCPSInfoRepo:
 
 Docker Recorder:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/recorder/**/*
+  variables:
+    CHANGES_PATH: 'services/recorder/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/recorder -f services/recorder/Dockerfile .
@@ -117,11 +111,8 @@ Docker Recorder:
 
 Docker Log Tracing:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/log-tracing/**/*
+  variables:
+    CHANGES_PATH: 'services/log-tracing/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/logtracer-middleware -f services/log-tracing/Dockerfile .
@@ -136,11 +127,8 @@ Docker Log Tracing:
 
 Docker Prolog Generator:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/recorder/**/*
+  variables:
+    CHANGES_PATH: 'services/recorder/**/*' 
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build . --file services/prolog-generator/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/prolog-generator
@@ -150,11 +138,8 @@ Docker Prolog Generator:
 
 Docker IoT Manager:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/iot-manager/**/*
+  variables:
+    CHANGES_PATH: 'services/iot-manager/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd services/iot-manager/
