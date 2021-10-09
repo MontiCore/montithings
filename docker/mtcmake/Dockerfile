@@ -31,4 +31,3 @@ RUN cd /usr/src/app/nng \
 WORKDIR /usr/src/app
 
 CMD [ "/bin/sh" ]
-
