@@ -37,7 +37,7 @@ before_script:
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
       changes:
-        - '"$CHANGES_PATH"'
+        - $CHANGES_PATH
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
   before_script:
