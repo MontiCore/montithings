@@ -331,7 +331,7 @@ GitHub Mirror:
   stage: mirror
   cache: {}
   allow_failure: true
-  needs: []
+#  needs: []
   variables:
     GIT_STRATEGY: clone
   dependencies:
