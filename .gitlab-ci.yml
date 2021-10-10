@@ -331,7 +331,7 @@ GitHub Mirror:
   stage: mirror
   cache: {}
   allow_failure: true
-#  needs: []
+  needs: []
   variables:
     GIT_STRATEGY: clone
   dependencies:
@@ -354,7 +354,7 @@ GitHub Mirror:
     - git remote add github git@github.com:MontiCore/montithings.git
     - git fetch --all
     - git switch -c github/"$CI_COMMIT_BRANCH" --track github/"$CI_COMMIT_BRANCH"
-    - git merge --no-edit -s recursive -X theirs "$CI_COMMIT_BRANCH"
+    - git merge --no-edit -s recursive -X theirs origin/"$CI_COMMIT_BRANCH"
 #    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
 #    - "curl \"https://raw.githubusercontent.com/MontiCore/monticore/dev/pre/mirror.sh\" --output mirror.sh"
 #    - sh mirror.sh
@@ -362,9 +362,11 @@ GitHub Mirror:
 #    - git add --all
 #    - "(git commit -m 'Replace private README links.') || true"
     - git push github HEAD:"$CI_COMMIT_BRANCH"
-  only:
-    - develop
-    - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
 
 
 ##########################################
