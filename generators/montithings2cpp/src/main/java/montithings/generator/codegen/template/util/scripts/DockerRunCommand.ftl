@@ -29,3 +29,4 @@ CONTAINER=$(docker run -d --rm \
   --DCPSConfigFile dcpsconfig.ini)
 </#if>
 echo docker stop $CONTAINER >> dockerStop.sh
+echo docker kill $CONTAINER >> dockerKill.sh
