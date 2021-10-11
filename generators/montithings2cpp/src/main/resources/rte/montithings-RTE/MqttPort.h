@@ -206,7 +206,7 @@ MqttPort<T>::sendToExternal (tl::optional<T> nextVal)
       std::string topic = "/ports/" + replaceDotsBySlashes (fullyQualifiedName);
       if (isSensorActuator)
         {
-          mqttClientInstance->publish (sensorActuatorTopic, payload);
+          mqttClientLocalInstance->publish (sensorActuatorTopic, payload);
         }
       else
         {
