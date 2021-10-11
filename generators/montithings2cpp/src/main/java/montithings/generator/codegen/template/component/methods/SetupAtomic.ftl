@@ -25,6 +25,8 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   sensorActuatorTypes = json::parse(file_input)["sensorActuatorTypes"];
 
   mqttClientInstance->addUser (this);
+  mqttClientLocalInstance->addUser (this);
+
   ${tc.includeArgs("template.component.helper.AddMqttOutPorts", [comp, config])}
   ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
 </#if>
