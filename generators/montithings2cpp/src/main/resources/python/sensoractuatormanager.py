@@ -32,6 +32,7 @@ class SensorActuatorManager:
         self.connected = False
 
     def on_message(self, client, userdata, message):
+        print("Got Message " + message.payload.decode("utf-8") + " on topic " + message.topic)
         json_dict = ast.literal_eval(message.payload.decode("utf-8"))
         if json_dict["occupiedBy"]:
             self.topics[message.topic] = (dt.datetime.now(), json_dict["occupiedBy"])

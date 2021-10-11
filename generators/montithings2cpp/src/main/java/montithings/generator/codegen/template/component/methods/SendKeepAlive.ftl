@@ -9,7 +9,6 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendKeepAlive(
   json j;
   j["occupiedBy"] = this->getInstanceName() + "." + portName;
   std::string message = j.dump();
-  mqttClientLocalInstance->unsubscribe (sensorActuatorConfigTopic);
   while (keepAliveFuture.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout){
     mqttClientLocalInstance->publishRetainedMessage (sensorActuatorConfigTopic, message);
     std::this_thread::sleep_for(std::chrono::seconds(5));

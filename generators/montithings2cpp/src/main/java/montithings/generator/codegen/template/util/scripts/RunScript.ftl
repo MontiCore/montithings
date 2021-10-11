@@ -15,7 +15,7 @@ echo "Starting components..."
 
 <#list instances as pair >
   <#if config.getMessageBroker().toString() == "MQTT">
-  ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883 > ${pair.getValue()}.log 2>&1 &
+  ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
   <#elseif config.getMessageBroker().toString() == "DDS">
     <#if config.getSplittingMode().toString() == "DISTRIBUTED">
       ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini --DCPSInfoRepo localhost:12345 > ${pair.getValue()}.log 2>&1 &
@@ -28,7 +28,7 @@ echo "Starting components..."
 </#list>
 <#if config.getMessageBroker().toString() == "MQTT">
   <#list sensorActuatorPorts as port >
-  ./${port} --name ${port} --brokerHostname localhost --brokerPort 1883 > ${port}.log 2>&1 &
+  ./${port} --name ${port} --brokerPort 1883 --localHostname localhost > ${port}.log 2>&1 &
   </#list>
 </#if>
 

@@ -9,7 +9,7 @@ std::string modelInstanceNameOut = getModelInstanceName(this->getInstanceName())
 
   // outgoing port ${p.getName()}
 
-  ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}", true, mqttClientInstance);
+  ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}", true, mqttClientInstance, mqttClientLocalInstance);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
 

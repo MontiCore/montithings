@@ -5,7 +5,7 @@ TCLAP::CmdLine cmd("${port} MontiThings SensorActuatorPort", ' ', "${config.getP
 TCLAP::ValueArg${"<"}std::string${">"} instanceNameArg ("n", "name","Fully qualified instance name of the sensorActuatorPort",true,"","string");
 cmd.add ( instanceNameArg );
 
-${tc.includeArgs("template.deploy.helper.MqttArgs")}
+${tc.includeArgs("template.sensoractuatorports.deploy.helper.MqttArgs")}
 
 <#if config.getRecordingMode().toString() == "ON">
   TCLAP::SwitchArg muteRecorder ("", "muteRecorder", "Suppress all logs from the recorder", false);

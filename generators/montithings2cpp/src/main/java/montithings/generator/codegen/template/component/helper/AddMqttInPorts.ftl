@@ -7,7 +7,7 @@ std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
   <#assign type = TypesPrinter.getRealPortCppTypeString(p.getComponent().get(), p, config)>
   // incoming port ${p.getName()}
 
-  ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameIn + "/${p.getName()}", true, mqttClientInstance);
+  ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameIn + "/${p.getName()}", true, mqttClientInstance, mqttClientLocalInstance);
   interface.getPort${p.getName()?cap_first} ()->attach (this);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
@@ -27,6 +27,6 @@ std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
   <#if !comp.isAtomic()>
     // additional outgoing port for port incoming port ${p.getName()}
     // to forward data to subcomponents
-    this->interface.addOutPort${p.getName()?cap_first}(new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", false));
+    this->interface.addOutPort${p.getName()?cap_first}(new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", false, mqttClientInstance, mqttClientLocalInstance));
   </#if>
 </#list>

@@ -42,7 +42,7 @@ esac
 </#if>
 <#if config.getMessageBroker().toString() == "MQTT">
     <#list sensorActuatorPorts as port >
-        ${tc.includeArgs("template.util.scripts.DockerRunCommand", [port, port?lower_case, config])}
+        ${tc.includeArgs("template.util.scripts.DockerRunCommandSensorActuatorPorts", [port, port?lower_case, config])}
     </#list>
     <#list hwcPythonScripts as script >
         ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [script?lower_case, config])}
