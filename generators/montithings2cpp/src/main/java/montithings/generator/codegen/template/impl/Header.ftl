@@ -80,6 +80,11 @@ void setInstanceName (const std::string &instanceName);
   <#assign behaviorName = ComponentHelper.getPortSpecificBehaviorName(comp, behavior)>
   ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input);
 </#list>
+
+<#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
+  <#assign initBehaviorName = ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)>
+  ${compname}Result${generics} init${initBehaviorName}(${compname}Input${generics} input);
+</#list>
 };
 
 <#if Utils.hasTypeParameter(comp)>

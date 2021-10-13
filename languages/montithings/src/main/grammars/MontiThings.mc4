@@ -64,12 +64,22 @@ grammar MontiThings extends MontiArc,
     /* ========================= Behavior ========================= */
     /* ============================================================ */
 
+    interface MTBehavior extends ArcElement = (Name@Port || ",")* MCJavaBlock;
+
     /**
      * Behavior of components get executed whenever all ports listed in front
      * of the MCJavaBlock have a new message available. If no ports are listed
      * the behavior is executed whenever any port has a new message available.
      */
-    Behavior implements ArcElement = "behavior" (Name@Port || ",")* MCJavaBlock;
+    Behavior implements MTBehavior = "behavior" (Name@Port || ",")* MCJavaBlock;
+
+    /**
+     * InitBehavior of components get executed once all ports listed in front
+     * of the MCJavaBlock have a new message available for the first time.
+     * During this first cycle, normal behavior gets skipped and resumes
+     * normally after.
+     */
+    InitBehavior implements MTBehavior = "init" (Name@Port || ",")* MCJavaBlock;
 
     /**
      * Behavior that gets executed in regular time intervals independent of the

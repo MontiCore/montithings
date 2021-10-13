@@ -754,6 +754,41 @@ public class ComponentHelper {
     return printJavaBlock(ComponentHelper.getBehavior(component), isLogTracingEnabled);
   }
 
+  public static List<ASTInitBehavior> getPortSpecificInitBehaviors(ComponentTypeSymbol comp) {
+    List<ASTInitBehavior> behaviorList = elementsOf(comp).filter(ASTInitBehavior.class)
+            .filter(e -> !e.isEmptyNames()).toList();
+    return behaviorList;
+  }
+
+  public static String getPortSpecificInitBehaviorName(ComponentTypeSymbol comp, ASTInitBehavior ast) {
+    String name = "";
+    for (String s : ast.getNameList()) {
+      name += "__";
+      name += StringTransformations.capitalize(s);
+    }
+    return name;
+  }
+
+  public static Set<PortSymbol> getPublishedPortsForInitBehavior(ComponentTypeSymbol component) {
+    return getPublishedPorts(component, getInitBehavior(component));
+  }
+
+  public static ASTMCJavaBlock getInitBehavior(ComponentTypeSymbol component) {
+    List<ASTInitBehavior> initBehaviors = elementsOf(component).filter(ASTInitBehavior.class)
+            .filter(e -> e.isEmptyNames()).toList();
+    Preconditions.checkArgument(!initBehaviors.isEmpty(),
+            "0xMT800 Trying to print behavior of component \"" + component.getName()
+                    + "\" that has no behavior.");
+    Preconditions.checkArgument(initBehaviors.size() == 1,
+            "0xMT801 Trying to print behavior of component \"" + component.getName()
+                    + "\" which has multiple conflicting behaviors.");
+    return initBehaviors.get(0).getMCJavaBlock();
+  }
+
+  public static boolean hasInitBehavior(ComponentTypeSymbol component) {
+    return !elementsOf(component).filter(ASTInitBehavior.class).filter(e -> e.isEmptyNames()).isEmpty();
+  }
+
   // endregion
   //============================================================================
   // region Pre / Postconditions

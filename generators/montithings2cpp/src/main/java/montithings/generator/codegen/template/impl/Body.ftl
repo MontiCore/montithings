@@ -6,6 +6,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#if ComponentHelper.hasBehavior(comp) || ComponentHelper.hasStatechart(comp)>
   ${tc.includeArgs("template.impl.methods.GetInitialValues", [comp, config, existsHWC])}
   ${tc.includeArgs("template.impl.methods.Compute", [comp, config, existsHWC])}
+  <#if ComponentHelper.hasInitBehavior(comp)>
+    ${tc.includeArgs("template.impl.methods.Init", [comp, config, existsHWC])}
+  </#if>
 </#if>
 
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
@@ -14,4 +17,8 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   ${tc.includeArgs("template.impl.methods.ComputePortSpecificBehavior", [behavior, comp, config, existsHWC])}
+</#list>
+
+<#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
+  ${tc.includeArgs("template.impl.methods.ComputePortSpecificInitBehavior", [initBehavior, comp, config, existsHWC])}
 </#list>
