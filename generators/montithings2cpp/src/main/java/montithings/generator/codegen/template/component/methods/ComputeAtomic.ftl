@@ -45,8 +45,17 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   {
   ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, behavior])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+  <#if ComponentHelper.hasInitBehavior(comp, behavior)>
+  if (initialized{ComponentHelper.getInitBehaviorName(comp, behavior)}) {
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init{ComponentHelper.getInitBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+    initialized{ComponentHelper.getInitBehaviorName(comp, behavior)} = true;
+  }
+  else {
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+  }
+  <#else>
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
-
+  </#if>
   ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
@@ -59,7 +68,17 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     <#if ComponentHelper.hasPortSpecificBehavior(comp)>else {</#if>
     ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+    <#if ComponentHelper.hasInitBehavior(comp)>
+    if (initialized) {
+      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init(${Identifier.getInputName()});
+      initialized = true;
+    }
+    else {
+      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+    }
+    <#else>
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
+    </#if>
     ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
     if (timeMode == TIMESYNC) {
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}

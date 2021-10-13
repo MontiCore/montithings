@@ -789,6 +789,28 @@ public class ComponentHelper {
     return !elementsOf(component).filter(ASTInitBehavior.class).filter(e -> e.isEmptyNames()).isEmpty();
   }
 
+  public static boolean hasInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
+    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)){
+      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(behavior.getNameList())){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static ASTInitBehavior getInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
+    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)){
+      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(behavior.getNameList())){
+        return initBehavior;
+      }
+    }
+    return null;
+  }
+
+  public static String getInitBehaviorName(ComponentTypeSymbol component, ASTBehavior behavior) {
+    return getPortSpecificInitBehaviorName(component, getInitBehavior(component, behavior));
+  }
+
   // endregion
   //============================================================================
   // region Pre / Postconditions
