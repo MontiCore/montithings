@@ -11,4 +11,10 @@ component Source {
     log("Source: " + lastValue);
     value = lastValue;
   }
+
+  init {
+    log("SourceInit: " + value);
+    value = 40;
+    log("SourceInit: " + value);
+  }
 }

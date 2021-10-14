@@ -11,11 +11,7 @@ ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [comp, config])}
 
-${ComponentHelper.printStatementBehavior(comp, isLogTracingEnabled)}
-<#list ComponentHelper.getPublishedPortsForBehavior(comp) as port>
-  ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
-</#list>
-
+${ComponentHelper.printJavaBlock(ComponentHelper.getInitBehavior(comp), isLogTracingEnabled)}
 
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementEnd", [comp, config])}
 return ${Identifier.getResultName()};

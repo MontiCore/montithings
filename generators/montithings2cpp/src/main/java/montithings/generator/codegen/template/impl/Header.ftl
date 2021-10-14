@@ -70,6 +70,9 @@ void setInstanceName (const std::string &instanceName);
   ${compname}Result${generics} getInitialValues() override <#if existsHWC>= 0<#else>{return {};}</#if>;
   ${compname}Result${generics} compute(${compname}Input${generics} input) override <#if existsHWC>= 0<#else>{return {};}</#if>;
 </#if>
+<#if ComponentHelper.hasInitBehavior(comp)>
+  ${compname}Result${generics} init(${compname}Input${generics} input);
+</#if>
 
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>

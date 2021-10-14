@@ -6,9 +6,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#if ComponentHelper.hasBehavior(comp) || ComponentHelper.hasStatechart(comp)>
   ${tc.includeArgs("template.impl.methods.GetInitialValues", [comp, config, existsHWC])}
   ${tc.includeArgs("template.impl.methods.Compute", [comp, config, existsHWC])}
-  <#if ComponentHelper.hasInitBehavior(comp)>
-    ${tc.includeArgs("template.impl.methods.Init", [comp, config, existsHWC])}
-  </#if>
+</#if>
+<#if ComponentHelper.hasInitBehavior(comp)>
+  ${tc.includeArgs("template.impl.methods.Init", [comp, config, existsHWC])}
 </#if>
 
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
