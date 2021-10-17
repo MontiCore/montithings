@@ -142,6 +142,8 @@ az vm show --resource-group montithingsResourceGroup --name montithings -d --que
 To connect to the machine, call:
 ```
 ssh azureuser@20.30.40.50
+              ^---------^
+    replace this with the IP that was output by the script
 ```
 
 After the installation you can use MontiThings as if it was installed using 
@@ -370,7 +372,7 @@ If you want to stop the application you can do the following:
 Visual Studio's variable script under `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxilliary\Build\vcvarsall.bat x64`
 (your path might be a little different depending on you installation location and Visual Studio version).
 
-**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
+**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`. Why?"<br>
 **A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
 
 **Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?" <br>
@@ -399,6 +401,18 @@ time to waste, you can read more about the different file formats on Wikipedia:
 **Q:** "I can't execute the binary. It says something like `-bash: ./hierarchy.Example: No such file or directory`. But I can clearly see the file when running `ls`.<br>
 **A:** You likely compiled the binary using Docker and are now trying to call it from outside the container. 
 Please remove the `build/bin` folder: from `target/generated-sources` call `sudo rm -rf build` (you need `sudo` because the folder doesn't belong to you if its built with Docker). If you don't have `sudo` rights, you can also go back inside the Docker container (`docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake`) and remove the folder from within the container. After removing the folder, please rebuild the project without using Docker.
+
+**Q:** "Why do I get the following error message (or a similar error):
+```
+* What went wrong:
+An exception occurred applying plugin request [id: 'de.set.ecj', version: '1.4.1']
+> Failed to apply plugin 'de.set.ecj'.
+   > Could not create plugin of type 'EclipseCompilerPlugin'.
+      > Could not generate a decorated class for type EclipseCompilerPlugin.
+         > org/gradle/jvm/toolchain/JavaToolChain
+```
+**A:** Gradle unfortunately has many breaking changes between its versions. Not all plugins are updated in a timely manner by their maintainers. You're probably using Gradle in version 7. Please use the lastest available version 6 release: https://gradle.org/releases/
+
 
 **Q:** "How shall I refer to this project in a scientific publication?"<br>
 **A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
