@@ -4,6 +4,9 @@ plugins{
     id "base"
 }
 
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
 def genPostfix = "generated-source/mclsg/montithings-vscode-plugin"
 def relGenDir = "target/$genPostfix" // Used since GeneratorSetup can not handle absolute paths
 def genDir = "$buildDir/$genPostfix"
@@ -21,6 +24,17 @@ mclsg{
 task copyLspserver(type: Copy) {
     from configurations.lspserver
     into "$genDir/bin"
+}
+
+// Edit package.json of the generated project
+task editPackageJson(){
+    doLast{
+        def file = new File("$genDir/package.json")
+        def json = new JsonBuilder(new JsonSlurper().parse(file))
+        json.content.description = "This is a Test description"
+        json.content.newField = "This is a test to add a new field to the json"
+        file.write(json.toPrettyString())
+    }
 }
 
 task buildPlugin(type: NpmTask){
@@ -41,4 +55,6 @@ tasks.build.dependsOn 'buildPlugin'
 tasks.buildPlugin.dependsOn 'copyLspserver'
 tasks.buildPlugin.dependsOn 'npm_install'
 tasks.buildPlugin.dependsOn 'generateVscodePlugin'
+tasks.buildPlugin.dependsOn 'editPackageJson'
+tasks.editPackageJson.dependsOn 'generateVscodePlugin'
 tasks.runVscodePlugin.dependsOn 'build'
