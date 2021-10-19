@@ -107,7 +107,7 @@ bool shouldCompute();
   bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}();
 </#list>
 <#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
-  bool initialized{ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = false;
+  bool initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = false;
 </#list>
 void start() override;
 void onEvent () override;

@@ -46,9 +46,9 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, behavior])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
   <#if ComponentHelper.hasInitBehavior(comp, behavior)>
-  if (!initialized{ComponentHelper.getInitBehaviorName(comp, behavior)}) {
-    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init{ComponentHelper.getInitBehaviorName(comp, behavior)}(${Identifier.getInputName()});
-    initialized{ComponentHelper.getInitBehaviorName(comp, behavior)} = true;
+  if (!initialized${ComponentHelper.getInitBehaviorName(comp, behavior)}) {
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init${ComponentHelper.getInitBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+    initialized${ComponentHelper.getInitBehaviorName(comp, behavior)} = true;
   }
   else {
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
