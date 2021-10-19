@@ -71,7 +71,7 @@ void setInstanceName (const std::string &instanceName);
   ${compname}Result${generics} compute(${compname}Input${generics} input) override <#if existsHWC>= 0<#else>{return {};}</#if>;
 </#if>
 <#if ComponentHelper.hasInitBehavior(comp)>
-  ${compname}Result${generics} init(${compname}Input${generics} input);
+  ${compname}Result${generics} init();
 </#if>
 
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>

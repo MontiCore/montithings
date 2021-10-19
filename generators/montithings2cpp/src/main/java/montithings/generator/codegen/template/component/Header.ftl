@@ -106,9 +106,6 @@ bool shouldCompute();
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}();
 </#list>
-<#if ComponentHelper.hasInitBehavior(comp)>
-  bool initialized = false;
-</#if>
 <#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
   bool initialized{ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = false;
 </#list>

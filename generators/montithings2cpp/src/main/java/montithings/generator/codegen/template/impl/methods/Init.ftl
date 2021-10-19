@@ -4,9 +4,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 <#assign isLogTracingEnabled = config.getLogTracing().toString() == "ON">
 
 ${Utils.printTemplateArguments(comp)}
-${compname}Result${generics} ${className}${generics}::init(${compname}Input${generics}
-${Identifier.getInputName()}){
+${compname}Result${generics} ${className}${generics}::init(){
 ${compname}Result${generics} ${Identifier.getResultName()};
+${compname}Input${generics} ${Identifier.getInputName()};
 ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [comp, config])}

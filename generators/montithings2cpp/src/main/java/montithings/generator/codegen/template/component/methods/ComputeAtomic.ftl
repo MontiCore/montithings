@@ -68,30 +68,13 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     <#if ComponentHelper.hasPortSpecificBehavior(comp)>else {</#if>
     ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
-    <#if ComponentHelper.hasInitBehavior(comp)>
-    if (!initialized) {
-      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init(${Identifier.getInputName()});
-      initialized = true;
-    }
-    else {
-      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-    }
-    <#else>
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
-    </#if>
     ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
     if (timeMode == TIMESYNC) {
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
     setResult(${Identifier.getResultName()});
     }
     <#if ComponentHelper.hasPortSpecificBehavior(comp)>}</#if>
-  <#else>
-    <#if ComponentHelper.hasInitBehavior(comp)>
-    if (!initialized) {
-      ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init(${Identifier.getInputName()});
-      initialized = true;
-    }
-    </#if>
   </#if>
 </#if>
 
