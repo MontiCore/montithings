@@ -31,8 +31,10 @@ task editPackageJson(){
     doLast{
         def file = new File("$genDir/package.json")
         def json = new JsonBuilder(new JsonSlurper().parse(file))
-        json.content.description = "This is a Test description"
-        json.content.newField = "This is a test to add a new field to the json"
+        json.content.version = "7.0.0"
+        json.content.publisher = "MontiThings"
+        json.content.name = "MontiThings"
+        //json.content.newField = "This is a test to add a new field to the json"
         file.write(json.toPrettyString())
     }
 }
