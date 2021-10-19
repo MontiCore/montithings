@@ -16,7 +16,7 @@ fi
 <#if config.getMessageBroker().toString() == "MQTT">
 pkill -f python/sensoractuatormanager.py
 
-mosquitto_sub -h localhost -W 1 -F '%t' -t '#' | grep '^/sensorActuator/config' | while read i ; do  mosquitto_pub -h localhost -r -d -t "$i" -n; done
+mosquitto_sub -h localhost -W 1 -F '%t' -t '#' | grep '^/sensorActuator/config' | while read i ; do  mosquitto_pub -h localhost -r -d -t "$i" -n; done > /dev/null 2>&1
 </#if>
 
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
