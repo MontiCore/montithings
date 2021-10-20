@@ -6,7 +6,7 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::start(){
 <#if ComponentHelper.hasInitBehavior(comp)>
-  ${Identifier.getBehaviorImplName()}.init();
+  threads.push_back(std::thread{&${className}Impl${Utils.printFormalTypeParameters(comp)}::init, ${Identifier.getBehaviorImplName()}});
 </#if>
 threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::run, this});
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
