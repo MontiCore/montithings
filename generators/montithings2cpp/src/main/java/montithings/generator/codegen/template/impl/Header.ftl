@@ -70,6 +70,9 @@ void setInstanceName (const std::string &instanceName);
   ${compname}Result${generics} getInitialValues() override <#if existsHWC>= 0<#else>{return {};}</#if>;
   ${compname}Result${generics} compute(${compname}Input${generics} input) override <#if existsHWC>= 0<#else>{return {};}</#if>;
 </#if>
+<#if ComponentHelper.hasInitBehavior(comp)>
+  ${compname}Result${generics} init();
+</#if>
 
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   <#assign everyBlockName = ComponentHelper.getEveryBlockName(comp, everyBlock)>
@@ -79,6 +82,11 @@ void setInstanceName (const std::string &instanceName);
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   <#assign behaviorName = ComponentHelper.getPortSpecificBehaviorName(comp, behavior)>
   ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input);
+</#list>
+
+<#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
+  <#assign initBehaviorName = ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)>
+  ${compname}Result${generics} init${initBehaviorName}(${compname}Input${generics} input);
 </#list>
 };
 

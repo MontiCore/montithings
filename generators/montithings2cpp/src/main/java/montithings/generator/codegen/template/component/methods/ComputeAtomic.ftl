@@ -40,13 +40,33 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   setResult(${Identifier.getResultName()});
   }
 <#else>
+  <#list ComponentHelper.getInitBehaviorsWithoutBehaviors(comp) as initBehavior>
+  if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, initBehavior)}() && !initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)})
+  {
+  ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, initBehavior])}
+  ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+  ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)}(${Identifier.getInputName()});
+  initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = true;
+  ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
+  }
+  <#sep>else </#sep>
+  </#list>
   <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
   {
   ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, behavior])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+  <#if ComponentHelper.hasInitBehavior(comp, behavior)>
+  if (!initialized${ComponentHelper.getInitBehaviorName(comp, behavior)}) {
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init${ComponentHelper.getInitBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+    initialized${ComponentHelper.getInitBehaviorName(comp, behavior)} = true;
+  }
+  else {
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+  }
+  <#else>
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
-
+  </#if>
   ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}

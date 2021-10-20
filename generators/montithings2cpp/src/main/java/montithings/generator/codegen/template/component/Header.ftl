@@ -103,8 +103,11 @@ void compute() override;
   void compute${everyBlockName} ();
 </#list>
 bool shouldCompute();
-<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+<#list ComponentHelper.getPortSpecificMTBehaviors(comp) as behavior>
   bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}();
+</#list>
+<#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
+  bool initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = false;
 </#list>
 void start() override;
 void onEvent () override;
