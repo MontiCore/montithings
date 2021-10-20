@@ -60,7 +60,7 @@ you'll most likely want the native installation - it will save you time in the l
 
 On Ubuntu 20.04, you can use our script for installing everything except OpenDDS:
 ```
-git clone git@git.rwth-aachen.de:monticore/montithings/core.git
+git clone <link to this Git repository>
 cd core
 ./installLinux.sh
 ```
@@ -68,7 +68,7 @@ cd core
 ### Installation
 
 ```
-git clone git@git.rwth-aachen.de:monticore/montithings/core.git
+git clone <link to this Git repository>
 cd core
 mvn clean install
 ```
