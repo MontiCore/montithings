@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
 	make \
 	mosquitto \
 	mosquitto-dev \
+	cpio \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
