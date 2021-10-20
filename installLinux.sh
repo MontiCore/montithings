@@ -19,11 +19,8 @@ cd dependencies
 # Install packages
 sudo add-apt-repository -y ppa:openjdk-r/ppa
 sudo apt-get update
-sudo apt-get install -y g++ git make cmake ninja-build mosquitto-dev libmosquitto-dev curl maven openjdk-11-jdk
+sudo apt-get install -y g++ git make cmake ninja-build mosquitto-dev libmosquitto-dev curl maven openjdk-11-jdk python3 python3-pip
 
-# Install Python
-sudo apt install python3
-sudo apt install python3-pip
 pip3 install paho-mqtt
 
 # Install Docker 
