@@ -40,6 +40,17 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   setResult(${Identifier.getResultName()});
   }
 <#else>
+  <#list ComponentHelper.getInitBehaviorsWithoutBehaviors(comp) as initBehavior>
+  if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, initBehavior)}() && !initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)})
+  {
+  ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, initBehavior])}
+  ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+  ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)}(${Identifier.getInputName()});
+  initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = true;
+  ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
+  }
+  <#sep>else </#sep>
+  </#list>
   <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
   {

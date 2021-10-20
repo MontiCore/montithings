@@ -690,7 +690,7 @@ public class ComponentHelper {
     return behaviorList;
   }
 
-  public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTBehavior ast) {
+  public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTMTBehavior ast) {
     String name = "";
     for (String s : ast.getNameList()) {
       name += "__";
@@ -703,7 +703,7 @@ public class ComponentHelper {
     return !getPortSpecificBehaviors(comp).isEmpty();
   }
 
-  public static boolean usesPort(ASTBehavior behavior, PortSymbol port) {
+  public static boolean usesPort(ASTMTBehavior behavior, PortSymbol port) {
     if (behavior.isEmptyNames()) {
       //standard behavior consumes all ports
       return true;
@@ -755,9 +755,11 @@ public class ComponentHelper {
   }
 
   public static List<ASTInitBehavior> getPortSpecificInitBehaviors(ComponentTypeSymbol comp) {
+    List<ASTInitBehavior> initBehaviors = new ArrayList<>();
     List<ASTInitBehavior> behaviorList = elementsOf(comp).filter(ASTInitBehavior.class)
             .filter(e -> !e.isEmptyNames()).toList();
-    return behaviorList;
+    initBehaviors.addAll(behaviorList);
+    return initBehaviors;
   }
 
   public static String getPortSpecificInitBehaviorName(ComponentTypeSymbol comp, ASTInitBehavior ast) {
@@ -809,6 +811,26 @@ public class ComponentHelper {
 
   public static String getInitBehaviorName(ComponentTypeSymbol component, ASTBehavior behavior) {
     return getPortSpecificInitBehaviorName(component, getInitBehavior(component, behavior));
+  }
+
+  public static List<ASTInitBehavior> getInitBehaviorsWithoutBehaviors(ComponentTypeSymbol component) {
+    List<ASTBehavior> behaviors = getPortSpecificBehaviors(component);
+    List<ASTInitBehavior> initBehaviors = getPortSpecificInitBehaviors(component);
+    for (ASTBehavior behavior : behaviors) {
+      if (hasInitBehavior(component, behavior)) {
+        initBehaviors.remove(getInitBehavior(component, behavior));
+      }
+    }
+    return initBehaviors;
+  }
+
+  public static List<ASTMTBehavior> getPortSpecificMTBehaviors(ComponentTypeSymbol component) {
+    List<ASTBehavior> behaviors = getPortSpecificBehaviors(component);
+    List<ASTInitBehavior> initBehaviors = getInitBehaviorsWithoutBehaviors(component);
+    List<ASTMTBehavior> mTBehaviors = new ArrayList<>();
+    mTBehaviors.addAll(behaviors);
+    mTBehaviors.addAll(initBehaviors);
+    return mTBehaviors;
   }
 
   // endregion
