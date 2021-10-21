@@ -19,8 +19,8 @@ if (shouldCompute()) {
 ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
 ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
 ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
-${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 <#if config.getSplittingMode().toString() == "OFF">
     <#list comp.subComponents as subcomponent >
