@@ -23,7 +23,7 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 </#if>
 
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
-${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
 

@@ -15,8 +15,8 @@ class ${className} : public ${compname}${prefix}condition${generics}
 {
 public:
 using ${compname}${prefix}condition${generics}::${compname}${prefix}condition;
-bool check (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result, ${compname}State${generics} state__at__pre</#if>) const override;
-void resolve (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result, ${compname}State${generics} &state__at__pre</#if>) override;
+bool check (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result</#if>, ${compname}State${generics} state__at__pre) const override;
+void resolve (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result</#if>, ${compname}State${generics} &state__at__pre) override;
 std::string toString () const override;
 bool isCatched () override;
 };
