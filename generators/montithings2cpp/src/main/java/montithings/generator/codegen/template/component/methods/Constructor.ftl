@@ -17,7 +17,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   ${Identifier.getStateName()}(
   <#list comp.getParameters() as param >
     ${param.getName()} <#sep>,</#sep>
-  </#list>)
+  </#list>),
   state__at__pre(
     <#list comp.getParameters() as param >
       ${param.getName()} <#sep>,</#sep>
