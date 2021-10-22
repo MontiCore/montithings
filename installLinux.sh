@@ -19,7 +19,7 @@ cd dependencies
 # Install packages
 sudo add-apt-repository -y ppa:openjdk-r/ppa
 sudo apt-get update
-sudo apt-get install -y g++ git make cmake ninja-build mosquitto-dev libmosquitto-dev curl maven openjdk-11-jdk python3 python3-pip
+sudo apt-get install -y g++ git make cmake ninja-build mosquitto-dev libmosquitto-dev curl maven openjdk-11-jdk python3 python3-pip mosquitto-clients
 
 pip3 install paho-mqtt
 

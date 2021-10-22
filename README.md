@@ -55,7 +55,7 @@ you'll most likely want the native installation - it will save you time in the l
 - GCC and CMake (For compiling the generated C++ code)
 - [Visual Studio Community][visualstudio] (only necessary for Windows!)
 - [Docker][docker] (for executing generator tests)
-- [Mosquitto][mosquitto] (only for MQTT message broker)
+- [Mosquitto][mosquitto] and [mosquitto_clients][mosquitto] (only for MQTT message broker)
 - [OpenDDS][opendds] (only for DDS communication)
 - [Python 3][python], [pip][pip] and [paho-mqtt][paho-mqtt] (only for Mqtt message broker)
 
