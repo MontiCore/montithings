@@ -18,6 +18,10 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   <#list comp.getParameters() as param >
     ${param.getName()} <#sep>,</#sep>
   </#list>)
+  state__at__pre(
+    <#list comp.getParameters() as param >
+      ${param.getName()} <#sep>,</#sep>
+    </#list>)
   <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
 </#if>
 <#if comp.isAtomic()>
@@ -36,6 +40,7 @@ this->instanceName = instanceName;
   this->${Identifier.getStateName()}.setInstanceName (instanceName);
   this->${Identifier.getStateName()}.setup ();
   ${tc.includeArgs("template.prepostconditions.hooks.Constructor", [comp])}
+  state__at__pre = ${Identifier.getStateName()};
 </#if>
 
 <#if comp.isPresentParentComponent()>
