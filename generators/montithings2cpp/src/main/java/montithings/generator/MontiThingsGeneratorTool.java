@@ -87,9 +87,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
     copyHwcToTarget(target, hwcPath, config);
-    if(config.getSplittingMode() != SplittingMode.DISTRIBUTED){
-      copyDeploymentConfigToTarget(target, hwcPath);
-    }
+    copyDeploymentConfigToTarget(target, hwcPath);
 
 
     /* ============================================================ */

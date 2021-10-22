@@ -53,13 +53,17 @@ public class FileHelper {
 
   public static void copyDeploymentConfigToTarget(File target, File hwcPath){
     File deploymentConfig = new File(hwcPath + File.separator + "deployment-config.json");
-    if(deploymentConfig.exists()){
-      try {
-        FileUtils.copyFileToDirectory(deploymentConfig, target);
-      } catch (IOException e) {
-        System.err.println(e.getMessage());
-        e.printStackTrace();
+    try {
+      if(deploymentConfig.exists()){
+          FileUtils.copyFileToDirectory(deploymentConfig, target);
+      } else {
+        File emptyConfig = new File(target + File.separator + "deployment-config.json");
+        FileUtils.touch(emptyConfig);
+        FileUtils.write(emptyConfig, "{}");
       }
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 
