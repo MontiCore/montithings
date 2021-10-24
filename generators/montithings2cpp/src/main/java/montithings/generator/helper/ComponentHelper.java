@@ -19,6 +19,7 @@ import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.ast.ASTNode;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
+import de.monticore.ocl.oclexpressions._ast.ASTOCLAtPreQualification;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
@@ -41,10 +42,7 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
-import montithings.generator.visitor.FindAgoQualificationsVisitor;
-import montithings.generator.visitor.FindPublishedPortsVisitor;
-import montithings.generator.visitor.GuardExpressionVisitor;
-import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.generator.visitor.*;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTCFGTag;
@@ -69,6 +67,7 @@ import java.util.stream.Collectors;
 
 import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
+import static montithings.util.IdentifierUtils.getPortForName;
 
 /**
  * Helper class used in the template to generate target code of atomic or
@@ -974,29 +973,24 @@ public class ComponentHelper {
   // region OCL
   //============================================================================
 
-  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
+  public static Map<String, Double> getAgoQualifications(ComponentTypeSymbol comp) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
     if (comp.isPresentAstNode()) {
       comp.getAstNode().accept(visitor.createTraverser());
     }
-    return visitor.getAgoQualifications().containsKey(var.getName());
+    return visitor.getAgoQualifications();
   }
 
-  public static boolean hasAgoQualification(ComponentTypeSymbol comp,
-    PortSymbol port) {
-    FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
-    if (comp.isPresentAstNode()) {
-      comp.getAstNode().accept(visitor.createTraverser());
-    }
-    return visitor.getAgoQualifications().containsKey(port.getName());
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
+    return getAgoQualifications(comp).containsKey(var.getName());
+  }
+
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, PortSymbol port) {
+    return getAgoQualifications(comp).containsKey(port.getName());
   }
 
   public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name) {
-    FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
-    if (comp.isPresentAstNode()) {
-      comp.getAstNode().accept(visitor.createTraverser());
-    }
-    double valueInSeconds = visitor.getAgoQualifications().get(name);
+    double valueInSeconds = getAgoQualifications(comp).get(name);
     //return as nanoseconds
     return "" + ((long) (valueInSeconds * 1000000000));
   }
