@@ -8,18 +8,19 @@ ${className}${generics}::apply (${compname}State${generics} &state,
 ${compname}Input${generics} &input
 <#if !isPrecondition>
   , ${compname}Result${generics} &result
+</#if>
   , ${compname}State${generics} &state__at__pre
-</#if>)
+)
 {
-if (check (state, input<#if !isPrecondition>, result, state__at__pre</#if>))
+if (check (state, input<#if !isPrecondition>, result</#if>, state__at__pre))
 {
 if (isCatched ())
 {
-resolve (state, input<#if !isPrecondition>, result, state__at__pre</#if>);
+resolve (state, input<#if !isPrecondition>, result</#if>, state__at__pre);
 }
 else
 {
-logError (state, input<#if !isPrecondition>, result, state__at__pre</#if>);
+logError (state, input<#if !isPrecondition>, result</#if>, state__at__pre);
 }
 }
 }

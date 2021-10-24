@@ -39,6 +39,8 @@ ${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config]
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 ${tc.includeArgs("template.state.hooks.Member", [comp])}
 
+${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre;
+
 <#if comp.isDecomposed()>
   <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
     void run();

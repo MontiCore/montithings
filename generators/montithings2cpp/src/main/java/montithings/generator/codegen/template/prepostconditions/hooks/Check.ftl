@@ -6,5 +6,5 @@ ${tc.signature("comp", "preOrPost")}
 for (auto ${preOrPost} : ${preOrPost}conditions)
 {
 ${preOrPost}->apply (${Identifier.getStateName()}, ${Identifier.getInputName()}
-<#if preOrPost == "post">, ${Identifier.getResultName()}, ${Identifier.getStateName()}__at__pre</#if>);
+<#if preOrPost == "post">, ${Identifier.getResultName()}</#if>, ${Identifier.getStateName()}__at__pre);
 }
