@@ -8,6 +8,7 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 
 
 rm -f dockerStop.sh
+rm -f dockerKill.sh
 
 # Create a dedicated network named montithings. Skip if it is already present.
 docker network ls | grep montithings > /dev/null || docker network create --driver bridge montithings
@@ -31,6 +32,7 @@ esac
   # Start DCPSInfoRepo
   CONTAINER=$(docker run --name dcpsinforepo -h dcpsinforepo --rm -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
   echo docker stop $CONTAINER >> dockerStop.sh
+  echo docker kill $CONTAINER >> dockerKill.sh
 </#if>
 
 <#if config.getSplittingMode().toString() == "OFF">
@@ -51,3 +53,4 @@ esac
 </#if>
 
 chmod +x dockerStop.sh
+chmod +x dockerKill.sh

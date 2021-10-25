@@ -61,7 +61,7 @@ you'll most likely want the native installation - it will save you time in the l
 
 On Ubuntu 20.04, you can use our script for installing everything except OpenDDS:
 ```
-git clone git@git.rwth-aachen.de:monticore/montithings/core.git
+git clone <link to this Git repository>
 cd core
 ./installLinux.sh
 ```
@@ -69,7 +69,7 @@ cd core
 ### Installation
 
 ```
-git clone git@git.rwth-aachen.de:monticore/montithings/core.git
+git clone <link to this Git repository>
 cd core
 mvn clean install
 ```
@@ -143,6 +143,8 @@ az vm show --resource-group montithingsResourceGroup --name montithings -d --que
 To connect to the machine, call:
 ```
 ssh azureuser@20.30.40.50
+              ^---------^
+    replace this with the IP that was output by the script
 ```
 
 After the installation you can use MontiThings as if it was installed using 
@@ -371,7 +373,7 @@ If you want to stop the application you can do the following:
 Visual Studio's variable script under `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxilliary\Build\vcvarsall.bat x64`
 (your path might be a little different depending on you installation location and Visual Studio version).
 
-**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`"<br>
+**Q:** "`mvn clean install` fails with error `The forked VM terminated without properly saying goodbye. VM crash or System.exit called?`. Why?"<br>
 **A:** Most likely your terminal couldn't handle that much output. Try to either build MontiThings using Intellij or redirect the output to a file: `mvn clean install > output.log 2>&1`
 
 **Q:** "My terminal says 'Killed' when running `mvn clean install`. Why?" <br>
@@ -401,24 +403,39 @@ time to waste, you can read more about the different file formats on Wikipedia:
 **A:** You likely compiled the binary using Docker and are now trying to call it from outside the container. 
 Please remove the `build/bin` folder: from `target/generated-sources` call `sudo rm -rf build` (you need `sudo` because the folder doesn't belong to you if its built with Docker). If you don't have `sudo` rights, you can also go back inside the Docker container (`docker run -it --rm -v $PWD:$PWD -w $PWD montithings/mtcmake`) and remove the folder from within the container. After removing the folder, please rebuild the project without using Docker.
 
+**Q:** "Why do I get the following error message (or a similar error):
+```
+* What went wrong:
+An exception occurred applying plugin request [id: 'de.set.ecj', version: '1.4.1']
+> Failed to apply plugin 'de.set.ecj'.
+   > Could not create plugin of type 'EclipseCompilerPlugin'.
+      > Could not generate a decorated class for type EclipseCompilerPlugin.
+         > org/gradle/jvm/toolchain/JavaToolChain
+```
+**A:** Gradle unfortunately has many breaking changes between its versions. Not all plugins are updated in a timely manner by their maintainers. You're probably using Gradle in version 7. Please use the lastest available version 6 release: https://gradle.org/releases/
+
+
 **Q:** "How shall I refer to this project in a scientific publication?"<br>
 **A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
-> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann. MontiThings: Model-driven Development and Deployment of Reliable IoT Applications. Journal of Systems and Software (2021), https://doi.org/10.1016/j.jss.2021.111087.
+> Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann,
+MontiThings: Model-Driven Development and Deployment of Reliable IoT Applications, In: W.K. Chan, editor, Journal of Systems and Software (JSS), Volume 183, January 2022, 111087, Elsevier, https://doi.org/10.1016/j.jss.2021.111087.
 
 ```
 @article{KRS+21,
-    key={KRS+21},
-    author = {Kirchhof, J\"{o}erg Christian and Rumpe, Bernhard and Schmalzing, David and Wortmann, Andreas},
-    editor = {Martini, Antonio and Wimmer, Manuel and Felderer, Michael and Abrahao, Silvia},
-    title = {{MontiThings: Model-driven Development and Deployment of Reliable IoT Applications}},
-    journal = {{Journal of Systems and Software}},
-    year = {2021},
-    month = {September},
-    pages = {111087},
-    publisher = {Elsevier},
-    doi = {https://doi.org/10.1016/j.jss.2021.111087},
-    issn = {0164-1212},
-    url = {http://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf}
+  key       = {KRS+21},
+  title     = {{MontiThings: Model-driven Development and Deployment of Reliable IoT Applications}},
+  author    = {Kirchhof, J\"{o}rg Christian and Rumpe, Bernhard and Schmalzing, David and Wortmann, Andreas},
+  editor    = {Chan, Wing-Kwong},
+  year      = 2022,
+  month     = {January},
+  journal   = {{Journal of Systems and Software}},
+  publisher = {Elsevier},
+  volume    = 183,
+  pages     = 111087,
+  doi       = {https://doi.org/10.1016/j.jss.2021.111087},
+  issn      = {0164-1212},
+  url       = {http://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf},
+  keywords  = {Internet of Things, Model-driven engineering, Architecture modeling, Code generation, Deployment}
 }
 ```
 

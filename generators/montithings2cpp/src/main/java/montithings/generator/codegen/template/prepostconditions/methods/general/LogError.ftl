@@ -9,8 +9,9 @@ ${className}${generics}::logError (${compname}State${generics} ${Identifier.getS
 ${compname}Input${generics} ${Identifier.getInputName()}
 <#if !isPrecondition>
   , ${compname}Result${generics} ${Identifier.getResultName()}
+</#if>
   , ${compname}State${generics} ${Identifier.getStateName()}__at__pre
-</#if>) const
+) const
 {
 std::stringstream error;
 error << "Violated <#if !isPrecondition>pre<#else>post</#if>condition " << toString () << " on component '" << instanceName << "'" << std::endl;

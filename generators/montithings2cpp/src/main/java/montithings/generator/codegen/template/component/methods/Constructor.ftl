@@ -21,7 +21,11 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   ${Identifier.getStateName()}(
   <#list comp.getParameters() as param >
     ${param.getName()} <#sep>,</#sep>
-  </#list>)
+  </#list>),
+  state__at__pre(
+    <#list comp.getParameters() as param >
+      ${param.getName()} <#sep>,</#sep>
+    </#list>)
   <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
 </#if>
 <#if comp.isAtomic()>
@@ -45,6 +49,7 @@ mqttClientLocalInstance = passedMqttClientLocalInstance;
   this->${Identifier.getStateName()}.setInstanceName (instanceName);
   this->${Identifier.getStateName()}.setup (<#if config.getMessageBroker().toString() == "MQTT">mqttClientInstance</#if>);
   ${tc.includeArgs("template.prepostconditions.hooks.Constructor", [comp])}
+  state__at__pre = ${Identifier.getStateName()};
 </#if>
 
 <#if comp.isPresentParentComponent()>

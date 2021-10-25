@@ -23,14 +23,13 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 </#if>
 
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
-${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
 
 ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
 
 <#if ComponentHelper.isEveryBlock(computeName, comp)>
   ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
-  
+  ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
   
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
 
@@ -40,13 +39,35 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
   setResult(${Identifier.getResultName()});
   }
 <#else>
+  <#list ComponentHelper.getInitBehaviorsWithoutBehaviors(comp) as initBehavior>
+  if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, initBehavior)}() && !initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)})
+  {
+  ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, initBehavior])}
+  ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+  ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+  ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)}(${Identifier.getInputName()});
+  initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = true;
+  ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
+  }
+  <#sep>else </#sep>
+  </#list>
   <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}())
   {
   ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, behavior])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+  ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+  <#if ComponentHelper.hasInitBehavior(comp, behavior)>
+  if (!initialized${ComponentHelper.getInitBehaviorName(comp, behavior)}) {
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.init${ComponentHelper.getInitBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+    initialized${ComponentHelper.getInitBehaviorName(comp, behavior)} = true;
+  }
+  else {
+    ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+  }
+  <#else>
   ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
-
+  </#if>
   ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
   if (timeMode == TIMESYNC) {
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
@@ -59,6 +80,7 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     <#if ComponentHelper.hasPortSpecificBehavior(comp)>else {</#if>
     ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
     ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
+    ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
     ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
     if (timeMode == TIMESYNC) {

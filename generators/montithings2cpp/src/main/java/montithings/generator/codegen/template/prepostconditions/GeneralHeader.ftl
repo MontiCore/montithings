@@ -21,11 +21,11 @@ std::string instanceName;
 public:
 ${className} (const std::string &instanceName);
 virtual bool isCatched ();
-virtual bool check (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result, ${compname}State${generics} state__at__pre</#if>) const = 0;
+virtual bool check (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result</#if>, ${compname}State${generics} state__at__pre) const = 0;
 virtual std::string toString () const = 0;
-virtual void resolve (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result, ${compname}State${generics} &state__at__pre</#if>) = 0;
-void apply (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result, ${compname}State${generics} &state__at__pre</#if>);
-void logError (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result, ${compname}State${generics} state__at__pre</#if>) const;
+virtual void resolve (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result</#if>, ${compname}State${generics} &state__at__pre) = 0;
+void apply (${compname}State${generics} &state, ${compname}Input${generics} &input <#if !isPrecondition>, ${compname}Result${generics} &result</#if>, ${compname}State${generics} &state__at__pre);
+void logError (${compname}State${generics} state, ${compname}Input${generics} input <#if !isPrecondition>, ${compname}Result${generics} result</#if>, ${compname}State${generics} state__at__pre) const;
 };
 
 <#if Utils.hasTypeParameter(comp)>

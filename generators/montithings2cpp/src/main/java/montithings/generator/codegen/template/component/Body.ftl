@@ -50,7 +50,7 @@ ${tc.includeArgs("template.logtracing.hooks.InitLogTracerDefinition", [comp, con
 
 ${tc.includeArgs("template.component.methods.ShouldCompute", [comp, config, className])}
 
-<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+<#list ComponentHelper.getPortSpecificMTBehaviors(comp) as behavior>
 ${tc.includeArgs("template.component.methods.ShouldComputePortSpecificBehavior", [behavior, comp, config, className])}
 </#list>
 

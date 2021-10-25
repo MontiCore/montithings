@@ -8,6 +8,7 @@ import com.google.common.collect.FluentIterable;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTBehavior;
+import montithings._ast.ASTInitBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
 import montithings._visitor.FindIncomingPorts;
@@ -29,6 +30,30 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
       List<PortSymbol> incomingPorts = node.getSymbol().getAllIncomingPorts();
       List<PortSymbol> unusedIncomingPorts = node.getSymbol().getAllIncomingPorts();
       List<Set<PortSymbol>> setsOfPorts = new ArrayList<>();
+      for (ASTInitBehavior initBehavior : elementsOf(node.getSymbol()).filter(ASTInitBehavior.class)
+              .filter(e -> !e.isEmptyNames()).toList()) {
+        Set<PortSymbol> portsInBehavior = getReferencedPorts(initBehavior.getMCJavaBlock());
+        for (PortSymbol portSymbolInBehavior : portsInBehavior) {
+          boolean found = false;
+          for (Optional<PortSymbol> portSymbolAtBehaviorTop : initBehavior.getNamesSymbolList()) {
+            if (portSymbolAtBehaviorTop.isPresent()) {
+              if (portSymbolAtBehaviorTop.get().equals(portSymbolInBehavior)) {
+                found = true;
+              }
+            }
+            else {
+              //shouldn't happen if symbol table is built properly
+              Log.error(String.format(MontiThingsError.BEHAVIOR_REFERENCES_INVALID_PORT.toString(),
+                      initBehavior.getNameList().toString(), node.getSymbol().getName(), "invalid port"));
+            }
+          }
+          if (!found) {
+            Log.error(String.format(MontiThingsError.BEHAVIOR_USES_UNDECLARED_PORT.toString(),
+                    initBehavior.getNameList().toString(), node.getSymbol().getName() + "Init",
+                    portSymbolInBehavior.getName()));
+          }
+        }
+      }
       for (ASTBehavior behavior : elementsOf(node.getSymbol()).filter(ASTBehavior.class)
         .filter(e -> !e.isEmptyNames()).toList()) {
         Set<PortSymbol> portsInBehavior = getReferencedPorts(behavior.getMCJavaBlock());

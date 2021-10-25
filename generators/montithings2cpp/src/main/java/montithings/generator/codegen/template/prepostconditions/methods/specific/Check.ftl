@@ -8,8 +8,9 @@ ${className}${generics}::check (${compname}State${generics} ${Identifier.getStat
 ${compname}Input${generics} ${Identifier.getInputName()}
 <#if !isPrecondition>
   , ${compname}Result${generics} ${Identifier.getResultName()}
+</#if>
   , ${compname}State${generics} ${Identifier.getStateName()}__at__pre
-</#if>) const
+) const
 {
 <#if isPrecondition>
   return ${tc.includeArgs("template.prepostconditions.helper.printPreconditionCheck", [comp, statement])};
