@@ -8,12 +8,20 @@ import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cdbasis._ast.*;
-import de.monticore.types.check.SymTypeExpression;
+import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
+import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.types.check.SymTypeExpressionFactory;
+import de.monticore.types.check.SymTypeOfGenerics;
+import de.monticore.types.check.SymTypeOfNull;
+import de.monticore.types.mcbasictypes._ast.ASTMCObjectType;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
+import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCCustomTypeArgument;
+import de.monticore.types.prettyprint.MCFullGenericTypesFullPrettyPrinter;
 import montiarc._ast.ASTMACompilationUnit;
+import montithings.MontiThingsMill;
 import montithings._ast.ASTMTComponentType;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
@@ -45,11 +53,14 @@ public class ClassDiagramUtil {
         ASTMCType astmcType;
         ASTMCCustomTypeArgument typeArgument = CD4CodeMill.mCCustomTypeArgumentBuilder().
                 setMCType(astPortDeclaration.getMCType()).build();
+        if (typeArgument.getMCType() instanceof ASTSIUnitType4Computing) {
+          ((ASTSIUnitType4Computing) typeArgument.getMCType()).setEnclosingScope(MontiThingsMill.scope());
+        }
         if (incoming) {
-          astmcType = CD4CodeMill.mCBasicGenericTypeBuilder().addName( "InPort").
+          astmcType = CD4CodeMill.mCBasicGenericTypeBuilder().addName("InPort").
                   addMCTypeArgument(typeArgument).build();
         } else {
-          astmcType = CD4CodeMill.mCBasicGenericTypeBuilder().addName( "OutPort").
+          astmcType = CD4CodeMill.mCBasicGenericTypeBuilder().addName("OutPort").
                   addMCTypeArgument(typeArgument).build();
         }
         ASTCDAttribute attribute = CD4CodeMill.cDAttributeBuilder().setName(astPort.getName()).setInitialAbsent()
@@ -70,12 +81,33 @@ public class ClassDiagramUtil {
   }
 
   private static void setSymType(ASTCDAttribute attribute) {
-    SymTypeExpression symType;
-    if (attribute.getMCType() instanceof ASTMCQualifiedType) {
-      symType = SymTypeExpressionFactory.createTypeObject(((ASTMCQualifiedType) attribute.getMCType()).getMCQualifiedName().getQName(), attribute.getEnclosingScope());
-    } else {
-      symType = tc.symTypeFromAST(attribute.getMCType());
+    SymTypeOfGenerics symType;
+    ASTMCType type = attribute.getMCType();
+    if (type instanceof ASTMCBasicGenericType) {
+      if (((ASTMCBasicGenericType) type).getMCTypeArgument(0) instanceof ASTMCCustomTypeArgument) {
+        ASTMCType typeArgument = ((ASTMCCustomTypeArgument) ((ASTMCBasicGenericType) type).getMCTypeArgument(0)).getMCType();
+        symType = SymTypeExpressionFactory.createGenerics(((ASTMCBasicGenericType) type).getName(0), attribute.getEnclosingScope());
+        if (typeArgument instanceof ASTMCQualifiedType) {
+          symType.addArgument(SymTypeExpressionFactory.createTypeObject(((ASTMCQualifiedType) typeArgument).getMCQualifiedName().getQName(), attribute.getEnclosingScope()));
+        }
+        else if (typeArgument instanceof ASTSIUnitType) {
+          SynthesizeSymTypeFromMontiThings synthesizeSymTypeFromMontiThings = new SynthesizeSymTypeFromMontiThings();
+          ((ASTSIUnitType) typeArgument).accept(synthesizeSymTypeFromMontiThings.getTraverser());
+          symType.addArgument(synthesizeSymTypeFromMontiThings.getResult().orElse(new SymTypeOfNull()));
+        }
+        else if (typeArgument instanceof ASTSIUnitType4Computing) {
+          SynthesizeSymTypeFromMontiThings synthesizeSymTypeFromMontiThings = new SynthesizeSymTypeFromMontiThings();
+          ((ASTSIUnitType4Computing) typeArgument).accept(synthesizeSymTypeFromMontiThings.getTraverser());
+          symType.addArgument(synthesizeSymTypeFromMontiThings.getResult().orElse(new SymTypeOfNull()));
+        }
+        else if (typeArgument instanceof ASTMCObjectType) {
+          symType.addArgument(SymTypeExpressionFactory.createTypeObject(typeArgument.printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter())), MontiThingsMill.scope()));
+        }
+        else {
+          symType.addArgument(tc.symTypeFromAST(typeArgument));
+        }
+        attribute.getSymbol().setType(symType);
+      }
     }
-    attribute.getSymbol().setType(symType);
   }
 }
