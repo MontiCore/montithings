@@ -4,7 +4,7 @@
 This example shows an atomic component with a statechart to define its behavior. 
 The example is again based on the Basic-Input-Ouput example.
 
-<img src="docs/Statecharts.png" alt="drawing" height="400px"/>
+<img src="../../../docs/Statecharts.png" alt="drawing" height="400px"/>
 
 The `Three` component replaces the `Sink` component from the 
 Basic-Input-Ouput example.

@@ -13,4 +13,4 @@ case "${os}" in
     *)          echo "unknown os!" && exit 1
 esac
 
-docker run --rm -d ${network} -p 3000:3000 --name logtracer_frontend registry.git.rwth-aachen.de/monticore/montithings/core/logtracer_frontend
+docker run --rm -d ${network} -p 3000:3000 --name logtracer-frontend montithings/logtracer-frontend

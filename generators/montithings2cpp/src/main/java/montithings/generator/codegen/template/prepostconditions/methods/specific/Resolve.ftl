@@ -9,8 +9,9 @@ ${className}${generics}::resolve (${compname}State${generics} &${Identifier.getS
 ${compname}Input${generics} &${Identifier.getInputName()}
 <#if !isPrecondition>
     , ${compname}Result${generics} &${Identifier.getResultName()}
+</#if>
     , ${compname}State${generics} &${Identifier.getStateName()}__at__pre
-</#if>)
+)
 {
 <#if catch.isPresent()>
     ${ComponentHelper.printJavaBlock(catch.get().handler, isLogTracingEnabled, true)}

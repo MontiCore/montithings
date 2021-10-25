@@ -16,7 +16,8 @@ ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [co
   <#list ComponentHelper.getPublishedPortsForBehavior(comp) as port>
     ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);
   </#list>
-<#else>
+</#if>
+<#if ComponentHelper.hasStatechart(comp)>
   ${tc.includeArgs("template.util.statechart.hooks.Compute", [comp, config])}
 </#if>
 

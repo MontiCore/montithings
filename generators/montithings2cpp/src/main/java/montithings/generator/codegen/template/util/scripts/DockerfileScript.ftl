@@ -6,9 +6,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 # Build Image -----------------------------
 <#if config.getMessageBroker().toString() == "DDS">
-    FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
+    FROM montithings/mtcmakedds AS build
 <#else>
-    FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmake AS build
+    FROM montithings/mtcmake AS build
 </#if>
 
 # Switch into our apps working directory

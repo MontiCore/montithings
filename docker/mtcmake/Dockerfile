@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 FROM alpine
 
 RUN apk add --update-cache \
@@ -31,4 +32,3 @@ RUN cd /usr/src/app/nng \
 WORKDIR /usr/src/app
 
 CMD [ "/bin/sh" ]
-

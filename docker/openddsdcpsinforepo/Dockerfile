@@ -1,4 +1,4 @@
-FROM registry.git.rwth-aachen.de/monticore/montithings/core/mtcmakedds AS build
+FROM montithings/mtcmakedds AS build
 
 FROM ubuntu:groovy
 

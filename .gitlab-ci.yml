@@ -34,6 +34,12 @@ before_script:
   variables:
     DOCKER_DRIVER: overlay2
   cache: { }
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - $CHANGES_PATH
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
   before_script:
     - docker login -u rwthse -p $dockerHubSe
   after_script:
@@ -45,11 +51,8 @@ before_script:
 
 Docker Alpine:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - docker/mtcmake/**/*
+  variables:
+    CHANGES_PATH: 'docker/mtcmake/**/*'
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmake 
@@ -60,20 +63,15 @@ Docker Alpine:
     - docker buildx create --name builder --driver docker-container --use
     - docker buildx inspect --bootstrap
 
-    - docker login -u rwthse -p $dockerHubSe
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t montithings/mtcmake:latest --push .
-    - docker logout
 
     # Running this a second time will just use the cached layers
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -t $CI_REGISTRY_IMAGE/mtcmake:latest --push .
 
 Docker DDS:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - docker/mtcmakedds/**/*
+  variables:
+    CHANGES_PATH: 'docker/mtcmakedds/**/*'
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmakedds
@@ -85,14 +83,14 @@ Docker DDS:
     - docker buildx inspect --bootstrap
 
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
+    
+    # Running this a second time will just use the cached layers
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t montithings/mtcmakedds:latest --push .
 
 Docker OpenDDSDCPSInfoRepo:
   <<: *docker_build_definition
-  only:
-    refs:
-     - develop
-    changes:
-      - docker/openddsdcpsinforepo/**/*
+  variables:
+    CHANGES_PATH: 'docker/openddsdcpsinforepo/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/openddsdcpsinforepo
@@ -101,11 +99,8 @@ Docker OpenDDSDCPSInfoRepo:
 
 Docker Recorder:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/recorder/**/*
+  variables:
+    CHANGES_PATH: 'services/recorder/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/recorder -f services/recorder/Dockerfile .
@@ -116,11 +111,8 @@ Docker Recorder:
 
 Docker Log Tracing:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/log-tracing/**/*
+  variables:
+    CHANGES_PATH: 'services/log-tracing/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/logtracer-middleware -f services/log-tracing/Dockerfile .
@@ -135,11 +127,8 @@ Docker Log Tracing:
 
 Docker Prolog Generator:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/recorder/**/*
+  variables:
+    CHANGES_PATH: 'services/recorder/**/*' 
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build . --file services/prolog-generator/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/prolog-generator
@@ -149,11 +138,8 @@ Docker Prolog Generator:
 
 Docker IoT Manager:
   <<: *docker_build_definition
-  only:
-    refs:
-      - develop
-    changes:
-      - services/iot-manager/**/*
+  variables:
+    CHANGES_PATH: 'services/iot-manager/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd services/iot-manager/
@@ -340,44 +326,47 @@ Code Quality:
 #    - docker buildx inspect --bootstrap
 #    - bash buildapplications.sh
 
-#GitHub Mirror:
-#  image: maven:3-jdk-8
-#  stage: mirror
-#  cache: {}
+GitHub Mirror:
+  image: maven:3-jdk-8
+  stage: mirror
+  cache: {}
+  allow_failure: true
 #  needs: []
-#  variables:
-#    GIT_STRATEGY: clone
-#  dependencies:
-#    - Deploy Nexus
-#  before_script:
-#    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-#    - eval $(ssh-agent -s)
-#    - ssh-add <(echo "$SE_CIBUILD_SSH_PRIV_KEY")
-#    - echo "$SE_CIBUILD_SSH_PRIV_KEY" | tr -d '\r' | ssh-add -
-#    - git config --global user.email "noreply-ci@se-rwth.de"
-#    - git config --global user.name "MontiCore Mirroring Bot"
-#    - mkdir -p ~/.ssh
-#    - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-#    - "curl -O https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh"
-#    - bash script.deb.sh
-#    - rm script.deb.sh
-#    - apt-get -y install git-lfs
-#  script:
-#    - git lfs fetch --all
-#    - git remote add github git@github.com:MontiCore/montithings.git
-#    - git fetch --all
-#    - git switch -c github/"$CI_COMMIT_BRANCH" --track github/"$CI_COMMIT_BRANCH"
-#    - git merge --no-edit -s recursive -X theirs "$CI_COMMIT_BRANCH"
+  variables:
+    GIT_STRATEGY: clone
+  dependencies:
+    - Deploy Nexus
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SE_CIBUILD_SSH_PRIV_KEY")
+    - echo "$SE_CIBUILD_SSH_PRIV_KEY" | tr -d '\r' | ssh-add -
+    - git config --global user.email "noreply-ci@se-rwth.de"
+    - git config --global user.name "MontiCore Mirroring Bot"
+    - mkdir -p ~/.ssh
+    - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - "curl -O https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh"
+    - bash script.deb.sh
+    - rm script.deb.sh
+    - apt-get -y install git-lfs
+  script:
+    - git lfs fetch --all
+    - git remote add github git@github.com:MontiCore/montithings.git
+    - git fetch --all
+    - git switch -c github/"$CI_COMMIT_BRANCH" --track github/"$CI_COMMIT_BRANCH"
+    - git merge --no-edit -s recursive -X theirs origin/"$CI_COMMIT_BRANCH"
 #    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
 #    - "curl \"https://raw.githubusercontent.com/MontiCore/monticore/dev/pre/mirror.sh\" --output mirror.sh"
 #    - sh mirror.sh
 #    - rm MDLinkChangerCLI.jar mirror.sh
 #    - git add --all
 #    - "(git commit -m 'Replace private README links.') || true"
-#    - git push github HEAD:"$CI_COMMIT_BRANCH"
-#  only:
-#    - develop
-#    - master
+    - git push github HEAD:"$CI_COMMIT_BRANCH"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
 
 
 ##########################################

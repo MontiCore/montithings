@@ -19,6 +19,7 @@ import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.ast.ASTNode;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
+import de.monticore.ocl.oclexpressions._ast.ASTOCLAtPreQualification;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
@@ -41,10 +42,7 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
-import montithings.generator.visitor.FindAgoQualificationsVisitor;
-import montithings.generator.visitor.FindPublishedPortsVisitor;
-import montithings.generator.visitor.GuardExpressionVisitor;
-import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.generator.visitor.*;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTCFGTag;
@@ -69,6 +67,7 @@ import java.util.stream.Collectors;
 
 import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
+import static montithings.util.IdentifierUtils.getPortForName;
 
 /**
  * Helper class used in the template to generate target code of atomic or
@@ -690,7 +689,7 @@ public class ComponentHelper {
     return behaviorList;
   }
 
-  public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTBehavior ast) {
+  public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTMTBehavior ast) {
     String name = "";
     for (String s : ast.getNameList()) {
       name += "__";
@@ -703,7 +702,7 @@ public class ComponentHelper {
     return !getPortSpecificBehaviors(comp).isEmpty();
   }
 
-  public static boolean usesPort(ASTBehavior behavior, PortSymbol port) {
+  public static boolean usesPort(ASTMTBehavior behavior, PortSymbol port) {
     if (behavior.isEmptyNames()) {
       //standard behavior consumes all ports
       return true;
@@ -752,6 +751,85 @@ public class ComponentHelper {
 
   public static String printStatementBehavior(ComponentTypeSymbol component, boolean isLogTracingEnabled) {
     return printJavaBlock(ComponentHelper.getBehavior(component), isLogTracingEnabled);
+  }
+
+  public static List<ASTInitBehavior> getPortSpecificInitBehaviors(ComponentTypeSymbol comp) {
+    List<ASTInitBehavior> initBehaviors = new ArrayList<>();
+    List<ASTInitBehavior> behaviorList = elementsOf(comp).filter(ASTInitBehavior.class)
+            .filter(e -> !e.isEmptyNames()).toList();
+    initBehaviors.addAll(behaviorList);
+    return initBehaviors;
+  }
+
+  public static String getPortSpecificInitBehaviorName(ComponentTypeSymbol comp, ASTInitBehavior ast) {
+    String name = "";
+    for (String s : ast.getNameList()) {
+      name += "__";
+      name += StringTransformations.capitalize(s);
+    }
+    return name;
+  }
+
+  public static Set<PortSymbol> getPublishedPortsForInitBehavior(ComponentTypeSymbol component) {
+    return getPublishedPorts(component, getInitBehavior(component));
+  }
+
+  public static ASTMCJavaBlock getInitBehavior(ComponentTypeSymbol component) {
+    List<ASTInitBehavior> initBehaviors = elementsOf(component).filter(ASTInitBehavior.class)
+            .filter(e -> e.isEmptyNames()).toList();
+    Preconditions.checkArgument(!initBehaviors.isEmpty(),
+            "0xMT800 Trying to print behavior of component \"" + component.getName()
+                    + "\" that has no behavior.");
+    Preconditions.checkArgument(initBehaviors.size() == 1,
+            "0xMT801 Trying to print behavior of component \"" + component.getName()
+                    + "\" which has multiple conflicting behaviors.");
+    return initBehaviors.get(0).getMCJavaBlock();
+  }
+
+  public static boolean hasInitBehavior(ComponentTypeSymbol component) {
+    return !elementsOf(component).filter(ASTInitBehavior.class).filter(e -> e.isEmptyNames()).isEmpty();
+  }
+
+  public static boolean hasInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
+    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)){
+      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(behavior.getNameList())){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static ASTInitBehavior getInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
+    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)){
+      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(behavior.getNameList())){
+        return initBehavior;
+      }
+    }
+    return null;
+  }
+
+  public static String getInitBehaviorName(ComponentTypeSymbol component, ASTBehavior behavior) {
+    return getPortSpecificInitBehaviorName(component, getInitBehavior(component, behavior));
+  }
+
+  public static List<ASTInitBehavior> getInitBehaviorsWithoutBehaviors(ComponentTypeSymbol component) {
+    List<ASTBehavior> behaviors = getPortSpecificBehaviors(component);
+    List<ASTInitBehavior> initBehaviors = getPortSpecificInitBehaviors(component);
+    for (ASTBehavior behavior : behaviors) {
+      if (hasInitBehavior(component, behavior)) {
+        initBehaviors.remove(getInitBehavior(component, behavior));
+      }
+    }
+    return initBehaviors;
+  }
+
+  public static List<ASTMTBehavior> getPortSpecificMTBehaviors(ComponentTypeSymbol component) {
+    List<ASTBehavior> behaviors = getPortSpecificBehaviors(component);
+    List<ASTInitBehavior> initBehaviors = getInitBehaviorsWithoutBehaviors(component);
+    List<ASTMTBehavior> mTBehaviors = new ArrayList<>();
+    mTBehaviors.addAll(behaviors);
+    mTBehaviors.addAll(initBehaviors);
+    return mTBehaviors;
   }
 
   // endregion
@@ -895,29 +973,24 @@ public class ComponentHelper {
   // region OCL
   //============================================================================
 
-  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
+  public static Map<String, Double> getAgoQualifications(ComponentTypeSymbol comp) {
     FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
     if (comp.isPresentAstNode()) {
       comp.getAstNode().accept(visitor.createTraverser());
     }
-    return visitor.getAgoQualifications().containsKey(var.getName());
+    return visitor.getAgoQualifications();
   }
 
-  public static boolean hasAgoQualification(ComponentTypeSymbol comp,
-    PortSymbol port) {
-    FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
-    if (comp.isPresentAstNode()) {
-      comp.getAstNode().accept(visitor.createTraverser());
-    }
-    return visitor.getAgoQualifications().containsKey(port.getName());
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
+    return getAgoQualifications(comp).containsKey(var.getName());
+  }
+
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, PortSymbol port) {
+    return getAgoQualifications(comp).containsKey(port.getName());
   }
 
   public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name) {
-    FindAgoQualificationsVisitor visitor = new FindAgoQualificationsVisitor();
-    if (comp.isPresentAstNode()) {
-      comp.getAstNode().accept(visitor.createTraverser());
-    }
-    double valueInSeconds = visitor.getAgoQualifications().get(name);
+    double valueInSeconds = getAgoQualifications(comp).get(name);
     //return as nanoseconds
     return "" + ((long) (valueInSeconds * 1000000000));
   }
