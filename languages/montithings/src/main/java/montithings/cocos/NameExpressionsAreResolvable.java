@@ -8,7 +8,9 @@ import de.monticore.ocl.setexpressions._ast.ASTSetComprehension;
 import de.monticore.ocl.setexpressions._ast.ASTSetComprehensionItem;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.IMontiThingsScope;
+import montithings._visitor.NameExpression2TypeValidator;
 import montithings.util.MontiThingsError;
+import java.util.List;
 
 /**
  * Checks that all name expressions in a behavior block actually refer to something
@@ -26,7 +28,7 @@ public class NameExpressionsAreResolvable implements ExpressionsBasisASTNameExpr
 
     boolean isSetVariableDeclaration = checkSetdeclarations(node);
 
-    if (!nameExists && !isSetVariableDeclaration) {
+    if (!nameExists && !isSetVariableDeclaration && !checkForTypeAccess(node)) {
       Log.error(String.format(MontiThingsError.IDENTIFIER_UNKNOWN.toString(), node.getName()),
         node.get_SourcePositionStart());
     }
@@ -47,6 +49,20 @@ public class NameExpressionsAreResolvable implements ExpressionsBasisASTNameExpr
           }
         }
       }
+    }
+    return false;
+  }
+
+  /**
+   * Checks whether the given name expression is actually part of a qualified name that refers to a type.
+   *
+   * @param node Input name expression
+   * @return true, if name expression is part of type reference, false otherwise
+   */
+  protected boolean checkForTypeAccess(ASTNameExpression node) {
+    if (node.getEnclosingScope() != null && node.getEnclosingScope().isPresentAstNode()) {
+      NameExpression2TypeValidator typeValidator = new NameExpression2TypeValidator();
+      return typeValidator.isTypeReference(node);
     }
     return false;
   }

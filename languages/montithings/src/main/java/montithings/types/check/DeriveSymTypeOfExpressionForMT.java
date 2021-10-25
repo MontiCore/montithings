@@ -9,6 +9,7 @@ import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
 import de.monticore.types.check.SymTypeExpression;
+import montithings._symboltable.MontiThingsScope;
 
 import java.util.Optional;
 
@@ -20,11 +21,11 @@ public class DeriveSymTypeOfExpressionForMT
 
   @Override
   protected Optional<SymTypeExpression> calculateNameExpression(ASTNameExpression expr) {
-    IBasicSymbolsScope scope = getScope(expr.getEnclosingScope());
+    MontiThingsScope scope = (MontiThingsScope) getScope(expr.getEnclosingScope());
     Optional<PortSymbol> optPort = getPortForName(expr);
     Optional<VariableSymbol> optVar = scope.resolveVariable(expr.getName());
     Optional<TypeSymbol> optType = scope.resolveType(expr.getName());
-    Optional<FieldSymbol> optField = Optional.empty();
+    Optional<FieldSymbol> optField = scope.resolveField(expr.getName());
     if (scope instanceof IOOSymbolsScope) {
       optField = ((IOOSymbolsScope) scope).resolveField(expr.getName());
     }
