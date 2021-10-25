@@ -1,25 +1,23 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.util;
 
-import arcbasis._ast.*;
-import cd4montithings.CD4MontiThingsMill;
-import cd4montithings._ast.ASTCDComponentInterface;
-import cd4montithings._ast.ASTCDPort;
-import cd4montithings._ast.ASTCDPortDeclaration;
-import cd4montithings._ast.ASTCDPortDirection;
-import cd4montithings._symboltable.CD4MontiThingsArtifactScope;
-import cd4montithings._symboltable.ICD4MontiThingsArtifactScope;
-import cd4montithings.trafos.GeneratePortSymTypeTrafo;
-import de.monticore.cdbasis._ast.ASTCDClass;
-import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
-import de.monticore.cdbasis._ast.ASTCDDefinition;
+import arcbasis._ast.ASTPort;
+import arcbasis._ast.ASTPortDeclaration;
+import arcbasis._ast.ASTPortDirectionIn;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
+import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
+import de.monticore.cdbasis._ast.*;
+import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
+import de.monticore.types.mcbasictypes._ast.ASTMCType;
+import de.monticore.types.mcsimplegenerictypes._ast.ASTMCCustomTypeArgument;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._ast.ASTMTComponentType;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
-
-import java.util.stream.Collectors;
 
 /**
  * Helpers to create class diagrams in the scope for each atomic component
@@ -27,43 +25,57 @@ import java.util.stream.Collectors;
 public class ClassDiagramUtil {
 
   private static MontiThingsTypeCheck tc = new MontiThingsTypeCheck(
-    new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+          new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
 
-  public static CD4MontiThingsArtifactScope createClassDiagram(ASTMACompilationUnit node){
+  public static CD4CodeArtifactScope createClassDiagram(ASTMACompilationUnit node) {
     return createClassDiagram((ASTMTComponentType) node.getComponentType());
   }
 
-  protected static CD4MontiThingsArtifactScope createClassDiagram(ASTMTComponentType comp) {
-    ASTCDClass astcdClass = CD4MontiThingsMill.cDClassBuilder().setName(comp.getName()).
-      setModifier(CD4MontiThingsMill.modifierBuilder().PUBLIC().build()).build();
+  protected static CD4CodeArtifactScope createClassDiagram(ASTMTComponentType comp) {
+    ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(comp.getName() + "Class").
+            setModifier(CD4CodeMill.modifierBuilder().PUBLIC().build()).build();
     for (ASTPortDeclaration astPortDeclaration : comp.getPortDeclarations()) {
-      ASTCDComponentInterface astcdComponentInterface =
-        CD4MontiThingsMill.cDComponentInterfaceBuilder().build();
-      ASTCDPortDirection portDirection;
+      boolean incoming;
       if (astPortDeclaration.getPortDirection() instanceof ASTPortDirectionIn) {
-        portDirection = CD4MontiThingsMill.cDPortDirectionInBuilder().build();
+        incoming = true;
+      } else {
+        incoming = false;
       }
-      else {
-        portDirection = CD4MontiThingsMill.cDPortDirectionOutBuilder().build();
+      for (ASTPort astPort : astPortDeclaration.getPortList()) {
+        ASTMCType astmcType;
+        ASTMCCustomTypeArgument typeArgument = CD4CodeMill.mCCustomTypeArgumentBuilder().
+                setMCType(astPortDeclaration.getMCType()).build();
+        if (incoming) {
+          astmcType = CD4CodeMill.mCBasicGenericTypeBuilder().addName( "InPort").
+                  addMCTypeArgument(typeArgument).build();
+        } else {
+          astmcType = CD4CodeMill.mCBasicGenericTypeBuilder().addName( "OutPort").
+                  addMCTypeArgument(typeArgument).build();
+        }
+        ASTCDAttribute attribute = CD4CodeMill.cDAttributeBuilder().setName(astPort.getName()).setInitialAbsent()
+                .setModifier(CD4CodeMill.modifierBuilder().PUBLIC().build()).setMCType(astmcType).build();
+        astcdClass.addCDMember(attribute);
       }
-      for (ASTPort astPort : astPortDeclaration.getPortList()){
-        ASTCDPort port = CD4MontiThingsMill.cDPortBuilder().setName(astPort.getName()).build();
-        port.setMCType(astPortDeclaration.getMCType());
-        ASTCDPortDeclaration portDeclaration = CD4MontiThingsMill.cDPortDeclarationBuilder().
-          setCDPortDirection(portDirection).setMCType(astPortDeclaration.getMCType()).
-          addCDPort(port).build();
-        astcdComponentInterface.addCDPortDeclaration(portDeclaration);
-      }
-      astcdClass.addCDMember(astcdComponentInterface);
     }
-    ASTCDDefinition astcdDefinition = CD4MontiThingsMill.cDDefinitionBuilder().
-      setModifier(CD4MontiThingsMill.modifierBuilder().PUBLIC().build()).
-      addCDElement(astcdClass).setName(comp.getName()).build();
-    ASTCDCompilationUnit astcdCompilationUnit = CD4MontiThingsMill.cDCompilationUnitBuilder().
-      setCDDefinition(astcdDefinition).build();
-    ICD4MontiThingsArtifactScope scope = CD4MontiThingsMill.scopesGenitorDelegator().createFromAST(astcdCompilationUnit);
-    GeneratePortSymTypeTrafo trafo = new GeneratePortSymTypeTrafo();
-    trafo.transform(astcdCompilationUnit, tc);
-    return (CD4MontiThingsArtifactScope) scope;
+    ASTCDDefinition astcdDefinition = CD4CodeMill.cDDefinitionBuilder().
+            setModifier(CD4CodeMill.modifierBuilder().PUBLIC().build()).
+            addCDElement(astcdClass).setName(comp.getName()).build();
+    ASTCDCompilationUnit astcdCompilationUnit = CD4CodeMill.cDCompilationUnitBuilder().
+            setCDDefinition(astcdDefinition).build();
+    ICD4CodeArtifactScope scope = CD4CodeMill.scopesGenitorDelegator().createFromAST(astcdCompilationUnit);
+    for (ASTCDMember astcdAttribute : astcdClass.getCDMemberList()) {
+      setSymType((ASTCDAttribute) astcdAttribute);
+    }
+    return (CD4CodeArtifactScope) scope;
+  }
+
+  private static void setSymType(ASTCDAttribute attribute) {
+    SymTypeExpression symType;
+    if (attribute.getMCType() instanceof ASTMCQualifiedType) {
+      symType = SymTypeExpressionFactory.createTypeObject(((ASTMCQualifiedType) attribute.getMCType()).getMCQualifiedName().getQName(), attribute.getEnclosingScope());
+    } else {
+      symType = tc.symTypeFromAST(attribute.getMCType());
+    }
+    attribute.getSymbol().setType(symType);
   }
 }

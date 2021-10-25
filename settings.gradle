@@ -14,7 +14,6 @@ pluginManagement {
 rootProject.name = 'montithings-core'
 include(':languages:montithings')
 include(':languages:bindings')
-include(':languages:cd4montithings')
 include(':languages:cdlangextension')
 include(':languages:error-handling')
 include(':languages:iot-behavior')
@@ -32,7 +31,6 @@ include(':services:prolog-generator:server')
 
 project(':languages:montithings').projectDir = file('languages/montithings')
 //project(':languages:bindings').projectDir = file('languages/bindings')
-project(':languages:cd4montithings').projectDir = file('languages/cd4montithings')
 project(':languages:cdlangextension').projectDir = file('languages/cdlangextension')
 project(':languages:error-handling').projectDir = file('languages/error-handling')
 project(':languages:montiarc-extensions').projectDir = file('languages/montiarc-extensions')

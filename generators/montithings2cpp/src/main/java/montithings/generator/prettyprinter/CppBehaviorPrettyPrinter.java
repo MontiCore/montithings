@@ -4,9 +4,7 @@ package montithings.generator.prettyprinter;
 import arcbasis._symboltable.PortSymbol;
 import behavior._ast.ASTAfterStatement;
 import behavior._ast.ASTAgoQualification;
-import behavior._ast.ASTConnectStatement;
 import behavior._ast.ASTLogStatement;
-import behavior._symboltable.IBehaviorScope;
 import behavior._visitor.BehaviorHandler;
 import behavior._visitor.BehaviorTraverser;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
@@ -101,22 +99,6 @@ public class CppBehaviorPrettyPrinter
     }
     else {
       node.getExpression().accept(getTraverser());
-    }
-  }
-
-  @Override
-  public void handle (ASTConnectStatement node){
-    getPrinter().print(".push_back(");
-    getPrinter().println(");");
-    connectPorts(node.getFrom(), node.getTo(), node.getEnclosingScope());
-  }
-
-  protected void connectPorts(String from, String to, IScope enclosingScope) {
-    IMontiArcScope s = (IMontiArcScope) enclosingScope;
-    Optional<PortSymbol> f = s.resolvePort(from);
-    Optional<PortSymbol> t = s.resolvePort(to);
-    if (!f.isPresent() || !t.isPresent()){
-
     }
   }
 

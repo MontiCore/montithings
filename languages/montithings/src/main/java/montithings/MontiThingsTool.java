@@ -1,9 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings;
 
-import cd4montithings._symboltable.CD4MontiThingsArtifactScope;
-import cd4montithings._symboltable.CD4MontiThingsSymbols2Json;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Preconditions;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
+import de.monticore.cd4code._symboltable.CD4CodeSymbols2Json;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
@@ -362,11 +364,17 @@ public class MontiThingsTool implements IMontiThingsTool {
 
   public void createClassDiagrams(@NotNull IMontiThingsGlobalScope scope, String symbolPath) {
     Preconditions.checkArgument(scope != null);
-    Set<MontiThingsArtifactScope> montiThingsArtifactScopes = new HashSet<>();
     Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
 
+    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    CD4CodeMill.globalScope().add(inPortType);
+    CD4CodeMill.globalScope().add(outPortType);
+
     //create scopes for class diagrams
-    Set<CD4MontiThingsArtifactScope> scopes = new HashSet<>();
+    Set<CD4CodeArtifactScope> scopes = new HashSet<>();
     for (ASTMACompilationUnit compilationUnit : models) {
       if (compilationUnit.getComponentType().getConnectors().isEmpty()) {
         scopes.add(createClassDiagram(compilationUnit));
@@ -374,11 +382,11 @@ public class MontiThingsTool implements IMontiThingsTool {
     }
 
     //convert scopes to symbol files
-    for (CD4MontiThingsArtifactScope artifactScope : scopes) {
+    for (CD4CodeArtifactScope artifactScope : scopes) {
       String symbolFileName = symbolPath
           + artifactScope.getName()
           + ".sym";
-      final CD4MontiThingsSymbols2Json symbols2Json = new CD4MontiThingsSymbols2Json();
+      final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
       final String path = symbols2Json.store(artifactScope, symbolFileName);
     }
   }

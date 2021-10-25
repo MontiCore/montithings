@@ -23,7 +23,6 @@
 		<module>mtconfig</module>
 		<module>bindings</module>
 		<module>iot-behavior</module>
-		<module>cd4montithings</module>
 	</modules>
 
 	<build>

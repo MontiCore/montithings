@@ -2,21 +2,7 @@
 package montithings._symboltable;
 
 import arcbasis._ast.ASTComponentType;
-import arcbasis._ast.ASTPort;
-import arcbasis._ast.ASTPortDeclaration;
-import arcbasis._symboltable.ComponentTypeSymbol;
-import arcbasis._symboltable.PortSymbol;
-import cd4montithings.CD4MontiThingsMill;
-import cd4montithings._ast.ASTCDComponentInterface;
-import cd4montithings._ast.ASTCDPort;
-import cd4montithings._ast.ASTCDPortDeclaration;
-import cd4montithings._ast.ASTCDPortDirection;
-import cd4montithings._symboltable.CD4MontiThingsArtifactScope;
-import cd4montithings._symboltable.ICD4MontiThingsArtifactScope;
 import com.google.common.base.Preconditions;
-import de.monticore.cdbasis._ast.ASTCDClass;
-import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
-import de.monticore.cdbasis._ast.ASTCDDefinition;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCImportStatement;
 import montiarc._ast.ASTMACompilationUnit;

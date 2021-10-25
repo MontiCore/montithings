@@ -1,13 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
-import arcbasis._symboltable.PortSymbolDeSer;
-import cd4montithings._symboltable.CDPortSymbolDeSer;
 import com.google.common.base.Preconditions;
-import com.google.errorprone.annotations.Var;
 import de.monticore.io.FileFinder;
 import de.monticore.io.paths.ModelCoordinate;
-import de.monticore.symbols.basicsymbols._symboltable.VariableSymbolDeSer;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbolDeSer;
 import de.monticore.symbols.oosymbols._symboltable.MethodSymbolDeSer;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbolDeSer;
@@ -30,7 +26,6 @@ public class MontiThingsGlobalScope extends MontiThingsGlobalScopeTOP {
       new MethodSymbolDeSer());
     this.putSymbolDeSer("de.monticore.cdassociation._symboltable.CDRoleSymbol",
       new FieldSymbolDeSer());
-    this.putSymbolDeSer("cd4montithings._symboltable.CDPortSymbol", new VariableSymbolDeSer());
   }
 
   /*
