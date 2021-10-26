@@ -3,7 +3,9 @@ package hierarchy;
 
 component Example {
   Source source;
+  ChooseNext cn;
   Sink sink;
 
-  source.value -> sink.value;
+  source.value -> cn.input;
+  cn.output -> sink.value;
 }
