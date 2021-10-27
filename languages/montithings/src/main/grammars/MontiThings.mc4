@@ -33,6 +33,7 @@ grammar MontiThings extends MontiArc,
     MTComponentType extends ComponentType =
       MTComponentModifier Name
       head:ComponentHead
+      MTImplements?
       (ComponentInstance || ",")*
       body:ComponentBody
     ;
@@ -44,6 +45,12 @@ grammar MontiThings extends MontiArc,
      * See [Wor16 Sec. 4.1.1]
      */
     MTComponentModifier =  ["interface"]? "component";
+
+    /**
+     * An additional keyword for components, which marks a component as
+     * implementing an interface component.
+     */
+    MTImplements = "implements" Name@ComponentType;
 
     /* ============================================================ */
     /* ================== ArcElement Insertions =================== */
