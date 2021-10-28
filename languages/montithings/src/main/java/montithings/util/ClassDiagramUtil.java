@@ -54,7 +54,13 @@ public class ClassDiagramUtil {
         ASTMCCustomTypeArgument typeArgument = CD4CodeMill.mCCustomTypeArgumentBuilder().
                 setMCType(astPortDeclaration.getMCType()).build();
         if (typeArgument.getMCType() instanceof ASTSIUnitType4Computing) {
-          ((ASTSIUnitType4Computing) typeArgument.getMCType()).setEnclosingScope(MontiThingsMill.scope());
+          typeArgument = CD4CodeMill.mCCustomTypeArgumentBuilder().
+                  setMCType(((ASTSIUnitType4Computing) typeArgument.getMCType()).getMCPrimitiveType()).build();
+        }
+        if (typeArgument.getMCType() instanceof ASTSIUnitType) {
+          //no explicit primitive type is given --> set to double
+          typeArgument = CD4CodeMill.mCCustomTypeArgumentBuilder().
+                  setMCType(CD4CodeMill.mCPrimitiveTypeBuilder().setPrimitive(4).build()).build();
         }
         if (incoming) {
           astmcType = CD4CodeMill.mCBasicGenericTypeBuilder().addName("InPort").
