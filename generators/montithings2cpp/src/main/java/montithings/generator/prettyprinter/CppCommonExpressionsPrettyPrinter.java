@@ -7,6 +7,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
 import montithings.generator.helper.ASTNoData;
@@ -14,7 +15,10 @@ import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import javax.measure.converter.UnitConverter;
+import java.util.Optional;
 
+import static montithings.generator.helper.TypesHelper.fieldAccessIsEnumConstant;
+import static montithings.generator.helper.TypesHelper.getFieldSymbolOfEnumConstant;
 import static montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter.*;
 
 public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPrinter {
@@ -149,6 +153,12 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       behaviorPP.handle((ASTAgoQualification) node.getExpression(), true);
       this.getPrinter().print("." + node.getName());
       CommentPrettyPrinter.printPostComments(node, this.getPrinter());
+    }
+    else if (fieldAccessIsEnumConstant(node)) {
+      Optional<FieldSymbol> symbol = getFieldSymbolOfEnumConstant(node);
+      String fullName = symbol.get().getFullName();
+      String cppFullyQualifiedName = fullName.replaceAll("\\.", "::");
+      getPrinter().print("montithings::" + cppFullyQualifiedName);
     }
     else {
       super.handle(node);
