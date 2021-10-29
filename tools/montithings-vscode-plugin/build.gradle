@@ -34,6 +34,7 @@ task editPackageJson(){
         json.content.version = "7.0.0"
         json.content.publisher = "MontiThings"
         json.content.name = "MontiThings"
+        json.content.icon = "MTLogo.png"
         //json.content.newField = "This is a test to add a new field to the json"
         file.write(json.toPrettyString())
     }
@@ -41,6 +42,11 @@ task editPackageJson(){
 
 task buildPlugin(type: NpmTask){
     args = ['run', 'package']
+}
+
+task copyIcon(type: Copy){
+    from("$projectDir"){include "MTLogo.png"}
+    into("$genDir")
 }
 
 task runVscodePlugin(type: Exec){
@@ -59,4 +65,5 @@ tasks.buildPlugin.dependsOn 'npm_install'
 tasks.buildPlugin.dependsOn 'generateVscodePlugin'
 tasks.buildPlugin.dependsOn 'editPackageJson'
 tasks.editPackageJson.dependsOn 'generateVscodePlugin'
+tasks.editPackageJson.dependsOn 'copyIcon'
 tasks.runVscodePlugin.dependsOn 'build'
