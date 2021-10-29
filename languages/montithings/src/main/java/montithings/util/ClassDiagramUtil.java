@@ -40,7 +40,7 @@ public class ClassDiagramUtil {
   }
 
   protected static CD4CodeArtifactScope createClassDiagram(ASTMTComponentType comp) {
-    ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(comp.getName() + "Class").
+    ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(comp.getName()).
             setModifier(CD4CodeMill.modifierBuilder().PUBLIC().build()).build();
     for (ASTPortDeclaration astPortDeclaration : comp.getPortDeclarations()) {
       boolean incoming;

@@ -31,6 +31,7 @@ import montithings.MontiThingsTool;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
+import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
@@ -124,7 +125,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     IMontiThingsGlobalScope symTab = createMTGlobalScope(mp);
-    createClassDiagrams(symTab, symbolPath);
+    createClassDiagrams((MontiThingsGlobalScope) symTab, symbolPath);
+    if (models.getClassdiagrams().isEmpty()) {
+      mp.addEntry(Paths.get(symbolPath));
+    }
     createSymbolTable(symTab);
 
 

@@ -362,7 +362,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     return mtScope;
   }
 
-  public void createClassDiagrams(@NotNull IMontiThingsGlobalScope scope, String symbolPath) {
+  public void createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
     Preconditions.checkArgument(scope != null);
     Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
 
