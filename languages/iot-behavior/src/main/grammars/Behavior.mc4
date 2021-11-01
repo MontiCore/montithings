@@ -76,11 +76,11 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    *
    * @attribute From
    *            Name of the port to which another port should be connected
-   * @attribute From
+   * @attribute To
    *            Name of the port which should be connected to another port
    */
   ConnectStatement implements MCStatement =
-    from:Name "->" to:Name ";" ;
+    from:MCQualifiedName "->" to:MCQualifiedName ";" ;
 
   /**
    * ASTDisConnectStatement can be used to describe behavior which dynamically
@@ -88,7 +88,7 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    *
    * @attribute From
    *            Name of the port which another port should be disconnected from
-   * @attribute From
+   * @attribute To
    *            Name of the port which should be disconnected
    */
   DisconnectStatement implements MCStatement =
