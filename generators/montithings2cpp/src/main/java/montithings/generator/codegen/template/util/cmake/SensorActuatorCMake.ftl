@@ -3,10 +3,7 @@ ${tc.signature("pckg", "port", "libraryPath", "config", "test", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 
-<#assign commonCodePrefix = "">
-<#if config.getSplittingMode().toString() != "OFF">
-    <#assign commonCodePrefix = "../">
-</#if>
+<#assign commonCodePrefix = "../">
 
 cmake_minimum_required(VERSION 3.8.2)
 project("${pckg}.${port}")
@@ -97,7 +94,6 @@ include_directories(".")
   <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")>
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
-  add_subdirectory(montithings-RTE)
 </#if>
 
 add_library(${pckg}_${port}Lib ${r"${SOURCES}"} ${r"${"}${pckg?upper_case}_SOURCES})

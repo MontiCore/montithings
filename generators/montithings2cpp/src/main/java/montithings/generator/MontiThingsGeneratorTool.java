@@ -105,6 +105,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       }
     }
 
+    if(!executableSensorActuatorPorts.isEmpty() && config.getSplittingMode()==SplittingMode.OFF){
+      Log.error("Cannot use SplittingMode OFF with SensorActuatorPorts");
+    }
+
     List<String> hwcPythonScripts = new ArrayList<>();
     for(File pckg : packages){
       Set<String> pythonScriptsWithoutPckg = getFilesWithEnding(new File(hwcPath + File.separator + pckg.getName()), Stream.of(".py").collect(Collectors.toSet()));
