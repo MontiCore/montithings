@@ -11,23 +11,27 @@ import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.CDEImportStatementSymbol;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.ast.ASTNode;
+import de.monticore.expressions.commonexpressions._ast.ASTFieldAccessExpression;
 import de.monticore.siunits._ast.ASTSIUnit;
 import de.monticore.siunits.utility.Converter;
 import de.monticore.siunits.utility.UnitFactory;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.se_rwth.commons.logging.Log;
+import montithings._symboltable.IMontiThingsScope;
+import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 
+import javax.measure.unit.Unit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.measure.unit.Unit;
 
 import static montithings.generator.helper.ComponentHelper.getPortSymbolFromPortAccess;
 
@@ -232,5 +236,20 @@ public class TypesHelper {
     return getCDEReplacement(typeSymbol, config);
   }
 
+  public static boolean fieldAccessIsEnumConstant(ASTFieldAccessExpression node) {
+    Optional<FieldSymbol> enumConstant = getFieldSymbolOfEnumConstant(node);
+    return enumConstant.isPresent();
+  }
+
+  public static Optional<FieldSymbol> getFieldSymbolOfEnumConstant(ASTFieldAccessExpression node) {
+    IMontiThingsScope enclosingScope = ((IMontiThingsScope)node.getEnclosingScope());
+    MontiThingsFullPrettyPrinter pp = new MontiThingsFullPrettyPrinter();
+    Optional<TypeSymbol> type = enclosingScope.resolveType(pp.prettyprint(node.getExpression()));
+    if (type.isPresent()) {
+      IMontiThingsScope enumScope = ((IMontiThingsScope) type.get().getSpannedScope());
+      return enumScope.resolveField(node.getName());
+    }
+    return Optional.empty();
+  }
 
 }

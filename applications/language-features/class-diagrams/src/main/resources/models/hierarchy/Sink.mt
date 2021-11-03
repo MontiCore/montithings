@@ -4,5 +4,5 @@ package hierarchy;
 import Colors.*;
 
 component Sink {
-  port in Color value;
+  port in Colors.Color value;
 }
