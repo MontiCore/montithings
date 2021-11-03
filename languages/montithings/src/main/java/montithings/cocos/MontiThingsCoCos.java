@@ -69,6 +69,7 @@ public class MontiThingsCoCos {
     checker.addCoCo((MontiThingsASTBehaviorCoCo) new DontReadOutports());
     checker.addCoCo((MontiThingsASTMTEveryBlockCoCo) new DontReadOutports());
     checker.addCoCo(new PortsInBehaviorAreUsedCorrectly());
+    checker.addCoCo(new InterfaceImplementedCorrectly());
 
     return checker;
   }

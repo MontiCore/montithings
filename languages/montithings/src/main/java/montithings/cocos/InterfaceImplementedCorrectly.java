@@ -18,11 +18,26 @@ public class InterfaceImplementedCorrectly implements MontiThingsASTMTComponentT
       if (node.getEnclosingScope() instanceof MontiThingsArtifactScope){
         ComponentTypeSymbol interfaceComponent =
           getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), node.getMTImplements().getName());
-        if (!GenericBindingUtil.canImplementInterface(node.getSymbol(), interfaceComponent)) {
-          /*Log.error(String.format(
-                  MontiThingsError.NOT_FITS_INTERFACE.toString(),
-                  typeName, subComponent.getInstanceName(0), node.getName(),
-                  subComponent.getComponentInstance(0).get_SourcePositionStart().toString()))*/
+        if (interfaceComponent == null){
+          Log.error(String.format(
+                  MontiThingsError.TYPE_NOT_FOUND.toString(),
+                  node.getMTImplements().getName(), node.getMTImplements().get_SourcePositionStart()));
+        }
+        else {
+          if (!GenericBindingUtil.canImplementInterface(node.getSymbol(), interfaceComponent)) {
+            Log.error(String.format(
+                    MontiThingsError.NOT_FITS_INTERFACE.toString(),
+                    node, node.getName(), node.getName(),
+                    node.get_SourcePositionStart().toString()));
+          }
+          if (!((ASTMTComponentType) interfaceComponent.getAstNode())
+                  .getMTComponentModifier().isInterface()){
+            Log.error(
+                    String.format(
+                            MontiThingsError.NOT_INTERFACE.toString(),
+                            "typeName", node.getName(), node.getName(),
+                            node.get_SourcePositionStart().toString()));
+          }
         }
       }
     }
