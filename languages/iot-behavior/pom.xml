@@ -64,6 +64,17 @@
             <version>${siunits.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>arc-fe</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montiarc.languages</groupId>
+            <artifactId>arc-fe</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+        </dependency>
+
         <!-- Java -->
 
         <dependency>

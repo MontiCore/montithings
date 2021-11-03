@@ -8,7 +8,8 @@
  */
 component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
                                    de.monticore.statements.MCCommonStatements,
-                                   de.monticore.SIUnitLiterals
+                                   de.monticore.SIUnitLiterals,
+                                   ArcBasis
 {
   /**
    * ASTAfterStatement can be used to defer the execution
@@ -80,7 +81,8 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    *            Name of the port which should be connected to another port
    */
   ConnectStatement implements MCStatement =
-    from:MCQualifiedName "->" to:MCQualifiedName ";" ;
+    //from:MCQualifiedName "->" to:MCQualifiedName ";" ;
+    Connector;
 
   /**
    * ASTDisConnectStatement can be used to describe behavior which dynamically

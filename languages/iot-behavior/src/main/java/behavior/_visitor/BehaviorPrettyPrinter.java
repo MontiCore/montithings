@@ -74,15 +74,15 @@ public class BehaviorPrettyPrinter implements BehaviorHandler {
 
   @Override
   public void handle(ASTConnectStatement node) {
-    getPrinter().print(node.getFrom() + " ");
+    //getPrinter().print(node.getFrom() + " ");
     getPrinter().print("->");
-    getPrinter().print(node.getTo() + ";");
+    //getPrinter().print(node.getTo() + ";");
   }
 
   @Override
   public void handle(ASTDisconnectStatement node) {
     getPrinter().print(node.getFrom() + " ");
-    getPrinter().print("-/");
+    getPrinter().print("-/>");
     getPrinter().print(node.getTo() + ";");
   }
 }
