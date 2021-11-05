@@ -14,6 +14,7 @@ import de.monticore.siunittypes4math._ast.ASTSIUnitType;
 import de.monticore.types.check.SymTypeExpressionFactory;
 import de.monticore.types.check.SymTypeOfGenerics;
 import de.monticore.types.check.SymTypeOfNull;
+import de.monticore.types.mcbasictypes.MCBasicTypesMill;
 import de.monticore.types.mcbasictypes._ast.ASTMCObjectType;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
@@ -42,6 +43,16 @@ public class ClassDiagramUtil {
   protected static CD4CodeArtifactScope createClassDiagram(ASTMTComponentType comp) {
     ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(comp.getName()).
             setModifier(CD4CodeMill.modifierBuilder().PUBLIC().build()).build();
+    if (comp.isPresentMTImplements()) {
+      ASTMCObjectType interfaceType = CD4CodeMill.mCQualifiedTypeBuilder().setMCQualifiedName
+              (CD4CodeMill.mCQualifiedNameBuilder().addParts(comp.getMTImplements().getName()).build())
+              .build();
+      astcdClass.setCDInterfaceUsage(CD4CodeMill.cDInterfaceUsageBuilder().addInterface(interfaceType).build());
+    }
+    if (comp.getHead().isPresentParent() && comp.getHead().getParent() instanceof ASTMCObjectType) {
+      astcdClass.setCDExtendUsage(CD4CodeMill.cDExtendUsageBuilder().addSuperclass
+              ((ASTMCObjectType) comp.getHead().getParent()).build());
+    }
     for (ASTPortDeclaration astPortDeclaration : comp.getPortDeclarations()) {
       boolean incoming;
       if (astPortDeclaration.getPortDirection() instanceof ASTPortDirectionIn) {

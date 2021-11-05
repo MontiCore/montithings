@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package behavior._visitor;
 
+import arcbasis._ast.ASTPortAccess;
 import behavior._ast.*;
 import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;
@@ -74,15 +75,19 @@ public class BehaviorPrettyPrinter implements BehaviorHandler {
 
   @Override
   public void handle(ASTConnectStatement node) {
-    //getPrinter().print(node.getFrom() + " ");
-    getPrinter().print("->");
-    //getPrinter().print(node.getTo() + ";");
+    node.getConnector().accept(getTraverser());
   }
 
   @Override
   public void handle(ASTDisconnectStatement node) {
-    getPrinter().print(node.getFrom() + " ");
+    node.getSource().accept(getTraverser());
     getPrinter().print("-/>");
-    getPrinter().print(node.getTo() + ";");
+    for (int i = 0; i < node.sizeTarget(); i++) {
+      node.getTarget(i).accept(getTraverser());
+      if (i != node.sizeTarget() - 1) {
+        getPrinter().print(", ");
+      }
+    }
+    getPrinter().print(";");
   }
 }

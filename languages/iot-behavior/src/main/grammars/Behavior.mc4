@@ -73,26 +73,26 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
 
   /**
    * ASTConnectStatement can be used to describe behavior which dynamically
-   * adds ports at runtime.
+   * connects ports at runtime.
    *
-   * @attribute From
-   *            Name of the port to which another port should be connected
-   * @attribute To
-   *            Name of the port which should be connected to another port
+   * @attribute Connector
+   *            Connector which specifies which ports should be connected
    */
   ConnectStatement implements MCStatement =
-    //from:MCQualifiedName "->" to:MCQualifiedName ";" ;
     Connector;
 
   /**
-   * ASTDisConnectStatement can be used to describe behavior which dynamically
-   * removes ports at runtime.
+   * ASTDisconnectStatement can be used to describe behavior which dynamically
+   * removes connections of ports at runtime.
    *
-   * @attribute From
-   *            Name of the port which another port should be disconnected from
-   * @attribute To
-   *            Name of the port which should be disconnected
+   * @attribute Source
+   *            Name of the source port which another port should be
+   *            disconnected from
+   * @attribute Target
+   *            Name of the port(s) which should be disconnected from the
+   *            source port
    */
   DisconnectStatement implements MCStatement =
-    from:Name "-/>" to:Name ";" ;
+    source:PortAccess "-/>" target:(PortAccess || ",")+ ";"
+  ;
 }
