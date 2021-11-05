@@ -27,43 +27,59 @@ task copyLspserver(type: Copy) {
 }
 
 // Edit package.json of the generated project
-task editPackageJson(){
-    doLast{
+task editPackageJson() {
+    doLast {
         def file = new File("$genDir/package.json")
         def json = new JsonBuilder(new JsonSlurper().parse(file))
         json.content.version = "7.0.0"
         json.content.publisher = "MontiThings"
         json.content.name = "MontiThings"
-        json.content.icon = "MTLogo.png"
+        json.content.icon = "mt_logo.png"
         //json.content.newField = "This is a test to add a new field to the json"
+
+        def iconThemesMap = [
+                "id": "monti-icon-theme",
+                "label": "default",
+                "path": "./fileicons/monti-icon-theme.json"
+        ]
+        json.content.contributes.iconThemes = [iconThemesMap]
+
         file.write(json.toPrettyString())
     }
-}
 
-task buildPlugin(type: NpmTask){
-    args = ['run', 'package']
-}
+    task buildPlugin(type: NpmTask) {
+        args = ['run', 'package']
+    }
 
-task copyIcon(type: Copy){
-    from("$projectDir"){include "MTLogo.png"}
-    into("$genDir")
-}
+    task copyIcon(type: Copy) {
+        from "$projectDir"
+        include "mt_logo.png"
+        into("$genDir")
+    }
 
-task runVscodePlugin(type: Exec){
-    workingDir "$projectDir"
-    commandLine "code", "--extensionDevelopmentPath=$genDir", "$projectDir/example/"
-}
+    task copyFileIcons(type: Copy) {
+        from "$projectDir"
+        include "fileIcons/**"
+        into layout.buildDirectory.dir("$genDir")
+    }
 
-// Build vscode plugin
-node {
-    download = true
-    nodeProjectDir = file("$genDir")
+    task runVscodePlugin(type: Exec) {
+        workingDir "$projectDir"
+        commandLine "code", "--extensionDevelopmentPath=$genDir", "$projectDir/example/"
+    }
+
+    // Build vscode plugin
+    node {
+        download = true
+        nodeProjectDir = file("$genDir")
+    }
+    tasks.build.dependsOn 'buildPlugin'
+    tasks.buildPlugin.dependsOn 'copyLspserver'
+    tasks.buildPlugin.dependsOn 'npm_install'
+    tasks.buildPlugin.dependsOn 'generateVscodePlugin'
+    tasks.buildPlugin.dependsOn 'editPackageJson'
+    tasks.editPackageJson.dependsOn 'generateVscodePlugin'
+    tasks.editPackageJson.dependsOn 'copyIcon'
+    tasks.editPackageJson.dependsOn 'copyFileIcons'
+    tasks.runVscodePlugin.dependsOn 'build'
 }
-tasks.build.dependsOn 'buildPlugin'
-tasks.buildPlugin.dependsOn 'copyLspserver'
-tasks.buildPlugin.dependsOn 'npm_install'
-tasks.buildPlugin.dependsOn 'generateVscodePlugin'
-tasks.buildPlugin.dependsOn 'editPackageJson'
-tasks.editPackageJson.dependsOn 'generateVscodePlugin'
-tasks.editPackageJson.dependsOn 'copyIcon'
-tasks.runVscodePlugin.dependsOn 'build'

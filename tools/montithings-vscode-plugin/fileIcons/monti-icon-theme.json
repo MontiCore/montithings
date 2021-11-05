@@ -1,0 +1,10 @@
+{
+    "iconDefinitions": {
+      "_mt_file": {
+        "iconPath": "./images/mt_icon.png"
+      }
+    },
+  "fileExtensions": {
+    "mt" : "_mt_file"
+  }
+}
