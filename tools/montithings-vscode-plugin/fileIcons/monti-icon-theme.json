@@ -1,10 +1,10 @@
 {
-    "iconDefinitions": {
-      "_mt_file": {
-        "iconPath": "./images/mt_icon.png"
-      }
-    },
+  "iconDefinitions": {
+    "_mt_file": {
+      "iconPath": "./images/mt_icon.svg"
+    }
+  },
   "fileExtensions": {
-    "mt" : "_mt_file"
+    "mt": "_mt_file"
   }
 }
