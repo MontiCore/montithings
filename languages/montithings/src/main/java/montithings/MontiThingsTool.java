@@ -10,6 +10,7 @@ import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeExpressionFactory;
@@ -366,12 +367,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     Preconditions.checkArgument(scope != null);
     Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
 
-    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
-    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
-    CD4CodeMill.globalScope().add(inPortType);
-    CD4CodeMill.globalScope().add(outPortType);
+    addPortSymbolsToCD4CGlobalScope();
 
     //create scopes for class diagrams
     Set<CD4CodeArtifactScope> scopes = new HashSet<>();
@@ -389,5 +385,14 @@ public class MontiThingsTool implements IMontiThingsTool {
       final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
       final String path = symbols2Json.store(artifactScope, symbolFileName);
     }
+  }
+
+  protected void addPortSymbolsToCD4CGlobalScope() {
+    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    CD4CodeMill.globalScope().add(inPortType);
+    CD4CodeMill.globalScope().add(outPortType);
   }
 }

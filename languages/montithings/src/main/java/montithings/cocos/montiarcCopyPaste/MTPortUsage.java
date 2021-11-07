@@ -63,7 +63,9 @@ public class MTPortUsage implements MontiThingsASTMTComponentTypeCoCo {
                   ArcError.INCOMING_PORT_NO_FORWARD.format(port, symbol.getFullName()),
                   sourcePosition);
         }
-        if (getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), node.getSpannedScope().resolvePort(port).get().getTypeInfo().getName()) == null){
+        String portTypeName = node.getSpannedScope().resolvePort(port).get().getTypeInfo().getName();
+        if (!portTypeName.startsWith("I") || getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(),
+                portTypeName.substring(1)) == null){
           Log.warn(
                   ArcError.INCOMING_PORT_NO_FORWARD.format(port, symbol.getFullName()),
                   sourcePosition);
