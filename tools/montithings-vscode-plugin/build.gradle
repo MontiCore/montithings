@@ -31,7 +31,7 @@ task editPackageJson() {
     doLast {
         def file = new File("$genDir/package.json")
         def json = new JsonBuilder(new JsonSlurper().parse(file))
-        json.content.version = "7.0.0"
+        json.content.version = "7.0.1"
         json.content.publisher = "MontiThings"
         json.content.name = "MontiThings"
         json.content.icon = "mt_logo.png"
@@ -40,7 +40,7 @@ task editPackageJson() {
         def iconThemesMap = [
                 "id": "monti-icon-theme",
                 "label": "default",
-                "path": "./fileicons/monti-icon-theme.json"
+                "path": "./fileIcons/monti-icon-theme.json"
         ]
         json.content.contributes.iconThemes = [iconThemesMap]
 
