@@ -13,8 +13,10 @@ ${tc.signature("comp", "config")}
 
 
   // Wait for initial connection
-  while(!mqttClientInstance->isConnected());
-  while(!mqttClientLocalInstance->isConnected());
+  while(!mqttClientInstance->isConnected())
+  ;
+  while(!mqttClientLocalInstance->isConnected())
+  ;
 
   <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0>
     MqttConfigRequester configRequester;
