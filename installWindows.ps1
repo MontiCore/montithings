@@ -1,105 +1,151 @@
 # Stop on first error
-$ErrorActionPreference = "Stop" 
+$ErrorActionPreference = "Stop"
+
+<#
+ # checks using "Get-Command" if a specific program is installed on the system
+ # the try-catch Block requires $ErrorActionPreference = "Stop"
+ #
+ # @param $ProgramName name of the program that should be checked
+ # @return $true if $ProgramName is already installed on the System, $false otherwise
+ #>
+function Get-IsInstalled {
+    param(
+        [Parameter(Mandatory)][string]$ProgramName
+    )
+
+    # Reload Path Environment Variable
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+    try{
+        $CheckCommand = Get-Command $ProgramName
+        Write-Output "$ProgramName is already installed"
+        return $true
+    }
+    catch {
+        return $false
+    }
+}
 
 ##########################################
 # Install WinGet CLI
 ##########################################
-# Install RTE
-Invoke-Webrequest -UseBasicParsing -OutFile VCLibs.appx https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
-Add-AppxPackage -Path "$PWD\VCLibs.appx"
-rm "$PWD\VCLibs.appx"
+if(-not (Get-IsInstalled winget)){
+    # Install RTE
+    Invoke-Webrequest -UseBasicParsing -OutFile VCLibs.appx https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+    Add-AppxPackage -Path "$PWD\VCLibs.appx"
+    rm "$PWD\VCLibs.appx"
 
-# Find current release
-$data = Invoke-Webrequest -UseBasicParsing https://api.github.com/repos/microsoft/winget-cli/releases/latest
-$data = $data.Content | ConvertFrom-Json
+    # Find current release
+    $data = Invoke-Webrequest -UseBasicParsing https://api.github.com/repos/microsoft/winget-cli/releases/latest
+    $data = $data.Content | ConvertFrom-Json
 
-# Get URL of installer
-foreach($asset in $data[0].assets) 
-{ 
-  if ($asset.name.endswith("msixbundle")) 
-  { 
-    $wingetUrl=$asset.browser_download_url 
-  } 
+    # Get URL of installer
+    foreach($asset in $data[0].assets)
+    {
+      if ($asset.name.endswith("msixbundle"))
+      {
+        $wingetUrl=$asset.browser_download_url
+      }
+    }
+    # Download and install
+    Invoke-Webrequest -UseBasicParsing -OutFile WinGet.msixbundle -Uri $wingetUrl
+    Add-AppPackage -path ".\WinGet.msixbundle"
+    rm ".\WinGet.msixbundle"
+
+    # Reload Path Environment Variable
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
-# Download and install
-Invoke-Webrequest -UseBasicParsing -OutFile WinGet.msixbundle -Uri $wingetUrl
-Add-AppPackage -path ".\WinGet.msixbundle"
-rm ".\WinGet.msixbundle"
-
-# Reload Path Environment Variable
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
-
 ##########################################
 # Install software available via WinGet
 ##########################################
-winget install -e Git.Git
-winget install -e Microsoft.OpenJDK.11
-winget install -e Microsoft.VisualStudio.2019.Community --override "--passive --wait --config $PWD\.vsconfig"
-winget install -e Kitware.CMake
-winget install -e Docker.DockerDesktop 
-winget install -e EclipseFoundation.Mosquitto
-winget install -e JFrog.Conan
+if(-not (Get-IsInstalled git)){
+    winget install -e Git.Git
+}
+if(-not (Get-IsInstalled java) -or (-not ([string](java --version)).Contains("11"))){
+    winget install -e Microsoft.OpenJDK.11
+}
+if((Test-Path "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe") -eq $false){
+    winget install -e Microsoft.VisualStudio.2019.Community --override "--passive --wait --config $PWD\.vsconfig"
+}
+if(-not (Get-IsInstalled cmake)){
+    winget install -e Kitware.CMake
+}
+if(-not (Get-IsInstalled docker)){
+    winget install -e Docker.DockerDesktop
+}
+if(-not (Get-IsInstalled mosquitto)){
+    winget install -e EclipseFoundation.Mosquitto
 
-# Add Mosquitto to PATH
-$oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-$newpath="$oldpath;C:\Program Files\Mosquitto\;C:\Program Files\CMake\bin"
-Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
-
+    # Add Mosquitto to PATH
+    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
+    $newpath="$oldpath;C:\Program Files\Mosquitto\;C:\Program Files\CMake\bin"
+    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+}
 # Reload Path Environment Variable
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 # Start Mosquitto MQTT Broker
 Start-Service -Name Mosquitto
 
+if(-not (Get-IsInstalled conan)){
+    winget install -e JFrog.Conan
+
+    # Reload Path Environment Variable
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+}
 ##########################################
 # Install Maven
 ##########################################
-# Download 
-Invoke-Webrequest -UseBasicParsing -OutFile Maven.zip -Uri "https://dlcdn.apache.org/maven/maven-3/3.8.3/binaries/apache-maven-3.8.3-bin.zip"
-Expand-Archive -DestinationPath 'C:\Program Files\' Maven.zip
-rm .\Maven.zip
+if(-not (Get-IsInstalled maven)){
+    # Download
+    Invoke-Webrequest -UseBasicParsing -OutFile Maven.zip -Uri "https://dlcdn.apache.org/maven/maven-3/3.8.3/binaries/apache-maven-3.8.3-bin.zip"
+    Expand-Archive -DestinationPath 'C:\Program Files\' Maven.zip
+    rm .\Maven.zip
 
-# Add Maven to PATH
-$oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-$newpath="$oldpath;C:\Program Files\apache-maven-3.8.3\bin\"
-Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+    # Add Maven to PATH
+    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
+    $newpath="$oldpath;C:\Program Files\apache-maven-3.8.3\bin\"
+    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
 
-# Reload Path Environment Variable
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+    # Reload Path Environment Variable
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+}
 
 ##########################################
 # Install Ninja
 ##########################################
-# Download
-Invoke-Webrequest -UseBasicParsing -OutFile Ninja.zip -Uri https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
-Expand-Archive -DestinationPath 'C:\Program Files\Ninja' Ninja.zip
-rm .\Ninja.zip 
+if(-not (Get-IsInstalled ninja)){
+    # Download
+    Invoke-Webrequest -UseBasicParsing -OutFile Ninja.zip -Uri https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
+    Expand-Archive -DestinationPath 'C:\Program Files\Ninja' Ninja.zip
+    rm .\Ninja.zip
 
-# Add Ninja to PATH
-$oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-$newpath="$oldpath;C:\Program Files\Ninja\"
-Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+    # Add Ninja to PATH
+    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
+    $newpath="$oldpath;C:\Program Files\Ninja\"
+    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
 
-# Reload Path Environment Variable
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
-
+    # Reload Path Environment Variable
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+}
 ##########################################
 # Install MinGW
 ##########################################
-# Install Chocolatery
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+if(-not (Get-IsInstalled gcc)){
+    # Install Chocolatery
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-choco install -y mingw
-
+    choco install -y mingw
+}
 
 ##########################################
 # Install NNG 1.3.0
 ##########################################
 Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nanomsg/nng/archive/v1.3.0.zip
 Expand-Archive -DestinationPath "$PWD" nng.zip
-rm .\nng.zip 
+rm .\nng.zip
 cd .\nng-1.3.0\
-exit 1
+exit 1 #todo
 cd ..
 rm .\nng-1.3.0\
 
@@ -107,4 +153,4 @@ rm .\nng-1.3.0\
 ##########################################
 # Install MontiThings
 ##########################################
-mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip" 
+mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
