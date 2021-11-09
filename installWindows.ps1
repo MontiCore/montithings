@@ -64,7 +64,7 @@ if(-not (Get-IsInstalled git)){
 if(-not (Get-IsInstalled java) -or (-not ([string](java --version)).Contains("11"))){
     winget install -e Microsoft.OpenJDK.11
 }
-if((Test-Path "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe") -eq $false){
+if((Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe") -eq $false){
     winget install -e Microsoft.VisualStudio.2019.Community --override "--passive --wait --config $PWD\.vsconfig"
 }
 if(-not (Get-IsInstalled cmake)){
@@ -96,7 +96,7 @@ if(-not (Get-IsInstalled conan)){
 ##########################################
 # Install Maven
 ##########################################
-if(-not (Get-IsInstalled maven)){
+if(-not (Get-IsInstalled mvn)){
     # Download
     Invoke-Webrequest -UseBasicParsing -OutFile Maven.zip -Uri "https://dlcdn.apache.org/maven/maven-3/3.8.3/binaries/apache-maven-3.8.3-bin.zip"
     Expand-Archive -DestinationPath 'C:\Program Files\' Maven.zip
