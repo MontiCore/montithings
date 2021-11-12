@@ -26,7 +26,9 @@ public class CppConfiguration implements Configuration{
   public enum Options {
     
     MODELPATH("modelPath"), MODELPATH_SHORT("mp"),
-    OUT("out"), OUT_SHORT("o");
+    OUT("out"), OUT_SHORT("o"),
+    HWCPATH("hwcPath"),
+    HWCPATH_SHORT("hwc");
     
     String name;
     
@@ -212,6 +214,21 @@ public class CppConfiguration implements Configuration{
       return mp.toFile();
     }
     System.out.println(modelPath);
+    return null;
+  }
+  
+  public File getHwcPath() {
+    Optional<String> hwcPath = getAsString(Options.HWCPATH);
+    if(hwcPath.isPresent()){
+      Path mp = Paths.get(hwcPath.get());
+      return mp.toFile();
+    }
+    hwcPath = getAsString(Options.HWCPATH_SHORT);
+    if(hwcPath.isPresent()){
+      Path mp = Paths.get(hwcPath.get());
+      return mp.toFile();
+    }
+    System.out.println(hwcPath);
     return null;
   }
   
