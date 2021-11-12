@@ -143,6 +143,7 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
         <#assign otherSide = AssociationHelper.getDerivedName(assoc, type)>
         ${otherSide} == rhs.${otherSide} <#sep>&&</#sep>
     </#list>
+    <#if type.getFieldList()?size == 0 && associations?size == 0>true</#if>
     ;
     }
     public:
