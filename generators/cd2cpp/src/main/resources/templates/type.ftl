@@ -1,9 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 // (c) https://github.com/MontiCore/monticore
-${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper", "imports", "associations")}
+${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper", "imports", "associations", "existsHwc")}
 <#assign AssociationHelper = tc.instantiate("montithings.generator.cd2cpp.AssociationHelper")>
 <#assign TypeHelper = tc.instantiate("montithings.generator.cd2cpp.TypeHelper", [package])>
 #pragma once
+
+<#assign typeName = type.getName()>
+<#if existsHwc>
+    <#assign typeName = typeName + "TOP">
+</#if>
 
 <#function java2cppTypeString type>
   <#assign output = type>
@@ -45,7 +50,7 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 namespace ${package}
 {
 
-${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
+${kind} ${typeName} <#if super != "">: ${super} </#if>{
 
   <#if type.isIsEnum()>
     <#-- enum -->
@@ -127,7 +132,7 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
     <#-- equality operators -->
     public:
     bool
-    operator== (const ${type.getName()} &rhs) const
+    operator== (const ${typeName} &rhs) const
     {
     return
     <#list type.getFieldList() as field>
@@ -142,13 +147,13 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
     }
     public:
     bool
-    operator!= (const ${type.getName()} &rhs) const
+    operator!= (const ${typeName} &rhs) const
     {
     return !(rhs == *this);
     }
 
     <#-- constructor -->
-    public: ${type.getName()}(
+    public: ${typeName}(
     <#list mandatoryFields as mandatoryField>
         ${java2cppTypeString(mandatoryField.type)} ${mandatoryField.name}
         <#if !mandatoryField?is_last>,</#if>
@@ -160,9 +165,9 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
     }
 
     <#-- stream operator -->
-    <#assign thisVar = type.getName()?uncap_first>
+    <#assign thisVar = typeName?uncap_first>
     friend std::ostream &
-    operator<< (std::ostream &os, const ${type.getName()} &${thisVar})
+    operator<< (std::ostream &os, const ${typeName} &${thisVar})
     {
     os << "{ ";
     <#-- attributes -->
@@ -221,7 +226,7 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
     
     <#-- no-args constructor, if any arguments are present -->
     <#if mandatoryFields?size != 0>
-    public: ${type.getName()}() {
+    public: ${typeName}() {
     }
     </#if>   
     
