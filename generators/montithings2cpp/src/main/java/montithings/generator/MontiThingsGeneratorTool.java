@@ -342,7 +342,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       generateCDEAdapter(target, config);
     }
     generateCD(modelPath, target);
-    mtg.generateBuildScript(target);
+    mtg.generateBuildScript(target, hwcPythonScripts);
 
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);

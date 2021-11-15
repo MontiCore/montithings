@@ -49,20 +49,14 @@ we add with the `TestActuatorInclude.ftl` template:
 #include <iostream>
 ```
 
-The components have no real functionality for easier comprehensibility of 
-this example but just forward the data provided on their incoming port to their
-outgoing port. 
-Accordingly, running this example will result in both of the actuators printing 
-numbers the following with increasing numbers and different UUIDs: 
+Accordingly, running this example will result in both of the actuators printing
+increasing numbers:
 ```
-{
-    "value0": {
-        "payload": {
-            "nullopt": false,
-            "data": 1
-        },
-        "uuid": "30123a46-2352-4927-a3a8-c9d7d509b3d4"
-    }
-}
-
+Sink: 0
+Sink: 1
+Sink: 2
+Sink: 3
+Sink: 4
+Sink: 5
+Sink: 6
 ```

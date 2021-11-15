@@ -162,9 +162,9 @@ public class MTGenerator {
             "template/impl/ImplementationFile.ftl", comp, config);
   }
 
-  public void generateBuildScript(File targetPath) {
+  public void generateBuildScript(File targetPath, List<String> hwcPythonScripts) {
     fg.generate(targetPath, "build", ".sh",
-            "template/util/scripts/BuildScript.ftl", config);
+            "template/util/scripts/BuildScript.ftl", hwcPythonScripts, config);
     makeExecutable(targetPath, "build", ".sh");
 
     fg.generate(targetPath, "build", ".bat",
@@ -227,11 +227,11 @@ public class MTGenerator {
     sortedDirs.sort(Comparator.naturalOrder());
 
     fg.generate(targetPath, "run", ".sh",
-            "template/util/scripts/RunScript.ftl", comp, sensorActuatorPorts, config);
+            "template/util/scripts/RunScript.ftl", comp, sensorActuatorPorts,hwcPythonScripts, config);
     makeExecutable(targetPath, "run", ".sh");
 
     fg.generate(targetPath, "kill", ".sh",
-            "template/util/scripts/KillScript.ftl", sortedDirs, sensorActuatorPorts, config);
+            "template/util/scripts/KillScript.ftl", sortedDirs, sensorActuatorPorts,hwcPythonScripts, config);
     makeExecutable(targetPath, "kill", ".sh");
 
     // Docker scripts

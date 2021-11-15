@@ -8,6 +8,7 @@ ${tc.signature("config", "isSensor", "portTemplateName", "everyTagOpt")}
 #include "tl/optional.hpp"
 #include "Port.h"
 #include "Utils.h"
+#include "Message.h"
 #include ${"<thread>"}
 
 
@@ -51,10 +52,26 @@ protected:
   ${defineHookPoint("<CppBlock>?portTemplate:provide")}
   }
 
+  template <typename A>
+    void handleNextVal(tl::optional<Message<A>> nextValMessage)
+      {
+      // unpacking Message type
+      tl::optional<A> nextVal;
+      if(nextValMessage.has_value()) {
+        Message<A> msg = nextValMessage.value();
+        nextVal = msg.getPayload();
+      }
+      ${defineHookPoint("<CppBlock>?portTemplate:consume")}
+  }
+
+
   void sendToExternal(tl::optional${r"<T>"} nextVal) override
   {
-  ${defineHookPoint("<CppBlock>?portTemplate:consume")}
+  // Type T is a Message type, hand written code, however, expects a primitive type
+  // hence, unpack nextVal first
+  handleNextVal(nextVal);
   }
+
 
   void setNextValue(T nextVal) override {
     <#if config.getRecordingMode().toString() == "ON" && isSensor>
@@ -64,8 +81,15 @@ protected:
     Port${"<T>"}::setNextValue(nextVal);
   }
 
+  template <typename A>
+    void setNextValue(A nextVal) {
+    // hand written code does not wrap values into the Message typ
+    // hence, it has to be done here
+    setNextValue(Message<A>(nextVal));
+  }
 
-  <#if config.getMessageBroker().toString() == "DDS">
+
+    <#if config.getMessageBroker().toString() == "DDS">
     ${Names.getSimpleName(portTemplateName)?cap_first}Port (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
   <#else>
     ${Names.getSimpleName(portTemplateName)?cap_first}Port (std::string instanceName) : instanceName(instanceName)

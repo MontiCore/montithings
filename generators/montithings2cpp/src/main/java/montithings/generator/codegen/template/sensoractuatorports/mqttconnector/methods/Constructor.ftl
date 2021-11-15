@@ -6,4 +6,5 @@ ${port}MqttConnector::${port}MqttConnector(std::string instanceName, MqttClient*
 mqttClientInstance = passedMqttClientInstance;
 mqttClientInstance->addUser (this);
 this->instanceName = instanceName;
+this->uuid = UniqueElement();
 }

@@ -6,6 +6,8 @@ ${tc.signature("port")}
 #include "IComponent.h"
 #include "MqttClient.h"
 #include "MqttPort.h"
+#include "Utils.h"
+#include "Message.h"
 #include "tl/optional.hpp"
 #include <string>
 #include <thread>
@@ -20,8 +22,10 @@ protected:
 std::vector<std::thread> threads;
 MqttClient *  mqttClientInstance;
 std::string sensorActuatorTopic = ${defineHookPoint("<CppBlock>?portTemplate:topic")};
-${port}Port<${defineHookPoint("<CppBlock>?portTemplate:type")}> * sensorActuatorPort;
+${port}Port<Message<${defineHookPoint("<CppBlock>?portTemplate:type")}>>* sensorActuatorPort;
 std::string instanceName;
+UniqueElement uuid;
+
 
 public:
 ${port}MqttConnector(std::string instanceName, MqttClient* passedMqttClientInstance);

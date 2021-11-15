@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("comp", "sensorActuatorPorts", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
@@ -37,6 +37,6 @@ if [ -d "hwc" ]; then
 find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "$0" > "$0.log" 2>&1 &' '{}' \;
 fi
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if config.getMessageBroker().toString() == "MQTT" && hwcPythonScripts?size!=0>
 exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
 </#if>

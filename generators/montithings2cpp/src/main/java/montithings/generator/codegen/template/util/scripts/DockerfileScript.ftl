@@ -111,7 +111,6 @@ RUN ./build.sh ${comp.getFullName()}
             # Run our binary on container startup
             ENTRYPOINT [ "sh", "entrypoint.sh" ]
     </#list>
-
     <#list hwcPythonScripts as script >
             <#assign splitScript  = script?split(".")>
 
@@ -139,7 +138,7 @@ RUN ./build.sh ${comp.getFullName()}
             ENTRYPOINT [ "python3", "${splitScript[1]}.py" ]
 
     </#list>
-
+    <#if hwcPythonScripts?size!=0>
             FROM alpine AS sensoractuatormanager
 
             RUN apk add --no-cache python3 py3-pip
@@ -158,4 +157,5 @@ RUN ./build.sh ${comp.getFullName()}
             RUN pip install -r requirements.txt
 
             ENTRYPOINT [ "python3", "./sensoractuatormanager.py" ]
+        </#if>
 </#if>

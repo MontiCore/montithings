@@ -27,6 +27,7 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 
       docker build --target ${script} -t ${script?lower_case}:latest .
   </#list>
-
+    <#if hwcPythonScripts?size!=0>
       docker build --target sensoractuatormanager -t sensoractuatormanager:latest .
+    </#if>
 </#if>
