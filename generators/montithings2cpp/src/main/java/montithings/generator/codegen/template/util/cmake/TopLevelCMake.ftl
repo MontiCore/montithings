@@ -1,5 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "existsHWC")}
+${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "sensorActuatorPorts", "existsHWC")}
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "">
@@ -10,6 +12,13 @@ ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "co
 cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
+
+<#if config.getSplittingMode().toString() == "OFF">
+  <#list sensorActuatorPorts as sensorActuatorPort >
+    add_subdirectory ("${sensorActuatorPort}")
+  </#list>
+</#if>
+
 
 <#if config.getSplittingMode().toString() != "OFF"
   && config.getTargetPlatform().toString() != "DSA_VCG"

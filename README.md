@@ -55,8 +55,9 @@ you'll most likely want the native installation - it will save you time in the l
 - GCC and CMake (For compiling the generated C++ code)
 - [Visual Studio Community][visualstudio] (only necessary for Windows!)
 - [Docker][docker] (for executing generator tests)
-- [Mosquitto][mosquitto] (only for MQTT message broker)
+- [Mosquitto][mosquitto] and [mosquitto_clients][mosquitto] (only for MQTT message broker)
 - [OpenDDS][opendds] (only for DDS communication)
+- [Python 3][python], [pip][pip] and [paho-mqtt][paho-mqtt] (only for Mqtt message broker)
 
 On Ubuntu 20.04, you can use our script for installing everything except OpenDDS:
 ```
@@ -488,3 +489,6 @@ https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICOR
 [azure-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 [terraform-cli]: https://www.terraform.io/downloads.html
 [azure-terraform-docs]: https://docs.microsoft.com/en-us/azure/developer/terraform/create-linux-virtual-machine-with-infrastructure
+[python]: https://www.python.org/
+[pip]: https://pypi.org/project/pip/
+[paho-mqtt]: https://pypi.org/project/paho-mqtt/

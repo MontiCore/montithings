@@ -18,7 +18,7 @@ LOG(DEBUG) << "Started.";
 <#else>
   cmp.threadJoin();
   <#if config.getMessageBroker().toString() == "MQTT">
-    MqttClient::instance()->wait();
+      mqttClientInstance->wait();
   </#if>
 
   <#if config.getMessageBroker().toString() == "DDS">

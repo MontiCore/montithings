@@ -16,7 +16,8 @@ ARG MTPYTHON
 ARG PYTHONFILE
 COPY --from=builder /install /usr/local
 ADD ${MTPYTHON} /app/montithingsconnector.py
+ADD python/parse_cmd.py /app/parse_cmd.py
 ADD ${PYTHONFILE} /app/script.py
 
 WORKDIR /app
-CMD ["python", "script.py"]
+ENTRYPOINT ["python", "script.py"]

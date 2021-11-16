@@ -34,6 +34,21 @@ ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, con
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
 ${tc.includeArgs("template.component.declarations.DDS", [config])}
 
+<#if config.getMessageBroker().toString() == "MQTT">
+  MqttClient *  mqttClientInstance;
+  MqttClient *  mqttClientLocalInstance;
+  json sensorActuatorTypes;
+
+  <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
+  MqttPort<Message<${type}>> *${p.getName()};
+  <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
+  std::thread th${p.getName()?cap_first};
+  std::promise<void> exitSignal${p.getName()?cap_first};
+  </#if>
+  </#list>
+</#if>
+
 ${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config])}
 
 ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
@@ -59,6 +74,10 @@ void initialize();
 
 public:
 ${className}(std::string instanceName
+<#if config.getMessageBroker().toString() == "MQTT">
+  , MqttClient* passedMqttClientInstance
+  , MqttClient* passedMqttClientLocalInstance
+</#if>
 <#if comp.getParameters()?has_content>,</#if>
 ${TypesPrinter.printConstructorArguments(comp)});
 
@@ -66,6 +85,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
   void publishConnectors();
   void publishConfigForSubcomponent (std::string instanceName);
+  void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::future<void> keepAliveFuture);
 </#if>
 
 <#if config.getMessageBroker().toString() == "DDS">

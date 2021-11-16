@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("subdirectories", "config", "existsHWC")}
+${tc.signature("subdirectories", "sensorActuatorPorts", "config", "existsHWC")}
 
 cmake_minimum_required (VERSION 3.8)
 project ("MontiThings Application")
@@ -22,4 +22,7 @@ project ("MontiThings Application")
 add_subdirectory ("montithings-RTE")
 <#list subdirectories as subdir >
   add_subdirectory ("${subdir}")
+</#list>
+<#list sensorActuatorPorts as sensorActuatorPort >
+  add_subdirectory ("${sensorActuatorPort}")
 </#list>
