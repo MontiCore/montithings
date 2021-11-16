@@ -25,7 +25,7 @@
 
 		<!-- DSLs -->
 
-		<cd4a.version>7.0.0</cd4a.version>
+		<cd4a.version>7.0.1</cd4a.version>
 		<ocl.version>7.0.0</ocl.version>
 		<siunits.version>7.0.0</siunits.version>
 		<montiarc.version>7.0.0-SNAPSHOT</montiarc.version>

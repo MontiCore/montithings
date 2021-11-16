@@ -341,7 +341,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
       generateCDEAdapter(target, config);
     }
-    generateCD(modelPath, target);
+
+    generateCD(modelPath, hwcPath, target);
     mtg.generateBuildScript(target, hwcPythonScripts);
 
     for (String model : models.getMontithings()) {
@@ -543,7 +544,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
-  protected void generateCD(File modelPath, File targetFilepath) {
+  protected void generateCD(File modelPath, File hwcPath, File targetFilepath) {
     List<String> foundModels = Modelfinder
       .getModelsInModelPath(modelPath, CD4AnalysisGlobalScope.EXTENSION);
     for (String model : foundModels) {
@@ -552,7 +553,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       Log.info("Generate CD model: " + model, TOOL_NAME);
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
-      new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model)
+      new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), Paths.get(hwcPath.getAbsolutePath()), model)
         //.generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
         //.generate(Optional.of(packageName));
         .generate(Optional.empty());

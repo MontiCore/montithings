@@ -3,10 +3,8 @@ package montithings.generator.cd2cpp;
 
 import com.google.common.collect.LinkedListMultimap;
 import de.monticore.cd4analysis._parser.CD4AnalysisParser;
-import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import de.monticore.cd4analysis.cocos.CD4AnalysisCoCos;
 import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._parser.CD4CodeParser;
 import de.monticore.cd4code._symboltable.*;
 import de.monticore.cd4code.prettyprint.CD4CodeFullPrettyPrinter;
 import de.monticore.cdassociation._ast.ASTCDAssociation;
@@ -16,57 +14,61 @@ import de.monticore.cdbasis._symboltable.ICDBasisScope;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
-import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
+import de.se_rwth.commons.logging.Log;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static montithings.generator.cd2cpp.TypeHelper.primitiveTypes;
 
 public class CppGenerator {
-
+  
   private Path outputDir;
-
+  
+  private Path hwcPath;
+  
   private TypeHelper typeHelper;
-
+  
   private GeneratorSetup generatorSetup;
-
+  
   private GeneratorEngine ge;
-
+  
   private String _package = "";
-
+  
   protected CD4AnalysisParser p;
-
+  
   protected ICD4CodeGlobalScope globalScope;
-
+  
   protected CD4CodeScopesGenitorDelegator symbolTableCreator;
-
+  
   protected CD4AnalysisCoCos cd4AnalyisCoCos;
-
+  
   protected CD4CodeFullPrettyPrinter printer;
-
+  
   protected CD4CodeDeSer deSer;
-
+  
   protected ASTCDCompilationUnit compilationUnit;
-
+  
   private List<CDTypeSymbol> cdSymbols = new ArrayList<>();
-
+  
   public CppGenerator(
     Path outputDir,
     Path modelPath,
+    Path hwcPath,
     String modelName) {
+    
     this.outputDir = outputDir;
-
+    
+    this.hwcPath = hwcPath;
+    
     CD4CodeMill.init();
-
+    
     CD4CodeMill.globalScope().clear();
     globalScope = CD4CodeMill.globalScope();
     globalScope.setModelPath(new ModelPath(modelPath));
@@ -78,22 +80,21 @@ public class CppGenerator {
       .setSpannedScope(CD4CodeMill.scope())
       .build());
     symbolTableCreator = CD4CodeMill.scopesGenitorDelegator();
-
+    
     final Optional<ASTCDCompilationUnit> astcdCompilationUnit;
     try {
       astcdCompilationUnit = CD4CodeMill.parser()
         .parse(modelPath.toFile().getPath() + "/" + modelName.replace(".", File.separator) + ".cd");
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       return;
     }
     compilationUnit = astcdCompilationUnit.get();
     final ICD4CodeArtifactScope scope = symbolTableCreator.createFromAST(compilationUnit);
     compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
-
+    
     cdSymbols.addAll(scope.getCDTypeSymbols().values());
-
+    
     scope
       .getSubScopes()
       .stream()
@@ -103,7 +104,7 @@ public class CppGenerator {
       .map(LinkedListMultimap::values)
       .forEach(l -> cdSymbols.addAll(l));
   }
-
+  
   public void generate(Optional<String> targetPackage) {
     for (CDTypeSymbol symbol : cdSymbols) {
       // CD4A uses different packages. If there's a package _within_ the diagram
@@ -118,12 +119,12 @@ public class CppGenerator {
       this.ge = new GeneratorEngine(this.generatorSetup);
       this.generate(symbol);
     }
-
+    
     if (!cdSymbols.isEmpty()) {
       this.generatePackageHeader(new ArrayList<>(cdSymbols));
     }
   }
-
+  
   protected void generatePackageHeader(Collection<CDTypeSymbol> types) {
     List<String> imports = new ArrayList<>();
     types.stream().filter(t -> !primitiveTypes.contains(t.getName()))
@@ -133,16 +134,17 @@ public class CppGenerator {
       .get(filePath.toString().replace("::", File.separator) + File.separator + "Package.h");
     ge.generateNoA("templates.package.ftl", filePath, imports);
   }
-
+  
   private void generate(CDTypeSymbol type) {
     // Skip primitives
-    if (primitiveTypes.contains(type.getName()))
+    if (primitiveTypes.contains(type.getName())) {
       return;
-
+    }
+    
     Collection<ASTCDAssociation> associations = AssociationHelper.getAssociations(compilationUnit, type);
-
+    
     String kind = type.isIsClass() ? "class" : (type.isIsEnum() ? "enum" : "class");
-
+    
     final StringBuilder _super = new StringBuilder();
     if (type.isPresentSuperClass()) {
       _super.append("public ");
@@ -167,15 +169,29 @@ public class CppGenerator {
       });
       _super.deleteCharAt(_super.length() - 1);
     }
-
+    
     String typeWithoutMT = typeHelper.printType(type);
     if (typeWithoutMT.startsWith("montithings::")) {
       typeWithoutMT = typeWithoutMT.replaceFirst("montithings::", "");
     }
     String filePathString = Names.getPathFromPackage(typeWithoutMT);
     filePathString = filePathString.replace("::", File.separator);
+    
     Path filePath = Paths.get(Names.getPathFromPackage(filePathString) + ".h");
-
+    File hwcFile = new File(hwcPath.toString(), filePath.toString());
+    File targetFile = new File(outputDir.toString(), filePath.toString());
+    boolean existsHwc = hwcFile.exists();
+    if(existsHwc){
+      try {
+        FileUtils.copyFile(hwcFile, targetFile);
+      } catch (IOException e) {
+        e.printStackTrace();
+        Log.error(String.format("0xCD2CPP0100 Copying from '%s' to '%s' failed",
+          hwcFile, targetFile));
+      }
+    }
+    filePath = Paths.get(Names.getPathFromPackage(filePathString)
+      + (existsHwc ? "TOP" : "") + ".h");
     // Hack to at least correctly generate java.lang.*
     // Will not work with packages that start with upper case letters
     List<String> imports = new ArrayList<>();
@@ -193,10 +209,10 @@ public class CppGenerator {
       }
     }
      */
-
+    
     ge.generate("templates.type.ftl", filePath, type.getAstNode(),
       _package.chars().filter(ch -> ch == '.').count() + 2,
       "montithings\n{\nnamespace " + _package.replace(".", "\n{\nnamespace "), kind,
-      type, _super, typeHelper, imports, associations);
+      type, _super, typeHelper, imports, associations, existsHwc);
   }
 }
