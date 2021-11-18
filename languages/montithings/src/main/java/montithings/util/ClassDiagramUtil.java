@@ -44,8 +44,9 @@ public class ClassDiagramUtil {
   }
 
   protected static CD4CodeArtifactScope createClassDiagram(ASTMTComponentType comp) {
+    String componentTypeName = "Co" + comp.getName();
     ASTModifier publicModifier = CD4CodeMill.modifierBuilder().PUBLIC().build();
-    ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName("I" + comp.getName()).
+    ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(componentTypeName).
             setModifier(publicModifier).build();
     if (comp.isPresentMTImplements()) {
       ASTMCObjectType interfaceType = CD4CodeMill.mCQualifiedTypeBuilder().setMCQualifiedName
@@ -106,7 +107,7 @@ public class ClassDiagramUtil {
       }
     }
     ASTCDDefinition astcdDefinition = CD4CodeMill.cDDefinitionBuilder().setModifier(publicModifier).
-            addCDElement(astcdClass).setName(comp.getName()).build();
+            addCDElement(astcdClass).setName(componentTypeName).build();
     ASTCDCompilationUnit astcdCompilationUnit = CD4CodeMill.cDCompilationUnitBuilder().
             setCDDefinition(astcdDefinition).build();
     ICD4CodeArtifactScope scope = CD4CodeMill.scopesGenitorDelegator().createFromAST(astcdCompilationUnit);
@@ -118,6 +119,7 @@ public class ClassDiagramUtil {
         setSymType((ASTCDMethod) astcdMember);
       }
     }
+    astcdClass.getSymbol().setIsClass(true);
     return (CD4CodeArtifactScope) scope;
   }
 

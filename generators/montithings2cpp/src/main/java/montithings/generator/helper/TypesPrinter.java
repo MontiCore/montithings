@@ -105,6 +105,10 @@ public class TypesPrinter {
    */
   public static String convertMontiCoreTypeNameToCppFQN(TypeSymbol typeSymbol) {
     String typeName = typeSymbol.getName();
+    //TODO: Instead of this, change FQN of typesymbol on creation
+    if (typeName.startsWith("CoData")) {
+      typeName = typeName + "." + typeName;
+    }
     return typeName.replaceAll("\\.", "::");
   }
 

@@ -21,10 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static montithings.generator.cd2cpp.TypeHelper.primitiveTypes;
@@ -108,6 +105,22 @@ public class CppGenerator {
       .forEach(l -> cdSymbols.addAll(l));
   }
 
+  public CppGenerator(Path outputDir, ICD4CodeScope scope) {
+    this.outputDir = outputDir;
+    //compilationUnit = (ASTCDCompilationUnit) scope.getAstNode();
+    //compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
+    cdSymbols.addAll(scope.getCDTypeSymbols().values());
+
+    scope
+            .getSubScopes()
+            .stream()
+            .map(ICDBasisScope::getCDTypeSymbols)
+            .collect(Collectors.toList())
+            .stream()
+            .map(LinkedListMultimap::values)
+            .forEach(l -> cdSymbols.addAll(l));
+  }
+
   public void generate(Optional<String> targetPackage) {
     for (CDTypeSymbol symbol : cdSymbols) {
       // CD4A uses different packages. If there's a package _within_ the diagram
@@ -143,7 +156,12 @@ public class CppGenerator {
     if (primitiveTypes.contains(type.getName()))
       return;
 
-    Collection<ASTCDAssociation> associations = AssociationHelper.getAssociations(compilationUnit, type);
+    Collection<ASTCDAssociation> associations;
+    if (compilationUnit != null) {
+      associations = AssociationHelper.getAssociations(compilationUnit, type);
+    } else {
+      associations = Collections.emptySet();
+    }
 
     String kind = type.isIsClass() ? "class" : (type.isIsEnum() ? "enum" : "class");
 

@@ -64,8 +64,8 @@ public class MTPortUsage implements MontiThingsASTMTComponentTypeCoCo {
                   sourcePosition);
         }
         String portTypeName = node.getSpannedScope().resolvePort(port).get().getTypeInfo().getName();
-        if (!portTypeName.startsWith("I") || getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(),
-                portTypeName.substring(1)) == null){
+        if (!portTypeName.startsWith("Co") || getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(),
+                portTypeName.substring(2)) == null) {
           Log.warn(
                   ArcError.INCOMING_PORT_NO_FORWARD.format(port, symbol.getFullName()),
                   sourcePosition);

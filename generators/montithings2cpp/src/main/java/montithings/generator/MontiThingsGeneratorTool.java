@@ -19,7 +19,9 @@ import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code._symboltable.ICD4CodeScope;
 import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -125,7 +127,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     IMontiThingsGlobalScope symTab = createMTGlobalScope(mp);
-    createClassDiagrams((MontiThingsGlobalScope) symTab, symbolPath);
+    Set<CD4CodeArtifactScope> componentTypeScopes = createClassDiagrams((MontiThingsGlobalScope) symTab, symbolPath);
     if (models.getClassdiagrams().isEmpty()) {
       mp.addEntry(Paths.get(symbolPath));
     }
@@ -315,6 +317,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       generateCDEAdapter(target, config);
     }
     generateCD(modelPath, target);
+    generateComponentTypeCDs(componentTypeScopes, target);
     mtg.generateBuildScript(target);
 
     for (String model : models.getMontithings()) {
@@ -520,6 +523,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         //.generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
         //.generate(Optional.of(packageName));
         .generate(Optional.empty());
+    }
+  }
+
+  protected void generateComponentTypeCDs(Set<CD4CodeArtifactScope> scopes, File targetFilepath) {
+    for (ICD4CodeScope scope : scopes) {
+      String modelName = scope.getName();
+      Log.info("Generate ComponentType model: " + modelName, TOOL_NAME);
+      Path outDir = Paths.get(targetFilepath.getAbsolutePath());
+      new CppGenerator(outDir, scope)
+              .generate(Optional.empty());
     }
   }
 

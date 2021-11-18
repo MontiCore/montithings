@@ -17,6 +17,8 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
   <#assign output = output?replace("Character", "char")>
   <#assign output = output?replace("Double", "double")>
   <#assign output = output?replace("Float", "float")>
+  <#assign output = output?replace("InPort", "Port")>
+  <#assign output = output?replace("OutPort", "Port")>
   <#return output>
 </#function>
 
@@ -64,6 +66,9 @@ ${kind} ${type.getName()} <#if super != "">: ${super} </#if>{
     <#list type.getFieldList() as field>
       <#-- attributes -->
       <#assign fieldType = java2cppTypeString(field.getType().getTypeInfo().getName())>
+      <#if field.getType().class.simpleName == "SymTypeOfGenerics">
+        <#assign fieldType = field.getType().print()?replace("OutPort", "Port")?replace("InPort", "Port")>
+      </#if>
       <#assign mandatoryFields = mandatoryFields + [{"name": field.getName(), "type":fieldType}]>
       protected: ${fieldType} ${field.getName()};
       public: ${fieldType} get${field.getName()?cap_first}() {

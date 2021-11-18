@@ -1,9 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.prettyprinter;
 
+import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.PortSymbol;
 import behavior._ast.ASTAfterStatement;
 import behavior._ast.ASTAgoQualification;
+import behavior._ast.ASTConnectStatement;
 import behavior._ast.ASTLogStatement;
 import behavior._visitor.BehaviorHandler;
 import behavior._visitor.BehaviorTraverser;
@@ -12,8 +14,6 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
-import de.monticore.symboltable.IScope;
-import montiarc._symboltable.IMontiArcScope;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
 
@@ -25,19 +25,19 @@ import static montithings.generator.prettyprinter.CppPrettyPrinterUtils.capitali
 import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppBehaviorPrettyPrinter
-  implements BehaviorHandler {
+        implements BehaviorHandler {
 
   protected BehaviorTraverser traverser;
   protected IndentPrinter printer;
   protected int afterStatementIndex;
 
-  public CppBehaviorPrettyPrinter(IndentPrinter printer){
+  public CppBehaviorPrettyPrinter(IndentPrinter printer) {
     this.printer = printer;
     this.afterStatementIndex = 0;
   }
 
   @Override
-  public void handle(ASTAfterStatement node){
+  public void handle(ASTAfterStatement node) {
     getPrinter().print("std::future<bool> fut");
     getPrinter().print(afterStatementIndex);
     getPrinter().print(" = std::async(std::launch::async, [&] () -> bool {");
@@ -54,68 +54,73 @@ public class CppBehaviorPrettyPrinter
   }
 
   @Override
-  public void handle (ASTLogStatement node) {
+  public void handle(ASTLogStatement node) {
     getPrinter().print("LOG(INFO) <<");
     printLogString(node);
     getPrinter().print(";");
   }
 
   @Override
-  public void handle (ASTAgoQualification node){
+  public void handle(ASTAgoQualification node) {
     handle(node, false);
   }
 
-  public void handle (ASTAgoQualification node, boolean isComparedToNoData){
-    if(node.getExpression() instanceof ASTNameExpression){
+  @Override
+  public void handle(ASTConnectStatement node) {
+    for (ASTPortAccess target : node.getConnector().getTargetList()) {
+      getPrinter().print("MqttClient::instance->publish(replaceDotsBySlashes(\"/connectors/\"");
+      getPrinter().print(" + instanceName + ");
+      getPrinter().print("\"/${" + target.getQName() + "}\"");
+      getPrinter().print(", replaceDotsBySlashes(");
+      getPrinter().print(" + instanceName + ");
+      getPrinter().print("\"/${" + node.getConnector().getSource().getQName() + "}\"");
+      getPrinter().print("));");
+    }
+  }
+
+  public void handle(ASTAgoQualification node, boolean isComparedToNoData) {
+    if (node.getExpression() instanceof ASTNameExpression) {
       ASTNameExpression name = (ASTNameExpression) node.getExpression();
       Optional<PortSymbol> port = getPortForName(name);
-      if(port.isPresent()){
-        if(port.get().isIncoming()){
+      if (port.isPresent()) {
+        if (port.get().isIncoming()) {
           getPrinter().print(Identifier.getInputName());
-        }
-        else  {
+        } else {
           getPrinter().print(Identifier.getResultName());
         }
         getPrinter().print(".agoGet");
         getPrinter().print(capitalize(name.getName()) + "(std::chrono::");
         printTime(node.getSIUnitLiteral());
         getPrinter().print(")");
-        if(!isComparedToNoData){
+        if (!isComparedToNoData) {
           getPrinter().print(".value()");
         }
-      }
-      else {
+      } else {
         Optional<VariableSymbol> symbol = node.getEnclosingScope().resolveVariable(name.getName());
-        if(symbol.isPresent()){
+        if (symbol.isPresent()) {
           getPrinter().print(Identifier.getStateName() + ".agoGet");
           getPrinter().print(capitalize(name.getName()) + "(std::chrono::");
           printTime(node.getSIUnitLiteral());
           getPrinter().print(")");
-        }
-        else {
+        } else {
           getPrinter().print(name.getName());
         }
       }
-    }
-    else {
+    } else {
       node.getExpression().accept(getTraverser());
     }
   }
 
-  protected void printTime(ASTSIUnitLiteral lit){
-    if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")){
+  protected void printTime(ASTSIUnitLiteral lit) {
+    if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")) {
       getPrinter().print("nanoseconds");
-    }
-    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("μs")){
+    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("μs")) {
       getPrinter().print("microseconds");
-    }
-    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ms")){
+    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ms")) {
       getPrinter().print("milliseconds");
-    }
-    else if(SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("s")){
+    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("s")) {
       getPrinter().print("seconds");
-    }
-    else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")) {
+    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")) {
       getPrinter().print("minutes");
     }
     getPrinter().print("{");
@@ -160,11 +165,13 @@ public class CppBehaviorPrettyPrinter
     return printer;
   }
 
-  @Override public BehaviorTraverser getTraverser() {
+  @Override
+  public BehaviorTraverser getTraverser() {
     return traverser;
   }
 
-  @Override public void setTraverser(BehaviorTraverser traverser) {
+  @Override
+  public void setTraverser(BehaviorTraverser traverser) {
     this.traverser = traverser;
   }
 }

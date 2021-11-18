@@ -363,7 +363,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     return mtScope;
   }
 
-  public void createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
+  public Set<CD4CodeArtifactScope> createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
     Preconditions.checkArgument(scope != null);
     Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
 
@@ -385,6 +385,8 @@ public class MontiThingsTool implements IMontiThingsTool {
       final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
       final String path = symbols2Json.store(artifactScope, symbolFileName);
     }
+
+    return scopes;
   }
 
   protected void addPortSymbolsToCD4CGlobalScope() {
