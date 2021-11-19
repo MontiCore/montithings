@@ -8,6 +8,7 @@ import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.utils.Names;
 import de.se_rwth.commons.logging.Log;
+import montithings.MontiThingsMill;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
@@ -334,7 +335,9 @@ public class MTGenerator {
       Names.getSimpleName(portName));
     // Bind hookpoints to templates when possible, that will be used by the generator engine.
     Stream.of("include", "body", "provide", "consume", "init", "topic", "type")
-      .forEach(hook -> bindSAPortTemplate(portName, setup, templates, hook, packageName));
+      .forEach(hook -> bindSAPortTemplate(portName, setup, templates, hook, config,
+        Optional.empty(), packageName)
+      );
 
     File target = new File(genSrcDir + File.separator + packageName + "." + portName);
     GeneratorEngine engine = new GeneratorEngine(setup);
@@ -396,7 +399,9 @@ public class MTGenerator {
       Names.getSimpleName(portName));
     // Bind hookpoints to templates when possible, that will be used by the generator engine.
     Stream.of("include", "body", "provide", "consume", "init")
-        .forEach(hook -> bindSAPortTemplate(portName, setup, templates, hook, config, portSymbol));
+      .forEach(hook -> bindSAPortTemplate(portName, setup, templates, hook, config,
+        Optional.of(portSymbol), "")
+      );
 
     // Find frequency at which to read out ports
     Optional<ASTEveryTag> everyTag = Optional.empty();
@@ -430,22 +435,24 @@ public class MTGenerator {
    * If no template is specified for the given hookpoint, no binding will occur.
    * The given setup is extended by the bindings and global variables as required.
    *
-   * @param portName   Qualified name of the resulting port. E.g. a.b.c.ComponentnamePortnamePort.
-   * @param setup      Generator setup where hookpoints are bound and global variables are set.
-   * @param templates  Templates following a defined naming scheme.
-   * @param hookpoint  Hookpoint name that should be bound by this method.
-   * @param config     Configuration of the generator. Mainly, the platform and port configuration is used.
-   * @param portSymbol Port that may have specific templates configured for usage.
+   * @param portName    Qualified name of the resulting port. E.g. a.b.c.ComponentnamePortnamePort.
+   * @param setup       Generator setup where hookpoints are bound and global variables are set.
+   * @param templates   Templates following a defined naming scheme.
+   * @param hookpoint   Hookpoint name that should be bound by this method.
+   * @param config      Configuration of the generator. Mainly, the platform and port configuration is used.
+   * @param portSymbol  Port that may have specific templates configured for usage.
+   * @param packageName Package name of port that is not associated to a single component type
    */
   protected static void bindSAPortTemplate(String portName, GeneratorSetup setup,
-    Set<File> templates, String hookpoint, ConfigParams config, PortSymbol portSymbol) {
+    Set<File> templates, String hookpoint, ConfigParams config, Optional<PortSymbol> portSymbol,
+    String packageName) {
 
     hookpoint = StringUtils.capitalize(hookpoint);
     // Get specified template for the port.
     Optional<HookpointSymbol> hookpointSymbol = Optional.empty();
-    if (!(config.getMtConfigScope() == null)) {
+    if (!(config.getMtConfigScope() == null) && portSymbol.isPresent()) {
       hookpointSymbol = config.getMtConfigScope()
-        .resolveHookpoint(config.getTargetPlatform().name(), portSymbol,
+        .resolveHookpoint(config.getTargetPlatform().name(), portSymbol.get(),
           StringUtils.uncapitalize(hookpoint));
     }
     // Bind specified template, if present and set arguments for it as global variable.
@@ -467,22 +474,9 @@ public class MTGenerator {
         if (template.getName().endsWith(Names.getSimpleName(portName) + hookpoint + ".ftl")) {
           setup.getGlex()
             .bindTemplateHookPoint("<CppBlock>?portTemplate:" + StringUtils.uncapitalize(hookpoint),
-              portName + hookpoint);
+              (packageName.equals("") ? "" : packageName + ".") + portName + hookpoint);
           break;
         }
-      }
-    }
-  }
-
-  protected static void bindSAPortTemplate(String portName, GeneratorSetup setup,
-    Set<File> templates, String hookpoint, String packageName) {
-    
-    hookpoint = StringUtils.capitalize(hookpoint);
-    for (File template : templates) {
-      if (template.getName().endsWith(Names.getSimpleName(portName) + hookpoint + ".ftl")) {
-        setup.getGlex()
-          .bindTemplateHookPoint("<CppBlock>?portTemplate:" + StringUtils.uncapitalize(hookpoint),
-            packageName + "." + portName + hookpoint);
       }
     }
   }
