@@ -46,6 +46,8 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
 </#if>
 
+${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, className])}
+
 <#if ComponentHelper.retainState(comp)>
   this->restoreState ();
 </#if>
