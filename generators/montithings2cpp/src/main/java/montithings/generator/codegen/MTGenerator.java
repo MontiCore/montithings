@@ -308,9 +308,12 @@ public class MTGenerator {
   }
 
   public void generateSensorActuatorPort(String portName, String packageName, ConfigParams config) {
-
-    //TODO: ignore if neither Sensor nor Actuator appear
-    boolean isSensor = portName.contains("Sensor") ? true : false;
+    if (!portName.contains("Sensor") && !portName.contains("Actuator")) {
+      Log.error(String.format(
+        "0xMT1113 Component-independent port '%s' must include either 'sensor' or 'actuator'",
+        portName));
+    }
+    boolean isSensor = portName.contains("Sensor");
     Path templatePath = config.getHwcTemplatePath();
 
     // Template environment setup.
