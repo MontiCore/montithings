@@ -17,3 +17,4 @@ exclude_patterns:
   - "**/defaultTypes/"
   - "libraries/"
   - "**/generated-test-sources/"
+  - "docs/"
