@@ -70,7 +70,6 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
     void run${ComponentHelper.getEveryBlockName(comp, everyBlock)}();
   </#list>
 </#if>
-void initialize();
 
 public:
 ${className}(std::string instanceName

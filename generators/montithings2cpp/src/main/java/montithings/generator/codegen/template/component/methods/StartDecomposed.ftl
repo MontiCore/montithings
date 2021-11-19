@@ -15,5 +15,5 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::start(){
     </#if>
 </#if>
 
-initialize();
+${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, className])}
 }
