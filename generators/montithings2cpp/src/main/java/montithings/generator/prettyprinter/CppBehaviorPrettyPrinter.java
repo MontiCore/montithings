@@ -14,6 +14,8 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.se_rwth.commons.StringTransformations;
+import groovyjarjarantlr.StringUtils;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
 
@@ -67,16 +69,35 @@ public class CppBehaviorPrettyPrinter
 
   @Override
   public void handle(ASTConnectStatement node) {
+    boolean sourceIsComponentInstance = isComponentInstance(node.getConnector().getSource());
     for (ASTPortAccess target : node.getConnector().getTargetList()) {
-      getPrinter().print("MqttClient::instance->publish(replaceDotsBySlashes(\"/connectors/\"");
-      getPrinter().print(" + instanceName + ");
-      getPrinter().print("\"/${" + target.getQName() + "}\"");
-      getPrinter().print(", replaceDotsBySlashes(");
-      getPrinter().print(" + instanceName + ");
-      getPrinter().print("\"/${" + node.getConnector().getSource().getQName() + "}\"");
+      boolean targetIsComponentInstance = isComponentInstance(target);
+      getPrinter().print("MqttClient::instance->publish(replaceDotsBySlashes(\"/connectors/\" + ");
+      if (targetIsComponentInstance) {
+        getPrinter().print("instanceName");
+        getPrinter().print(" + \"/" + target.getQName() + "\"");
+      }
+      else {
+        getPrinter().print("input.get" + StringTransformations.capitalize(target.getComponent()) + "()" +
+                ".value().getFullyQualifiedName()");
+      }
+      getPrinter().print("), replaceDotsBySlashes( + ");
+      if (sourceIsComponentInstance) {
+        getPrinter().print("instanceName");
+        getPrinter().print(" + \"/" + node.getConnector().getSource().getQName() + "\"");
+      }
+      else {
+        getPrinter().print("input.get" + StringTransformations.capitalize(node.getConnector().getSource().getComponent()) + "()" +
+                ".value().getFullyQualifiedName()");
+      }
       getPrinter().print("));");
     }
   }
+
+  protected boolean isComponentInstance(ASTPortAccess portAccess) {
+    return !portAccess.isPresentComponentSymbol();
+  }
+
 
   public void handle(ASTAgoQualification node, boolean isComparedToNoData) {
     if (node.getExpression() instanceof ASTNameExpression) {
