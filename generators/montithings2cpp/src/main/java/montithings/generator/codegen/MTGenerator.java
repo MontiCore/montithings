@@ -310,6 +310,15 @@ public class MTGenerator {
       "template/adapter/ImplementationFile.ftl", packageName, simpleName, config);
   }
 
+  /**
+   * This method creates independent sensor / actuator ports. Not to be confused with
+   * {@code generateAdditionalPort} method that generates code for sensor / actuator ports that
+   * are directly associated with a specific port of a specific component type.
+   *
+   * @param portName    Qualified name of the resulting port. E.g. a.b.c.ComponentnamePortnamePort.
+   * @param packageName Name of the package in which the HWC of the port is placed
+   * @param config      Configuration of the generator. Mainly, the platform and port configuration is used.
+   */
   public void generateSensorActuatorPort(String portName, String packageName, ConfigParams config) {
     if (!portName.contains("Sensor") && !portName.contains("Actuator")) {
       Log.error(String.format(
@@ -329,9 +338,9 @@ public class MTGenerator {
     // template for a port is given. The scheme follows the pattern
     // templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume|Init|Topic|Type"].ftl,
     // if the portName equals a.b.c.ComponentnamePortnamePort.
-    Set<File> templates = FileHelper.getPortImplementation(Paths
-        .get(templatePath.toFile().getAbsolutePath(),
-          Names.getPathFromPackage(packageName)).toFile(),
+    Set<File> templates = FileHelper.getPortImplementation(
+      Paths.get(templatePath.toFile().getAbsolutePath(),
+        Names.getPathFromPackage(packageName)).toFile(),
       Names.getSimpleName(portName));
     // Bind hookpoints to templates when possible, that will be used by the generator engine.
     Stream.of("include", "body", "provide", "consume", "init", "topic", "type")
