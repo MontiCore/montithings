@@ -22,6 +22,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static montithings.generator.helper.FileHelper.makeExecutable;
 
@@ -322,21 +324,17 @@ public class MTGenerator {
     setup.setAdditionalTemplatePaths(
       Collections.singletonList(templatePath.toFile().getAbsoluteFile()));
 
-    // Set of templates that follow a defined naming scheme that will be used if no specific template for a port is given.
-    // The scheme follows the pattern templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume|Init|Topic|Type"].ftl,
+    // Set of templates that follow a defined naming scheme that will be used if no specific
+    // template for a port is given. The scheme follows the pattern
+    // templatePath/a/b/c/ComponentnamePortnamePort["Include|Body|Provide|Consume|Init|Topic|Type"].ftl,
     // if the portName equals a.b.c.ComponentnamePortnamePort.
     Set<File> templates = FileHelper.getPortImplementation(Paths
         .get(templatePath.toFile().getAbsolutePath(),
           Names.getPathFromPackage(packageName)).toFile(),
       Names.getSimpleName(portName));
     // Bind hookpoints to templates when possible, that will be used by the generator engine.
-    bindSAPortTemplate(portName, setup, templates, "include", packageName);
-    bindSAPortTemplate(portName, setup, templates, "body", packageName);
-    bindSAPortTemplate(portName, setup, templates, "provide", packageName);
-    bindSAPortTemplate(portName, setup, templates, "consume", packageName);
-    bindSAPortTemplate(portName, setup, templates, "init", packageName);
-    bindSAPortTemplate(portName, setup, templates, "topic", packageName);
-    bindSAPortTemplate(portName, setup, templates, "type", packageName);
+    Stream.of("include", "body", "provide", "consume", "init", "topic", "type")
+      .forEach(hook -> bindSAPortTemplate(portName, setup, templates, hook, packageName));
 
     File target = new File(genSrcDir + File.separator + packageName + "." + portName);
     GeneratorEngine engine = new GeneratorEngine(setup);
@@ -344,25 +342,13 @@ public class MTGenerator {
     engine.generateNoA("template/sensoractuatorports/deploy/DeploySensorActuatorPort.ftl",
       Paths.get(target + File.separator + "Deploy" + portName + ".cpp"), portName, isSensor,
       config);
-
     engine.generateNoA("template/sensoractuatorports/mqttconnector/Header.ftl",
       Paths.get(target + File.separator + portName + "MqttConnector.h"), portName);
     engine.generateNoA("template/sensoractuatorports/mqttconnector/Body.ftl",
       Paths.get(target + File.separator + portName + "MqttConnector.cpp"), portName, isSensor);
-
-    Optional<ASTEveryTag> everyTag = Optional.empty();
-    //TODO: What to do with this?
-    /*if (config.getMtConfigScope() != null) {
-      Optional<PortTemplateTagSymbol> portTag = config.getMtConfigScope()
-              .resolvePortTemplateTag(config.getTargetPlatform().name(), portSymbol);
-      if (portTag.isPresent() && portTag.get().getAstNode().hasEveryTag()) {
-        everyTag = portTag.get().getAstNode().getEveryTag();
-      }
-    }*/
-
     engine.generateNoA("template/sensoractuatorports/SensorActuatorPort.ftl",
       Paths.get(target + File.separator + portName + "Port.h"), config, isSensor, portName,
-      everyTag);
+      Optional.empty());
   }
 
   /**
@@ -409,12 +395,10 @@ public class MTGenerator {
           Names.getPathFromPackage(Names.getQualifier(portName))).toFile(),
       Names.getSimpleName(portName));
     // Bind hookpoints to templates when possible, that will be used by the generator engine.
-    bindSAPortTemplate(portName, setup, templates, "include", config, portSymbol);
-    bindSAPortTemplate(portName, setup, templates, "body", config, portSymbol);
-    bindSAPortTemplate(portName, setup, templates, "provide", config, portSymbol);
-    bindSAPortTemplate(portName, setup, templates, "consume", config, portSymbol);
-    bindSAPortTemplate(portName, setup, templates, "init", config, portSymbol);
+    Stream.of("include", "body", "provide", "consume", "init")
+        .forEach(hook -> bindSAPortTemplate(portName, setup, templates, hook, config, portSymbol));
 
+    // Find frequency at which to read out ports
     Optional<ASTEveryTag> everyTag = Optional.empty();
     if (config.getMtConfigScope() != null) {
       Optional<PortTemplateTagSymbol> portTag = config.getMtConfigScope()
@@ -428,7 +412,6 @@ public class MTGenerator {
     GeneratorEngine engine = new GeneratorEngine(setup);
     engine.generateNoA("template/util/ports/sensorActuatorPort.ftl", path, config, portSymbol,
       portName, everyTag, existsHWC);
-
   }
 
   /**
@@ -455,8 +438,8 @@ public class MTGenerator {
    * @param portSymbol Port that may have specific templates configured for usage.
    */
   protected static void bindSAPortTemplate(String portName, GeneratorSetup setup,
-    Set<File> templates,
-    String hookpoint, ConfigParams config, PortSymbol portSymbol) {
+    Set<File> templates, String hookpoint, ConfigParams config, PortSymbol portSymbol) {
+
     hookpoint = StringUtils.capitalize(hookpoint);
     // Get specified template for the port.
     Optional<HookpointSymbol> hookpointSymbol = Optional.empty();
@@ -492,8 +475,8 @@ public class MTGenerator {
   }
 
   protected static void bindSAPortTemplate(String portName, GeneratorSetup setup,
-    Set<File> templates,
-    String hookpoint, String packageName) {
+    Set<File> templates, String hookpoint, String packageName) {
+    
     hookpoint = StringUtils.capitalize(hookpoint);
     for (File template : templates) {
       if (template.getName().endsWith(Names.getSimpleName(portName) + hookpoint + ".ftl")) {
