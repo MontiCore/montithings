@@ -39,7 +39,6 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
 </#if>
-${tc.includeArgs("template.component.methods.Initialize", [comp, config, className])}
 
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}

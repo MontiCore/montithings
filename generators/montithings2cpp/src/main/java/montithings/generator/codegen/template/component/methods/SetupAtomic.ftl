@@ -40,5 +40,5 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   replaceDotsBySlashes (instanceName));
 </#if>
 
-initialize();
+${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, className])}
 }
