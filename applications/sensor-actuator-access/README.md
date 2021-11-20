@@ -16,28 +16,19 @@ MontiThings uses the templates to inject code in the ports.
 To enable MontiThings to find the templates, you have to give them specific 
 names and replace `<ComponentName>` and `<PortName>` with the names of the 
 component and port you want to inject your code into: 
-- To add import statements, use `<ComponentName><PortName>PortInclude.ftl`
+- To add import statements, use `<ComponentName><PortName>Include.ftl`
 - To provide values to the component (i.e. implement an incoming port), 
-use `<ComponentName><PortName>PortProvide.ftl`
+use `<ComponentName><PortName>Provide.ftl`
 - To process values from the component (i.e. implement an outgoing port), 
-use `<ComponentName><PortName>PortConsume.ftl`
+use `<ComponentName><PortName>Consume.ftl`
+- To specify the type of the port use `<ComponentName><PortName>Type.ftl`
+- To provide the topic which the port publishes or subscribes to use
+`<ComponentName><PortName>Topic.ftl`
 
-For example, here the `SourceSensorPortProvide.ftl` template 
-implements the incoming port (called `sensor`) of the `Source` component. 
-Templates for incoming ports need to call the `setNextValue()` method to provide
-values to the architecture. 
-Here, we just count up numbers with stepsize 2:
-```
-static int counter = 0;
-counter += 2;
-this->setNextValue (counter);
-```
-
-Similarly, we can implement using the outgoing port of the `Sink` component 
-which is called `Actuator`. 
+For example, we can implement an actuator port like this: 
 For the purpose of not requiring any hardware to run this example, we just print
 the values to the console.
-This is done by `SinkActuatorPortConsume.ftl`:
+This is done by `TestActuatorConsume.ftl`:
 ```
 if (nextVal)
   {
@@ -53,22 +44,19 @@ port.
 Otherwise (if the compute method does not write data to that port), we only 
 print "Sink: No data.".
 As this uses `std::cout` our C++ code also requires an include statement which
-we add with the `SinkActuatorPortInclude.ftl` template:
+we add with the `TestActuatorInclude.ftl` template:
 ```
 #include <iostream>
 ```
 
-The components have no real functionality for easier comprehensibility of 
-this example but just forward the data provided on their incoming port to their
-outgoing port. 
-Accordingly, running this example will result in the `Sink` component printing 
-numbers in steps of 2: 
+Accordingly, running this example will result in both of the actuators printing
+increasing numbers:
 ```
+Sink: 0
+Sink: 1
 Sink: 2
+Sink: 3
 Sink: 4
+Sink: 5
 Sink: 6
-Sink: 8
-Sink: 10
-Sink: 12
-Sink: 14
 ```

@@ -3,10 +3,12 @@ from montithingsconnector import MontiThingsConnector as MTC
 import time
 
 
-# Set up MontiThings port connection
-mtc = MTC("example-sensor-topic", None)
-
-while True:
-    # Send a message to MontiThings (sensor port)
-    mtc.send(32)
-    time.sleep(1)
+if __name__ == '__main__':
+    # Set up MontiThings port connection
+    mtc = MTC("source-sensor-topic", None, parse_cmd_args=True)
+    i = 0
+    while True:
+        # Send a message to MontiThings (sensor port)
+        mtc.send(i)
+        i = i + 1
+        time.sleep(2)

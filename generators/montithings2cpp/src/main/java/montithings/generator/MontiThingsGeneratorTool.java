@@ -69,6 +69,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static montithings.generator.helper.FileHelper.*;
 
@@ -90,6 +91,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ==================== Copy HWC to target ==================== */
     /* ============================================================ */
     copyHwcToTarget(target, hwcPath, config);
+    copyDeploymentConfigToTarget(target, hwcPath);
+
 
     /* ============================================================ */
     /* ======================== Find Models ======================= */
@@ -196,6 +199,40 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     /* ============================================================ */
+    /* =============== Generate SensorActuatorPorts =============== */
+    /* ============================================================ */
+    File[] packages = hwcPath.listFiles();
+    List<String> executableSensorActuatorPorts = new ArrayList<>();
+
+    for (File pckg : packages) {
+      Set<String> sensorActuatorPorts = getFilesWithEnding(
+        new File(hwcPath + File.separator + pckg.getName()), getFileEndings());
+      for (String port : sensorActuatorPorts) {
+        if (!templatePortBelongsToComponent(symTab, port, config)) {
+          mtg.generateSensorActuatorPort(port, pckg.getName(), config);
+          generateCMakeForSensorActuatorPort(pckg.getName(), port, config);
+          executableSensorActuatorPorts.add(pckg.getName() + "." + port);
+        }
+      }
+    }
+
+    if (!executableSensorActuatorPorts.isEmpty()
+      && config.getSplittingMode() == SplittingMode.OFF) {
+      Log.error("Cannot use SplittingMode OFF with SensorActuatorPorts");
+    }
+
+    List<String> hwcPythonScripts = new ArrayList<>();
+    for (File pckg : packages) {
+      Set<String> pythonScriptsWithoutPckg = getFilesWithEnding(
+        new File(hwcPath + File.separator + pckg.getName()),
+        Stream.of(".py").collect(Collectors.toSet())
+      );
+      for (String script : pythonScriptsWithoutPckg) {
+        hwcPythonScripts.add(pckg.getName() + "." + script);
+      }
+    }
+
+    /* ============================================================ */
     /* ====================== Generate Code ======================= */
     /* ============================================================ */
 
@@ -268,7 +305,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-      mtg.generateMakeFileForSubdirs(target, executableSubdirs, config);
+      mtg.generateMakeFileForSubdirs(target, executableSubdirs, executableSensorActuatorPorts,
+        config);
     }
 
     for (Entry<ComponentTypeSymbol, Set<ComponentTypeSymbol>> e : modelPacks.entrySet()) {
@@ -316,8 +354,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       config.setSplittingMode(orgSplit);
       config.setMessageBroker(orgBroker);
 
-      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, hwcPath, config, models,
-        executableSubdirs);
+      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, config,
+        executableSensorActuatorPorts, hwcPythonScripts, executableSubdirs);
 
       mtg = new MTGenerator(target, hwcPath, config);
     }
@@ -325,14 +363,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
       generateCDEAdapter(target, config);
     }
-    generateCD(modelPath, target);
+    
+    generateCD(modelPath, hwcPath, target);
     generateComponentTypeCDs(componentTypeScopes, target);
-    mtg.generateBuildScript(target);
+    mtg.generateBuildScript(target, hwcPythonScripts);
 
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
       if (ComponentHelper.isApplication(comp, config)) {
-        mtg.generateDockerfileScript(target, comp);
+        mtg.generateDockerfileScript(target, comp, executableSensorActuatorPorts, hwcPythonScripts);
       }
     }
 
@@ -497,8 +536,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
-    File target, File hwcPath, ConfigParams config, Models models,
-    List<String> executableInstanceNames) {
+    File target, ConfigParams config, List<String> sensorActuatorPorts,
+    List<String> hwcPythonScripts, List<String> executableInstanceNames) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
 
     if (ComponentHelper.isApplication(comp, config)
@@ -511,15 +550,25 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       if (config.getTargetPlatform()
         != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
         Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
-        mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath);
+        mtg.generateMakeFile(target, comp, libraryPath, subPackagesPath, sensorActuatorPorts);
         if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          mtg.generateScripts(target, comp, executableInstanceNames);
+          mtg.generateScripts(target, comp, sensorActuatorPorts, hwcPythonScripts,
+            executableInstanceNames);
         }
       }
     }
   }
 
-  protected void generateCD(File modelPath, File targetFilepath) {
+  protected void generateCMakeForSensorActuatorPort(String pckg, String port, ConfigParams config) {
+    // 6 generate make file
+    if (config.getTargetPlatform()
+      != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
+      Log.info("Generate CMake file for " + port, "MontiThingsGeneratorTool");
+      mtg.generateMakeFileForSensorActuatorPort(pckg, port, "montithings-RTE");
+    }
+  }
+
+  protected void generateCD(File modelPath, File hwcPath, File targetFilepath) {
     List<String> foundModels = Modelfinder
       .getModelsInModelPath(modelPath, CD4AnalysisGlobalScope.EXTENSION);
     for (String model : foundModels) {
@@ -528,7 +577,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       Log.info("Generate CD model: " + model, TOOL_NAME);
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
-      new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()), model)
+      new CppGenerator(outDir, Paths.get(modelPath.getAbsolutePath()),
+        Paths.get(hwcPath.getAbsolutePath()), model)
         //.generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
         //.generate(Optional.of(packageName));
         .generate(Optional.empty());
@@ -686,5 +736,30 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     return false;
+  }
+
+
+  public boolean templatePortBelongsToComponent(IMontiThingsGlobalScope symTab,
+    String portName, ConfigParams config) {
+
+    // Get all names of the FTL files for templating a port by file name
+    Set<String> sensorActuatorPortNames = new HashSet<>();
+
+    for (PortSymbol port : config.getTemplatedPorts()) {
+      if (!port.getComponent().isPresent()) {
+        Log.error(
+          String.format("0xMT1112 Templated port '%s' has no component", port.getFullName()));
+      }
+      if (config.getTemplatedPorts().contains(port)) {
+        sensorActuatorPortNames.add(
+          StringUtils.capitalize(port.getComponent().get().getName()) +
+            StringUtils.capitalize(port.getName()) +
+            "Port"
+        );
+      }
+    }
+
+    // check if any of the templated ports matches the given port name
+    return sensorActuatorPortNames.stream().anyMatch(portName::startsWith);
   }
 }

@@ -1,0 +1,6 @@
+{
+  "sensorActuatorTypes": {
+    "sink": ["sink-actuator-topic", "second-sink-actuator-topic"],
+    "source": ["source-sensor-topic", "second-source-sensor-topic"]
+  }
+}

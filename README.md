@@ -55,8 +55,9 @@ you'll most likely want the native installation - it will save you time in the l
 - GCC and CMake (For compiling the generated C++ code)
 - [Visual Studio Community][visualstudio] (only necessary for Windows!)
 - [Docker][docker] (for executing generator tests)
-- [Mosquitto][mosquitto] (only for MQTT message broker)
+- [Mosquitto][mosquitto] and [mosquitto_clients][mosquitto] (only for MQTT message broker)
 - [OpenDDS][opendds] (only for DDS communication)
+- [Python 3][python], [pip][pip] and [paho-mqtt][paho-mqtt] (only for Mqtt message broker)
 
 On Ubuntu 20.04, you can use our script for installing everything except OpenDDS:
 ```
@@ -413,15 +414,30 @@ An exception occurred applying plugin request [id: 'de.set.ecj', version: '1.4.1
 ```
 **A:** Gradle unfortunately has many breaking changes between its versions. Not all plugins are updated in a timely manner by their maintainers. You're probably using Gradle in version 7. Please use the lastest available version 6 release: https://gradle.org/releases/
 
+**Q:** "Why am I getting the following error?
 
-**Q:** "How shall I refer to this project in a scientific publication?"<br>
-**A:** Please cite MontiThings using it's publication in the Journal of Systems and Software. The article is currently in press. We will update this page when the article is published.
+Maven:
+```
+[ERROR] An internal error occured.
+org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:
+General error during conversion: Unsupported class file major version 61
+```
+Gradle: 
+```
+> startup failed:
+  General error during semantic analysis: Unsupported class file major version 61
+```
+**A:** Your Java version is too new. Please use JDK 8, 11, or 14. Other versions are not checked by the CI pipeline.
+
+# Reference
+
+Please cite MontiThings using it's publication in the Journal of Systems and Software. 
 > Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann,
 MontiThings: Model-Driven Development and Deployment of Reliable IoT Applications, In: W.K. Chan, editor, Journal of Systems and Software (JSS), Volume 183, January 2022, 111087, Elsevier, https://doi.org/10.1016/j.jss.2021.111087.
 
 ```
-@article{KRS+21,
-  key       = {KRS+21},
+@article{KRS+22,
+  key       = {KRS+22},
   title     = {{MontiThings: Model-driven Development and Deployment of Reliable IoT Applications}},
   author    = {Kirchhof, J\"{o}rg Christian and Rumpe, Bernhard and Schmalzing, David and Wortmann, Andreas},
   editor    = {Chan, Wing-Kwong},
@@ -473,3 +489,6 @@ https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICOR
 [azure-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 [terraform-cli]: https://www.terraform.io/downloads.html
 [azure-terraform-docs]: https://docs.microsoft.com/en-us/azure/developer/terraform/create-linux-virtual-machine-with-infrastructure
+[python]: https://www.python.org/
+[pip]: https://pypi.org/project/pip/
+[paho-mqtt]: https://pypi.org/project/paho-mqtt/

@@ -6,6 +6,10 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp)}::${className}
 (std::string instanceName
+<#if config.getMessageBroker().toString() == "MQTT">
+  , MqttClient* passedMqttClientInstance
+  , MqttClient* passedMqttClientLocalInstance
+</#if>
 <#if comp.getParameters()?has_content>
   , ${Utils.printConfigurationParametersAsList(comp)}
 </#if>
@@ -33,12 +37,17 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
 {
 this->instanceName = instanceName;
 
+<#if config.getMessageBroker().toString() == "MQTT">
+mqttClientInstance = passedMqttClientInstance;
+mqttClientLocalInstance = passedMqttClientLocalInstance;
+</#if>
+
 <#list comp.getParameters() as param >
   ${Identifier.getStateName()}.set${param.getName()?cap_first} (${param.getName()});
 </#list>
 <#if comp.isAtomic()>
   this->${Identifier.getStateName()}.setInstanceName (instanceName);
-  this->${Identifier.getStateName()}.setup ();
+  this->${Identifier.getStateName()}.setup (<#if config.getMessageBroker().toString() == "MQTT">mqttClientInstance</#if>);
   ${tc.includeArgs("template.prepostconditions.hooks.Constructor", [comp])}
   state__at__pre = ${Identifier.getStateName()};
 </#if>

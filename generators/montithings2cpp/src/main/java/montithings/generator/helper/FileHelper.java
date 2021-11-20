@@ -31,7 +31,7 @@ public class FileHelper {
     try {
       FileFilter filefilter = new FileFilter(){
         public boolean accept(File pathname) {
-          if (pathname.getName().endsWith(".ftl")) {
+          if (pathname.getName().endsWith(".ftl") || pathname.getName().endsWith(".json")) {
             return false;
           } else {
             return true;
@@ -46,6 +46,22 @@ public class FileHelper {
       }
     }
     catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  public static void copyDeploymentConfigToTarget(File target, File hwcPath){
+    File deploymentConfig = new File(hwcPath + File.separator + "deployment-config.json");
+    try {
+      if(deploymentConfig.exists()){
+          FileUtils.copyFileToDirectory(deploymentConfig, target);
+      } else {
+        File emptyConfig = new File(target + File.separator + "deployment-config.json");
+        FileUtils.touch(emptyConfig);
+        FileUtils.write(emptyConfig, "{}");
+      }
+    } catch (IOException e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
     }
@@ -201,12 +217,7 @@ public class FileHelper {
 
   public static Set<File> getPortImplementation(File hwcPath, String fqComponentName) {
     Set<File> result = new HashSet<>();
-    Set<String> fileEndings = new HashSet<>();
-    fileEndings.add("Include.ftl");
-    fileEndings.add("Body.ftl");
-    fileEndings.add("Provide.ftl");
-    fileEndings.add("Consume.ftl");
-    fileEndings.add("Init.ftl");
+    Set<String> fileEndings = getFileEndings();
 
     for (String ending : fileEndings) {
       File hwcFile = Paths.get(hwcPath.toString() + File.separator
@@ -218,6 +229,38 @@ public class FileHelper {
       }
     }
     return result;
+  }
+
+
+  public static Set<String> getFilesWithEnding(File hwcPath, Set<String> fileEndings) {
+    Set<String> result = new HashSet<>();
+
+    if (hwcPath.isDirectory()) {
+      for (String ending : fileEndings) {
+        String[] files = new String[0];
+        try {
+          files = Files.walk(hwcPath.toPath()).filter(name -> name.toString().endsWith(ending)).map(path -> path.getFileName().toString().split(ending)[0]).toArray(String[]::new);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        for (String file : files) {
+          result.add(file);
+        }
+      }
+    }
+    return result;
+  }
+
+  public static Set<String> getFileEndings() {
+    Set<String> fileEndings = new HashSet<>();
+    fileEndings.add("Include.ftl");
+    fileEndings.add("Body.ftl");
+    fileEndings.add("Provide.ftl");
+    fileEndings.add("Consume.ftl");
+    fileEndings.add("Init.ftl");
+    fileEndings.add("Topic.ftl");
+    fileEndings.add("Type.ftl");
+    return fileEndings;
   }
 
   /**

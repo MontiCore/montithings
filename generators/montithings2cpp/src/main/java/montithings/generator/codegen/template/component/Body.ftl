@@ -14,6 +14,10 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.StartDecomposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupComposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
+  <#if config.getMessageBroker().toString() == "MQTT">
+    ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
+  </#if>
+
   <#if config.getSplittingMode().toString() == "OFF">
     <#list comp.getSubComponents() as subcomponent>
       ${tc.includeArgs("template.component.methods.GetSubcomp", [comp, className, subcomponent, config])}
@@ -29,11 +33,12 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.Run", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupAtomic", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitAtomic", [comp, config, className])}
-  ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
+  <#if config.getMessageBroker().toString() == "MQTT">
+    ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
+  </#if>  ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
 </#if>
-${tc.includeArgs("template.component.methods.Initialize", [comp, config, className])}
 
 <#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}

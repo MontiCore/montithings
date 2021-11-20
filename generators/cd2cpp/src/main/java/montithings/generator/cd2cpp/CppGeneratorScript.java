@@ -52,6 +52,8 @@ public class CppGeneratorScript extends Script implements GroovyRunner {
     // to have them properly typed in the script
     builder.addVariable(CppConfiguration.Options.MODELPATH.toString(),
         config.getModelPath());
+    builder.addVariable(CppConfiguration.Options.HWCPATH.toString(),
+      config.getHwcPath());
     builder.addVariable(CppConfiguration.Options.OUT.toString(),
         config.getOut());
     GroovyInterpreter g = builder.build();
@@ -64,7 +66,7 @@ public class CppGeneratorScript extends Script implements GroovyRunner {
    * Gets called by Groovy Script. Generates component artifacts for each
    * component in {@code modelPath} to {@code targetFilepath}
    */
-  public void generate(File modelPath, File targetFilepath) {
+  public void generate(File modelPath, File hwcPath, File targetFilepath) {
     File fqnMP = Paths.get(modelPath.getAbsolutePath()).toFile();
     List<String> foundModels = Modelfinder.getModelsInModelPath(fqnMP, "cd");
     for (String model : foundModels) {
@@ -72,7 +74,8 @@ public class CppGeneratorScript extends Script implements GroovyRunner {
       String packageName = Names.getQualifier(model);
       
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
-      new CppGenerator(outDir, Paths.get(fqnMP.getAbsolutePath()), model)
+      new CppGenerator(outDir, Paths.get(fqnMP.getAbsolutePath()),
+        Paths.get(hwcPath.getAbsolutePath()), model)
         .generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
     }    
   }

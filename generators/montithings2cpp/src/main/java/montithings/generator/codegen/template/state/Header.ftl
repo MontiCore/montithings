@@ -59,10 +59,13 @@ bool replayFinished = false;
 bool replayTimeout = false;
 bool receivedState = false;
 bool restoredState = false;
+<#if config.getMessageBroker().toString() == "MQTT">
+MqttClient* mqttClientInstance;
+</#if>
 
 public:
 void setInstanceName (const std::string &instanceName);
-virtual void setup ();
+virtual void setup (<#if config.getMessageBroker().toString() == "MQTT">MqttClient* passedMqttClientInstance</#if>);
 <#if config.getMessageBroker().toString() == "MQTT">
   virtual void requestState ();
   virtual void requestReplay ();

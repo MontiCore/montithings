@@ -12,9 +12,11 @@ public class Example {
   public void test() {
     Path outDir = Paths.get("target/out/");
     Path modelPath = Paths.get("src/test/resources/models");
+    Path hwcPath = Paths.get("src/test/resources/hwc");
+    
     String modelName = "domain.Domain";
-    new CppGenerator(outDir, modelPath, modelName).generate(Optional.empty());
+    new CppGenerator(outDir, modelPath, hwcPath, modelName).generate(Optional.empty());
     String targetPackage = "some.custom._package";
-    new CppGenerator(outDir, modelPath, modelName).generate(Optional.of(targetPackage));
+    new CppGenerator(outDir, modelPath, hwcPath, modelName).generate(Optional.of(targetPackage));
   }
 }

@@ -22,7 +22,7 @@ std::string thisInstance = replaceDotsBySlashes (this->getInstanceName());
     </#if>
     std::string configJson = config.dump ();
 
-    MqttClient::instance ()->publish ("/config/" + thisInstance + "/${subcomponentName}", configJson);
+    mqttClientInstance->publish ("/config/" + thisInstance + "/${subcomponentName}", configJson);
     CLOG (DEBUG, "MQTT_PORT") << "Published config via MQTT. "
                               << "/config/" + thisInstance + "/${subcomponentName}"
                               << " " << configJson;
