@@ -56,6 +56,7 @@ import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
 import mtconfig._symboltable.IMTConfigGlobalScope;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.json.Json;
@@ -111,9 +112,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     Log.info("Initializing symboltable", TOOL_NAME);
 
     if (config.getReplayMode() == ConfigParams.ReplayMode.ON) {
-        addTrafo(new ExternalPortMockTrafo(modelPath, config.getReplayDataFile(), config.getMainComponent()));
-        addTrafo(new DelayedChannelTrafo(modelPath, config.getReplayDataFile()));
-        addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
+      addTrafo(new ExternalPortMockTrafo(modelPath, config.getReplayDataFile(),
+        config.getMainComponent()));
+      addTrafo(new DelayedChannelTrafo(modelPath, config.getReplayDataFile()));
+      addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
     }
 
     CD4CodeMill.reset();
@@ -122,27 +124,25 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     ICD4CodeGlobalScope cd4MTGlobalScope = CD4CodeMill.globalScope();
     cd4MTGlobalScope.setModelPath(mp);
 
-
     MontiThingsMill.reset();
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     IMontiThingsGlobalScope symTab = createMTGlobalScope(mp);
-    Set<CD4CodeArtifactScope> componentTypeScopes = createClassDiagrams((MontiThingsGlobalScope) symTab, symbolPath);
+    Set<CD4CodeArtifactScope> componentTypeScopes = createClassDiagrams(
+      (MontiThingsGlobalScope) symTab, symbolPath);
     if (models.getClassdiagrams().isEmpty()) {
       mp.addEntry(Paths.get(symbolPath));
     }
     createSymbolTable(symTab);
 
-
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
-    ICDLangExtensionGlobalScope cdLangExtensionGlobalScope = cdExtensionTool.initSymbolTable(modelPath);
+    ICDLangExtensionGlobalScope cdLangExtensionGlobalScope = cdExtensionTool.initSymbolTable(
+      modelPath);
     config.setCdLangExtensionScope(cdLangExtensionGlobalScope);
-
 
     BindingsTool bindingsTool = new BindingsTool();
     bindingsTool.setMtGlobalScope(symTab);
     IBindingsGlobalScope binTab = bindingsTool.initSymbolTable(modelPath);
-
 
     MTConfigTool mtConfigTool = new MTConfigTool();
     mtConfigTool.setMtGlobalScope(symTab);
@@ -199,18 +199,17 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ====================== Generate Code ======================= */
     /* ============================================================ */
 
-    if (config.getReplayMode() == ConfigParams.ReplayMode.ON){
+    if (config.getReplayMode() == ConfigParams.ReplayMode.ON) {
       // clear list of templated ports since they get mocked by a trafo
       config.getTemplatedPorts().clear();
 
       List<String> allModels = symTab.getSubScopes().stream()
-              .map(s -> s.getComponentTypeSymbols().values())
-              .flatMap(Collection::stream)
-              .map(ComponentTypeSymbolTOP::getFullName)
-              .collect(Collectors.toList());
+        .map(s -> s.getComponentTypeSymbols().values())
+        .flatMap(Collection::stream)
+        .map(ComponentTypeSymbolTOP::getFullName)
+        .collect(Collectors.toList());
       models.setMontithings(allModels);
     }
-
 
     // Collect all the instances of the executable components (Some components
     // may only be included in other components and thus do not need an own
@@ -219,13 +218,22 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     List<Pair<ComponentTypeSymbol, String>> instances = ComponentHelper
       .getExecutableInstances(mainCompSymbol, config);
     HashSet<ComponentTypeSymbol> executableComponents = new HashSet<>();
-    for(Pair<ComponentTypeSymbol, String> instance : instances) {
+    for (Pair<ComponentTypeSymbol, String> instance : instances) {
       executableComponents.add(instance.getKey());
+    }
+
+    // Also generate code for all components that are never used directly
+    // whose interface is exchanged dynamically via a port (i.e. components
+    // that may be instantiated dynamically)
+    for (ComponentTypeSymbol cs : getAllComponents(symTab)) {
+      if (componentIsUsedDynamically(cs, symTab)) {
+        executableComponents.add(cs);
+      }
     }
 
     // Aggregate all the target folders for the components.
     List<String> executableSubdirs = new ArrayList<>(instances.size());
-    for(ComponentTypeSymbol comp : executableComponents) {
+    for (ComponentTypeSymbol comp : executableComponents) {
       executableSubdirs.add(comp.getFullName());
     }
 
@@ -251,7 +259,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         // component should be deployed with its subcomponents
         if (ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
           for (ComponentTypeSymbol sub : ComponentHelper.getSubcompTypesRecursive(comp)) {
-            Log.debug("Including model \"" + sub.getFullName() + "\" with deployment of \"" + comp.getFullName() + "\"", TOOL_NAME);
+            Log.debug("Including model \"" + sub.getFullName() + "\" with deployment of \""
+              + comp.getFullName() + "\"", TOOL_NAME);
             includeModels.add(sub);
           }
         }
@@ -265,7 +274,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for (Entry<ComponentTypeSymbol, Set<ComponentTypeSymbol>> e : modelPacks.entrySet()) {
       String baseModel = e.getKey().getFullName();
       Set<ComponentTypeSymbol> enclosingModels = e.getValue();
-
 
       File compTarget = target;
 
@@ -298,8 +306,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
 
         generateCppForComponent(model, symTab, compTarget, hwcPath, config, models, genDeploy);
-        
-        if(!genDeploy) {
+
+        if (!genDeploy) {
           // copy hwc for embedded component manually
           copyHwcToTarget(new File(target, baseModel), hwcPath, model, config, models);
         }
@@ -308,7 +316,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       config.setSplittingMode(orgSplit);
       config.setMessageBroker(orgBroker);
 
-      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, hwcPath, config, models, executableSubdirs);
+      generateCMakeForComponent(baseModel, symTab, modelPath, compTarget, hwcPath, config, models,
+        executableSubdirs);
 
       mtg = new MTGenerator(target, hwcPath, config);
     }
@@ -440,7 +449,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
       config.setMtConfigScope(mtConfigTool.createSymboltable(ast, symTab));
 
-
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
       MTConfigCoCos.createChecker().checkAll(ast);
@@ -478,7 +486,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     // Generate Files
     mtg.generateAll(Paths.get(target.getAbsolutePath(),
-      Names.getPathFromPackage(comp.getPackageName())).toFile(),
+        Names.getPathFromPackage(comp.getPackageName())).toFile(),
       comp, generateDeploy);
 
     generateHwcPort(target, config, comp);
@@ -489,7 +497,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected void generateCMakeForComponent(String model, IMontiThingsScope symTab, File modelPath,
-    File target, File hwcPath, ConfigParams config, Models models, List<String> executableInstanceNames) {
+    File target, File hwcPath, ConfigParams config, Models models,
+    List<String> executableInstanceNames) {
     ComponentTypeSymbol comp = modelToSymbol(model, symTab);
 
     if (ComponentHelper.isApplication(comp, config)
@@ -532,7 +541,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       Log.info("Generate ComponentType model: " + modelName, TOOL_NAME);
       Path outDir = Paths.get(targetFilepath.getAbsolutePath());
       new CppGenerator(outDir, scope)
-              .generate(Optional.empty());
+        .generate(Optional.empty());
     }
   }
 
@@ -544,7 +553,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
           List<String> packageName = unit.getAstNode().getPackageList();
 
           mtg.generateAdapter(Paths.get(targetFilepath.getAbsolutePath(),
-            Names.getPathFromPackage(Names.getQualifiedName(packageName))).toFile(), packageName,
+              Names.getPathFromPackage(Names.getQualifiedName(packageName))).toFile(), packageName,
             simpleName);
         }
       }
@@ -595,7 +604,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
-  protected void generateDeployInfo(File target, ConfigParams config, List<Pair<ComponentTypeSymbol, String>> executableInstances) {
+  protected void generateDeployInfo(File target, ConfigParams config,
+    List<Pair<ComponentTypeSymbol, String>> executableInstances) {
     JsonObjectBuilder jsonBase = Json.createObjectBuilder();
 
     // Collect executable instances.
@@ -608,7 +618,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
       jsonInstance.add("componentType", comp.getFullName());
       jsonInstance.add("instanceName", instance.getValue());
-      jsonInstance.add("dockerImage", comp.getFullName().toLowerCase()+":latest");
+      jsonInstance.add("dockerImage", comp.getFullName().toLowerCase() + ":latest");
 
       // Also add the requirements of the component.
       JsonArrayBuilder jreqs = Json.createArrayBuilder();
@@ -636,5 +646,45 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   public void setStopAfterCoCoCheck(boolean stopAfterCoCoCheck) {
     this.stopAfterCoCoCheck = stopAfterCoCoCheck;
+  }
+
+  public Set<ComponentTypeSymbol> getAllComponents(IMontiThingsGlobalScope symTab) {
+    Set<ComponentTypeSymbol> allComponentTypes = new HashSet<>();
+    for (IMontiThingsScope scope : symTab.getSubScopes()) {
+      allComponentTypes.addAll(scope.getComponentTypeSymbols().values());
+    }
+    return allComponentTypes;
+  }
+
+  public Set<ComponentTypeSymbol> getImplementedComponents(ComponentTypeSymbol component) {
+    Set<ComponentTypeSymbol> implementsComps = new HashSet<>();
+    ASTMTComponentType astmtComponentType = ((ASTMTComponentType) component.getAstNode());
+
+    if (!astmtComponentType.isPresentMTImplements() ||
+      !astmtComponentType.getMTImplements().isPresentNameSymbol()) {
+      return implementsComps;
+    }
+
+    implementsComps.add(astmtComponentType.getMTImplements().getNameSymbol());
+
+    return implementsComps;
+  }
+
+  public boolean componentIsUsedDynamically(ComponentTypeSymbol component,
+    IMontiThingsGlobalScope symTab) {
+
+    Set<String> namesOfImplementedInterfaces = new HashSet<>();
+    for (ComponentTypeSymbol interf : getImplementedComponents(component)) {
+      namesOfImplementedInterfaces.add("Co" + interf.getName());
+    }
+
+    for (ComponentTypeSymbol current : getAllComponents(symTab)) {
+      if (current.getPorts().stream()
+        .anyMatch(p -> namesOfImplementedInterfaces.contains(p.getTypeInfo().getName()))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
