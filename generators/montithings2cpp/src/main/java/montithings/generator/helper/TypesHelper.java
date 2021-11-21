@@ -152,14 +152,14 @@ public class TypesHelper {
   public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance) {
     ASTNode node = instance.getEnclosingScope().getSpanningSymbol().getAstNode();
     if (!(node instanceof ASTComponentType)) {
-      Log.error("0xMT0789 instance is not spanned by ASTComponentType.");
+      Log.error("0xMT0792 instance is not spanned by ASTComponentType.");
     }
     Optional<ASTComponentInstantiation> result = ((ASTComponentType) node)
       .getSubComponentInstantiations()
       .stream().filter(i -> i.getComponentInstanceList().contains(instance.getAstNode()))
       .findFirst();
     if (!result.isPresent()) {
-      Log.error("0xMT0790 instance not found.");
+      Log.error("0xMT0791 instance not found.");
     }
     return result.get();
   }

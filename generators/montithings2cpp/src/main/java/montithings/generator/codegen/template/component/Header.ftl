@@ -143,6 +143,13 @@ void onEvent () override;
 ${compname}State${generics}* getState();
 void threadJoin ();
 void checkPostconditions(${compname}Input${generics}& input, ${compname}Result${generics}& result, ${compname}State${generics}& state, ${compname}State${generics}& state__at__pre);
+
+<#if comp.getPorts()?size gt 0>
+  std::string getConnectionStringCo${compname}() const;
+  <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
+    std::string getConnectionString${interface}() const;
+  </#list>
+</#if>
 };
 
 <#if Utils.hasTypeParameter(comp)>

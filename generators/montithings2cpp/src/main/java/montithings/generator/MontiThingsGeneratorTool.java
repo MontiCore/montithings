@@ -76,6 +76,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static montithings.generator.helper.ComponentHelper.getInterfaceClassNames;
 import static montithings.generator.helper.FileHelper.*;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
@@ -716,20 +717,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     return allComponentTypes;
   }
 
-  public Set<ComponentTypeSymbol> getImplementedComponents(ComponentTypeSymbol component) {
-    Set<ComponentTypeSymbol> implementsComps = new HashSet<>();
-    ASTMTComponentType astmtComponentType = ((ASTMTComponentType) component.getAstNode());
-
-    if (!astmtComponentType.isPresentMTImplements() ||
-      !astmtComponentType.getMTImplements().isPresentNameSymbol()) {
-      return implementsComps;
-    }
-
-    implementsComps.add(astmtComponentType.getMTImplements().getNameSymbol());
-
-    return implementsComps;
-  }
-
   public Set<ComponentTypeSymbol> getDynamicallyConnectedSubcomps(ComponentTypeSymbol enclosingComp) {
     Set<ComponentTypeSymbol> result = new HashSet<>();
 
@@ -763,10 +750,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   public boolean componentIsUsedDynamically(ComponentTypeSymbol component,
     IMontiThingsGlobalScope symTab) {
 
-    Set<String> namesOfImplementedInterfaces = new HashSet<>();
-    for (ComponentTypeSymbol interf : getImplementedComponents(component)) {
-      namesOfImplementedInterfaces.add("Co" + interf.getName());
-    }
+    Set<String> namesOfImplementedInterfaces = getInterfaceClassNames(component);
 
     for (ComponentTypeSymbol current : getAllComponents(symTab)) {
       if (current.getPorts().stream()
@@ -777,7 +761,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     return false;
   }
-
 
   public boolean templatePortBelongsToComponent(IMontiThingsGlobalScope symTab,
     String portName, ConfigParams config) {

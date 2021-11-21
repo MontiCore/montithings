@@ -372,7 +372,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     //create scopes for class diagrams
     Set<CD4CodeArtifactScope> scopes = new HashSet<>();
     for (ASTMACompilationUnit compilationUnit : models) {
-      if (compilationUnit.getComponentType().getConnectors().isEmpty()) {
+      if (!compilationUnit.getComponentType().getPorts().isEmpty()) {
         scopes.add(createClassDiagram(compilationUnit));
       }
     }

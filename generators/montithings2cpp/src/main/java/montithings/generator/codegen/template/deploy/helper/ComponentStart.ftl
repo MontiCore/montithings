@@ -19,6 +19,20 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
       ${variable.getName()} <#sep>,</#sep>
   </#list>
   );
+
+  <#if comp.getPorts()?size gt 0>
+    if (printConnectionStr.getValue ())
+    {
+    LOG(INFO) << "Co${comp.getName()} Connection String: " << cmp.getConnectionStringCo${comp.getName()}();
+    }
+    <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
+      if (printConnectionStr${interface}.getValue ())
+      {
+      LOG(INFO) << "${interface} Connection String: " << cmp.getConnectionString${interface}();
+      }
+    </#list>
+  </#if>
+
   ${tc.includeArgs("template.deploy.helper.DDSClientSetCmp", [comp, config])}
   ${tc.includeArgs("template.deploy.helper.CommunicationManagerInit", [comp, config])}
 

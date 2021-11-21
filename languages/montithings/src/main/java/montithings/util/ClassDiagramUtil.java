@@ -32,7 +32,7 @@ import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Helpers to create class diagrams in the scope for each atomic component
+ * Helpers to create class diagrams in the scope for components
  */
 public class ClassDiagramUtil {
 

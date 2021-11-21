@@ -43,6 +43,7 @@ ${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
     ${tc.includeArgs("template.input.hooks.Include", [comp])}
     ${tc.includeArgs("template.result.hooks.Include", [comp])}
 </#if>
+
 <#if config.getRecordingMode().toString() == "ON">
   #include "record-and-replay/recorder/HWCInterceptor.h"
 </#if>
