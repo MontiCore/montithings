@@ -20,15 +20,30 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
   </#list>
   );
 
+  <#-- Printing connection strings for dynamically instantiated components -->
   <#if comp.getPorts()?size gt 0>
     if (printConnectionStr.getValue ())
     {
-    LOG(INFO) << "Co${comp.getName()} Connection String: " << cmp.getConnectionStringCo${comp.getName()}();
+    if (ppprintConnectionStr.getValue ())
+    {
+    ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, "Co" + comp.getName(), true])}
+    LOG(INFO) << "Co${comp.getName()} Connection String: " << str;
+    } else {
+      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, "Co" + comp.getName(), false])}
+      LOG(INFO) << "Co${comp.getName()} Connection String: " << str;
+    }
     }
     <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
       if (printConnectionStr${interface}.getValue ())
       {
-      LOG(INFO) << "${interface} Connection String: " << cmp.getConnectionString${interface}();
+      if (ppprintConnectionStr.getValue ())
+      {
+      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, interface, true])}
+      LOG(INFO) << "${interface} Connection String: " << str;
+      } else {
+      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, interface, false])}
+      LOG(INFO) << "${interface} Connection String: " << str;
+      }
       }
     </#list>
   </#if>

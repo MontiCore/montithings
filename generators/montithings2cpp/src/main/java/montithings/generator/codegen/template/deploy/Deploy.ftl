@@ -15,6 +15,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include "easyloggingpp/easylogging++.h"
 #include ${"<chrono>"}
 #include ${"<thread>"}
+#include ${"<regex>"}
 <#if config.getMessageBroker().toString() == "MQTT">
 #include "MqttConfigRequester.h"
 </#if>
