@@ -15,7 +15,6 @@ import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.StringTransformations;
-import groovyjarjarantlr.StringUtils;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
 
@@ -69,35 +68,50 @@ public class CppBehaviorPrettyPrinter
 
   @Override
   public void handle(ASTConnectStatement node) {
-    boolean sourceIsComponentInstance = isComponentInstance(node.getConnector().getSource());
+    boolean sourceIsComponentInstance = isStaticComponentInstance(node.getConnector().getSource());
     for (ASTPortAccess target : node.getConnector().getTargetList()) {
-      boolean targetIsComponentInstance = isComponentInstance(target);
-      getPrinter().print("MqttClient::instance->publish(replaceDotsBySlashes(\"/connectors/\" + ");
+      boolean targetIsComponentInstance = isStaticComponentInstance(target);
+      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
       if (targetIsComponentInstance) {
         getPrinter().print("instanceName");
         getPrinter().print(" + \"/" + target.getQName() + "\"");
       }
       else {
-        getPrinter().print("input.get" + StringTransformations.capitalize(target.getComponent()) + "()" +
-                ".value().getFullyQualifiedName()");
+        printGetExternalPortAccessFQN(target);
       }
-      getPrinter().print("), replaceDotsBySlashes( + ");
+      getPrinter().print("), replaceDotsBySlashes (");
       if (sourceIsComponentInstance) {
         getPrinter().print("instanceName");
         getPrinter().print(" + \"/" + node.getConnector().getSource().getQName() + "\"");
       }
       else {
-        getPrinter().print("input.get" + StringTransformations.capitalize(node.getConnector().getSource().getComponent()) + "()" +
-                ".value().getFullyQualifiedName()");
+        printGetExternalPortAccessFQN(node.getConnector().getSource());
       }
       getPrinter().print("));");
     }
   }
 
-  protected boolean isComponentInstance(ASTPortAccess portAccess) {
-    return !portAccess.isPresentComponentSymbol();
+  protected void printGetExternalPortAccessFQN(ASTPortAccess target) {
+    getPrinter().print(
+      "input.get" + StringTransformations.capitalize(target.getComponent()) + " ().value ()" +
+        ".get" + StringTransformations.capitalize(target.getPort()) + " ()" +
+        ".getFullyQualifiedName ()"
+    );
   }
 
+  /**
+   * With dynamic component instances, some port accesses may not actually refer to ports we can
+   * directly access because they are our subcomponents. This method will return true if we have
+   * a port we instantiated as part of a subcomponent we statically instantiated ourselves. The
+   * method will return false if we have a port that we only know how to connect to because we
+   * received its communication information via a port.
+   *
+   * @param portAccess the port access to check
+   * @return if port access refers to port from a statically instantiated component
+   */
+  protected boolean isStaticComponentInstance(ASTPortAccess portAccess) {
+    return portAccess.isPresentComponentSymbol();
+  }
 
   public void handle(ASTAgoQualification node, boolean isComparedToNoData) {
     if (node.getExpression() instanceof ASTNameExpression) {

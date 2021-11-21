@@ -36,10 +36,10 @@ ${tc.includeArgs("template.interface.hooks.Include", [comp])}
 ${tc.includeArgs("template.state.hooks.Include", [comp])}
 ${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
 
+#include "${compname}Impl.h"
 <#if comp.isDecomposed()>
     ${Utils.printIncludes(comp, compname, config)}
 <#else>
-  #include "${compname}Impl.h"
     ${tc.includeArgs("template.input.hooks.Include", [comp])}
     ${tc.includeArgs("template.result.hooks.Include", [comp])}
 </#if>

@@ -1,9 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
+import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.ComponentTypeSymbolTOP;
 import arcbasis._symboltable.PortSymbol;
+import behavior._ast.ASTConnectStatement;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
 import bindings._ast.ASTBindingsCompilationUnit;
@@ -30,10 +32,12 @@ import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
+import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._symboltable.MontiThingsGlobalScope;
+import montithings._visitor.MontiThingsTraverser;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
@@ -45,6 +49,7 @@ import montithings.generator.data.Models;
 import montithings.generator.helper.CD4MTTool;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
+import montithings.generator.visitor.FindConnectStatementsVisitor;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
 import montithings.trafos.DelayedChannelTrafo;
@@ -330,6 +335,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         mtg.generateDDSDCPSConfig(compTarget);
       }
 
+      Set<ComponentTypeSymbol> dynConnectedSubcomps = getDynamicallyConnectedSubcomps(e.getKey());
+
       // Save splitting mode and message broker for overriding it for subcomponents that should be included in the same binary.
       SplittingMode orgSplit = config.getSplittingMode();
       MessageBroker orgBroker = config.getMessageBroker();
@@ -339,9 +346,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         boolean genDeploy = model.equals(baseModel);
 
         // Only the deployed component should communicate directly with the 'outer world'.
-        // All the other enclosed components should communicate using native ports. 
+        // All the other enclosed components should communicate using native ports.
+        // Unless its dynamically connected. Then it needs to communicate.
         config.setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
-        config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
+        if (!dynConnectedSubcomps.contains(symModel)) {
+          config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
+        }
 
         generateCppForComponent(model, symTab, compTarget, hwcPath, config, models, genDeploy);
 
@@ -363,7 +373,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
       generateCDEAdapter(target, config);
     }
-    
+
     generateCD(modelPath, hwcPath, target);
     generateComponentTypeCDs(componentTypeScopes, target);
     mtg.generateBuildScript(target, hwcPythonScripts);
@@ -718,6 +728,36 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     implementsComps.add(astmtComponentType.getMTImplements().getNameSymbol());
 
     return implementsComps;
+  }
+
+  public Set<ComponentTypeSymbol> getDynamicallyConnectedSubcomps(ComponentTypeSymbol enclosingComp) {
+    Set<ComponentTypeSymbol> result = new HashSet<>();
+
+    // Find all connect statements
+    FindConnectStatementsVisitor visitor = new FindConnectStatementsVisitor();
+    Set<ASTBehavior> behaviors = enclosingComp.getAstNode().getBody().getArcElementList().stream()
+      .filter(e -> e instanceof ASTBehavior)
+      .map(e -> (ASTBehavior)e)
+      .collect(Collectors.toSet());
+    MontiThingsTraverser traverser = visitor.createTraverser();
+    for (ASTBehavior b : behaviors) {
+      b.accept(traverser);
+    }
+
+    // Get the types of all component instances accessed in connect statements
+    for (ASTConnectStatement cs : visitor.getConnectStatements()) {
+      Set<ASTPortAccess> portAccesses = new HashSet<>();
+      portAccesses.add(cs.getConnector().getSource());
+      portAccesses.addAll(cs.getConnector().getTargetList());
+
+      for (ASTPortAccess pa : portAccesses) {
+        if (pa.isPresentComponentSymbol()) {
+          result.add(pa.getComponentSymbol().getType());
+        }
+      }
+    }
+
+    return result;
   }
 
   public boolean componentIsUsedDynamically(ComponentTypeSymbol component,

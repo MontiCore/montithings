@@ -63,6 +63,7 @@ ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.PublishConnectors", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.OnMessage", [comp, config, className])}
+  ${tc.includeArgs("template.component.methods.GetMqttClientInstance", [comp, config, className])}
 </#if>
 
 <#if config.getMessageBroker().toString() == "DDS">

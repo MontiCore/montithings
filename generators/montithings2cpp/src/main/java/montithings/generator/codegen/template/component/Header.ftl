@@ -40,12 +40,12 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
   json sensorActuatorTypes;
 
   <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
-  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
-  MqttPort<Message<${type}>> *${p.getName()};
-  <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
-  std::thread th${p.getName()?cap_first};
-  std::promise<void> exitSignal${p.getName()?cap_first};
-  </#if>
+    <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
+    MqttPort<Message<${type}>> *${p.getName()};
+    <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
+      std::thread th${p.getName()?cap_first};
+      std::promise<void> exitSignal${p.getName()?cap_first};
+    </#if>
   </#list>
 </#if>
 
@@ -55,6 +55,7 @@ ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 ${tc.includeArgs("template.state.hooks.Member", [comp])}
 
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre;
+${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 
 <#if comp.isDecomposed()>
   <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
@@ -62,8 +63,6 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   </#if>
   ${tc.includeArgs("template.component.helper.SubcompIncludes", [comp, config])}
 <#else>
-  ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
-
   void setResult(${compname}Result${Utils.printFormalTypeParameters(comp)} result);
   void run();
   <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
@@ -85,6 +84,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void publishConnectors();
   void publishConfigForSubcomponent (std::string instanceName);
   void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::future<void> keepAliveFuture);
+  MqttClient *getMqttClientInstance () const;
 </#if>
 
 <#if config.getMessageBroker().toString() == "DDS">
@@ -125,7 +125,7 @@ void compute() override;
 </#list>
 bool shouldCompute();
 <#list ComponentHelper.getPortSpecificMTBehaviors(comp) as behavior>
-  bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}();
+  bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(<#if !comp.isAtomic()>${compname}Input${generics}& ${Identifier.getInputName()}</#if>);
 </#list>
 <#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
   bool initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = false;
