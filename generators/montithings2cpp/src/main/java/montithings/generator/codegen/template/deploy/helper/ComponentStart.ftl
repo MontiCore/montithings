@@ -10,6 +10,10 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
   ${tc.includeArgs("template.deploy.helper.DDSInit", [comp, config])}
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (
   instanceNameArg.getValue ()
+  <#if config.getMessageBroker().toString() == "MQTT">
+  , mqttClientInstance
+  , mqttClientLocalInstance
+  </#if>
   <#if comp.getParameters()?size gt 0>,</#if>
   <#list comp.getParameters() as variable>
       ${variable.getName()} <#sep>,</#sep>
@@ -44,6 +48,10 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
     {
       ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name}${"<"}${typeArguments}${">"} cmp (
       instanceNameArg.getValue ()
+      <#if config.getMessageBroker().toString() == "MQTT">
+        , mqttClientInstance
+        , mqttClientLocalInstance
+      </#if>
       <#if comp.getParameters()?size gt 0>,</#if>
       <#list comp.getParameters() as variable>
         ${variable.getName()} <#sep>,</#sep>

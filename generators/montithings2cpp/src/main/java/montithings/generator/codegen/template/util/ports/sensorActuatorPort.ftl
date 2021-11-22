@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("config", "portSymbol", "portTemeplateName", "everyTagOpt" "existsHWC")}
+${tc.signature("config", "portSymbol", "portTemplateName", "everyTagOpt" "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 <#include "/template/Copyright.ftl">
@@ -15,7 +15,7 @@ ${tc.includeArgs("template.util.ports.helper.DDSRecorderIncludes", [config, port
 
 ${defineHookPoint("<CppBlock>?portTemplate:include")}
 template${r"<class T>"}
-class ${Names.getSimpleName(portTemeplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
+class ${Names.getSimpleName(portTemplateName)?cap_first}<#if existsHWC>TOP</#if> : public Port${r"<T>"}{
 protected:
 
   ${tc.includeArgs("template.util.ports.helper.DDSRecorderDeclarations", [config, portSymbol])}
@@ -94,9 +94,9 @@ protected:
   ${tc.includeArgs("template.util.ports.methods.DDSRecorderRecord", [config, portSymbol])}
 
   <#if config.getMessageBroker().toString() == "DDS">
-    ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
+    ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
   <#else>
-    ${Names.getSimpleName(portTemeplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)
+    ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)
   </#if>
   {
     ${tc.includeArgs("template.util.ports.helper.DDSRecorderInit", [config, portSymbol])}

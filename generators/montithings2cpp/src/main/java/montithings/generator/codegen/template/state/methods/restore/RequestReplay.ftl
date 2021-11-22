@@ -5,5 +5,5 @@ ${tc.signature("comp", "className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${generics}::requestReplay ()
 {
-MqttClient::instance ()->publish ("/requestReplay/" + replaceDotsBySlashes (this->instanceName), "");
+mqttClientInstance->publish ("/requestReplay/" + replaceDotsBySlashes (this->instanceName), "");
 }

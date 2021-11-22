@@ -1,8 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("comp", "config", "existsHWC")}
+${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
+<#assign sensoractuatormanagerimage = "sensoractuatormanager">
 
 
 
@@ -18,8 +19,12 @@ docker network ls | grep montithings > /dev/null || docker network create --driv
 # On macOS, the montithings network is used instead. Therefore, we have to pass the ip of the host machine.
 os="$(uname -s)"
 case "${r"${os}"}" in
-    Linux*)     mqttip=127.0.0.1;;
-    Darwin*)    mqttip=host.docker.internal;;
+    Linux*)
+            mqttip=127.0.0.1
+            localmqttip=127.0.0.1;;
+    Darwin*)
+            mqttip=host.docker.internal
+            localmqttip=host.docker.internal;;
     *)          echo "unknown os!" && exit 1
 esac
 
@@ -36,6 +41,15 @@ esac
   <#list instances as pair >
       ${tc.includeArgs("template.util.scripts.DockerRunCommand", [pair.getKey().fullName, pair.getValue(), config])}
   </#list>
+</#if>
+<#if config.getMessageBroker().toString() == "MQTT">
+    <#list sensorActuatorPorts as port >
+        ${tc.includeArgs("template.util.scripts.DockerRunCommandSensorActuatorPorts", [port, port?lower_case, config])}
+    </#list>
+    <#list hwcPythonScripts as script >
+        ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [script?lower_case, config])}
+    </#list>
+    ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [sensoractuatormanagerimage, config])}
 </#if>
 
 chmod +x dockerStop.sh

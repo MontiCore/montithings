@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
-${tc.signature("config", "existsHWC")}
+${tc.signature("hwcPythonScripts","config", "existsHWC")}
 
 set -e # Stop on first error
 
@@ -38,6 +38,12 @@ cd build/bin
 cp ../../"$1"/*.sh .
 <#if config.getMessageBroker().toString() == "DDS">
 cp ../../"$1"/*.ini .
+</#if>
+<#if config.getMessageBroker().toString() == "MQTT" && hwcPythonScripts?size!=0>
+mkdir python
+cp ../../python/sensoractuatormanager.py python/.
+cp ../../python/montithingsconnector.py python/.
+cp ../../python/requirements.txt python/.
 </#if>
 <#if config.getSplittingMode().toString() == "LOCAL">
 cp -r ../../"$1"/ports .

@@ -1,10 +1,13 @@
 # (c) https://github.com/MontiCore/monticore
 import paho.mqtt.client as mqtt
 import json
+import parse_cmd
 
 
 class MontiThingsConnector:
-    def __init__(self, topic_name, receive):
+    def __init__(self, topic_name, receive, broker_hostname='localhost', broker_port=1883, parse_cmd_args=False):
+        if parse_cmd_args:
+            broker_hostname, broker_port = parse_cmd.parse_cmd_args()
         self.topic_name = topic_name
         self.mqttc = mqtt.Client()
         if receive is None:
@@ -12,16 +15,19 @@ class MontiThingsConnector:
         else:
             self._receive = receive
         self.connected = False
-        self.connect_to_broker()
+        self.connect_to_broker(receive, broker_hostname, broker_port)
         self.wait_for_connection()
 
-    def connect_to_broker(self):
+    def connect_to_broker(self, receive, broker_hostname, broker_port):
         self.mqttc.on_message = self.on_message
         self.mqttc.on_connect = self.on_connect
         self.mqttc.on_disconnect = self.on_disconnect
-        self.mqttc.connect("localhost", 1883)
+        self.mqttc.connect(broker_hostname, broker_port)
         self.mqttc.subscribe("/sensorActuator/" + self.topic_name, qos=0)
-        self.mqttc.loop_start()
+        if receive is None:
+            self.mqttc.loop_start()
+        else:
+            self.mqttc.loop_forever()
 
     def on_connect(self, mqttc, obj, flags, rc):
         print("Connected MQTT broker.")

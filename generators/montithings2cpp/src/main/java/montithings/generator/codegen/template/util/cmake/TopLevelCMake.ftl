@@ -1,5 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "existsHWC")}
+${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "sensorActuatorPorts", "existsHWC")}
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "">
@@ -10,6 +12,13 @@ ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "co
 cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
+
+<#if config.getSplittingMode().toString() == "OFF">
+  <#list sensorActuatorPorts as sensorActuatorPort >
+    add_subdirectory ("${sensorActuatorPort}")
+  </#list>
+</#if>
+
 
 <#if config.getSplittingMode().toString() != "OFF"
   && config.getTargetPlatform().toString() != "DSA_VCG"
@@ -107,7 +116,8 @@ include_directories("hwc" ${r"${dir_list}"})
 <#if config.getMessageBroker().toString() == "MQTT">
   # Include Mosquitto Library
   if(APPLE)
-  find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto)
+  find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto /opt/homebrew/Cellar/mosquitto)
+  include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/)
   else()
   find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
   include_directories(/snap/mosquitto/current/usr/include)

@@ -16,7 +16,7 @@ cmd.add (monochrome);
 <#if config.getSplittingMode().toString() == "LOCAL" && config.getMessageBroker().toString() == "OFF">
   ${tc.includeArgs("template.deploy.helper.CommunicationManagerArgs", [comp, config])}
 <#elseif config.getMessageBroker().toString() == "MQTT">
-  ${tc.includeArgs("template.deploy.helper.MqttArgs", [comp, config])}
+  ${tc.includeArgs("template.deploy.helper.MqttArgs")}
 <#elseif config.getMessageBroker().toString() == "DDS">
   ${tc.includeArgs("template.deploy.helper.DDSArgs", [comp, config])}
 </#if>
