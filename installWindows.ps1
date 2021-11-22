@@ -64,9 +64,6 @@ if(-not (Get-IsInstalled git)){
 if(-not (Get-IsInstalled java) -or (-not ([string](java --version)).Contains("11"))){
     winget install -e Microsoft.OpenJDK.11
 }
-if((Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe") -eq $false){
-    winget install -e Microsoft.VisualStudio.2019.Community --override "--passive --wait --config $PWD\.vsconfig"
-}
 if(-not (Get-IsInstalled cmake)){
     winget install -e Kitware.CMake
 }
@@ -94,17 +91,22 @@ if(-not (Get-IsInstalled conan)){
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
 ##########################################
+# Install Chocolatery Package Manager
+##########################################
+if(-not (Get-IsInstalled choco)){
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+}
+
+##########################################
 # Install Maven
 ##########################################
 if(-not (Get-IsInstalled mvn)){
     # Download
-    Invoke-Webrequest -UseBasicParsing -OutFile Maven.zip -Uri "https://dlcdn.apache.org/maven/maven-3/3.8.3/binaries/apache-maven-3.8.3-bin.zip"
-    Expand-Archive -DestinationPath 'C:\Program Files\' Maven.zip
-    rm .\Maven.zip
+    choco install maven
 
     # Add Maven to PATH
     $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-    $newpath="$oldpath;C:\Program Files\apache-maven-3.8.3\bin\"
+    $newpath="$oldpath;C:\Program Files\apache-maven-3.8.4\bin\"
     Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
 
     # Reload Path Environment Variable
@@ -132,9 +134,6 @@ if(-not (Get-IsInstalled ninja)){
 # Install MinGW
 ##########################################
 if(-not (Get-IsInstalled gcc)){
-    # Install Chocolatery
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-
     choco install -y mingw
 }
 
@@ -145,10 +144,15 @@ Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nano
 Expand-Archive -DestinationPath "$PWD" nng.zip
 rm .\nng.zip
 cd .\nng-1.3.0\
-exit 1 #todo
+#todo wip
+mkdir build
+cd .\build\
+cmake -G Ninja ..
+ninja
+ninja test
+ninja install
 cd ..
-rm .\nng-1.3.0\
-
+cd ..
 
 ##########################################
 # Install MontiThings
