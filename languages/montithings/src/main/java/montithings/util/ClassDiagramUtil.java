@@ -10,6 +10,7 @@ import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4codebasis._ast.ASTCDMethod;
 import de.monticore.cdbasis._ast.*;
 import de.monticore.cdbasis._symboltable.ICDBasisScope;
+import de.monticore.cdinterfaceandenum._ast.ASTCDInterface;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import de.monticore.siunittypes4math._ast.ASTSIUnitType;
@@ -49,10 +50,13 @@ public class ClassDiagramUtil {
     ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(componentTypeName).
             setModifier(publicModifier).build();
     if (comp.isPresentMTImplements()) {
-      ASTMCObjectType interfaceType = CD4CodeMill.mCQualifiedTypeBuilder().setMCQualifiedName
-              (CD4CodeMill.mCQualifiedNameBuilder().addParts(comp.getMTImplements().getName()).build())
-              .build();
-      astcdClass.setCDInterfaceUsage(CD4CodeMill.cDInterfaceUsageBuilder().addInterface(interfaceType).build());
+      ASTCDInterfaceUsageBuilder interfaceUsageBuilder = CD4CodeMill.cDInterfaceUsageBuilder();
+      for (String name : comp.getMTImplements().getNameList()) {
+        ASTMCObjectType interfaceType = CD4CodeMill.mCQualifiedTypeBuilder().setMCQualifiedName
+                        (CD4CodeMill.mCQualifiedNameBuilder().addParts(name).build()).build();
+        interfaceUsageBuilder.addInterface(interfaceType);
+      }
+      astcdClass.setCDInterfaceUsage(interfaceUsageBuilder.build());
     }
     if (comp.getHead().isPresentParent() && comp.getHead().getParent() instanceof ASTMCObjectType) {
       astcdClass.setCDExtendUsage(CD4CodeMill.cDExtendUsageBuilder().addSuperclass

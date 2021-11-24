@@ -15,28 +15,30 @@ public class InterfaceImplementedCorrectly implements MontiThingsASTMTComponentT
   @Override
   public void check(ASTMTComponentType node) {
     if (node.isPresentMTImplements()){
-      if (node.getEnclosingScope() instanceof MontiThingsArtifactScope){
-        ComponentTypeSymbol interfaceComponent =
-          getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), node.getMTImplements().getName());
-        if (interfaceComponent == null){
-          Log.error(String.format(
-                  MontiThingsError.TYPE_NOT_FOUND.toString(),
-                  node.getMTImplements().getName(), node.getMTImplements().get_SourcePositionStart()));
-        }
-        else {
-          if (!GenericBindingUtil.canImplementInterface(node.getSymbol(), interfaceComponent)) {
+      for (String name : node.getMTImplements().getNameList()) {
+        if (node.getEnclosingScope() instanceof MontiThingsArtifactScope){
+          ComponentTypeSymbol interfaceComponent =
+                  getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), name);
+          if (interfaceComponent == null){
             Log.error(String.format(
-                    MontiThingsError.NOT_FITS_INTERFACE.toString(),
-                    node, node.getName(), node.getName(),
-                    node.get_SourcePositionStart().toString()));
+                    MontiThingsError.TYPE_NOT_FOUND.toString(),
+                    name, node.getMTImplements().get_SourcePositionStart()));
           }
-          if (!((ASTMTComponentType) interfaceComponent.getAstNode())
-                  .getMTComponentModifier().isInterface()){
-            Log.error(
-                    String.format(
-                            MontiThingsError.NOT_INTERFACE.toString(),
-                            "typeName", node.getName(), node.getName(),
-                            node.get_SourcePositionStart().toString()));
+          else {
+            if (!GenericBindingUtil.canImplementInterface(node.getSymbol(), interfaceComponent)) {
+              Log.error(String.format(
+                      MontiThingsError.NOT_FITS_INTERFACE.toString(),
+                      node, node.getName(), node.getName(),
+                      node.get_SourcePositionStart().toString()));
+            }
+            if (!((ASTMTComponentType) interfaceComponent.getAstNode())
+                    .getMTComponentModifier().isInterface()){
+              Log.error(
+                      String.format(
+                              MontiThingsError.NOT_INTERFACE.toString(),
+                              "typeName", node.getName(), node.getName(),
+                              node.get_SourcePositionStart().toString()));
+            }
           }
         }
       }

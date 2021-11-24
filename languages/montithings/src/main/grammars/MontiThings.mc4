@@ -50,7 +50,7 @@ grammar MontiThings extends MontiArc,
      * An additional keyword for components, which marks a component as
      * implementing an interface component.
      */
-    MTImplements = "implements" Name@ComponentType;
+    MTImplements = "implements" (Name@ComponentType || ",")+;
 
     /* ============================================================ */
     /* ================== ArcElement Insertions =================== */
