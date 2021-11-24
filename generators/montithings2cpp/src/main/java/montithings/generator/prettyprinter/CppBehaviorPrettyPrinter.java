@@ -3,10 +3,7 @@ package montithings.generator.prettyprinter;
 
 import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.PortSymbol;
-import behavior._ast.ASTAfterStatement;
-import behavior._ast.ASTAgoQualification;
-import behavior._ast.ASTConnectStatement;
-import behavior._ast.ASTLogStatement;
+import behavior._ast.*;
 import behavior._visitor.BehaviorHandler;
 import behavior._visitor.BehaviorTraverser;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
@@ -91,10 +88,35 @@ public class CppBehaviorPrettyPrinter
     }
   }
 
-  protected void printGetExternalPortAccessFQN(ASTPortAccess target) {
+  @Override
+  public void handle(ASTDisconnectStatement node) {
+    boolean sourceIsComponentInstance = isStaticComponentInstance(node.getSource());
+    for (ASTPortAccess target : node.getTargetList()) {
+      boolean targetIsComponentInstance = isStaticComponentInstance(target);
+      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/disconnect/\" + ");
+      if (targetIsComponentInstance) {
+        getPrinter().print("instanceName");
+        getPrinter().print(" + \"/" + target.getQName() + "\"");
+      }
+      else {
+        printGetExternalPortAccessFQN(target);
+      }
+      getPrinter().print("), replaceDotsBySlashes (");
+      if (sourceIsComponentInstance) {
+        getPrinter().print("instanceName");
+        getPrinter().print(" + \"/" + node.getSource().getQName() + "\"");
+      }
+      else {
+        printGetExternalPortAccessFQN(node.getSource());
+      }
+      getPrinter().print("));");
+    }
+  }
+
+  protected void printGetExternalPortAccessFQN(ASTPortAccess portAccess) {
     getPrinter().print(
-      "input.get" + StringTransformations.capitalize(target.getComponent()) + " ().value ()" +
-        ".get" + StringTransformations.capitalize(target.getPort()) + " ()" +
+      "input.get" + StringTransformations.capitalize(portAccess.getComponent()) + " ().value ()" +
+        ".get" + StringTransformations.capitalize(portAccess.getPort()) + " ()" +
         ".getFullyQualifiedName ()"
     );
   }

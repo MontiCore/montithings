@@ -54,6 +54,12 @@ public:
   void subscribe (std::string portFqn);
 
   /**
+   * Unsubscribe from the messages of the port with the provided name
+   * \param portFqn fully qualified name of the port to unsubscribe from
+   */
+  void unsubscribe (std::string portFqn);
+
+  /**
    * Set the name of the local sensor / actuator to connect to
    * \param sensorName topic name without "/sensorActuator/" prefix
    */
@@ -99,11 +105,14 @@ MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe, MqttClient *clien
   mqttClientLocalInstance->addUser (this);
 
   std::string connectorTopic = "/connectors/" + replaceDotsBySlashes (fullyQualifiedName);
+  std::string disconnectTopic = "/disconnect/" + replaceDotsBySlashes (fullyQualifiedName);
   std::string manualInjectTopic = "/portsInject/" + replaceDotsBySlashes (fullyQualifiedName);
   if (shouldSubscribe)
     {
       mqttClientInstance->subscribe (connectorTopic);
       subscriptions.emplace (connectorTopic);
+      mqttClientInstance->subscribe (disconnectTopic);
+      subscriptions.emplace (disconnectTopic);
       mqttClientInstance->subscribe (manualInjectTopic);
       subscriptions.emplace (manualInjectTopic);
     }
@@ -116,6 +125,15 @@ MqttPort<T>::subscribe (std::string portFqn)
   std::string topic = "/ports/" + replaceDotsBySlashes (portFqn);
   mqttClientInstance->subscribe (topic);
   subscriptions.emplace (topic);
+}
+
+template <typename T>
+void
+MqttPort<T>::unsubscribe (std::string portFqn)
+{
+    std::string topic = "/ports/" + replaceDotsBySlashes (portFqn);
+    mqttClientInstance->unsubscribe (topic);
+    subscriptions.erase (topic);
 }
 
 template <typename T>
@@ -184,6 +202,12 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
           if (topic.find ("/connectors/") != std::string::npos)
             {
               subscribe (payload);
+            }
+
+          // check if this message informs us about the loss of a connection
+          if (topic.find ("/disconnect/") != std::string::npos)
+            {
+              unsubscribe (payload);
             }
         }
     }
