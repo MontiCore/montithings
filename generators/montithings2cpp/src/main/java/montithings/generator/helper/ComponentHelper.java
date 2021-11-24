@@ -271,12 +271,15 @@ public class ComponentHelper {
     Set<ComponentTypeSymbol> implementsComps = new HashSet<>();
     ASTMTComponentType astmtComponentType = ((ASTMTComponentType) component.getAstNode());
 
-    if (!astmtComponentType.isPresentMTImplements() ||
-      !astmtComponentType.getMTImplements().isPresentNameSymbol()) {
+    if (!astmtComponentType.isPresentMTImplements()) {
       return implementsComps;
     }
 
-    implementsComps.add(astmtComponentType.getMTImplements().getNameSymbol());
+    for (Optional<ComponentTypeSymbol> compSymbol : astmtComponentType.getMTImplements().getNamesSymbolList()) {
+      if (compSymbol.isPresent()) {
+        implementsComps.add(compSymbol.get());
+      }
+    }
 
     return implementsComps;
   }
