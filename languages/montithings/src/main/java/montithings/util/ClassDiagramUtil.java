@@ -10,7 +10,6 @@ import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cd4codebasis._ast.ASTCDMethod;
 import de.monticore.cdbasis._ast.*;
 import de.monticore.cdbasis._symboltable.ICDBasisScope;
-import de.monticore.cdinterfaceandenum._ast.ASTCDInterface;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunittypes4computing._ast.ASTSIUnitType4Computing;
 import de.monticore.siunittypes4math._ast.ASTSIUnitType;
@@ -18,7 +17,6 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
 import de.monticore.types.check.SymTypeOfGenerics;
 import de.monticore.types.check.SymTypeOfNull;
-import de.monticore.types.mcbasictypes.MCBasicTypesMill;
 import de.monticore.types.mcbasictypes._ast.*;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCCustomTypeArgument;
@@ -47,8 +45,8 @@ public class ClassDiagramUtil {
   protected static CD4CodeArtifactScope createClassDiagram(ASTMTComponentType comp) {
     String componentTypeName = "Co" + comp.getName();
     ASTModifier publicModifier = CD4CodeMill.modifierBuilder().PUBLIC().build();
-    ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(componentTypeName).
-            setModifier(publicModifier).build();
+    ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(componentTypeName)
+            .setModifier(publicModifier).build();
     if (comp.isPresentMTImplements()) {
       ASTCDInterfaceUsageBuilder interfaceUsageBuilder = CD4CodeMill.cDInterfaceUsageBuilder();
       for (String name : comp.getMTImplements().getNameList()) {

@@ -5,13 +5,10 @@ import arcbasis._ast.ASTArcParameter;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import clockcontrol._ast.ASTCalculationInterval;
-import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
-import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
-import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
@@ -22,10 +19,12 @@ import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.monticore.types.prettyprint.MCCollectionTypesFullPrettyPrinter;
 import genericarc._ast.ASTArcTypeParameter;
+import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
+import montithings.util.GenericBindingUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class TypesPrinter {
   public static String printCPPTypeName(SymTypeExpression expression, ComponentTypeSymbol comp,
     ConfigParams config) {
     if (expression.getTypeInfo() instanceof OOTypeSymbol) {
-      return convertMontiCoreTypeNameToCppFQN(expression.getTypeInfo());
+      return convertMontiCoreTypeNameToCppFQN(expression.getTypeInfo(), comp);
     }
     if (expression instanceof SymTypeOfNumericWithSIUnit) {
       expression = ((SymTypeOfNumericWithSIUnit) expression).getNumericType();
@@ -93,7 +92,7 @@ public class TypesPrinter {
         "Can't print namespace of non-CD type " + portSymbol.getType().getTypeInfo().getFullName());
     }
     TypeSymbol cdTypeSymbol = portSymbol.getType().getTypeInfo();
-    return convertMontiCoreTypeNameToCppFQN(cdTypeSymbol);
+    return convertMontiCoreTypeNameToCppFQN(cdTypeSymbol, componentSymbol);
   }
 
   /**
@@ -101,12 +100,15 @@ public class TypesPrinter {
    * by dots, to C++ type names, where name parts are separated by double colons
    *
    * @param typeSymbol the type whose FQN shall be returned
+   * @param comp
    * @return FQN of typeSymbol in C++ notation with double colon separators
    */
-  public static String convertMontiCoreTypeNameToCppFQN(TypeSymbol typeSymbol) {
+  public static String convertMontiCoreTypeNameToCppFQN(TypeSymbol typeSymbol, ComponentTypeSymbol comp) {
     String typeName = typeSymbol.getName();
-    //TODO: Instead of this, change FQN of typesymbol on creation
-    if (typeName.startsWith("CoData")) {
+    //Workaround for component types as the DeSer doesn't create symbols with their fully qualified name
+    if (typeName.startsWith("Co") && GenericBindingUtil.getComponentFromString(GenericBindingUtil
+                    .getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) comp.getEnclosingScope()),
+            typeName.substring(2)) != null) {
       typeName = typeName + "." + typeName;
     }
     return typeName.replaceAll("\\.", "::");
