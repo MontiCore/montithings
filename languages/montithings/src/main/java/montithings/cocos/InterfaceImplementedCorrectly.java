@@ -9,13 +9,22 @@ import montithings._symboltable.MontiThingsArtifactScope;
 import montithings.util.GenericBindingUtil;
 import montithings.util.MontiThingsError;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static montithings.util.GenericBindingUtil.getComponentFromString;
 
 public class InterfaceImplementedCorrectly implements MontiThingsASTMTComponentTypeCoCo {
   @Override
   public void check(ASTMTComponentType node) {
     if (node.isPresentMTImplements()){
-      for (String name : node.getMTImplements().getNameList()) {
+      Set<String> names = new HashSet<>(node.getMTImplements().getNameList());
+      if (node.getMTImplements().getNameList().size() > names.size()) {
+        Log.warn(String.format(
+                MontiThingsError.SAME_INTERFACE_MULTIPLE_TIMES.toString(),
+                node.getName()));
+      }
+      for (String name : names) {
         if (node.getEnclosingScope() instanceof MontiThingsArtifactScope){
           ComponentTypeSymbol interfaceComponent =
                   getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(), name);
