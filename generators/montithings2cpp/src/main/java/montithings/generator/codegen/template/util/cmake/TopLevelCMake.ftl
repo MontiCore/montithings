@@ -67,9 +67,12 @@ SET(dir_list "")
   </#if>
 </#if>
 
-<#if config.getTargetPlatform().toString() != "DSA_VCG"
-&& config.getTargetPlatform().toString() != "DSA_LAB">
-  find_package(nng 1.1.1 CONFIG REQUIRED)
+<#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
+                 && config.getTargetPlatform().toString() != "DSA_LAB"
+                 && config.getSplittingMode().toString() != "OFF"
+                 && config.getMessageBroker().toString() == "OFF">
+<#if needsNng>
+  find_package(nng 1.3.0 CONFIG REQUIRED)
 </#if>
 
 # for MSVC
@@ -145,7 +148,9 @@ add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}
 </#list>)
 target_link_libraries(${comp.getFullName()?replace(".","_")}Lib MontiThingsRTE)
-target_link_libraries(${comp.getFullName()?replace(".","_")}Lib nng::nng)
+<#if needsNng>
+  target_link_libraries(${comp.getFullName()?replace(".","_")}Lib nng::nng)
+</#if>
 set_target_properties(${comp.getFullName()?replace(".","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
@@ -163,7 +168,9 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
     <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
       target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
     </#if>
-    target_link_libraries(${comp.getFullName()} nng::nng)
+    <#if needsNng>
+      target_link_libraries(${comp.getFullName()} nng::nng)
+    </#if>
   </#if>
   set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
 </#if>
