@@ -189,6 +189,9 @@ public class MTGenerator {
       "template/util/scripts/WinBuildScript.ftl", config);
     makeExecutable(targetPath, "build", ".bat");
 
+    fg.generate(targetPath, "conanfile", ".txt",
+      "template/util/cmake/Conanfile.ftl", config);
+
     fg.generate(targetPath, "reformatCode", ".sh",
       "template/util/scripts/ReformatScript.ftl");
     makeExecutable(targetPath, "reformatCode", ".sh");

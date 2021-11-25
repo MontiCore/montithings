@@ -42,12 +42,23 @@ set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
   </#if>
 </#if>
 
+set(PATH_CONAN_BUILD_INFO ${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
+
+if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
+# Includes the contents of the conanbuildinfo.cmake file.
+include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
+# Prepares the CMakeList.txt for Conan (set include directories, set variables, etc...)
+conan_basic_setup()
+endif()
+
 <#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
 && config.getTargetPlatform().toString() != "DSA_LAB"
 && config.getSplittingMode().toString() != "OFF"
 && config.getMessageBroker().toString() == "OFF">
 <#if needsNng>
+  if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   find_package(nng 1.3.0 CONFIG REQUIRED)
+  endif ()
 </#if>
 
 find_package(Threads REQUIRED)
@@ -80,6 +91,7 @@ list(FILTER ${pckg?upper_case}_SOURCES EXCLUDE REGEX "Deploy.*")
 include_directories(".")
 
 <#if config.getMessageBroker().toString() == "MQTT">
+  if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   # Include Mosquitto Library
   if(APPLE)
   find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto /opt/homebrew/Cellar/mosquitto)
@@ -87,6 +99,7 @@ include_directories(".")
   else()
   find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
   include_directories(/snap/mosquitto/current/usr/include)
+  endif()
   endif()
 </#if>
 
@@ -105,8 +118,13 @@ include_directories(".")
 add_library(${pckg}_${port}Lib ${r"${SOURCES}"} ${r"${"}${pckg?upper_case}_SOURCES})
 target_link_libraries(${pckg}_${port}Lib MontiThingsRTE)
 <#if needsNng>
+  if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   target_link_libraries(${pckg}_${port}Lib nng::nng)
+  endif()
 </#if>
+if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
+target_link_libraries(${pckg}_${port}Lib ${r"${CONAN_LIBS}"})
+endif()
 target_link_libraries(${pckg}_${port}Lib Threads::Threads)
 set_target_properties(${pckg}_${port}Lib PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
@@ -121,12 +139,16 @@ install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
       ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [pckg+"."+port])}
   <#else>
     <#if config.getMessageBroker().toString() == "MQTT">
+      if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${pckg}.${port} ${r"${MOSQUITTO_LIB}"})
+      endif()
     <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
       target_link_libraries(${pckg}.${port} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>
+      if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${pckg}.${port} nng::nng)
+      endif()
     </#if>
   </#if>
   set_target_properties(${pckg}.${port} PROPERTIES LINKER_LANGUAGE CXX)
