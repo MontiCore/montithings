@@ -47,6 +47,8 @@ set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
   find_package(nng 1.1.1 CONFIG REQUIRED)
 </#if>
 
+find_package(Threads REQUIRED)
+
 # for MSVC
 if (MSVC)
 set(variables
@@ -99,6 +101,7 @@ include_directories(".")
 
 add_library(${pckg}_${port}Lib ${r"${SOURCES}"} ${r"${"}${pckg?upper_case}_SOURCES})
 target_link_libraries(${pckg}_${port}Lib MontiThingsRTE)
+target_link_libraries(${pckg}_${port}Lib Threads::Threads)
 target_link_libraries(${pckg}_${port}Lib nng::nng)
 set_target_properties(${pckg}_${port}Lib PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
