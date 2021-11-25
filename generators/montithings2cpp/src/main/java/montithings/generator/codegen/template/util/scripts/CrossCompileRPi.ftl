@@ -6,11 +6,18 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 # Cross compiles the application for Raspberry Pi 4
 
-if [ $(which docker >> /dev/null) -ne 0 ]
+# Check if a command is available on this system
+# Taken from https://get.docker.com/
+command_exists() {
+        command -v "$@" > /dev/null 2>&1
+}
+
+if ! command_exists docker
 then
 echo "Cross compiling requires Docker. It looks like Docker isn't installed. Aborting."
 exit 1
 fi
+
 
 docker run --rm dockcross/linux-armv7-lts > ./dockcross
 chmod +x dockcross
