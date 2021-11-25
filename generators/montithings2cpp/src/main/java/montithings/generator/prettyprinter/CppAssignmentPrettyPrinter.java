@@ -93,6 +93,11 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
       getPrinter().print("get" + capitalize(nameExpr.getName()) + "()");
       getPrinter().print(operation);
       getPrinter().print(")");
+    } else if (node instanceof ASTNameExpression) {
+      ASTNameExpression nameExpr = (ASTNameExpression) node;
+      boolean isPre = preOrPost.equals("pre");
+      String op = operation.equals("+1") ? "++" : "--";
+      getPrinter().print((isPre ? op : "") + nameExpr.getName() + (!isPre ? op : ""));
     }
   }
 
