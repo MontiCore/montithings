@@ -140,14 +140,14 @@ install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
   <#else>
     <#if config.getMessageBroker().toString() == "MQTT">
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
-      target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
+      target_link_libraries(${pckg}.${port} ${r"${MOSQUITTO_LIB}"})
       endif()
     <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
       target_link_libraries(${pckg}.${port} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
-      target_link_libraries(${comp.getFullName()} nng::nng)
+      target_link_libraries(${pckg}.${port} nng::nng)
       endif()
     </#if>
   </#if>
