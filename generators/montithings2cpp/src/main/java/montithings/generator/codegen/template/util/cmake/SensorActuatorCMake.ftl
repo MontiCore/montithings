@@ -42,9 +42,12 @@ set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
   </#if>
 </#if>
 
-<#if config.getTargetPlatform().toString() != "DSA_VCG"
-&& config.getTargetPlatform().toString() != "DSA_LAB">
-  find_package(nng 1.1.1 CONFIG REQUIRED)
+<#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
+&& config.getTargetPlatform().toString() != "DSA_LAB"
+&& config.getSplittingMode().toString() != "OFF"
+&& config.getMessageBroker().toString() == "OFF">
+<#if needsNng>
+  find_package(nng 1.3.0 CONFIG REQUIRED)
 </#if>
 
 find_package(Threads REQUIRED)
@@ -101,8 +104,10 @@ include_directories(".")
 
 add_library(${pckg}_${port}Lib ${r"${SOURCES}"} ${r"${"}${pckg?upper_case}_SOURCES})
 target_link_libraries(${pckg}_${port}Lib MontiThingsRTE)
+<#if needsNng>
+  target_link_libraries(${pckg}_${port}Lib nng::nng)
+</#if>
 target_link_libraries(${pckg}_${port}Lib Threads::Threads)
-target_link_libraries(${pckg}_${port}Lib nng::nng)
 set_target_properties(${pckg}_${port}Lib PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
@@ -120,7 +125,9 @@ install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
     <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
       target_link_libraries(${pckg}.${port} "${r"${opendds_libs}"}")
     </#if>
-    target_link_libraries(${pckg}.${port} nng::nng)
+    <#if needsNng>
+      target_link_libraries(${pckg}.${port} nng::nng)
+    </#if>
   </#if>
   set_target_properties(${pckg}.${port} PROPERTIES LINKER_LANGUAGE CXX)
 </#if>
