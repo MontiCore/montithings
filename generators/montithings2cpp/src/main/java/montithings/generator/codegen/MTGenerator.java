@@ -174,6 +174,12 @@ public class MTGenerator {
       "template/impl/ImplementationFile.ftl", comp, config);
   }
 
+  public void generateCrosscompileScript(File targetPath, ComponentTypeSymbol comp) {
+    fg.generate(targetPath, "crosscompileRPi", ".sh",
+      "template/util/scripts/CrossCompileRPi.ftl", comp, config);
+    makeExecutable(targetPath, "build", ".sh");
+  }
+
   public void generateBuildScript(File targetPath, List<String> hwcPythonScripts) {
     fg.generate(targetPath, "build", ".sh",
       "template/util/scripts/BuildScript.ftl", hwcPythonScripts, config);
