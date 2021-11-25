@@ -72,6 +72,8 @@ SET(dir_list "")
   find_package(nng 1.1.1 CONFIG REQUIRED)
 </#if>
 
+find_package(Threads REQUIRED)
+
 # for MSVC
 if (MSVC)
 set(variables
@@ -145,6 +147,7 @@ add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}
 </#list>)
 target_link_libraries(${comp.getFullName()?replace(".","_")}Lib MontiThingsRTE)
+target_link_libraries(${comp.getFullName()?replace(".","_")}Lib Threads::Threads)
 target_link_libraries(${comp.getFullName()?replace(".","_")}Lib nng::nng)
 set_target_properties(${comp.getFullName()?replace(".","_")}Lib PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
