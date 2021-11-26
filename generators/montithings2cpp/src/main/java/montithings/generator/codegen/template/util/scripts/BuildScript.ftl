@@ -30,7 +30,7 @@ fi
   cd build
   if [ -n "${r"${USE_CONAN}"}" ] && [ "${r"${USE_CONAN}"}" = "1" ]
   then
-  conan install --build==missing ..
+  conan install --build missing ..
   fi
     <#if config.getTargetPlatform().toString() == "DSA_LAB">
       $CMAKE -G Ninja ..
