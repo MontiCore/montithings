@@ -43,7 +43,10 @@ fi
 # Install Dependencies
 brew install cmake ninja mosquitto terraform azure-cli conan python
 brew services start mosquitto
+if ! command_exists docker
+then
 brew install --cask docker
+fi
 
 # Install NNG
 if [ ! -d nng ]
