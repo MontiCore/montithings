@@ -134,7 +134,7 @@ include_directories("hwc" ${r"${dir_list}"})
   # Include Mosquitto Library
   if(APPLE)
   find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto /opt/homebrew/Cellar/mosquitto)
-  include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/)
+  include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/ /opt/homebrew/Cellar/mosquitto/2.0.14/include/)
   else()
   find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
   include_directories(/snap/mosquitto/current/usr/include)
