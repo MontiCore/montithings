@@ -111,10 +111,21 @@ endif ()
 add_library(MontiThingsRTE ${RTE_SOURCES})
 
 if (NOT EXCLUDE_MQTT)
-    # Include Mosquitto Library
+  # Include Mosquitto Library
+  if(APPLE)
     find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto /opt/homebrew/Cellar/mosquitto)
     include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/)
-    target_link_libraries(MontiThingsRTE ${MOSQUITTO_LIB})
+  if(WIN32)
+    include_directories(C:\\Program\ Files\\Mosquitto\\devel)
+    link_directories(C:\\Program\ Files\\Mosquitto\\devel)
+    find_library(MOSQUITTO_LIB mosquitto HINTS C:\\Program\ Files\\Mosquitto\\devel)
+  else()
+    find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
+    include_directories(/snap/mosquitto/current/usr/include)
+  endif()
+
+  target_link_libraries(MontiThingsRTE ${MOSQUITTO_LIB})
+
 endif ()
 
 if (NOT EXCLUDE_DDS)
