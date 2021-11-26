@@ -61,17 +61,30 @@ you'll most likely want the native installation - it will save you time in the l
 
 On Ubuntu 20.04, you can use our script for installing everything except OpenDDS:
 ```
-git clone <link to this Git repository>
-cd core
+git clone <link to this Git repository> montithings
+cd montithings
 ./installLinux.sh
+```
+
+On macOS, you can also use our script for installing everything except OpenDDS.
+It will also install Java, Maven, and Gradle using SDKMAN. 
+If you already have Java 8, 11, or 14 installed, you might want to remove these lines
+of the script before executing it.
+You will be asked several times for your password in the process.
+If you do not already have the XCode developer tools, they will be also 
+installed; in this case there will be a popup from Apple right after starting the script. 
+```
+git clone <link to this Git repository> montithings
+cd montithings
+./installMac.sh
 ```
 
 ### Installation
 
 ```
-git clone <link to this Git repository>
-cd core
-mvn clean install
+git clone <link to this Git repository> montithings
+cd montithings
+mvn clean install -Dexec.skip
 ```
 
 Now the project should start building. This can take a while (10-15 minutes are normal). 

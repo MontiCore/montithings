@@ -32,7 +32,9 @@ if (NOT EXCLUDE_DDS)
     )
 endif ()
 
-find_package(nng 1.1.1 CONFIG REQUIRED)
+if (NOT EXCLUDE_COMM_MANAGER)
+  find_package(nng 1.3.0 CONFIG REQUIRED)
+endif ()
 
 # for MSVC
 if (MSVC)
@@ -132,6 +134,8 @@ if (NOT EXCLUDE_DDS)
     target_link_libraries(MontiThingsRTE ${opendds_libs})
 endif ()
 
-target_link_libraries(MontiThingsRTE nng::nng)
+if (NOT EXCLUDE_COMM_MANAGER)
+  target_link_libraries(MontiThingsRTE nng::nng)
+endif ()
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)
