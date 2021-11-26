@@ -8,9 +8,23 @@ cmake_minimum_required(VERSION 3.8)
     ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
 
-<#if config.getTargetPlatform().toString() != "DSA_VCG"
-&& config.getTargetPlatform().toString() != "DSA_LAB">
-    find_package(nng 1.1.1 CONFIG REQUIRED)
+set(PATH_CONAN_BUILD_INFO ${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
+
+if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
+# Includes the contents of the conanbuildinfo.cmake file.
+include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
+# Prepares the CMakeList.txt for Conan (set include directories, set variables, etc...)
+conan_basic_setup()
+endif()
+
+<#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
+&& config.getTargetPlatform().toString() != "DSA_LAB"
+&& config.getSplittingMode().toString() != "OFF"
+&& config.getMessageBroker().toString() == "OFF">
+<#if needsNng>
+    if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
+    find_package(nng 1.3.0 CONFIG REQUIRED)
+    endif ()
 </#if>
 
 include_directories("${libraryPath?replace("\\","/")}")
