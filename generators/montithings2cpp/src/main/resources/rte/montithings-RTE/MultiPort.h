@@ -19,7 +19,6 @@ template <class T> class MultiPort : public Port<T>
 {
 protected:
   std::set<Port<T> *> managedPorts;
-  Port<T> *dataProvidingPort = nullptr;
 
 public:
   MultiPort () = default;
@@ -31,9 +30,9 @@ public:
       {
         portToAdd->attach (listener);
       }
-    if (dataProvidingPort != nullptr)
+    if (this->dataProvider != nullptr)
       {
-        portToAdd->setDataProvidingPort (dataProvidingPort);
+        portToAdd->setDataProvidingPort (this->dataProvider);
       }
     managedPorts.emplace (portToAdd);
   }
@@ -112,7 +111,7 @@ public:
   void
   setDataProvidingPort (Port<T> *port) override
   {
-    dataProvidingPort = port;
+    this->dataProvider = port;
     for (auto currentport : managedPorts)
       {
         currentport->setDataProvidingPort (port);

@@ -2,6 +2,12 @@
 #!/bin/sh
 ${tc.signature("hwcPythonScripts","config", "existsHWC")}
 
+#
+# Set "export USE_CONAN=1" to make this script call conan
+# Or call "USE_CONAN=1 ./build.sh componentName"
+#
+
+
 set -e # Stop on first error
 
 if [ "$#" -ne 1 ]
@@ -22,6 +28,10 @@ fi
 <#else>
   mkdir -p build
   cd build
+  if [ -n "${r"${USE_CONAN}"}" ] && [ "${r"${USE_CONAN}"}" = "1" ]
+  then
+  conan install --build missing ..
+  fi
     <#if config.getTargetPlatform().toString() == "DSA_LAB">
       $CMAKE -G Ninja ..
     <#else>
