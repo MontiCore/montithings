@@ -26,6 +26,7 @@ import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
+import montithings.util.ClassDiagramUtil;
 
 import javax.measure.unit.Unit;
 import java.util.ArrayList;
@@ -250,6 +251,10 @@ public class TypesHelper {
       return enumScope.resolveField(node.getName());
     }
     return Optional.empty();
+  }
+
+  public static String getComponentTypePrefix(){
+    return ClassDiagramUtil.COMPONENT_TYPE_PREFIX;
   }
 
 }

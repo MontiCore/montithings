@@ -255,6 +255,7 @@ public class CppGenerator {
     }
      */
 
+    //add imports for interfaces of component type cds
     if (type.getInterfaceList().isEmpty()) {
       MCBasicTypesFullPrettyPrinter p = new MCBasicTypesFullPrettyPrinter(new IndentPrinter());
       for (ASTMCObjectType superType : type.getAstNode().getInterfaceList()) {

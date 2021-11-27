@@ -26,10 +26,10 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
     {
     if (ppprintConnectionStr.getValue ())
     {
-    ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, "Co" + comp.getName(), true])}
+    ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, TypesHelper.getComponentTypePrefix() + comp.getName(), true])}
     LOG(INFO) << "Co${comp.getName()} Connection String: " << str;
     } else {
-      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, "Co" + comp.getName(), false])}
+      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, TypesHelper.getComponentTypePrefix() + comp.getName(), false])}
       LOG(INFO) << "Co${comp.getName()} Connection String: " << str;
     }
     }

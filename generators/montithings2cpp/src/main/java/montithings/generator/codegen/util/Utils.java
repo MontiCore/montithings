@@ -27,6 +27,7 @@ import montithings.generator.helper.TypesHelper;
 import montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
+import montithings.util.ClassDiagramUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Preconditions;
@@ -451,8 +452,8 @@ public class Utils {
   public static String getComponentInterfaceImport(String interfaceName, String escape) {
     return "#include \""
       + escape
-      + "Co" + interfaceName + "/"
-      + "Co" + interfaceName + ".h"
+      + ClassDiagramUtil.COMPONENT_TYPE_PREFIX + interfaceName + "/"
+      + ClassDiagramUtil.COMPONENT_TYPE_PREFIX + interfaceName + ".h"
       + "\"";
   }
 

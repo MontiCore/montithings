@@ -43,6 +43,7 @@ import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
 import montithings.generator.visitor.*;
+import montithings.util.ClassDiagramUtil;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTCFGTag;
@@ -255,7 +256,7 @@ public class ComponentHelper {
   public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component, boolean addPrefix) {
     Set<String> namesOfImplementedInterfaces = new HashSet<>();
     for (ComponentTypeSymbol interf : getImplementedComponents(component)) {
-      namesOfImplementedInterfaces.add((addPrefix ? "Co" : "") + interf.getName());
+      namesOfImplementedInterfaces.add((addPrefix ? ClassDiagramUtil.COMPONENT_TYPE_PREFIX : "") + interf.getName());
     }
     return namesOfImplementedInterfaces;
   }

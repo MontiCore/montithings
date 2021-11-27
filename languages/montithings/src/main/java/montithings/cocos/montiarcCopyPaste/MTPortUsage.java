@@ -16,6 +16,7 @@ import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
 import montithings._symboltable.MontiThingsArtifactScope;
+import montithings.util.ClassDiagramUtil;
 import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.util.Collection;
@@ -64,7 +65,7 @@ public class MTPortUsage implements MontiThingsASTMTComponentTypeCoCo {
                   sourcePosition);
         }
         String portTypeName = node.getSpannedScope().resolvePort(port).get().getTypeInfo().getName();
-        if (!portTypeName.startsWith("Co") || getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(),
+        if (!portTypeName.startsWith(ClassDiagramUtil.COMPONENT_TYPE_PREFIX) || getComponentFromString((MontiThingsArtifactScope) node.getEnclosingScope(),
                 portTypeName.substring(2)) == null) {
           Log.warn(
                   ArcError.INCOMING_PORT_NO_FORWARD.format(port, symbol.getFullName()),

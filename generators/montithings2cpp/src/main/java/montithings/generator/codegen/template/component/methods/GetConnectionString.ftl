@@ -3,7 +3,7 @@ ${tc.signature("comp","config","className", "interfaceName", "ports")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#-- Types automatically generated for interfaces are prefixes with "Co" -->
-<#assign coName = "Co" + interfaceName?cap_first>
+<#assign coName = TypesHelper.getComponentTypePrefix() + interfaceName?cap_first>
 
 ${Utils.printTemplateArguments(comp)}
 std::string

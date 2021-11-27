@@ -24,6 +24,7 @@ import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
+import montithings.util.ClassDiagramUtil;
 import montithings.util.GenericBindingUtil;
 
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class TypesPrinter {
   public static String convertMontiCoreTypeNameToCppFQN(TypeSymbol typeSymbol, ComponentTypeSymbol comp) {
     String typeName = typeSymbol.getName();
     //Workaround for component types as the DeSer doesn't create symbols with their fully qualified name
-    if (typeName.startsWith("Co") && GenericBindingUtil.getComponentFromString(GenericBindingUtil
+    if (typeName.startsWith(ClassDiagramUtil.COMPONENT_TYPE_PREFIX) && GenericBindingUtil.getComponentFromString(GenericBindingUtil
                     .getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) comp.getEnclosingScope()),
             typeName.substring(2)) != null) {
       typeName = typeName + "." + typeName;

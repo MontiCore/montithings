@@ -35,6 +35,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ClassDiagramUtil {
 
+  public static final String COMPONENT_TYPE_PREFIX = "Co";
+
   private static MontiThingsTypeCheck tc = new MontiThingsTypeCheck(
           new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
 
@@ -43,7 +45,7 @@ public class ClassDiagramUtil {
   }
 
   protected static CD4CodeArtifactScope createClassDiagram(ASTMTComponentType comp) {
-    String componentTypeName = "Co" + comp.getName();
+    String componentTypeName = COMPONENT_TYPE_PREFIX + comp.getName();
     ASTModifier publicModifier = CD4CodeMill.modifierBuilder().PUBLIC().build();
     ASTCDClass astcdClass = CD4CodeMill.cDClassBuilder().setName(componentTypeName)
             .setModifier(publicModifier).build();
@@ -51,7 +53,7 @@ public class ClassDiagramUtil {
       ASTCDInterfaceUsageBuilder interfaceUsageBuilder = CD4CodeMill.cDInterfaceUsageBuilder();
       for (String name : comp.getMTImplements().getNameList()) {
         ASTMCObjectType interfaceType = CD4CodeMill.mCQualifiedTypeBuilder().setMCQualifiedName
-                        (CD4CodeMill.mCQualifiedNameBuilder().addParts("Co" + name).build()).build();
+                        (CD4CodeMill.mCQualifiedNameBuilder().addParts(COMPONENT_TYPE_PREFIX + name).build()).build();
         interfaceUsageBuilder.addInterface(interfaceType);
       }
       astcdClass.setCDInterfaceUsage(interfaceUsageBuilder.build());
@@ -122,17 +124,6 @@ public class ClassDiagramUtil {
       }
     }
     astcdClass.getSymbol().setIsClass(true);
-    /*for (ASTMCObjectType interfaceUsage : astcdClass.getInterfaceList()) {
-      //SymTypeExpression interfaceType = SymTypeExpressionFactory.createTypeObject(interfaceUsage.printType
-             //(new MCBasicTypesFullPrettyPrinter(new IndentPrinter())), scope);
-      //((OOTypeSymbol) interfaceType.getTypeInfo()).setIsInterface(true);
-      OOTypeSymbol typeSymbol = new OOTypeSymbolSurrogate(interfaceUsage.printType
-              (new MCBasicTypesFullPrettyPrinter(new IndentPrinter())));
-      typeSymbol.setIsClass(false);
-      typeSymbol.setIsInterface(true);
-      typeSymbol.setEnclosingScope(scope);
-      astcdClass.getSymbol().addSuperTypes(SymTypeExpressionFactory.createTypeObject(typeSymbol));
-    }*/
     return (CD4CodeArtifactScope) scope;
   }
 
