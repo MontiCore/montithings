@@ -2,15 +2,14 @@
 package montithings;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Preconditions;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
+import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.CD4CodeSymbols2Json;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
-import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeExpressionFactory;
@@ -25,7 +24,6 @@ import montithings.util.MontiThingsError;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -363,7 +361,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     return mtScope;
   }
 
-  public Set<CD4CodeArtifactScope> createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
+  public CD4CodeGlobalScope createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
     Preconditions.checkArgument(scope != null);
     Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
 
@@ -379,6 +377,8 @@ public class MontiThingsTool implements IMontiThingsTool {
 
     //convert scopes to symbol files
     for (CD4CodeArtifactScope artifactScope : scopes) {
+      CD4CodeMill.globalScope().addSubScope(artifactScope);
+      artifactScope.setEnclosingScope(CD4CodeMill.globalScope());
       String symbolFileName = symbolPath
           + artifactScope.getName()
           + ".sym";
@@ -386,7 +386,7 @@ public class MontiThingsTool implements IMontiThingsTool {
       final String path = symbols2Json.store(artifactScope, symbolFileName);
     }
 
-    return scopes;
+    return (CD4CodeGlobalScope) CD4CodeMill.globalScope();
   }
 
   protected void addPortSymbolsToCD4CGlobalScope() {

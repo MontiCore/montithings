@@ -14,7 +14,10 @@ import de.monticore.cdbasis._symboltable.ICDBasisScope;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.types.mcbasictypes._ast.ASTMCObjectType;
+import de.monticore.types.prettyprint.MCBasicTypesFullPrettyPrinter;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.io.FileUtils;
@@ -115,8 +118,6 @@ public class CppGenerator {
 
   public CppGenerator(Path outputDir, ICD4CodeScope scope) {
     this.outputDir = outputDir;
-    //compilationUnit = (ASTCDCompilationUnit) scope.getAstNode();
-    //compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
     cdSymbols.addAll(scope.getCDTypeSymbols().values());
 
     scope
@@ -200,6 +201,17 @@ public class CppGenerator {
       });
       _super.deleteCharAt(_super.length() - 1);
     }
+    //workaround for component type cds
+    else if (!type.getAstNode().getInterfaceList().isEmpty()) {
+      MCBasicTypesFullPrettyPrinter p = new MCBasicTypesFullPrettyPrinter(new IndentPrinter());
+      _super.append(" ");
+      type.getAstNode().getInterfaceList().forEach(i -> {
+        _super.append(" public ");
+        _super.append(typeHelper.printType(i.printType(p)));
+        _super.append(",");
+      });
+      _super.deleteCharAt(_super.length() - 1);
+    }
     
     String typeWithoutMT = typeHelper.printType(type);
     if (typeWithoutMT.startsWith("montithings::")) {
@@ -242,7 +254,15 @@ public class CppGenerator {
       }
     }
      */
-    
+
+    if (type.getInterfaceList().isEmpty()) {
+      MCBasicTypesFullPrettyPrinter p = new MCBasicTypesFullPrettyPrinter(new IndentPrinter());
+      for (ASTMCObjectType superType : type.getAstNode().getInterfaceList()) {
+        String typeName = superType.printType(p);
+        imports.add("../" + typeName + "/" + typeName + ".h");
+      }
+    }
+
     ge.generate("templates.type.ftl", filePath, type.getAstNode(),
       _package.chars().filter(ch -> ch == '.').count() + 2,
       "montithings\n{\nnamespace " + _package.replace(".", "\n{\nnamespace "), kind,

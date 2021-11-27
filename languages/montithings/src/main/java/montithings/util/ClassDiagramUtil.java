@@ -51,7 +51,7 @@ public class ClassDiagramUtil {
       ASTCDInterfaceUsageBuilder interfaceUsageBuilder = CD4CodeMill.cDInterfaceUsageBuilder();
       for (String name : comp.getMTImplements().getNameList()) {
         ASTMCObjectType interfaceType = CD4CodeMill.mCQualifiedTypeBuilder().setMCQualifiedName
-                        (CD4CodeMill.mCQualifiedNameBuilder().addParts(name).build()).build();
+                        (CD4CodeMill.mCQualifiedNameBuilder().addParts("Co" + name).build()).build();
         interfaceUsageBuilder.addInterface(interfaceType);
       }
       astcdClass.setCDInterfaceUsage(interfaceUsageBuilder.build());
@@ -122,6 +122,17 @@ public class ClassDiagramUtil {
       }
     }
     astcdClass.getSymbol().setIsClass(true);
+    /*for (ASTMCObjectType interfaceUsage : astcdClass.getInterfaceList()) {
+      //SymTypeExpression interfaceType = SymTypeExpressionFactory.createTypeObject(interfaceUsage.printType
+             //(new MCBasicTypesFullPrettyPrinter(new IndentPrinter())), scope);
+      //((OOTypeSymbol) interfaceType.getTypeInfo()).setIsInterface(true);
+      OOTypeSymbol typeSymbol = new OOTypeSymbolSurrogate(interfaceUsage.printType
+              (new MCBasicTypesFullPrettyPrinter(new IndentPrinter())));
+      typeSymbol.setIsClass(false);
+      typeSymbol.setIsInterface(true);
+      typeSymbol.setEnclosingScope(scope);
+      astcdClass.getSymbol().addSuperTypes(SymTypeExpressionFactory.createTypeObject(typeSymbol));
+    }*/
     return (CD4CodeArtifactScope) scope;
   }
 

@@ -22,6 +22,7 @@ import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
+import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeScope;
 import de.monticore.io.FileReaderWriter;
@@ -137,12 +138,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     IMontiThingsGlobalScope symTab = createMTGlobalScope(mp);
-    Set<CD4CodeArtifactScope> componentTypeScopes = createClassDiagrams(
+    CD4CodeGlobalScope componentTypeScopes = createClassDiagrams(
       (MontiThingsGlobalScope) symTab, symbolPath);
     if (models.getClassdiagrams().isEmpty()) {
       mp.addEntry(Paths.get(symbolPath));
     }
     createSymbolTable(symTab);
+
+    //generate here, as CD4CodeGlobalScope is reset by CDLangExtension symbol table
+    generateComponentTypeCDs(componentTypeScopes, target);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     ICDLangExtensionGlobalScope cdLangExtensionGlobalScope = cdExtensionTool.initSymbolTable(
@@ -376,7 +380,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     generateCD(modelPath, hwcPath, target);
-    generateComponentTypeCDs(componentTypeScopes, target);
     mtg.generateBuildScript(target, hwcPythonScripts);
 
     for (String model : models.getMontithings()) {
@@ -579,6 +582,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
+  protected void generateComponentTypeCDs(CD4CodeGlobalScope scopes, File targetFilepath) {
+    for (ICD4CodeScope scope : scopes.getSubScopes()) {
+      String modelName = scope.getName();
+      Log.info("Generate ComponentType model: " + modelName, TOOL_NAME);
+      Path outDir = Paths.get(targetFilepath.getAbsolutePath());
+      new CppGenerator(outDir, scope)
+        .generate(Optional.empty());
+    }
+  }
+
   protected void generateCD(File modelPath, File hwcPath, File targetFilepath) {
     List<String> foundModels = Modelfinder
       .getModelsInModelPath(modelPath, CD4AnalysisGlobalScope.EXTENSION);
@@ -592,16 +605,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         Paths.get(hwcPath.getAbsolutePath()), model)
         //.generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
         //.generate(Optional.of(packageName));
-        .generate(Optional.empty());
-    }
-  }
-
-  protected void generateComponentTypeCDs(Set<CD4CodeArtifactScope> scopes, File targetFilepath) {
-    for (ICD4CodeScope scope : scopes) {
-      String modelName = scope.getName();
-      Log.info("Generate ComponentType model: " + modelName, TOOL_NAME);
-      Path outDir = Paths.get(targetFilepath.getAbsolutePath());
-      new CppGenerator(outDir, scope)
         .generate(Optional.empty());
     }
   }
