@@ -22,14 +22,21 @@ called "[Liskov's substitution principle][liskov]").
 
 In this example, the `Example` component expects a `DataProvider`.
 If it gets one, it connects it to its `Sink` component using the connect statement in the 
-behavior block:
+behavior block.
+Similarly, if the `Example` component gets informed that a `DataProvider` no longer exists, 
+it will disconnect using the `-/>` syntax:
 ```
 component Example {
-  port in CoDataProvider dp;
+  port in CoDataProvider connect;
+  port in CoDataProvider disconnect;
   Sink sink;
 
-  behavior dp {
-    dp.value -> sink.value;
+  behavior connect {
+    connect.value -> sink.value;
+  }
+
+  behavior disconnect {
+    disconnect.value -/> sink.value;
   }
 }
 ```
@@ -55,18 +62,21 @@ Looking at the output of the `Example` component (`tail -f hierarchy.Example.log
 we see that it's not processing any messages up to now. 
 We can also find the `portInject` topic for manually sending messages to a port: 
 ```
-DEBUG: 2021-11-21 15:11:20,727 Connected to MQTT topic /portsInject/hierarchy/Example/dp
+DEBUG: 2021-11-21 15:11:20,727 Connected to MQTT topic /portsInject/hierarchy/Example/connect
 ```
 
 Using these two information, we can send a message with the interface of the `Source` component to 
-the`dp` port of the `Example` component:
+the `connect` port of the `Example` component:
 ```
-mosquitto_pub -t "/portsInject/hierarchy/Example/dp" -m "{\"value0\":{\"payload\":{\"data\":{\"value0\":{\"value0\":\"newton.value\"}},\"nullopt\":false},\"uuid\":\"5f5a6061-d2f1-4f51-a7b9-4c879da4097d\"}}"
+mosquitto_pub -t "/portsInject/hierarchy/Example/connect" -m "{\"value0\":{\"payload\":{\"data\":{\"value0\":{\"value0\":\"newton.value\"}},\"nullopt\":false},\"uuid\":\"5f5a6061-d2f1-4f51-a7b9-4c879da4097d\"}}"
 ```
 
 Looking again at the log of the `Example` component, we see that the `Sink` component starts 
 logging the values of the `Source` component, i.e., the components were successfully connected.
 
-
+You can disconnect the two components again by sending the same message to the `disconnect` port:
+```
+mosquitto_pub -t "/portsInject/hierarchy/Example/disconnect" -m "{\"value0\":{\"payload\":{\"data\":{\"value0\":{\"value0\":\"newton.value\"}},\"nullopt\":false},\"uuid\":\"5f5a6061-d2f1-4f51-a7b9-4c879da4097d\"}}"
+```
 
 [liskov]: https://en.wikipedia.org/wiki/Liskov_substitution_principle
