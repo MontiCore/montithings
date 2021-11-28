@@ -2,6 +2,10 @@
 package montithings;
 
 import com.google.common.base.Preconditions;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
+import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
+import de.monticore.cd4code._symboltable.CD4CodeSymbols2Json;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
@@ -28,6 +32,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static montithings.util.ClassDiagramUtil.createClassDiagram;
 import static montithings.util.LibraryFunctionsUtil.addAllLibraryFunctions;
 
 public class MontiThingsTool implements IMontiThingsTool {
@@ -354,5 +359,42 @@ public class MontiThingsTool implements IMontiThingsTool {
     IMontiThingsGlobalScope mtScope = this.createMTGlobalScope(modelPath);
     this.processModels(mtScope);
     return mtScope;
+  }
+
+  public CD4CodeGlobalScope createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
+    Preconditions.checkArgument(scope != null);
+    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+
+    addPortSymbolsToCD4CGlobalScope();
+
+    //create scopes for class diagrams
+    Set<CD4CodeArtifactScope> scopes = new HashSet<>();
+    for (ASTMACompilationUnit compilationUnit : models) {
+      if (!compilationUnit.getComponentType().getPorts().isEmpty()) {
+        scopes.add(createClassDiagram(compilationUnit));
+      }
+    }
+
+    //convert scopes to symbol files
+    for (CD4CodeArtifactScope artifactScope : scopes) {
+      CD4CodeMill.globalScope().addSubScope(artifactScope);
+      artifactScope.setEnclosingScope(CD4CodeMill.globalScope());
+      String symbolFileName = symbolPath
+          + artifactScope.getName()
+          + ".sym";
+      final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
+      final String path = symbols2Json.store(artifactScope, symbolFileName);
+    }
+
+    return (CD4CodeGlobalScope) CD4CodeMill.globalScope();
+  }
+
+  protected void addPortSymbolsToCD4CGlobalScope() {
+    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    CD4CodeMill.globalScope().add(inPortType);
+    CD4CodeMill.globalScope().add(outPortType);
   }
 }

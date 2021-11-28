@@ -16,11 +16,24 @@ remainingComputes++;
 while (remainingComputes > 0)
 {
 if (shouldCompute()) {
+
 ${tc.includeArgs("template.component.helper.ComputeInputs", [comp, config, false, "false"])}
 ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
 ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
-${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+
+<#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
+  if (shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()}))
+  {
+  ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
+    <#-- Different from atomic component we do not set a "result" here, because the composed
+         components are not allowed to send messages on outgoing ports
+     -->
+  ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+  ${tc.includeArgs("template.component.helper.ComputeResults", [comp, config, true, className])}
+  ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
+  }
+</#list>
 
 <#if config.getSplittingMode().toString() == "OFF">
     <#list comp.subComponents as subcomponent >
@@ -28,8 +41,10 @@ ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
     </#list>
 </#if>
 
+
 ${tc.includeArgs("template.component.helper.ComputeResults", [comp, config, true, className])}
 ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
+
 }
 remainingComputes--;
 }

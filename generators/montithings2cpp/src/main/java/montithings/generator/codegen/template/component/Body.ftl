@@ -63,6 +63,7 @@ ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.PublishConnectors", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.OnMessage", [comp, config, className])}
+  ${tc.includeArgs("template.component.methods.GetMqttClientInstance", [comp, config, className])}
 </#if>
 
 <#if config.getMessageBroker().toString() == "DDS">
@@ -72,5 +73,12 @@ ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
 ${tc.includeArgs("template.component.methods.OnEvent", [comp, config, className])}
 ${tc.includeArgs("template.component.methods.ThreadJoin", [comp, config, className])}
 ${tc.includeArgs("template.component.methods.CheckPostconditions", [comp, config, className])}
+
+<#if comp.getPorts()?size gt 0>
+  ${tc.includeArgs("template.component.methods.GetConnectionString", [comp, config, className, comp.getName(), comp.getPorts()])}
+  <#list ComponentHelper.getInterfaceClassNames(comp, false) as interface>
+    ${tc.includeArgs("template.component.methods.GetConnectionString", [comp, config, className, interface, ComponentHelper.getPortsOfInterface(interface, comp)])}
+  </#list>
+</#if>
 
 ${tc.includeArgs("template.component.methods.Constructor", [comp, config, className])}

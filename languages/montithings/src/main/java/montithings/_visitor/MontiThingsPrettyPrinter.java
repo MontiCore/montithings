@@ -58,6 +58,9 @@ public class MontiThingsPrettyPrinter implements MontiThingsHandler {
     node.getMTComponentModifier().accept(getTraverser());
     this.getPrinter().print(node.getName());
     node.getHead().accept(getTraverser());
+    if (node.isPresentMTImplements()) {
+      node.getMTImplements().accept(getTraverser());
+    }
     acceptSeperatedList(node.getComponentInstanceList());
     node.getBody().accept(getTraverser());
   }
@@ -68,6 +71,18 @@ public class MontiThingsPrettyPrinter implements MontiThingsHandler {
       this.getPrinter().print("interface ");
     }
     this.getPrinter().print("component ");
+  }
+
+  @Override
+  public void handle(@NotNull ASTMTImplements node) {
+    this.getPrinter().print(" implements");
+    for (int i = 0; i < node.getNameList().size(); i++) {
+      if (i != 0) {
+        getPrinter().print(",");
+      }
+      getPrinter().print(" ");
+      getPrinter().print(node.getName(i));
+    }
   }
 
   @Override

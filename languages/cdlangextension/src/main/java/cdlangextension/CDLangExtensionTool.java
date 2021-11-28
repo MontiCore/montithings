@@ -88,6 +88,7 @@ public class CDLangExtensionTool {
         CD4CodeMill.globalScope().addSubScope(currentScope);
       }
     }
+
     CD4CodeResolver resolver = new CD4CodeResolver(CD4CodeMill.globalScope());
 
     CDLangExtensionMill.reset();

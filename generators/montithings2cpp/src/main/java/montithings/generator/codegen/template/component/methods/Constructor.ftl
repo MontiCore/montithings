@@ -28,8 +28,9 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
     </#list>)
   <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
 </#if>
-<#if comp.isAtomic()>
+<#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0>
   ${tc.includeArgs("template.component.helper.BehaviorInitializerListEntry", [comp, config])}
+  <#if !comp.isAtomic()>,</#if>
 </#if>
 <#if shouldPrintSubcomponents>
   ${tc.includeArgs("template.component.helper.SubcompInitializerList", [comp, config])}

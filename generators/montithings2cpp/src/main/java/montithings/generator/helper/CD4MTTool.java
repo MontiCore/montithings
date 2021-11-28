@@ -15,6 +15,7 @@ import de.monticore.cdassociation.trafo.CDAssociationCreateFieldsFromNavigableRo
 import de.monticore.cdassociation.trafo.CDAssociationRoleNameTrafo;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.se_rwth.commons.logging.Log;
 
 import java.io.File;
@@ -71,6 +72,20 @@ public class CD4MTTool {
     CD4CodeMill.globalScope().clear();
     CD4CodeMill.globalScope().setModelPath(new ModelPath(modelPath.toPath()));
     ((CD4CodeGlobalScope) CD4CodeMill.globalScope()).addBuiltInTypes();
+    CD4CodeMill.globalScope().add(CD4CodeMill.typeSymbolBuilder()
+            .setName("String")
+            .setFullName("String")
+            .setEnclosingScope(CD4CodeMill.globalScope())
+            .setSpannedScope(CD4CodeMill.scope())
+            .build());
+    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").
+            setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").
+            setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    CD4CodeMill.globalScope().add(inPortType);
+    CD4CodeMill.globalScope().add(outPortType);
     ICD4CodeArtifactScope artifact = CD4CodeMill.scopesGenitorDelegator().createFromAST(ast);
     ast.accept(new CD4CodeSymbolTableCompleter(ast).getTraverser());
     return artifact;

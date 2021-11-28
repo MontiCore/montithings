@@ -1,9 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator;
 
+import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.ComponentTypeSymbolTOP;
 import arcbasis._symboltable.PortSymbol;
+import behavior._ast.ASTConnectStatement;
 import bindings.BindingsTool;
 import bindings._ast.ASTBindingRule;
 import bindings._ast.ASTBindingsCompilationUnit;
@@ -19,7 +21,10 @@ import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
+import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
+import de.monticore.cd4code._symboltable.ICD4CodeScope;
 import de.monticore.io.FileReaderWriter;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -28,9 +33,12 @@ import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsMill;
 import montithings.MontiThingsTool;
+import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings._symboltable.IMontiThingsGlobalScope;
 import montithings._symboltable.IMontiThingsScope;
+import montithings._symboltable.MontiThingsGlobalScope;
+import montithings._visitor.MontiThingsTraverser;
 import montithings.cocos.PortConnection;
 import montithings.generator.cd2cpp.CppGenerator;
 import montithings.generator.cocos.ComponentHasBehavior;
@@ -42,6 +50,7 @@ import montithings.generator.data.Models;
 import montithings.generator.helper.CD4MTTool;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
+import montithings.generator.visitor.FindConnectStatementsVisitor;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
 import montithings.trafos.DelayedChannelTrafo;
@@ -68,6 +77,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static montithings.generator.helper.ComponentHelper.getInterfaceClassNames;
 import static montithings.generator.helper.FileHelper.*;
 
 public class MontiThingsGeneratorTool extends MontiThingsTool {
@@ -100,8 +110,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ======================= Serialize CDs ====================== */
     /* ============================================================ */
 
+    String symbolPath = target.toString() + File.separator + "symbols" + File.separator;
     if (!models.getClassdiagrams().isEmpty()) {
-      String symbolPath = target.toString() + File.separator + "symbols" + File.separator;
       CD4MTTool.convertToSymFile(modelPath, models.getClassdiagrams(), symbolPath);
       mp.addEntry(Paths.get(symbolPath));
     }
@@ -121,14 +131,22 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     CD4CodeMill.reset();
     CD4CodeMill.init();
     CD4CodeMill.globalScope().clear();
-    ICD4CodeGlobalScope cd4CGlobalScope = CD4CodeMill.globalScope();
-    cd4CGlobalScope.setModelPath(mp);
+    ICD4CodeGlobalScope cd4MTGlobalScope = CD4CodeMill.globalScope();
+    cd4MTGlobalScope.setModelPath(mp);
 
     MontiThingsMill.reset();
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
     IMontiThingsGlobalScope symTab = createMTGlobalScope(mp);
+    CD4CodeGlobalScope componentTypeScopes = createClassDiagrams(
+      (MontiThingsGlobalScope) symTab, symbolPath);
+    if (models.getClassdiagrams().isEmpty()) {
+      mp.addEntry(Paths.get(symbolPath));
+    }
     createSymbolTable(symTab);
+
+    //generate here, as CD4CodeGlobalScope is reset by CDLangExtension symbol table
+    generateComponentTypeCDs(componentTypeScopes, target);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
     ICDLangExtensionGlobalScope cdLangExtensionGlobalScope = cdExtensionTool.initSymbolTable(
@@ -251,6 +269,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       executableComponents.add(instance.getKey());
     }
 
+    // Also generate code for all components that are never used directly
+    // whose interface is exchanged dynamically via a port (i.e. components
+    // that may be instantiated dynamically)
+    for (ComponentTypeSymbol cs : getAllComponents(symTab)) {
+      if (componentIsUsedDynamically(cs, symTab)) {
+        executableComponents.add(cs);
+      }
+    }
+
     // Aggregate all the target folders for the components.
     List<String> executableSubdirs = new ArrayList<>(instances.size());
     for (ComponentTypeSymbol comp : executableComponents) {
@@ -313,6 +340,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         mtg.generateDDSDCPSConfig(compTarget);
       }
 
+      Set<ComponentTypeSymbol> dynConnectedSubcomps = getDynamicallyConnectedSubcomps(e.getKey());
+
       // Save splitting mode and message broker for overriding it for subcomponents that should be included in the same binary.
       SplittingMode orgSplit = config.getSplittingMode();
       MessageBroker orgBroker = config.getMessageBroker();
@@ -322,9 +351,12 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         boolean genDeploy = model.equals(baseModel);
 
         // Only the deployed component should communicate directly with the 'outer world'.
-        // All the other enclosed components should communicate using native ports. 
+        // All the other enclosed components should communicate using native ports.
+        // Unless its dynamically connected. Then it needs to communicate.
         config.setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
-        config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
+        if (!dynConnectedSubcomps.contains(symModel)) {
+          config.setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
+        }
 
         generateCppForComponent(model, symTab, compTarget, hwcPath, config, models, genDeploy);
 
@@ -551,6 +583,16 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
   }
 
+  protected void generateComponentTypeCDs(CD4CodeGlobalScope scopes, File targetFilepath) {
+    for (ICD4CodeScope scope : scopes.getSubScopes()) {
+      String modelName = scope.getName();
+      Log.info("Generate ComponentType model: " + modelName, TOOL_NAME);
+      Path outDir = Paths.get(targetFilepath.getAbsolutePath());
+      new CppGenerator(outDir, scope)
+        .generate(Optional.empty());
+    }
+  }
+
   protected void generateCD(File modelPath, File hwcPath, File targetFilepath) {
     List<String> foundModels = Modelfinder
       .getModelsInModelPath(modelPath, CD4AnalysisGlobalScope.EXTENSION);
@@ -669,6 +711,59 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   public void setStopAfterCoCoCheck(boolean stopAfterCoCoCheck) {
     this.stopAfterCoCoCheck = stopAfterCoCoCheck;
+  }
+
+  public Set<ComponentTypeSymbol> getAllComponents(IMontiThingsGlobalScope symTab) {
+    Set<ComponentTypeSymbol> allComponentTypes = new HashSet<>();
+    for (IMontiThingsScope scope : symTab.getSubScopes()) {
+      allComponentTypes.addAll(scope.getComponentTypeSymbols().values());
+    }
+    return allComponentTypes;
+  }
+
+  public Set<ComponentTypeSymbol> getDynamicallyConnectedSubcomps(ComponentTypeSymbol enclosingComp) {
+    Set<ComponentTypeSymbol> result = new HashSet<>();
+
+    // Find all connect statements
+    FindConnectStatementsVisitor visitor = new FindConnectStatementsVisitor();
+    Set<ASTBehavior> behaviors = enclosingComp.getAstNode().getBody().getArcElementList().stream()
+      .filter(e -> e instanceof ASTBehavior)
+      .map(e -> (ASTBehavior)e)
+      .collect(Collectors.toSet());
+    MontiThingsTraverser traverser = visitor.createTraverser();
+    for (ASTBehavior b : behaviors) {
+      b.accept(traverser);
+    }
+
+    // Get the types of all component instances accessed in connect statements
+    for (ASTConnectStatement cs : visitor.getConnectStatements()) {
+      Set<ASTPortAccess> portAccesses = new HashSet<>();
+      portAccesses.add(cs.getConnector().getSource());
+      portAccesses.addAll(cs.getConnector().getTargetList());
+
+      for (ASTPortAccess pa : portAccesses) {
+        if (pa.isPresentComponentSymbol()) {
+          result.add(pa.getComponentSymbol().getType());
+        }
+      }
+    }
+
+    return result;
+  }
+
+  public boolean componentIsUsedDynamically(ComponentTypeSymbol component,
+    IMontiThingsGlobalScope symTab) {
+
+    Set<String> namesOfImplementedInterfaces = getInterfaceClassNames(component);
+
+    for (ComponentTypeSymbol current : getAllComponents(symTab)) {
+      if (current.getPorts().stream()
+        .anyMatch(p -> namesOfImplementedInterfaces.contains(p.getTypeInfo().getName()))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public boolean templatePortBelongsToComponent(IMontiThingsGlobalScope symTab,

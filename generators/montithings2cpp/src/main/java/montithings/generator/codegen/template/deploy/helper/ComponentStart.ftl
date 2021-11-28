@@ -19,6 +19,35 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
       ${variable.getName()} <#sep>,</#sep>
   </#list>
   );
+
+  <#-- Printing connection strings for dynamically instantiated components -->
+  <#if comp.getPorts()?size gt 0>
+    if (printConnectionStr.getValue ())
+    {
+    if (ppprintConnectionStr.getValue ())
+    {
+    ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, TypesHelper.getComponentTypePrefix() + comp.getName(), true])}
+    LOG(INFO) << "Co${comp.getName()} Connection String: " << str;
+    } else {
+      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, TypesHelper.getComponentTypePrefix() + comp.getName(), false])}
+      LOG(INFO) << "Co${comp.getName()} Connection String: " << str;
+    }
+    }
+    <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
+      if (printConnectionStr${interface}.getValue ())
+      {
+      if (ppprintConnectionStr.getValue ())
+      {
+      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, interface, true])}
+      LOG(INFO) << "${interface} Connection String: " << str;
+      } else {
+      ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, interface, false])}
+      LOG(INFO) << "${interface} Connection String: " << str;
+      }
+      }
+    </#list>
+  </#if>
+
   ${tc.includeArgs("template.deploy.helper.DDSClientSetCmp", [comp, config])}
   ${tc.includeArgs("template.deploy.helper.CommunicationManagerInit", [comp, config])}
 

@@ -7,11 +7,15 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import arcbasis.util.ArcError;
+import behavior._ast.ASTConnectStatement;
 import com.google.common.base.Preconditions;
 import de.se_rwth.commons.SourcePosition;
 import de.se_rwth.commons.logging.Log;
+import montithings._ast.ASTBehavior;
+import montithings._ast.ASTMTComponentType;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,8 +36,10 @@ public class PortConnection extends SubComponentsConnected {
     Preconditions.checkArgument(node.isPresentSymbol(), "ASTComponent node '%s' has no symbol. "
       + "Did you forget to run the SymbolTableCreator before checking cocos?", node.getName());
     final ComponentTypeSymbol compSymbol = node.getSymbol();
-    final Collection<String> targets = this.getTargetNames(node);
-    final Collection<String> sources = this.getSourceNames(node);
+    Collection<String> targets = this.getTargetNames(node);
+    addConnectorTargetsFromBehavior(targets, (ASTMTComponentType) node);
+    Collection<String> sources = this.getSourceNames(node);
+    addConnectorSourcesFromBehavior(sources, (ASTMTComponentType) node);
     for (ComponentInstanceSymbol subSymbol : compSymbol.getSubComponents()) {
       // --------- INCOMING PORTS ----------
       Collection<String> subInputPorts =
@@ -78,6 +84,42 @@ public class PortConnection extends SubComponentsConnected {
               subSymbol.getFullName(), compSymbol.getFullName()), sourcePosition);
           }
         }
+      }
+    }
+  }
+
+  protected void addConnectorSourcesFromBehavior(Collection<String> sources, ASTMTComponentType node) {
+    List<ASTBehavior> behaviors = node.getBody()
+            .getArcElementList()
+            .stream()
+            .filter(element -> element instanceof ASTBehavior)
+            .map(behavior -> (ASTBehavior) behavior)
+            .collect(Collectors.toList());
+    for (ASTBehavior behavior : behaviors) {
+      List<ASTConnectStatement> connectStatements = behavior.getMCJavaBlock().getMCBlockStatementList().stream()
+              .filter(element -> element instanceof ASTConnectStatement)
+              .map(connector -> ((ASTConnectStatement) connector))
+              .collect(Collectors.toList());
+      for (ASTConnectStatement connectStatement : connectStatements){
+        sources.add(connectStatement.getConnector().getSourceName());
+      }
+    }
+  }
+
+  protected void addConnectorTargetsFromBehavior(Collection<String> sources, ASTMTComponentType node) {
+    List<ASTBehavior> behaviors = node.getBody()
+            .getArcElementList()
+            .stream()
+            .filter(element -> element instanceof ASTBehavior)
+            .map(behavior -> (ASTBehavior) behavior)
+            .collect(Collectors.toList());
+    for (ASTBehavior behavior : behaviors) {
+      List<ASTConnectStatement> connectStatements = behavior.getMCJavaBlock().getMCBlockStatementList().stream()
+              .filter(element -> element instanceof ASTConnectStatement)
+              .map(connector -> ((ASTConnectStatement) connector))
+              .collect(Collectors.toList());
+      for (ASTConnectStatement connectStatement : connectStatements){
+        sources.addAll(connectStatement.getConnector().getTargetsNames());
       }
     }
   }

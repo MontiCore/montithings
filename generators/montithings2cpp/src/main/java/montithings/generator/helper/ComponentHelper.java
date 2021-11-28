@@ -43,6 +43,7 @@ import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
 import montithings.generator.visitor.*;
+import montithings.util.ClassDiagramUtil;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTCFGTag;
@@ -247,6 +248,71 @@ public class ComponentHelper {
       return astmtComponentType.getMTComponentModifier().isInterface();
     }
     return false;
+  }
+
+  /**
+   * Get the names of all types generated for the interfaces implemented by the given component
+   */
+  public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component, boolean addPrefix) {
+    Set<String> namesOfImplementedInterfaces = new HashSet<>();
+    for (ComponentTypeSymbol interf : getImplementedComponents(component)) {
+      namesOfImplementedInterfaces.add((addPrefix ? ClassDiagramUtil.COMPONENT_TYPE_PREFIX : "") + interf.getName());
+    }
+    return namesOfImplementedInterfaces;
+  }
+
+  public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component) {
+    return getInterfaceClassNames(component, true);
+  }
+
+  /**
+   * Get all types of (interface) components implemented by the given component
+   */
+  public static Set<ComponentTypeSymbol> getImplementedComponents(ComponentTypeSymbol component) {
+    Set<ComponentTypeSymbol> implementsComps = new HashSet<>();
+    ASTMTComponentType astmtComponentType = ((ASTMTComponentType) component.getAstNode());
+
+    if (!astmtComponentType.isPresentMTImplements()) {
+      return implementsComps;
+    }
+
+    for (Optional<ComponentTypeSymbol> compSymbol : astmtComponentType.getMTImplements().getNamesSymbolList()) {
+      if (compSymbol.isPresent()) {
+        implementsComps.add(compSymbol.get());
+      }
+    }
+
+    return implementsComps;
+  }
+
+  /**
+   * Get the ports of the (interface) component that has the given name and that is implemented
+   * by the given component
+   */
+  public static Set<PortSymbol> getPortsOfInterface(String interfName, ComponentTypeSymbol comp) {
+    Set<PortSymbol> result = new HashSet<>();
+
+    Set<ComponentTypeSymbol> allInterfaces = getImplementedComponents(comp);
+    if (allInterfaces.isEmpty()) {
+      Log.error(String.format("0xMT0800 Requested ports of interface '%s' for component '%s' "
+        + "that does not implement any interfaces", interfName, comp.getFullName()));
+    }
+
+    Optional<ComponentTypeSymbol> requestedInterface = Optional.empty();
+    for (ComponentTypeSymbol interf : allInterfaces) {
+      if (interf.getName().equals(interfName)) {
+        requestedInterface = Optional.of(interf);
+      }
+    }
+
+    if (!requestedInterface.isPresent()) {
+      Log.error(String.format("0xMT0801 Requested ports of interface '%s' for component '%s' "
+        + "that does not implement the given interfaces", interfName, comp.getFullName()));
+    }
+
+    result.addAll(requestedInterface.get().getPorts());
+
+    return result;
   }
 
   @Deprecated

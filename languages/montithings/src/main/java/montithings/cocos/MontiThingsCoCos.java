@@ -9,6 +9,7 @@ import montithings._cocos.MontiThingsASTMTEveryBlockCoCo;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.montiarcCopyPaste.MTConfigurationParameterAssignment;
 import montithings.cocos.montiarcCopyPaste.MTConnectorSourceAndTargetExistAndFit;
+import montithings.cocos.montiarcCopyPaste.MTPortUsage;
 import portextensions.cocos.PortsInBatchStatementAreIncoming;
 import portextensions.cocos.PortsInSyncGroupAreIncoming;
 import portextensions.cocos.SyncGroupIsNoSubset;
@@ -40,7 +41,7 @@ public class MontiThingsCoCos {
     checker.addCoCo(new PortNameCapitalisation());
     checker.addCoCo(new PortTypeExists());
     checker.addCoCo(new PortUniqueSender());
-    checker.addCoCo(new PortUsage());
+    checker.addCoCo(new MTPortUsage());
     checker.addCoCo(new UniqueIdentifierNames());
 
     // we do not import the SubComponentsConnected CoCo from ArcBasis here.
@@ -69,6 +70,7 @@ public class MontiThingsCoCos {
     checker.addCoCo((MontiThingsASTBehaviorCoCo) new DontReadOutports());
     checker.addCoCo((MontiThingsASTMTEveryBlockCoCo) new DontReadOutports());
     checker.addCoCo(new PortsInBehaviorAreUsedCorrectly());
+    checker.addCoCo(new InterfaceImplementedCorrectly());
 
     return checker;
   }

@@ -10,6 +10,8 @@ public enum MontiThingsError implements montithings.util.Error {
     "Generic '%s' for component instance '%s' in component '%s' line '%s' does not extend only interface models."
       + " Is an resolveable interface component model available?"),
   TYPE_NOT_FOUND("0xMT1420", "Type '%s' line '%s' could not be found."),
+  SAME_INTERFACE_MULTIPLE_TIMES("0xMT1425",
+    "Component '%s' implements the same interface more than once."),
   IMPLEMENTATION_MISSING("0xMT1430",
     "Implementation Component '%s' of SubComponent '%s' in component '%s' line '%s' does not exist."
       + "Is an resolveable implementing component model available?"),

@@ -35,11 +35,15 @@ public class MontiThingsGlobalScope extends MontiThingsGlobalScopeTOP {
   @Override
   public void loadFileForModelName(@NotNull String modelName) {
     Preconditions.checkNotNull(modelName);
-    Optional<ModelCoordinate> mc = FileFinder.findFile(getModelPath(), modelName, ".sym", cache);
-    if (mc.isPresent()) {
+    Optional<ModelCoordinate> mc = FileFinder.findFile(getModelPath(), modelName, "sym", cache);
+    // TODO: currently there are two differing ways in which symbol files are loaded by MontiThings, this one (which is
+    // done either way by MontiCore) and the one used in the MontiThingsTool. Using both ways at once leads to errors,
+    // as 2 symbol table entries are found for every symbol stemming from a symbol file. Therefore this is currently
+    // disabled, but it would probably be better to disable the other way in the long run.
+    /*if (mc.isPresent()) {
       addLoadedFile(mc.get().getQualifiedPath().toString());
       IMontiThingsArtifactScope as = getSymbols2Json().load(mc.get().getLocation());
       addSubScope(as);
-    }
+    }*/
   }
 }

@@ -19,6 +19,10 @@ public class TypeHelper {
     return "montithings::" + _package + "::" + type.getName();
   }
 
+  public static String printType(String typeName) {
+    return typeName + "::" + typeName;
+  }
+
   public static final List<String> primitiveTypes = new ArrayList<>(
     Arrays.asList("boolean", "byte", "char", "double", "float",
       "int", "long", "short", "String"));

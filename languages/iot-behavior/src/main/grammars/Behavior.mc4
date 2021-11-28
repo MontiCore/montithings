@@ -8,7 +8,8 @@
  */
 component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
                                    de.monticore.statements.MCCommonStatements,
-                                   de.monticore.SIUnitLiterals
+                                   de.monticore.SIUnitLiterals,
+                                   ArcBasis
 {
   /**
    * ASTAfterStatement can be used to defer the execution
@@ -54,7 +55,7 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    */
   LogStatement implements MCStatement =
     "log" StringLiteral ";" ;
-    nokeyword "log";
+  nokeyword "log";
 
   /**
    * ASTAgoQualification can be used to access the values of
@@ -69,4 +70,29 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    */
   AgoQualification implements Expression <400> =
     Expression "@ago" "(" SIUnitLiteral ")";
+
+  /**
+   * ASTConnectStatement can be used to describe behavior which dynamically
+   * connects ports at runtime.
+   *
+   * @attribute Connector
+   *            Connector which specifies which ports should be connected
+   */
+  ConnectStatement implements MCStatement =
+    Connector;
+
+  /**
+   * ASTDisconnectStatement can be used to describe behavior which dynamically
+   * removes connections of ports at runtime.
+   *
+   * @attribute Source
+   *            Name of the source port which another port should be
+   *            disconnected from
+   * @attribute Target
+   *            Name of the port(s) which should be disconnected from the
+   *            source port
+   */
+  DisconnectStatement implements MCStatement =
+    source:PortAccess "-/>" target:(PortAccess || ",")+ ";"
+  ;
 }

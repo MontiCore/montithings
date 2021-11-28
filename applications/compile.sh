@@ -8,6 +8,7 @@ buildProject() {
 }
 
 buildProject "basic-input-output" "hierarchy"
+buildProject "dynamics" "hierarchy.Example"
 buildProject "hierarchy" "hierarchy"
 buildProject "mqtt-ports" "hierarchy.Example"
 buildProject "retain-state" "hierarchy"

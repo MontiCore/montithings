@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.cocos;
 
-import arcautomaton._ast.ASTArcStatechart;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;

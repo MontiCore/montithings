@@ -13,6 +13,22 @@ TCLAP::SwitchArg monochrome ("", "monochrome", "Do not use colored output, use p
 false);
 cmd.add (monochrome);
 
+<#if comp.getPorts()?size gt 0>
+  TCLAP::SwitchArg ppprintConnectionStr ("", "pretty", "Set whether connect string shall be pretty printed (default: false). PrettyPrinted JSONs will include intends and newlines. Not prettyprinted connect strings have escaped quotation marks",
+  false);
+  cmd.add (ppprintConnectionStr);
+
+  TCLAP::SwitchArg printConnectionStr ("", "printConnectStr", "Prints out the JSON connection string of this component, i.e. a message containing the component's interface that can be passed to other components to enable them to connect to this component, before starting the component",
+  false);
+  cmd.add (printConnectionStr);
+
+  <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
+    TCLAP::SwitchArg printConnectionStr${interface} ("", "printConnectStr${interface}", "Prints out the JSON connection string of this component interpreted as a '${interface}', i.e. a message containing the component's interface that can be passed to other components to enable them to connect to this component, before starting the component",
+    false);
+    cmd.add (printConnectionStr${interface});
+  </#list>
+</#if>
+
 <#if config.getSplittingMode().toString() == "LOCAL" && config.getMessageBroker().toString() == "OFF">
   ${tc.includeArgs("template.deploy.helper.CommunicationManagerArgs", [comp, config])}
 <#elseif config.getMessageBroker().toString() == "MQTT">

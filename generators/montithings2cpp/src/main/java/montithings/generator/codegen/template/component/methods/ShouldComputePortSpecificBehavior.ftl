@@ -3,11 +3,16 @@ ${tc.signature("behavior", "comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
-bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}() {
+bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}
+(<#if !comp.isAtomic()>${compname}Input${generics}& ${Identifier.getInputName()}</#if>) {
   return
-  <#list behavior.getNameList() as port>
-  ${Identifier.getInterfaceName()}.getPort${port?cap_first}()->hasValue(this->uuid)
-  <#sep>&&</#sep>
-  </#list>
+    <#list behavior.getNameList() as port>
+      <#if comp.isAtomic()>
+        ${Identifier.getInterfaceName()}.getPort${port?cap_first}()->hasValue(this->uuid)
+      <#else>
+        ${Identifier.getInputName()}.get${port?cap_first}().has_value()
+      </#if>
+      <#sep>&&</#sep>
+    </#list>
   ;
 }

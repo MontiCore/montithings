@@ -96,9 +96,7 @@ public class MTGenerator {
     generatePrePostcondition(targetPath, comp,
       new ArrayList<>(ComponentHelper.getPostconditions(comp)), false);
 
-    if (comp.isAtomic()) {
-      generateBehaviorImplementation(comp, targetPath);
-    }
+    generateBehaviorImplementation(comp, targetPath);
 
     // Generate inner components
     for (ComponentTypeSymbol innerComp : comp.getInnerComponents()) {

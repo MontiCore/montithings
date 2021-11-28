@@ -2,6 +2,7 @@
 // (c) https://github.com/MontiCore/monticore
 ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper", "imports", "associations", "existsHwc")}
 <#assign AssociationHelper = tc.instantiate("montithings.generator.cd2cpp.AssociationHelper")>
+<#assign FieldHelper = tc.instantiate("montithings.generator.cd2cpp.FieldHelper")>
 <#assign TypeHelper = tc.instantiate("montithings.generator.cd2cpp.TypeHelper", [package])>
 #pragma once
 
@@ -22,6 +23,8 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
   <#assign output = output?replace("Character", "char")>
   <#assign output = output?replace("Double", "double")>
   <#assign output = output?replace("Float", "float")>
+  <#assign output = output?replace("InPort", "PortLink")>
+  <#assign output = output?replace("OutPort", "PortLink")>
   <#return output>
 </#function>
 
@@ -65,18 +68,23 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     <#-- mandatoryFields are those required in the constructor -->
     <#-- They may originate from attributes or associations with cardinality [1] -->
     <#assign mandatoryFields = []>
+    <#assign fieldsFromInterface = []>
     
     <#list type.getFieldList() as field>
       <#-- attributes -->
-      <#assign fieldType = java2cppTypeString(field.getType().getTypeInfo().getName())>
-      <#assign mandatoryFields = mandatoryFields + [{"name": field.getName(), "type":fieldType}]>
-      protected: ${fieldType} ${field.getName()};
-      public: ${fieldType} get${field.getName()?cap_first}() {
+      <#if !FieldHelper.isFromInterface(type, field)>
+        <#assign fieldType = java2cppTypeString(field.getType().getTypeInfo().getName())>
+        <#assign mandatoryFields = mandatoryFields + [{"name": field.getName(), "type":fieldType}]>
+        protected: ${fieldType} ${field.getName()};
+        public: ${fieldType} get${field.getName()?cap_first}() {
         return ${field.getName()};
-      }
-      public: void set${field.getName()?cap_first}(${fieldType} ${field.getName()}) {
+        }
+        public: void set${field.getName()?cap_first}(${fieldType} ${field.getName()}) {
         this->${field.getName()} = ${field.getName()};
-      }
+        }
+      <#else>
+        <#assign fieldsFromInterface = fieldsFromInterface + [{"name": field.getName(), "type":fieldType, "interfaceName": FieldHelper.getInterface(type, field)}]>
+      </#if>
     </#list>
 
     <#-- associations -->
@@ -156,10 +164,22 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     <#-- constructor -->
     public: ${typeName}(
     <#list mandatoryFields as mandatoryField>
-        ${java2cppTypeString(mandatoryField.type)} ${mandatoryField.name}
-        <#if !mandatoryField?is_last>,</#if>
+      ${java2cppTypeString(mandatoryField.type)} ${mandatoryField.name}
+      <#if !mandatoryField?is_last>,</#if>
     </#list>
-    ){
+    <#list fieldsFromInterface as fieldFromInterface>
+      ${java2cppTypeString(fieldFromInterface.type)} ${fieldFromInterface.name}
+      <#if !fieldFromInterface?is_last>,</#if>
+    </#list>
+    )
+    <#if FieldHelper.hasFieldFromInterface(type)>
+      :
+      <#list fieldsFromInterface as fieldFromInterface>
+        ${fieldFromInterface.interfaceName}(${fieldFromInterface.name})
+        <#if !fieldFromInterface?is_last>,</#if>
+      </#list>
+    </#if>
+    {
        <#list mandatoryFields as mandatoryField>
          this->${mandatoryField.name} = ${mandatoryField.name};
        </#list>
@@ -226,7 +246,7 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     }
     
     <#-- no-args constructor, if any arguments are present -->
-    <#if mandatoryFields?size != 0>
+    <#if mandatoryFields?size != 0 || fieldsFromInterface?size != 0>
     public: ${typeName}() {
     }
     </#if>   

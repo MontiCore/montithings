@@ -14,6 +14,10 @@ import de.monticore.cdbasis._symboltable.ICDBasisScope;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
+import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.types.mcbasictypes._ast.ASTMCObjectType;
+import de.monticore.types.prettyprint.MCBasicTypesFullPrettyPrinter;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.io.FileUtils;
@@ -28,18 +32,18 @@ import java.util.stream.Collectors;
 import static montithings.generator.cd2cpp.TypeHelper.primitiveTypes;
 
 public class CppGenerator {
-  
+
   private Path outputDir;
-  
+
   private Path hwcPath;
-  
+
   private TypeHelper typeHelper;
-  
+
   private GeneratorSetup generatorSetup;
-  
+
   private GeneratorEngine ge;
-  
-  private String _package = "";
+
+  protected String _package = "";
   
   protected CD4AnalysisParser p;
   
@@ -79,6 +83,12 @@ public class CppGenerator {
       .setEnclosingScope(CD4CodeMill.globalScope())
       .setSpannedScope(CD4CodeMill.scope())
       .build());
+    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+    CD4CodeMill.globalScope().add(inPortType);
+    CD4CodeMill.globalScope().add(outPortType);
     symbolTableCreator = CD4CodeMill.scopesGenitorDelegator();
     
     final Optional<ASTCDCompilationUnit> astcdCompilationUnit;
@@ -104,7 +114,23 @@ public class CppGenerator {
       .map(LinkedListMultimap::values)
       .forEach(l -> cdSymbols.addAll(l));
   }
-  
+
+
+  public CppGenerator(Path outputDir, ICD4CodeScope scope) {
+    this.outputDir = outputDir;
+    cdSymbols.addAll(scope.getCDTypeSymbols().values());
+
+    scope
+            .getSubScopes()
+            .stream()
+            .map(ICDBasisScope::getCDTypeSymbols)
+            .collect(Collectors.toList())
+            .stream()
+            .map(LinkedListMultimap::values)
+            .forEach(l -> cdSymbols.addAll(l));
+  }
+
+
   public void generate(Optional<String> targetPackage) {
     for (CDTypeSymbol symbol : cdSymbols) {
       // CD4A uses different packages. If there's a package _within_ the diagram
@@ -140,9 +166,15 @@ public class CppGenerator {
     if (primitiveTypes.contains(type.getName())) {
       return;
     }
-    
-    Collection<ASTCDAssociation> associations = AssociationHelper.getAssociations(compilationUnit, type);
-    
+
+    Collection<ASTCDAssociation> associations;
+    if (compilationUnit != null) {
+      associations = AssociationHelper.getAssociations(compilationUnit, type);
+    } else {
+      associations = Collections.emptySet();
+    }
+
+
     String kind = type.isIsClass() ? "class" : (type.isIsEnum() ? "enum" : "class");
     
     final StringBuilder _super = new StringBuilder();
@@ -169,6 +201,17 @@ public class CppGenerator {
       });
       _super.deleteCharAt(_super.length() - 1);
     }
+    //workaround for component type cds
+    else if (!type.getAstNode().getInterfaceList().isEmpty()) {
+      MCBasicTypesFullPrettyPrinter p = new MCBasicTypesFullPrettyPrinter(new IndentPrinter());
+      _super.append(" ");
+      type.getAstNode().getInterfaceList().forEach(i -> {
+        _super.append(" public ");
+        _super.append(typeHelper.printType(i.printType(p)));
+        _super.append(",");
+      });
+      _super.deleteCharAt(_super.length() - 1);
+    }
     
     String typeWithoutMT = typeHelper.printType(type);
     if (typeWithoutMT.startsWith("montithings::")) {
@@ -178,7 +221,9 @@ public class CppGenerator {
     filePathString = filePathString.replace("::", File.separator);
     
     Path filePath = Paths.get(Names.getPathFromPackage(filePathString) + ".h");
-    File hwcFile = new File(hwcPath.toString(), filePath.toString());
+    // hwcPath may be null when we don't generate from a class diagram but from an automatically
+    // created type symbol representing the interface of a component type
+    File hwcFile = hwcPath != null ? new File(hwcPath.toString(), filePath.toString()) : new File("");
     File targetFile = new File(outputDir.toString(), filePath.toString());
     boolean existsHwc = hwcFile.exists();
     if(existsHwc){
@@ -209,7 +254,16 @@ public class CppGenerator {
       }
     }
      */
-    
+
+    //add imports for interfaces of component type cds
+    if (type.getInterfaceList().isEmpty()) {
+      MCBasicTypesFullPrettyPrinter p = new MCBasicTypesFullPrettyPrinter(new IndentPrinter());
+      for (ASTMCObjectType superType : type.getAstNode().getInterfaceList()) {
+        String typeName = superType.printType(p);
+        imports.add("../" + typeName + "/" + typeName + ".h");
+      }
+    }
+
     ge.generate("templates.type.ftl", filePath, type.getAstNode(),
       _package.chars().filter(ch -> ch == '.').count() + 2,
       "montithings\n{\nnamespace " + _package.replace(".", "\n{\nnamespace "), kind,

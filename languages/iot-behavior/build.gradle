@@ -41,8 +41,12 @@ dependencies {
   grammar("de.monticore:siunits:$siunits_version:$grammars_classifier"){
     exclude group:'de.monticore', module:'monticore-grammar'
   }
+  grammar("montiarc.languages:arc-fe:$montiarc_version:$grammars_classifier"){
+    exclude group:'de.monticore', module:'monticore-grammar'
+  }
 
   implementation "de.monticore:siunits:$siunits_version"
+  implementation "montiarc.languages:arc-fe:$montiarc_version"
   implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
   implementation "com.google.guava:guava:$guava_version"
   implementation "org.antlr:antlr4-runtime:$antlr_version"

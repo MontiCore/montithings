@@ -27,6 +27,7 @@ import montithings.generator.helper.TypesHelper;
 import montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
+import montithings.util.ClassDiagramUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Preconditions;
@@ -389,6 +390,17 @@ public class Utils {
       escape += "../";
     }
 
+    // Generated interfaces for dynamics
+    if (!comp.getPorts().isEmpty()) {
+      String componentImportStatement = getComponentInterfaceImport(comp.getName(), escape);
+      s.append(componentImportStatement + "\n");
+
+      for (String interfaceName : ComponentHelper.getInterfaceClassNames(comp, false)) {
+        String interfaceImportStatement = getComponentInterfaceImport(interfaceName, escape);
+        s.append(interfaceImportStatement + "\n");
+      }
+    }
+
     for (ImportStatement imp : imports) {
       // Skip imports that import enum constants
       Optional<TypeSymbol> type = comp.getEnclosingScope().resolveType(imp.getStatement());
@@ -435,6 +447,14 @@ public class Utils {
 
     s.append(printIncludes(escape, Lists.newArrayList(includeStatements)));
     return s.toString();
+  }
+
+  public static String getComponentInterfaceImport(String interfaceName, String escape) {
+    return "#include \""
+      + escape
+      + ClassDiagramUtil.COMPONENT_TYPE_PREFIX + interfaceName + "/"
+      + ClassDiagramUtil.COMPONENT_TYPE_PREFIX + interfaceName + ".h"
+      + "\"";
   }
 
   public static String printIncludes(ComponentTypeSymbol comp, String compname,
