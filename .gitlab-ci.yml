@@ -288,6 +288,7 @@ Code Quality:
     - docker run  --rm 
       --env CODECLIMATE_CODE="$PWD" 
       --env CONTAINER_TIMEOUT_SECONDS=150000 
+      --env ENGINE_MEMORY_LIMIT_BYTES=100000000000
       --volume "$PWD":/code 
       --volume /var/run/docker.sock:/var/run/docker.sock 
       --volume /tmp/cc:/tmp/cc 
@@ -295,7 +296,8 @@ Code Quality:
     # Check Code Quality
     - docker run --rm 
        --env CODECLIMATE_CODE="$PWD" 
-       --env CONTAINER_TIMEOUT_SECONDS=150000 
+       --env CONTAINER_TIMEOUT_SECONDS=150000
+       --env ENGINE_MEMORY_LIMIT_BYTES=100000000000 
        --volume "$PWD":/code 
        --volume /var/run/docker.sock:/var/run/docker.sock 
        --volume /tmp/cc:/tmp/cc 
