@@ -86,7 +86,7 @@ grammar MontiThings extends MontiArc,
      * During this first cycle, normal behavior gets skipped and resumes
      * normally after.
      */
-    InitBehavior implements MTBehavior = "init" (Name@Port || ",")* MCJavaBlock;
+    InitBehavior implements MTBehavior = key("init") (Name@Port || ",")* MCJavaBlock;
 
     /**
      * Behavior that gets executed in regular time intervals independent of the
