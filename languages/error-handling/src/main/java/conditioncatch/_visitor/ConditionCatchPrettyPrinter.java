@@ -43,7 +43,6 @@ public class ConditionCatchPrettyPrinter implements ConditionCatchHandler {
     node.getCondition().accept((ConditionBasisTraverser) getTraverser());
     this.getPrinter().print(" catch ");
     node.getHandler().accept(getTraverser());
-    this.getPrinter().println(";");
   }
 
 }
