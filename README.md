@@ -442,6 +442,20 @@ Gradle:
 ```
 **A:** Your Java version is too new. Please use JDK 8, 11, or 14. Other versions are not checked by the CI pipeline.
 
+
+**Q:** Why am I getting the following error in PowerShell?
+```
+Error downloading object: docs/Banner.png (a631659): Smudge error: Error downloading docs/Banner.png (a6316593e8f3cafc22350d1799235e871ddacd061f888e875f33c496cff83f3c): batch request: Permission denied, please try again.
+Permission denied, please try again.
+...
+warning: Clone succeeded, but checkout failed.
+You can inspect what was checked out with 'git status'
+and retry with 'git restore --source=HEAD :/'
+```
+**A:** Apparantly, there is a problem with git lfs and PowerShell, if you use an SSH key that has a passphrase. 
+Please use a different shell (such as Git Bash on Windows; see [this answer](https://github.com/git-lfs/git-lfs/issues/3216#issuecomment-750920515) on GitHub) or use an SSH key without a passphrase. 
+
+
 # Reference
 
 Please cite MontiThings using it's publication in the Journal of Systems and Software. 
