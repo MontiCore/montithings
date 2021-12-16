@@ -13,9 +13,9 @@ ${tc.signature("comp","config","isMonitor","behavior")}
   </#list>)</#if>;
   <#list comp.getAllIncomingPorts() as inPort>
   <#if ComponentHelper.isSIUnitPort(inPort)>
-    if (${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>).has_value()) {
-      ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>).value()
-                 .applyConversionFactor(this->${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}ConversionFactor());
+    if (${Identifier.getInputName()}.get${inPort.getName()?cap_first}().has_value()) {
+    ${Identifier.getInputName()}.set${inPort.getName()?cap_first}(${Identifier.getInputName()}.get${inPort.getName()?cap_first}().value() *
+    ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}ConversionFactor());
     }
   </#if>
   </#list>
