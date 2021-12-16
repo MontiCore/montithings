@@ -7,16 +7,18 @@ ${tc.signature("comp","config","isMonitor","behavior")}
   <#if behavior != "false" && !ComponentHelper.usesPort(behavior, inPort)>
     tl::nullopt
   <#else>
-  <#if ComponentHelper.isSIUnitPort(inPort)>
-    ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>).value()
-                 .applyConversionFactor(this->${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}ConversionFactor())
-  <#else>
-      ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
-  </#if>
-
+    ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
   </#if>
   <#sep>,</#sep>
   </#list>)</#if>;
+  <#list comp.getAllIncomingPorts() as inPort>
+  <#if ComponentHelper.isSIUnitPort(inPort)>
+    if (${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>).has_value()) {
+      ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>).value()
+                 .applyConversionFactor(this->${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}ConversionFactor());
+    }
+  </#if>
+  </#list>
 <#else>
   ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()};
   <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
