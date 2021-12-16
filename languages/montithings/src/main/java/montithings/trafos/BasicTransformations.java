@@ -21,6 +21,7 @@ import de.monticore.literals.mccommonliterals._ast.ASTStringLiteralBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTExpressionStatementBuilder;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
+import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.mcbasictypes._ast.*;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._ast.ASTMACompilationUnitBuilder;
@@ -92,6 +93,35 @@ public abstract class BasicTransformations {
     astComponentInstanceBuilder.addPortDeclaration(portDeclarationBuilder.build());
     ASTComponentInterface build = astComponentInstanceBuilder.build();
     comp.getComponentType().getBody().addArcElement(build);
+  }
+
+  /**
+   * Add a port to the given component.
+   *
+   * @param comp       AST of component which is modified
+   * @param name       Name of the port
+   * @param isOutgoing Defines the direction of the port
+   * @param type       Defines the type of the port, given as SymTypeExpression
+   */
+  protected void addPort(ASTMTComponentType comp, String name, Boolean isOutgoing,
+      SymTypeExpression type) {
+    ASTMCQualifiedName qualifiedName =
+        MontiThingsMill.mCQualifiedNameBuilder().addParts(type.print()).build();
+    ASTMCType mcType =
+        MontiThingsMill.mCQualifiedTypeBuilder().setMCQualifiedName(qualifiedName).build();
+    ASTPortDeclarationBuilder portDeclarationBuilder = ComfortableArcMillForMontiThings
+        .portDeclarationBuilder();
+    portDeclarationBuilder
+        .setIncoming(!isOutgoing)
+        .addPort(name)
+        .setMCType(mcType);
+
+    ASTComponentInterfaceBuilder astComponentInstanceBuilder = ComfortableArcMillForMontiThings
+        .componentInterfaceBuilder();
+
+    astComponentInstanceBuilder.addPortDeclaration(portDeclarationBuilder.build());
+    ASTComponentInterface build = astComponentInstanceBuilder.build();
+    comp.getBody().addArcElement(build);
   }
 
   /**

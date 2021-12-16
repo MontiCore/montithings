@@ -53,6 +53,7 @@ import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindConnectStatementsVisitor;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
+import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.DelayedChannelTrafo;
 import montithings.trafos.DelayedComputationTrafo;
 import montithings.trafos.ExternalPortMockTrafo;
@@ -241,6 +242,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         hwcPythonScripts.add(pckg.getName() + "." + script);
       }
     }
+
+    addTrafo(new ComponentTypePortsNamingTrafo(config.getTemplatedPorts()));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
