@@ -220,8 +220,9 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       .forEach(vars::add);
     
     // add variable for constraint output
+    Variable varDroppedConstraints = new Variable(PROLOG_VAR_DROPPEDCONSTRAINTS);
     if(withDroppedConstraints) {
-      vars.add(new Variable(PROLOG_VAR_DROPPEDCONSTRAINTS));
+      vars.add(varDroppedConstraints);
     }
     
     vars.add(new Variable(PROLOG_VAR_DEPENDENCIES));
@@ -230,7 +231,12 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     String goalName = withDroppedConstraints ? "distribution_suggest" : "distribution";
     Compound goal = new Compound(goalName, vars.toArray(new Variable[vars.size()]));
     if(distinct) {
-      goal = new Compound("distinct", new Term[]{goal});
+      if(withDroppedConstraints) {
+        // find distinct solutions only regarding suggestions
+        goal = new Compound("distinct", new Term[]{varDroppedConstraints, goal});        
+      } else {
+        goal = new Compound("distinct", new Term[]{goal});
+      }
     }
     return goal;
   }

@@ -160,7 +160,7 @@ public class DeploymentManager implements IDeployStatusListener {
       IDistributionCalculator calc = this.prepareDistributionCalculator(config);
       
       List<String> instanceNames = config.getDeploymentInfo().getInstanceNames();
-      DistributionSuggestionRequest request = new DistributionSuggestionRequest(targetProvider.getClients(), instanceNames, 0, 10);
+      DistributionSuggestionRequest request = new DistributionSuggestionRequest(targetProvider.getClients(), instanceNames, suggestionIndex, 1);
       
       Map<Distribution, List<Suggestion>> results = calc.computeDistributionSuggestion(request).exceptionally((t) -> {
         return null;
@@ -174,16 +174,13 @@ public class DeploymentManager implements IDeployStatusListener {
       DeploymentConfiguration cloned = config.clone();
       
       Iterator<Entry<Distribution, List<Suggestion>>> it = results.entrySet().iterator();
-      int index = 0;
-      while(it.hasNext()) {
+      if(it.hasNext()) {
         Entry<Distribution, List<Suggestion>> e = it.next();
-        if(index == suggestionIndex) {
-          List<Suggestion> suggs = e.getValue();
-          // Apply suggestions to cloned config.
-          suggs.forEach(s->s.applyTo(cloned));
-          break;
-        }
-        index++;
+        List<Suggestion> suggs = e.getValue();
+        // Apply suggestions to cloned config.
+        suggs.forEach(s->s.applyTo(cloned));
+        System.out.println(suggestionIndex);
+        System.out.println(e.getKey());
       }
       
       ConstraintContext ctx = new ConstraintContext(config, targetProvider.getClients());
