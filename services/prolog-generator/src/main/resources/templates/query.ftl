@@ -125,6 +125,7 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
         <#assign count_constraint++>
     </#list>
 
+    <#assign count_backtrack=count>
     <#assign count_constraint_backtrack=count_constraint>
     % look for a set of devices that can satisfy every constraint
     (
@@ -147,8 +148,11 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
     </#list>
 
+    AllAvailableDevicesFilteredResult = AllAvailableDevicesFiltered${count},
+
     true) ; (
     % if there is no set of devices that can satisfy every constraint, we'll fallback to the original behavior of dropping constraints
+    <#assign count=count_backtrack>
     <#assign count_constraint=count_constraint_backtrack>
 
     <#list distribution.lteConstraints as constraint>
@@ -156,31 +160,74 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
         <#assign count++>
     </#list>
 
+    <#assign count_dummy_devices=0>
+
     % then constrains greater than equal: >=
     <#list distribution.gteConstraints as constraint>
         (
-        check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}), Constraint${count_constraint} = '';
+        (
+            check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
+            Constraint${count_constraint} = '',
+            AllAvailableDevicesFiltered${count+1} = AllAvailableDevicesFiltered${count}
+        );
         <#assign contraintnum = constraint.number?number - 1>
         <#list contraintnum..0 as gte_satisfiable>
         (
-        \+check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, _),
-        check_gte(property("${constraint.key}", "${constraint.value}"), ${gte_satisfiable}, AllAvailableDevicesFiltered${count}),
-        Constraint${count_constraint} = '[GEQ] ${distribution.name} ${constraint.key} ${constraint.value} >= ${constraint.number} (${gte_satisfiable} would be satisfiable)'
+            \+check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, _),
+            check_gte(property("${constraint.key}", "${constraint.value}"), ${gte_satisfiable}, AllAvailableDevicesFiltered${count}),
+            (
+                (
+                    <#assign missingnum = constraint.number?number - gte_satisfiable>
+                    <#assign dummy_device_ids=[]>
+                    <#list 1..missingnum as i>
+                        <#assign dummy_device_id="__dummy_device_"+distribution.name+"_"+count_dummy_devices>
+                        <#assign dummy_device_ids = dummy_device_ids + [dummy_device_id]>
+                        <#assign count_dummy_devices++>
+                    </#list>
+                    Hardware = [<#list distribution.selectionConjunctionProperties as sel><#if sel.key == "has_hardware">${sel.value}<#sep>,</#sep></#if></#list>],
+                    % suggestion_hardware(for_component, with_hardware, at_location, count)
+                    term_string(suggestion_hardware("${distribution.name}", Hardware, "${constraint.value}", ${missingnum}), Constraint${count_constraint}),
+                    append(AllAvailableDevicesFiltered${count},[<#list dummy_device_ids as dummy_device_id>"${dummy_device_id}"<#sep>,</#sep></#list>],AllAvailableDevicesFiltered${count+1}),
+
+                    % setup new dummy devices with location and hardware
+                    <#list dummy_device_ids as dummy_device_id>
+                        assert(property("location","${constraint.value}","${dummy_device_id}")),
+                        <#list distribution.selectionConjunctionProperties as sel>
+                            <#if sel.key == "has_hardware">
+                                assert(property("has_hardware","${sel.value}","${dummy_device_id}")),<#sep>,</#sep>
+                            </#if>
+                        </#list>
+                    </#list>
+
+                    true
+                ) ; (
+                    Constraint${count_constraint} = '[GEQ] ${distribution.name} ${constraint.key} ${constraint.value} >= ${constraint.number} (${gte_satisfiable} would be satisfiable)',
+                    AllAvailableDevicesFiltered${count+1} = AllAvailableDevicesFiltered${count}
+                )
+            )
         )<#sep>;</#sep>
         </#list>
         ),
+        <#assign count++>
         <#assign count_constraint++>
     </#list>
 
+    % check that all <= constraints are still met (might be disrupted by suggesting new hardware)
+    <#list distribution.lteConstraints as constraint>
+    check_lte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
+    </#list>
+
+
+    AllAvailableDevicesFilteredResult = AllAvailableDevicesFiltered${count},
     true)), 
 
     % then constrains that check all equal
     <#list distribution.checkAllConstraints as constraint>
-    check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
+    check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFilteredResult),
     </#list>
 
     % bind result to target variable
-    AllAvailableDevicesFiltered${count} = ${distribution.name}.
+    AllAvailableDevicesFilteredResult = ${distribution.name}.
 
 </#list>
 
@@ -227,7 +274,7 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
 <#assign current_constraint = 1>
 <#list ast.distributions as distribution>
     <#assign total_constraints_this_distribution = distribution.equalConstraints?size + distribution.gteConstraints?size>
-    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_constraints_this_distribution gt 0><#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint}<#assign current_constraint++></#list></#if>); (!, false) ),
+    (get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_constraints_this_distribution gt 0><#list 1..total_constraints_this_distribution as i>,Constraint${current_constraint}<#assign current_constraint++></#list></#if>)),
 </#list>
 
     % apply incompatible checks

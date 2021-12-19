@@ -184,6 +184,11 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
             
             for (String clientID : clients) {
               List<String> instances = dmap.get(clientID);
+              if(instances == null) {
+                // this may be the case for dummy clients (hardware suggestions)
+                instances = new LinkedList<String>();
+                dmap.put(clientID, instances);
+              }
               instances.add(instanceName);
             }
           }
@@ -205,6 +210,10 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   }
   
   private Term constructQueryTerm(List<String> components, boolean withDroppedConstraints) {
+    return this.constructQueryTerm(components, withDroppedConstraints, true);
+  }
+  
+  private Term constructQueryTerm(List<String> components, boolean withDroppedConstraints, boolean distinct) {
     LinkedList<Variable> vars = new LinkedList<>();
     components.stream()
       .map((str) -> new Variable(str))
@@ -219,7 +228,11 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     
     // select proper goal
     String goalName = withDroppedConstraints ? "distribution_suggest" : "distribution";
-    return new Compound(goalName, vars.toArray(new Variable[vars.size()]));
+    Compound goal = new Compound(goalName, vars.toArray(new Variable[vars.size()]));
+    if(distinct) {
+      goal = new Compound("distinct", new Term[]{goal});
+    }
+    return goal;
   }
   
   private void prepareWorkspace() throws IOException {
@@ -244,10 +257,10 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   
   private void cleanup() throws IOException {
     if (this.fileFacts != null) {
-      this.fileFacts.delete();
+      //this.fileFacts.delete();
     }
     if (this.fileQuery != null) {
-      this.fileQuery.delete();
+      //this.fileQuery.delete();
     }
   }
   

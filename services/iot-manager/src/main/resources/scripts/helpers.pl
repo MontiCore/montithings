@@ -107,6 +107,11 @@ include_lte(property(Key, Value), N, InputList, OutputList) :-
   subtract(InputList,ListDevicesThatMatchProperty,InputListFiltered),
   append(InputListFiltered,InputListIntersectionComb,OutputList).
 
+check_lte(property(Key, Value), N, InputList) :-
+  findall(X,property(Key, Value,X),ListDevicesThatMatchProperty),
+  intersection(InputList, ListDevicesThatMatchProperty, InputListIntersection),
+  length(InputListIntersection,Len),
+  Len =< N.
 
 check_gte(property(Key, Value), N, InputList) :-
   findall(X,property(Key, Value,X),ListDevicesThatMatchProperty),
