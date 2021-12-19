@@ -25,7 +25,6 @@ variables:
   DOCKER_DRIVER: overlay2
   SAST_DISABLED: "true"
   SAST_EXCLUDED_PATHS: "test, services, cereal, json, nngpp, message-types, cpp-httplib, easyloggingpp, sole, curl, rigtorp"
-  DOCKER_AUTH_CONFIG: "$AZURE_DOCKER_AUTH"
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -156,6 +155,8 @@ Docker IoT Manager:
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
 Validate Maven:
   image: montithings.azurecr.io/maven:3-jdk-8
+  variables: 
+    DOCKER_AUTH_CONFIG: "$AZURE_DOCKER_AUTH"
   stage: build
   script:
     - mvn -U $MAVEN_CLI_OPTS compile package -Dmaven.test.skip=true
