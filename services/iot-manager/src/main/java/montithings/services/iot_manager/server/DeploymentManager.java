@@ -104,6 +104,7 @@ public class DeploymentManager implements IDeployStatusListener {
       IDistributionCalculator calc = prepareDistributionCalculator(currentDeploymentConfig);
       List<String> instanceNames = this.currentDeploymentInfo.getInstanceNames();
       DistributionCalcRequest request = new DistributionCalcRequest(targetProvider.getClients(), instanceNames);
+      request.setReferenceDistribution(currentDistribution);
       this.currentDistribution = calc.computeDistribution(request).exceptionally((t) -> {
         return null;
       }).get();

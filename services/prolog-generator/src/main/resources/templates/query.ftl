@@ -266,6 +266,29 @@ distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>
     % finishing query with a .
     1 == 1.
 
+distribution_persist(
+    <#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>, 
+    <#list ast.distributions as distribution>Prev__${distribution.name}<#sep>,</#sep></#list>, 
+    Dependencies) :-
+    (
+        % check whether old (active) distribution is still valid.
+
+        <#-- To ignore differences in order, we'll sort results & inputs. -->
+        <#list ast.distributions as distribution>
+            sort(Prev__${distribution.name}, SPrev__${distribution.name}),
+        </#list>
+
+        distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>, Dependencies),
+        <#-- Output given distribution as resulting distribution to prevent unnecessary hardware reallocations. -->
+        <#list ast.distributions as distribution>
+            sort(${distribution.name}, SPrev__${distribution.name}),
+        </#list>
+        ! <#-- When the distribution is valid in the current state, there is no need to check it again. -->
+    ) ; (
+        % otherwise generate a new distribution
+        distribution(<#list ast.distributions as distribution>${distribution.name}<#sep>,</#sep></#list>, Dependencies)
+    ).
+
 <#-- -------------------------------- -->
 <#-- DISTRIBUTION QUERY (With Drops)  -->
 <#-- -------------------------------- -->

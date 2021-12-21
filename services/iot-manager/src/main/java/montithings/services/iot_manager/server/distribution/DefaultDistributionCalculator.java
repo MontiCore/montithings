@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nullable;
+
 import org.jpl7.Atom;
 import org.jpl7.Compound;
 import org.jpl7.PrologException;
@@ -71,8 +73,14 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       // load Prolog files
       new Query(new Compound("consult", wrap(new Atom("query.pl")))).oneSolution();
       
+      DistributionQueryType queryType = DistributionQueryType.DISTRIBUTION;
+      if(param.getReferenceDistribution() != null) {
+        // use the given distribution as reference
+        queryType = DistributionQueryType.DISTRIBUTION_PERSIST;
+      }
+      
       // compute distribution solution
-      Query query = new Query(this.constructQueryTerm(components, false));
+      Query query = new Query(this.constructQueryTerm(components, queryType));
       Map<String, Term> solution = query.oneSolution();
       Distribution distribution = null;
       
@@ -142,7 +150,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       new Query(new Compound("consult", wrap(new Atom("query.pl")))).oneSolution();
       
       // compute distribution solutions
-      Query query = new Query(this.constructQueryTerm(components, true));
+      Query query = new Query(this.constructQueryTerm(components, DistributionQueryType.SUGGESTIONS));
       Map<Distribution, List<Suggestion>> results = new LinkedHashMap<>();
       
       int index = 0;
@@ -208,29 +216,56 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     }
   }
   
-  private Term constructQueryTerm(List<String> components, boolean withDroppedConstraints) {
-    return this.constructQueryTerm(components, withDroppedConstraints, true);
+  private Term constructQueryTerm(List<String> components, DistributionQueryType type) {
+    return this.constructQueryTerm(components, type, true, null);
   }
   
-  private Term constructQueryTerm(List<String> components, boolean withDroppedConstraints, boolean distinct) {
-    LinkedList<Variable> vars = new LinkedList<>();
+  private Term constructQueryTerm(List<String> components, DistributionQueryType type, boolean distinct, @Nullable Distribution reference) {
+    LinkedList<Term> terms = new LinkedList<>();
     components.stream()
       .map((str) -> new Variable(str))
-      .forEach(vars::add);
+      .forEach(terms::add);
+    
+    if(type == DistributionQueryType.DISTRIBUTION_PERSIST) {
+      if(reference == null) {
+        // If we do not have a reference, we still have to add the expected
+        // terms to fit the query scheme.
+        reference = new Distribution(new HashMap<>());
+      }
+      
+      // try to persist reference distribution
+      // reconstruct prolog lists from distribution
+      Map<String, List<String>> cmap = new HashMap<String, List<String>>();
+      for(String comp : components) {
+        cmap.put(comp, new LinkedList<>());
+      }
+      for(Entry<String, String[]> e : reference.getDistributionMap().entrySet()) {
+        for(String comp : e.getValue()) {
+          List<String> clientList = cmap.get(comp);
+          if(clientList != null) {
+            clientList.add(e.getKey());
+          }
+        }
+      }
+      // add reference component list terms to query
+      for(String comp : components) {
+        List<String> clients = cmap.get(comp);
+        terms.add(Util.stringArrayToList(clients.toArray(new String[clients.size()])));
+      }
+    }
     
     // add variable for constraint output
     Variable varDroppedConstraints = new Variable(PROLOG_VAR_DROPPEDCONSTRAINTS);
-    if(withDroppedConstraints) {
-      vars.add(varDroppedConstraints);
+    if(type.withDroppedConstraints) {
+      terms.add(varDroppedConstraints);
     }
-    
-    vars.add(new Variable(PROLOG_VAR_DEPENDENCIES));
+    terms.add(new Variable(PROLOG_VAR_DEPENDENCIES));
     
     // select proper goal
-    String goalName = withDroppedConstraints ? "distribution_suggest" : "distribution";
-    Compound goal = new Compound(goalName, vars.toArray(new Variable[vars.size()]));
+    String goalName = type.prologName;
+    Compound goal = new Compound(goalName, terms.toArray(new Term[terms.size()]));
     if(distinct) {
-      if(withDroppedConstraints) {
+      if(type.withDroppedConstraints) {
         // find distinct solutions only regarding suggestions
         goal = new Compound("distinct", new Term[]{varDroppedConstraints, goal});        
       } else {
@@ -291,6 +326,20 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       return query.hasMoreSolutions();
     } catch(PrologException e) {
       return false;
+    }
+  }
+  
+  private static enum DistributionQueryType {
+    DISTRIBUTION("distribution", false),
+    DISTRIBUTION_PERSIST("distribution_persist", false),
+    SUGGESTIONS("distribution_suggest", true);
+    
+    public final String prologName;
+    public final boolean withDroppedConstraints;
+    
+    private DistributionQueryType(String prologName, boolean withDroppedConstraints) {
+      this.prologName = prologName;
+      this.withDroppedConstraints = withDroppedConstraints;
     }
   }
   
