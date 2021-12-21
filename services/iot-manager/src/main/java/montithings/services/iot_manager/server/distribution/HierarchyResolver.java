@@ -37,6 +37,9 @@ public class HierarchyResolver {
       }
     }
     
+    // Sort by clientID for deterministic behavior.
+    assignments.sort((a1,a2)->a1.clientID.compareTo(a2.clientID));
+    
     // collect all instances that are missing parents
     Set<Assignment> missingParent = new HashSet<>();
     missingParent.addAll(assignments);
