@@ -15,6 +15,7 @@ import montithings.services.iot_manager.server.data.NetworkInfo;
 import montithings.services.iot_manager.server.data.constraint.processor.ConstraintContext;
 import montithings.services.iot_manager.server.data.constraint.processor.ConstraintPipeline;
 import montithings.services.iot_manager.server.distribution.DefaultDistributionCalculator;
+import montithings.services.iot_manager.server.distribution.DistributionCalcRequest;
 import montithings.services.iot_manager.server.distribution.DistributionSuggestionRequest;
 import montithings.services.iot_manager.server.distribution.IDistributionCalculator;
 import montithings.services.iot_manager.server.distribution.IPrologGenerator;
@@ -102,7 +103,8 @@ public class DeploymentManager implements IDeployStatusListener {
       // Compute distribution.
       IDistributionCalculator calc = prepareDistributionCalculator(currentDeploymentConfig);
       List<String> instanceNames = this.currentDeploymentInfo.getInstanceNames();
-      this.currentDistribution = calc.computeDistribution(targetProvider.getClients(), instanceNames).exceptionally((t) -> {
+      DistributionCalcRequest request = new DistributionCalcRequest(targetProvider.getClients(), instanceNames);
+      this.currentDistribution = calc.computeDistribution(request).exceptionally((t) -> {
         return null;
       }).get();
       
@@ -199,7 +201,8 @@ public class DeploymentManager implements IDeployStatusListener {
       IDistributionCalculator calc = this.prepareDistributionCalculator(config);
       
       List<String> instanceNames = config.getDeploymentInfo().getInstanceNames();
-      Distribution distribution = calc.computeDistribution(targetProvider.getClients(), instanceNames).exceptionally((t) -> {
+      DistributionCalcRequest request = new DistributionCalcRequest(targetProvider.getClients(), instanceNames);
+      Distribution distribution = calc.computeDistribution(request).exceptionally((t) -> {
         return null;
       }).get();
       

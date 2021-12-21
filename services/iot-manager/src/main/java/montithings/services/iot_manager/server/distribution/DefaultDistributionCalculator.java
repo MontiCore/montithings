@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.jpl7.Atom;
 import org.jpl7.Compound;
 import org.jpl7.PrologException;
@@ -58,9 +57,9 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     this.fileQuery = new File(this.workingDir, "query.pl");
   }
   
-  private Distribution computeDistributionSync(Pair<Collection<DeployClient>,List<String>> param) throws DistributionException {
-    Collection<DeployClient> deployTargets = param.getLeft();
-    List<String> components = param.getRight();
+  private Distribution computeDistributionSync(DistributionCalcRequest param) throws DistributionException {
+    Collection<DeployClient> deployTargets = param.getDeployTargets();
+    List<String> components = param.getComponents();
     try {
       if(deployTargets.size() == 0) {
         throw new DeploymentException("no clients for deployment available");
@@ -271,8 +270,8 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   }
   
   @Override
-  public CompletableFuture<Distribution> computeDistribution(Collection<DeployClient> targets, List<String> components) {
-    return CompletableFuture.supplyAsync(() -> Pair.of(targets, components)).thenApply(this::computeDistributionSync);
+  public CompletableFuture<Distribution> computeDistribution(DistributionCalcRequest request) {
+    return CompletableFuture.supplyAsync(() -> request).thenApply(this::computeDistributionSync);
   }
   
   @Override

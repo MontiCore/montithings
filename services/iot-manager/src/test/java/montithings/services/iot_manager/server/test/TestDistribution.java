@@ -30,6 +30,7 @@ import montithings.services.iot_manager.server.data.DeploymentInfo;
 import montithings.services.iot_manager.server.data.Distribution;
 import montithings.services.iot_manager.server.data.NetworkInfo;
 import montithings.services.iot_manager.server.distribution.DefaultDistributionCalculator;
+import montithings.services.iot_manager.server.distribution.DistributionCalcRequest;
 import montithings.services.iot_manager.server.distribution.IDistributionCalculator;
 import montithings.services.iot_manager.server.distribution.IPrologGenerator;
 import montithings.services.iot_manager.server.distribution.RestPrologGenerator;
@@ -62,7 +63,7 @@ public class TestDistribution {
     }
     
     try {
-      Distribution dist = calc.computeDistribution(targets, components).exceptionally((t) -> {
+      Distribution dist = calc.computeDistribution(new DistributionCalcRequest(targets, components)).exceptionally((t) -> {
         t.printStackTrace();
         return null;
       }).get();
@@ -163,7 +164,7 @@ public class TestDistribution {
     
     IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
     List<String> instanceNames = deployment.getInstanceNames();
-    Distribution dist = calc.computeDistribution(clients, instanceNames).exceptionally((t) -> {
+    Distribution dist = calc.computeDistribution(new DistributionCalcRequest(clients, instanceNames)).exceptionally((t) -> {
       t.printStackTrace();
       fail();
       return null;
