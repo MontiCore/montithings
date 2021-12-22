@@ -10,11 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nullable;
@@ -156,14 +158,12 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       int index = 0;
       int count = 0;
       
+      List<Set<Suggestion>> lastSuggestions = new LinkedList<>();
+      
       while(hasMoreSolutions(query) && count < request.getMaxCount()) {
         Map<String,Term> solution = query.nextSolution();
         
         index++;
-        if(index <= request.getOffset()) {
-          // Ignore this suggestion as it should be skipped.
-          continue;
-        }
         
         // parse solution
         if (solution != null) {
@@ -173,6 +173,28 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
           Lists.newArrayList(droppedConstraints).stream()
             .map((c)->Suggestion.parseProlog(c, request.getComponents()))
             .forEach(suggestions::add);
+          
+          // check, if there already is a super-set of suggestions
+          // that have been made
+          boolean foundSuperset = false;
+          for(Set<Suggestion> prevSuggestion : lastSuggestions) {
+            if(suggestions.containsAll(prevSuggestion)) {
+              index--;
+              foundSuperset = true;
+              break;
+            }
+          }
+          if(foundSuperset) {
+            // if these suggestions are a super-set of previously made
+            // suggestions, we do not want them.
+            continue;
+          }
+          lastSuggestions.add(new HashSet<>(suggestions));
+          
+          if(index <= request.getOffset()) {
+            // Ignore this suggestion as it should be skipped.
+            continue;
+          }
           
           solution.remove(PROLOG_VAR_DROPPEDCONSTRAINTS);
           solution.remove(PROLOG_VAR_DEPENDENCIES);
