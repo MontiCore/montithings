@@ -194,7 +194,7 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
                         assert(property("location","${constraint.value}","${dummy_device_id}")),
                         <#list distribution.selectionConjunctionProperties as sel>
                             <#if sel.key == "has_hardware">
-                                assert(property("has_hardware","${sel.value}","${dummy_device_id}")),<#sep>,</#sep>
+                                assert(property("has_hardware","${sel.value}","${dummy_device_id}")),
                             </#if>
                         </#list>
                     </#list>
