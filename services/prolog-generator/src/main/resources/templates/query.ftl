@@ -363,7 +363,7 @@ distribution_suggest(<#list ast.distributions as distribution>${distribution.nam
     <#if total_constraints gt 0>
         <#list 1..total_constraints as i>
         (Constraint${i} == '', DroppedConstraints${i} = DroppedConstraints${i-1};
-        (\+(Constraint${i} == ''), append(DroppedConstraints${i-1}, [Constraint${i}], DroppedConstraints${i}), write('Dropped constraint: '), writeln(Constraint${i}))),
+        (\+(Constraint${i} == ''), append(DroppedConstraints${i-1}, [Constraint${i}], DroppedConstraints${i})<#--, write('Dropped constraint: '), writeln(Constraint${i})-->)),
         
         </#list>
     </#if>
