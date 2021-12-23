@@ -37,6 +37,9 @@ public class HierarchyResolver {
       }
     }
     
+    // Sort by clientID for deterministic behavior.
+    assignments.sort((a1,a2)->a1.clientID.compareTo(a2.clientID));
+    
     // collect all instances that are missing parents
     Set<Assignment> missingParent = new HashSet<>();
     missingParent.addAll(assignments);
@@ -73,7 +76,7 @@ public class HierarchyResolver {
     // first, because longer instance names (potentially children) need the name
     // of the parent to already be resolved.
     assignments.sort((a1,a2)->Integer.compare(a1.modelInstanceName.length(), a2.modelInstanceName.length()));
-    
+    dependencies.sort((d1,d2)->Integer.compare(d1.dependency.modelInstanceName.length(), d2.dependency.modelInstanceName.length()));
     // apply dependencies
     for(Dependency dep : dependencies) {
       // we are only interested in dependencies that assign a child component to
@@ -105,7 +108,6 @@ public class HierarchyResolver {
     
     // assign parents to components without parent dependency via round robin
     HashMap<String, Integer> roundRobinInstanceNumber = new HashMap<>();
-    
     for(Assignment a : missingParent) {
       String parentModelInstanceName = getParentOf(a.modelInstanceName);
       int lastNum = roundRobinInstanceNumber.getOrDefault(parentModelInstanceName, 0);

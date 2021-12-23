@@ -31,7 +31,8 @@ public interface Suggestion {
         SuggestionGEQ::parseProlog,
         SuggestionEQ::parseProlog,
         SuggestionIncomp::parseProlog,
-        SuggestionDependency::parseProlog
+        SuggestionDependency::parseProlog,
+        SuggestionHardware::parseProlog
     );
     
     // create instance name resolver to resolve prolog names to MontiThings instance names

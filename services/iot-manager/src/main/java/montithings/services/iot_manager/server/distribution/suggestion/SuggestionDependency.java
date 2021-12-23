@@ -65,5 +65,47 @@ public class SuggestionDependency implements Suggestion {
       return null;
     }
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((dependency == null) ? 0 : dependency.hashCode());
+    result = prime * result + ((dependent == null) ? 0 : dependent.hashCode());
+    result = prime * result + (distinct ? 1231 : 1237);
+    result = prime * result + orgCount;
+    result = prime * result + satCount;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    SuggestionDependency other = (SuggestionDependency) obj;
+    if (dependency == null) {
+      if (other.dependency != null)
+        return false;
+    }
+    else if (!dependency.equals(other.dependency))
+      return false;
+    if (dependent == null) {
+      if (other.dependent != null)
+        return false;
+    }
+    else if (!dependent.equals(other.dependent))
+      return false;
+    if (distinct != other.distinct)
+      return false;
+    if (orgCount != other.orgCount)
+      return false;
+    if (satCount != other.satCount)
+      return false;
+    return true;
+  }
   
 }
