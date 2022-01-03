@@ -15,6 +15,7 @@ import montithings.services.iot_manager.server.data.NetworkInfo;
 import montithings.services.iot_manager.server.data.constraint.processor.ConstraintContext;
 import montithings.services.iot_manager.server.data.constraint.processor.ConstraintPipeline;
 import montithings.services.iot_manager.server.distribution.DefaultDistributionCalculator;
+import montithings.services.iot_manager.server.distribution.DistributionCalcRequest;
 import montithings.services.iot_manager.server.distribution.DistributionSuggestionRequest;
 import montithings.services.iot_manager.server.distribution.IDistributionCalculator;
 import montithings.services.iot_manager.server.distribution.IPrologGenerator;
@@ -102,7 +103,9 @@ public class DeploymentManager implements IDeployStatusListener {
       // Compute distribution.
       IDistributionCalculator calc = prepareDistributionCalculator(currentDeploymentConfig);
       List<String> instanceNames = this.currentDeploymentInfo.getInstanceNames();
-      this.currentDistribution = calc.computeDistribution(targetProvider.getClients(), instanceNames).exceptionally((t) -> {
+      DistributionCalcRequest request = new DistributionCalcRequest(targetProvider.getClients(), instanceNames);
+      request.setReferenceDistribution(currentDistribution);
+      this.currentDistribution = calc.computeDistribution(request).exceptionally((t) -> {
         return null;
       }).get();
       
@@ -160,7 +163,7 @@ public class DeploymentManager implements IDeployStatusListener {
       IDistributionCalculator calc = this.prepareDistributionCalculator(config);
       
       List<String> instanceNames = config.getDeploymentInfo().getInstanceNames();
-      DistributionSuggestionRequest request = new DistributionSuggestionRequest(targetProvider.getClients(), instanceNames, 0, 10);
+      DistributionSuggestionRequest request = new DistributionSuggestionRequest(targetProvider.getClients(), instanceNames, suggestionIndex, 1);
       
       Map<Distribution, List<Suggestion>> results = calc.computeDistributionSuggestion(request).exceptionally((t) -> {
         return null;
@@ -174,16 +177,13 @@ public class DeploymentManager implements IDeployStatusListener {
       DeploymentConfiguration cloned = config.clone();
       
       Iterator<Entry<Distribution, List<Suggestion>>> it = results.entrySet().iterator();
-      int index = 0;
-      while(it.hasNext()) {
+      if(it.hasNext()) {
         Entry<Distribution, List<Suggestion>> e = it.next();
-        if(index == suggestionIndex) {
-          List<Suggestion> suggs = e.getValue();
-          // Apply suggestions to cloned config.
-          suggs.forEach(s->s.applyTo(cloned));
-          break;
-        }
-        index++;
+        List<Suggestion> suggs = e.getValue();
+        // Apply suggestions to cloned config.
+        suggs.forEach(s->s.applyTo(cloned));
+        System.out.println(suggestionIndex);
+        System.out.println(e.getKey());
       }
       
       ConstraintContext ctx = new ConstraintContext(config, targetProvider.getClients());
@@ -202,7 +202,8 @@ public class DeploymentManager implements IDeployStatusListener {
       IDistributionCalculator calc = this.prepareDistributionCalculator(config);
       
       List<String> instanceNames = config.getDeploymentInfo().getInstanceNames();
-      Distribution distribution = calc.computeDistribution(targetProvider.getClients(), instanceNames).exceptionally((t) -> {
+      DistributionCalcRequest request = new DistributionCalcRequest(targetProvider.getClients(), instanceNames);
+      Distribution distribution = calc.computeDistribution(request).exceptionally((t) -> {
         return null;
       }).get();
       

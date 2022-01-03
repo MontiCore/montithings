@@ -54,5 +54,38 @@ public class SuggestionIncomp implements Suggestion {
       return null;
     }
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((instanceName1 == null) ? 0 : instanceName1.hashCode());
+    result = prime * result + ((instanceName2 == null) ? 0 : instanceName2.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    SuggestionIncomp other = (SuggestionIncomp) obj;
+    if (instanceName1 == null) {
+      if (other.instanceName1 != null)
+        return false;
+    }
+    else if (!instanceName1.equals(other.instanceName1))
+      return false;
+    if (instanceName2 == null) {
+      if (other.instanceName2 != null)
+        return false;
+    }
+    else if (!instanceName2.equals(other.instanceName2))
+      return false;
+    return true;
+  }
   
 }
