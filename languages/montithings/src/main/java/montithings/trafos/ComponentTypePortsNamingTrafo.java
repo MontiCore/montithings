@@ -1,74 +1,107 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.trafos;
 
-import arcbasis._ast.ASTComponentType;
-import arcbasis._ast.ASTConnector;
-import arcbasis._symboltable.ComponentInstanceSymbol;
-import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._ast.*;
 import arcbasis._symboltable.PortSymbol;
 import behavior._ast.ASTConnectStatement;
+import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
+import genericarc._ast.ASTGenericComponentHead;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
+import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings._visitor.MontiThingsTraverser;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static montithings.util.TrafoUtil.*;
+
 public class ComponentTypePortsNamingTrafo extends BasicTransformations implements MontiThingsTrafo, MontiThingsTraverser {
   protected static final String TOOL_NAME = "ComponentTypePortsNamingTrafo";
   protected ASTMACompilationUnit compilationUnit;
-  Set<PortSymbol> portsToIgnore;
+  protected Collection<ASTMACompilationUnit> allModels;
+  Set<String> portsToIgnore;
 
   public ComponentTypePortsNamingTrafo(Set<PortSymbol> portsToIgnore) {
-    this.portsToIgnore = portsToIgnore;
+    this.portsToIgnore = portsToIgnore.stream().map(p -> p.getName()).collect(Collectors.toSet());
   }
 
   public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels, Collection<ASTMACompilationUnit> addedModels, ASTMACompilationUnit targetComp) {
     Log.info("Apply transformation: Component Type Port Names: " + targetComp.getComponentType().getName(), TOOL_NAME);
     compilationUnit = targetComp;
+    allModels = originalModels;
     targetComp.accept(this);
     return originalModels;
   }
 
   @Override
   public void visit(ASTMTComponentType comp) {
-    for (PortSymbol unconnectedPort : getUnconnectedPorts(comp)) {
-      addPort(comp, comp.getName() + "_" + unconnectedPort.getName(), unconnectedPort.isOutgoing(), unconnectedPort.getType());
+    //skip components with type parameters
+    if (comp.getHead() instanceof ASTGenericComponentHead) {
+      return;
+    }
+    for (Map.Entry<String, ASTMCType> port : getUnconnectedPorts(comp)) {
+      String newPortName = comp.getName().toLowerCase() + "_" + port.getKey().replaceAll("\\.", "_");
+      try {
+        addPort(compilationUnit, newPortName, false, port.getValue());
+      }
+      catch (Exception e) {
+        Log.error(e.getCause().getMessage());
+        e.printStackTrace();
+      }
+      addConnection(comp, newPortName, port.getKey());
     }
   }
 
-  private Set<PortSymbol> getUnconnectedPorts(ASTMTComponentType comp) {
-    final ComponentTypeSymbol compSymbol = comp.getSymbol();
-    Set<PortSymbol> portSymbols = new HashSet<>();
+  private Set<Map.Entry<String, ASTMCType>> getUnconnectedPorts(ASTMTComponentType comp) {
+    //TODO: correct to only include incoming ports?
+    Set<Map.Entry<String, ASTMCType>> portNames = new HashSet<>();
     Collection<String> targets = this.getTargetNames(comp);
+    //TODO: wahrscheinlich addConnectorTargetsFromBehavior nicht ausführen?
     addConnectorTargetsFromBehavior(targets, (ASTMTComponentType) comp);
-    Collection<String> sources = this.getSourceNames(comp);
-    addConnectorSourcesFromBehavior(sources, (ASTMTComponentType) comp);
-    for (ComponentInstanceSymbol subSymbol : compSymbol.getSubComponents()) {
-      // --------- INCOMING PORTS ----------
-      Collection<String> subInputPorts = this.getNames(subSymbol.getType().getAllIncomingPorts());
-      subInputPorts = subInputPorts.stream().map(s -> subSymbol.getName() + "." + s).collect(Collectors.toList());
-      subInputPorts.removeAll(targets);
-      for (String port : subInputPorts) {
-        Optional<PortSymbol> portSymbol = subSymbol.getType().getPort(port.split("\\.")[1]);
-        if (portSymbol.isPresent() && !portsToIgnore.contains(portSymbol.get())) {
-          portSymbols.add(portSymbol.get());
+    for (ASTComponentInstantiation componentInstantiation : comp.getSubComponentInstantiations()) {
+      String componentInstanceTypeName =
+          new MontiThingsFullPrettyPrinter(new IndentPrinter()).prettyprint(componentInstantiation.getMCType());
+
+      //remove generic type arguments from name
+      componentInstanceTypeName = componentInstanceTypeName.replaceAll("<.*>", "");
+
+      for (ASTComponentInstance componentInstance : componentInstantiation.getComponentInstanceList()) {
+        //get all ports of subcomponents
+        String componentInstanceName = componentInstance.getName();
+        ASTMACompilationUnit compilationUnit = getComponentByUnqualifiedName(allModels, componentInstanceTypeName);
+        Collection<ASTPortDeclaration> portDeclarations = compilationUnit.getComponentType().getPortDeclarations();
+        Map<String, ASTMCType> subInputPorts = new HashMap<>();
+        Map<String, ASTMCType> subOutputPorts = new HashMap<>();
+        for (ASTPortDeclaration portDeclaration : portDeclarations) {
+          if (portDeclaration.getPortDirection() instanceof ASTPortDirectionIn) {
+            for (ASTPort port : portDeclaration.getPortList()) {
+              subInputPorts.put(componentInstanceName + "." + port.getName(), portDeclaration.getMCType());
+            }
+          }
+          else if (portDeclaration.getPortDirection() instanceof ASTPortDirectionOut) {
+            for (ASTPort port : portDeclaration.getPortList()) {
+              subOutputPorts.put(componentInstanceName + "." + port.getName(), portDeclaration.getMCType());
+            }
+          }
         }
-      }
-      // --------- OUTGOING PORTS ----------
-      Collection<String> subOutputPorts = this.getNames(subSymbol.getType().getAllOutgoingPorts());
-      subOutputPorts = subOutputPorts.stream().map(s -> subSymbol.getName() + "." + s).collect(Collectors.toList());
-      subOutputPorts.removeAll(sources);
-      for (String port : subOutputPorts) {
-        Optional<PortSymbol> portSymbol = subSymbol.getType().getPort(port.split("\\.")[1]);
-        if (portSymbol.isPresent() && !portsToIgnore.contains(portSymbol.get())) {
-          portSymbols.add(portSymbol.get());
+
+        //remove all ports which appear in connectors
+        for (String target : targets) {
+          subInputPorts.remove(target);
+        }
+
+        for (Map.Entry<String, ASTMCType> port : subInputPorts.entrySet()) {
+          if (!portsToIgnore.contains(port.getKey())) {
+            portNames.add(port);
+          }
         }
       }
     }
-    return portSymbols;
+    return portNames;
   }
 
   protected void addConnectorSourcesFromBehavior(Collection<String> sources, ASTMTComponentType node) {
@@ -97,9 +130,5 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
 
   protected Collection<String> getTargetNames(ASTComponentType node) {
     return node.getConnectors().stream().map(ASTConnector::getTargetsNames).flatMap(Collection::stream).collect(Collectors.toList());
-  }
-
-  protected Collection<String> getNames(Collection<PortSymbol> ports) {
-    return ports.stream().map(PortSymbol::getName).collect(Collectors.toList());
   }
 }

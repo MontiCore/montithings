@@ -21,7 +21,6 @@ import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeScope;
@@ -135,6 +134,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     ICD4CodeGlobalScope cd4MTGlobalScope = CD4CodeMill.globalScope();
     cd4MTGlobalScope.setModelPath(mp);
 
+    ComponentTypePortsNamingTrafo typePortsNamingTrafo = new ComponentTypePortsNamingTrafo(config.getTemplatedPorts());
+    addTrafo(typePortsNamingTrafo);
+
     MontiThingsMill.reset();
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
@@ -242,8 +244,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         hwcPythonScripts.add(pckg.getName() + "." + script);
       }
     }
-
-    addTrafo(new ComponentTypePortsNamingTrafo(config.getTemplatedPorts()));
 
     /* ============================================================ */
     /* ====================== Generate Code ======================= */
@@ -434,6 +434,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         config.getMainComponent(), allComponents)
       );
     }
+  }
+
+  protected ComponentTypeSymbol getMainComponent (IMontiThingsGlobalScope symTab,
+      ConfigParams configParams){
+    return symTab.resolveComponentType(configParams.getMainComponent()).get();
   }
 
   protected void checkCdExtensionModels(List<String> foundCDExtensionModels, File modelPath,

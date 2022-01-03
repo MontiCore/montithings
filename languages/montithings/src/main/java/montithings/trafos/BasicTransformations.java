@@ -45,10 +45,19 @@ public abstract class BasicTransformations {
    * @param target Qualified port name on the right side, e.g. sink.value
    */
   protected void addConnection(ASTMACompilationUnit comp, String source, String target) {
+    addConnection(comp.getComponentType(), source, target);
+  }
+
+  /**
+   * @param comp   AST of component type which is modified
+   * @param source Qualified port name on the left side, e.g. source.value
+   * @param target Qualified port name on the right side, e.g. sink.value
+   */
+  protected void addConnection(ASTComponentType comp, String source, String target) {
     ASTConnectorBuilder connectorBuilder = ComfortableArcMillForMontiThings.connectorBuilder();
     connectorBuilder.setSource(source);
     connectorBuilder.addTarget(target);
-    comp.getComponentType().getBody().addArcElement(connectorBuilder.build());
+    comp.getBody().addArcElement(connectorBuilder.build());
   }
 
   /**
