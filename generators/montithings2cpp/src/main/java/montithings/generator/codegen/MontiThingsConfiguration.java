@@ -45,6 +45,7 @@ public class MontiThingsConfiguration implements Configuration {
     SPLITTING("splitting"),
     LOGTRACING("logtracing"),
     RECORDING("recording"),
+    PORTNAME("portsToMain"),
     MESSAGEBROKER("messageBroker"),
     MESSAGEBROKER_SHORT("broker"),
     REPLAYMODE("replayMode"),
@@ -88,6 +89,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setSplittingMode(getSplittingMode());
     configParams.setLogTracing(getLogTracing());
     configParams.setRecordingMode(getRecordingMode());
+    configParams.setPortNameTrafo(getPortNameTrafo());
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker(getSplittingMode()));
     configParams.setReplayMode(getReplayMode());
@@ -471,6 +473,23 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "off"
     return ConfigParams.RecordingMode.OFF;
+  }
+
+  public ConfigParams.PortNameTrafo getPortNameTrafo() {
+    Optional<String> portNameTrafo = getAsString(Options.PORTNAME);
+    if (portNameTrafo.isPresent()) {
+      switch (portNameTrafo.get()) {
+        case "OFF":
+          return ConfigParams.PortNameTrafo.OFF;
+        case "ON":
+          return ConfigParams.PortNameTrafo.ON;
+        default:
+          throw new IllegalArgumentException(
+              "0xMT303 portNameTrafo option " + portNameTrafo + " in pom.xml is unknown");
+      }
+    }
+    // fallback default is "off"
+    return ConfigParams.PortNameTrafo.OFF;
   }
 
   /**

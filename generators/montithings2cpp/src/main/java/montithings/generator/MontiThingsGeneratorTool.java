@@ -134,8 +134,10 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     ICD4CodeGlobalScope cd4MTGlobalScope = CD4CodeMill.globalScope();
     cd4MTGlobalScope.setModelPath(mp);
 
-    ComponentTypePortsNamingTrafo typePortsNamingTrafo = new ComponentTypePortsNamingTrafo(config.getTemplatedPorts());
-    addTrafo(typePortsNamingTrafo);
+    if (config.getPortNameTrafo() == ConfigParams.PortNameTrafo.ON) {
+      ComponentTypePortsNamingTrafo typePortsNamingTrafo = new ComponentTypePortsNamingTrafo(config.getTemplatedPorts());
+      addTrafo(typePortsNamingTrafo);
+    }
 
     MontiThingsMill.reset();
     MontiThingsMill.init();

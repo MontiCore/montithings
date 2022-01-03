@@ -19,6 +19,7 @@ import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
 import montithings._symboltable.*;
 import montithings.cocos.MontiThingsCoCos;
+import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.MontiThingsTrafo;
 import montithings.util.MontiThingsError;
 import org.apache.commons.io.FilenameUtils;
@@ -233,21 +234,34 @@ public class MontiThingsTool implements IMontiThingsTool {
     Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
     Set<ASTMACompilationUnit> result = new HashSet<>(models);
 
-    // iterate with an iterator in order to avoid ConcurrentModificationException,
-    // as models are transformed
-    for (Iterator<ASTMACompilationUnit> iterator = models.iterator(); iterator.hasNext(); ) {
-      ASTMACompilationUnit ast = iterator.next();
+    boolean again = true;
+    while (again) {
+      again = false;
+      // iterate with an iterator in order to avoid ConcurrentModificationException,
+      // as models are transformed
+      for (Iterator<ASTMACompilationUnit> iterator = models.iterator(); iterator.hasNext(); ) {
+        ASTMACompilationUnit ast = iterator.next();
 
-      for (MontiThingsTrafo trafo : trafos) {
-        try {
-          additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
-        }
-        catch (Exception e) {
-          Log.error(e.getCause().getMessage());
-          e.printStackTrace();
+        for (MontiThingsTrafo trafo : trafos) {
+          try {
+            if (trafo instanceof ComponentTypePortsNamingTrafo) {
+              ((ComponentTypePortsNamingTrafo) trafo).changed = false;
+            }
+            additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
+            if (trafo instanceof ComponentTypePortsNamingTrafo) {
+              if (((ComponentTypePortsNamingTrafo) trafo).changed) {
+                again = true;
+              }
+            }
+          }
+          catch (Exception e) {
+            Log.error(e.getCause().getMessage());
+            e.printStackTrace();
+          }
         }
       }
     }
+
     result.addAll(additionalTrafoModels);
     return result;
   }
