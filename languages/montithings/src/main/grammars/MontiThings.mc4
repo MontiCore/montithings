@@ -102,13 +102,22 @@ grammar MontiThings extends MontiArc,
         SCStatechartElement*
       "}";
 
-    //TODO: comments
+    /**
+     * Used to define multiple states in a single non-terminal.
+     * Only states without a body are allowed and all states
+     * defined in MTSCState share the same modifiers.
+     */
+    MTSCState implements SCStateElement, SCStatechartElement =
+      SCModifier "state" (Name || ",")+ ";";
+
+    /**
+     * MTSCTransition allows the definition of multiple statechart
+     * transitions at once. Each source has a transition to each
+     * target with the same STCBody.
+     */
     MTSCTransition implements SCStateElement, SCStatechartElement =
        Stereotype? sourceNames:(Name@SCState || ",")+ "->" targetNames:(Name@SCState || ",")+ SCTBody ";" ;
 
-    // only allow states without body in a list
-    MTSCState implements SCStateElement, SCStatechartElement =
-      SCModifier "state" (Name || ",")+ ";";
 
     /**
      * Used to re-send the last message on a port.
