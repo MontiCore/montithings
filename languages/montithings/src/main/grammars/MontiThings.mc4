@@ -102,6 +102,14 @@ grammar MontiThings extends MontiArc,
         SCStatechartElement*
       "}";
 
+    //TODO: comments
+    MTSCTransition implements SCStateElement, SCStatechartElement =
+       Stereotype? sourceNames:(Name@SCState || ",")+ "->" targetNames:(Name@SCState || ",")+ SCTBody ";" ;
+
+    // only allow states without body in a list
+    MTSCState implements SCStateElement, SCStatechartElement =
+      SCModifier "state" (Name || ",")+ ";";
+
     /**
      * Used to re-send the last message on a port.
      * Deprecated! Ports send a new message whenever they are assigned a new
