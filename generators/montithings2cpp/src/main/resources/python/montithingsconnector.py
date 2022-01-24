@@ -37,7 +37,10 @@ class MontiThingsConnector:
         self.connected = False
 
     def on_message(self, client, userdata, message):
-        self._receive(message.payload)
+         m_decode = message.payload.decode("utf-8")
+         m_in = json.loads(m_decode) #decode json data
+         self._receive(m_in["value0"]["payload"]["data"])
+
 
     def send(self, msg):
         import uuid
