@@ -54,6 +54,13 @@ public:
         }
         return *this;
     }
+
+    friend std::ostream &
+    operator<< (std::ostream &os, const Message &message)
+    {
+      os << message.payload;
+      return os;
+    }
 };
 
 namespace cereal {

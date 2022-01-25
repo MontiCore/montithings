@@ -29,18 +29,18 @@ ${tc.signature("comp","config","isMonitor","behavior")}
         portMonitorUuid${inPort.getName()?cap_first}
       <#else>
         this->uuid
-      </#if>));
+      </#if>).value());
     }
   </#if>
   </#list>
   <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort >
   <#if behavior == "false" || ComponentHelper.usesPort(behavior, inPort)>
-    ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(
+    ${Identifier.getInputName()}.set${inPort.getName()?cap_first}(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(
     <#if isMonitor>
       portMonitorUuid${inPort.getName()?cap_first}
     <#else>
       this->uuid
-    </#if>));
+    </#if>).value());
   </#if>
   </#list>
 </#if>

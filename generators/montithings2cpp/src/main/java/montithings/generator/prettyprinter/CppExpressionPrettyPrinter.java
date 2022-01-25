@@ -75,7 +75,7 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
         prefix = Identifier.getResultName();
       }
 
-      if (isComparedToNoData) {
+      if (isComparedToNoData || portsInBatchStatement.contains(port.get())) {
         getPrinter().print(prefix + ".get" + capitalize(node.getName()) + "()");
       }
       else {
