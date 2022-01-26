@@ -186,6 +186,7 @@ public class ComponentHelper {
 
   public static String printPackageNamespaceForComponent(ComponentTypeSymbol comp) {
     List<String> packages = ComponentHelper.getPackages(comp);
+    packages = packages.stream().filter(x -> !x.isEmpty()).collect(Collectors.toList());
     if (ComponentHelper.isInterfaceComponent(comp)) {
       return "";
     }
