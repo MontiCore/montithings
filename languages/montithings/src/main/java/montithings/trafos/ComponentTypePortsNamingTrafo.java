@@ -23,11 +23,18 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
   protected static final String TOOL_NAME = "ComponentTypePortsNamingTrafo";
   protected ASTMACompilationUnit compilationUnit;
   protected Collection<ASTMACompilationUnit> allModels;
-  Set<String> portsToIgnore;
+  protected Set<String> portsToIgnore;
+
+  public static Set<ASTMACompilationUnit> getChangedCompilationUnits() {
+    return changedCompilationUnits;
+  }
+
+  protected static Set<ASTMACompilationUnit> changedCompilationUnits = new HashSet<>();
   public boolean changed;
 
   public ComponentTypePortsNamingTrafo(Set<PortSymbol> portsToIgnore) {
     this.portsToIgnore = portsToIgnore.stream().map(p -> p.getName()).collect(Collectors.toSet());
+
   }
 
   public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels, Collection<ASTMACompilationUnit> addedModels, ASTMACompilationUnit targetComp) {
@@ -48,6 +55,7 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
       String newPortName = comp.getName().toLowerCase() + "_" + port.getKey().replaceAll("\\.", "_");
       try {
         addPort(compilationUnit, newPortName, false, port.getValue());
+        changedCompilationUnits.add(compilationUnit);
         changed = true;
       }
       catch (Exception e) {

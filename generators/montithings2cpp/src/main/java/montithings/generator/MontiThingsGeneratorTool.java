@@ -149,8 +149,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       mp.addEntry(Paths.get(symbolPath));
     }
     createSymbolTable(symTab);
+    // ports introduced by the ComponentTypePortsNamingTrafo have to be added in class diagrams
+    if (config.getPortNameTrafo() == ConfigParams.PortNameTrafo.ON) {
+      componentTypeScopes = createMissingClassDiagrams(
+        (MontiThingsGlobalScope) symTab, symbolPath);
+    }
 
-    //generate here, as CD4CodeGlobalScope is reset by CDLangExtension symbol table
+    // generate here, as CD4CodeGlobalScope is reset by CDLangExtension symbol table
     generateComponentTypeCDs(componentTypeScopes, target);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();

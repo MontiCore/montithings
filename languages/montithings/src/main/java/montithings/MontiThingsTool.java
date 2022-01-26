@@ -55,6 +55,8 @@ public class MontiThingsTool implements IMontiThingsTool {
     this(MontiThingsCoCos.createChecker());
   }
 
+  protected Set<ASTMACompilationUnit> models;
+
   public MontiThingsTool(@NotNull MontiThingsCoCoChecker checker) {
     this(checker, new MontiThingsParser(), new MontiThingsSymbols2Json());
   }
@@ -69,6 +71,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     this.parser = parser;
     this.deSer = deSer;
     this.checker = checker;
+    models = new HashSet<>();
     ((MontiThingsDeSer) MontiThingsMill.globalScope().getDeSer())
       .ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
   }
@@ -210,7 +213,9 @@ public class MontiThingsTool implements IMontiThingsTool {
     MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
     MontiThingsMill.globalScope();
     this.loadAll(scope).forEach(scope::addSubScope);
-    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+    if (models.isEmpty()) {
+      models = new HashSet<>(this.parseAll(scope));
+    }
     models = applyTrafos(models);
     return models.stream().map(symTab::createFromAST).collect(Collectors.toSet());
   }
@@ -377,7 +382,9 @@ public class MontiThingsTool implements IMontiThingsTool {
 
   public CD4CodeGlobalScope createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
     Preconditions.checkArgument(scope != null);
-    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+    if (models.isEmpty()) {
+      models = new HashSet<>(this.parseAll(scope));
+    }
 
     addPortSymbolsToCD4CGlobalScope();
 
@@ -396,6 +403,29 @@ public class MontiThingsTool implements IMontiThingsTool {
       String symbolFileName = symbolPath
           + artifactScope.getName()
           + ".sym";
+      final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
+      final String path = symbols2Json.store(artifactScope, symbolFileName);
+    }
+
+    return (CD4CodeGlobalScope) CD4CodeMill.globalScope();
+  }
+
+  public CD4CodeGlobalScope createMissingClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
+    Preconditions.checkArgument(scope != null);
+
+    //create scopes for class diagrams
+    Set<CD4CodeArtifactScope> scopes = new HashSet<>();
+    for (ASTMACompilationUnit compilationUnit : ComponentTypePortsNamingTrafo.getChangedCompilationUnits()) {
+      scopes.add(createClassDiagram(compilationUnit));
+    }
+
+    //convert scopes to symbol files
+    for (CD4CodeArtifactScope artifactScope : scopes) {
+      CD4CodeMill.globalScope().addSubScope(artifactScope);
+      artifactScope.setEnclosingScope(CD4CodeMill.globalScope());
+      String symbolFileName = symbolPath
+        + artifactScope.getName()
+        + ".sym";
       final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
       final String path = symbols2Json.store(artifactScope, symbolFileName);
     }
