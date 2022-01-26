@@ -52,7 +52,13 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
       return;
     }
     for (Map.Entry<String, ASTMCType> port : getUnconnectedPorts(comp)) {
-      String newPortName = comp.getName().toLowerCase() + "_" + port.getKey().replaceAll("\\.", "_");
+      String newPortName;
+      if (findParents(allModels, compilationUnit).isEmpty()) {
+        newPortName = comp.getName().toLowerCase() + "_" + port.getKey().replaceAll("\\.", "_");
+      }
+      else {
+        newPortName = port.getKey().replaceAll("\\.", "_");
+      }
       try {
         addPort(compilationUnit, newPortName, false, port.getValue());
         changedCompilationUnits.add(compilationUnit);
