@@ -112,6 +112,15 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     /* ============================================================ */
 
     String symbolPath = target.toString() + File.separator + "symbols" + File.separator;
+
+    // Ensure symbols folder exists
+    File symbolsFolder = new File(symbolPath);
+    if (!symbolsFolder.exists()) {
+      if (!symbolsFolder.mkdirs()) {
+        Log.error("0xMT1200 Could not create directory '" + symbolsFolder.getAbsolutePath() + "'");
+      }
+    }
+
     if (!models.getClassdiagrams().isEmpty()) {
       CD4MTTool.convertToSymFile(modelPath, models.getClassdiagrams(), symbolPath);
       mp.addEntry(Paths.get(symbolPath));
