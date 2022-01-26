@@ -34,9 +34,9 @@ echo "Starting components..."
 
 # Run Python Ports
 if [ -d "hwc" ]; then
-find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "$0" > "$0.log" 2>&1 &' '{}' \;
+find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "$0" > "$0.log" 2>&1 &' '{}' \;
 fi
 
 <#if config.getMessageBroker().toString() == "MQTT" && hwcPythonScripts?size!=0>
-exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
+exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
 </#if>

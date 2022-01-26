@@ -56,6 +56,7 @@ import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.DelayedChannelTrafo;
 import montithings.trafos.DelayedComputationTrafo;
 import montithings.trafos.ExternalPortMockTrafo;
+import montithings.trafos.SimplifyStatechartTrafo;
 import montithings.util.MontiThingsError;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
@@ -127,6 +128,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       addTrafo(new DelayedChannelTrafo(modelPath, config.getReplayDataFile()));
       addTrafo(new DelayedComputationTrafo(modelPath, config.getReplayDataFile()));
     }
+
+    addTrafo(new SimplifyStatechartTrafo());
 
     CD4CodeMill.reset();
     CD4CodeMill.init();
