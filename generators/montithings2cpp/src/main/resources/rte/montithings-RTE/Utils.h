@@ -14,7 +14,7 @@
 #include "cereal/types/unordered_map.hpp"
 #include "sole/sole.hpp"
 
-#include "Message.h"
+template <class T> class Message;
 
 template<typename T>
 std::string
@@ -60,6 +60,26 @@ concat(const std::string& first, T second) {
   std::stringstream ss;
   ss << first << second;
   return ss.str();
+}
+
+template < class T >
+std::ostream& operator << (std::ostream& os, const tl::optional<T>& v)
+{
+  if (v.has_value()) os << v.value();
+  else os << "tl::nullopt";
+  return os;
+}
+
+template < class T >
+std::ostream& operator << (std::ostream& os, const std::vector<Message<T>>& v)
+{
+  os << "[";
+  for (auto i = v.begin(); i != v.end(); i++)
+    {
+      os << *i << (i != v.end()-1 ? ", " : "");
+    }
+  os << "]";
+  return os;
 }
 
 /**
