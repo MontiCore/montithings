@@ -73,10 +73,8 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
   }
 
   private Set<Map.Entry<String, ASTMCType>> getUnconnectedPorts(ASTMTComponentType comp) {
-    //TODO: correct to only include incoming ports?
     Set<Map.Entry<String, ASTMCType>> portNames = new HashSet<>();
     Collection<String> targets = this.getTargetNames(comp);
-    //TODO: wahrscheinlich addConnectorTargetsFromBehavior nicht ausführen?
     addConnectorTargetsFromBehavior(targets, (ASTMTComponentType) comp);
     for (ASTComponentInstantiation componentInstantiation : comp.getSubComponentInstantiations()) {
       String componentInstanceTypeName =
@@ -120,16 +118,6 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
     return portNames;
   }
 
-  protected void addConnectorSourcesFromBehavior(Collection<String> sources, ASTMTComponentType node) {
-    List<ASTBehavior> behaviors = node.getBody().getArcElementList().stream().filter(element -> element instanceof ASTBehavior).map(behavior -> (ASTBehavior) behavior).collect(Collectors.toList());
-    for (ASTBehavior behavior : behaviors) {
-      List<ASTConnectStatement> connectStatements = behavior.getMCJavaBlock().getMCBlockStatementList().stream().filter(element -> element instanceof ASTConnectStatement).map(connector -> ((ASTConnectStatement) connector)).collect(Collectors.toList());
-      for (ASTConnectStatement connectStatement : connectStatements) {
-        sources.add(connectStatement.getConnector().getSourceName());
-      }
-    }
-  }
-
   protected void addConnectorTargetsFromBehavior(Collection<String> sources, ASTMTComponentType node) {
     List<ASTBehavior> behaviors = node.getBody().getArcElementList().stream().filter(element -> element instanceof ASTBehavior).map(behavior -> (ASTBehavior) behavior).collect(Collectors.toList());
     for (ASTBehavior behavior : behaviors) {
@@ -138,10 +126,6 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
         sources.addAll(connectStatement.getConnector().getTargetsNames());
       }
     }
-  }
-
-  protected Collection<String> getSourceNames(ASTComponentType node) {
-    return node.getConnectors().stream().map(ASTConnector::getSourceName).collect(Collectors.toList());
   }
 
   protected Collection<String> getTargetNames(ASTComponentType node) {
