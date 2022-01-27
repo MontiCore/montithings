@@ -240,6 +240,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     Set<ASTMACompilationUnit> result = new HashSet<>(models);
 
     boolean again = true;
+    boolean firstLoop = true;
     while (again) {
       again = false;
       // iterate with an iterator in order to avoid ConcurrentModificationException,
@@ -248,23 +249,26 @@ public class MontiThingsTool implements IMontiThingsTool {
         ASTMACompilationUnit ast = iterator.next();
 
         for (MontiThingsTrafo trafo : trafos) {
-          try {
-            if (trafo instanceof ComponentTypePortsNamingTrafo) {
-              ((ComponentTypePortsNamingTrafo) trafo).changed = false;
-            }
-            additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
-            if (trafo instanceof ComponentTypePortsNamingTrafo) {
-              if (((ComponentTypePortsNamingTrafo) trafo).changed) {
-                again = true;
+          if (firstLoop || trafo instanceof ComponentTypePortsNamingTrafo) {
+            try {
+              if (trafo instanceof ComponentTypePortsNamingTrafo) {
+                ((ComponentTypePortsNamingTrafo) trafo).setChanged(false);
+              }
+              additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
+              if (trafo instanceof ComponentTypePortsNamingTrafo) {
+                if (((ComponentTypePortsNamingTrafo) trafo).isChanged()) {
+                  again = true;
+                }
               }
             }
-          }
-          catch (Exception e) {
-            Log.error(e.getCause().getMessage());
-            e.printStackTrace();
+            catch (Exception e) {
+              Log.error(e.getCause().getMessage());
+              e.printStackTrace();
+            }
           }
         }
       }
+      firstLoop = false;
     }
 
     result.addAll(additionalTrafoModels);

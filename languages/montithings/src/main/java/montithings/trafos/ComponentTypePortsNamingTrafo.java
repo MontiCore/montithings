@@ -30,7 +30,16 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
   }
 
   protected static Set<ASTMACompilationUnit> changedCompilationUnits = new HashSet<>();
-  public boolean changed;
+
+  public boolean isChanged() {
+    return changed;
+  }
+
+  public void setChanged(boolean changed) {
+    this.changed = changed;
+  }
+
+  protected boolean changed;
 
   public ComponentTypePortsNamingTrafo(Set<PortSymbol> portsToIgnore) {
     this.portsToIgnore = portsToIgnore.stream().map(p -> p.getName()).collect(Collectors.toSet());
@@ -55,16 +64,14 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
       String newPortName;
       if (findParents(allModels, compilationUnit).isEmpty()) {
         newPortName = comp.getName().toLowerCase() + "_" + port.getKey().replaceAll("\\.", "_");
-      }
-      else {
+      } else {
         newPortName = port.getKey().replaceAll("\\.", "_");
       }
       try {
         addPort(compilationUnit, newPortName, false, port.getValue());
         changedCompilationUnits.add(compilationUnit);
         changed = true;
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         Log.error(e.getCause().getMessage());
         e.printStackTrace();
       }
@@ -78,7 +85,7 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
     addConnectorTargetsFromBehavior(targets, (ASTMTComponentType) comp);
     for (ASTComponentInstantiation componentInstantiation : comp.getSubComponentInstantiations()) {
       String componentInstanceTypeName =
-          new MontiThingsFullPrettyPrinter(new IndentPrinter()).prettyprint(componentInstantiation.getMCType());
+        new MontiThingsFullPrettyPrinter(new IndentPrinter()).prettyprint(componentInstantiation.getMCType());
 
       //remove generic type arguments from name
       componentInstanceTypeName = componentInstanceTypeName.replaceAll("<.*>", "");
@@ -95,8 +102,7 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
             for (ASTPort port : portDeclaration.getPortList()) {
               subInputPorts.put(componentInstanceName + "." + port.getName(), portDeclaration.getMCType());
             }
-          }
-          else if (portDeclaration.getPortDirection() instanceof ASTPortDirectionOut) {
+          } else if (portDeclaration.getPortDirection() instanceof ASTPortDirectionOut) {
             for (ASTPort port : portDeclaration.getPortList()) {
               subOutputPorts.put(componentInstanceName + "." + port.getName(), portDeclaration.getMCType());
             }
