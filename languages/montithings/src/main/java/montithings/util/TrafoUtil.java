@@ -115,6 +115,24 @@ public abstract class TrafoUtil {
   }
 
   /**
+   * Searches in the collection of models for the given name
+   *
+   * @param models      Collection of AST components where is searched in
+   * @param name Qualified component name
+   * @return AST of searched component
+   */
+  public static ASTMACompilationUnit getComponentByUnqualifiedName(Collection<ASTMACompilationUnit> models,
+      String name) {
+    for (ASTMACompilationUnit model : models) {
+      String modelName = model.getComponentType().getName();
+      if (modelName.equals(name)) {
+        return model;
+      }
+    }
+    throw new NoSuchElementException("There is no such model named " + name);
+  }
+
+  /**
    * Capitalizes first character of the given string
    *
    * @param str string to capitalized

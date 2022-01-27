@@ -21,7 +21,6 @@ import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.monticore.cd4code.CD4CodeMill;
-import de.monticore.cd4code._symboltable.CD4CodeArtifactScope;
 import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.ICD4CodeScope;
@@ -53,6 +52,7 @@ import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindConnectStatementsVisitor;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
+import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.DelayedChannelTrafo;
 import montithings.trafos.DelayedComputationTrafo;
 import montithings.trafos.ExternalPortMockTrafo;
@@ -146,6 +146,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     ICD4CodeGlobalScope cd4MTGlobalScope = CD4CodeMill.globalScope();
     cd4MTGlobalScope.setModelPath(mp);
 
+    if (config.getPortNameTrafo() == ConfigParams.PortNameTrafo.ON) {
+      ComponentTypePortsNamingTrafo typePortsNamingTrafo = new ComponentTypePortsNamingTrafo(config.getTemplatedPorts());
+      addTrafo(typePortsNamingTrafo);
+    }
+
     MontiThingsMill.reset();
     MontiThingsMill.init();
     MontiThingsMill.globalScope().clear();
@@ -156,8 +161,13 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       mp.addEntry(Paths.get(symbolPath));
     }
     createSymbolTable(symTab);
+    // ports introduced by the ComponentTypePortsNamingTrafo have to be added in class diagrams
+    if (config.getPortNameTrafo() == ConfigParams.PortNameTrafo.ON) {
+      componentTypeScopes = createMissingClassDiagrams(
+        (MontiThingsGlobalScope) symTab, symbolPath);
+    }
 
-    //generate here, as CD4CodeGlobalScope is reset by CDLangExtension symbol table
+    // generate here, as CD4CodeGlobalScope is reset by CDLangExtension symbol table
     generateComponentTypeCDs(componentTypeScopes, target);
 
     CDLangExtensionTool cdExtensionTool = new CDLangExtensionTool();
@@ -443,6 +453,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
         config.getMainComponent(), allComponents)
       );
     }
+  }
+
+  protected ComponentTypeSymbol getMainComponent (IMontiThingsGlobalScope symTab,
+      ConfigParams configParams){
+    return symTab.resolveComponentType(configParams.getMainComponent()).get();
   }
 
   protected void checkCdExtensionModels(List<String> foundCDExtensionModels, File modelPath,

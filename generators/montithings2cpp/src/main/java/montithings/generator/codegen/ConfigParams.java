@@ -152,6 +152,25 @@ public class ConfigParams {
     }
    }
 
+  public enum PortNameTrafo {
+    OFF("OFF"),
+    ON("ON");
+
+    String value;
+
+    PortNameTrafo(String value) {
+      this.value = value;
+    }
+
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
   /** property for message brokers */
   protected MessageBroker messageBroker = MessageBroker.OFF;
 
@@ -162,6 +181,8 @@ public class ConfigParams {
   protected ReplayMode replayMode = ReplayMode.OFF;
 
   protected RecordingMode recordingMode = RecordingMode.OFF;
+
+  protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
 
   /** property for target platform */
   protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
@@ -389,6 +410,14 @@ public class ConfigParams {
 
   public void setRecordingMode(RecordingMode recordingMode) {
     this.recordingMode = recordingMode;
+  }
+
+  public PortNameTrafo getPortNameTrafo() {
+    return portNameTrafo;
+  }
+
+  public void setPortNameTrafo(PortNameTrafo portNameTrafo) {
+    this.portNameTrafo = portNameTrafo;
   }
 
   public Multimap<ComponentTypeSymbol, String> getTypeArguments() {
