@@ -33,11 +33,14 @@ import org.assertj.core.util.Lists;
 import org.assertj.core.util.Preconditions;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static montithings.generator.helper.TypesHelper.getConversionFactorFromSourceAndTarget;
 import static montithings.generator.helper.TypesHelper.isSIUnitPort;
 
 public class Utils {
+
+  private static List<String> packages;
 
   public static String getDeployFile(ComponentTypeSymbol comp) {
     String filename = comp.getFullName();
@@ -318,6 +321,7 @@ public class Utils {
   public static String printNamespaceStart(ComponentTypeSymbol comp) {
     StringBuilder s = new StringBuilder();
     List<String> packages = ComponentHelper.getPackages(comp);
+    packages = packages.stream().filter(x -> !x.isEmpty()).collect(Collectors.toList());
     s.append("namespace montithings {\n");
     for (String pack : packages) {
       s.append("namespace " + pack + " {\n");
@@ -328,6 +332,7 @@ public class Utils {
   public static String printNamespaceEnd(ComponentTypeSymbol comp) {
     StringBuilder s = new StringBuilder();
     List<String> packages = ComponentHelper.getPackages(comp);
+    packages = packages.stream().filter(x -> !x.isEmpty()).collect(Collectors.toList());
     for (int i = 0; i < packages.size(); i++) {
       s.append("} // namespace " + packages.get(packages.size() - (i + 1)));
       s.append("\n");

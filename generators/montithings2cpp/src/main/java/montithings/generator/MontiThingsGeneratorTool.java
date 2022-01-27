@@ -195,7 +195,9 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
     for (String model : models.getMontithings()) {
       // Parse model
-      String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
+      String qualifier = Names.getQualifier(model);
+      String qualifiedModelName = qualifier + (qualifier.isEmpty() ? "" : ".")
+        + Names.getSimpleName(model);
       ComponentTypeSymbol comp = symTab.resolveComponentType(qualifiedModelName).get();
 
       Log.info("Searching templates for: " + comp.getFullName(), TOOL_NAME);
@@ -443,7 +445,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   protected void checkIfMainComponentExists(IMontiThingsGlobalScope symTab,
     Models models, ConfigParams config) {
     List<String> allComponentsList = models.getMontithings().stream()
-      .map(c -> Names.getQualifier(c) + "." + Names.getSimpleName(c))
+      .map(c -> Names.getQualifier(c) + (Names.getQualifier(c).isEmpty()? "" : ".") + Names.getSimpleName(c))
       .collect(Collectors.toList());
 
     String allComponents = String.join(", ", allComponentsList);
@@ -728,7 +730,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
   }
 
   protected ComponentTypeSymbol modelToSymbol(String model, IMontiThingsScope symTab) {
-    String qualifiedModelName = Names.getQualifier(model) + "." + Names.getSimpleName(model);
+    String qualifiedModelName = Names.getQualifier(model)
+      + (Names.getQualifier(model).isEmpty()? "" : ".") + Names.getSimpleName(model);
     return symTab.resolveComponentType(qualifiedModelName).get();
   }
 

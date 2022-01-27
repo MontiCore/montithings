@@ -161,6 +161,8 @@ include_directories("hwc" ${r"${dir_list}"})
   add_subdirectory(montithings-RTE)
 </#if>
 
+file(GLOB SOURCES "*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX "${Utils.getDeployFile(comp)}")
 add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}
