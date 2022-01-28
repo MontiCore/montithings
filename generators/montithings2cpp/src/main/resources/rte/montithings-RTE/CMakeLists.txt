@@ -116,7 +116,7 @@ if (NOT EXCLUDE_MQTT)
   # Include Mosquitto Library
   if(APPLE)
     find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto /opt/homebrew/Cellar/mosquitto)
-    include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/)
+    include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/ /opt/homebrew/Cellar/mosquitto/2.0.14/include/)
   elseif(WIN32)
     include_directories(C:\\Program\ Files\\Mosquitto\\devel)
     link_directories(C:\\Program\ Files\\Mosquitto\\devel)
