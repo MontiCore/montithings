@@ -53,7 +53,7 @@ public class TaggingScopesGenitor extends TaggingScopesGenitorTOP {
                     componentType = Optional.ofNullable(componentInstance.get().getType());
                     for (int i = 1; i <= partsList.size() - 1; i++) {
                         componentInstance = componentType.get().getSpannedScope().resolveComponentInstanceDown(partsList.get(i));
-                        if (componentInstance.isEmpty()) break;
+                        if (!componentInstance.isPresent()) break;
                         componentType = Optional.ofNullable(componentInstance.get().getType());
                     }
                 }

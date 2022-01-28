@@ -391,7 +391,7 @@ public class TaggingTool {
       }
       connection.getInputStream().close();
 
-      return outputStream.toString(StandardCharsets.UTF_8);
+      return outputStream.toString();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
