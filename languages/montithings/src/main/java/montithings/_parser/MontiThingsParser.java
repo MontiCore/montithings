@@ -47,7 +47,15 @@ public class MontiThingsParser extends MontiThingsParserTOP {
     if (optAst.isPresent()) {
       String fileRoot = Files.getNameWithoutExtension(relativeFilePath);
       String modelName = optAst.get().getComponentType().getName();
-      String packageOfFile = Names.getPathFromFilename(relativeFilePath);
+      String packageOfFile;
+      if (relativeFilePath.lastIndexOf(File.separator) != -1) {
+        packageOfFile = Names.getPackageFromPath(Names.getPathFromFilename(relativeFilePath));
+      }
+      else {
+        packageOfFile = Names
+          .getPackageFromPath(Names.getPathFromFilename(relativeFilePath, "/"), "/");
+      }
+
       String packageOfModel = constructQualifiedName(optAst.get().isPresentPackage() ?
         optAst.get().getPackage().getPartsList() : new ArrayList<>());
       if (!modelName.equals(fileRoot)) {
@@ -59,7 +67,7 @@ public class MontiThingsParser extends MontiThingsParserTOP {
       }
       if (!Names.getPackageFromPath(packageOfFile).endsWith(packageOfModel)) {
         Log.error(String.format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(),
-            packageOfModel, packageOfFile),
+            packageOfModel, optAst.get().getComponentType().getName(), packageOfFile),
           optAst.get().isPresentPackage() ? optAst.get().getPackage().get_SourcePositionStart()
             : optAst.get().get_SourcePositionStart());
         setError(true);
