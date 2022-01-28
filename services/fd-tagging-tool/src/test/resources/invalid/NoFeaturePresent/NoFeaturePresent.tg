@@ -1,0 +1,5 @@
+package invalid.NoFeaturePresent;
+
+tagging NoFeaturePresent {
+    feature invalid.NoFeaturePresent.NoFeaturePresent.Truck contains invalid.NoFeaturePresent.NoFeaturePresent;
+}

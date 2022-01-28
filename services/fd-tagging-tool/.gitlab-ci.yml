@@ -1,0 +1,51 @@
+# (c) https://github.com/MontiCore/monticore  
+image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.8.2-jdk8
+
+# These are the default stages. You don't need to explicitly define them. But you could define any stages you need.
+stages:
+  - build
+#  - test
+  - report
+  
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+
+build_gradle:
+  stage: build
+  script:
+    - "gradle assemble"
+    - "gradle testReport"
+  artifacts:
+    paths:
+      - "target"
+    expire_in: 1 week
+
+#test_gradle:
+#  stage: test
+#  dependencies:
+#    - build_gradle
+#  cache:
+#    paths:
+#      - .gradle/wrapper
+#      - .gradle/caches
+#    key: ${CI_COMMIT_REF_SLUG}-gradle
+#  script:
+#    - "gradle testReport"
+#  artifacts:
+#    paths:
+#      - "target"
+#    expire_in: 1 week
+
+pages:
+  stage: report
+  dependencies:
+    - build_gradle
+  cache: {}
+  script:
+    - mv target/reports/allTests public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master

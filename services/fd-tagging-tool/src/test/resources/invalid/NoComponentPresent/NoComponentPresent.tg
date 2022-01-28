@@ -1,0 +1,5 @@
+package invalid.NoComponentPresent;
+
+tagging NoComponentPresent {
+    feature invalid.NoComponentPresent.NoComponentPresent.Car contains invalid.NoComponentPresent.NoComponentPresent.sink2;
+}

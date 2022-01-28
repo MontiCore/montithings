@@ -1,0 +1,7 @@
+package valid.SmartHomeProject;
+
+import valid.SmartHomeProject.SmartHome;
+
+featureconfig TestConfiguration for SmartHome {
+    SmartHome, SmartLights, TemperatureControl, SmartAssistant, Blinds;
+}

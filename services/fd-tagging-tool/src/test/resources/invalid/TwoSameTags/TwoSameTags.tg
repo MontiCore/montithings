@@ -1,0 +1,6 @@
+package invalid.TwoSameTags;
+
+tagging TwoSameTags {
+    feature invalid.TwoSameTags.TwoSameTags.Car contains invalid.TwoSameTags.Source;
+    feature invalid.TwoSameTags.TwoSameTags.Car contains invalid.TwoSameTags.Sink;
+}
