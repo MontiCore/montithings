@@ -59,7 +59,7 @@ public class MontiThingsParser extends MontiThingsParserTOP {
       }
       if (!Names.getPackageFromPath(packageOfFile).endsWith(packageOfModel)) {
         Log.error(String.format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(),
-            packageOfModel, packageOfFile),
+            packageOfModel, optAst.get().getComponentType().getName(), packageOfFile),
           optAst.get().isPresentPackage() ? optAst.get().getPackage().get_SourcePositionStart()
             : optAst.get().get_SourcePositionStart());
         setError(true);
