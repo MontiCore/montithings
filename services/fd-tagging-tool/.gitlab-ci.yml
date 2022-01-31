@@ -15,7 +15,6 @@ build_gradle:
   stage: build
   script:
     - "gradle assemble"
-    - "gradle testReport"
   artifacts:
     paths:
       - "target"
