@@ -1,3 +1,5 @@
+/* (c) https://github.com/MontiCore/monticore */
+
 /**
  * sends data on an internally managed mqtt topic.
  * make a dynamic listener subscribe to this topic by using announce()
@@ -24,12 +26,17 @@
 
 #include "arduino_secrets.h"
 
-namespace montiInterface {
+namespace montithings {
 
+    // To connect with SSL/TLS:
+    // 1) Change WiFiClient to WiFiSSLClient. (see above)
+    // 2) Change port value from 1883 to 8883. (in tab/arduino_secrets.h)
+    // 3) Change broker value to a server with a known SSL/TLS root certificate
+    //    flashed in the WiFi module. (in tab/arduino_secrets.h)
     WiFiClient wifiClient;
+
     MqttClient mqttClient(wifiClient);
     char *deviceID;
-
 
     /**
      * Initializes Serial and waits for port to open
@@ -106,15 +113,18 @@ namespace montiInterface {
 
     /**
      * announces itself to the 'portsInject' topic of another device, causing that device
-     * to receive data send from this device via sendData() in the future.
+     * to subscribe to the given subPort of this device
      * @param portsInject the portsInject MQTT topic of another device
+     * @param subPort a subPort of this device
      */
-    void announce(char *portsInject) {
+    void announce(String portsInject, char subPort[]) {
         char *messageID = getUid();
         mqttClient.beginMessage(portsInject);
         mqttClient.print("{\"value0\":{\"payload\":{\"data\":{\"value0\":{\"value0\":\"");
         mqttClient.print(deviceID);
-        mqttClient.print("/microcontroller\"}},\"nullopt\":false},\"uuid\":\"");
+        mqttClient.print("/");
+        mqttClient.print(subPort);
+        mqttClient.print("\"}},\"nullopt\":false},\"uuid\":\"");
         mqttClient.print(messageID);
         mqttClient.print("\"}}");
         mqttClient.endMessage();
@@ -122,9 +132,11 @@ namespace montiInterface {
     }
 
     /**
-     * wraps data in a JSON format and sends it on the mqtt Port of this device
+     * wraps data in a JSON format and sends it to the given subPort of this device
+     * @param data the data to be send
+     * @param subPort a subPort of this device
      */
-    void sendJson(const char data[]) {
+    void sendJson(const char data[], char subPort[]) {
         Serial.print("Sending message: ");
         Serial.println(data);
 
@@ -133,7 +145,8 @@ namespace montiInterface {
         char buf[200];
         strcpy(buf, "/ports/");
         strcat(buf, deviceID);
-        strcat(buf, "/microcontroller");
+        strcat(buf, "/");
+        strcat(buf, subPort);
 
         mqttClient.beginMessage(buf);
         mqttClient.print("{\"value0\":{\"payload\":{\"data\":");
@@ -148,44 +161,49 @@ namespace montiInterface {
     }
 
     /**
-     * sends an int to all devices that this device has announced itself to
+     * sends an int to the given subPort
      * @param data an int
+     * @param a subPort of this device
      */
-    void sendInt(int data){
-      sendJson(String(data).c_str());
+    void send(int data, char subPort[]){
+      sendJson(String(data).c_str(), subPort);
     }
 
     /**
-     * sends a float to all devices that this device has announced itself to
+     * sends a float to the given subPort
      * @param data a float
+     * @param a subPort of this device
      */
-    void sendFloat(float data){
-        sendJson(String(data).c_str());
+    void send(float data, char subPort[]){
+        sendJson(String(data).c_str(), subPort);
     }
 
     /**
-     * sends a char[] to all devices that this device has announced itself to
+     * sends a char[] to the given subPort
      * @param data a char[] containing data
+     * @param a subPort of this device
      */
-    void sendCharArr(char data[]){
-        sendJson('\"' + data + '\"');
+    void send(char data[], char subPort[]){
+        sendJson(data, subPort);
     }
 
 
     /**
-     * sends a bool to all devices that this device has announced itself to
+     * sends a bool to the given subPort
      * @param data a bool
+     * @param a subPort of this device
      */
-    void sendBool(bool data){
-        sendJson(data? "true":"false");
+    void send(bool data, char subPort[]){
+        sendJson(data? "true":"false", subPort);
     }
 
     /**
-     * sends double to all devices that this device has announced itself to
+     * sends double to the given subPort
      * @param data a double
+     * @param a subPort of this device
      */
-    void sendDouble(double data) {
-        sendJson(String(data).c_str());
+    void send(double data, char subPort[]) {
+        sendJson(String(data).c_str(), subPort);
     }
 
     /**
@@ -195,12 +213,6 @@ namespace montiInterface {
 
         //please enter your sensitive data in the Secret tab/arduino_secrets.h
         connectToWifi(SECRET_SSID, SECRET_PASS);
-
-        // To connect with SSL/TLS:
-        // 1) Change WiFiClient to WiFiSSLClient. (see above)
-        // 2) Change port value from 1883 to 8883.
-        // 3) Change broker value to a server with a known SSL/TLS root certificate
-        //    flashed in the WiFi module.
 
         //please enter broker hostname and port in arduino_secrets.h
         const char broker[] = BROKER_HOSTNAME;
