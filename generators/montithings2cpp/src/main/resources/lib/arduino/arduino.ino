@@ -10,8 +10,8 @@ void setup(){
 
     //name of the sink (name given to the sink-instance on startup in the command line)
     String receiverName = "example";
-    montithings::announce("/portsInject/" + receiverName + "/connect", "counting");
-    montithings::announce("/portsInject/" + receiverName + "/connect", "alternating");
+    montithings::announce(receiverName, "counting");
+    montithings::announce(receiverName, "alternating");
 }
 
 int count = 0;

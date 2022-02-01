@@ -114,12 +114,12 @@ namespace montithings {
     /**
      * announces itself to the 'portsInject' topic of another device, causing that device
      * to subscribe to the given subPort of this device
-     * @param portsInject the portsInject MQTT topic of another device
+     * @param receiverName the name of the receiving device as found in the mqtt topic /portsInject/receiverName/connect
      * @param subPort a subPort of this device
      */
-    void announce(String portsInject, char subPort[]) {
+    void announce(String receiverName, char subPort[]) {
         char *messageID = getUid();
-        mqttClient.beginMessage(portsInject);
+        mqttClient.beginMessage("/portsInject/" + receiverName + "/connect");
         mqttClient.print("{\"value0\":{\"payload\":{\"data\":{\"value0\":{\"value0\":\"");
         mqttClient.print(deviceID);
         mqttClient.print("/");
