@@ -115,7 +115,7 @@ public class TypesHelper {
    * @return True if the given port uses a type from a class diagram, false otherwise
    */
   public static boolean portUsesCdType(PortSymbol portSymbol) {
-    return portSymbol.getTypeInfo() instanceof OOTypeSymbol;
+    return portSymbol.getTypeInfo() instanceof OOTypeSymbol && !isJavaType(portSymbol.getType().print());
   }
 
   //============================================================================

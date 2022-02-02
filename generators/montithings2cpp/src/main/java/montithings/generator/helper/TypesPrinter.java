@@ -269,7 +269,7 @@ public class TypesPrinter {
 
   public static String getRealPortCppTypeString(ComponentTypeSymbol comp, PortSymbol port,
     ConfigParams config) {
-    if (TypesHelper.portUsesCdType(port)) {
+    if (!TypesHelper.isJavaType(port.getType().print()) && TypesHelper.portUsesCdType(port)) {
       return printCdPortFQN(comp, port, config);
     }
     else {
