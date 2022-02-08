@@ -178,9 +178,9 @@ public class MTGenerator {
     makeExecutable(targetPath, "build", ".sh");
   }
 
-  public void generateBuildScript(File targetPath, List<String> hwcPythonScripts) {
+  public void generateBuildScript(File targetPath, ComponentTypeSymbol comp, List<String> hwcPythonScripts) {
     fg.generate(targetPath, "build", ".sh",
-      "template/util/scripts/BuildScript.ftl", hwcPythonScripts, config);
+      "template/util/scripts/BuildScript.ftl", comp, hwcPythonScripts, config);
     makeExecutable(targetPath, "build", ".sh");
 
     fg.generate(targetPath, "build", ".bat",

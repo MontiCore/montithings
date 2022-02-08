@@ -404,11 +404,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     }
 
     generateCD(modelPath, hwcPath, target);
-    mtg.generateBuildScript(target, hwcPythonScripts);
 
     for (String model : models.getMontithings()) {
       ComponentTypeSymbol comp = modelToSymbol(model, symTab);
       if (ComponentHelper.isApplication(comp, config)) {
+        mtg.generateBuildScript(target, comp, hwcPythonScripts);
         mtg.generateDockerfileScript(target, comp, executableSensorActuatorPorts, hwcPythonScripts);
         mtg.generateCrosscompileScript(target, comp);
       }
