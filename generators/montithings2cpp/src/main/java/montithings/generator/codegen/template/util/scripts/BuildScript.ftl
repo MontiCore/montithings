@@ -29,7 +29,7 @@ echo "There is no component whose fully qualified name matches the first argumen
 exit 1
 fi
 
-pushd "$SCRIPTPATH" > /dev/null
+CALLER_PWD="$PWD"
 cd "$SCRIPTPATH" > /dev/null
 
 <#if config.getTargetPlatform().toString() == "DSA_VCG">
@@ -76,5 +76,5 @@ chmod +x *.sh
 cd ../..
 </#if>
 
-popd > /dev/null
+cd "$CALLER_PWD" > /dev/null
 
