@@ -4,18 +4,19 @@ programname=$0
 JAR="/Users/kirchhof/.montithings/jar/cli-7.0.0-SNAPSHOT-cli.jar"
 
 function usage {
-  echo "usage: montithings [run [local]|logs [-f]|stop] component"
+  echo "usage: montithings [run [local|docker]|logs [-f]|stop] component"
   echo "  run           build and execute component"
   echo "  run local     build and execute component as distributed application"
+  echo "  run docke     build and execute component as distributed application using Docker"
   echo "  logs          show the logs of component instance (cat)"
   echo "  logs -f       show the logs of component instance (tail -f)"
   echo "  stop          stop the execution of component (only for distributed)"
-  
+
   exit 1
 }
 
 function progress {
-  pid=$! 
+  pid=$!
 
   spin='┐┤┘┴└├┌┬'
 
@@ -31,7 +32,7 @@ function progress {
   done
   wait $pid
   if [ $? -ne 0 ]
-  then 
+  then
     printf "\r\033[K[$1] Failed.\n"
     printf "$(tail -n 1 $2)\n"
     rm ${2}
@@ -43,9 +44,9 @@ function progress {
 }
 
 if [ "$1" = "run" ]
-then 
+then
   output_file=$(mktemp)
-  if [ "$2" = "local" ]
+  if [ "$2" = "local" ] || [ "$2" = "docker" ]
   then
     java -jar $JAR --mainComp $3 --splitting local -b mqtt >>"$output_file" 2>>"$output_file" &
   else
@@ -53,13 +54,23 @@ then
   fi
   progress "Generating" "$output_file"
   cd target/generated-sources/
-  ./build.sh >>"$output_file" 2>>"$output_file" &
+  if [ "$2" = "docker" ]
+  then
+    ./dockerBuild.sh >>"$output_file" 2>>"$output_file" &
+  else
+    ./build.sh >>"$output_file" 2>>"$output_file" &
+  fi
   progress "Building" "$output_file"
   rm ${output_file}
-  cd build/bin/ 
+  cd build/bin/
   if [ "$2" = "local" ]
   then
     ./run.sh
+    echo Components started in background.
+  elif [ "$2" = "docker" ]
+  then
+    cd ../..
+    ./dockerRun.sh
     echo Components started in background.
   else
     ./"$2" -n "$2"
@@ -68,7 +79,7 @@ then
 fi
 
 if [ "$1" = "logs" ]
-then 
+then
   if [ "$2" = "-f" ]
   then
     comp_instance_name="$3"
@@ -93,14 +104,24 @@ then
 fi
 
 if [ "$1" = "stop" ]
-then 
-  if [ ! -f "target/generated-sources/build/bin/kill.sh" ]
+then
+  if [ -f "target/generated-sources/build/bin/kill.sh" ]
+  then
+    ./target/generated-sources/build/bin/kill.sh
+  fi
+
+  if [ -f "target/generated-sources/dockerKill.sh" ]
+  then
+    ./target/generated-sources/dockerKill.sh
+  fi
+
+  if [ ! -f "target/generated-sources/build/bin/kill.sh" ] && [ ! -f "target/generated-sources/dockerKill.sh" ]
   then
     echo "Splitting not enabled or project not built."
     exit 1
+  else
+    exit 0
   fi
-  ./target/generated-sources/build/bin/kill.sh
-  exit 0
 fi
 
 usage

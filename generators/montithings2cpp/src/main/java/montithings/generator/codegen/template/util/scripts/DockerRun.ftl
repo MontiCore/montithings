@@ -5,10 +5,10 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 <#assign sensoractuatormanagerimage = "sensoractuatormanager">
 
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-
-rm -f dockerStop.sh
-rm -f dockerKill.sh
+rm -f "$SCRIPTPATH"/dockerStop.sh
+rm -f "$SCRIPTPATH"/dockerKill.sh
 
 # Create a dedicated network named montithings. Skip if it is already present.
 docker network ls | grep montithings > /dev/null || docker network create --driver bridge montithings
@@ -31,8 +31,8 @@ esac
 <#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
   # Start DCPSInfoRepo
   CONTAINER=$(docker run --name dcpsinforepo -h dcpsinforepo --rm -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
-  echo docker stop $CONTAINER >> dockerStop.sh
-  echo docker kill $CONTAINER >> dockerKill.sh
+  echo docker stop $CONTAINER >> "$SCRIPTPATH"/dockerStop.sh
+  echo docker kill $CONTAINER >> "$SCRIPTPATH"/dockerKill.sh
 </#if>
 
 <#if config.getSplittingMode().toString() == "OFF">
@@ -49,8 +49,10 @@ esac
     <#list hwcPythonScripts as script >
         ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [script?lower_case, config])}
     </#list>
-    ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [sensoractuatormanagerimage, config])}
+    <#if sensorActuatorPorts?size gt 0 || hwcPythonScripts?size gt 0>
+      ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [sensoractuatormanagerimage, config])}
+    </#if>
 </#if>
 
-chmod +x dockerStop.sh
-chmod +x dockerKill.sh
+chmod +x "$SCRIPTPATH"/dockerStop.sh
+chmod +x "$SCRIPTPATH"/dockerKill.sh

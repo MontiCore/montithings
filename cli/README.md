@@ -15,9 +15,10 @@ just as easy as writing `montithings run componentname`.
 ## Usage
 
 ```
-usage: montithings [run [local]|logs [-f]|stop] component
+usage: montithings [run [local|docker]|logs [-f]|stop] component
   run           build and execute component
   run local     build and execute component as distributed application
+  run docke     build and execute component as distributed application using Docker
   logs          show the logs of component instance (cat)
   logs -f       show the logs of component instance (tail -f)
   stop          stop the execution of component (only for distributed)

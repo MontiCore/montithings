@@ -6,4 +6,4 @@ CONTAINER=$(docker run -d --rm \
 --cap-add=NET_ADMIN \<#-- allows simulating network delay-->
 --name ${scriptname} -h ${scriptname} ${scriptname}:latest --name ${scriptname} \
 --brokerHostname ${"$"}{localmqttip} --brokerPort 1883)
-echo docker stop $CONTAINER >> dockerStop.sh
+echo docker stop $CONTAINER >> "$SCRIPTPATH"/dockerStop.sh
