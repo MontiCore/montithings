@@ -518,9 +518,9 @@ public class MTCLI {
       optionalArg(true).
       numberOfArgs(1).
       desc("Set the message broker to be used by the architecture. Possible arguments are:\n"
-        + "-sp off to use a proprietary one,\n"
-        + "-sp mqtt to use Message Queuing Telemetry Transport (Mosquitto MQTT),\n"
-        + "-sp dds to Data Distribution Service (OpenDDS)")
+        + "-b off to use a proprietary one,\n"
+        + "-b mqtt to use Message Queuing Telemetry Transport (Mosquitto MQTT),\n"
+        + "-b dds to Data Distribution Service (OpenDDS)")
       .build()
     );
 

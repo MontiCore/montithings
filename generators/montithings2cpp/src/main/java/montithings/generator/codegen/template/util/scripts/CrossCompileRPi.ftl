@@ -19,10 +19,10 @@ exit 1
 fi
 
 
-docker run --rm dockcross/linux-armv7-lts > ./dockcross
+docker run --rm --platform=linux/amd64 dockcross/linux-armv7-lts > ./dockcross
 chmod +x dockcross
 <#if config.getSplittingMode().toString() == "OFF">
-  ./dockcross bash -c './build.sh ${comp.getPackageName()}'
+  ./dockcross -a --platform=linux/amd64 bash -c './build.sh ${comp.getPackageName()}'
 <#else>
-  ./dockcross bash -c './build.sh ${comp.getFullName()}'
+  ./dockcross -a --platform=linux/amd64 bash -c './build.sh ${comp.getFullName()}'
 </#if>
