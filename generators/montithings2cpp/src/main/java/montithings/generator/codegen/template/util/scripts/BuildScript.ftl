@@ -11,7 +11,12 @@ ${tc.signature("comp","hwcPythonScripts","config", "existsHWC")}
 set -e # Stop on first error
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-COMPNAME=${comp.getFullName()}
+<#if config.getSplittingMode().toString() == "OFF">
+  COMPNAME=${comp.getPackageName()}
+<#else>
+  COMPNAME=${comp.getFullName()}
+</#if>
+
 COMPPATH=$SCRIPTPATH/$COMPNAME
 
 

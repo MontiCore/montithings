@@ -1,4 +1,42 @@
 <!-- (c) https://github.com/MontiCore/monticore -->
+# MontiThings Tool
+The MontiThings tool is an all-in-one solution and makes running MontiThings
+just as easy as writing `montithings run componentname`. 
+
+## Installing
+1. Place the `montithings` file in this project in a folder in your home folder 
+   called `.montithings`. 
+2. Build the CLI using `mvn clean install`
+3. Place the generated JAR (named similar to `cli-7.0.0-SNAPSHOT-cli.jar`) 
+   in your home folder in a folder called `.montithings/jar` (or any other folder 
+   anywhere you like)
+4. Add the `.montithings` folder to your `PATH`. 
+
+## Usage
+
+```
+usage: montithings [run [local|docker]|logs [-f]|stop] component
+  run           build and execute component
+  run local     build and execute component as distributed application
+  run docke     build and execute component as distributed application using Docker
+  logs          show the logs of component instance (cat)
+  logs -f       show the logs of component instance (tail -f)
+  stop          stop the execution of component (only for distributed)
+```
+
+## Example
+
+Try it out with the application under `applications/mqtt-ports`
+
+1. Run the project `montithings run hierarchy.Example`. 
+   The tool will generate code, compile it, and start the application.
+   Stop it by pressing CTRL+C.
+2. Run the project as a distributed application `montithings run local hierarchy.Example`.
+   The tool will generate code, compile it, and start the application in background.
+3. To inspect the logs of the `hierarchy.Example.sink` component, call `montithings logs -f hierarchy.Example.sink`.
+   Stop watching the logs by pressing CTRL+C. 
+4. To stop the backgrounded application, call `montithings stop`.
+
 # MontiThings CLI
 
 The MontiThings CLI can be used to validate, pretty-print, 

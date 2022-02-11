@@ -1,0 +1,128 @@
+#!/bin/bash
+
+programname=$0
+JAR="/Users/kirchhof/.montithings/jar/cli-7.0.0-SNAPSHOT-cli.jar"
+
+function usage {
+  echo "usage: montithings [run [local|docker]|logs [-f]|stop] component"
+  echo "  run           build and execute component"
+  echo "  run local     build and execute component as distributed application"
+  echo "  run docke     build and execute component as distributed application using Docker"
+  echo "  logs          show the logs of component instance (cat)"
+  echo "  logs -f       show the logs of component instance (tail -f)"
+  echo "  stop          stop the execution of component (only for distributed)"
+
+  exit 1
+}
+
+function progress {
+  pid=$!
+
+  spin='┐┤┘┴└├┌┬'
+
+  i=0
+  command_size=${#1}
+  while kill -0 $pid 2>/dev/null
+  do
+    i=$(( (i+1) %8 ))
+    COLUMNS=$(tput cols)
+    available_width=$(expr $COLUMNS - 5 - $command_size)
+    printf "\r\033[K${spin:$i:1} [$1] $(tail -n 1 $2 | awk -v columns=$available_width '{print substr($0,1,columns)}')"
+    sleep .05
+  done
+  wait $pid
+  if [ $? -ne 0 ]
+  then
+    printf "\r\033[K[$1] Failed.\n"
+    printf "$(tail -n 1 $2)\n"
+    rm ${2}
+    exit 1
+  fi
+
+  printf "\r\033[K[$1] Done."
+  echo
+}
+
+if [ "$1" = "run" ]
+then
+  output_file=$(mktemp)
+  if [ "$2" = "local" ] || [ "$2" = "docker" ]
+  then
+    java -jar $JAR --mainComp $3 --splitting local -b mqtt >>"$output_file" 2>>"$output_file" &
+  else
+    java -jar $JAR --mainComp $2 >>"$output_file" 2>>"$output_file" &
+  fi
+  progress "Generating" "$output_file"
+  cd target/generated-sources/
+  if [ "$2" = "docker" ]
+  then
+    ./dockerBuild.sh >>"$output_file" 2>>"$output_file" &
+  else
+    ./build.sh >>"$output_file" 2>>"$output_file" &
+  fi
+  progress "Building" "$output_file"
+  rm ${output_file}
+  cd build/bin/
+  if [ "$2" = "local" ]
+  then
+    ./run.sh
+    echo Components started in background.
+  elif [ "$2" = "docker" ]
+  then
+    cd ../..
+    ./dockerRun.sh
+    echo Components started in background.
+  else
+    ./"$2" -n "$2"
+  fi
+  exit 0
+fi
+
+if [ "$1" = "logs" ]
+then
+  if [ "$2" = "-f" ]
+  then
+    comp_instance_name="$3"
+  else
+    comp_instance_name="$2"
+  fi
+  logfile="target/generated-sources/build/bin/$comp_instance_name.log"
+
+  if [ ! -f "$logfile" ]
+  then
+    echo "Component instance '$comp_instance_name' does not exist."
+    exit 1
+  fi
+
+  if [ "$2" = "-f" ]
+  then
+    tail -f "$logfile"
+  else
+    cat "$logfile"
+  fi
+  exit 0
+fi
+
+if [ "$1" = "stop" ]
+then
+  if [ -f "target/generated-sources/build/bin/kill.sh" ]
+  then
+    ./target/generated-sources/build/bin/kill.sh
+  fi
+
+  if [ -f "target/generated-sources/dockerKill.sh" ]
+  then
+    ./target/generated-sources/dockerKill.sh
+  fi
+
+  if [ ! -f "target/generated-sources/build/bin/kill.sh" ] && [ ! -f "target/generated-sources/dockerKill.sh" ]
+  then
+    echo "Splitting not enabled or project not built."
+    exit 1
+  else
+    exit 0
+  fi
+fi
+
+usage
+exit 1
