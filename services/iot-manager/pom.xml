@@ -126,6 +126,18 @@
       <version>13.0.0</version>
     </dependency>
 
+    <!-- azure iot hub -->
+    <dependency>
+      <groupId>com.microsoft.azure.sdk.iot</groupId>
+      <artifactId>iot-service-client</artifactId>
+      <version>1.30.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.monticore.bs</groupId>
+      <artifactId>monticore-runtime</artifactId>
+      <version>7.0.0</version>
+    </dependency>
 
   </dependencies>
 
