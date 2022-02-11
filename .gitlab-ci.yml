@@ -97,6 +97,27 @@ Docker OpenDDSDCPSInfoRepo:
     - docker build -t $CI_REGISTRY_IMAGE/openddsdcpsinforepo .
     - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
 
+Docker MTTool:
+  <<: *docker_build_definition
+  variables:
+    CHANGES_PATH: 'docker/mttool/**/*'
+  stage: post-test
+  dependencies:
+    - Unit Test JDK 11 #download generated-test-sources
+  script:
+    - docker login -u sebot -p $sebot $CI_REGISTRY
+
+    - export DOCKER_CLI_EXPERIMENTAL=enabled
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx rm builder
+    - docker buildx create --name builder --driver docker-container --use
+    - docker buildx inspect --bootstrap
+
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -f docker/mttool/Dockerfile -t montithings/mttool:latest --push .
+
+    # Running this a second time will just use the cached layers
+    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmake -f docker/mttool/Dockerfile -t $CI_REGISTRY_IMAGE/mttool:latest --push .
+
 Docker Recorder:
   <<: *docker_build_definition
   variables:
