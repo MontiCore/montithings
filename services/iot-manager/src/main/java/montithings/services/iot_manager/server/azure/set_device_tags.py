@@ -1,3 +1,5 @@
+# (c) https://github.com/MontiCore/monticore
+
 from azure.iot.hub import IoTHubRegistryManager
 from azure.iot.hub.models import Twin, TwinProperties
 import config

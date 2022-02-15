@@ -1,3 +1,5 @@
+# (c) https://github.com/MontiCore/monticore
+
 # config file for set_device_tags.py
 
 # the connection-string of the iot-hub, found under 'shared-access-policies'

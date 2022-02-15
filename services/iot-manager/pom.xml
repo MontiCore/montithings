@@ -134,10 +134,10 @@
     </dependency>
 
     <dependency>
-      <groupId>de.monticore.bs</groupId>
+      <groupId>de.monticore</groupId>
       <artifactId>monticore-runtime</artifactId>
-      <version>7.0.0</version>
     </dependency>
+
 
   </dependencies>
 
