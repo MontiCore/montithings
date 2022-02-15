@@ -20,7 +20,14 @@ ${tc.signature("modules", "deploymentInfo", "networkInfo")}
 },
 "runtime": {
 "settings": {
-"minDockerVersion": "v1.25"
+"minDockerVersion": "v1.25",
+"registryCredentials": {
+"myRegistry": {
+"address": "${networkInfo.getDockerRepositoryPrefix()?keep_before("/")}",
+"password": "${networkInfo.getDockerRepositoryPassword()}",
+"username": "${networkInfo.getDockerRepositoryUsername()}"
+}
+}
 },
 "type": "docker"
 },
