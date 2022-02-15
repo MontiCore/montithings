@@ -126,8 +126,20 @@ public class HttpAPIController {
   }
   
   private Object handleSetDockerRegistry(Request req, Response resp) {
-    manager.getNetworkInfo().setDockerRepositoryPrefix(req.body());
-    System.out.println("Set docker registry: "+manager.getNetworkInfo().getDockerRepositoryPrefix());
+    try {
+      String bodyStr = req.body();
+      JsonElement json = JsonParser.parseString(bodyStr);
+      manager.getNetworkInfo().setDockerRepositoryPrefix(json.getAsJsonObject().get("hostname").getAsString());
+      System.out.println("Set docker registry: "+manager.getNetworkInfo().getDockerRepositoryPrefix());
+      manager.getNetworkInfo().setDockerRepositoryUsername(json.getAsJsonObject().get("username").getAsString());
+      System.out.println("Set docker registry username: "+manager.getNetworkInfo().getDockerRepositoryUsername());
+      manager.getNetworkInfo().setDockerRepositoryPassword(json.getAsJsonObject().get("password").getAsString());
+      System.out.println("Set docker registry password: "+manager.getNetworkInfo().getDockerRepositoryPassword());
+    } catch(Exception e) {
+      e.printStackTrace();
+      resp.status(400);
+      return RESPONSE_JSON_FAILED;
+    }
     return RESPONSE_JSON_SUCCESS;
   }
   
