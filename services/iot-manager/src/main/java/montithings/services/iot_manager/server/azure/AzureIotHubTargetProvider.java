@@ -66,7 +66,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
             setup.setTracing(false);
             GeneratorEngine engine = new GeneratorEngine(setup);
             StringBuilderWriter deployment = new StringBuilderWriter();
-            engine.generateNoA("templates/deployment.ftl", deployment,
+            engine.generateNoA("templates/azureDeployment.ftl", deployment,
                     distributionMap.get(deviceID), deplInfo, netInfo);
             try {
                 applyConfigurationContentOnDevice(deviceID, deployment.toString(), iotHubConnectionString);
