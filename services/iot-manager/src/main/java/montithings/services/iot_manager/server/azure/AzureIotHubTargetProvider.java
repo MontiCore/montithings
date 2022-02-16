@@ -118,10 +118,14 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
 
         for (DeployClient client : allClients) {
             if (previousClients.contains(client) && !currentClients.contains(client)) {
+                client.setOnline(false);
                 listener.onClientOffline(client);
+                System.out.println("Client '" + client.getClientID() + "' marked as offline");
             }
             if (!previousClients.contains(client) && currentClients.contains(client)) {
+                client.setOnline(true);
                 listener.onClientOnline(client);
+                System.out.println("Client '" + client.getClientID() + "' marked as online");
             }
         }
         clients = currentClients;
