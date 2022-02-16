@@ -22,15 +22,13 @@ import de.monticore.generating.GeneratorSetup;
 import montithings.services.iot_manager.server.IDeployTargetProvider;
 import montithings.services.iot_manager.server.data.*;
 import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
+import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import org.apache.commons.io.output.StringBuilderWriter;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 public class AzureIotHubTargetProvider implements IDeployTargetProvider {
 
@@ -39,10 +37,14 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
 
     DeviceTwin iotHub;
     boolean initialized = false;
-    private IDeployStatusListener listener;
+    private IDeployStatusListener listener = new VoidDeployStatusListener();
+    private final long providerID;
+    private List<DeployClient> clients = new ArrayList<>();
+    private boolean running = true;
 
 
-    public AzureIotHubTargetProvider(String iotHubConnectionString) {
+    public AzureIotHubTargetProvider(long providerID, String iotHubConnectionString) {
+        this.providerID = providerID;
         this.iotHubConnectionString = iotHubConnectionString;
     }
 
@@ -82,36 +84,61 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
      */
     @Override
     public Collection<DeployClient> getClients() {
-        if (!initialized) {
-            initialize();
-        }
-        ArrayList<DeployClient> clients = new ArrayList<>();
-        try {
-            Query hubQuery = iotHub.queryTwin("SELECT * FROM devices");
-
-            while (hubQuery.hasNext()) {
-                JsonObject deviceTwinJSON = JsonParser.parseString(hubQuery.next().toString()).getAsJsonObject();
-                clients.add(getDeployClientfromObject(deviceTwinJSON));
-            }
-        } catch (IotHubException | IOException e) {
-            e.printStackTrace();
-        }
         return clients;
     }
 
     @Override
     public void initialize() {
         iotHub = new DeviceTwin(iotHubConnectionString);
+        initialized = true;
+
+        // start polling for periodic updates
+        Thread updaterThread = new Thread(this::startPolling);
+        updaterThread.setDaemon(true);
+        updaterThread.start();
     }
 
     @Override
     public void close() throws DeploymentException {
-        //intentionally left empty
+        this.running = false;
     }
 
     @Override
     public void setStatusListener(IDeployStatusListener listener) {
         this.listener = listener;
+    }
+
+    public void refreshClients() {
+        System.out.println("Refresh clients...");
+        List<DeployClient> previousClients = new ArrayList<>(clients);
+        List<DeployClient> currentClients = requestClientsFromAzure();
+        Set<DeployClient> allClients = new HashSet<>(previousClients);
+        allClients.addAll(currentClients);
+
+        for (DeployClient client : allClients) {
+            if (previousClients.contains(client) && !currentClients.contains(client)) {
+                listener.onClientOffline(client);
+            }
+            if (!previousClients.contains(client) && currentClients.contains(client)) {
+                listener.onClientOnline(client);
+            }
+        }
+        clients = currentClients;
+    }
+
+    protected List<DeployClient> requestClientsFromAzure () {
+        List<DeployClient> result = new ArrayList<>();
+        try {
+            Query hubQuery = iotHub.queryTwin("SELECT * FROM devices");
+
+            while (hubQuery.hasNext()) {
+                JsonObject deviceTwinJSON = JsonParser.parseString(hubQuery.next().toString()).getAsJsonObject();
+                result.add(getDeployClientfromObject(deviceTwinJSON));
+            }
+        } catch (IotHubException | IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**
@@ -128,7 +155,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
         String deviceID = hostName + ":" + deviceName;
 
         boolean online = deviceTwinJSON.get("connectionState").getAsString().equals("Connected");
-        long targetProviderID = hostName.hashCode();
+        long targetProviderID = providerID;
         String[] hardware = getHardwareFromDeviceTwin(deviceTwinJSON);
         LocationSpecifier location = getLocationFromDeviceTwin(deviceTwinJSON);
 
@@ -165,7 +192,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
                     locationJson.get("floor").getAsString(),
                     locationJson.get("room").getAsString());
         } catch (NullPointerException e) {
-            return new LocationSpecifier();
+            return new LocationSpecifier("unspecified", "unspecified", "unspecified");
         }
     }
 
@@ -195,5 +222,17 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
         request.setHeaderField("Content-Type", "application/json");
         request.setHeaderField("charset", "utf-8");
         return request;
+    }
+
+    private void startPolling() {
+        while (this.running) {
+            try {
+                refreshClients();
+                Thread.sleep(30_000);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
