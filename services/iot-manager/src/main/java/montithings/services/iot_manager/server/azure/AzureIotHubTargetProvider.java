@@ -69,7 +69,8 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
             engine.generateNoA("templates/azureDeployment.ftl", deployment,
                     distributionMap.get(deviceID), deplInfo, netInfo);
             try {
-                applyConfigurationContentOnDevice(deviceID, deployment.toString(), iotHubConnectionString);
+                String deviceName = AzureIotUtils.getDeviceName(deviceID, iotHubConnectionString);
+                applyConfigurationContentOnDevice(deviceName, deployment.toString(), iotHubConnectionString);
             } catch (IotHubException | IOException e) {
                 System.out.println("ERROR! Deployment failed on device " + deviceID);
                 e.printStackTrace();
@@ -150,9 +151,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
     public DeployClient getDeployClientfromObject(JsonObject deviceTwinJSON) {
 
         String deviceName = deviceTwinJSON.get("deviceId").getAsString();
-        String hostName = iotHubConnectionString.substring(
-                iotHubConnectionString.indexOf("HostName=") + 9, iotHubConnectionString.indexOf(";")); // "HostName=".length() = 9
-        String deviceID = hostName + ":" + deviceName;
+        String deviceID = AzureIotUtils.getDeviceIdentifier(deviceName, iotHubConnectionString);
 
         boolean online = deviceTwinJSON.get("connectionState").getAsString().equals("Connected");
         long targetProviderID = providerID;
