@@ -15,6 +15,8 @@ dependencies {
   implementation "org.yaml:snakeyaml:$snakeyaml_version"
   implementation "com.sparkjava:spark-core:$sparkjava_version"
   implementation "io.kubernetes:client-java:$kubernetes_client_version"
+  implementation "com.microsoft.azure.sdk.iot:iot-service-client:$azure_iot_version"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
   testImplementation "junit:junit:$junit_version"
 }
 

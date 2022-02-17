@@ -72,16 +72,21 @@
       <version>1.2.0</version>
     </dependency>
 
-    <!--<dependency> <groupId>com.github.SWI-Prolog</groupId> <artifactId>packages-jpl</artifactId> 
-      <version>7.6.1</version> </dependency> -->
+    <!-- https://maven.pkg.github.com/swi-prolog/packages-jpl -->
+    <dependency>
+      <groupId>com.github.SWI-Prolog</groupId>
+      <artifactId>packages-jpl</artifactId>
+      <version>7.6.1</version>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/jpl/jpl -->
+    <!--
     <dependency>
       <groupId>jpl</groupId>
       <artifactId>jpl</artifactId>
       <version>7.4.0</version>
     </dependency>
-
+-->
 
     <!-- https://mvnrepository.com/artifact/com.github.java-prolog-connectivity/jpc -->
     <dependency>
@@ -124,6 +129,18 @@
       <groupId>io.kubernetes</groupId>
       <artifactId>client-java</artifactId>
       <version>13.0.0</version>
+    </dependency>
+
+    <!-- azure iot hub -->
+    <dependency>
+      <groupId>com.microsoft.azure.sdk.iot</groupId>
+      <artifactId>iot-service-client</artifactId>
+      <version>1.30.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.monticore</groupId>
+      <artifactId>monticore-runtime</artifactId>
     </dependency>
 
 

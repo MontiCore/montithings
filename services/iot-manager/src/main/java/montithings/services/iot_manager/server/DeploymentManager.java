@@ -166,6 +166,7 @@ public class DeploymentManager implements IDeployStatusListener {
       DistributionSuggestionRequest request = new DistributionSuggestionRequest(targetProvider.getClients(), instanceNames, suggestionIndex, 1);
       
       Map<Distribution, List<Suggestion>> results = calc.computeDistributionSuggestion(request).exceptionally((t) -> {
+        t.printStackTrace();
         return null;
       }).get();
       
