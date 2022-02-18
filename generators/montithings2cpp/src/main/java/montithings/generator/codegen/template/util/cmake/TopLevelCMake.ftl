@@ -13,6 +13,8 @@ cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
 
+add_compile_options(-Wno-psabi)
+
 <#if config.getSplittingMode().toString() == "OFF">
   <#list sensorActuatorPorts as sensorActuatorPort >
     add_subdirectory ("${sensorActuatorPort}")
