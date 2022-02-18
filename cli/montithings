@@ -4,7 +4,7 @@ programname=$0
 JAR="$HOME/.montithings/jar/cli-7.0.0-SNAPSHOT-cli.jar"
 
 function usage {
-  echo "usage: montithings [run [local|docker]|logs [-f]|stop] component"
+  echo "usage: montithings [run [local|docker]|logs [-f]|stop] COMPONENT"
   echo "  run           build and execute component"
   echo "  run local     build and execute component as distributed application"
   echo "  run docke     build and execute component as distributed application using Docker"
@@ -15,11 +15,20 @@ function usage {
   exit 1
 }
 
+function check_tools_available() {
+  which $1 >> /dev/null
+  if [ $? -ne 0 ]
+  then
+    echo "You do not have '$1' installed. Please run MontiThings installer or install '$1' manually."
+    exit 1
+  fi
+}
+
 function progress {
   pid=$!
 
   spin='┐┤┘┴└├┌┬'
-
+#  spin='⣷⣯⣟⡿⢿⣻⣽⣾'
   i=0
   command_size=${#1}
   while kill -0 $pid 2>/dev/null
@@ -42,6 +51,15 @@ function progress {
   printf "\r\033[K[$1] Done."
   echo
 }
+
+check_tools_available java
+check_tools_available cmake
+check_tools_available ninja
+if [ "$1" = "run" ] || [ "$2" = "docker" ]
+then
+  check_tools_available docker
+fi
+
 
 if [ "$1" = "run" ]
 then
@@ -88,6 +106,12 @@ then
   fi
   logfile="target/generated-sources/build/bin/$comp_instance_name.log"
 
+  if [ -f "target/generated-sources/dockerKill.sh" ]
+  then
+    docker logs -f "$comp_instance_name"
+    exit 0
+  fi
+
   if [ ! -f "$logfile" ]
   then
     echo "Component instance '$comp_instance_name' does not exist."
@@ -113,6 +137,8 @@ then
   if [ -f "target/generated-sources/dockerKill.sh" ]
   then
     ./target/generated-sources/dockerKill.sh
+    rm ./target/generated-sources/dockerKill.sh
+    exit 0
   fi
 
   if [ ! -f "target/generated-sources/build/bin/kill.sh" ] && [ ! -f "target/generated-sources/dockerKill.sh" ]
