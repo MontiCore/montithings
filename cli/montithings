@@ -106,6 +106,12 @@ then
   fi
   logfile="target/generated-sources/build/bin/$comp_instance_name.log"
 
+  if [ -f "target/generated-sources/dockerKill.sh" ]
+  then
+    docker logs -f "$comp_instance_name"
+    exit 0
+  fi
+
   if [ ! -f "$logfile" ]
   then
     echo "Component instance '$comp_instance_name' does not exist."
@@ -131,6 +137,8 @@ then
   if [ -f "target/generated-sources/dockerKill.sh" ]
   then
     ./target/generated-sources/dockerKill.sh
+    rm ./target/generated-sources/dockerKill.sh
+    exit 0
   fi
 
   if [ ! -f "target/generated-sources/build/bin/kill.sh" ] && [ ! -f "target/generated-sources/dockerKill.sh" ]
