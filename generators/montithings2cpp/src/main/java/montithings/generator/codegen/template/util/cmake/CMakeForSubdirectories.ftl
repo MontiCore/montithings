@@ -3,6 +3,9 @@ ${tc.signature("subdirectories", "sensorActuatorPorts", "config", "existsHWC")}
 
 cmake_minimum_required (VERSION 3.8)
 project ("MontiThings Application")
+
+add_compile_options(-Wno-psabi)
+
 <#if !(config.getMessageBroker().toString() == "DDS")>
   set(EXCLUDE_DDS 1)
 </#if>
