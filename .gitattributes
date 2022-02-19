@@ -12,3 +12,21 @@
 *.png filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.pptx filter=lfs diff=lfs merge=lfs -text
+
+# Exclude 3rd party libraries from GitHub language statistics
+services/recorder/lib/** linguist-vendored
+services/log-tracing/lib/** linguist-vendored
+services/log-tracing/frontend/public/** linguist-vendored
+services/recorder/lib/** linguist-vendored
+generators/montithings2cpp/src/main/resources/test/gtests/lib/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/cereal/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/cpp-httplib/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/easyloggingpp/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/json/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/nngpp/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/rigtorp/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/sole/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/tclap/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/tl/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/record-and-replay/message-types/** linguist-vendored
+generators/montithings2cpp/src/main/resources/rte/montithings-RTE/logtracing/interface/dds/message-types/** linguist-vendored
