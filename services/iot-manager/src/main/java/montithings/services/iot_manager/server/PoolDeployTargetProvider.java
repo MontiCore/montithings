@@ -77,7 +77,9 @@ public class PoolDeployTargetProvider implements IDeployTargetProvider {
     for(IDeployTargetProvider prov : providers) {
       try {
         prov.close();
-      } catch(DeploymentException e) { }
+      } catch(DeploymentException e) {
+        e.printStackTrace();
+      }
     }
   }
   

@@ -74,9 +74,9 @@ public enum MontiThingsError implements montithings.util.Error {
 
   ;
 
-  protected final String errorCode;
+  private final String errorCode;
 
-  protected final String errorMessage;
+  private final String errorMessage;
 
   MontiThingsError(String errorCode, String errorMessage) {
     assert (errorCode != null);

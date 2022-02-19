@@ -65,6 +65,7 @@ public class MTConfigScopesGenitor extends MTConfigScopesGenitorTOP {
 
   @Override
   public void endVisit(ASTMTConfigUnit node) {
+    // intentionally left empty
   }
 
   /**

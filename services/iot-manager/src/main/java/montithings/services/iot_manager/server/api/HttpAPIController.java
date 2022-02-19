@@ -71,14 +71,12 @@ public class HttpAPIController {
       String strJson = request.body();
       DeploymentConfiguration config = DeploymentConfiguration.fromJson(strJson);
       success = manager.validate(config);
-    } catch(DeploymentException e) {
+    }
+    catch(Throwable e) {
       e.printStackTrace();
       success = false;
-    } catch(Throwable t) {
-      t.printStackTrace();
-      success = false;
     }
-    
+
     response.status(success ? 200 : 409);
     return "";
   }

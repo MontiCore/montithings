@@ -16,8 +16,8 @@ public enum MTConfigError implements mtconfig.util.Error {
   ONLY_ONE_EVERY("0xMTCFG1038", "Port '%s' has multiple 'every' statements. At most one is allowed.")
 ;
 
-  protected final String errorCode;
-  protected final String errorMessage;
+  private final String errorCode;
+  private final String errorMessage;
 
   MTConfigError(String errorCode, String errorMessage) {
     assert (errorCode != null);

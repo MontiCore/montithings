@@ -87,7 +87,9 @@ public class DeploymentManager implements IDeployStatusListener {
       this.currentDeploymentConfig = null;
       this.currentDeploymentInfo = null;
     }
-    catch (DeploymentException e) { }
+    catch (DeploymentException e) {
+      e.printStackTrace();
+    }
   }
   
   /**
@@ -225,7 +227,9 @@ public class DeploymentManager implements IDeployStatusListener {
     try {
       this.terminate();
       this.targetProvider.close();
-    } catch(DeploymentException e) {}
+    } catch(DeploymentException e) {
+      e.printStackTrace();
+    }
     
     // Replace with new one
     this.targetProvider = provider;

@@ -181,6 +181,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
       }
     }
     catch (JsonParseException | IllegalStateException | NullPointerException e) {
+      e.printStackTrace();
       // This client is not properly set up. Thus we'll refuse to use it.
       return null;
     }
@@ -204,6 +205,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
         Thread.sleep(30_000);
       }
       catch (InterruptedException | DeploymentException e) {
+        e.printStackTrace();
       }
     }
   }

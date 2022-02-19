@@ -205,7 +205,9 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
           try {
             apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
           }
-          catch (ApiException e1) { }
+          catch (ApiException e1) {
+            e1.printStackTrace();
+          }
         } else {
           // otherwise deploy instances
           
@@ -243,7 +245,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
           
           try {
             apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
-          } catch(ApiException ex) {
+          } catch(ApiException ignored) {
             // This may fail. Checking whether a deployment already exists with
             // this name and then deleting it would be more expensive.
           }
@@ -252,7 +254,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
             apiApps.createNamespacedDeployment(K8S_NAMESPACE, deployment, null, null, null);
           }
           catch (ApiException e1) {
-            System.out.println(e1.getResponseBody());
+            System.err.println(e1.getResponseBody());
             e1.printStackTrace();
           }
         }

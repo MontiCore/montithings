@@ -42,7 +42,7 @@ public class MontiThingsPrettyPrinter implements MontiThingsHandler {
   }
 
   public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
-    if (list.size() <= 0) {
+    if (list.isEmpty()) {
       return;
     }
     Iterator<T> iterator = list.iterator();

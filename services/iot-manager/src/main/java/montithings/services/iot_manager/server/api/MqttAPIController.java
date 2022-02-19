@@ -129,7 +129,9 @@ public class MqttAPIController implements IDeployStatusListener {
         manager.setDeploymentInfo(deployInfo);
         publishSuccess(TOPIC_SETINFO_RESPONSE, true);
         return;
-      } catch(JsonParseException | ClassCastException | DeploymentException e) {}
+      } catch(JsonParseException | ClassCastException | DeploymentException e) {
+        e.printStackTrace();
+      }
     }
     // This is only executed when the above does not succeed in any way.
     publishSuccess(TOPIC_SETINFO_RESPONSE, false);

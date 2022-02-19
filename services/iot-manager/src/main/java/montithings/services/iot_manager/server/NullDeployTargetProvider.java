@@ -15,7 +15,7 @@ public class NullDeployTargetProvider implements IDeployTargetProvider {
   
   @Override
   public void deploy(Distribution distribution, DeploymentInfo deploymentInfo, NetworkInfo net) throws DeploymentException {
-    
+    // intentionally left empty
   }
   
   @SuppressWarnings("unchecked")
@@ -26,17 +26,17 @@ public class NullDeployTargetProvider implements IDeployTargetProvider {
   
   @Override
   public void setStatusListener(IDeployStatusListener listener) {
-    
+    // intentionally left empty
   }
   
   @Override
   public void initialize() throws DeploymentException {
-    
+    // intentionally left empty
   }
   
   @Override
   public void close() throws DeploymentException {
-    
+    // intentionally left empty
   }
   
 }

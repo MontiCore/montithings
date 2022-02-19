@@ -218,8 +218,8 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
       }
       mqttClient.close();
       this.active = false;
-    } catch(MqttException e) {
-      // We can ignore this, since the client is already dead if this failes.
+    } catch(MqttException ignored) {
+      // We can ignore this, since the client is already dead if this fails.
     }
   }
   
