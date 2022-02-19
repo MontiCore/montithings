@@ -142,7 +142,7 @@ public class CDLangExtensionTool {
     }
     catch (IOException e) {
       Log.error(
-        String.format(CDLangExtensionError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        String.format(CDLangExtensionError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory),
         e);
     }
     return Collections.emptySet();
@@ -181,8 +181,7 @@ public class CDLangExtensionTool {
     }
     catch (IOException e) {
       Log.error(
-        String.format(CDLangExtensionError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
-        e);
+        String.format(CDLangExtensionError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory), e);
     }
     return Collections.emptySet();
   }

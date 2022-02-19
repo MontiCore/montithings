@@ -17,13 +17,14 @@ import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
+import de.se_rwth.commons.logging.Log;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
 import montithings.generator.codegen.ConfigParams;
 import montithings.generator.helper.ComponentHelper;
+import montithings.generator.helper.TypesHelper;
 import montithings.generator.helper.TypesPrinter;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
-import montithings.generator.helper.TypesHelper;
 import montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import static montithings.generator.helper.TypesHelper.getConversionFactorFromSourceAndTarget;
 import static montithings.generator.helper.TypesHelper.isSIUnitPort;
 
+@SuppressWarnings("unused")
 public class Utils {
 
   private static List<String> packages;
@@ -46,7 +48,7 @@ public class Utils {
     String filename = comp.getFullName();
     int indexComponentName = filename.length() - comp.getName().length();
     filename = filename.substring(0, indexComponentName);
-    filename = filename.replaceAll("\\.", "/");
+    filename = filename.replace(".", "/");
     filename += "Deploy" + comp.getName() + ".cpp";
     return filename;
   }
@@ -62,7 +64,9 @@ public class Utils {
       if (type instanceof SymTypeOfNumericWithSIUnit){
         type = ((SymTypeOfNumericWithSIUnit) type).getNumericType();
       }
-      s.append(TypesHelper.java2cppTypeString(type.print()) + " " + param.getName());
+      s.append(TypesHelper.java2cppTypeString(type.print()));
+      s.append(" ");
+      s.append(param.getName());
       if (i != comp.getParameters().size()) {
         s.append(',');
       }
@@ -78,30 +82,32 @@ public class Utils {
       "0xMT2000 Number of parameters does not match number of arguments for instance ",
       compInstance.getName());
 
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (int i = 0 ; i < params.size() ; i++) {
-      result += "config[\"" + params.get(i).getName() + "\"]"
-        + " = dataToJson (" + paramValues.get(i) + ");\n";
+      result.append("config[\"").append(params.get(i).getName()).append("\"]")
+        .append(" = dataToJson (").append(paramValues.get(i)).append(");\n");
     }
-    return result;
+    return result.toString();
   }
 
   public static String printSIParameters(ComponentTypeSymbol comp, ComponentInstanceSymbol compInstance){
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (PortSymbol ps : compInstance.getType().getAllPorts()){
       if (isSIUnitPort(ps) && ps.isIncoming()){
         for (ASTConnector c : comp.getAstNode().getConnectors()){
           for (ASTPortAccess portAccess : c.getTargetList()){
             Optional<PortSymbol> ops = ComponentHelper.getPortSymbolFromPortAccess(portAccess);
             if(ops.isPresent() && ops.get().equals(ps)){
-              result += "config[\"" + ps.getName() + "ConversionFactor\"]" + " = dataToJson (" +
-                getConversionFactorFromSourceAndTarget(c.getSource(), portAccess) + ");\n";
+              result.append("config[\"").append(ps.getName()).append("ConversionFactor\"]")
+                .append(" = dataToJson (")
+                .append(getConversionFactorFromSourceAndTarget(c.getSource(), portAccess))
+                .append(");\n");
             }
           }
         }
       }
     }
-    return result;
+    return result.toString();
   }
 
   /**
@@ -110,13 +116,16 @@ public class Utils {
   public static String printImports(ComponentTypeSymbol comp) {
     StringBuilder s = new StringBuilder();
     for (ImportStatement _import : ComponentHelper.getImports(comp)) {
-      s.append("import " + _import.getStatement());
+      s.append("import ").append(_import.getStatement());
       if (_import.isStar()) {
         s.append(".*");
       }
     }
     for (ComponentTypeSymbol inner : comp.getInnerComponents()) {
-      s.append("import " + printPackageWithoutKeyWordAndSemicolon(inner) + "." + inner.getName());
+      s.append("import ");
+      s.append(printPackageWithoutKeyWordAndSemicolon(inner));
+      s.append(".");
+      s.append(inner.getName());
     }
     return s.toString();
   }
@@ -258,11 +267,8 @@ public class Utils {
    * then this redundant method can be replaced with comp.hasTypeParameter().
    */
   public static boolean hasTypeParameter(ComponentTypeSymbol comp) {
-    if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
-      !((ASTGenericComponentHead) comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
-      return true;
-    }
-    return false;
+    return comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
+      !((ASTGenericComponentHead) comp.getAstNode().getHead()).isEmptyArcTypeParameters();
   }
 
   /*TODO Check why not all typeParameters exist in ComponentTypeSymbols,
@@ -283,13 +289,16 @@ public class Utils {
    */
   public static String printPackage(ComponentTypeSymbol comp) {
     StringBuilder s = new StringBuilder();
-    if (comp.isInnerComponent()) {
-      s.append(
-        "package " + printPackageWithoutKeyWordAndSemicolon(comp.getOuterComponent().get()) + "."
-          + comp.getOuterComponent().get().getName() + "gen");
+    if (comp.isInnerComponent() && comp.getOuterComponent().isPresent()) {
+      s.append("package ");
+      s.append(printPackageWithoutKeyWordAndSemicolon(comp.getOuterComponent().get()));
+      s.append(".");
+      s.append(comp.getOuterComponent().get().getName());
+      s.append("gen");
     }
     else {
-      s.append("package " + comp.getPackageName());
+      s.append("package ");
+      s.append(comp.getPackageName());
     }
     return s.toString();
   }
@@ -299,7 +308,7 @@ public class Utils {
    */
   public static String printPackageWithoutKeyWordAndSemicolon(
     arcbasis._symboltable.ComponentTypeSymbol comp) {
-    if (comp.isInnerComponent()) {
+    if (comp.isInnerComponent() && comp.getOuterComponent().isPresent()) {
       return printPackageWithoutKeyWordAndSemicolon(comp.getOuterComponent().get()) + "." + comp
         .getOuterComponent().get().getName() + "gen";
     }
@@ -324,7 +333,9 @@ public class Utils {
     packages = packages.stream().filter(x -> !x.isEmpty()).collect(Collectors.toList());
     s.append("namespace montithings {\n");
     for (String pack : packages) {
-      s.append("namespace " + pack + " {\n");
+      s.append("namespace ");
+      s.append(pack);
+      s.append(" {\n");
     }
     return s.toString();
   }
@@ -334,7 +345,8 @@ public class Utils {
     List<String> packages = ComponentHelper.getPackages(comp);
     packages = packages.stream().filter(x -> !x.isEmpty()).collect(Collectors.toList());
     for (int i = 0; i < packages.size(); i++) {
-      s.append("} // namespace " + packages.get(packages.size() - (i + 1)));
+      s.append("} // namespace ");
+      s.append(packages.get(packages.size() - (i + 1)));
       s.append("\n");
     }
     s.append("} // namespace montithings\n");
@@ -344,20 +356,23 @@ public class Utils {
   public static String printGetPort(ASTPortAccess access) {
     StringBuilder s = new StringBuilder();
     if (access.isPresentComponent()) {
-      s.append(access.getComponent() + ".");
+      s.append(access.getComponent()).append(".");
     }
     else {
       s.append("this->");
     }
     s.append("getInterface ()->");
-    s.append("getPort" + StringUtils.capitalize(access.getPort()) + "()");
+    s.append("getPort");
+    s.append(StringUtils.capitalize(access.getPort()));
+    s.append("()");
     return s.toString();
   }
 
   public static String printComponentPrefix(ASTPortAccess access){
     StringBuilder s = new StringBuilder();
     if (access.isPresentComponent()) {
-      s.append(access.getComponent() + ".");
+      s.append(access.getComponent());
+      s.append(".");
     }
     else {
       s.append("this->");
@@ -389,20 +404,22 @@ public class Utils {
     HashSet<ASTCDEImportStatement> includeStatements = new HashSet<>();
     List<ImportStatement> imports = ComponentHelper.getImports(comp);
 
-    String escape = "";
+    StringBuilder escape = new StringBuilder();
     int escapeCount = 1 + StringUtils.countMatches(comp.getPackageName(), '.');
     for (int i = 0; i < escapeCount; i++) {
-      escape += "../";
+      escape.append("../");
     }
 
     // Generated interfaces for dynamics
     if (!comp.getPorts().isEmpty()) {
-      String componentImportStatement = getComponentInterfaceImport(comp.getName(), escape);
-      s.append(componentImportStatement + "\n");
+      String componentImportStatement = getComponentInterfaceImport(comp.getName(),
+        escape.toString());
+      s.append(componentImportStatement).append("\n");
 
       for (String interfaceName : ComponentHelper.getInterfaceClassNames(comp, false)) {
-        String interfaceImportStatement = getComponentInterfaceImport(interfaceName, escape);
-        s.append(interfaceImportStatement + "\n");
+        String interfaceImportStatement = getComponentInterfaceImport(interfaceName,
+          escape.toString());
+        s.append(interfaceImportStatement).append("\n");
       }
     }
 
@@ -425,7 +442,7 @@ public class Utils {
         + imp.getStatement().replaceAll("\\.", "/")
         + (imp.isStar() ? "/Package.h" : ".h")
         + "\"";
-      s.append(importStatement + "\n");
+      s.append(importStatement).append("\n");
     }
 
 
@@ -447,10 +464,10 @@ public class Utils {
       }
     }
     for (String include : portIncludes) {
-      s.append(include + "\n");
+      s.append(include).append("\n");
     }
 
-    s.append(printIncludes(escape, Lists.newArrayList(includeStatements)));
+    s.append(printIncludes(escape.toString(), Lists.newArrayList(includeStatements)));
     return s.toString();
   }
 
@@ -464,7 +481,7 @@ public class Utils {
 
   public static String printIncludes(ComponentTypeSymbol comp, String compname,
     ConfigParams config) {
-    Set<String> compIncludes = new HashSet<String>();
+    Set<String> compIncludes = new HashSet<>();
     for (ComponentInstanceSymbol subcomponent : comp.getSubComponents()) {
       if (!getGenericParameters(comp).contains(subcomponent.getGenericType().getName())) {
         boolean isInner = subcomponent.getType().isInnerComponent();
@@ -476,9 +493,6 @@ public class Utils {
             + ".h\"");
         } else {
           if(ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
-            /*compIncludes.add("#include <"
-                + subcomponent.getType().getFullName().replaceAll("\\.", "/")
-                + ".h>");*/
             compIncludes.add("#include <"
                 + subcomponent.getType().getName().replaceAll("\\.", "/")
                 + ".h>");
@@ -492,47 +506,53 @@ public class Utils {
     }
     StringBuilder s = new StringBuilder();
     for (String include : compIncludes) {
-      s.append(include + "\n");
+      s.append(include).append("\n");
     }
-    s.append("#include \"" + compname + "Input.h\"\n");
-    s.append("#include \"" + compname + "Result.h\"\n");
+    s.append("#include \"").append(compname).append("Input.h\"\n");
+    s.append("#include \"").append(compname).append("Result.h\"\n");
     return s.toString();
   }
 
   public static String escapePackage(List<String> packageName) {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (String ignored : packageName) {
-      result += "../";
+      result.append("../");
     }
-    return result;
+    return result.toString();
   }
 
   public static String printIncludes(String prefix, List<ASTCDEImportStatement> imports) {
-    HashSet<String> portIncludes = new HashSet<String>();
+    HashSet<String> portIncludes = new HashSet<>();
     for (ASTCDEImportStatement importStatement : imports) {
       String portPackage = importStatement.getImportSource().toString();
       portIncludes.add("#include " + portPackage);
-      portIncludes.add("#include \"" + prefix + printCDType(importStatement).replaceFirst("montithings::", "").replaceAll("::", "/") + ".h\"");
+      portIncludes.add("#include \"" + prefix + printCDType(importStatement)
+        .replaceFirst("montithings::", "")
+        .replace("::", "/")
+        + ".h\"");
     }
     StringBuilder s = new StringBuilder();
     for (String include : portIncludes) {
-      s.append(include + "\n");
+      s.append(include).append("\n");
     }
     return s.toString();
   }
 
   public static String printCDType(ASTCDEImportStatement importStatement) {
-    StringBuilder namespace = new StringBuilder("montithings::");
-    String importType = importStatement.getSymbol().getEnclosingScope()
-      .resolveType(importStatement.getCdType().getQName()).get()
-      .getFullName()
-      .replaceAll("\\.", "::");
+    String namespace = "montithings::";
+    Optional<TypeSymbol> ts = importStatement.getSymbol().getEnclosingScope()
+        .resolveType(importStatement.getCdType().getQName());
+    if (!ts.isPresent()) {
+      System.err.println(Arrays.toString(new Throwable().getStackTrace()));
+      Log.error("CDType '" + importStatement.getCdType().getQName() + "' not present");
+      System.exit(-1); // unreachable, but makes the static analyzer happy
+    }
+    String importType = ts.get().getFullName().replace(".", "::");
     return namespace + importType;
   }
 
   public static String printPackageNamespace(ComponentTypeSymbol comp,
     ComponentInstanceSymbol subcomp) {
-    // TODO: getTypeInfo statt getType hat früher hier Generics aufgelöst
     ComponentTypeSymbol subcomponentType = subcomp.getType();
     String fullNamespaceSubcomponent = ComponentHelper
       .printPackageNamespaceForComponent(subcomponentType);

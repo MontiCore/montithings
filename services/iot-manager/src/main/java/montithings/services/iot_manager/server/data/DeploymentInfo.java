@@ -1,13 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data;
 
-import java.util.LinkedList;
-import java.util.List;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import montithings.services.iot_manager.server.exception.DeploymentException;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class DeploymentInfo {
   

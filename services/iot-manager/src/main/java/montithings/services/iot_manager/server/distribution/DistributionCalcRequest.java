@@ -1,12 +1,11 @@
 package montithings.services.iot_manager.server.distribution;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import montithings.services.iot_manager.server.data.DeployClient;
 import montithings.services.iot_manager.server.data.Distribution;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
 
 public class DistributionCalcRequest {
   

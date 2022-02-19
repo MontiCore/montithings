@@ -1,9 +1,15 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import montithings.services.iot_manager.server.Utils;
+import montithings.services.iot_manager.server.data.*;
+import montithings.services.iot_manager.server.distribution.*;
+import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
+import montithings.services.iot_manager.server.distribution.config.DockerComposeConfig;
+import montithings.services.iot_manager.server.distribution.config.DockerComposeService;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -14,26 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.junit.Test;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import montithings.services.iot_manager.server.Utils;
-import montithings.services.iot_manager.server.data.DeployClient;
-import montithings.services.iot_manager.server.data.DeploymentConfiguration;
-import montithings.services.iot_manager.server.data.LocationSpecifier;
-import montithings.services.iot_manager.server.data.DeploymentInfo;
-import montithings.services.iot_manager.server.data.Distribution;
-import montithings.services.iot_manager.server.data.NetworkInfo;
-import montithings.services.iot_manager.server.distribution.DefaultDistributionCalculator;
-import montithings.services.iot_manager.server.distribution.DistributionCalcRequest;
-import montithings.services.iot_manager.server.distribution.IDistributionCalculator;
-import montithings.services.iot_manager.server.distribution.IPrologGenerator;
-import montithings.services.iot_manager.server.distribution.RestPrologGenerator;
-import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
-import montithings.services.iot_manager.server.distribution.config.DockerComposeConfig;
-import montithings.services.iot_manager.server.distribution.config.DockerComposeService;
+import static org.junit.Assert.*;
 
 public class TestDistribution {
   

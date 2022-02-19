@@ -1,0 +1,52 @@
+version = 1
+
+exclude_patterns = [
+  "services/recorder/lib/**",
+  "services/log-tracing/lib/**",
+  "services/log-tracing/frontend/public/**",
+  "services/recorder/lib/**",
+  "generators/montithings2cpp/src/main/resources/test/gtests/lib/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/cereal/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/cpp-httplib/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/easyloggingpp/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/json/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/nngpp/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/rigtorp/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/sole/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/tclap/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/tl/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/record-and-replay/message-types/**",
+  "generators/montithings2cpp/src/main/resources/rte/montithings-RTE/logtracing/interface/dds/message-types/**",
+  "**/src/test/**",
+  "**/src/integration-test/**",
+  "**/src/acceptance-test/**",
+  "docs/**"
+]
+
+[[analyzers]]
+name = "java"
+enabled = true
+
+  [analyzers.meta]
+  runtime_version = "8"
+
+[[analyzers]]
+name = "shell"
+enabled = true
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  plugins = [
+    "vue",
+    "angular"
+  ]
+
+[[analyzers]]
+name = "python"
+enabled = true
+
+  [analyzers.meta]
+  runtime_version = "3.x.x"

@@ -101,7 +101,7 @@ public class TypesPrinter {
    * by dots, to C++ type names, where name parts are separated by double colons
    *
    * @param typeSymbol the type whose FQN shall be returned
-   * @param comp
+   * @param comp component type
    * @return FQN of typeSymbol in C++ notation with double colon separators
    */
   public static String convertMontiCoreTypeNameToCppFQN(TypeSymbol typeSymbol, ComponentTypeSymbol comp) {
@@ -136,31 +136,31 @@ public class TypesPrinter {
   }
 
   public static String printConstructorArguments(ComponentTypeSymbol comp) {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter();
     List<ASTArcParameter> parameters = comp.getAstNode().getHead().getArcParameterList();
 
     for (int i = 0; i < parameters.size(); i++) {
       ASTArcParameter param = parameters.get(i);
-      result += java2cppTypeString(printNumericType(param.getSymbol().getType()));
-      ;
-      result += " ";
-      result += param.getName();
+      result.append(java2cppTypeString(printNumericType(param.getSymbol().getType())));
+
+      result.append(" ");
+      result.append(param.getName());
       if (param.isPresentDefault()) {
-        result += " = ";
+        result.append(" = ");
         if (param.getSymbol().getType() instanceof SymTypeOfNumericWithSIUnit) {
-          result += Utils.printSIExpression(param.getDefault(), param.getSymbol().getType());
+          result.append(Utils.printSIExpression(param.getDefault(), param.getSymbol().getType()));
         }
         else {
-          result += printer.prettyprint(param.getDefault());
+          result.append(printer.prettyprint(param.getDefault()));
         }
       }
       if (i < parameters.size() - 1) {
-        result += ", ";
+        result.append(", ");
       }
     }
 
-    return result;
+    return result.toString();
   }
 
   public static String printTypeArguments(List<TypeVarSymbol> types) {
@@ -187,11 +187,10 @@ public class TypesPrinter {
    */
   public static String printActualTypeArguments(List<ASTMCTypeArgument> typeArguments) {
     if (typeArguments.size() > 0) {
-      String result = "<" +
+      return "<" +
         typeArguments.stream().map(TypesPrinter::printTypeArgumentIterate)
           .collect(Collectors.joining(", ")) +
         ">";
-      return result;
     }
     return "";
   }

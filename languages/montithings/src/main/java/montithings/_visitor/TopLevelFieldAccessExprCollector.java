@@ -5,8 +5,8 @@ import de.monticore.expressions.commonexpressions._visitor.CommonExpressionsHand
 import de.monticore.expressions.commonexpressions._visitor.CommonExpressionsTraverser;
 import de.monticore.expressions.commonexpressions._visitor.CommonExpressionsVisitor2;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TopLevelFieldAccessExprCollector implements CommonExpressionsVisitor2, CommonExpressionsHandler {
 

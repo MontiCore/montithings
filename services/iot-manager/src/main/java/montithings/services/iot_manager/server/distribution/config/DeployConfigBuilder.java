@@ -4,7 +4,6 @@ package montithings.services.iot_manager.server.distribution.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 import montithings.services.iot_manager.server.data.InstanceInfo;
 import montithings.services.iot_manager.server.data.constraint.Constraint;

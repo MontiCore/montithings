@@ -1,18 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.development.server.prolog;
 
+import org.jpl7.*;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.jpl7.Atom;
-import org.jpl7.Compound;
-import org.jpl7.JPL;
-import org.jpl7.Query;
-import org.jpl7.Term;
-import org.jpl7.Util;
-import org.jpl7.Variable;
 
 public class PrologTestNative {
   public static void main(String[] args) {

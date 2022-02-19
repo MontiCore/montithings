@@ -194,7 +194,7 @@ public abstract class BasicTransformations {
    * @param qName        Type name
    * @param instanceName Instance name
    * @param args         Instance arguments
-   * @return
+   * @return component instantiation
    */
   protected ASTComponentInstantiation addSubComponentInstantiation(ASTMACompilationUnit comp,
     ASTMCQualifiedName qName, String instanceName, ASTArguments args) {

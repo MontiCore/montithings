@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.prolog_generator;
 
-import de.monticore.lang.json._ast.ASTJSONNull;
 import de.monticore.lang.json._ast.ASTJSONNumber;
 import de.monticore.lang.json._ast.ASTJSONString;
 import de.monticore.lang.json._ast.ASTJSONValue;

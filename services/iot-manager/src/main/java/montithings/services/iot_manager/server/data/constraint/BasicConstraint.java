@@ -1,17 +1,16 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data.constraint;
 
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
 import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
 import montithings.services.iot_manager.server.exception.DeploymentException;
+
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 public class BasicConstraint implements Constraint {
   

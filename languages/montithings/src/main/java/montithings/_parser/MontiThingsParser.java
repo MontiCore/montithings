@@ -6,7 +6,6 @@ import com.google.common.io.Files;
 import de.se_rwth.commons.Joiners;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
-import static com.google.common.collect.Iterables.transform;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._parser.MontiArcParser;
@@ -17,6 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static com.google.common.collect.Iterables.transform;
 
 /**
  * Copy-Paste from MontiArcParser that uses MontiThingsParserTOP instead of MontiArcParserTOP
@@ -91,9 +94,12 @@ public class MontiThingsParser extends MontiThingsParserTOP {
 
   protected String constructQualifiedName(Iterable<String> parts) {
     return Joiners.DOT.join(
-      transform(transform(parts,
-          StringTransformations.TRIM_WHITESPACE),
-        StringTransformations.TRIM_DOT));
+      StreamSupport.stream(parts.spliterator(), false)
+        .map(StringTransformations.TRIM_WHITESPACE)
+        .collect(Collectors.toList()).stream()
+        .map(StringTransformations.TRIM_DOT)
+        .collect(Collectors.toList())
+    );
   }
 
 }

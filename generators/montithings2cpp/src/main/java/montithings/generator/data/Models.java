@@ -4,7 +4,6 @@ package montithings.generator.data;
 import bindings.BindingsTool;
 import cdlangextension.CDLangExtensionTool;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.cd4analysis._symboltable.ICD4AnalysisGlobalScope;
 import montiarc.util.Modelfinder;
 import montithings.MontiThingsTool;
 import mtconfig.MTConfigTool;

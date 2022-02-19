@@ -1,6 +1,18 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.genesis;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import montithings.services.iot_manager.server.IDeployTargetProvider;
+import montithings.services.iot_manager.server.data.*;
+import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
+import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
+import montithings.services.iot_manager.server.exception.DeploymentException;
+import montithings.services.iot_manager.server.util.MontiThingsUtil;
+import okhttp3.*;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -9,28 +21,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import montithings.services.iot_manager.server.IDeployTargetProvider;
-import montithings.services.iot_manager.server.data.DeployClient;
-import montithings.services.iot_manager.server.data.DeploymentInfo;
-import montithings.services.iot_manager.server.data.Distribution;
-import montithings.services.iot_manager.server.data.InstanceInfo;
-import montithings.services.iot_manager.server.data.LocationSpecifier;
-import montithings.services.iot_manager.server.data.NetworkInfo;
-import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
-import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
-import montithings.services.iot_manager.server.exception.DeploymentException;
-import montithings.services.iot_manager.server.util.MontiThingsUtil;
 
 public class GenesisDeployTargetProvider implements IDeployTargetProvider {
   
@@ -181,6 +171,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
       }
     }
     catch (JsonParseException | IllegalStateException | NullPointerException e) {
+      e.printStackTrace();
       // This client is not properly set up. Thus we'll refuse to use it.
       return null;
     }
@@ -204,6 +195,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
         Thread.sleep(30_000);
       }
       catch (InterruptedException | DeploymentException e) {
+        e.printStackTrace();
       }
     }
   }

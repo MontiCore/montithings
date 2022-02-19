@@ -20,8 +20,7 @@ public class PortExtensionsPrettyPrinter implements PortExtensionsHandler {
   protected IndentPrinter printer;
 
   public PortExtensionsPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public PortExtensionsPrettyPrinter(@NotNull IndentPrinter printer) {
@@ -45,7 +44,7 @@ public class PortExtensionsPrettyPrinter implements PortExtensionsHandler {
   }
 
   public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
-    if (list.size() <= 0) {
+    if (list.isEmpty()) {
       return;
     }
     Iterator<T> iterator = list.iterator();

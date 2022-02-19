@@ -4,7 +4,6 @@ package montithings.cocos;
 import arcbasis._ast.ASTArcElement;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
-import com.google.common.collect.FluentIterable;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTBehavior;
@@ -15,6 +14,8 @@ import montithings._visitor.FindIncomingPorts;
 import montithings.util.MontiThingsError;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Checks that ports are used correctly in behavior blocks, i.e. that
@@ -30,8 +31,9 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
       List<PortSymbol> incomingPorts = node.getSymbol().getAllIncomingPorts();
       List<PortSymbol> unusedIncomingPorts = node.getSymbol().getAllIncomingPorts();
       List<Set<PortSymbol>> setsOfPorts = new ArrayList<>();
-      for (ASTInitBehavior initBehavior : elementsOf(node.getSymbol()).filter(ASTInitBehavior.class)
-              .filter(e -> !e.isEmptyNames()).toList()) {
+      for (ASTInitBehavior initBehavior : elementsOf(node.getSymbol()).filter(
+          ASTInitBehavior.class::isInstance).map(ASTInitBehavior.class::cast)
+        .filter(e -> !e.isEmptyNames()).collect(Collectors.toList())) {
         Set<PortSymbol> portsInBehavior = getReferencedPorts(initBehavior.getMCJavaBlock());
         for (PortSymbol portSymbolInBehavior : portsInBehavior) {
           boolean found = false;
@@ -54,8 +56,8 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
           }
         }
       }
-      for (ASTBehavior behavior : elementsOf(node.getSymbol()).filter(ASTBehavior.class)
-        .filter(e -> !e.isEmptyNames()).toList()) {
+      for (ASTBehavior behavior : elementsOf(node.getSymbol()).filter(ASTBehavior.class::isInstance)
+        .map(ASTBehavior.class::cast).filter(e -> !e.isEmptyNames()).collect(Collectors.toList())) {
         Set<PortSymbol> portsInBehavior = getReferencedPorts(behavior.getMCJavaBlock());
         for (PortSymbol portSymbolInBehavior : portsInBehavior) {
           boolean found = false;
@@ -127,8 +129,8 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
     }
   }
 
-  public static FluentIterable<ASTArcElement> elementsOf(ComponentTypeSymbol comp) {
-    return FluentIterable.from(comp.getAstNode().getBody().getArcElementList());
+  public static Stream<ASTArcElement> elementsOf(ComponentTypeSymbol comp) {
+    return comp.getAstNode().getBody().getArcElementList().stream();
   }
 
   protected Set<PortSymbol> getReferencedPorts(ASTMCJavaBlock block) {
@@ -138,12 +140,16 @@ public class PortsInBehaviorAreUsedCorrectly implements MontiThingsASTMTComponen
   }
 
   protected boolean nonPortSpecificBehaviorExists(ComponentTypeSymbol comp) {
-    return !(elementsOf(comp).filter(ASTBehavior.class)
-      .filter(e -> e.isEmptyNames()).toList().isEmpty());
+    return elementsOf(comp)
+      .filter(ASTBehavior.class::isInstance)
+      .map(ASTBehavior.class::cast)
+      .anyMatch(ASTBehavior::isEmptyNames);
   }
 
   protected boolean portSpecificBehaviorExists(ComponentTypeSymbol comp) {
-    return !(elementsOf(comp).filter(ASTBehavior.class)
-      .filter(e -> !e.isEmptyNames()).toList().isEmpty());
+    return elementsOf(comp)
+      .filter(ASTBehavior.class::isInstance)
+      .map(ASTBehavior.class::cast)
+      .anyMatch(e -> !e.isEmptyNames());
   }
 }

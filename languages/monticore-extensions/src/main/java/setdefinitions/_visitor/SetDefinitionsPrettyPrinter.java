@@ -19,8 +19,7 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   protected IndentPrinter printer;
 
   public SetDefinitionsPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public SetDefinitionsPrettyPrinter(@NotNull IndentPrinter printer) {
@@ -44,7 +43,7 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   }
 
   public <T extends ASTExpressionsBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
-    if (list.size() <= 0) {
+    if (list.isEmpty()) {
       return;
     }
     Iterator<T> iterator = list.iterator();
@@ -56,7 +55,7 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   }
 
   public <T extends ASTSetDefinitionsNode> void acceptSeperatedSetList(@NotNull List<T> list) {
-    if (list.size() <= 0) {
+    if (list.isEmpty()) {
       return;
     }
     Iterator<T> iterator = list.iterator();

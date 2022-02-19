@@ -59,11 +59,8 @@ public class GeneratorHelper {
     if(!(config.getMtConfigScope()==null)) {
       portTemplateTagSymbol = config.getMtConfigScope().resolvePortTemplateTag(config.getTargetPlatform().name(), port);
     }
-    if(portTemplateTagSymbol.isPresent()&&portTemplateTagSymbol.get().isPresentAstNode()&&!portTemplateTagSymbol.get().getAstNode().isEmptySinglePortTags()){
-      return true;
-    }
-
-    return false;
+    return portTemplateTagSymbol.isPresent() && portTemplateTagSymbol.get().isPresentAstNode()
+      && !portTemplateTagSymbol.get().getAstNode().isEmptySinglePortTags();
   }
 
   public static Optional<String> getMqttSensorActuatorName(PortSymbol port, ConfigParams config) {

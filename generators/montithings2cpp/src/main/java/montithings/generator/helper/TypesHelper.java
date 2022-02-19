@@ -137,23 +137,18 @@ public class TypesHelper {
 
   public static boolean isSIUnitPort(ASTPortAccess portAccess) {
     Optional<PortSymbol> ps = getPortSymbolFromPortAccess(portAccess);
-    if (ps.isPresent()) {
-      return isSIUnitPort(ps.get());
-    }
-    return false;
+    return ps.filter(TypesHelper::isSIUnitPort).isPresent();
   }
 
   public static boolean isSIUnitPort(PortSymbol portSymbol) {
-    if (portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit) {
-      return true;
-    }
-    return false;
+    return portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit;
   }
 
   public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance) {
     ASTNode node = instance.getEnclosingScope().getSpanningSymbol().getAstNode();
     if (!(node instanceof ASTComponentType)) {
       Log.error("0xMT0792 instance is not spanned by ASTComponentType.");
+      System.exit(-1); // unreachable, but silences static analyzer
     }
     Optional<ASTComponentInstantiation> result = ((ASTComponentType) node)
       .getSubComponentInstantiations()
@@ -161,12 +156,13 @@ public class TypesHelper {
       .findFirst();
     if (!result.isPresent()) {
       Log.error("0xMT0791 instance not found.");
+      System.exit(-1); // unreachable, but silences static analyzer
     }
     return result.get();
   }
 
   public static List<String> getSIUnitPortNames(ComponentTypeSymbol comp) {
-    List names = new ArrayList();
+    List<String> names = new ArrayList<>();
     for (PortSymbol ps : comp.getAllIncomingPorts()) {
       if (ps.getType() instanceof SymTypeOfNumericWithSIUnit) {
         names.add(ps.getName());
@@ -181,7 +177,7 @@ public class TypesHelper {
    */
   public static double getConversionFactor(ASTSIUnit source, ASTSIUnit target){
     Unit sourceUnit = UnitFactory.createUnit(source);
-    Unit targetUnit =  UnitFactory.createUnit(target);
+    Unit targetUnit = UnitFactory.createUnit(target);
     return getConversionFactor(sourceUnit, targetUnit);
   }
 
@@ -190,8 +186,7 @@ public class TypesHelper {
    * to target
    */
   public static double getConversionFactor(Unit sourceUnit, Unit targetUnit){
-    double conversionFactor = Converter.convert(1, sourceUnit, targetUnit);
-    return conversionFactor;
+    return Converter.convert(1, sourceUnit, targetUnit);
   }
 
   // endregion

@@ -33,7 +33,7 @@ public class ConfigParams {
     DSA_LAB("DSA_LAB"), // connected cars lab, based on docker.dsa-ac.de:20001/dev-l06-customer
     RASPBERRY("RASPBERRY"); // Raspberry Pi + Grove Base HAT
 
-    String name;
+    final String name;
 
     TargetPlatform(String name) {
       this.name = name;
@@ -59,7 +59,7 @@ public class ConfigParams {
     LOCAL("LOCAL"),
     DISTRIBUTED("DISTRIBUTED");
 
-    String name;
+    final String name;
 
     SplittingMode(String name) {
       this.name = name;
@@ -79,7 +79,7 @@ public class ConfigParams {
     MQTT("MQTT"),
     DDS("DDS");
 
-    String name;
+    final String name;
 
     MessageBroker(String name) {
       this.name = name;
@@ -98,7 +98,7 @@ public class ConfigParams {
     OFF("OFF"),
     ON("ON");
 
-    String value;
+    final String value;
 
     LogTracing(String value) {
       this.value = value;
@@ -118,7 +118,7 @@ public class ConfigParams {
     OFF("OFF"),
     ON("ON");
 
-    String name;
+    final String name;
 
     ReplayMode(String name) {
       this.name = name;
@@ -137,7 +137,7 @@ public class ConfigParams {
     OFF("OFF"),
     ON("ON");
 
-    String mode;
+    final String mode;
 
     RecordingMode(String mode) {
       this.mode = mode;
@@ -156,7 +156,7 @@ public class ConfigParams {
     OFF("OFF"),
     ON("ON");
 
-    String value;
+    final String value;
 
     PortNameTrafo(String value) {
       this.value = value;

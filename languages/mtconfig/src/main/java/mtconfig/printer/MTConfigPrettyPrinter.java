@@ -48,9 +48,8 @@ public class MTConfigPrettyPrinter extends MCBasicTypesPrettyPrinter implements 
     else {
       this.getPrinter().println("{");
       this.getPrinter().indent();
-      Iterator<ASTProperty> iter_propertiesss = a.getPropertiessList().iterator();
-      while (iter_propertiesss.hasNext()) {
-        iter_propertiesss.next().accept(getTraverser());
+      for (ASTProperty astProperty : a.getPropertiessList()) {
+        astProperty.accept(getTraverser());
       }
       this.getPrinter().unindent();
       this.getPrinter().println(" } ");

@@ -8,10 +8,8 @@ import arcbasis._symboltable.PortSymbol;
 import arcbasis.util.ArcError;
 import behavior._ast.ASTConnectStatement;
 import com.google.common.base.Preconditions;
-import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.se_rwth.commons.SourcePosition;
 import de.se_rwth.commons.logging.Log;
-import montithings.MontiThingsMill;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
@@ -24,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static montithings.util.GenericBindingUtil.getComponentFromString;
-import static montithings.util.IdentifierUtils.getPortForName;
 
 public class MTPortUsage implements MontiThingsASTMTComponentTypeCoCo {
   @Override

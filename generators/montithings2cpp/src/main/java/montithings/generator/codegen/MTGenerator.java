@@ -8,7 +8,6 @@ import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.utils.Names;
 import de.se_rwth.commons.logging.Log;
-import montithings.MontiThingsMill;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
@@ -23,7 +22,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static montithings.generator.helper.FileHelper.makeExecutable;
@@ -219,8 +217,7 @@ public class MTGenerator {
 
   public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories,
     List<String> sensorActuatorPorts, ConfigParams config) {
-    List sortedDirs = new ArrayList<String>();
-    sortedDirs.addAll(subdirectories);
+    List<String> sortedDirs = new ArrayList<>(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
     fg.generate(targetPath, "CMakeLists", ".txt",

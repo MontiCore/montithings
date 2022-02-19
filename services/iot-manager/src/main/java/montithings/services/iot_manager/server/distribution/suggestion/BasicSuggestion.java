@@ -1,15 +1,14 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution.suggestion;
 
-import java.util.ListIterator;
-
 import com.google.common.base.Objects;
-
-import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
+import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.data.constraint.BasicConstraint;
-import montithings.services.iot_manager.server.data.constraint.Constraint;
 import montithings.services.iot_manager.server.data.constraint.BasicConstraint.Type;
+import montithings.services.iot_manager.server.data.constraint.Constraint;
+
+import java.util.ListIterator;
 
 public class BasicSuggestion implements Suggestion {
   

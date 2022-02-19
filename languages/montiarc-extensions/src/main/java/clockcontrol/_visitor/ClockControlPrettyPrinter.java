@@ -12,8 +12,7 @@ public class ClockControlPrettyPrinter implements ClockControlHandler {
   protected IndentPrinter printer;
 
   public ClockControlPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public ClockControlPrettyPrinter(@NotNull IndentPrinter printer) {

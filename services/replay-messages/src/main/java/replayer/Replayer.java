@@ -139,7 +139,7 @@ public class Replayer implements MqttCallback {
   }
 
   private boolean allTopicsAreReplayed(Set<String> topicsToReplay, Map<String, Integer> iterator) {
-    topicsToReplay.forEach(t -> ensureTopicExists(t));
+    topicsToReplay.forEach(this::ensureTopicExists);
     topicsToReplay.stream().filter(t -> iterator.get(t) == null).forEach(t -> iterator.put(t, Integer.MAX_VALUE));
     for (String t : topicsToReplay) {
       Integer messagesReplayed = iterator.get(t);

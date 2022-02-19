@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution;
 
+import montithings.services.iot_manager.server.data.DeployClient;
+
 import java.util.Collection;
 import java.util.List;
-
-import montithings.services.iot_manager.server.data.DeployClient;
 
 public class DistributionSuggestionRequest {
   

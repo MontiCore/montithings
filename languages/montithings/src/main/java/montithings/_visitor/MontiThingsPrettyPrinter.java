@@ -17,8 +17,7 @@ public class MontiThingsPrettyPrinter implements MontiThingsHandler {
   protected IndentPrinter printer;
 
   public MontiThingsPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public MontiThingsPrettyPrinter(@NotNull IndentPrinter printer) {
@@ -42,7 +41,7 @@ public class MontiThingsPrettyPrinter implements MontiThingsHandler {
   }
 
   public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
-    if (list.size() <= 0) {
+    if (list.isEmpty()) {
       return;
     }
     Iterator<T> iterator = list.iterator();

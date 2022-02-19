@@ -1,6 +1,18 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
+import com.google.common.base.Charsets;
+import com.google.gson.*;
+import montithings.services.iot_manager.server.data.*;
+import montithings.services.iot_manager.server.distribution.config.DockerComposeConfig;
+import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
+import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
+import montithings.services.iot_manager.server.exception.DeploymentException;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,27 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import com.google.common.base.Charsets;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-
-import montithings.services.iot_manager.server.data.DeployClient;
-import montithings.services.iot_manager.server.data.DeploymentInfo;
-import montithings.services.iot_manager.server.data.Distribution;
-import montithings.services.iot_manager.server.data.LocationSpecifier;
-import montithings.services.iot_manager.server.data.NetworkInfo;
-import montithings.services.iot_manager.server.distribution.config.DockerComposeConfig;
-import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
-import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
-import montithings.services.iot_manager.server.exception.DeploymentException;
 
 public class DefaultDeployTargetProvider implements IDeployTargetProvider {
   
@@ -218,8 +209,8 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
       }
       mqttClient.close();
       this.active = false;
-    } catch(MqttException e) {
-      // We can ignore this, since the client is already dead if this failes.
+    } catch(MqttException ignored) {
+      // We can ignore this, since the client is already dead if this fails.
     }
   }
   

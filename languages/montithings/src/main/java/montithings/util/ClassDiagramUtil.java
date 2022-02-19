@@ -37,7 +37,7 @@ public class ClassDiagramUtil {
 
   public static final String COMPONENT_TYPE_PREFIX = "Co";
 
-  private static MontiThingsTypeCheck tc = new MontiThingsTypeCheck(
+  private static final MontiThingsTypeCheck tc = new MontiThingsTypeCheck(
           new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
 
   public static CD4CodeArtifactScope createClassDiagram(ASTMACompilationUnit node) {
@@ -64,11 +64,7 @@ public class ClassDiagramUtil {
     }
     for (ASTPortDeclaration astPortDeclaration : comp.getPortDeclarations()) {
       boolean incoming;
-      if (astPortDeclaration.getPortDirection() instanceof ASTPortDirectionIn) {
-        incoming = true;
-      } else {
-        incoming = false;
-      }
+      incoming = astPortDeclaration.getPortDirection() instanceof ASTPortDirectionIn;
       for (ASTPort astPort : astPortDeclaration.getPortList()) {
         ASTMCType astmcType;
         ASTMCCustomTypeArgument typeArgument = CD4CodeMill.mCCustomTypeArgumentBuilder().

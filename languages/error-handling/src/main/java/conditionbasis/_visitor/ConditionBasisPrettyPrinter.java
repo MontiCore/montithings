@@ -12,8 +12,7 @@ public class ConditionBasisPrettyPrinter implements ConditionBasisHandler {
   protected IndentPrinter printer;
 
   public ConditionBasisPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public ConditionBasisPrettyPrinter(@NotNull IndentPrinter printer) {

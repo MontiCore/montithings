@@ -12,8 +12,8 @@ public enum CDLangExtensionError implements cdlangextension.util.Error {
   TOOL_FILE_WALK_IOEXCEPTION("0xCDE1040", "Could not access the directory \"%s\" or one of its subdirectories.");
 
 
-  protected final String errorCode;
-  protected final String errorMessage;
+  private final String errorCode;
+  private final String errorMessage;
 
   CDLangExtensionError(String errorCode, String errorMessage) {
     assert (errorCode != null);

@@ -101,11 +101,11 @@ public class MontiThingsTool implements IMontiThingsTool {
   }
 
   protected String getMTFileExtension() {
-    return this.MT_FILE_EXTENSION;
+    return MT_FILE_EXTENSION;
   }
 
   protected String getSymFileExtension() {
-    return this.SYM_FILE_EXTENSION;
+    return SYM_FILE_EXTENSION;
   }
 
   @Override
@@ -119,7 +119,7 @@ public class MontiThingsTool implements IMontiThingsTool {
       return this.getParser().parse(file.toString());
     }
     catch (IOException e) {
-      Log.error(String.format(MontiThingsError.TOOL_PARSE_IOEXCEPTION.toString(), file.toString()),
+      Log.error(String.format(MontiThingsError.TOOL_PARSE_IOEXCEPTION.toString(), file),
         e);
     }
     return Optional.empty();
@@ -160,7 +160,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     }
     catch (IOException e) {
       Log.error(
-        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory),
         e);
     }
     return Collections.emptySet();
@@ -179,7 +179,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     }
     catch (IOException e) {
       Log.error(
-        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory),
         e);
     }
     return Collections.emptySet();
@@ -245,9 +245,7 @@ public class MontiThingsTool implements IMontiThingsTool {
       again = false;
       // iterate with an iterator in order to avoid ConcurrentModificationException,
       // as models are transformed
-      for (Iterator<ASTMACompilationUnit> iterator = models.iterator(); iterator.hasNext(); ) {
-        ASTMACompilationUnit ast = iterator.next();
-
+      for (ASTMACompilationUnit ast : models) {
         for (MontiThingsTrafo trafo : trafos) {
           if (firstLoop || trafo instanceof ComponentTypePortsNamingTrafo) {
             try {
@@ -400,7 +398,11 @@ public class MontiThingsTool implements IMontiThingsTool {
       }
     }
 
-    //convert scopes to symbol files
+    return convertCDScopesToSymbolFiles(symbolPath, scopes);
+  }
+
+  protected CD4CodeGlobalScope convertCDScopesToSymbolFiles(String symbolPath,
+    Set<CD4CodeArtifactScope> scopes) {
     for (CD4CodeArtifactScope artifactScope : scopes) {
       CD4CodeMill.globalScope().addSubScope(artifactScope);
       artifactScope.setEnclosingScope(CD4CodeMill.globalScope());
@@ -424,24 +426,31 @@ public class MontiThingsTool implements IMontiThingsTool {
     }
 
     //convert scopes to symbol files
-    for (CD4CodeArtifactScope artifactScope : scopes) {
-      CD4CodeMill.globalScope().addSubScope(artifactScope);
-      artifactScope.setEnclosingScope(CD4CodeMill.globalScope());
-      String symbolFileName = symbolPath
-        + artifactScope.getName()
-        + ".sym";
-      final CD4CodeSymbols2Json symbols2Json = new CD4CodeSymbols2Json();
-      final String path = symbols2Json.store(artifactScope, symbolFileName);
-    }
-
-    return (CD4CodeGlobalScope) CD4CodeMill.globalScope();
+    return convertCDScopesToSymbolFiles(symbolPath, scopes);
   }
 
-  protected void addPortSymbolsToCD4CGlobalScope() {
-    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
-    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+  public static void addPortSymbolsToCD4CGlobalScope() {
+    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder()
+      .setName("InPort")
+      .setFullName("InPort")
+      .setEnclosingScope(CD4CodeMill.globalScope())
+      .setSpannedScope(CD4CodeMill.scope())
+      .build();
+    inPortType
+      .addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder()
+        .setName("T")
+        .setFullName("T").build());
+    TypeSymbol outPortType = CD4CodeMill
+      .typeSymbolBuilder()
+      .setName("OutPort")
+      .setFullName("OutPort")
+      .setEnclosingScope(CD4CodeMill.globalScope())
+      .setSpannedScope(CD4CodeMill.scope())
+      .build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder()
+      .setName("T")
+      .setFullName("T")
+      .build());
     CD4CodeMill.globalScope().add(inPortType);
     CD4CodeMill.globalScope().add(outPortType);
   }

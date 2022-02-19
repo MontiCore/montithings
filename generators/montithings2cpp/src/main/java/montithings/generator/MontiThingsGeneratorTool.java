@@ -52,11 +52,7 @@ import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.visitor.FindConnectStatementsVisitor;
 import montithings.generator.visitor.FindTemplatedPortsVisitor;
 import montithings.generator.visitor.GenericInstantiationVisitor;
-import montithings.trafos.ComponentTypePortsNamingTrafo;
-import montithings.trafos.DelayedChannelTrafo;
-import montithings.trafos.DelayedComputationTrafo;
-import montithings.trafos.ExternalPortMockTrafo;
-import montithings.trafos.SimplifyStatechartTrafo;
+import montithings.trafos.*;
 import montithings.util.MontiThingsError;
 import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
@@ -238,7 +234,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     File[] packages = hwcPath.listFiles();
     List<String> executableSensorActuatorPorts = new ArrayList<>();
 
-    for (File pckg : packages) {
+    for (File pckg : Objects.requireNonNull(packages)) {
       Set<String> sensorActuatorPorts = getFilesWithEnding(
         new File(hwcPath + File.separator + pckg.getName()), getFileEndings());
       for (String port : sensorActuatorPorts) {
@@ -690,10 +686,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for (PortSymbol port : comp.getPorts()) {
       if (config.getTemplatedPorts().contains(port)) {
         Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config);
-        if (portType.isPresent()) {
-          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), target, portType.get(),
-            config, port);
-        }
+        portType.ifPresent(s ->
+          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), target, s, config, port));
       }
     }
   }

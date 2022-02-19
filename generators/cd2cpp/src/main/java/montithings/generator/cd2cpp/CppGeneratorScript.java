@@ -1,15 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2cpp;
 
-import java.io.File;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
-
-import org.codehaus.groovy.control.customizers.ImportCustomizer;
-
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.configuration.Configuration;
 import de.se_rwth.commons.groovy.GroovyInterpreter;
@@ -17,6 +8,13 @@ import de.se_rwth.commons.groovy.GroovyRunner;
 import de.se_rwth.commons.logging.Log;
 import groovy.lang.Script;
 import montiarc.util.Modelfinder;
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Script for generating C++ Code from CD4A models

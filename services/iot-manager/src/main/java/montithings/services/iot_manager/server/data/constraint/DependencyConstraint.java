@@ -4,7 +4,6 @@ package montithings.services.iot_manager.server.data.constraint;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
 import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
 
 public class DependencyConstraint implements Constraint {

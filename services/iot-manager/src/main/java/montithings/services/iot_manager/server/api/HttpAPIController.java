@@ -4,7 +4,6 @@ package montithings.services.iot_manager.server.api;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-
 import montithings.services.iot_manager.server.DeployTargetProviderParser;
 import montithings.services.iot_manager.server.DeploymentManager;
 import montithings.services.iot_manager.server.IDeployTargetProvider;
@@ -71,14 +70,12 @@ public class HttpAPIController {
       String strJson = request.body();
       DeploymentConfiguration config = DeploymentConfiguration.fromJson(strJson);
       success = manager.validate(config);
-    } catch(DeploymentException e) {
+    }
+    catch(Throwable e) {
       e.printStackTrace();
       success = false;
-    } catch(Throwable t) {
-      t.printStackTrace();
-      success = false;
     }
-    
+
     response.status(success ? 200 : 409);
     return "";
   }

@@ -1,6 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution.suggestion;
 
+import com.google.common.collect.Lists;
+import montithings.services.iot_manager.server.data.DeploymentConfiguration;
+import montithings.services.iot_manager.server.data.LocationSpecifier;
+import montithings.services.iot_manager.server.util.InstanceNameResolver;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +14,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Lists;
-
-import montithings.services.iot_manager.server.data.LocationSpecifier;
-import montithings.services.iot_manager.server.util.InstanceNameResolver;
-import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 
 public interface Suggestion {
   

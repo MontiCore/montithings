@@ -1,15 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.k8s;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import io.kubernetes.client.informer.ResourceEventHandler;
 import io.kubernetes.client.informer.SharedIndexInformer;
 import io.kubernetes.client.informer.SharedInformerFactory;
@@ -17,31 +8,19 @@ import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1Container;
-import io.kubernetes.client.openapi.models.V1Deployment;
-import io.kubernetes.client.openapi.models.V1DeploymentSpec;
-import io.kubernetes.client.openapi.models.V1LabelSelector;
-import io.kubernetes.client.openapi.models.V1LocalObjectReference;
-import io.kubernetes.client.openapi.models.V1Node;
-import io.kubernetes.client.openapi.models.V1NodeCondition;
-import io.kubernetes.client.openapi.models.V1NodeList;
-import io.kubernetes.client.openapi.models.V1NodeStatus;
-import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.openapi.models.V1PodSpec;
-import io.kubernetes.client.openapi.models.V1PodTemplateSpec;
+import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.CallGeneratorParams;
 import io.kubernetes.client.util.Config;
 import montithings.services.iot_manager.server.IDeployTargetProvider;
-import montithings.services.iot_manager.server.data.DeployClient;
-import montithings.services.iot_manager.server.data.DeploymentInfo;
-import montithings.services.iot_manager.server.data.Distribution;
-import montithings.services.iot_manager.server.data.InstanceInfo;
-import montithings.services.iot_manager.server.data.LocationSpecifier;
-import montithings.services.iot_manager.server.data.NetworkInfo;
+import montithings.services.iot_manager.server.data.*;
 import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
 import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.util.MontiThingsUtil;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceEventHandler<V1Node> {
   
@@ -205,7 +184,9 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
           try {
             apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
           }
-          catch (ApiException e1) { }
+          catch (ApiException e1) {
+            e1.printStackTrace();
+          }
         } else {
           // otherwise deploy instances
           
@@ -243,7 +224,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
           
           try {
             apiApps.deleteNamespacedDeployment(labelValue, K8S_NAMESPACE, null, null, null, null, null, null);
-          } catch(ApiException ex) {
+          } catch(ApiException ignored) {
             // This may fail. Checking whether a deployment already exists with
             // this name and then deleting it would be more expensive.
           }
@@ -252,7 +233,7 @@ public class K8sDeployTargetProvider implements IDeployTargetProvider, ResourceE
             apiApps.createNamespacedDeployment(K8S_NAMESPACE, deployment, null, null, null);
           }
           catch (ApiException e1) {
-            System.out.println(e1.getResponseBody());
+            System.err.println(e1.getResponseBody());
             e1.printStackTrace();
           }
         }

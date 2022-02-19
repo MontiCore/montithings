@@ -19,7 +19,7 @@ public class FileGenerator {
   /**
    * true if member variables have been set correctly
    */
-  protected boolean isInitialized = false;
+  protected boolean isInitialized;
 
   /**
    * Directory in which the generated sources should be placed

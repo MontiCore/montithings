@@ -1,26 +1,17 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import montithings.services.iot_manager.server.data.constraint.BasicConstraint;
-import montithings.services.iot_manager.server.data.constraint.Constraint;
-import montithings.services.iot_manager.server.data.constraint.DependencyConstraint;
-import montithings.services.iot_manager.server.data.constraint.IncompConstraint;
-import montithings.services.iot_manager.server.data.constraint.LocationConstraint;
+import montithings.services.iot_manager.server.data.constraint.*;
 import montithings.services.iot_manager.server.distribution.suggestion.SuggestionHardware;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.util.ThrowingFunction;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class DeploymentConfiguration {
   
@@ -130,8 +121,8 @@ public class DeploymentConfiguration {
   }
   
   @Override
-  public DeploymentConfiguration clone() {
-    DeploymentConfiguration cloned = new DeploymentConfiguration();
+  public DeploymentConfiguration clone() throws CloneNotSupportedException {
+    DeploymentConfiguration cloned = (DeploymentConfiguration) super.clone();
     cloned.setConstraints(new ArrayList<>(this.constraints));
     cloned.setDeploymentInfo(this.deploymentInfo);
     return cloned;

@@ -1,14 +1,14 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution.suggestion;
 
-import java.util.ListIterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 import montithings.services.iot_manager.server.data.constraint.Constraint;
 import montithings.services.iot_manager.server.data.constraint.IncompConstraint;
 import montithings.services.iot_manager.server.util.InstanceNameResolver;
+
+import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SuggestionIncomp implements Suggestion {
   
