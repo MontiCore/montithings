@@ -64,7 +64,8 @@ public class CppExpressionPrettyPrinter extends ExpressionsBasisPrettyPrinter {
 
     List<PortSymbol> portsInBatchStatement = ComponentHelper.getPortsInBatchStatement(comp);
     List<ASTSyncStatement> syncStatements = ComponentHelper
-      .elementsOf(comp).filter(ASTSyncStatement.class).toList();
+      .elementsOf(comp).filter(ASTSyncStatement.class::isInstance).map(ASTSyncStatement.class::cast)
+      .collect(Collectors.toList());
 
     if (port.isPresent()) {
       String prefix;

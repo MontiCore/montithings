@@ -234,7 +234,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     File[] packages = hwcPath.listFiles();
     List<String> executableSensorActuatorPorts = new ArrayList<>();
 
-    for (File pckg : packages) {
+    for (File pckg : Objects.requireNonNull(packages)) {
       Set<String> sensorActuatorPorts = getFilesWithEnding(
         new File(hwcPath + File.separator + pckg.getName()), getFileEndings());
       for (String port : sensorActuatorPorts) {
@@ -686,10 +686,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
     for (PortSymbol port : comp.getPorts()) {
       if (config.getTemplatedPorts().contains(port)) {
         Optional<String> portType = GeneratorHelper.getPortHwcTemplateName(port, config);
-        if (portType.isPresent()) {
-          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), target, portType.get(),
-            config, port);
-        }
+        portType.ifPresent(s ->
+          MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), target, s, config, port));
       }
     }
   }

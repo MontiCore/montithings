@@ -3,8 +3,6 @@ package cdlangextension._cocos;
 
 /**
  * Context Conditions for CDLangExtension language
- *
- * @author (last commit) Julian Krebber
  */
 public class CDLangExtensionCoCos {
   public static CDLangExtensionCoCoChecker createChecker() {

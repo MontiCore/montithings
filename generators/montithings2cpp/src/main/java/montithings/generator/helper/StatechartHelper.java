@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 
 public class StatechartHelper {
   public static ASTArcStatechart getStatechart(ComponentTypeSymbol comp) {
-    return ComponentHelper.elementsOf(comp).filter(ASTArcStatechart.class).get(0);
+    return ComponentHelper.elementsOf(comp).filter(ASTArcStatechart.class::isInstance)
+      .map(ASTArcStatechart.class::cast).findFirst().get();
   }
 
   public static ASTSCState getInitialState(ComponentTypeSymbol comp) {

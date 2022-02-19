@@ -13,7 +13,6 @@ import cdlangextension._symboltable.DepLanguageSymbol;
 import cdlangextension._symboltable.ICDLangExtensionScope;
 import clockcontrol._ast.ASTCalculationInterval;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.FluentIterable;
 import conditionbasis._ast.ASTCondition;
 import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.ast.ASTNode;
@@ -67,8 +66,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
 /**
@@ -77,9 +76,9 @@ import static montithings.generator.helper.TypesHelper.java2cppTypeString;
  */
 public class ComponentHelper {
 
-  public static FluentIterable<ASTArcElement> elementsOf(
+  public static Stream<ASTArcElement> elementsOf(
     ComponentTypeSymbol component) {
-    return FluentIterable.from(component.getAstNode().getBody().getArcElementList());
+    return component.getAstNode().getBody().getArcElementList().stream();
   }
 
   //============================================================================
@@ -114,7 +113,7 @@ public class ComponentHelper {
    * Get import for subpackages
    */
   public static String getSubPackageImports(File[] subPackagesPath) {
-    String packageNames = "";
+    StringBuilder packageNames = new StringBuilder();
     String start = "\"./";
     String endCpp = "/*.cpp\"\n";
     String endH = "/*.h\"\n";
@@ -128,14 +127,14 @@ public class ComponentHelper {
         \"./packageName2/*.cpp\"\n
         \"./packageName2/*.h\"\n
        */
-      packageNames += start + subPackage.getName() + endCpp;
-      packageNames += start + subPackage.getName() + endH;
+      packageNames.append(start).append(subPackage.getName()).append(endCpp);
+      packageNames.append(start).append(subPackage.getName()).append(endH);
     }
-    return packageNames;
+    return packageNames.toString();
   }
 
   public static String getSubPackageIncludes(File[] subPackagesPath) {
-    String packageNames = "";
+    StringBuilder packageNames = new StringBuilder();
     String start = "include_directories(./";
     String end = ")\n";
 
@@ -146,9 +145,9 @@ public class ComponentHelper {
         include_directories(./packageName1)\n
         include_directories(./packageName2)\n
        */
-      packageNames += start + subPackage.getName() + end;
+      packageNames.append(start).append(subPackage.getName()).append(end);
     }
-    return packageNames;
+    return packageNames.toString();
   }
 
   public static String getPackagePath(ComponentTypeSymbol comp, ComponentInstanceSymbol subComp) {
@@ -307,6 +306,7 @@ public class ComponentHelper {
     if (!requestedInterface.isPresent()) {
       Log.error(String.format("0xMT0801 Requested ports of interface '%s' for component '%s' "
         + "that does not implement the given interfaces", interfName, comp.getFullName()));
+      System.exit(-1); // unreachable, but silences static analyzer
     }
 
     return new HashSet<>(requestedInterface.get().getPorts());
@@ -314,9 +314,8 @@ public class ComponentHelper {
 
   @Deprecated
   public static boolean hasUpdateInterval(ComponentTypeSymbol comp) {
-    return !elementsOf(comp)
-      .filter(ASTCalculationInterval.class)
-      .isEmpty();
+    return elementsOf(comp).filter(ASTCalculationInterval.class::isInstance)
+      .map(ASTCalculationInterval.class::cast).findAny().isPresent();
   }
 
   /**
@@ -324,9 +323,9 @@ public class ComponentHelper {
    */
   @Deprecated
   public static String getExecutionIntervalMethod(ComponentTypeSymbol comp) {
-    ASTCalculationInterval interval = elementsOf(comp)
-      .filter(ASTCalculationInterval.class)
-      .first().orNull();
+    ASTCalculationInterval interval = elementsOf(comp).filter(
+        ASTCalculationInterval.class::isInstance).map(ASTCalculationInterval.class::cast).findFirst()
+      .orElse(null);
     String method = "std::chrono::";
     method += TypesPrinter.printTime(interval);
     return method;
@@ -341,9 +340,9 @@ public class ComponentHelper {
 
   @Deprecated
   public static String getExecutionIntervalInMillis(ComponentTypeSymbol comp) {
-    ASTCalculationInterval interval = elementsOf(comp)
-      .filter(ASTCalculationInterval.class)
-      .first().orNull();
+    ASTCalculationInterval interval = elementsOf(comp).filter(
+        ASTCalculationInterval.class::isInstance).map(ASTCalculationInterval.class::cast).findFirst()
+      .orElse(null);
     if (interval == null) {
       return "50";
     }
@@ -459,7 +458,8 @@ public class ComponentHelper {
   }
 
   public static List<ASTArcTiming> getTiming(ComponentTypeSymbol component) {
-    return elementsOf(component).filter(ASTArcTiming.class).toList();
+    return elementsOf(component).filter(ASTArcTiming.class::isInstance)
+      .map(ASTArcTiming.class::cast).collect(Collectors.toList());
   }
 
   public static boolean isTimesync(ComponentTypeSymbol component) {
@@ -473,7 +473,8 @@ public class ComponentHelper {
   }
 
   public static boolean retainState(ComponentTypeSymbol component) {
-    return !elementsOf(component).filter(ASTMTRetainState.class).isEmpty();
+    return elementsOf(component).filter(ASTMTRetainState.class::isInstance)
+      .map(ASTMTRetainState.class::cast).findAny().isPresent();
   }
 
   // endregion
@@ -572,9 +573,10 @@ public class ComponentHelper {
    */
   public static List<List<String>> getSyncGroups(ComponentTypeSymbol comp) {
     return elementsOf(comp)
-      .filter(ASTSyncStatement.class)
-      .transform(ASTSyncStatement::getSyncedPortList)
-      .toList();
+      .filter(ASTSyncStatement.class::isInstance)
+      .map(ASTSyncStatement.class::cast)
+      .map(ASTSyncStatement::getSyncedPortList)
+      .collect(Collectors.toList());
   }
 
   /**
@@ -601,7 +603,7 @@ public class ComponentHelper {
    * port.
    *
    * @param cmp        The component defining the connector
-   * @param portAccess the portaccess to evaluate
+   * @param portAccess the port access to evaluate
    * @return true, if the port is an incoming port. False, otherwise.
    */
   public static boolean isIncomingPort(ComponentTypeSymbol cmp, ASTPortAccess portAccess) {
@@ -612,6 +614,10 @@ public class ComponentHelper {
       String subCompName = portAccess.getComponent();
       Optional<ComponentInstanceSymbol> subCompInstance = cmp.getSpannedScope()
         .resolveComponentInstance(subCompName);
+      if (!subCompInstance.isPresent()) {
+        Log.error("0xMT802 Could not find component instance for port access");
+        System.exit(-1); // unreachable, but silences static analyzer
+      }
       ComponentTypeSymbol subComp = subCompInstance.get().getType();
       port = subComp.getSpannedScope().resolvePort(portNameUnqualified);
     }
@@ -626,7 +632,8 @@ public class ComponentHelper {
    * Returns true iff comp contains at least one buffered port
    */
   public static Boolean usesBatchMode(ComponentTypeSymbol comp) {
-    return elementsOf(comp).filter(ASTAnnotatedPort.class).stream()
+    return elementsOf(comp).filter(ASTAnnotatedPort.class::isInstance)
+      .map(ASTAnnotatedPort.class::cast)
       .anyMatch(e -> e.getPortAnnotation() instanceof ASTBufferedPort);
   }
 
@@ -637,10 +644,9 @@ public class ComponentHelper {
    */
   public static List<PortSymbol> getPortsInBatchStatement(
     ComponentTypeSymbol component) {
-    List<ASTAnnotatedPort> bufferPorts = elementsOf(component)
-      .filter(ASTAnnotatedPort.class)
-      .filter(p -> p.getPortAnnotation() instanceof ASTBufferedPort)
-      .toList();
+    List<ASTAnnotatedPort> bufferPorts = elementsOf(component).filter(
+        ASTAnnotatedPort.class::isInstance).map(ASTAnnotatedPort.class::cast)
+      .filter(p -> p.getPortAnnotation() instanceof ASTBufferedPort).collect(Collectors.toList());
     List<String> bufferPortsNames = new ArrayList<>();
     for (ASTAnnotatedPort port : bufferPorts) {
       for (ASTPortDeclaration decl : port.getPortDeclarationList()) {
@@ -697,8 +703,8 @@ public class ComponentHelper {
   //============================================================================
 
   public static ASTMCJavaBlock getBehavior(ComponentTypeSymbol component) {
-    List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class)
-      .filter(ASTBehavior::isEmptyNames).toList();
+    List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class::isInstance)
+      .map(ASTBehavior.class::cast).filter(ASTBehavior::isEmptyNames).collect(Collectors.toList());
     Preconditions.checkArgument(!behaviors.isEmpty(),
       "0xMT800 Trying to print behavior of component \"" + component.getName()
         + "\" that has no behavior.");
@@ -709,8 +715,9 @@ public class ComponentHelper {
   }
 
   public static List<ASTEveryBlock> getEveryBlocks(ComponentTypeSymbol comp) {
-    List<ASTMTEveryBlock> mtEveryBlockList = elementsOf(comp).filter(ASTMTEveryBlock.class)
-      .toList();
+    List<ASTMTEveryBlock> mtEveryBlockList = elementsOf(comp).filter(
+        ASTMTEveryBlock.class::isInstance).map(ASTMTEveryBlock.class::cast)
+      .collect(Collectors.toList());
     List<ASTEveryBlock> everyBlockList = new ArrayList<>();
     for (ASTMTEveryBlock b : mtEveryBlockList) {
       everyBlockList.add(b.getEveryBlock());
@@ -747,7 +754,8 @@ public class ComponentHelper {
   }
 
   public static List<ASTBehavior> getPortSpecificBehaviors(ComponentTypeSymbol comp) {
-    return elementsOf(comp).filter(ASTBehavior.class).filter(e -> !e.isEmptyNames()).toList();
+    return elementsOf(comp).filter(ASTBehavior.class::isInstance).map(ASTBehavior.class::cast)
+      .filter(e -> !e.isEmptyNames()).collect(Collectors.toList());
   }
 
   public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTMTBehavior ast) {
@@ -772,23 +780,30 @@ public class ComponentHelper {
   }
 
   public static boolean hasGeneralBehavior(ComponentTypeSymbol comp) {
-    return !elementsOf(comp).filter(ASTBehavior.class)
-      .filter(ASTBehavior::isEmptyNames).toList().isEmpty();
+    return elementsOf(comp)
+      .filter(ASTBehavior.class::isInstance)
+      .map(ASTBehavior.class::cast)
+      .anyMatch(ASTBehavior::isEmptyNames);
   }
 
   public static ASTBehavior getGeneralBehavior(ComponentTypeSymbol comp) {
-    return elementsOf(comp).filter(ASTBehavior.class)
-      .filter(ASTBehavior::isEmptyNames).toList().get(0);
+    return elementsOf(comp)
+      .filter(ASTBehavior.class::isInstance)
+      .map(ASTBehavior.class::cast)
+      .filter(ASTBehavior::isEmptyNames)
+      .collect(Collectors.toList()).get(0);
   }
 
   public static boolean hasBehavior(ComponentTypeSymbol component) {
-    return !elementsOf(component)
-      .filter(ASTBehavior.class)
-      .filter(ASTBehavior::isEmptyNames).isEmpty();
+    return elementsOf(component)
+      .filter(ASTBehavior.class::isInstance)
+      .map(ASTBehavior.class::cast)
+      .anyMatch(ASTBehavior::isEmptyNames);
   }
 
   public static boolean hasStatechart(ComponentTypeSymbol component) {
-    return !elementsOf(component).filter(ASTArcStatechart.class).isEmpty();
+    return elementsOf(component).filter(ASTArcStatechart.class::isInstance)
+      .map(ASTArcStatechart.class::cast).findAny().isPresent();
   }
 
   public static Set<PortSymbol> getPublishedPortsForBehavior(ComponentTypeSymbol component) {
@@ -817,11 +832,11 @@ public class ComponentHelper {
   }
 
   public static List<ASTInitBehavior> getPortSpecificInitBehaviors(ComponentTypeSymbol comp) {
-    List<ASTInitBehavior> initBehaviors = new ArrayList<>();
-    List<ASTInitBehavior> behaviorList = elementsOf(comp).filter(ASTInitBehavior.class)
-            .filter(e -> !e.isEmptyNames()).toList();
-    initBehaviors.addAll(behaviorList);
-    return initBehaviors;
+    return elementsOf(comp)
+      .filter(ASTInitBehavior.class::isInstance)
+      .map(ASTInitBehavior.class::cast)
+      .filter(e -> !e.isEmptyNames())
+      .collect(Collectors.toList());
   }
 
   public static String getPortSpecificInitBehaviorName(ComponentTypeSymbol comp, ASTInitBehavior ast) {
@@ -838,8 +853,11 @@ public class ComponentHelper {
   }
 
   public static ASTMCJavaBlock getInitBehavior(ComponentTypeSymbol component) {
-    List<ASTInitBehavior> initBehaviors = elementsOf(component).filter(ASTInitBehavior.class)
-            .filter(e -> e.isEmptyNames()).toList();
+    List<ASTInitBehavior> initBehaviors = elementsOf(component)
+      .filter(ASTInitBehavior.class::isInstance)
+      .map(ASTInitBehavior.class::cast)
+      .filter(ASTInitBehavior::isEmptyNames)
+      .collect(Collectors.toList());
     Preconditions.checkArgument(!initBehaviors.isEmpty(),
             "0xMT800 Trying to print behavior of component \"" + component.getName()
                     + "\" that has no behavior.");
@@ -850,8 +868,10 @@ public class ComponentHelper {
   }
 
   public static boolean hasInitBehavior(ComponentTypeSymbol component) {
-    return !elementsOf(component).filter(ASTInitBehavior.class)
-      .filter(ASTInitBehavior::isEmptyNames).isEmpty();
+    return elementsOf(component)
+      .filter(ASTInitBehavior.class::isInstance)
+      .map(ASTInitBehavior.class::cast)
+      .anyMatch(ASTInitBehavior::isEmptyNames);
   }
 
   public static boolean hasInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
@@ -905,13 +925,17 @@ public class ComponentHelper {
   public static List<ASTCondition> getConditions(ComponentTypeSymbol component) {
 
     // get uncatched conditions
-    List<ASTCondition> conditions = new ArrayList<>(elementsOf(component)
-      .filter(ASTMTCondition.class)
-      .transform(ASTMTCondition::getCondition)
-      .toList());
+    List<ASTCondition> conditions = elementsOf(component)
+      .filter(ASTMTCondition.class::isInstance)
+      .map(ASTMTCondition.class::cast)
+      .map(ASTMTCondition::getCondition)
+      .collect(Collectors.toList());
 
     // get catched conditions
-    List<ASTMTCatch> catchedConditions = elementsOf(component).filter(ASTMTCatch.class).toList();
+    List<ASTMTCatch> catchedConditions = elementsOf(component)
+      .filter(ASTMTCatch.class::isInstance)
+      .map(ASTMTCatch.class::cast)
+      .collect(Collectors.toList());
     conditions.addAll(catchedConditions.stream()
       .map(c -> c.getConditionCatch().getCondition())
       .collect(Collectors.toList()));
@@ -921,7 +945,8 @@ public class ComponentHelper {
   public static Optional<ASTConditionCatch> getCatch(ComponentTypeSymbol component,
     ASTCondition condition) {
     Optional<ASTConditionCatch> result = Optional.empty();
-    List<ASTMTCatch> catchedConditions = elementsOf(component).filter(ASTMTCatch.class).toList();
+    List<ASTMTCatch> catchedConditions = elementsOf(component).filter(ASTMTCatch.class::isInstance)
+      .map(ASTMTCatch.class::cast).collect(Collectors.toList());
     Optional<ASTMTCatch> mtcatch = catchedConditions.stream()
       .filter(c -> c.getConditionCatch().getCondition() == condition)
       .findFirst();
@@ -950,7 +975,8 @@ public class ComponentHelper {
   }
 
   public static List<ASTMTCatch> getCatchedConditions(ComponentTypeSymbol component) {
-    return elementsOf(component).filter(ASTMTCatch.class).toList();
+    return elementsOf(component).filter(ASTMTCatch.class::isInstance).map(ASTMTCatch.class::cast)
+      .collect(Collectors.toList());
   }
 
   /**
@@ -978,19 +1004,6 @@ public class ComponentHelper {
   //============================================================================
   // region SI Units
   //============================================================================
-
-  public static double getConversionFactorFromSourceAndTarget(ASTPortAccess source,
-    ASTPortAccess target) {
-    Optional<PortSymbol> pss = getPortSymbolFromPortAccess(source);
-    if (pss.isPresent() && pss.get().getType() instanceof SymTypeOfNumericWithSIUnit) {
-      Optional<PortSymbol> pst = getPortSymbolFromPortAccess(target);
-      if (pst.isPresent()) {
-        return getConversionFactor(((SymTypeOfNumericWithSIUnit) pss.get().getType()).getUnit(),
-          ((SymTypeOfNumericWithSIUnit) pst.get().getType()).getUnit());
-      }
-    }
-    return 1;
-  }
 
   public static boolean isSIUnitPort(ASTPortAccess portAccess) {
     Optional<PortSymbol> ps = getPortSymbolFromPortAccess(portAccess);
