@@ -31,8 +31,8 @@ public class DeriveSymTypeOfExpressionForMT
     if (optVar.isPresent()) {
       //no method here, test variable first
       // durch AST-Umbau kann ASTNameExpression keine Methode sein
-      VariableSymbol var = optVar.get();
-      SymTypeExpression res = var.getType().deepClone();
+      VariableSymbol variableSymbol = optVar.get();
+      SymTypeExpression res = variableSymbol.getType().deepClone();
       typeCheckResult.setField();
       return Optional.of(res);
     }

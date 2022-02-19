@@ -315,7 +315,7 @@ public class MTCLI {
    * @param target copy destination directory
    */
   public void copyFromJar(String source, final Path target) throws URISyntaxException, IOException {
-    URI resource = getClass().getResource("").toURI();
+    URI resource = MTCLI.class.getResource("").toURI();
     FileSystem fileSystem;
     try {
       fileSystem = FileSystems.newFileSystem(resource, Collections.<String, String>emptyMap());

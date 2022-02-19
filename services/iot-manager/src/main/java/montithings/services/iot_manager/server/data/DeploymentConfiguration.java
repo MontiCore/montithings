@@ -121,8 +121,8 @@ public class DeploymentConfiguration {
   }
   
   @Override
-  public DeploymentConfiguration clone() {
-    DeploymentConfiguration cloned = new DeploymentConfiguration();
+  public DeploymentConfiguration clone() throws CloneNotSupportedException {
+    DeploymentConfiguration cloned = (DeploymentConfiguration) super.clone();
     cloned.setConstraints(new ArrayList<>(this.constraints));
     cloned.setDeploymentInfo(this.deploymentInfo);
     return cloned;

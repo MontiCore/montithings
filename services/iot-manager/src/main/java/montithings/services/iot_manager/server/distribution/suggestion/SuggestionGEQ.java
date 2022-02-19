@@ -38,5 +38,10 @@ public class SuggestionGEQ extends BasicSuggestion {
       return null;
     }
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    return super.equals(obj);
+  }
   
 }

@@ -1049,8 +1049,8 @@ public class ComponentHelper {
     return visitor.getAgoQualifications();
   }
 
-  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol var) {
-    return getAgoQualifications(comp).containsKey(var.getName());
+  public static boolean hasAgoQualification(ComponentTypeSymbol comp, VariableSymbol variable) {
+    return getAgoQualifications(comp).containsKey(variable.getName());
   }
 
   public static boolean hasAgoQualification(ComponentTypeSymbol comp, PortSymbol port) {

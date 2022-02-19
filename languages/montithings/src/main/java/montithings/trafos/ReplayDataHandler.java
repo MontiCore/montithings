@@ -37,10 +37,10 @@ class ReplayDataHandler {
     return this.data.getJsonObject("recordings")
       .getJsonArray(qCompName)
       .stream()
-      .filter(record -> record.getValueType() == JsonValue.ValueType.OBJECT)
-      .map(record -> (JsonObject) record)
+      .filter(rec -> rec.getValueType() == JsonValue.ValueType.OBJECT)
+      .map(rec -> (JsonObject) rec)
       .filter(
-        record -> record.getString("topic").equals(qCompName + "." + qInstancePortName + "/out"))
+        rec -> rec.getString("topic").equals(qCompName + "." + qInstancePortName + "/out"))
       .collect(Collectors.toList());
   }
 
