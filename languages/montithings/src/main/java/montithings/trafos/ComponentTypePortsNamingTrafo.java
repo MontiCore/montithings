@@ -3,6 +3,7 @@ package montithings.trafos;
 
 import arcbasis._ast.*;
 import arcbasis._symboltable.PortSymbol;
+import arcbasis._symboltable.PortSymbolTOP;
 import behavior._ast.ASTConnectStatement;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
@@ -43,7 +44,7 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
   protected boolean changed;
 
   public ComponentTypePortsNamingTrafo(Set<PortSymbol> portsToIgnore) {
-    this.portsToIgnore = portsToIgnore.stream().map(p -> p.getName()).collect(Collectors.toSet());
+    this.portsToIgnore = portsToIgnore.stream().map(PortSymbolTOP::getName).collect(Collectors.toSet());
 
   }
 
@@ -83,7 +84,7 @@ public class ComponentTypePortsNamingTrafo extends BasicTransformations implemen
   private Set<Map.Entry<String, ASTMCType>> getUnconnectedPorts(ASTMTComponentType comp) {
     Set<Map.Entry<String, ASTMCType>> portNames = new HashSet<>();
     Collection<String> targets = this.getTargetNames(comp);
-    addConnectorTargetsFromBehavior(targets, (ASTMTComponentType) comp);
+    addConnectorTargetsFromBehavior(targets, comp);
     for (ASTComponentInstantiation componentInstantiation : comp.getSubComponentInstantiations()) {
       String componentInstanceTypeName =
         new MontiThingsFullPrettyPrinter(new IndentPrinter()).prettyprint(componentInstantiation.getMCType());

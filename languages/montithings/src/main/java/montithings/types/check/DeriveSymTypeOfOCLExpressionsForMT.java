@@ -45,7 +45,6 @@ public class DeriveSymTypeOfOCLExpressionsForMT extends DeriveSymTypeOfOCLExpres
       typeCheckResult.reset();
       Log.error(
         "0xA3082 The type of the expression of the OCLTypeCastExpression can't be cast to given type");
-      return;
     }
     else {
       //set result to typecasted expression

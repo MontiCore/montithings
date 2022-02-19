@@ -66,7 +66,7 @@ class ReplayDataHandler {
   }
 
   protected HashMap<Integer, Long> getComputationLatencies(String qCompName) {
-    HashMap<Integer, Long> delays = new HashMap<Integer, Long>();
+    HashMap<Integer, Long> delays = new HashMap<>();
 
     if (!this.data.containsKey("computation_latency") ||
       !this.data.getJsonObject("computation_latency").containsKey(qCompName)) {

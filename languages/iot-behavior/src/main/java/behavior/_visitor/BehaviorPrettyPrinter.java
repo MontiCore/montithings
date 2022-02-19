@@ -13,8 +13,7 @@ public class BehaviorPrettyPrinter implements BehaviorHandler {
   protected IndentPrinter printer;
 
   public BehaviorPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public BehaviorPrettyPrinter(@NotNull IndentPrinter printer) {

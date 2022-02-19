@@ -15,6 +15,7 @@ public class Main {
     StateStore stateStore = new StateStore(brokerUri, replayer);
     replayer.setStateStore(stateStore);
     while (true)
+      // intentional endless loop to keep program alive
       ;
   }
 }

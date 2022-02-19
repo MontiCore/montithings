@@ -19,8 +19,7 @@ public interface IMTConfigScope extends IMTConfigScopeTOP {
    * @param hookpoint Name that identifies the type of the hookpoint.
    * @return Hookpoint that applies to the given identification, port and platform. Otherwise empty.
    */
-  default
-  public Optional<HookpointSymbol> resolveHookpoint(String platform, PortSymbol port,
+  default Optional<HookpointSymbol> resolveHookpoint(String platform, PortSymbol port,
     String hookpoint) {
     Optional<PortTemplateTagSymbol> tagSymbol = resolvePortTemplateTag(platform, port);
     if (!tagSymbol.isPresent()) {
@@ -36,8 +35,7 @@ public interface IMTConfigScope extends IMTConfigScopeTOP {
    * @param componentTypeSymbol Component that the configuration applies to9.
    * @return Component configuration that applies to the given component, and platform. Otherwise empty.
    */
-  default
-  public Optional<CompConfigSymbol> resolveCompConfig(String platform,
+  default Optional<CompConfigSymbol> resolveCompConfig(String platform,
     ComponentTypeSymbol componentTypeSymbol) {
     List<CompConfigSymbol> allConfigsForComp = resolveCompConfigMany(
       componentTypeSymbol.getFullName());
@@ -52,8 +50,7 @@ public interface IMTConfigScope extends IMTConfigScopeTOP {
    * @param port The port that the port template tag applies to.
    * @return Port template tag that applies to the given port. Otherwise empty.
    */
-  default
-  public Optional<PortTemplateTagSymbol> resolvePortTemplateTagDown(PortSymbol port) {
+  default Optional<PortTemplateTagSymbol> resolvePortTemplateTagDown(PortSymbol port) {
     return resolvePortTemplateTagDown(port.getName(), AccessModifier.ALL_INCLUSION,
       new PortTemplateTagFilter(port));
   }
@@ -65,8 +62,7 @@ public interface IMTConfigScope extends IMTConfigScopeTOP {
    * @param port     The port that the ort template tag applies to.
    * @return Port template tag that applies to the given port and platform. Otherwise empty.
    */
-  default
-  public Optional<PortTemplateTagSymbol> resolvePortTemplateTag(String platform, PortSymbol port) {
+  default Optional<PortTemplateTagSymbol> resolvePortTemplateTag(String platform, PortSymbol port) {
     if (!port.getComponent().isPresent()) {
       return Optional.empty();
     }
@@ -92,12 +88,9 @@ public interface IMTConfigScope extends IMTConfigScopeTOP {
 
     @Override
     public boolean test(CompConfigSymbol compConfigSymbol) {
-      if (compConfigSymbol.isPresentAstNode()
+      return compConfigSymbol.isPresentAstNode()
         && compConfigSymbol.getAstNode().getComponentTypeSymbol() != null
-        && compConfigSymbol.getAstNode().getPlatform().equals(platform)) {
-        return true;
-      }
-      return false;
+        && compConfigSymbol.getAstNode().getPlatform().equals(platform);
     }
   }
 
@@ -113,11 +106,8 @@ public interface IMTConfigScope extends IMTConfigScopeTOP {
 
     @Override
     public boolean test(PortTemplateTagSymbol portTemplateTagSymbol) {
-      if (portTemplateTagSymbol.isPresentAstNode()
-        && portTemplateTagSymbol.getAstNode().getPortSymbol() != null) {
-        return true;
-      }
-      return false;
+      return portTemplateTagSymbol.isPresentAstNode()
+        && portTemplateTagSymbol.getAstNode().getPortSymbol() != null;
     }
   }
 

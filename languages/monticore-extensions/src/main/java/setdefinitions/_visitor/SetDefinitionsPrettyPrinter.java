@@ -19,8 +19,7 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   protected IndentPrinter printer;
 
   public SetDefinitionsPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public SetDefinitionsPrettyPrinter(@NotNull IndentPrinter printer) {

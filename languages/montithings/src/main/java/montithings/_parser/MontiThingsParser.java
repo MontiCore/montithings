@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.collect.Iterables.transform;
 
@@ -92,9 +94,12 @@ public class MontiThingsParser extends MontiThingsParserTOP {
 
   protected String constructQualifiedName(Iterable<String> parts) {
     return Joiners.DOT.join(
-      transform(transform(parts,
-          StringTransformations.TRIM_WHITESPACE),
-        StringTransformations.TRIM_DOT));
+      StreamSupport.stream(parts.spliterator(), false)
+        .map(StringTransformations.TRIM_WHITESPACE)
+        .collect(Collectors.toList()).stream()
+        .map(StringTransformations.TRIM_DOT)
+        .collect(Collectors.toList())
+    );
   }
 
 }

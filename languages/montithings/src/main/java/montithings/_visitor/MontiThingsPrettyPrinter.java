@@ -17,8 +17,7 @@ public class MontiThingsPrettyPrinter implements MontiThingsHandler {
   protected IndentPrinter printer;
 
   public MontiThingsPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public MontiThingsPrettyPrinter(@NotNull IndentPrinter printer) {

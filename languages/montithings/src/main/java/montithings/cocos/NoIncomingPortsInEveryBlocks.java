@@ -28,7 +28,7 @@ public class NoIncomingPortsInEveryBlocks implements BehaviorASTEveryBlockCoCo {
     node.getMCJavaBlock().accept(new NoIncomingPortsInEveryBlocksLogsVisitor().createTraverser());
   }
 
-  protected class NoIncomingPortsInEveryBlocksVisitor implements ExpressionsBasisVisitor2 {
+  protected static class NoIncomingPortsInEveryBlocksVisitor implements ExpressionsBasisVisitor2 {
     @Override public void visit(ASTNameExpression node) {
       String referencedName = node.getName();
       Optional<PortSymbol> referencedPort =
@@ -48,7 +48,7 @@ public class NoIncomingPortsInEveryBlocks implements BehaviorASTEveryBlockCoCo {
     }
   }
 
-  protected class NoIncomingPortsInEveryBlocksLogsVisitor implements BehaviorVisitor2 {
+  protected static class NoIncomingPortsInEveryBlocksLogsVisitor implements BehaviorVisitor2 {
     @Override public void visit(ASTLogStatement node) {
       List<String> referencedNames = node.getReferencedVariables();
       for (String currentName : referencedNames) {

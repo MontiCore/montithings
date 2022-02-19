@@ -19,7 +19,7 @@ public class LoggedVariablesAreResolvable implements BehaviorASTLogStatementCoCo
       boolean nameExists =
         node.getEnclosingScope().resolveVariable(referencedName).isPresent()
           || node.getEnclosingScope().resolveField(referencedName).isPresent()
-          || ((IMontiThingsScope) node.getEnclosingScope()).resolvePort(referencedName).isPresent();
+          || node.getEnclosingScope().resolvePort(referencedName).isPresent();
 
       if (!nameExists) {
         Log.error(String.format(MontiThingsError.LOG_IDENTIFIER_UNKNOWN.toString(), referencedName),

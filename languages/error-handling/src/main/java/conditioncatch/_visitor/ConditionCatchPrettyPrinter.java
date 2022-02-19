@@ -14,7 +14,7 @@ public class ConditionCatchPrettyPrinter implements ConditionCatchHandler {
   protected IndentPrinter printer;
 
   public ConditionCatchPrettyPrinter() {
-    this.printer = new IndentPrinter();
+     this.printer = new IndentPrinter();
   }
 
   public ConditionCatchPrettyPrinter(@NotNull IndentPrinter printer) {

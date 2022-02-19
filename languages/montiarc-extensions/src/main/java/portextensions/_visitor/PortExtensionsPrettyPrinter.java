@@ -20,8 +20,7 @@ public class PortExtensionsPrettyPrinter implements PortExtensionsHandler {
   protected IndentPrinter printer;
 
   public PortExtensionsPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public PortExtensionsPrettyPrinter(@NotNull IndentPrinter printer) {
