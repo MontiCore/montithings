@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution;
 
+import montithings.services.iot_manager.server.data.Distribution;
+
 import java.util.*;
 import java.util.Map.Entry;
-
-import montithings.services.iot_manager.server.data.Distribution;
 
 /**
  * This class is responsible for transforming instance names of instances that

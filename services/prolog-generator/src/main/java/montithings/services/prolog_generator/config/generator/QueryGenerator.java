@@ -5,7 +5,6 @@ import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import montithings.services.prolog_generator.config._ast.ASTConfig;
 import montithings.services.prolog_generator.config._parser.ConfigParser;
-import montithings.services.prolog_generator.facts._parser.FactsParser;
 
 import java.io.IOException;
 import java.util.Optional;

@@ -3,7 +3,6 @@ package montithings.types.check;
 
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;

@@ -4,7 +4,6 @@ package montithings.services.iot_manager.server.api;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-
 import montithings.services.iot_manager.server.DeployTargetProviderParser;
 import montithings.services.iot_manager.server.DeploymentManager;
 import montithings.services.iot_manager.server.IDeployTargetProvider;

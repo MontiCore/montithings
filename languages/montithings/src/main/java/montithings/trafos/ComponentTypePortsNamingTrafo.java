@@ -17,7 +17,8 @@ import montithings._visitor.MontiThingsTraverser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static montithings.util.TrafoUtil.*;
+import static montithings.util.TrafoUtil.findParents;
+import static montithings.util.TrafoUtil.getComponentByUnqualifiedName;
 
 public class ComponentTypePortsNamingTrafo extends BasicTransformations implements MontiThingsTrafo, MontiThingsTraverser {
   protected static final String TOOL_NAME = "ComponentTypePortsNamingTrafo";

@@ -1,30 +1,22 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
+import montithings.services.iot_manager.server.data.*;
+import montithings.services.iot_manager.server.data.constraint.processor.ConstraintContext;
+import montithings.services.iot_manager.server.data.constraint.processor.ConstraintPipeline;
+import montithings.services.iot_manager.server.distribution.*;
+import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
+import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
+import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
+import montithings.services.iot_manager.server.distribution.suggestion.Suggestion;
+import montithings.services.iot_manager.server.exception.DeploymentException;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import montithings.services.iot_manager.server.data.DeployClient;
-import montithings.services.iot_manager.server.data.DeploymentConfiguration;
-import montithings.services.iot_manager.server.data.DeploymentInfo;
-import montithings.services.iot_manager.server.data.Distribution;
-import montithings.services.iot_manager.server.data.NetworkInfo;
-import montithings.services.iot_manager.server.data.constraint.processor.ConstraintContext;
-import montithings.services.iot_manager.server.data.constraint.processor.ConstraintPipeline;
-import montithings.services.iot_manager.server.distribution.DefaultDistributionCalculator;
-import montithings.services.iot_manager.server.distribution.DistributionCalcRequest;
-import montithings.services.iot_manager.server.distribution.DistributionSuggestionRequest;
-import montithings.services.iot_manager.server.distribution.IDistributionCalculator;
-import montithings.services.iot_manager.server.distribution.IPrologGenerator;
-import montithings.services.iot_manager.server.distribution.RestPrologGenerator;
-import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
-import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
-import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
-import montithings.services.iot_manager.server.distribution.suggestion.Suggestion;
-import montithings.services.iot_manager.server.exception.DeploymentException;
 
 /**
  * Main class for managing the deployment.

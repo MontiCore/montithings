@@ -1,14 +1,13 @@
 package montithings.services.iot_manager.server.distribution.suggestion;
 
-import java.util.Arrays;
-
-import org.jpl7.Term;
-import org.jpl7.Util;
-
 import com.google.gson.JsonObject;
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.util.InstanceNameResolver;
+import org.jpl7.Term;
+import org.jpl7.Util;
+
+import java.util.Arrays;
 
 public class SuggestionHardware implements Suggestion {
   

@@ -1,19 +1,18 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
-import java.net.URL;
-import java.util.HashMap;
-
-import montithings.services.iot_manager.server.azure.AzureIotHubTargetProvider;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import montithings.services.iot_manager.server.azure.AzureIotHubTargetProvider;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.genesis.GenesisDeployTargetProvider;
 import montithings.services.iot_manager.server.k8s.K8sDeployTargetProvider;
 import montithings.services.iot_manager.server.util.ThrowingFunction;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+
+import java.net.URL;
+import java.util.HashMap;
 
 public class DeployTargetProviderParser {
   

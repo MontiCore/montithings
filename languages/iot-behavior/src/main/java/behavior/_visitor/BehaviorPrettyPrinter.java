@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package behavior._visitor;
 
-import arcbasis._ast.ASTPortAccess;
 import behavior._ast.*;
 import com.google.common.base.Preconditions;
 import de.monticore.prettyprint.IndentPrinter;

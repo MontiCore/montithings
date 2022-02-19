@@ -1,12 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution.suggestion;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.data.constraint.BasicConstraint.Type;
 import montithings.services.iot_manager.server.util.InstanceNameResolver;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SuggestionGEQ extends BasicSuggestion {
   

@@ -19,7 +19,6 @@ import conditioncatch._ast.ASTConditionCatch;
 import de.monticore.ast.ASTNode;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.ocl.oclexpressions._ast.ASTOCLAtPreQualification;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunitliterals.utility.SIUnitLiteralDecoder;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
@@ -42,7 +41,10 @@ import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.ConfigParams.SplittingMode;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
-import montithings.generator.visitor.*;
+import montithings.generator.visitor.FindAgoQualificationsVisitor;
+import montithings.generator.visitor.FindPublishedPortsVisitor;
+import montithings.generator.visitor.GuardExpressionVisitor;
+import montithings.generator.visitor.NoDataComparisionsVisitor;
 import montithings.util.ClassDiagramUtil;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
@@ -68,7 +70,6 @@ import java.util.stream.Collectors;
 
 import static montithings.generator.helper.TypesHelper.getConversionFactor;
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
-import static montithings.util.IdentifierUtils.getPortForName;
 
 /**
  * Helper class used in the template to generate target code of atomic or

@@ -6,7 +6,6 @@ import com.google.common.io.Files;
 import de.se_rwth.commons.Joiners;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.StringTransformations;
-import static com.google.common.collect.Iterables.transform;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._parser.MontiArcParser;
@@ -17,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import static com.google.common.collect.Iterables.transform;
 
 /**
  * Copy-Paste from MontiArcParser that uses MontiThingsParserTOP instead of MontiArcParserTOP

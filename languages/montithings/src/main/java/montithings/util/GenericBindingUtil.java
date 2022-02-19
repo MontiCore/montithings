@@ -1,9 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.util;
 
-import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._ast.ASTComponentType;
-import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.prettyprint.IndentPrinter;
