@@ -169,8 +169,7 @@ public class MTCLI {
     addCmdParameter(cmd, params, "br", "messageBroker");
 
     Configuration cfg = new ConfigurationPropertiesMapContributor(params);
-    MontiThingsConfiguration mtcfg = MontiThingsConfiguration.withConfiguration(cfg);
-    return mtcfg;
+    return MontiThingsConfiguration.withConfiguration(cfg);
   }
 
   /**
@@ -299,10 +298,7 @@ public class MTCLI {
     try {
       copyFromJar(srcName, Paths.get(targetDirectory.toPath() + File.separator + targetName));
     }
-    catch (IOException e) {
-      e.printStackTrace();
-    }
-    catch (URISyntaxException e) {
+    catch (IOException | URISyntaxException e) {
       e.printStackTrace();
     }
   }
@@ -315,7 +311,7 @@ public class MTCLI {
    * @param target copy destination directory
    */
   public void copyFromJar(String source, final Path target) throws URISyntaxException, IOException {
-    URI resource = MTCLI.class.getResource("").toURI();
+    URI resource = Objects.requireNonNull(MTCLI.class.getResource("")).toURI();
     FileSystem fileSystem;
     try {
       fileSystem = FileSystems.newFileSystem(resource, Collections.<String, String>emptyMap());
@@ -328,12 +324,10 @@ public class MTCLI {
 
     Files.walkFileTree(jarPath, new SimpleFileVisitor<Path>() {
 
-      private Path currentTarget;
-
       @Override
       public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
         throws IOException {
-        currentTarget = target.resolve(jarPath.relativize(dir).toString());
+        Path currentTarget = target.resolve(jarPath.relativize(dir).toString());
         Files.createDirectories(currentTarget);
         return FileVisitResult.CONTINUE;
       }

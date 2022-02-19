@@ -120,13 +120,13 @@ public class ComponentHelper {
     String endH = "/*.h\"\n";
 
     for (File subPackage : subPackagesPath) {
-      /**
-       * Example of build String with 2 subpackages:
-       *
-       * \"./packageName1/*.cpp\"\n
-       * \"./packageName1/*.h\"\n
-       * \"./packageName2/*.cpp\"\n
-       * \"./packageName2/*.h\"\n
+      /*
+        Example of build String with 2 subpackages:
+
+        \"./packageName1/*.cpp\"\n
+        \"./packageName1/*.h\"\n
+        \"./packageName2/*.cpp\"\n
+        \"./packageName2/*.h\"\n
        */
       packageNames += start + subPackage.getName() + endCpp;
       packageNames += start + subPackage.getName() + endH;
@@ -140,11 +140,11 @@ public class ComponentHelper {
     String end = ")\n";
 
     for (File subPackage : subPackagesPath) {
-      /**
-       * Example of build String with 2 subpackages:
-       *
-       * include_directories(./packageName1)\n
-       * include_directories(./packageName2)\n
+      /*
+        Example of build String with 2 subpackages:
+
+        include_directories(./packageName1)\n
+        include_directories(./packageName2)\n
        */
       packageNames += start + subPackage.getName() + end;
     }
@@ -163,17 +163,17 @@ public class ComponentHelper {
       // Split packageName
       String[] path = subCompPackageName.split("\\.");
       // Build correct package path
-      String correctPath = "";
+      StringBuilder correctPath = new StringBuilder();
       boolean leaveFirstOut = true;
       for (String dir : path) {
         if (leaveFirstOut) {
           leaveFirstOut = false;
           continue;
         }
-        correctPath += dir + "/";
+        correctPath.append(dir).append("/");
       }
       // Return correct path
-      return correctPath;
+      return correctPath.toString();
     }
     // If subcomponent is in the same package as component, then no package path before class import required
     return "";
@@ -224,17 +224,17 @@ public class ComponentHelper {
   public static Set<String> includeGenericComponentIterate(ComponentTypeSymbol comp,
     ComponentInstanceSymbol instance, List<ASTMCTypeArgument> types) {
     HashSet<String> result = new HashSet<>();
-    for (int i = 0; i < types.size(); i++) {
-      String typeName = TypesPrinter.printTypeArgument(types.get(i));
+    for (ASTMCTypeArgument type : types) {
+      String typeName = TypesPrinter.printTypeArgument(type);
       ComponentTypeSymbol boundComponent = GenericBindingUtil.getComponentFromString(
         GenericBindingUtil
           .getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) comp.getEnclosingScope()),
         typeName);
       if (boundComponent != null) {
         result.add(getPackagePath(comp, boundComponent) + typeName);
-        if (types.get(i) instanceof ASTMCBasicGenericType) {
+        if (type instanceof ASTMCBasicGenericType) {
           result.addAll(includeGenericComponentIterate(comp, instance,
-            ((ASTMCBasicGenericType) types.get(i)).getMCTypeArgumentList()));
+            ((ASTMCBasicGenericType) type).getMCTypeArgumentList()));
         }
       }
     }
@@ -279,9 +279,7 @@ public class ComponentHelper {
     }
 
     for (Optional<ComponentTypeSymbol> compSymbol : astmtComponentType.getMTImplements().getNamesSymbolList()) {
-      if (compSymbol.isPresent()) {
-        implementsComps.add(compSymbol.get());
-      }
+      compSymbol.ifPresent(implementsComps::add);
     }
 
     return implementsComps;
@@ -292,7 +290,6 @@ public class ComponentHelper {
    * by the given component
    */
   public static Set<PortSymbol> getPortsOfInterface(String interfName, ComponentTypeSymbol comp) {
-    Set<PortSymbol> result = new HashSet<>();
 
     Set<ComponentTypeSymbol> allInterfaces = getImplementedComponents(comp);
     if (allInterfaces.isEmpty()) {
@@ -312,9 +309,7 @@ public class ComponentHelper {
         + "that does not implement the given interfaces", interfName, comp.getFullName()));
     }
 
-    result.addAll(requestedInterface.get().getPorts());
-
-    return result;
+    return new HashSet<>(requestedInterface.get().getPorts());
   }
 
   @Deprecated
@@ -385,7 +380,7 @@ public class ComponentHelper {
    * Workaround for the fact that MontiArc returns parameters twice
    */
   public static List<VariableSymbol> getFields(ComponentTypeSymbol component) {
-    return component.getFields().stream().collect(Collectors.toList());
+    return new ArrayList<>(component.getFields());
   }
 
   public static List<VariableSymbol> getArcFieldVariables(ComponentTypeSymbol component) {
@@ -703,7 +698,7 @@ public class ComponentHelper {
 
   public static ASTMCJavaBlock getBehavior(ComponentTypeSymbol component) {
     List<ASTBehavior> behaviors = elementsOf(component).filter(ASTBehavior.class)
-      .filter(e -> e.isEmptyNames()).toList();
+      .filter(ASTBehavior::isEmptyNames).toList();
     Preconditions.checkArgument(!behaviors.isEmpty(),
       "0xMT800 Trying to print behavior of component \"" + component.getName()
         + "\" that has no behavior.");
@@ -752,18 +747,16 @@ public class ComponentHelper {
   }
 
   public static List<ASTBehavior> getPortSpecificBehaviors(ComponentTypeSymbol comp) {
-    List<ASTBehavior> behaviorList = elementsOf(comp).filter(ASTBehavior.class)
-      .filter(e -> !e.isEmptyNames()).toList();
-    return behaviorList;
+    return elementsOf(comp).filter(ASTBehavior.class).filter(e -> !e.isEmptyNames()).toList();
   }
 
   public static String getPortSpecificBehaviorName(ComponentTypeSymbol comp, ASTMTBehavior ast) {
-    String name = "";
+    StringBuilder name = new StringBuilder();
     for (String s : ast.getNameList()) {
-      name += "__";
-      name += StringTransformations.capitalize(s);
+      name.append("__");
+      name.append(StringTransformations.capitalize(s));
     }
-    return name;
+    return name.toString();
   }
 
   public static boolean hasPortSpecificBehavior(ComponentTypeSymbol comp) {
@@ -789,7 +782,9 @@ public class ComponentHelper {
   }
 
   public static boolean hasBehavior(ComponentTypeSymbol component) {
-    return !elementsOf(component).filter(ASTBehavior.class).filter(e -> e.isEmptyNames()).isEmpty();
+    return !elementsOf(component)
+      .filter(ASTBehavior.class)
+      .filter(ASTBehavior::isEmptyNames).isEmpty();
   }
 
   public static boolean hasStatechart(ComponentTypeSymbol component) {
@@ -830,12 +825,12 @@ public class ComponentHelper {
   }
 
   public static String getPortSpecificInitBehaviorName(ComponentTypeSymbol comp, ASTInitBehavior ast) {
-    String name = "";
+    StringBuilder name = new StringBuilder();
     for (String s : ast.getNameList()) {
-      name += "__";
-      name += StringTransformations.capitalize(s);
+      name.append("__");
+      name.append(StringTransformations.capitalize(s));
     }
-    return name;
+    return name.toString();
   }
 
   public static Set<PortSymbol> getPublishedPortsForInitBehavior(ComponentTypeSymbol component) {
@@ -855,7 +850,8 @@ public class ComponentHelper {
   }
 
   public static boolean hasInitBehavior(ComponentTypeSymbol component) {
-    return !elementsOf(component).filter(ASTInitBehavior.class).filter(e -> e.isEmptyNames()).isEmpty();
+    return !elementsOf(component).filter(ASTInitBehavior.class)
+      .filter(ASTInitBehavior::isEmptyNames).isEmpty();
   }
 
   public static boolean hasInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
@@ -877,7 +873,8 @@ public class ComponentHelper {
   }
 
   public static String getInitBehaviorName(ComponentTypeSymbol component, ASTBehavior behavior) {
-    return getPortSpecificInitBehaviorName(component, getInitBehavior(component, behavior));
+    return getPortSpecificInitBehaviorName(component,
+      Objects.requireNonNull(getInitBehavior(component, behavior)));
   }
 
   public static List<ASTInitBehavior> getInitBehaviorsWithoutBehaviors(ComponentTypeSymbol component) {
@@ -906,10 +903,9 @@ public class ComponentHelper {
   //============================================================================
 
   public static List<ASTCondition> getConditions(ComponentTypeSymbol component) {
-    List<ASTCondition> conditions = new ArrayList<>();
 
     // get uncatched conditions
-    conditions.addAll(elementsOf(component)
+    List<ASTCondition> conditions = new ArrayList<>(elementsOf(component)
       .filter(ASTMTCondition.class)
       .transform(ASTMTCondition::getCondition)
       .toList());
@@ -998,23 +994,18 @@ public class ComponentHelper {
 
   public static boolean isSIUnitPort(ASTPortAccess portAccess) {
     Optional<PortSymbol> ps = getPortSymbolFromPortAccess(portAccess);
-    if (ps.isPresent()) {
-      return isSIUnitPort(ps.get());
-    }
-    return false;
+    return ps.filter(ComponentHelper::isSIUnitPort).isPresent();
   }
 
   public static boolean isSIUnitPort(PortSymbol portSymbol) {
-    if (portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit) {
-      return true;
-    }
-    return false;
+    return portSymbol.getType() instanceof SymTypeOfNumericWithSIUnit;
   }
 
   public static ASTComponentInstantiation getInstantiation(ComponentInstanceSymbol instance) {
     ASTNode node = instance.getEnclosingScope().getSpanningSymbol().getAstNode();
     if (!(node instanceof ASTComponentType)) {
       Log.error("0xMT0789 instance is not spanned by ASTComponentType.");
+      System.exit(-1); // unreachable, but silences static analyzer
     }
     Optional<ASTComponentInstantiation> result = ((ASTComponentType) node)
       .getSubComponentInstantiations()
@@ -1022,12 +1013,13 @@ public class ComponentHelper {
       .findFirst();
     if (!result.isPresent()) {
       Log.error("0xMT0790 instance not found.");
+      System.exit(-1); // unreachable, but silences static analyzer
     }
     return result.get();
   }
 
   public static List<String> getSIUnitPortNames(ComponentTypeSymbol comp) {
-    List names = new ArrayList();
+    List<String> names = new ArrayList<>();
     for (PortSymbol ps : comp.getAllIncomingPorts()) {
       if (ps.getType() instanceof SymTypeOfNumericWithSIUnit) {
         names.add(ps.getName());
@@ -1070,7 +1062,7 @@ public class ComponentHelper {
 
   public static List<Pair<ComponentTypeSymbol, String>> getExecutableInstances(
     ComponentTypeSymbol topComponent, ConfigParams config) {
-    if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF) {
+    if (config.getSplittingMode() == SplittingMode.OFF) {
       // If splitting is turned off, splitting hints are ignored.
       return getInstances(topComponent);
     }
@@ -1091,8 +1083,10 @@ public class ComponentHelper {
       if (cfg.isPresent()) {
         CompConfigSymbol cc = cfg.get();
         ASTCompConfig acc = cc.getAstNode();
-        return !FluentIterable.from(acc.getMTCFGTagList()).filter(ASTSeparationHint.class)
-          .isEmpty();
+        return acc.getMTCFGTagList().stream()
+          .filter(ASTSeparationHint.class::isInstance)
+          .map(ASTSeparationHint.class::cast)
+          .findAny().isPresent();
       }
     }
     return false;

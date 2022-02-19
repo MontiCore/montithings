@@ -217,8 +217,7 @@ public class MTGenerator {
 
   public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories,
     List<String> sensorActuatorPorts, ConfigParams config) {
-    List sortedDirs = new ArrayList<String>();
-    sortedDirs.addAll(subdirectories);
+    List<String> sortedDirs = new ArrayList<>(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
     fg.generate(targetPath, "CMakeLists", ".txt",

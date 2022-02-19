@@ -57,7 +57,7 @@ public class CLILogger extends Log {
   /**
    * Is level TRACE enabled for the given log name?
    *
-   * @param logName
+   * @param logName custom name for log, e.g. a method or class name
    * @return whether level TRACE is enabled for the given log name
    */
   @Override protected boolean doIsTraceEnabled(String logName) {
@@ -67,7 +67,7 @@ public class CLILogger extends Log {
   /**
    * Is level DEBUG enabled for the given log name?
    *
-   * @param logName
+   * @param logName custom name for log, e.g. a method or class name
    * @return whether level DEBUG is enabled for the given log name
    */
   @Override protected boolean doIsDebugEnabled(String logName) {
@@ -77,7 +77,7 @@ public class CLILogger extends Log {
   /**
    * Is level INFO enabled for the given log name?
    *
-   * @param logName
+   * @param logName custom name for log, e.g. a method or class name
    * @return whether level INFO is enabled for the given log name
    */
   @Override protected boolean doIsInfoEnabled(String logName) {
