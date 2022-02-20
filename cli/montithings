@@ -43,8 +43,11 @@ function progress {
   if [ $? -ne 0 ]
   then
     printf "\r\033[K[$1] Failed.\n"
+    printf "$(cat $2 | grep "fatal error")"
+    [ "$(grep -c "fatal error" $2)" -gt 0 ] && printf "\n"
     printf "$(tail -n 1 $2)\n"
-    rm ${2}
+    mv ${2} build.log
+    echo "Complete log can be found at target/generated-sources/build.log"
     exit 1
   fi
 
@@ -84,7 +87,7 @@ then
     ./build.sh >>"$output_file" 2>>"$output_file" &
   fi
   progress "Building" "$output_file"
-  rm ${output_file}
+  mv ${output_file} build.log
   cd build/bin/
   if [ "$2" = "local" ]
   then
