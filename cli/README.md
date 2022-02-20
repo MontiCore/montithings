@@ -1,7 +1,9 @@
 <!-- (c) https://github.com/MontiCore/monticore -->
 # MontiThings Tool
 The MontiThings tool is an all-in-one solution and makes running MontiThings
-just as easy as writing `montithings run componentname`. 
+just as easy as writing `montithings run componentname`.
+The command line tool requires running the [native installation](../docs/install/native.md)
+(to install MontiThings' dependencies) and is only available for Linux / macOS.
 
 ## Installing
 1. Place the `montithings` file in this project in a folder in your home folder 
@@ -36,6 +38,8 @@ Try it out with the application under `applications/mqtt-ports`
 3. To inspect the logs of the `hierarchy.Example.sink` component, call `montithings logs -f hierarchy.Example.sink`.
    Stop watching the logs by pressing CTRL+C. 
 4. To stop the backgrounded application, call `montithings stop`.
+
+<img src="../docs/ScreenRecording.gif" width="700px"/>
 
 # MontiThings CLI
 

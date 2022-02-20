@@ -48,13 +48,13 @@ The `Example` component contains two subcomponents. The `Source` component produ
 values, the `Sink` component consumes these values and displays them on the
 terminal.
 
-<img src="docs/BasicInputOutput.png" alt="drawing" height="200px"/>
+<img src="docs/BasicInputOutputPackaged.png" alt="drawing" height="200px"/>
 
 We support four ways of building an application:
 1. Using the command line [(*instructions*)](./docs/building-apps/cmd.md)
 1. Using the [CLion][clion] IDE [(*instructions*)](./docs/building-apps/clion.md)
 1. Using [Docker](docker) [(*instructions*)](./docs/building-apps/docker.md)
-1. Using MontiThings' command line tool [(*instructions*)](./docs/building-apps/tool.md)
+1. Using MontiThings' command line tool [(*instructions*)](./cli/README.md)
 
 <img src="docs/ScreenRecording.gif" width="700px"/>
 
@@ -125,4 +125,5 @@ https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICOR
 [python]: https://www.python.org/
 [pip]: https://pypi.org/project/pip/
 [paho-mqtt]: https://pypi.org/project/paho-mqtt/
+[jss-preprint]: https://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf
 [jss-preprint]: https://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf
