@@ -4,10 +4,10 @@ programname=$0
 JAR="$HOME/.montithings/jar/cli-7.0.0-SNAPSHOT-cli.jar"
 
 function usage {
-  echo "usage: montithings [run [local|docker]|logs [-f]|stop] COMPONENT"
-  echo "  run           build and execute component"
+  echo "usage: montithings [run [local|docker] | logs [-f] | stop] COMPONENT"
+  echo "  run           build and execute component as single binary"
   echo "  run local     build and execute component as distributed application"
-  echo "  run docke     build and execute component as distributed application using Docker"
+  echo "  run docker    build and execute component as distributed application using Docker"
   echo "  logs          show the logs of component instance (cat)"
   echo "  logs -f       show the logs of component instance (tail -f)"
   echo "  stop          stop the execution of component (only for distributed)"
@@ -43,8 +43,11 @@ function progress {
   if [ $? -ne 0 ]
   then
     printf "\r\033[K[$1] Failed.\n"
+    printf "$(cat $2 | grep "fatal error")"
+    [ "$(grep -c "fatal error" $2)" -gt 0 ] && printf "\n"
     printf "$(tail -n 1 $2)\n"
-    rm ${2}
+    mv ${2} build.log
+    echo "Complete log can be found at target/generated-sources/build.log"
     exit 1
   fi
 
@@ -66,6 +69,11 @@ then
   output_file=$(mktemp)
   if [ "$2" = "local" ] || [ "$2" = "docker" ]
   then
+    if [ "$#" -ne 3 ]
+    then
+      usage
+      exit 1
+    fi
     java -jar $JAR --mainComp $3 --splitting local -b mqtt >>"$output_file" 2>>"$output_file" &
   else
     java -jar $JAR --mainComp $2 >>"$output_file" 2>>"$output_file" &
@@ -79,7 +87,7 @@ then
     ./build.sh >>"$output_file" 2>>"$output_file" &
   fi
   progress "Building" "$output_file"
-  rm ${output_file}
+  mv ${output_file} build.log
   cd build/bin/
   if [ "$2" = "local" ]
   then
