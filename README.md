@@ -27,11 +27,6 @@ While MontiArc generates code for simulations, MontiThings generates code to be 
 MontiThings takes models and handwritten code from its users together with a control script.
 MontiThings uses these elements to generate a C++ project including various scripts, e.g., for building the project, or packaging it in Docker images.
 
-# Demo
-
-![](./docs/ScreenRecording.gif)
-
-
 # Installation
 
 This section describes some of the many possible ways to use MontiThings.
@@ -55,10 +50,13 @@ terminal.
 
 <img src="docs/BasicInputOutput.png" alt="drawing" height="200px"/>
 
-We support three ways of building an application:
-1. Using the command line [(*instructions*)](./docs/building-apps/native.md)
+We support four ways of building an application:
+1. Using the command line [(*instructions*)](./docs/building-apps/cmd.md)
 1. Using the [CLion][clion] IDE [(*instructions*)](./docs/building-apps/clion.md)
 1. Using [Docker](docker) [(*instructions*)](./docs/building-apps/docker.md)
+1. Using MontiThings' command line tool [(*instructions*)](./docs/building-apps/tool.md)
+
+<img src="docs/ScreenRecording.gif" width="700px"/>
 
 # FAQs
 
@@ -66,7 +64,7 @@ We support three ways of building an application:
 
 # Reference
 
-Please cite MontiThings using it's publication in the Journal of Systems and Software.
+Please cite MontiThings using it's publication in the Journal of Systems and Software  [(Free Preprint Link)][jss-preprint].
 > Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann,
 MontiThings: Model-Driven Development and Deployment of Reliable IoT Applications, In: W.K. Chan, editor, Journal of Systems and Software (JSS), Volume 183, January 2022, 111087, Elsevier, https://doi.org/10.1016/j.jss.2021.111087.
 
@@ -127,3 +125,4 @@ https://github.com/MontiCore/monticore/blob/dev/00.org/Licenses/LICENSE-MONTICOR
 [python]: https://www.python.org/
 [pip]: https://pypi.org/project/pip/
 [paho-mqtt]: https://pypi.org/project/paho-mqtt/
+[jss-preprint]: https://www.se-rwth.de/publications/MontiThings-Model-driven-Development-and-Deployment-of-Reliable-IoT-Applications.pdf
