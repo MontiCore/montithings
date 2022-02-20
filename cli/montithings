@@ -4,10 +4,10 @@ programname=$0
 JAR="$HOME/.montithings/jar/cli-7.0.0-SNAPSHOT-cli.jar"
 
 function usage {
-  echo "usage: montithings [run [local|docker]|logs [-f]|stop] COMPONENT"
-  echo "  run           build and execute component"
+  echo "usage: montithings [run [local|docker] | logs [-f] | stop] COMPONENT"
+  echo "  run           build and execute component as single binary"
   echo "  run local     build and execute component as distributed application"
-  echo "  run docke     build and execute component as distributed application using Docker"
+  echo "  run docker    build and execute component as distributed application using Docker"
   echo "  logs          show the logs of component instance (cat)"
   echo "  logs -f       show the logs of component instance (tail -f)"
   echo "  stop          stop the execution of component (only for distributed)"
@@ -66,6 +66,11 @@ then
   output_file=$(mktemp)
   if [ "$2" = "local" ] || [ "$2" = "docker" ]
   then
+    if [ "$#" -ne 3 ]
+    then
+      usage
+      exit 1
+    fi
     java -jar $JAR --mainComp $3 --splitting local -b mqtt >>"$output_file" 2>>"$output_file" &
   else
     java -jar $JAR --mainComp $2 >>"$output_file" 2>>"$output_file" &
