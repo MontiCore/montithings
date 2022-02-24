@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.8.2)
 project("${pckg}.${port}")
 set(CMAKE_CXX_STANDARD 11)
 
-<#if config.getSplittingMode().toString() != "OFF"
+<#if !(config.getSplittingMode().toString() == "OFF")
   && config.getTargetPlatform().toString() != "DSA_VCG"
   && config.getTargetPlatform().toString() != "DSA_LAB"
   && config.getMessageBroker().toString() == "DDS"> <#-- todo long expression-->
@@ -53,7 +53,7 @@ endif()
 
 <#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
 && config.getTargetPlatform().toString() != "DSA_LAB"
-&& config.getSplittingMode().toString() != "OFF"
+&& !(config.getSplittingMode().toString() == "OFF")
 && config.getMessageBroker().toString() == "OFF">
 <#if needsNng>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
@@ -110,10 +110,10 @@ else()
   <#if !(config.getMessageBroker().toString() == "DDS")>
     set(EXCLUDE_DDS 1)
   </#if>
-  <#if config.getMessageBroker().toString() != "MQTT"> <#-- todo invert -->
+  <#if !(config.getMessageBroker().toString() == "MQTT")>
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")> <#-- todo invert splittingmode-->
+  <#if !(config.getMessageBroker().toString() == "OFF" && !(config.getSplittingMode().toString() == "OFF"))>
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
 </#if>
@@ -145,7 +145,7 @@ install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${pckg}.${port} ${r"${MOSQUITTO_LIB}"})
       endif()
-    <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+    <#elseif !(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "DDS">
       target_link_libraries(${pckg}.${port} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>

@@ -95,7 +95,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
 </#if>
 
 <#if comp.isDecomposed()>
-  <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF"> <#-- todo many usages, do both components individually -->
+  <#if !(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "OFF"> <#-- todo many usages, do both components individually -->
     ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
   </#if>
   <#if config.getSplittingMode().toString() == "OFF">

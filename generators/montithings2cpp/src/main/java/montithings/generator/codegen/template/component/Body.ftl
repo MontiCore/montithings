@@ -3,7 +3,7 @@ ${tc.signature("comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if comp.isDecomposed()>
-  <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
+  <#if !(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "OFF">
     ${tc.includeArgs("template.component.helper.SubcompMethodDefinitions", [comp, config])}
   </#if>
 

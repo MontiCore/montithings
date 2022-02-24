@@ -19,7 +19,7 @@ endif()
 
 <#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
 && config.getTargetPlatform().toString() != "DSA_LAB"
-&& config.getSplittingMode().toString() != "OFF"
+&& !(config.getSplittingMode().toString() == "OFF")
 && config.getMessageBroker().toString() == "OFF">
 <#if needsNng>
     if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})

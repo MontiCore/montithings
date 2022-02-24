@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getSplittingMode().toString() != "OFF"> <#-- todo invert -->
+<#if !(config.getSplittingMode().toString() == "OFF")>
 free(ddsArgv[0]);
 free(ddsArgv[2]);
 </#if>

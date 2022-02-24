@@ -5,7 +5,7 @@ ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "co
 <#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "">
-<#if config.getSplittingMode().toString() != "OFF">
+<#if !(config.getSplittingMode().toString() == "OFF")>
     <#assign commonCodePrefix = "../">
 </#if>
 
@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD 11)
 </#if>
 
 
-<#if config.getSplittingMode().toString() != "OFF"
+<#if !(config.getSplittingMode().toString() == "OFF")
   && config.getTargetPlatform().toString() != "DSA_VCG"
   && config.getTargetPlatform().toString() != "DSA_LAB"
   && config.getMessageBroker().toString() == "DDS">
@@ -78,7 +78,7 @@ endif()
 
 <#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
                  && config.getTargetPlatform().toString() != "DSA_LAB"
-                 && config.getSplittingMode().toString() != "OFF"
+                 && !(config.getSplittingMode().toString() == "OFF")
                  && config.getMessageBroker().toString() == "OFF">
 <#if needsNng>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
@@ -146,13 +146,13 @@ include_directories("hwc" ${r"${dir_list}"})
 </#if>
 
 <#if test || config.getSplittingMode().toString() == "OFF">
-  <#if config.getMessageBroker().toString() != "DDS"> <#-- todo invert -->
+  <#if !(config.getMessageBroker().toString() == "DDS")>
     set(EXCLUDE_DDS 1)
   </#if>
-  <#if config.getMessageBroker().toString() != "MQTT"> <#-- todo invert -->
+  <#if !(config.getMessageBroker().toString() == "MQTT")>
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")> <#-- todo invert -->
+  <#if !(config.getMessageBroker().toString() == "OFF") || config.getSplittingMode().toString() == "OFF">
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
   <#if (config.getLogTracing().toString() == "ON")>
@@ -191,7 +191,7 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
       endif()
-    <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+    <#elseif !(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "DDS">
       target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>

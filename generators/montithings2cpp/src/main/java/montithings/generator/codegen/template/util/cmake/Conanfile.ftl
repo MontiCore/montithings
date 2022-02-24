@@ -4,7 +4,7 @@ ${tc.signature("config", "existsHWC")}
 <#assign needsMosquitto = config.getMessageBroker().toString() == "MQTT">
 <#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
                  && config.getTargetPlatform().toString() != "DSA_LAB"
-                 && config.getSplittingMode().toString() != "OFF"
+                 && !(config.getSplittingMode().toString() == "OFF")
                  && config.getMessageBroker().toString() == "OFF">
 
 [requires]

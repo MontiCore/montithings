@@ -4,7 +4,7 @@ ${tc.signature("comp", "config")}
 
 LOG(DEBUG) << "Started.";
 
-<#if ComponentHelper.isTimesync(comp) || (config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF")> <#-- todo long expression-->
+<#if ComponentHelper.isTimesync(comp) || (!(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "OFF")> <#-- todo long expression-->
   while (true)
   {
   auto end = std::chrono::high_resolution_clock::now()

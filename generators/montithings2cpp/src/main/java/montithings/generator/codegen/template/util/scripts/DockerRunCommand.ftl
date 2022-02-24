@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("typeName", "instanceName", "config")}
-<#if config.getSplittingMode().toString() != "OFF">
+<#if !(config.getSplittingMode().toString() == "OFF")>
     <#assign lineBreak = "\\">
 <#else>
     <#assign lineBreak = ")">
@@ -16,7 +16,7 @@ CONTAINER=$(docker run -d --rm \
   -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini \
 </#if>
 --name ${instanceName} -h ${instanceName} ${typeName?lower_case}:latest --name ${instanceName} ${lineBreak}
-<#if config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF">
+<#if config.getMessageBroker().toString() == "OFF" && !(config.getSplittingMode().toString() == "OFF")>
   --managementPort 30006 --dataPortArg 30007)
 </#if>
 <#if config.getMessageBroker().toString() == "MQTT">
