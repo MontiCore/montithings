@@ -2,8 +2,8 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if !(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "DDS">
-  <#if config.getSplittingMode().toString() == "DISTRIBUTED">
+<#if !splittingModeDisabled && brokerIsDDS>
+  <#if splittingModeIsDistributed>
       <#assign argc = 5>
   <#else>
       <#assign argc = 3>
@@ -16,7 +16,7 @@ ${tc.signature("comp", "config")}
   ddsArgv[0] = strdup(instanceNameArg.getValue().c_str());
   ddsArgv[1] = dds1;
   ddsArgv[2] = strdup(dcpsConfigArg.getValue().c_str());
-  <#if config.getSplittingMode().toString() == "DISTRIBUTED">
+  <#if splittingModeIsDistributed>
     ddsArgv[3] = dds3;
     ddsArgv[4] = strdup(dcpsInfoRepoArg.getValue().c_str());
   </#if>

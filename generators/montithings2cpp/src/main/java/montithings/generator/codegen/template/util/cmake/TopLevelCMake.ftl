@@ -5,7 +5,7 @@ ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "co
 <#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "">
-<#if !(config.getSplittingMode().toString() == "OFF")>
+<#if !splittingModeDisabled>
     <#assign commonCodePrefix = "../">
 </#if>
 
@@ -13,17 +13,14 @@ cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
 
-<#if config.getSplittingMode().toString() == "OFF">
+<#if splittingModeDisabled>
   <#list sensorActuatorPorts as sensorActuatorPort >
     add_subdirectory ("${sensorActuatorPort}")
   </#list>
 </#if>
 
 
-<#if !(config.getSplittingMode().toString() == "OFF")
-  && config.getTargetPlatform().toString() != "DSA_VCG"
-  && config.getTargetPlatform().toString() != "DSA_LAB"
-  && config.getMessageBroker().toString() == "DDS">
+<#if needsDDS>
   # DDS specificcd
   find_package(OpenDDS REQUIRED)
 
@@ -56,13 +53,13 @@ SET(${r"${return_list}"} ${r"${dir_list}"})
 ENDMACRO()
 SET(dir_list "")
 
-<#if config.getTargetPlatform().toString() == "DSA_VCG"
-|| config.getTargetPlatform().toString() == "DSA_LAB">
+<#if targetPlatformIsDsaVcg
+|| targetPlatformIsDsaLab>
   ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
-<#if config.getTargetPlatform().toString() == "RASPBERRY">
+<#if targetPlatformIsRaspberry>
   ${tc.includeArgs("template.util.cmake.platform.raspberrypi.Parameters", [config, commonCodePrefix])}
-  <#if config.getSplittingMode().toString() == "OFF">
+  <#if splittingModeDisabled>
     add_subdirectory(lib/lib/raspberrypi)
   </#if>
 </#if>
@@ -76,10 +73,10 @@ include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
 conan_basic_setup()
 endif()
 
-<#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
-                 && config.getTargetPlatform().toString() != "DSA_LAB"
-                 && !(config.getSplittingMode().toString() == "OFF")
-                 && config.getMessageBroker().toString() == "OFF">
+<#assign needsNng = !targetPlatformIsDsaVcg
+                 && !targetPlatformIsDsaLab
+                 && !splittingModeDisabled
+                 && brokerDisabled>
 <#if needsNng>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   find_package(nng 1.3.0 CONFIG REQUIRED)
@@ -129,7 +126,7 @@ file(GLOB_RECURSE HWC_SOURCES "hwc/*.cpp" "hwc/*.h")
 HEADER_DIRECTORIES("hwc" dir_list)
 include_directories("hwc" ${r"${dir_list}"})
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   # Include Mosquitto Library
   if(APPLE)
@@ -145,17 +142,17 @@ include_directories("hwc" ${r"${dir_list}"})
   endif()
 </#if>
 
-<#if test || config.getSplittingMode().toString() == "OFF">
-  <#if !(config.getMessageBroker().toString() == "DDS")>
+<#if test || splittingModeDisabled>
+  <#if !(brokerIsDDS)>
     set(EXCLUDE_DDS 1)
   </#if>
-  <#if !(config.getMessageBroker().toString() == "MQTT")>
+  <#if !(brokerIsMQTT)>
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(config.getMessageBroker().toString() == "OFF") || config.getSplittingMode().toString() == "OFF">
+  <#if !(brokerDisabled) || splittingModeDisabled>
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
-  <#if (config.getLogTracing().toString() == "ON")>
+  <#if (logTracingEnabled)>
     set(ENABLE_LOG_TRACING 1)
   </#if>
   add_subdirectory(montithings-RTE)
@@ -181,17 +178,17 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
 <#if !test>
   add_executable(${comp.getFullName()} ${Utils.getDeployFile(comp)})
   target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
-  <#if config.getTargetPlatform().toString() == "DSA_VCG"
-  || config.getTargetPlatform().toString() == "DSA_LAB">
+  <#if targetPlatformIsDsaVcg
+  || targetPlatformIsDsaLab>
       ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [comp.getFullName()])}
-  <#elseif config.getTargetPlatform().toString() == "RASPBERRY">
+  <#elseif targetPlatformIsRaspberry>
       ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [comp.getFullName()])}
   <#else>
-    <#if config.getMessageBroker().toString() == "MQTT">
+    <#if brokerIsMQTT>
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
       endif()
-    <#elseif !(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "DDS">
+    <#elseif !splittingModeDisabled && brokerIsDDS>
       target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>

@@ -4,7 +4,7 @@ ${tc.signature("comp","config")}
 std::string topic = "";
 
 bool isRecordingEnabled = false;
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
     isRecordingEnabled = true;
 </#if>
 

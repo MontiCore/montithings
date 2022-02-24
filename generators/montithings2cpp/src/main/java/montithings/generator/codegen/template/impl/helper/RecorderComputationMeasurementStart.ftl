@@ -3,6 +3,6 @@
 ${tc.signature("comp", "config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
     auto timeStartCalc = std::chrono::high_resolution_clock::now();
 </#if>

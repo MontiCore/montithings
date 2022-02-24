@@ -4,7 +4,7 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
-<#if config.getSplittingMode().toString() == "OFF">
+<#if splittingModeDisabled>
   docker build -t ${comp.getFullName()?lower_case}:latest .
 <#else>
   <#-- helper list to detect duplicated keys -->
@@ -18,7 +18,7 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
     </#if>
   </#list>
 </#if>
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   <#list sensorActuatorPorts as port >
 
       docker build --target ${port} -t ${port?lower_case}:latest .

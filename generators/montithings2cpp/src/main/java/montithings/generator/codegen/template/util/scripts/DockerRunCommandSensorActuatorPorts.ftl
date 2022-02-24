@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("typeName", "instanceName", "config")}
-<#if !(config.getSplittingMode().toString() == "OFF")>
+<#if !splittingModeDisabled>
     <#assign lineBreak = "\\">
 <#else>
     <#assign lineBreak = ")">

@@ -2,7 +2,7 @@
 ${tc.signature("comp","config")}
 
 while (!this->tryInitializeDDS (argc, argv)) {
-<#if config.getSplittingMode().toString() == "LOCAL">
+<#if splittingModeIsLocal>
     CLOG (DEBUG, "DDS") << "Creating dds instances failed. Is multicast enabled/allowed?";
 <#else>
     CLOG (DEBUG, "DDS") << "Creating dds instances failed. Is the DCPSInfoRepo service running?";

@@ -74,7 +74,7 @@ protected:
 
 
   void setNextValue(T nextVal) override {
-    <#if config.getRecordingMode().toString() == "ON" && isSensor>
+    <#if recordingEnabled && isSensor>
         recordMessage(nextVal);
     </#if>
 
@@ -89,7 +89,7 @@ protected:
   }
 
 
-    <#if config.getMessageBroker().toString() == "DDS">
+    <#if brokerIsDDS>
     ${Names.getSimpleName(portTemplateName)?cap_first}Port (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
   <#else>
     ${Names.getSimpleName(portTemplateName)?cap_first}Port (std::string instanceName) : instanceName(instanceName)

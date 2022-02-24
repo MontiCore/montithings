@@ -6,8 +6,8 @@ ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
 #include "Port.h"
 #include "InOutPort.h"
 <#list comp.getPorts() as port>
-    <#assign addPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
-    <#if config.getTemplatedPorts()?seq_contains(port) && addPort!="Optional.empty"> <#-- todo long expression-->
+    <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
+    <#if dummyName7>
       #include "${Names.getSimpleName(addPort.get())?cap_first}.h"
     </#if>
 </#list>
@@ -25,7 +25,7 @@ ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
 #include "easyloggingpp/easylogging++.h"
 #include ${"<iostream>"}
 #include <fstream>
-<#if config.getMessageBroker().toString() == "MQTT"> <#-- todo many usages -->
+<#if brokerIsMQTT>
   #include "MqttClient.h"
   #include "MqttPort.h"
   #include "Utils.h"
@@ -44,6 +44,6 @@ ${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
     ${tc.includeArgs("template.result.hooks.Include", [comp])}
 </#if>
 
-<#if config.getRecordingMode().toString() == "ON"> <#-- todo many usages -->
+<#if recordingEnabled>
   #include "record-and-replay/recorder/HWCInterceptor.h"
 </#if>

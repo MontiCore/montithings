@@ -6,7 +6,7 @@ CLOG(DEBUG, "DDS") << "DDSClient | Received connection configuration: " << paylo
 std::string connection = payload;
 
 bool isRecordingEnabled = false;
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
     isRecordingEnabled = true;
 </#if>
 

@@ -8,10 +8,10 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::init(){
     super.init();
 </#if>
 
-<#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp,config)> <#-- todo long expression-->
+<#if dummyName8>
     <#list comp.getAstNode().getConnectors() as connector>
         <#list connector.getTargetList() as target>
-            <#if ComponentHelper.isIncomingPort(comp, target)  && (config.getMessageBroker().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp,config))> <#-- todo long expression (just the second part of &&, two usages-->
+            <#if ComponentHelper.isIncomingPort(comp, target)  && (dummyName10)>
                 // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
                 ${Utils.printGetPort(target)}->setDataProvidingPort (${Utils.printGetPort(connector.getSource())});
                 <#if ComponentHelper.isSIUnitPort(connector.getSource())>

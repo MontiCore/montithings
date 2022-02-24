@@ -3,19 +3,19 @@ ${tc.signature("subdirectories", "sensorActuatorPorts", "config", "existsHWC")}
 
 cmake_minimum_required (VERSION 3.8)
 project ("MontiThings Application")
-<#if !(config.getMessageBroker().toString() == "DDS")>
+<#if !(brokerIsDDS)>
   set(EXCLUDE_DDS 1)
 </#if>
-<#if !(config.getMessageBroker().toString() == "MQTT")>
+<#if !(brokerIsMQTT)>
   set(EXCLUDE_MQTT 1)
 </#if>
-<#if (!(config.getSplittingMode().toString() == "OFF")) && (config.getMessageBroker().toString() != "OFF")>
+<#if (!splittingModeDisabled) && (config.getMessageBroker().toString() != "OFF")>
   set(EXCLUDE_COMM_MANAGER 1)
 </#if>
-<#if (config.getLogTracing().toString() == "ON")> <#-- todo many usages -->
+<#if (logTracingEnabled)>
   set(ENABLE_LOG_TRACING 1)
 </#if>
-<#if config.getTargetPlatform().toString() == "RASPBERRY"> <#-- todo many usages -->
+<#if targetPlatformIsRaspberry>
   add_compile_options(${"$<$<CXX_COMPILER_ID:GNU>"}:-Wno-psabi>)
   add_subdirectory(lib/lib/raspberrypi)
 </#if>

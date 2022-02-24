@@ -93,7 +93,7 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
 
 <#if ComponentHelper.retainState(comp)>
   json json__state = ${Identifier.getStateName()}.serializeState ();
-  <#if config.getMessageBroker().toString() == "MQTT">
+  <#if brokerIsMQTT>
     <#-- if there's no incoming ports, we have no chance of replaying and need
          to store every message. If there's at least one incoming port it is sufficient
          to save every couple of messages and replay everything after last save -->

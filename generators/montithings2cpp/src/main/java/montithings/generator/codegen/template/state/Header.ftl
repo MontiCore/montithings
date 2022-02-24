@@ -10,7 +10,7 @@ ${Utils.printIncludes(comp,config)}
 #include ${"<fstream>"}
 #include ${"<future>"}
 #include ${"<thread>"}
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   #include "MqttClient.h"
 </#if>
 
@@ -32,7 +32,7 @@ class ${className}
         </#list> >
     </#if>
 </#if>
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   <#if comp.isPresentParentComponent()>,<#else>:</#if>
   public MqttUser
 </#if>
@@ -59,14 +59,14 @@ bool replayFinished = false;
 bool replayTimeout = false;
 bool receivedState = false;
 bool restoredState = false;
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
 MqttClient* mqttClientInstance;
 </#if>
 
 public:
 void setInstanceName (const std::string &instanceName);
-virtual void setup (<#if config.getMessageBroker().toString() == "MQTT">MqttClient* passedMqttClientInstance</#if>);
-<#if config.getMessageBroker().toString() == "MQTT">
+virtual void setup (<#if brokerIsMQTT>MqttClient* passedMqttClientInstance</#if>);
+<#if brokerIsMQTT>
   virtual void requestState ();
   virtual void requestReplay ();
   virtual void publishState (json state);
@@ -82,7 +82,7 @@ bool isReplayTimeout () const;
 bool isReceivedState () const;
 bool isRestoredState () const;
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
 </#if>
 };

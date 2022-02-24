@@ -5,10 +5,10 @@ ${tc.signature("comp","config","className")}
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::start(){
-<#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
+<#if dummyName2>
     threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::run, this});
 <#else>
-    <#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp, config)>
+    <#if dummyName8>
         <#list comp.subComponents as subcomponent >
             this->${subcomponent.getName()}.start();
         </#list>

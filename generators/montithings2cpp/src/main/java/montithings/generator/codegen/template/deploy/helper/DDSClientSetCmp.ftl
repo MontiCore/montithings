@@ -2,13 +2,13 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getMessageBroker().toString() == "DDS">
+<#if brokerIsDDS>
     cmp.setDDSCmdArgs(ddsArgc, ddsArgv);
 </#if>
 
 ${tc.includeArgs("template.logtracing.hooks.InitLogTracer", [comp, config])}
 
-<#if !(config.getSplittingMode().toString() == "OFF") && config.getMessageBroker().toString() == "DDS">
+<#if !splittingModeDisabled && brokerIsDDS>
   ddsClient.setComp(&cmp);
 
   ddsClient.initializeOutgoingPorts();

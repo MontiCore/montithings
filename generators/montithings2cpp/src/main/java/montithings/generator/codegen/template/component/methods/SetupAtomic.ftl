@@ -12,7 +12,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   std::ifstream file_input("../../deployment-config.json");
   if(!file_input.good()){
     file_input.close();
@@ -35,7 +35,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   this->restoreState ();
 </#if>
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   mqttClientInstance->publish (replaceDotsBySlashes ("/components"),
   replaceDotsBySlashes (instanceName));
 </#if>

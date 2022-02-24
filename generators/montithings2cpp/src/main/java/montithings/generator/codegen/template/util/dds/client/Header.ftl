@@ -20,7 +20,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<dds/DCPS/StaticIncludes.h>"}
 
 <#-- Load libraries for rtps_udp transport communication -->
-<#if config.getSplittingMode().toString() != "DISTRIBUTED"> <#-- todo many usages -->
+<#if !(splittingModeIsDistributed)>
 #include ${"<dds/DCPS/RTPS/RtpsDiscovery.h>"}
 #include ${"<dds/DCPS/transport/rtps_udp/RtpsUdp.h>"}
 </#if>

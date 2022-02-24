@@ -2,7 +2,7 @@
 ${tc.signature("comp","className","subcomponent","config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-<#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
+<#if dummyName4>
   <#assign type = subcomponent.getGenericType().getName()>
 <#else>
   <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>

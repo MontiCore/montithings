@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
   MqttClient* mqttClientLocalInstance;
   if((brokerHostnameArg.getValue() == localHostnameArg.getValue())){
@@ -18,7 +18,7 @@ ${tc.signature("comp", "config")}
   while(!mqttClientLocalInstance->isConnected())
   ;
 
-  <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0> <#-- todo long expression-->
+  <#if dummyName13>
     MqttConfigRequester configRequester;
     configRequester.requestConfig(getModelInstanceName(instanceNameArg.getValue ()));
 

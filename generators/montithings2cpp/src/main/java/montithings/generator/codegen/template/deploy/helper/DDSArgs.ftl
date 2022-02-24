@@ -5,7 +5,7 @@ ${tc.signature("comp", "config")}
 TCLAP::ValueArg${"<"}std::string${">"} dcpsConfigArg ("","DCPSConfigFile","Config file for DCPS (e.g. dcpsconfig.ini)",true,"","string");
 cmd.add ( dcpsConfigArg );
 
-<#if config.getSplittingMode().toString() == "DISTRIBUTED">
+<#if splittingModeIsDistributed>
   TCLAP::ValueArg${"<"}std::string${">"} dcpsInfoRepoArg ("","DCPSInfoRepo","Hostname and network port of the DCPSInfoRepo (e.g. localhost:12345)",false,"","string");
   cmd.add ( dcpsInfoRepoArg );
 </#if>

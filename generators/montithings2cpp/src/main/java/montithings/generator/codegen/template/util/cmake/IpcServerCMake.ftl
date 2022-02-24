@@ -3,8 +3,8 @@ ${tc.signature("libraryPath","ipcPath","existsHWC","config")}
 cmake_minimum_required(VERSION 3.8)
 <#-- project(${port.getName()?cap_first}Server) TODO -->set(CMAKE_CXX_STANDARD 11)
 
-<#if config.getTargetPlatform().toString() == "DSA_VCG"
-|| config.getTargetPlatform().toString() == "DSA_LAB">
+<#if targetPlatformIsDsaVcg
+|| targetPlatformIsDsaLab>
     ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
 
@@ -17,10 +17,10 @@ include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
 conan_basic_setup()
 endif()
 
-<#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
-&& config.getTargetPlatform().toString() != "DSA_LAB"
-&& !(config.getSplittingMode().toString() == "OFF")
-&& config.getMessageBroker().toString() == "OFF">
+<#assign needsNng = !targetPlatformIsDsaVcg
+&& !targetPlatformIsDsaLab
+&& !splittingModeDisabled
+&& brokerDisabled>
 <#if needsNng>
     if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
     find_package(nng 1.3.0 CONFIG REQUIRED)
@@ -35,7 +35,7 @@ file(GLOB SOURCES
 "${libraryPath?replace("\\","/")}/*.cpp"
 "${libraryPath?replace("\\","/")}/*.h")
 
-<#-- add_executable(${port.getName()?cap_first}Server ${r"${SOURCES}"}) TODO --><#if config.getTargetPlatform().toString() == "DSA_VCG">
+<#-- add_executable(${port.getName()?cap_first}Server ${r"${SOURCES}"}) TODO --><#if targetPlatformIsDsaVcg>
 <#-- ${printDsaLinkLibraries(port.getName()?cap_first+"Server")} TODO -->
 <#else>
 <#-- target_link_libraries(${port.getName()?cap_first}Server nng::nng) TODO -->

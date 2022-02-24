@@ -7,7 +7,7 @@ cmd.add ( instanceNameArg );
 
 ${tc.includeArgs("template.sensoractuatorports.deploy.helper.MqttArgs")}
 
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
   TCLAP::SwitchArg muteRecorder ("", "muteRecorder", "Suppress all logs from the recorder", false);
   cmd.add (muteRecorder);
 </#if>
@@ -19,7 +19,7 @@ if (muteMqttLogger.getValue ())
 el::Loggers::reconfigureLogger ("MQTT", el::ConfigurationType::Enabled, "false");
 }
 
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
   if (muteRecorder.getValue ())
   {
   el::Loggers::reconfigureLogger ("RECORDER", el::ConfigurationType::Enabled, "false");

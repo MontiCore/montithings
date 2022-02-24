@@ -2,11 +2,11 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if !(config.getSplittingMode().toString() == "OFF")>
+<#if !splittingModeDisabled>
 free(ddsArgv[0]);
 free(ddsArgv[2]);
 </#if>
 
-<#if config.getSplittingMode().toString() == "DISTRIBUTED">
+<#if splittingModeIsDistributed>
   free(ddsArgv[4]);
 </#if>

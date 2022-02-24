@@ -2,10 +2,10 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getLogTracing().toString() == "ON" && !(comp.getPorts()?size == 0)> <#-- todo many usages, do both individually -->
+<#if logTracingEnabled && !hasNoPorts>
   <#list comp.getPorts() as port>
     <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
-    <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
+    <#if dummyName7>
       this->logTracer->registerExternalPort("${port.getName()}");
     </#if>
   </#list>

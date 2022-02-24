@@ -5,7 +5,7 @@ ${tc.signature("comp","config","className")}
 
 ${Utils.printTemplateArguments(comp)}
 bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute() {
-<#if comp.getAllIncomingPorts()?size gt 0 && !ComponentHelper.hasSyncGroups(comp)> <#-- todo long expression-->
+<#if dummyName11>
     if (timeMode == TIMESYNC || <#list comp.getAllIncomingPorts() as inPort>${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}
     ()->hasValue(this->uuid)<#sep>||</#sep>
 </#list>)
@@ -27,7 +27,7 @@ bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute() {
     )
     { return true; }
 </#if>
-<#if comp.getAllIncomingPorts()?size == 0>
+<#if hasNoIncomingPorts>
     return true;
 <#else>
     return false;

@@ -77,7 +77,7 @@ protected:
   }
 
   void setNextValue(T nextVal) override {
-    <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
+    <#if recordingEnabled && portSymbol.isIncoming()>
         recordMessage(nextVal);
     </#if>
 
@@ -94,7 +94,7 @@ protected:
 
   ${tc.includeArgs("template.util.ports.methods.DDSRecorderRecord", [config, portSymbol])}
 
-  <#if config.getMessageBroker().toString() == "DDS">
+  <#if brokerIsDDS>
     ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
   <#else>
     ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)

@@ -11,7 +11,7 @@ std::string topic = std::string ((char *)message->topic);
 std::string payload = std::string ((char *)message->payload, message->payloadlen);
 
 <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
-    <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
+    <#if dummyName5>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
         // check if its message from sensorActuatorConfig topic
         if (topic == "/sensorActuator/config/" + ${p.getName()}->getSensorActuatorName()){

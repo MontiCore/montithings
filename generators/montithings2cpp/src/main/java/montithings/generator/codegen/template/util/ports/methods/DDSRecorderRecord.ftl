@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "portSymbol")}
 
-  <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
+  <#if recordingEnabled && portSymbol.isIncoming()>
     void recordMessage(T value) {
 
       DDSMessage::Message message;
