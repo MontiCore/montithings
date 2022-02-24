@@ -55,7 +55,7 @@ ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 ${tc.includeArgs("template.state.hooks.Member", [comp])}
 
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre;
-<#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0>
+<#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0> <#-- todo many usages -->
   ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 </#if>
 
@@ -95,12 +95,12 @@ ${TypesPrinter.printConstructorArguments(comp)});
 </#if>
 
 <#if comp.isDecomposed()>
-  <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
+  <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF"> <#-- todo many usages, do both components individually -->
     ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
   </#if>
   <#if config.getSplittingMode().toString() == "OFF">
     <#list comp.getSubComponents() as subcomponent>
-      <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
+      <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())> <#-- todo many usages -->
         <#assign type = subcomponent.getGenericType().getName()>
       <#else>
         <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>

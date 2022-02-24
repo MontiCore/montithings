@@ -3,7 +3,7 @@ ${tc.signature("comp", "statement")}
 <#include "/template/Preamble.ftl">
 
 <#list ComponentHelper.getPortsInGuardExpression(statement.guard) as port>
-  <#if !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.getName())>
+  <#if !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.getName())> <#-- todo long expression-->
     <#if port.isIncoming()>
       ${Identifier.getInputName()}.get${port.getName()?cap_first}()
     <#else>

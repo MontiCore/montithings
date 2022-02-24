@@ -5,7 +5,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 
 #include "${compname}.h"
-<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
+<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF"> <#-- todo invert -->
   #include "${compname}Manager.h"
 <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
   #include "${compname}DDSClient.h"

@@ -2,7 +2,7 @@
 ${tc.signature("config", "existsHWC")}
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 [common]
-<#if config.getSplittingMode().toString() == "DISTRIBUTED">
+<#if config.getSplittingMode().toString() == "DISTRIBUTED"> <#-- todo many usages -->
 DCPSBit=0
 DCPSGlobalTransportConfig=myconfig
 

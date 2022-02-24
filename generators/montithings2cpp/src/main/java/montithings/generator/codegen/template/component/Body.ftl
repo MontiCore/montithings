@@ -7,7 +7,7 @@ ${tc.signature("comp","config","className")}
     ${tc.includeArgs("template.component.helper.SubcompMethodDefinitions", [comp, config])}
   </#if>
 
-  <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
+  <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)> <#-- todo many usages -->
     ${tc.includeArgs("template.component.methods.Run", [comp, config, className])}
   </#if>
   ${tc.includeArgs("template.component.methods.ComputeDecomposed", [comp, config, className])}

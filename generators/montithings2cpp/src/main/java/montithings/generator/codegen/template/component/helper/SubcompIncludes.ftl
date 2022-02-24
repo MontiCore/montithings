@@ -2,7 +2,7 @@
 ${tc.signature("comp","config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-<#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp, config)>
+<#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp, config)> <#-- todo many usages -->
   <#list comp.getSubComponents() as subcomponent>
       <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
         <#assign type = subcomponent.getGenericType().getName()>

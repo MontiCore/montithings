@@ -12,10 +12,10 @@ project ("MontiThings Application")
 <#if (config.getSplittingMode().toString() != "OFF") && (config.getMessageBroker().toString() != "OFF")>
   set(EXCLUDE_COMM_MANAGER 1)
 </#if>
-<#if (config.getLogTracing().toString() == "ON")>
+<#if (config.getLogTracing().toString() == "ON")> <#-- todo many usages -->
   set(ENABLE_LOG_TRACING 1)
 </#if>
-<#if config.getTargetPlatform().toString() == "RASPBERRY">
+<#if config.getTargetPlatform().toString() == "RASPBERRY"> <#-- todo many usages -->
   add_compile_options(${"$<$<CXX_COMPILER_ID:GNU>"}:-Wno-psabi>)
   add_subdirectory(lib/lib/raspberrypi)
 </#if>

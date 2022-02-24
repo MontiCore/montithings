@@ -10,7 +10,7 @@ ${tc.signature("comp", "statement")}
   </#if>
   <#sep>&&</#sep>
 </#list>
-<#if ComponentHelper.getPortsInGuardExpression(statement.guard)?size == 0>
+<#if ComponentHelper.getPortsInGuardExpression(statement.guard)?size == 0> <#-- todo long expression-->
   true // presence of value on ports not checked as they are not used in precondition
 </#if>
 && !(${Utils.printExpression(statement.guard)})

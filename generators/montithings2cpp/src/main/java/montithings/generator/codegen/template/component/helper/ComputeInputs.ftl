@@ -4,7 +4,7 @@ ${tc.signature("comp","config","isMonitor","behavior")}
 
 <#if !ComponentHelper.usesBatchMode(comp)>
   ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()}<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >
-  <#if behavior != "false" && !ComponentHelper.usesPort(behavior, inPort)>
+  <#if behavior != "false" && !ComponentHelper.usesPort(behavior, inPort)> <#-- todo invert full -->
     tl::nullopt
   <#else>
     ${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(<#if isMonitor>portMonitorUuid${inPort.getName()?cap_first}<#else>this->uuid</#if>)
@@ -22,7 +22,7 @@ ${tc.signature("comp","config","isMonitor","behavior")}
 <#else>
   ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()};
   <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
-  <#if behavior == "false" || ComponentHelper.usesPort(behavior, inPort)>
+  <#if behavior == "false" || ComponentHelper.usesPort(behavior, inPort)> <#-- todo many usages -->
     while(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->hasValue(this->uuid)){
     ${Identifier.getInputName()}.add${inPort.getName()?cap_first}Element(${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}()->getCurrentValue(
       <#if isMonitor>

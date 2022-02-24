@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 11)
 <#if config.getSplittingMode().toString() != "OFF"
   && config.getTargetPlatform().toString() != "DSA_VCG"
   && config.getTargetPlatform().toString() != "DSA_LAB"
-  && config.getMessageBroker().toString() == "DDS">
+  && config.getMessageBroker().toString() == "DDS"> <#-- todo long expression-->
   # DDS specificcd
   find_package(OpenDDS REQUIRED)
 
@@ -107,13 +107,13 @@ else()
 </#if>
 
 <#if test || config.getSplittingMode().toString() == "OFF">
-  <#if config.getMessageBroker().toString() != "DDS">
+  <#if !(config.getMessageBroker().toString() == "DDS")>
     set(EXCLUDE_DDS 1)
   </#if>
-  <#if config.getMessageBroker().toString() != "MQTT">
+  <#if config.getMessageBroker().toString() != "MQTT"> <#-- todo invert -->
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")>
+  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")> <#-- todo invert splittingmode-->
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
 </#if>

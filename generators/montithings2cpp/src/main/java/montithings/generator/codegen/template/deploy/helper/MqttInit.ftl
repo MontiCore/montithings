@@ -18,7 +18,7 @@ ${tc.signature("comp", "config")}
   while(!mqttClientLocalInstance->isConnected())
   ;
 
-  <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0>
+  <#if comp.getParameters()?size gt 0 || ComponentHelper.getSIUnitPortNames(comp)?size gt 0 || config.getTypeArguments(comp)?size gt 0> <#-- todo long expression-->
     MqttConfigRequester configRequester;
     configRequester.requestConfig(getModelInstanceName(instanceNameArg.getValue ()));
 

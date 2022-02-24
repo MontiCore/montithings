@@ -40,7 +40,7 @@ fi
   ninja
 </#if>
 
-<#if config.getSplittingMode().toString() != "OFF">
+<#if config.getSplittingMode().toString() != "OFF"> <#-- todo invert -->
 echo Copy Scripts for "$1"
 cd ..
 find hwc -name "*.py" | cpio -pdm build/bin/ > /dev/null 2>&1

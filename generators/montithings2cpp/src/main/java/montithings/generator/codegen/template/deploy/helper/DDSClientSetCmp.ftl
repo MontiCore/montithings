@@ -8,7 +8,7 @@ ${tc.signature("comp", "config")}
 
 ${tc.includeArgs("template.logtracing.hooks.InitLogTracer", [comp, config])}
 
-<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS"> <#-- todo invert -->
   ddsClient.setComp(&cmp);
 
   ddsClient.initializeOutgoingPorts();

@@ -17,7 +17,7 @@ ${className}::searchSubcomponents ()
       // ${subcomponentSymbol.getName()} ${subcomponent.getName()}
       ${tc.includeArgs("template.util.comm.helper.SCDetailsHelper", [comp, subcomponent])}
 
-      <#if config.getSplittingMode().toString() == "LOCAL">
+      <#if config.getSplittingMode().toString() == "LOCAL"> <#-- todo many usages -->
         std::ifstream i (this->portConfigFilePath);
         json j;
         i >> j;
@@ -31,7 +31,7 @@ ${className}::searchSubcomponents ()
       // tell subcomponent where to connect to
       <#list comp.getAstNode().getConnectors() as connector>
         <#list connector.targetList as target>
-          <#if !target.isPresentComponent() && subcomponent.getName() == connector.getSource().getComponent()>
+          <#if !target.isPresentComponent() && subcomponent.getName() == connector.getSource().getComponent()> <#-- todo long expression-->
             <#list subcomponentSymbol.ports as p>
               <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
 

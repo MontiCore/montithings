@@ -8,7 +8,7 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
 <#list comp.incomingPorts as port >
     ${Identifier.getInterfaceName()}.getPort${port.getName()?cap_first} ()->attach (this);
     <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
-    <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
+    <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty"> <#-- todo many usages -->
         <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
         ${Identifier.getInterfaceName()}.addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<Message<${type}>>(instanceName
         <#if config.getMessageBroker().toString() == "DDS">
@@ -22,7 +22,7 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
     <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
         <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
         ${Identifier.getInterfaceName()}.addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<Message<${type}>>(instanceName
-        <#if config.getMessageBroker().toString() == "DDS">
+        <#if config.getMessageBroker().toString() == "DDS"> <#-- todo many usages -->
           , argc, &argv
         </#if>));
     </#if>

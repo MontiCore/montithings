@@ -146,13 +146,13 @@ include_directories("hwc" ${r"${dir_list}"})
 </#if>
 
 <#if test || config.getSplittingMode().toString() == "OFF">
-  <#if config.getMessageBroker().toString() != "DDS">
+  <#if config.getMessageBroker().toString() != "DDS"> <#-- todo invert -->
     set(EXCLUDE_DDS 1)
   </#if>
-  <#if config.getMessageBroker().toString() != "MQTT">
+  <#if config.getMessageBroker().toString() != "MQTT"> <#-- todo invert -->
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")>
+  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")> <#-- todo invert -->
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
   <#if (config.getLogTracing().toString() == "ON")>
