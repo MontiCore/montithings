@@ -1,0 +1,10 @@
+package examples.incorrect;
+
+testdiagram MainTest for Main {
+  -> value : 14;
+  value -> sumCom.first, sumComp.first : 14;
+  value -> sumCom.second, sumComp.second : 14, 14;
+  sumCom.result -> foo : 28;
+
+  assert sumCom.doesnotexist < 29;
+}

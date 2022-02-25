@@ -1,0 +1,7 @@
+package examples.incorrect;
+
+testdiagram MainTest for Main {
+  -> value : 14;
+
+  assert doesnotexist > 12;
+}

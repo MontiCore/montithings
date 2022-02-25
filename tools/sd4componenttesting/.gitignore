@@ -1,0 +1,11 @@
+*.iml
+**/.idea
+**/target
+.attach_pid*
+**/.gradle
+out/**
+out
+.settings/
+.classpath
+.project
+.vscode/

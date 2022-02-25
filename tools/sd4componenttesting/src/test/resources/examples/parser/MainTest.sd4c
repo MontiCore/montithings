@@ -1,0 +1,9 @@
+package examples.parser;
+
+testdiagram MainTest for Main {
+  value -> sumCom.first : 12;
+  value -> sumCom.second: 13;
+  value -> sumCom.second, sumCom.first : 13;
+  value -> sumCom.second, sumCom.first : 12, 13;
+  sumCom.result -> result : 25;
+}
