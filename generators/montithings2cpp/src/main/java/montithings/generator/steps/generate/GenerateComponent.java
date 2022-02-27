@@ -75,7 +75,7 @@ public class GenerateComponent extends GeneratorStep {
             .setMessageBroker(genDeploy ? orgBroker : ConfigParams.MessageBroker.OFF);
         }
 
-        generateCppForComponent(model, state, genDeploy);
+        generateCppForComponent(model, compTarget, state, genDeploy);
 
         if (!genDeploy) {
           // copy hwc for embedded component manually
@@ -87,13 +87,13 @@ public class GenerateComponent extends GeneratorStep {
       state.getConfig().setSplittingMode(orgSplit);
       state.getConfig().setMessageBroker(orgBroker);
 
-      generateCMakeForComponent(baseModel, state);
+      generateCMakeForComponent(baseModel, compTarget, state);
 
       state.setMtg(new MTGenerator(state.getTarget(), state.getHwcPath(), state.getConfig()));
     }
   }
 
-  protected void generateCppForComponent(String model, GeneratorToolState state,
+  protected void generateCppForComponent(String model, File target, GeneratorToolState state,
     boolean generateDeploy) {
     ComponentTypeSymbol comp = state.getTool().modelToSymbol(model, state.getSymTab());
     Log.info("Generate MT model: " + comp.getFullName(), TOOL_NAME);
@@ -114,24 +114,24 @@ public class GenerateComponent extends GeneratorStep {
     }
 
     // Generate Files
-    state.getMtg().generateAll(Paths.get(state.getTarget().getAbsolutePath(),
+    state.getMtg().generateAll(Paths.get(target.getAbsolutePath(),
         Names.getPathFromPackage(comp.getPackageName())).toFile(),
       comp, generateDeploy);
 
-    generateHwcPort(state.getTarget(), state.getConfig(), comp);
+    generateHwcPort(target, state.getConfig(), comp);
 
     if (state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-      copyHwcToTarget(state.getTarget(), state.getHwcPath(), model, state.getConfig(),
+      copyHwcToTarget(target, state.getHwcPath(), model, state.getConfig(),
         state.getModels());
     }
   }
 
-  protected void generateCMakeForComponent(String model, GeneratorToolState state) {
+  protected void generateCMakeForComponent(String model, File target, GeneratorToolState state) {
     ComponentTypeSymbol comp = state.getTool().modelToSymbol(model, state.getSymTab());
 
     if (ComponentHelper.isApplication(comp, state.getConfig())
       || state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-      File libraryPath = Paths.get(state.getTarget().getAbsolutePath(), "montithings-RTE").toFile();
+      File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
       // Check for Subpackages
       File[] subPackagesPath = getSubPackagesPath(state.getModelPath().getAbsolutePath());
 
@@ -139,11 +139,11 @@ public class GenerateComponent extends GeneratorStep {
       if (state.getConfig().getTargetPlatform()
         != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
         Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
-        state.getMtg().generateMakeFile(state.getTarget(), comp, libraryPath, subPackagesPath,
+        state.getMtg().generateMakeFile(target, comp, libraryPath, subPackagesPath,
           state.getExecutableSensorActuatorPorts());
         if (state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
           state.getMtg()
-            .generateScripts(state.getTarget(), comp, state.getExecutableSensorActuatorPorts(),
+            .generateScripts(target, comp, state.getExecutableSensorActuatorPorts(),
               state.getHwcPythonScripts(),
               state.getExecutableSubdirs());
         }

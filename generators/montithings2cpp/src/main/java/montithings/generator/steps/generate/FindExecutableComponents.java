@@ -47,7 +47,10 @@ public class FindExecutableComponents extends GeneratorStep {
     for (ComponentTypeSymbol comp : executableComponents) {
       executableSubdirs.add(comp.getFullName());
     }
+
+    state.setExecutableComponents(executableComponents);
     state.setExecutableSubdirs(executableSubdirs);
+    state.setInstances(instances);
   }
 
   protected Set<ComponentTypeSymbol> getAllComponents(IMontiThingsGlobalScope symTab) {

@@ -59,16 +59,17 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .setNextStep(new CheckMTConfig())
       .setNextStep(new ConditionalStop(stopAfterCoCoCheck))
       .setNextStep(new GenerateSensorActuatorPorts())
-      .setNextStep(new StopStep())
       .setNextStep(new ClearTemplatesIfReplay())
       .setNextStep(new FindExecutableComponents())
       .setNextStep(new FindModelPacks())
       .setNextStep(new GenerateCMakeLists())
       .setNextStep(new GenerateComponent())
+      .setNextStep(new GenerateCDEAdapter())
       .setNextStep(new GenerateCD())
       .setNextStep(new GenerateBuildScripts())
       .setNextStep(new GenerateDeployInfo())
       .setNextStep(new GenerateTestSources())
+      .setNextStep(new StopStep())
     ;
 
     firstStep.execute(state);
