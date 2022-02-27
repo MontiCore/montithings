@@ -84,7 +84,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     return this.deSer;
   }
 
-  protected MontiThingsCoCoChecker getChecker() {
+  public MontiThingsCoCoChecker getChecker() {
     return this.checker;
   }
 
@@ -100,7 +100,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     this.trafos.add(trafo);
   }
 
-  protected String getMTFileExtension() {
+  public String getMTFileExtension() {
     return MT_FILE_EXTENSION;
   }
 
