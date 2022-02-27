@@ -8,6 +8,9 @@ import de.se_rwth.commons.logging.Log;
 import groovy.lang.Script;
 import montithings.MontiThingsMill;
 import montithings.generator.MontiThingsGeneratorTool;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.MontiThingsConfiguration;
+import montithings.generator.config.Options;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 import java.io.File;
@@ -39,17 +42,18 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
 
     // after adding everything we override a couple of known variable
     // bindings to have them properly typed in the script
-    builder.addVariable(MontiThingsConfiguration.Options.MODELPATH.toString(), config.getModelPath());
-    builder.addVariable(MontiThingsConfiguration.Options.TESTPATH.toString(), config.getTestPath());
-    builder.addVariable(MontiThingsConfiguration.Options.OUT.toString(), config.getOut());
-    builder.addVariable(MontiThingsConfiguration.Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
-    builder.addVariable(MontiThingsConfiguration.Options.PLATFORM.toString(), config.getPlatform());
-    builder.addVariable(MontiThingsConfiguration.Options.MESSAGEBROKER.toString(), config.getMessageBroker(config.getSplittingMode()));
-    builder.addVariable(MontiThingsConfiguration.Options.LOGTRACING.toString(), config.getLogTracing());
-    builder.addVariable(MontiThingsConfiguration.Options.VERSION.toString(), config.getVersion());
-    builder.addVariable(MontiThingsConfiguration.Options.MAINCOMP.toString(), config.getMainComponent());
-    builder.addVariable(MontiThingsConfiguration.Options.REPLAYMODE.toString(), config.getReplayMode());
-    builder.addVariable(MontiThingsConfiguration.Options.REPLAYDATAFILE.toString(), config.getReplayDataFile());
+    builder.addVariable(Options.MODELPATH.toString(), config.getModelPath());
+    builder.addVariable(Options.TESTPATH.toString(), config.getTestPath());
+    builder.addVariable(Options.OUT.toString(), config.getOut());
+    builder.addVariable(Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
+    builder.addVariable(Options.PLATFORM.toString(), config.getPlatform());
+    builder.addVariable(Options.MESSAGEBROKER.toString(),
+      config.getMessageBroker(config.getSplittingMode()));
+    builder.addVariable(Options.LOGTRACING.toString(), config.getLogTracing());
+    builder.addVariable(Options.VERSION.toString(), config.getVersion());
+    builder.addVariable(Options.MAINCOMP.toString(), config.getMainComponent());
+    builder.addVariable(Options.REPLAYMODE.toString(), config.getReplayMode());
+    builder.addVariable(Options.REPLAYDATAFILE.toString(), config.getReplayDataFile());
 
     GroovyInterpreter g = builder.build();
     g.evaluate(script);

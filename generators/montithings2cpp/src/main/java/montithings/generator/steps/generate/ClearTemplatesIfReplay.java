@@ -2,7 +2,7 @@
 package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.ComponentTypeSymbolTOP;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ReplayMode;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class ClearTemplatesIfReplay extends GeneratorStep {
 
   @Override public void action(GeneratorToolState state) {
-    if (state.getConfig().getReplayMode() == ConfigParams.ReplayMode.ON) {
+    if (state.getConfig().getReplayMode() == ReplayMode.ON) {
       state.getConfig().getTemplatedPorts().clear();
 
       List<String> allModels = state.getSymTab().getSubScopes().stream()

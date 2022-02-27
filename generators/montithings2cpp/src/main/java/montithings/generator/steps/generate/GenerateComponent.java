@@ -10,8 +10,11 @@ import de.se_rwth.commons.logging.Log;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import montithings._visitor.MontiThingsTraverser;
-import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.MTGenerator;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.MessageBroker;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
@@ -41,26 +44,26 @@ public class GenerateComponent extends GeneratorStep {
 
       File compTarget = state.getTarget();
 
-      if (state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+      if (state.getConfig().getSplittingMode() != SplittingMode.OFF) {
         compTarget = Paths.get(state.getTarget().getAbsolutePath(), baseModel).toFile();
         state.setMtg(new MTGenerator(compTarget, state.getHwcPath(), state.getConfig()));
 
-        if (state.getConfig().getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
+        if (state.getConfig().getSplittingMode() == SplittingMode.LOCAL) {
           ComponentTypeSymbol comp = state.getTool().modelToSymbol(baseModel, state.getSymTab());
           state.getMtg().generatePortJson(compTarget, comp);
         }
 
         GenerateCDEAdapter.generateCDEAdapter(compTarget, state);
       }
-      if (state.getConfig().getMessageBroker() == ConfigParams.MessageBroker.DDS) {
+      if (state.getConfig().getMessageBroker() == MessageBroker.DDS) {
         state.getMtg().generateDDSDCPSConfig(compTarget);
       }
 
       Set<ComponentTypeSymbol> dynConnectedSubcomps = getDynamicallyConnectedSubcomps(e.getKey());
 
       // Save splitting mode and message broker for overriding it for subcomponents that should be included in the same binary.
-      ConfigParams.SplittingMode orgSplit = state.getConfig().getSplittingMode();
-      ConfigParams.MessageBroker orgBroker = state.getConfig().getMessageBroker();
+      SplittingMode orgSplit = state.getConfig().getSplittingMode();
+      MessageBroker orgBroker = state.getConfig().getMessageBroker();
 
       for (ComponentTypeSymbol symModel : enclosingModels) {
         String model = symModel.getFullName();
@@ -69,10 +72,10 @@ public class GenerateComponent extends GeneratorStep {
         // Only the deployed component should communicate directly with the 'outer world'.
         // All the other enclosed components should communicate using native ports.
         // Unless its dynamically connected. Then it needs to communicate.
-        state.getConfig().setSplittingMode(genDeploy ? orgSplit : ConfigParams.SplittingMode.OFF);
+        state.getConfig().setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
         if (!dynConnectedSubcomps.contains(symModel)) {
           state.getConfig()
-            .setMessageBroker(genDeploy ? orgBroker : ConfigParams.MessageBroker.OFF);
+            .setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
         }
 
         generateCppForComponent(model, compTarget, state, genDeploy);
@@ -120,7 +123,7 @@ public class GenerateComponent extends GeneratorStep {
 
     generateHwcPort(target, state.getConfig(), comp);
 
-    if (state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+    if (state.getConfig().getSplittingMode() != SplittingMode.OFF) {
       copyHwcToTarget(target, state.getHwcPath(), model, state.getConfig(),
         state.getModels());
     }
@@ -130,18 +133,18 @@ public class GenerateComponent extends GeneratorStep {
     ComponentTypeSymbol comp = state.getTool().modelToSymbol(model, state.getSymTab());
 
     if (ComponentHelper.isApplication(comp, state.getConfig())
-      || state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+      || state.getConfig().getSplittingMode() != SplittingMode.OFF) {
       File libraryPath = Paths.get(target.getAbsolutePath(), "montithings-RTE").toFile();
       // Check for Subpackages
       File[] subPackagesPath = getSubPackagesPath(state.getModelPath().getAbsolutePath());
 
       // generate cmake file
       if (state.getConfig().getTargetPlatform()
-        != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
+        != TargetPlatform.ARDUINO) { // Arduino uses its own build system
         Log.info("Generate CMake file for " + comp.getFullName(), "MontiThingsGeneratorTool");
         state.getMtg().generateMakeFile(target, comp, libraryPath, subPackagesPath,
           state.getExecutableSensorActuatorPorts());
-        if (state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+        if (state.getConfig().getSplittingMode() != SplittingMode.OFF) {
           state.getMtg()
             .generateScripts(target, comp, state.getExecutableSensorActuatorPorts(),
               state.getHwcPythonScripts(),

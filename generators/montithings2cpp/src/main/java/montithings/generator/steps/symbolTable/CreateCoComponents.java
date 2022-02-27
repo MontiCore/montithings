@@ -7,7 +7,7 @@ import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.MontiThingsGlobalScope;
 import montithings.generator.MontiThingsGeneratorTool;
 import montithings.generator.cd2cpp.CppGenerator;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.PortNameTrafo;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 
@@ -26,7 +26,7 @@ public class CreateCoComponents extends GeneratorStep {
     }
     state.getTool().createSymbolTable(state.getSymTab());
     // ports introduced by the ComponentTypePortsNamingTrafo have to be added in class diagrams
-    if (state.getConfig().getPortNameTrafo() == ConfigParams.PortNameTrafo.ON) {
+    if (state.getConfig().getPortNameTrafo() == PortNameTrafo.ON) {
       componentTypeScopes = state.getTool().createMissingClassDiagrams(
         (MontiThingsGlobalScope) state.getSymTab(), state.getSymbolPath());
     }

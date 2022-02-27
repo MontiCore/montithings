@@ -5,7 +5,7 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.Names;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.*;
 import montithings.generator.steps.check.*;

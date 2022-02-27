@@ -3,8 +3,10 @@ package generation;
 
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.MontiThingsGeneratorTool;
-import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.MTGenerator;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,9 +44,9 @@ public class CppCodeTest {
       e.printStackTrace();
     }
     ConfigParams params = new ConfigParams();
-    params.setTargetPlatform(ConfigParams.TargetPlatform.GENERIC);
-    params.setSplittingMode(ConfigParams.SplittingMode.OFF);
-    params.setHwcTemplatePath(Paths.get(HWCPATH.toString(),packageName));
+    params.setTargetPlatform(TargetPlatform.GENERIC);
+    params.setSplittingMode(SplittingMode.OFF);
+    params.setHwcTemplatePath(Paths.get(HWCPATH.toString(), packageName));
     params.setHwcPath(HWCPATH.toFile());
     params.setProjectVersion("unspecified");
     params.setMainComponent("hierarchy.Example");

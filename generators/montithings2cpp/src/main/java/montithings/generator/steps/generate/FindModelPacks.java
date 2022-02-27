@@ -3,7 +3,7 @@ package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.SplittingMode;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.steps.GeneratorStep;
@@ -28,7 +28,7 @@ public class FindModelPacks extends GeneratorStep {
       // ignore it right here. If splitting is turned of, we will generate
       // everything due to compatibility reasons.
       if (state.getExecutableComponents().contains(comp)
-        || state.getConfig().getSplittingMode() == ConfigParams.SplittingMode.OFF) {
+        || state.getConfig().getSplittingMode() == SplittingMode.OFF) {
         // aggregate all of the components that should be packed with this
         // component
         Set<ComponentTypeSymbol> includeModels = new HashSet<>();

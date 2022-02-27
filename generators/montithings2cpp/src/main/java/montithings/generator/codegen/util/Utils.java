@@ -20,7 +20,8 @@ import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
 import genericarc._ast.ASTArcTypeParameter;
 import genericarc._ast.ASTGenericComponentHead;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.SplittingMode;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.TypesHelper;
 import montithings.generator.helper.TypesPrinter;
@@ -486,16 +487,17 @@ public class Utils {
       if (!getGenericParameters(comp).contains(subcomponent.getGenericType().getName())) {
         boolean isInner = subcomponent.getType().isInnerComponent();
 
-        if (config.getSplittingMode() == ConfigParams.SplittingMode.OFF || isInner){
+        if (config.getSplittingMode() == SplittingMode.OFF || isInner) {
           compIncludes.add("#include \"" + ComponentHelper.getPackagePath(comp, subcomponent)
             + (isInner ? (comp.getName() + "-Inner/") : "")
             + ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config, false)
             + ".h\"");
-        } else {
-          if(ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
+        }
+        else {
+          if (ComponentHelper.shouldIncludeSubcomponents(comp, config)) {
             compIncludes.add("#include <"
-                + subcomponent.getType().getName().replaceAll("\\.", "/")
-                + ".h>");
+              + subcomponent.getType().getName().replaceAll("\\.", "/")
+              + ".h>");
           }
         }
       }

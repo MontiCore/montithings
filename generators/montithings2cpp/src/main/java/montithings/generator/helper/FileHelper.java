@@ -4,7 +4,9 @@ package montithings.generator.helper;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.Models;
 import org.apache.commons.io.FileUtils;
 
@@ -53,7 +55,7 @@ public class FileHelper {
 
     for (File file : hwcFiles) {
       try {
-        if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
+        if (config.getTargetPlatform() == TargetPlatform.ARDUINO) {
           FileUtils.copyFileToDirectory(file, Paths.get(target.getAbsolutePath()).toFile());
         }
         else {
@@ -68,7 +70,7 @@ public class FileHelper {
   }
 
   protected static void addNonImplFiles(File hwcPath, ConfigParams config, Set<File> hwcFiles) {
-    if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+    if (config.getSplittingMode() != SplittingMode.OFF) {
       try {
         hwcFiles.addAll(getNonImplFiles(hwcPath));
       }

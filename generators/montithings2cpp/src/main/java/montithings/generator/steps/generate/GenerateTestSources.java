@@ -4,7 +4,8 @@ package montithings.generator.steps.generate;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.MontiThingsGeneratorTool;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.steps.GeneratorStep;
@@ -19,11 +20,11 @@ public class GenerateTestSources extends GeneratorStep {
 
   @Override public void action(GeneratorToolState state) {
     if (state.getTestPath() != null && !state.getTestPath().toString().equals("")) {
-      if (state.getConfig().getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+      if (state.getConfig().getSplittingMode() != SplittingMode.OFF) {
         Log.info("--------------------------------", "MontiThingsGeneratorTool");
         Log.info("Generate Test Sources", "MontiThingsGeneratorTool");
         Log.info("--------------------------------", "MontiThingsGeneratorTool");
-        state.getConfig().setSplittingMode(ConfigParams.SplittingMode.OFF);
+        state.getConfig().setSplittingMode(SplittingMode.OFF);
         MontiThingsGeneratorTool testTool = new MontiThingsGeneratorTool();
         testTool.generate(state.getModelPath(), Paths
           .get(Paths.get(state.getTarget().getAbsolutePath()).getParent().toString(),
@@ -57,7 +58,7 @@ public class GenerateTestSources extends GeneratorStep {
         File[] subPackagesPath = getSubPackagesPath(state.getModelPath().getAbsolutePath());
 
         // generate make file
-        if (state.getConfig().getTargetPlatform() != ConfigParams.TargetPlatform.ARDUINO) {
+        if (state.getConfig().getTargetPlatform() != TargetPlatform.ARDUINO) {
           // Arduino uses its own build system
           state.getMtg().generateTestMakeFile(target.toFile(), comp, libraryPath, subPackagesPath);
         }

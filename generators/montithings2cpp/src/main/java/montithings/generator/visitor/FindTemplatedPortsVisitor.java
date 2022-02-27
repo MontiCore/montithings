@@ -9,7 +9,7 @@ import montithings._ast.ASTMTComponentType;
 import montithings._visitor.MontiThingsHandler;
 import montithings._visitor.MontiThingsTraverser;
 import montithings._visitor.MontiThingsVisitor2;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
 import montithings.generator.helper.GeneratorHelper;
 
 import java.util.HashSet;

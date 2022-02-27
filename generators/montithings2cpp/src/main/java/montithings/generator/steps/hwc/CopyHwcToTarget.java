@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.steps.hwc;
 
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import org.apache.commons.io.FileUtils;
@@ -20,7 +20,7 @@ public class CopyHwcToTarget extends GeneratorStep {
     try {
       FileFilter filefilter = pathname -> !pathname.getName().endsWith(".ftl")
         && !pathname.getName().endsWith(".json");
-      if (state.getConfig().getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
+      if (state.getConfig().getTargetPlatform() == TargetPlatform.ARDUINO) {
         FileUtils.copyDirectory(state.getHwcPath(),
           Paths.get(state.getTarget().getAbsolutePath()).toFile(), filefilter);
       }

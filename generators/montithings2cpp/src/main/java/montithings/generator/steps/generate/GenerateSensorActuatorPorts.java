@@ -3,7 +3,8 @@ package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.PortSymbol;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +36,7 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
     }
 
     if (!executableSensorActuatorPorts.isEmpty()
-      && state.getConfig().getSplittingMode() == ConfigParams.SplittingMode.OFF) {
+      && state.getConfig().getSplittingMode() == SplittingMode.OFF) {
       Log.error("Cannot use SplittingMode OFF with SensorActuatorPorts");
     }
 
@@ -57,7 +58,7 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
   protected void generateCMakeForSensorActuatorPort(String pckg, String port,
     GeneratorToolState state) {
     if (state.getConfig().getTargetPlatform()
-      != ConfigParams.TargetPlatform.ARDUINO) { // Arduino uses its own build system
+      != TargetPlatform.ARDUINO) { // Arduino uses its own build system
       Log.info("Generate CMake file for " + port, "MontiThingsGeneratorTool");
       state.getMtg().generateMakeFileForSensorActuatorPort(pckg, port, "montithings-RTE");
     }

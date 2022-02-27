@@ -2,7 +2,8 @@
 package montithings.generator.steps.trafos;
 
 import montithings.generator.MontiThingsGeneratorTool;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.ReplayMode;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import montithings.trafos.DelayedChannelTrafo;
@@ -18,7 +19,7 @@ public class SetupReplayerTrafos extends GeneratorStep {
     ConfigParams config = state.getConfig();
     MontiThingsGeneratorTool tool = state.getTool();
 
-    if (config.getReplayMode() == ConfigParams.ReplayMode.ON) {
+    if (config.getReplayMode() == ReplayMode.ON) {
       tool.addTrafo(new ExternalPortMockTrafo(state.getModelPath(), config.getReplayDataFile(),
         config.getMainComponent()));
       tool.addTrafo(new DelayedChannelTrafo(state.getModelPath(), config.getReplayDataFile()));
