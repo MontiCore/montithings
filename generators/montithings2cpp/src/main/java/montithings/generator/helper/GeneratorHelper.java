@@ -3,7 +3,7 @@ package montithings.generator.helper;
 
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.utils.Names;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
 import mtconfig._ast.ASTHookpoint;
 import mtconfig._symboltable.PortTemplateTagSymbol;
 import org.apache.commons.lang3.StringUtils;

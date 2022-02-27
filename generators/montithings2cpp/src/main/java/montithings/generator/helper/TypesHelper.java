@@ -24,8 +24,8 @@ import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
-import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
+import montithings.generator.config.ConfigParams;
 import montithings.util.ClassDiagramUtil;
 
 import javax.measure.unit.Unit;

@@ -4,12 +4,13 @@ package montithings.generator.helper;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.Models;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,38 +25,6 @@ import java.util.stream.Stream;
  * Utility class for file-related actions of the generator
  */
 public class FileHelper {
-
-  public static void copyHwcToTarget(File target, File hwcPath, ConfigParams config) {
-    try {
-      FileFilter filefilter = pathname -> !pathname.getName().endsWith(".ftl") && !pathname.getName().endsWith(".json");
-      if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
-        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile(), filefilter);
-      }
-      else {
-        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath(), "hwc").toFile(), filefilter);
-      }
-    }
-    catch (IOException e) {
-      System.err.println(e.getMessage());
-      e.printStackTrace();
-    }
-  }
-
-  public static void copyDeploymentConfigToTarget(File target, File hwcPath){
-    File deploymentConfig = new File(hwcPath + File.separator + "deployment-config.json");
-    try {
-      if(deploymentConfig.exists()){
-          FileUtils.copyFileToDirectory(deploymentConfig, target);
-      } else {
-        File emptyConfig = new File(target + File.separator + "deployment-config.json");
-        FileUtils.touch(emptyConfig);
-        FileUtils.write(emptyConfig, "{}");
-      }
-    } catch (IOException e) {
-      System.err.println(e.getMessage());
-      e.printStackTrace();
-    }
-  }
 
   public static void copyHwcToTarget(File target, File hwcPath, String fqComponentName,
     ConfigParams config, Models models) {
@@ -86,7 +55,7 @@ public class FileHelper {
 
     for (File file : hwcFiles) {
       try {
-        if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
+        if (config.getTargetPlatform() == TargetPlatform.ARDUINO) {
           FileUtils.copyFileToDirectory(file, Paths.get(target.getAbsolutePath()).toFile());
         }
         else {
@@ -101,7 +70,7 @@ public class FileHelper {
   }
 
   protected static void addNonImplFiles(File hwcPath, ConfigParams config, Set<File> hwcFiles) {
-    if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+    if (config.getSplittingMode() != SplittingMode.OFF) {
       try {
         hwcFiles.addAll(getNonImplFiles(hwcPath));
       }

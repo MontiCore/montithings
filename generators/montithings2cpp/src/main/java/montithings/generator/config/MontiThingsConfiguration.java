@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen;
+package montithings.generator.config;
 
 import de.se_rwth.commons.configuration.Configuration;
 import de.se_rwth.commons.configuration.ConfigurationContributorChainBuilder;
@@ -27,60 +27,17 @@ public class MontiThingsConfiguration implements Configuration {
    */
   public ConfigParams configParams = new ConfigParams();
 
-  /**
-   * The names of the specific MontiThings options used in this configuration.
-   */
-  public enum Options {
-
-    MODELPATH("modelPath"),
-    MODELPATH_SHORT("mp"),
-    TESTPATH("testPath"),
-    HANDWRITTENCODEPATH("handwrittenCode"),
-    HANDWRITTENCODEPATH_MONTICORE("handcodedPath"),
-    HANDWRITTENCODEPATH_SHORT("hwc"),
-    OUT("out"),
-    OUT_MONTICORE("outputDir"),
-    OUT_SHORT("o"),
-    PLATFORM("platform"),
-    SPLITTING("splitting"),
-    LOGTRACING("logtracing"),
-    RECORDING("recording"),
-    PORTNAME("portsToMain"),
-    MESSAGEBROKER("messageBroker"),
-    MESSAGEBROKER_SHORT("broker"),
-    REPLAYMODE("replayMode"),
-    REPLAYDATAFILE("replayDataPath"),
-    MAINCOMP("mainComponent"),
-    MAINCOMP_SHORT("main"),
-    VERSION("version");
-
-    final String name;
-
-    Options(String name) {
-      this.name = name;
-    }
-
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-      return this.name;
-    }
-
-  }
-
   protected final Configuration configuration;
 
   /**
-   * Factory method for {@link TemplateClassGeneratorConfiguration}.
+   * Factory method for TemplateClassGeneratorConfiguration.
    */
   public static MontiThingsConfiguration withConfiguration(Configuration configuration) {
     return new MontiThingsConfiguration(configuration);
   }
 
   /**
-   * Constructor for {@link TemplateClassGeneratorConfiguration}
+   * Constructor for TemplateClassGeneratorConfiguration
    */
   protected MontiThingsConfiguration(Configuration internal) {
     this.configuration = ConfigurationContributorChainBuilder.newChain()
@@ -314,121 +271,65 @@ public class MontiThingsConfiguration implements Configuration {
     return out.map(File::new).orElseGet(() -> new File(DEFAULT_OUTPUT_DIRECTORY));
   }
 
-  public ConfigParams.TargetPlatform getPlatform() {
+  public TargetPlatform getPlatform() {
     Optional<String> platform = getAsString(Options.PLATFORM);
     if (platform.isPresent()) {
-      switch (platform.get()) {
-        case "GENERIC":
-          return ConfigParams.TargetPlatform.GENERIC;
-        case "DSA_VCG":
-        case "l06":
-        case "DSA":
-        case "VCG":
-          return ConfigParams.TargetPlatform.DSA_VCG;
-        case "DSA_LAB":
-        case "LAB":
-          return ConfigParams.TargetPlatform.DSA_LAB;
-        case "ARDUINO":
-        case "ESP32":
-          return ConfigParams.TargetPlatform.ARDUINO;
-        case "RASPBERRY":
-        case "RASPBERRYPI":
-        case "RASPI":
-          return ConfigParams.TargetPlatform.RASPBERRY;
-        default:
-          throw new IllegalArgumentException(
-            "0xMT300 Platform " + platform + " in pom.xml is unknown");
-      }
+      return TargetPlatform.fromString(platform.get());
     }
     // fallback default is "generic"
-    return ConfigParams.TargetPlatform.GENERIC;
+    return TargetPlatform.GENERIC;
   }
 
-  public ConfigParams.SplittingMode getSplittingMode() {
+  public SplittingMode getSplittingMode() {
     Optional<String> splittingMode = getAsString(Options.SPLITTING);
     if (splittingMode.isPresent()) {
-      switch (splittingMode.get()) {
-        case "OFF":
-          return ConfigParams.SplittingMode.OFF;
-        case "LOCAL":
-          return ConfigParams.SplittingMode.LOCAL;
-        case "DISTRIBUTED":
-          return ConfigParams.SplittingMode.DISTRIBUTED;
-        default:
-          throw new IllegalArgumentException(
-                  "0xMT301 Splitting mode " + splittingMode + " in pom.xml is unknown");
-      }
+      return SplittingMode.fromString(splittingMode.get());
     }
     // fallback default is "off"
-    return ConfigParams.SplittingMode.OFF;
+    return SplittingMode.OFF;
   }
 
-  public ConfigParams.LogTracing getLogTracing() {
+  public LogTracing getLogTracing() {
     Optional<String> logTracing = getAsString(Options.LOGTRACING);
     if (logTracing.isPresent()) {
-      switch (logTracing.get()) {
-        case "OFF":
-          return ConfigParams.LogTracing.OFF;
-        case "ON":
-          return ConfigParams.LogTracing.ON;
-        default:
-          throw new IllegalArgumentException(
-                  "0xMT302 Log tracing mode " + logTracing + " in pom.xml is unknown");
-      }
+      return LogTracing.fromString(logTracing.get());
     }
     // fallback default is "off"
-    return ConfigParams.LogTracing.OFF;
+    return LogTracing.OFF;
   }
 
-  public ConfigParams.MessageBroker getMessageBroker(ConfigParams.SplittingMode splittingMode) {
+  public MessageBroker getMessageBroker(SplittingMode splittingMode) {
     Optional<String> messageBroker = getAsString(Options.MESSAGEBROKER);
     if (!messageBroker.isPresent()) {
       messageBroker = getAsString(Options.MESSAGEBROKER_SHORT);
     }
     if (messageBroker.isPresent()) {
-      switch (messageBroker.get()) {
-        case "OFF":
-          return ConfigParams.MessageBroker.OFF;
-        case "MQTT":
-          return ConfigParams.MessageBroker.MQTT;
-        case "DDS":
-          return ConfigParams.MessageBroker.DDS;
-        default:
-          throw new IllegalArgumentException(
-                  "0xMT302 Message broker " + messageBroker + " in pom.xml is unknown");
-      }
+      return MessageBroker.fromString(messageBroker.get());
     }
 
-    if (splittingMode == ConfigParams.SplittingMode.OFF) {
+    if (splittingMode == SplittingMode.OFF) {
       // fallback default if not splitting is disabled is "off"
-      return ConfigParams.MessageBroker.OFF;
-    } else {
+      return MessageBroker.OFF;
+    }
+    else {
       // fallback default if splitted is enabled "MQTT"
-      return ConfigParams.MessageBroker.MQTT;
+      return MessageBroker.MQTT;
     }
   }
 
-  public ConfigParams.ReplayMode getReplayMode() {
+  public ReplayMode getReplayMode() {
     Optional<String> replayMode = getAsString(Options.REPLAYMODE);
     if (replayMode.isPresent()) {
-      switch (replayMode.get()) {
-        case "OFF":
-          return ConfigParams.ReplayMode.OFF;
-        case "ON":
-          return ConfigParams.ReplayMode.ON;
-        default:
-          throw new IllegalArgumentException(
-                  "0xMT303 Replay mode " + replayMode + " in pom.xml is unknown");
-      }
+      return ReplayMode.fromString(replayMode.get());
     }
     // fallback default is "off"
-    return ConfigParams.ReplayMode.OFF;
+    return ReplayMode.OFF;
   }
 
   public File getReplayDataFile() {
     Optional<String> path = getAsString(Options.REPLAYDATAFILE);
 
-    if (configParams.getReplayMode() == ConfigParams.ReplayMode.ON && !path.isPresent()) {
+    if (configParams.getReplayMode() == ReplayMode.ON && !path.isPresent()) {
       Log.error(MontiThingsError.GENERATOR_REPLAYDATA_REQUIRED.toString());
     }
 
@@ -441,48 +342,32 @@ public class MontiThingsConfiguration implements Configuration {
 
     if (mainComp.isPresent() && mainCompShort.isPresent()) {
       Log.error(String.format(MontiThingsError.GENERATOR_ONLY_ONE_MAIN.toString(),
-              mainComp.get(), mainCompShort.get()));
+        mainComp.get(), mainCompShort.get()));
     }
-    if (configParams.getSplittingMode() == ConfigParams.SplittingMode.OFF
-            && !mainComp.isPresent() && !mainCompShort.isPresent()) {
+    if (configParams.getSplittingMode() == SplittingMode.OFF
+      && !mainComp.isPresent() && !mainCompShort.isPresent()) {
       Log.error(MontiThingsError.GENERATOR_MAIN_REQUIRED.toString());
     }
 
     return mainComp.orElseGet(mainCompShort::get);
   }
 
-  public ConfigParams.RecordingMode getRecordingMode() {
+  public RecordingMode getRecordingMode() {
     Optional<String> recordingMode = getAsString(Options.RECORDING);
     if (recordingMode.isPresent()) {
-      switch (recordingMode.get()) {
-        case "OFF":
-          return ConfigParams.RecordingMode.OFF;
-        case "ON":
-          return ConfigParams.RecordingMode.ON;
-        default:
-          throw new IllegalArgumentException(
-                  "0xMT303 Recording mode " + recordingMode + " in pom.xml is unknown");
-      }
+      return RecordingMode.fromString(recordingMode.get());
     }
     // fallback default is "off"
-    return ConfigParams.RecordingMode.OFF;
+    return RecordingMode.OFF;
   }
 
-  public ConfigParams.PortNameTrafo getPortNameTrafo() {
+  public PortNameTrafo getPortNameTrafo() {
     Optional<String> portNameTrafo = getAsString(Options.PORTNAME);
     if (portNameTrafo.isPresent()) {
-      switch (portNameTrafo.get()) {
-        case "OFF":
-          return ConfigParams.PortNameTrafo.OFF;
-        case "ON":
-          return ConfigParams.PortNameTrafo.ON;
-        default:
-          throw new IllegalArgumentException(
-              "0xMT303 portNameTrafo option " + portNameTrafo + " in pom.xml is unknown");
-      }
+      return PortNameTrafo.fromString(portNameTrafo.get());
     }
     // fallback default is "off"
-    return ConfigParams.PortNameTrafo.OFF;
+    return PortNameTrafo.OFF;
   }
 
   /**
