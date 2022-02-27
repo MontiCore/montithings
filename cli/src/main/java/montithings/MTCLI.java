@@ -9,7 +9,7 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.MontiThingsGeneratorTool;
-import montithings.generator.codegen.MontiThingsConfiguration;
+import montithings.generator.config.MontiThingsConfiguration;
 import org.apache.commons.cli.*;
 
 import java.io.File;
