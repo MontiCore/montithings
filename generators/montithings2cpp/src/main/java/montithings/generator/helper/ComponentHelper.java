@@ -163,12 +163,7 @@ public class ComponentHelper {
       String[] path = subCompPackageName.split("\\.");
       // Build correct package path
       StringBuilder correctPath = new StringBuilder();
-      boolean leaveFirstOut = true;
-      for (String dir : path) {
-        if (leaveFirstOut) {
-          leaveFirstOut = false;
-          continue;
-        }
+      for (String dir : Arrays.stream(path).skip(1).collect(Collectors.toList())) {
         correctPath.append(dir).append("/");
       }
       // Return correct path
@@ -312,6 +307,13 @@ public class ComponentHelper {
     return new HashSet<>(requestedInterface.get().getPorts());
   }
 
+  /**
+   * Checks if component has an update interval
+   *
+   * @param comp the component to check
+   * @return true iff comp has update interval
+   * @deprecated
+   */
   @Deprecated
   public static boolean hasUpdateInterval(ComponentTypeSymbol comp) {
     return elementsOf(comp).filter(ASTCalculationInterval.class::isInstance)
@@ -320,6 +322,8 @@ public class ComponentHelper {
 
   /**
    * Gets a string that corresponds to the update interval of the component in CPP code
+   *
+   * @deprecated
    */
   @Deprecated
   public static String getExecutionIntervalMethod(ComponentTypeSymbol comp) {
@@ -353,17 +357,18 @@ public class ComponentHelper {
 
     switch (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit())) {
       case ("ns"):
-        return "" + (int) (value / (1000 * 1000));
+        return Integer.toString((int) (value / (1000 * 1000)));
       case ("μs"):
-        return "" + (int) (value / 1000);
+        return Integer.toString((int) (value / 1000));
       case ("ms"):
-        return "" + (int) (value);
+        return Integer.toString((int) (value));
       case ("s"):
-        return "" + (int) (value * 1000);
+        return Integer.toString((int) (value * 1000));
       case ("min"):
-        return "" + (int) (value * 1000 * 60);
+        return Integer.toString((int) (value * 1000 * 60));
+      default:
+        return "50";
     }
-    return "50";
   }
 
   public static List<VariableSymbol> getVariablesAndParameters(ComponentTypeSymbol comp) {
@@ -464,8 +469,7 @@ public class ComponentHelper {
 
   public static boolean isTimesync(ComponentTypeSymbol component) {
     return getTiming(component).stream()
-      .filter(e -> e.getArcTimeMode() instanceof ASTArcSync)
-      .collect(Collectors.toSet()).size() > 0;
+      .anyMatch(e -> e.getArcTimeMode() instanceof ASTArcSync);
   }
 
   public static boolean isApplication(ComponentTypeSymbol component, ConfigParams config) {
@@ -550,8 +554,6 @@ public class ComponentHelper {
       if (instantiation.getMCType() instanceof ASTMCBasicGenericType) {
         List<ASTMCTypeArgument> types = new ArrayList<>(
           ((ASTMCBasicGenericType) instantiation.getMCType()).getMCTypeArgumentList());
-        //TODO: we still need the following call
-        //types = addTypeParameterComponentPackage(instance, types);
         result += TypesPrinter.printActualTypeArguments(types);
       }
     }
@@ -565,7 +567,7 @@ public class ComponentHelper {
 
 
   public static Boolean hasSyncGroups(ComponentTypeSymbol comp) {
-    return getSyncGroups(comp).size() > 0;
+    return !getSyncGroups(comp).isEmpty();
   }
 
   /**
@@ -726,22 +728,14 @@ public class ComponentHelper {
   }
 
   public static String getEveryBlockName(ComponentTypeSymbol comp, ASTEveryBlock ast) {
-    List<ASTEveryBlock> everyBlockList = getEveryBlocks(comp);
-    int i = 1;
-    for (ASTEveryBlock everyBlock : everyBlockList) {
-      if (everyBlock.equals(ast)) {
-        if (everyBlock.isPresentName()) {
-          return everyBlock.getName();
-        }
-        else {
-          return "__Every" + i;
-        }
-      }
-      i++;
-    }
+    int index = getEveryBlocks(comp).indexOf(ast);
 
-    //this code should normally not be executed
-    return "";
+    if (ast.isPresentName()) {
+      return ast.getName();
+    }
+    else {
+      return "__Every" + index;
+    }
   }
 
   public static boolean isEveryBlock(String name, ComponentTypeSymbol comp) {
@@ -1065,7 +1059,7 @@ public class ComponentHelper {
   public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name) {
     double valueInSeconds = getAgoQualifications(comp).get(name);
     //return as nanoseconds
-    return "" + ((long) (valueInSeconds * 1000000000));
+    return Long.toString((long) (valueInSeconds * 1000000000));
   }
 
   // endregion
@@ -1217,6 +1211,7 @@ public class ComponentHelper {
 
   /**
    * @return Returns true if a handwritten implementation for the IPC Server exists
+   * @deprecated
    */
   @Deprecated
   public static Boolean existsIPCServerHWCClass(File hwcPath, ComponentTypeSymbol comp,
