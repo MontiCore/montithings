@@ -5,6 +5,7 @@ import cdlangextension._ast.ASTCDLangExtensionUnit;
 import cdlangextension._cocos.CDLangExtensionCoCos;
 import cdlangextension._parser.CDLangExtensionParser;
 import cdlangextension._symboltable.ICDLangExtensionGlobalScope;
+import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
@@ -26,6 +27,7 @@ public class CheckCdExtensionModels extends GeneratorStep {
       catch (IOException e) {
         Log.error("File '" + model + "' CDLangExtension artifact was not found");
       }
+      Preconditions.checkNotNull(cdExtensionAST);
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
@@ -41,7 +43,7 @@ public class CheckCdExtensionModels extends GeneratorStep {
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
-      new CDLangExtensionCoCos().createChecker().checkAll(cdExtensionAST);
+      CDLangExtensionCoCos.createChecker().checkAll(cdExtensionAST);
     }
   }
 

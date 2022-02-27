@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.steps.check;
 
+import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
@@ -22,6 +23,7 @@ public class CheckMTConfig extends GeneratorStep {
       catch (IOException e) {
         Log.error("File '" + model + "' MTConfig artifact was not found");
       }
+      Preconditions.checkNotNull(ast);
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");

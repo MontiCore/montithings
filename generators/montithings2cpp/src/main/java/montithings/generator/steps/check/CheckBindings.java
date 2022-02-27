@@ -5,6 +5,7 @@ import bindings._ast.ASTBindingRule;
 import bindings._ast.ASTBindingsCompilationUnit;
 import bindings._cocos.BindingsCoCos;
 import bindings._parser.BindingsParser;
+import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
@@ -28,6 +29,7 @@ public class CheckBindings extends GeneratorStep {
       catch (IOException e) {
         Log.error("File '" + binding + "' Bindings artifact was not found");
       }
+      Preconditions.checkNotNull(bindingsAST);
       Log.info("Parsing model: " + binding, TOOL_NAME);
       state.getBindingsTool().createSymboltable(bindingsAST, state.getBinTab());
 

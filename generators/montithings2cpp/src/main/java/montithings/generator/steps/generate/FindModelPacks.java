@@ -48,6 +48,7 @@ public class FindModelPacks extends GeneratorStep {
         }
       }
     }
-  }
 
+    state.setModelPacks(modelPacks);
+  }
 }

@@ -93,10 +93,6 @@ public class GenerateComponent extends GeneratorStep {
     }
   }
 
-  protected void generateCppForComponent(String model, GeneratorToolState state) {
-    generateCppForComponent(model, state, true);
-  }
-
   protected void generateCppForComponent(String model, GeneratorToolState state,
     boolean generateDeploy) {
     ComponentTypeSymbol comp = state.getTool().modelToSymbol(model, state.getSymTab());

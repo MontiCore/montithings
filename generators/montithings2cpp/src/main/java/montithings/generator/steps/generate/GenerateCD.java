@@ -2,7 +2,6 @@
 package montithings.generator.steps.generate;
 
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.generator.cd2cpp.CppGenerator;
@@ -22,15 +21,10 @@ public class GenerateCD extends GeneratorStep {
     List<String> foundModels = Modelfinder
       .getModelsInModelPath(state.getModelPath(), CD4AnalysisGlobalScope.EXTENSION);
     for (String model : foundModels) {
-      String simpleName = Names.getSimpleName(model);
-      String packageName = Names.getQualifier(model);
-
       Log.info("Generate CD model: " + model, TOOL_NAME);
       Path outDir = Paths.get(state.getTarget().getAbsolutePath());
       new CppGenerator(outDir, Paths.get(state.getModelPath().getAbsolutePath()),
         Paths.get(state.getHwcPath().getAbsolutePath()), model)
-        //.generate(Optional.of(Names.getQualifiedName(packageName, simpleName)));
-        //.generate(Optional.of(packageName));
         .generate(Optional.empty());
     }
   }
