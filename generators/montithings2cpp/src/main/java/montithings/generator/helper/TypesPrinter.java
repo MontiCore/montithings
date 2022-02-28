@@ -131,7 +131,7 @@ public class TypesPrinter {
         .getName();
     }
     else {
-      return portSymbol.getType().getTypeInfo().getName();
+      return portSymbol.getType().print();
     }
   }
 
