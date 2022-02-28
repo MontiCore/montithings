@@ -10,7 +10,6 @@ import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.NameExpression2TypeValidator;
 import montithings.util.MontiThingsError;
-import java.util.List;
 
 /**
  * Checks that all name expressions in a behavior block actually refer to something

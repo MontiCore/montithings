@@ -8,8 +8,8 @@ import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.utils.Names;
 import de.se_rwth.commons.logging.Log;
-import montithings.MontiThingsMill;
 import montithings.generator.codegen.util.Identifier;
+import montithings.generator.config.*;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
 import mtconfig._ast.ASTEveryTag;
@@ -23,7 +23,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static montithings.generator.helper.FileHelper.makeExecutable;
@@ -53,7 +52,7 @@ public class MTGenerator {
     Identifier.createInstance(comp);
     String compname = comp.getName();
 
-    boolean useWsPorts = (config.getSplittingMode() != ConfigParams.SplittingMode.OFF
+    boolean useWsPorts = (config.getSplittingMode() != SplittingMode.OFF
       && generateDeploy);
 
     fg.generate(targetPath, compname + "Input", ".h",
@@ -106,8 +105,8 @@ public class MTGenerator {
 
     // Generate deploy class
     if (ComponentHelper.isApplication(comp, config) || (
-      config.getSplittingMode() != ConfigParams.SplittingMode.OFF && generateDeploy)) {
-      if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
+      config.getSplittingMode() != SplittingMode.OFF && generateDeploy)) {
+      if (config.getTargetPlatform() == TargetPlatform.ARDUINO) {
         File sketchDirectory = new File(
           targetPath.getParentFile().getPath() + File.separator + "Deploy" + compname);
         sketchDirectory.mkdir();
@@ -120,15 +119,15 @@ public class MTGenerator {
       else {
         fg.generate(targetPath, "Deploy" + compname, ".cpp", "template/deploy/Deploy.ftl",
           comp, config);
-        if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
-          if (config.getMessageBroker() == ConfigParams.MessageBroker.OFF) {
+        if (config.getSplittingMode() != SplittingMode.OFF) {
+          if (config.getMessageBroker() == MessageBroker.OFF) {
             fg.generate(targetPath, compname + "Manager", ".h", "template/util/comm/Header.ftl",
               comp, config);
             fg.generate(targetPath, compname + "Manager",
               ".cpp",
               "template/util/comm/ImplementationFile.ftl", comp, config);
           }
-          else if (config.getMessageBroker() == ConfigParams.MessageBroker.DDS) {
+          else if (config.getMessageBroker() == MessageBroker.DDS) {
             fg.generate(targetPath,
               compname + "DDSClient", ".h", "template/util/dds/client/Header.ftl", comp,
               config);
@@ -137,7 +136,7 @@ public class MTGenerator {
               "template/util/dds/client/ImplementationFile.ftl", comp, config);
           }
         }
-        if (config.getLogTracing() == ConfigParams.LogTracing.ON &&
+        if (config.getLogTracing() == LogTracing.ON &&
           !comp.getPorts().isEmpty()) {
           fg.generate(targetPath,
             compname + "LogTraceObserver", ".h", "template/logtracing/Header.ftl", comp,
@@ -175,12 +174,12 @@ public class MTGenerator {
   public void generateCrosscompileScript(File targetPath, ComponentTypeSymbol comp) {
     fg.generate(targetPath, "crosscompileRPi", ".sh",
       "template/util/scripts/CrossCompileRPi.ftl", comp, config);
-    makeExecutable(targetPath, "build", ".sh");
+    makeExecutable(targetPath, "crosscompileRPi", ".sh");
   }
 
-  public void generateBuildScript(File targetPath, List<String> hwcPythonScripts) {
+  public void generateBuildScript(File targetPath, ComponentTypeSymbol comp, List<String> hwcPythonScripts) {
     fg.generate(targetPath, "build", ".sh",
-      "template/util/scripts/BuildScript.ftl", hwcPythonScripts, config);
+      "template/util/scripts/BuildScript.ftl", comp, hwcPythonScripts, config);
     makeExecutable(targetPath, "build", ".sh");
 
     fg.generate(targetPath, "build", ".bat",
@@ -219,8 +218,7 @@ public class MTGenerator {
 
   public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories,
     List<String> sensorActuatorPorts, ConfigParams config) {
-    List sortedDirs = new ArrayList<String>();
-    sortedDirs.addAll(subdirectories);
+    List<String> sortedDirs = new ArrayList<>(subdirectories);
     sortedDirs.sort(Comparator.naturalOrder());
 
     fg.generate(targetPath, "CMakeLists", ".txt",
@@ -289,7 +287,7 @@ public class MTGenerator {
   }
 
   public void generatePortJson(File targetPath, ComponentTypeSymbol comp) {
-    if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
+    if (config.getSplittingMode() == SplittingMode.LOCAL) {
       Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + "ports");
       fg.generate(path.toFile(), comp.getFullName(), ".json",
         "template/util/comm/PortJson.ftl", comp, config, comp.getFullName());
@@ -300,7 +298,7 @@ public class MTGenerator {
   }
 
   public void generatePortJson(File targetPath, ComponentInstanceSymbol comp, String prefix) {
-    if (config.getSplittingMode() == ConfigParams.SplittingMode.LOCAL) {
+    if (config.getSplittingMode() == SplittingMode.LOCAL) {
       Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + "ports");
       fg.generate(path.toFile(), prefix + "." + comp.getName(), ".json",
         "template/util/comm/PortJson.ftl", comp.getType(), config, prefix + "." + comp.getName());

@@ -13,8 +13,6 @@ import java.util.Set;
 /**
  * Checks if an import statement or language was used multiple times.
  * TODO check uniqueness in multiple files.
- *
- * @author Julian Krebber
  */
 public class ImportNameUnique
   implements CDLangExtensionASTDepLanguageCoCo, CDLangExtensionASTCDLangExtensionUnitCoCo {

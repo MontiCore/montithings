@@ -1,11 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.development.server.prolog;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import java.util.NoSuchElementException;
 
 public class PrologQuery implements AutoCloseable, Iterable<Map<String,String>> {
   
@@ -53,7 +54,9 @@ public class PrologQuery implements AutoCloseable, Iterable<Map<String,String>> 
         prolog.startQuery(term);
         this.prefetch();
       }
-      catch (IOException e) { }
+      catch (IOException e) {
+        e.printStackTrace();
+      }
     }
     
     private void prefetch() {
@@ -74,8 +77,8 @@ public class PrologQuery implements AutoCloseable, Iterable<Map<String,String>> 
     }
 
     @Override
-    public Map<String, String> next() {
-      if(!hasNext) return null;
+    public Map<String, String> next() throws NoSuchElementException {
+      if(!hasNext) throw new NoSuchElementException();
       Map<String, String> prevNext = next;
       if(mayFetchAgain) {
         try {

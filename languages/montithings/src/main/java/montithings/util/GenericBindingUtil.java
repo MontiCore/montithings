@@ -1,9 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.util;
 
-import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._ast.ASTComponentType;
-import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.prettyprint.IndentPrinter;
@@ -127,10 +125,7 @@ public class GenericBindingUtil {
     List<PortSymbol> interfacePortSymbols = componentSymbol1.getAllPorts();
     for (PortSymbol s : interfacePortSymbols) {
       Optional<PortSymbol> similarS = componentSymbol2.getPort(s.getName());
-      if (!similarS.isPresent()) {
-        return false;
-      }
-      else if (s.isIncoming() != similarS.get().isIncoming()) {
+      if (!similarS.isPresent() || s.isIncoming() != similarS.get().isIncoming()) {
         return false;
       }
       /*
@@ -176,22 +171,6 @@ public class GenericBindingUtil {
       s = (MontiThingsScope) s.getEnclosingScope();
     }
     return (MontiThingsArtifactScope) s;
-  }
-
-  /**
-   * Gets the type name of a given subComponent.
-   *
-   * @param comp Component that contains the subComponent.
-   * @param name SubComponent instance, that identifies the subComponent by Name.
-   * @return The Type of the AST subComponent that uses given instance name if present. Otherwise null.
-   */
-  public static String getSubComponentType(ASTComponentType comp, ComponentInstanceSymbol name) {
-    for (ASTComponentInstantiation subComponent : comp.getSubComponentInstantiations()) {
-      if (subComponent.getInstancesNames().stream().anyMatch(a -> name.getName().equals(a))) {
-        return printSimpleType(subComponent.getMCType());
-      }
-    }
-    return null;
   }
 
   public static String printSimpleType(ASTMCType type) {

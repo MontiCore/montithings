@@ -27,7 +27,9 @@ public class MontiThingsScopesGenitor extends MontiThingsScopesGenitorTOP {
       imports.add(new ImportStatement(importStatement.getQName(), importStatement.isStar()));
     }
     IMontiThingsArtifactScope artifactScope = MontiThingsMill.artifactScope();
-    artifactScope.setPackageName(rootNode.getPackage().getQName());
+    if (rootNode.isPresentPackage()) {
+      artifactScope.setPackageName(rootNode.getPackage().getQName());
+    }
     artifactScope.setImportsList(imports);
     putOnStack(artifactScope);
 

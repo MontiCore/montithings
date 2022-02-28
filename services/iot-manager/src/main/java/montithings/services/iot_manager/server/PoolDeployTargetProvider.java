@@ -1,10 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import montithings.services.iot_manager.server.data.DeployClient;
 import montithings.services.iot_manager.server.data.DeploymentInfo;
 import montithings.services.iot_manager.server.data.Distribution;
@@ -12,6 +8,11 @@ import montithings.services.iot_manager.server.data.NetworkInfo;
 import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
 import montithings.services.iot_manager.server.distribution.listener.VoidDeployStatusListener;
 import montithings.services.iot_manager.server.exception.DeploymentException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class PoolDeployTargetProvider implements IDeployTargetProvider {
 
@@ -77,7 +78,9 @@ public class PoolDeployTargetProvider implements IDeployTargetProvider {
     for(IDeployTargetProvider prov : providers) {
       try {
         prov.close();
-      } catch(DeploymentException e) { }
+      } catch(DeploymentException e) {
+        e.printStackTrace();
+      }
     }
   }
   

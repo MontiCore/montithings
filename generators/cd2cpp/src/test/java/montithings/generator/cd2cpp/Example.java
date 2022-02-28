@@ -1,11 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2cpp;
 
+import org.junit.Test;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-
-import org.junit.Test;
 
 public class Example {
   @Test

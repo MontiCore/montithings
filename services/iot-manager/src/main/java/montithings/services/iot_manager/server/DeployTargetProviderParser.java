@@ -1,17 +1,18 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
-import java.net.URL;
-import java.util.HashMap;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import montithings.services.iot_manager.server.azure.AzureIotHubTargetProvider;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.genesis.GenesisDeployTargetProvider;
 import montithings.services.iot_manager.server.k8s.K8sDeployTargetProvider;
 import montithings.services.iot_manager.server.util.ThrowingFunction;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+
+import java.net.URL;
+import java.util.HashMap;
 
 public class DeployTargetProviderParser {
   
@@ -29,6 +30,7 @@ public class DeployTargetProviderParser {
         constructors.put("BASIC", DeployTargetProviderParser::parseBasicProvider);
         constructors.put("KUBERNETES", DeployTargetProviderParser::parseKubernetesProvider);
         constructors.put("GENESIS", DeployTargetProviderParser::parseGenesisProvider);
+        constructors.put("AZURE", DeployTargetProviderParser::parseAzureProvider);
         
         JsonObject jo = json.getAsJsonObject();
         String type = jo.get("type").getAsString();
@@ -92,6 +94,18 @@ public class DeployTargetProviderParser {
       long providerID = json.get("id").getAsLong();
       URL url = new URL(endpointURL);
       return new GenesisDeployTargetProvider(providerID, url);
+    }
+    catch (Exception e) {
+      throw new DeploymentException(e);
+    }
+  }
+
+  public static AzureIotHubTargetProvider parseAzureProvider(JsonObject json) throws DeploymentException {
+    try {
+      String connectionString = json.get("iotHubConnectionString").getAsString();
+      long providerID = json.get("id").getAsLong();
+      System.out.println("Created Azure IoT Hub Provider: " + connectionString);
+      return new AzureIotHubTargetProvider(providerID, connectionString);
     }
     catch (Exception e) {
       throw new DeploymentException(e);

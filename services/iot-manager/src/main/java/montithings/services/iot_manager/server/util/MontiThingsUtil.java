@@ -1,9 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.util;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
+
+import java.util.List;
 
 public class MontiThingsUtil {
   

@@ -42,7 +42,7 @@ public class MTConfigParser extends MTConfigParserTOP {
   @Override
   public Optional<ASTMTConfigUnit> parse(@NotNull String relativeFilePath) throws IOException {
     Preconditions.checkArgument(relativeFilePath != null);
-    String nonUriPath = relativeFilePath.replaceAll("/", Matcher.quoteReplacement(File.separator));
+    String nonUriPath = relativeFilePath.replace("/", Matcher.quoteReplacement(File.separator));
     return parseMTConfigUnit(nonUriPath);
   }
 }

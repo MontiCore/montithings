@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data.constraint.processor;
 
-import java.util.Collection;
-
 import montithings.services.iot_manager.server.data.DeployClient;
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
+
+import java.util.Collection;
 
 public class ConstraintContext {
   

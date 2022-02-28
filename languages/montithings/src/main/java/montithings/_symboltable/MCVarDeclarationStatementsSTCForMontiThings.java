@@ -23,10 +23,8 @@ public class MCVarDeclarationStatementsSTCForMontiThings
   @Override
   public void endVisit(ASTLocalVariableDeclaration ast) {
     List<FieldSymbol> symbols = Lists.newArrayList();
-    Iterator var4 = ast.getVariableDeclaratorList().iterator();
 
-    while (var4.hasNext()) {
-      ASTVariableDeclarator v = (ASTVariableDeclarator) var4.next();
+    for (ASTVariableDeclarator v : ast.getVariableDeclaratorList()) {
       SymTypeExpression simpleType = this.createTypeLoader(ast.getMCType());
       v.getDeclarator().getSymbol().setType(simpleType);
       symbols.add(v.getDeclarator().getSymbol());

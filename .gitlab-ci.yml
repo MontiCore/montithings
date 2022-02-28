@@ -97,6 +97,7 @@ Docker OpenDDSDCPSInfoRepo:
     - docker build -t $CI_REGISTRY_IMAGE/openddsdcpsinforepo .
     - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
 
+
 Docker Recorder:
   <<: *docker_build_definition
   variables:

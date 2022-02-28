@@ -59,7 +59,7 @@ public class ArcBasisSTCForMontiThings extends ArcBasisScopesGenitor {
 
   @Override
   public void visit(ASTArcParameter node) {
-
+    // intentionally left empty
   }
 
   @Override

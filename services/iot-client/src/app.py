@@ -23,7 +23,7 @@ if __name__ == "__main__":
     myTopicConfig = f"deployment/{config.CLIENT_ID}/config"
     myTopicPush = f"deployment/{config.CLIENT_ID}/push"
     myTopicHeartbeat   = f"deployment/{config.CLIENT_ID}/heartbeat"
-    topicPoll   = f"deployment/poll"
+    topicPoll   = "deployment/poll"
 
     print("Initializing components...")
     mngr = helpers.ComposeManager("../run/deployment")

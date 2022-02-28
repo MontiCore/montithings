@@ -28,7 +28,7 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
 
   protected MontiThingsTraverser traverser;
 
-  protected IndentPrinter printer = null;
+  protected IndentPrinter printer;
 
   public MontiThingsToMontiArcFullPrettyPrinter() {
     this(new IndentPrinter());

@@ -9,8 +9,6 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.se_rwth.commons.logging.Log;
 import montithings._auxiliary.SetExpressionsMillForMontiThings;
-import setdefinitions._ast.ASTSetValueRange;
-import setdefinitions._ast.ASTSetValueRegEx;
 
 import java.util.Stack;
 

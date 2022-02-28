@@ -3,7 +3,6 @@ package montithings.types.check;
 
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
-import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
@@ -32,8 +31,8 @@ public class DeriveSymTypeOfExpressionForMT
     if (optVar.isPresent()) {
       //no method here, test variable first
       // durch AST-Umbau kann ASTNameExpression keine Methode sein
-      VariableSymbol var = optVar.get();
-      SymTypeExpression res = var.getType().deepClone();
+      VariableSymbol variableSymbol = optVar.get();
+      SymTypeExpression res = variableSymbol.getType().deepClone();
       typeCheckResult.setField();
       return Optional.of(res);
     }

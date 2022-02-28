@@ -25,9 +25,7 @@ class ${className} : public IComponent
 </#if>
 {
 protected:
-<#if !(comp.getPorts()?size == 0)>
-  ${tc.includeArgs("template.interface.hooks.Member", [comp])}
-</#if>
+${tc.includeArgs("template.interface.hooks.Member", [comp])}
 
 ${tc.includeArgs("template.component.declarations.PortMonitorUuid", [comp, config])}
 ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, config])}

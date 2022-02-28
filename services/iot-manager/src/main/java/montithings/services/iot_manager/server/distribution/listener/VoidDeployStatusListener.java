@@ -8,17 +8,17 @@ public class VoidDeployStatusListener implements IDeployStatusListener {
   
   @Override
   public void onClientOnline(DeployClient client) {
-    
+    // intentionally left empty
   }
   
   @Override
   public void onClientOffline(DeployClient client) {
-    
+    // intentionally left empty
   }
 
   @Override
   public void onDeploymentUpdated(Distribution dist) {
-    
+    // intentionally left empty
   }
   
 }

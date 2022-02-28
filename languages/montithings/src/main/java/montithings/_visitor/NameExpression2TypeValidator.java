@@ -34,11 +34,8 @@ public class NameExpression2TypeValidator {
         if (nameCompleter.getNameExpression().isPresent() &&
                 nameCompleter.getNameExpression().get().equals(node)) {
           // if the qualified name for the matching AST node is found, check if it is a type reference
-          if (((IMontiThingsScope) node.getEnclosingScope()).resolveTypeMany(nameCompleter.getName()).size() == 1) {
-            return true;
-          } else {
-            return false;
-          }
+          return ((IMontiThingsScope) node.getEnclosingScope())
+            .resolveTypeMany(nameCompleter.getName()).size() == 1;
         }
         nameCompleter.clear();
       }

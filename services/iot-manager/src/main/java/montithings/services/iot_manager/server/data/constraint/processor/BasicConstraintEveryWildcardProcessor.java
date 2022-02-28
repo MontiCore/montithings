@@ -1,15 +1,15 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data.constraint.processor;
 
-import java.util.HashSet;
-import java.util.ListIterator;
-import java.util.Set;
-
 import montithings.services.iot_manager.server.data.DeployClient;
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.data.constraint.BasicConstraint;
 import montithings.services.iot_manager.server.data.constraint.Constraint;
+
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Set;
 
 /**
  * Resolves "every" location wildcards, i.e. removes constraints containing

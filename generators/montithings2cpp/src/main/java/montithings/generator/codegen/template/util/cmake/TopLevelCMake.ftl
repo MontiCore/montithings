@@ -13,6 +13,8 @@ cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
 
+add_compile_options(-Wno-psabi)
+
 <#if config.getSplittingMode().toString() == "OFF">
   <#list sensorActuatorPorts as sensorActuatorPort >
     add_subdirectory ("${sensorActuatorPort}")
@@ -161,6 +163,8 @@ include_directories("hwc" ${r"${dir_list}"})
   add_subdirectory(montithings-RTE)
 </#if>
 
+file(GLOB SOURCES "*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX "${Utils.getDeployFile(comp)}")
 add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}

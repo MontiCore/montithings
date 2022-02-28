@@ -7,15 +7,10 @@ import mtconfig.MTConfigTool;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCoChecker;
 import mtconfig._cocos.MTConfigCoCos;
-import mtconfig._parser.MTConfigParser;
 import mtconfig.util.MTConfigError;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;

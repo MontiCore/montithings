@@ -21,7 +21,7 @@ public class CppVarDeclarationStatementsPrettyPrinter extends MCVarDeclarationSt
   @Override
   public void handle(ASTLocalVariableDeclaration a) {
     CommentPrettyPrinter.printPreComments(a, this.getPrinter());
-    a.getMCModifierList().stream().forEach((m) -> {
+    a.getMCModifierList().forEach((m) -> {
       this.getPrinter().print(" ");
       m.accept(getTraverser());
       this.getPrinter().print(" ");
@@ -45,10 +45,8 @@ public class CppVarDeclarationStatementsPrettyPrinter extends MCVarDeclarationSt
     }
     this.getPrinter().print(" ");
     String sep = "";
-    Iterator var4 = a.getVariableDeclaratorList().iterator();
 
-    while(var4.hasNext()) {
-      ASTVariableDeclarator v = (ASTVariableDeclarator)var4.next();
+    for (ASTVariableDeclarator v : a.getVariableDeclaratorList()) {
       this.getPrinter().print(sep);
       sep = ", ";
       v.accept(getTraverser());

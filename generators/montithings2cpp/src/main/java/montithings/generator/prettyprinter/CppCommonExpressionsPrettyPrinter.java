@@ -157,7 +157,7 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
     else if (fieldAccessIsEnumConstant(node)) {
       Optional<FieldSymbol> symbol = getFieldSymbolOfEnumConstant(node);
       String fullName = symbol.get().getFullName();
-      String cppFullyQualifiedName = fullName.replaceAll("\\.", "::");
+      String cppFullyQualifiedName = fullName.replace(".", "::");
       getPrinter().print("montithings::" + cppFullyQualifiedName);
     }
     else {

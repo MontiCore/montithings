@@ -7,7 +7,6 @@ import arcbasis._symboltable.PortSymbol;
 import com.google.common.base.Preconditions;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.scbasis._ast.ASTSCState;
-import de.monticore.scbasis._ast.ASTSCTBody;
 import de.monticore.scbasis._ast.ASTSCTransition;
 import de.monticore.sctransitions4code._ast.ASTTransitionBody;
 import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
@@ -18,7 +17,8 @@ import java.util.stream.Collectors;
 
 public class StatechartHelper {
   public static ASTArcStatechart getStatechart(ComponentTypeSymbol comp) {
-    return ComponentHelper.elementsOf(comp).filter(ASTArcStatechart.class).get(0);
+    return ComponentHelper.elementsOf(comp).filter(ASTArcStatechart.class::isInstance)
+      .map(ASTArcStatechart.class::cast).findFirst().get();
   }
 
   public static ASTSCState getInitialState(ComponentTypeSymbol comp) {

@@ -74,5 +74,23 @@ public class DeployClient {
   public void setTargetProviderID(long targetProviderID) {
     this.targetProviderID = targetProviderID;
   }
-  
+
+  /* ============================================================ */
+  /* ======================= GENERATED CODE ===================== */
+  /* ============================================================ */
+
+  @Override public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+
+    DeployClient client = (DeployClient) o;
+
+    return clientID != null ? clientID.equals(client.clientID) : client.clientID == null;
+  }
+
+  @Override public int hashCode() {
+    return clientID != null ? clientID.hashCode() : 0;
+  }
 }

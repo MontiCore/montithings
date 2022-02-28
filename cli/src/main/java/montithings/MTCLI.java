@@ -9,7 +9,7 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.MontiThingsGeneratorTool;
-import montithings.generator.codegen.MontiThingsConfiguration;
+import montithings.generator.config.MontiThingsConfiguration;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -169,8 +169,7 @@ public class MTCLI {
     addCmdParameter(cmd, params, "br", "messageBroker");
 
     Configuration cfg = new ConfigurationPropertiesMapContributor(params);
-    MontiThingsConfiguration mtcfg = MontiThingsConfiguration.withConfiguration(cfg);
-    return mtcfg;
+    return MontiThingsConfiguration.withConfiguration(cfg);
   }
 
   /**
@@ -299,10 +298,7 @@ public class MTCLI {
     try {
       copyFromJar(srcName, Paths.get(targetDirectory.toPath() + File.separator + targetName));
     }
-    catch (IOException e) {
-      e.printStackTrace();
-    }
-    catch (URISyntaxException e) {
+    catch (IOException | URISyntaxException e) {
       e.printStackTrace();
     }
   }
@@ -315,7 +311,7 @@ public class MTCLI {
    * @param target copy destination directory
    */
   public void copyFromJar(String source, final Path target) throws URISyntaxException, IOException {
-    URI resource = getClass().getResource("").toURI();
+    URI resource = Objects.requireNonNull(MTCLI.class.getResource("")).toURI();
     FileSystem fileSystem;
     try {
       fileSystem = FileSystems.newFileSystem(resource, Collections.<String, String>emptyMap());
@@ -328,12 +324,10 @@ public class MTCLI {
 
     Files.walkFileTree(jarPath, new SimpleFileVisitor<Path>() {
 
-      private Path currentTarget;
-
       @Override
       public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
         throws IOException {
-        currentTarget = target.resolve(jarPath.relativize(dir).toString());
+        Path currentTarget = target.resolve(jarPath.relativize(dir).toString());
         Files.createDirectories(currentTarget);
         return FileVisitResult.CONTINUE;
       }
@@ -518,9 +512,9 @@ public class MTCLI {
       optionalArg(true).
       numberOfArgs(1).
       desc("Set the message broker to be used by the architecture. Possible arguments are:\n"
-        + "-sp off to use a proprietary one,\n"
-        + "-sp mqtt to use Message Queuing Telemetry Transport (Mosquitto MQTT),\n"
-        + "-sp dds to Data Distribution Service (OpenDDS)")
+        + "-b off to use a proprietary one,\n"
+        + "-b mqtt to use Message Queuing Telemetry Transport (Mosquitto MQTT),\n"
+        + "-b dds to Data Distribution Service (OpenDDS)")
       .build()
     );
 

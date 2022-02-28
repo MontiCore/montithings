@@ -15,7 +15,7 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::init(){
                 // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
                 ${Utils.printGetPort(target)}->setDataProvidingPort (${Utils.printGetPort(connector.getSource())});
                 <#if ComponentHelper.isSIUnitPort(connector.getSource())>
-                    ${Utils.printComponentPrefix(target)}getInterface()->setPort${target.getPort()?cap_first}ConversionFactor (${ComponentHelper.getConversionFactorFromSourceAndTarget(connector.source, target)?replace(",", ".")});
+                    ${Utils.printComponentPrefix(target)}getInterface()->setPort${target.getPort()?cap_first}ConversionFactor (${TypesHelper.getConversionFactorFromSourceAndTarget(connector.source, target)?replace(",", ".")});
                 </#if>
             </#if>
         </#list>
