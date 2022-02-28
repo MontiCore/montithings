@@ -24,7 +24,7 @@ class MontiThingsToolTest {
   protected static final String TEST_PATH = Paths.get("montithings", "tool").toString();
 
   protected static Stream<Arguments> validModelPathAndExpectedValuesProvider() {
-    return Stream.of(Arguments.of(Paths.get("validExample").toString(), 4));
+    return Stream.of(Arguments.of(Paths.get("validExample").toString(), 5));
   }
 
   /**
