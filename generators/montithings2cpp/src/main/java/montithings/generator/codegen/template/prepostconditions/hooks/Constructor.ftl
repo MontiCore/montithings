@@ -2,6 +2,7 @@
 ${tc.signature("comp")}
 <#include "/template/TcPreamble.ftl">
 <#include "/template/CompPreamble.ftl">
+<#assign generics = Utils.printFormalTypeParameters(comp)>
 
 <#assign preconditions = ComponentHelper.getPreconditions(comp)>
 <#if preconditions?size gt 0>
