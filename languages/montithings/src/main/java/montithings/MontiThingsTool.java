@@ -328,9 +328,6 @@ public class MontiThingsTool implements IMontiThingsTool {
     TypeSymbol collectionType = createCollectionType("Collection", artifactScope, Optional.empty(), typeVarSymbol);
     add2Scope(artifactScope, collectionType);
 
-    //SymTypeOfGenerics superType = SymTypeExpressionFactory
-    //  .createGenerics(getCollectionType(), SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
-
     TypeSymbol listType = createCollectionType("List", artifactScope, Optional.of(collectionType), typeVarSymbol);
     add2Scope(artifactScope, listType);
 
@@ -347,14 +344,11 @@ public class MontiThingsTool implements IMontiThingsTool {
     if (collectionType.isPresent()) {
       type.addSuperTypes(SymTypeExpressionFactory.createTypeObject(collectionType.get()));
     }
-    type.getSpannedScope().setName("List");
+    type.getSpannedScope().setName(name);
     type.addTypeVarSymbol(typeVarSymbol);
     return type;
   }
 
-  protected static TypeSymbol getCollectionType() {
-    return SymTypeExpressionFactory.createTypeConstant("Collection").getTypeInfo();
-  }
 
 
   protected void add2Scope(@NotNull IBasicSymbolsScope scope, @NotNull TypeSymbol... symbols) {
