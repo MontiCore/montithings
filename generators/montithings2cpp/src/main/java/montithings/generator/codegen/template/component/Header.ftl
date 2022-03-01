@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 <#include "/template/Copyright.ftl">
 
@@ -25,7 +26,7 @@ class ${className} : public IComponent
 </#if>
 {
 protected:
-<#if !hasNoPorts>
+<#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.Member", [comp])}
 </#if>
 
@@ -42,7 +43,7 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
   <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
     <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
     MqttPort<Message<${type}>> *${p.getName()};
-    <#if dummyName5>
+    <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
       std::thread th${p.getName()?cap_first};
       std::promise<void> exitSignal${p.getName()?cap_first};
     </#if>
@@ -55,12 +56,12 @@ ${tc.includeArgs("template.prepostconditions.hooks.Member", [comp])}
 ${tc.includeArgs("template.state.hooks.Member", [comp])}
 
 ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateName()}__at__pre;
-<#if dummyName3>
+<#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0>
   ${compname}Impl${Utils.printFormalTypeParameters(comp)} ${Identifier.getBehaviorImplName()};
 </#if>
 
 <#if comp.isDecomposed()>
-  <#if dummyName2>
+  <#if needsRunMethod>
     void run();
   </#if>
   ${tc.includeArgs("template.component.helper.SubcompIncludes", [comp, config])}
@@ -95,12 +96,12 @@ ${TypesPrinter.printConstructorArguments(comp)});
 </#if>
 
 <#if comp.isDecomposed()>
-  <#if !splittingModeDisabled && brokerDisabled>
+  <#if !(splittingModeDisabled) && brokerDisabled>
     ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
   </#if>
   <#if splittingModeDisabled>
     <#list comp.getSubComponents() as subcomponent>
-      <#if dummyName4>
+      <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
         <#assign type = subcomponent.getGenericType().getName()>
       <#else>
         <#assign type = ComponentHelper.getSubComponentTypeNameWithoutPackage(subcomponent, config)>
@@ -111,7 +112,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   </#if>
 </#if>
 
-<#if !hasNoPorts>
+<#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDeclaration", [comp])}
 </#if>
 

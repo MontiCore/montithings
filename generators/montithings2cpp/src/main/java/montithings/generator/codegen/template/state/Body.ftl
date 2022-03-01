@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "className")}
+<#include "/template/Preamble.ftl">
 <#include "/template/state/helper/GeneralPreamble.ftl">
 
 <#list ComponentHelper.getVariablesAndParameters(comp) as var>

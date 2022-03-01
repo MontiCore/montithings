@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
+<#include "/template/Preamble.ftl">
 <#include "/template/logtracing/helper/GeneralPreamble.ftl">
 
 <#list comp.getIncomingPorts() as p>

@@ -1,9 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "portSymbol", "portTemplateName", "everyTagOpt" "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign TypesPrinter = tc.instantiate("montithings.generator.helper.TypesPrinter")>
-<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 <#include "/template/Copyright.ftl">
+<#include "/template/ConfigPreamble.ftl">
+<#include "/template/TcPreamble.ftl">
 #pragma once
 #include "easyloggingpp/easylogging++.h"
 #include "tl/optional.hpp"

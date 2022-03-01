@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "existsHWC")}
+<#include "/template/ConfigPreamble.ftl">
 <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 [common]
 <#if splittingModeIsDistributed>

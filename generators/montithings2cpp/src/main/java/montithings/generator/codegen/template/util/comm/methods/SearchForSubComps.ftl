@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
+<#include "/template/Preamble.ftl">
 <#include "/template/util/comm/helper/GeneralPreamble.ftl">
 
 void
@@ -31,7 +32,7 @@ ${className}::searchSubcomponents ()
       // tell subcomponent where to connect to
       <#list comp.getAstNode().getConnectors() as connector>
         <#list connector.targetList as target>
-          <#if dummyName1>
+          <#if !target.isPresentComponent() && subcomponent.getName() == connector.getSource().getComponent()>
             <#list subcomponentSymbol.ports as p>
               <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
 
@@ -46,7 +47,7 @@ ${className}::searchSubcomponents ()
               </#if>
             </#list>
           </#if>
-        <#-- TODO: What happens if !target.isPresentComponent() --><#if dummyName17>
+        <#-- TODO: What happens if !target.isPresentComponent() --><#if target.isPresentComponent() && subcomponent.getName() == target.getComponent()>
           {
           <#if !connector.getSource().isPresentComponent()>
             PortToSocket message ("${target.port}", comm->getOurIp() + ":" + communicationPort, "/" + comp->getInstanceName () + "/out/${connector.getSource().port}");

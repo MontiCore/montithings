@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "portSymbol")}
+<#include "/template/ConfigPreamble.ftl">
 
 <#if recordingEnabled && portSymbol.isIncoming()>
   std::unique_ptr${"<DDSRecorder>"} ddsRecorder;

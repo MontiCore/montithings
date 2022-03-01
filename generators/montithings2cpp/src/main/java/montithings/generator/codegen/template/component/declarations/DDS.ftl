@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config")}
-<#include "/template/component/helper/GeneralPreamble.ftl">
+<#include "/template/ConfigPreamble.ftl">
 
 <#if brokerIsDDS>
   // sensor actuator ports require cmd args in order to set up their DDS clients

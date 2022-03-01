@@ -10,7 +10,7 @@ void ${hostclassName}${Utils.printFormalTypeParameters(comp)}::initLogTracer(
   </#if>
 ){
 
-  <#if !hasNoPorts>
+  <#if !(comp.getPorts()?size == 0)>
     logTraceObserver = new ${comp.name}LogTraceObserver(this);
   </#if>
 

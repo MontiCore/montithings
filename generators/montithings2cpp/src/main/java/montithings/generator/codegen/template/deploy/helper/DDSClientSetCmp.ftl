@@ -8,7 +8,7 @@ ${tc.signature("comp", "config")}
 
 ${tc.includeArgs("template.logtracing.hooks.InitLogTracer", [comp, config])}
 
-<#if !splittingModeDisabled && brokerIsDDS>
+<#if !(splittingModeDisabled) && brokerIsDDS>
   ddsClient.setComp(&cmp);
 
   ddsClient.initializeOutgoingPorts();

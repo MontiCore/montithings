@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
 ${tc.signature("hwcPythonScripts","config", "existsHWC")}
+<#include "/template/ConfigPreamble.ftl">
 
 #
 # Set "export USE_CONAN=1" to make this script call conan
@@ -40,7 +41,7 @@ fi
   ninja
 </#if>
 
-<#if !splittingModeDisabled>
+<#if !(splittingModeDisabled)>
 echo Copy Scripts for "$1"
 cd ..
 find hwc -name "*.py" | cpio -pdm build/bin/ > /dev/null 2>&1

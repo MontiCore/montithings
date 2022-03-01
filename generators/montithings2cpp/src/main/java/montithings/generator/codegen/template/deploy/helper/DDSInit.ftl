@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if !splittingModeDisabled && brokerIsDDS>
+<#if !(splittingModeDisabled) && brokerIsDDS>
   <#if splittingModeIsDistributed>
       <#assign argc = 5>
   <#else>

@@ -1,7 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
-<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (dummyName8)>
+<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (splittingModeDisabled || ComponentHelper.shouldIncludeSubcomponents(comp, config))>
 
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp)}::${className}
@@ -28,7 +29,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
     </#list>)
   <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
 </#if>
-<#if dummyName3>
+<#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0>
   ${tc.includeArgs("template.component.helper.BehaviorInitializerListEntry", [comp, config])}
   <#if !comp.isAtomic()>,</#if>
 </#if>

@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("everyBlock", "comp", "config", "existsHWC")}
+<#include "/template/Preamble.ftl">
 <#include "/template/impl/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}

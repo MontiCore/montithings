@@ -1,9 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config")}
+<#include "/template/ConfigPreamble.ftl">
+
 # Cross compile
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_VERSION 1)
-<#if !targetPlatformIsDsaLab>
+<#if !(targetPlatformIsDsaLab)>
     set(CMAKE_C_COMPILER   /usr/bin/powerpc-linux-gnu-gcc)
     set(CMAKE_CXX_COMPILER /usr/bin/powerpc-linux-gnu-g++)
 </#if>

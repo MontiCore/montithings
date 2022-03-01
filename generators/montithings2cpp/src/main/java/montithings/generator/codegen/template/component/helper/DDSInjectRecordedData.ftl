@@ -6,9 +6,10 @@
      generator instead of in transformations. -->
 
 ${tc.signature("comp", "config")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-<#if dummyName9>
+<#if replayEnabled && !ComponentHelper.isFlaggedAsGenerated(comp)>
 {
     // Fill system call replayer with recorded data
     std::ifstream ifstreamRecordings("recordings.json");

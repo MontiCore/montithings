@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if !splittingModeDisabled>
+<#if !(splittingModeDisabled)>
 free(ddsArgv[0]);
 free(ddsArgv[2]);
 </#if>

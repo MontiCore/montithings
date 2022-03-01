@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
+<#include "/template/Preamble.ftl">
 <#include "/template/interface/helper/GeneralPreamble.ftl">
 
 <#list comp.getPorts() as port>

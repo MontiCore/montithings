@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "isSensor", "portTemplateName", "everyTagOpt")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
+<#include "/template/TcPreamble.ftl">
+<#include "/template/ConfigPreamble.ftl">
 <#include "/template/Copyright.ftl">
 #pragma once
 #include "easyloggingpp/easylogging++.h"

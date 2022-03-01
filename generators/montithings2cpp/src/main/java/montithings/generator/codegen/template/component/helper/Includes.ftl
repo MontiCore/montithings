@@ -1,13 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 #include "IComponent.h"
 #include "Port.h"
 #include "InOutPort.h"
 <#list comp.getPorts() as port>
-    <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
-    <#if dummyName7>
+    <#assign addPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
+    <#if config.getTemplatedPorts()?seq_contains(port) && addPort!="Optional.empty">
       #include "${Names.getSimpleName(addPort.get())?cap_first}.h"
     </#if>
 </#list>

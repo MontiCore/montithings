@@ -1,13 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
+<#include "/template/Preamble.ftl">
 <#include "/template/deploy/helper/GeneralPreamble.ftl">
 <#include "/template/Copyright.ftl">
 
 
 #include "${compname}.h"
-<#if !splittingModeDisabled && brokerDisabled>
+<#if !(splittingModeDisabled) && brokerDisabled>
   #include "${compname}Manager.h"
-<#elseif !splittingModeDisabled && brokerIsDDS>
+<#elseif !(splittingModeDisabled) && brokerIsDDS>
   #include "${compname}DDSClient.h"
 </#if>
 

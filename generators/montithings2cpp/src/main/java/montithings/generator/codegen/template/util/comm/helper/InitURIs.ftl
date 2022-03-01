@@ -13,7 +13,7 @@ ${tc.signature("comp")}
     <#list connector.targetList as target>
         <#list comp.subComponents as subcomponent>
             <#assign subcomponentSymbol = subcomponent.type.loadedSymbol>
-            <#if dummyName16>
+            <#if !connector.getSource().isPresentComponent() && subcomponent.getName() == target.getComponent()>
                 <#list subcomponentSymbol.ports as p>
                     <#if p.getName() == target.port>
                         std::string to${subcomponent.getName()?cap_first}_${p.getName()}_uri;

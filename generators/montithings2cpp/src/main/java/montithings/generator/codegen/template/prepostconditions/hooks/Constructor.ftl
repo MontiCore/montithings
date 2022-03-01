@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp")}
-<#include "/template/Preamble.ftl">
+<#include "/template/TcPreamble.ftl">
+<#include "/template/CompPreamble.ftl">
 
 <#assign preconditions = ComponentHelper.getPreconditions(comp)>
 <#if preconditions?size gt 0>

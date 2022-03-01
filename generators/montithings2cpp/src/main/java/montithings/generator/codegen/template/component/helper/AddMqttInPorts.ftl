@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
@@ -9,7 +10,7 @@ std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
 
   ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameIn + "/${p.getName()}", true, mqttClientInstance, mqttClientLocalInstance);
   interface.getPort${p.getName()?cap_first} ()->attach (this);
-  <#if dummyName5>
+  <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
     std::vector< std::string > sensorActuatorTopics${p.getName()?cap_first} = sensorActuatorTypes["${sensorActuatorType}"];
     std::string topicName = sensorActuatorTopics${p.getName()?cap_first}[0];

@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
 ${tc.signature("components", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
+<#include "/template/ConfigPreamble.ftl">
 
 <#list components as comp >
   pkill -f ${comp}

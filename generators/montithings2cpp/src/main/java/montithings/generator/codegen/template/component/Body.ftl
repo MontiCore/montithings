@@ -1,13 +1,14 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if comp.isDecomposed()>
-  <#if !splittingModeDisabled && brokerDisabled>
+  <#if !(splittingModeDisabled) && brokerDisabled>
     ${tc.includeArgs("template.component.helper.SubcompMethodDefinitions", [comp, config])}
   </#if>
 
-  <#if dummyName2>
+  <#if needsRunMethod>
     ${tc.includeArgs("template.component.methods.Run", [comp, config, className])}
   </#if>
   ${tc.includeArgs("template.component.methods.ComputeDecomposed", [comp, config, className])}
@@ -40,7 +41,7 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
 </#if>
 
-<#if !hasNoPorts>
+<#if !(comp.getPorts()?size == 0)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
 </#if>
 

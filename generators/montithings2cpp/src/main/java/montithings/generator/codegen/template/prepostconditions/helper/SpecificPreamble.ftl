@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-<#include "/template/Preamble.ftl">
+<#include "/template/TcPreamble.ftl">
+<#include "/template/CompPreamble.ftl">
 <#assign prefix = "">
 <#if isPrecondition>
     <#assign prefix = "Pre">

@@ -1,10 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "className")}
+<#include "/template/Preamble.ftl">
 <#include "/template/input/helper/GeneralPreamble.ftl">
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 
 <#if !isBatch>
-  <#if !(hasNoIncomingPorts)>
+  <#if !(comp.getAllIncomingPorts()?size == 0)>
     ${tc.includeArgs("template.input.methods.Constructor", [comp, config, existsHWC])}
   </#if>
 </#if>

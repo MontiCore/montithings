@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
 ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 

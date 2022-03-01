@@ -1,7 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("pckg", "port", "libraryPath", "config", "test", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#include "/template/ConfigPreamble.ftl">
+<#include "/template/TcPreamble.ftl">
 
 <#assign commonCodePrefix = "../">
 
@@ -28,8 +28,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS_DEBUG "${r"${CMAKE_CXX_FLAGS_DEBUG}"} -gdwarf-3")
 set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
 
-<#if targetPlatformIsDsaVcg
-|| targetPlatformIsDsaLab>
+<#if targetPlatformIsDsa>
   ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
 <#if targetPlatformIsRaspberry>
@@ -48,10 +47,6 @@ include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
 conan_basic_setup()
 endif()
 
-<#assign needsNng = !targetPlatformIsDsaVcg
-&& !targetPlatformIsDsaLab
-&& !splittingModeDisabled
-&& brokerDisabled>
 <#if needsNng>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   find_package(nng 1.3.0 CONFIG REQUIRED)
@@ -110,7 +105,7 @@ else()
   <#if !(brokerIsMQTT)>
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(brokerDisabled && !splittingModeDisabled)>
+  <#if !(brokerDisabled && !(splittingModeDisabled))>
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
 </#if>
@@ -132,8 +127,7 @@ install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 <#if !test>
   add_executable(${pckg}.${port} Deploy${port}.cpp)
   target_link_libraries(${pckg}.${port} ${pckg}_${port}Lib)
-  <#if targetPlatformIsDsaVcg
-  || targetPlatformIsDsaLab>
+  <#if targetPlatformIsDsa>
       ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [pckg+"."+port])}
   <#elseif targetPlatformIsRaspberry>
       ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [pckg+"."+port])}
@@ -142,7 +136,7 @@ install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${pckg}.${port} ${r"${MOSQUITTO_LIB}"})
       endif()
-    <#elseif !splittingModeDisabled && brokerIsDDS>
+    <#elseif !(splittingModeDisabled) && brokerIsDDS>
       target_link_libraries(${pckg}.${port} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>

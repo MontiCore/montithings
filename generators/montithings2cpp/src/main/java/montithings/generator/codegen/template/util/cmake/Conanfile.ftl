@@ -1,14 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "existsHWC")}
-
-<#assign needsMosquitto = brokerIsMQTT>
-<#assign needsNng = !targetPlatformIsDsaVcg
-                 && !targetPlatformIsDsaLab
-                 && !splittingModeDisabled
-                 && brokerDisabled>
+<#include "/template/ConfigPreamble.ftl">
 
 [requires]
-<#if needsMosquitto>
+<#if brokerIsMQTT>
 mosquitto/2.0.10
 </#if>
 <#if needsNng>

@@ -1,11 +1,12 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 
 ${Utils.printTemplateArguments(comp)}
 bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute() {
-<#if dummyName11>
+<#if comp.getAllIncomingPorts()?size gt 0 && !ComponentHelper.hasSyncGroups(comp)>
     if (timeMode == TIMESYNC || <#list comp.getAllIncomingPorts() as inPort>${Identifier.getInterfaceName()}.getPort${inPort.getName()?cap_first}
     ()->hasValue(this->uuid)<#sep>||</#sep>
 </#list>)
@@ -27,7 +28,7 @@ bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute() {
     )
     { return true; }
 </#if>
-<#if hasNoIncomingPorts>
+<#if comp.getAllIncomingPorts()?size == 0>
     return true;
 <#else>
     return false;

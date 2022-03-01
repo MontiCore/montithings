@@ -1,6 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("typeName", "instanceName", "config")}
-<#if !splittingModeDisabled>
+<#include "/template/ConfigPreamble.ftl">
+
+<#if !(splittingModeDisabled)>
     <#assign lineBreak = "\\">
 <#else>
     <#assign lineBreak = ")">
@@ -16,7 +18,7 @@ CONTAINER=$(docker run -d --rm \
   -v ${r"${PWD}"}/dcpsconfig.ini:/usr/src/app/build/bin/dcpsconfig.ini \
 </#if>
 --name ${instanceName} -h ${instanceName} ${typeName?lower_case}:latest --name ${instanceName} ${lineBreak}
-<#if brokerDisabled && !splittingModeDisabled>
+<#if brokerDisabled && !(splittingModeDisabled)>
   --managementPort 30006 --dataPortArg 30007)
 </#if>
 <#if brokerIsMQTT>

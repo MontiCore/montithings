@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
+<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
@@ -8,10 +9,10 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::init(){
     super.init();
 </#if>
 
-<#if dummyName8>
+<#if splittingModeDisabled || ComponentHelper.shouldIncludeSubcomponents(comp,config)>
     <#list comp.getAstNode().getConnectors() as connector>
         <#list connector.getTargetList() as target>
-            <#if ComponentHelper.isIncomingPort(comp, target)  && (dummyName10)>
+            <#if ComponentHelper.isIncomingPort(comp, target)  && (brokerDisabled || ComponentHelper.shouldIncludeSubcomponents(comp,config))>
                 // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
                 ${Utils.printGetPort(target)}->setDataProvidingPort (${Utils.printGetPort(connector.getSource())});
                 <#if ComponentHelper.isSIUnitPort(connector.getSource())>

@@ -1,5 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("subdirectories", "sensorActuatorPorts", "config", "existsHWC")}
+<#include "/template/ConfigPreamble.ftl">
 
 cmake_minimum_required (VERSION 3.8)
 project ("MontiThings Application")
@@ -9,7 +10,7 @@ project ("MontiThings Application")
 <#if !(brokerIsMQTT)>
   set(EXCLUDE_MQTT 1)
 </#if>
-<#if (!splittingModeDisabled) && (config.getMessageBroker().toString() != "OFF")>
+<#if !(splittingModeDisabled || brokerDisabled)>
   set(EXCLUDE_COMM_MANAGER 1)
 </#if>
 <#if (logTracingEnabled)>

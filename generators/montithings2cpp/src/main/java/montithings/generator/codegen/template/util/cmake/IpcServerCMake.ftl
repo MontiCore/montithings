@@ -1,10 +1,11 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("libraryPath","ipcPath","existsHWC","config")}
+<#include "/template/ConfigPreamble.ftl">
+
 cmake_minimum_required(VERSION 3.8)
 <#-- project(${port.getName()?cap_first}Server) TODO -->set(CMAKE_CXX_STANDARD 11)
 
-<#if targetPlatformIsDsaVcg
-|| targetPlatformIsDsaLab>
+<#if targetPlatformIsDsa>
     ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
 
@@ -17,10 +18,6 @@ include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
 conan_basic_setup()
 endif()
 
-<#assign needsNng = !targetPlatformIsDsaVcg
-&& !targetPlatformIsDsaLab
-&& !splittingModeDisabled
-&& brokerDisabled>
 <#if needsNng>
     if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
     find_package(nng 1.3.0 CONFIG REQUIRED)

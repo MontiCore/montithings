@@ -1,11 +1,9 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("files", "comp", "hwcPath", "libraryPath", "subPackagesPath", "config", "test", "sensorActuatorPorts", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
 <#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "">
-<#if !splittingModeDisabled>
+<#if !(splittingModeDisabled)>
     <#assign commonCodePrefix = "../">
 </#if>
 
@@ -53,8 +51,7 @@ SET(${r"${return_list}"} ${r"${dir_list}"})
 ENDMACRO()
 SET(dir_list "")
 
-<#if targetPlatformIsDsaVcg
-|| targetPlatformIsDsaLab>
+<#if targetPlatformIsDsa>
   ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
 <#if targetPlatformIsRaspberry>
@@ -73,10 +70,6 @@ include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
 conan_basic_setup()
 endif()
 
-<#assign needsNng = !targetPlatformIsDsaVcg
-                 && !targetPlatformIsDsaLab
-                 && !splittingModeDisabled
-                 && brokerDisabled>
 <#if needsNng>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   find_package(nng 1.3.0 CONFIG REQUIRED)
@@ -149,7 +142,7 @@ include_directories("hwc" ${r"${dir_list}"})
   <#if !(brokerIsMQTT)>
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(brokerDisabled) || splittingModeDisabled>
+  <#if !(brokerDisabled && !(splittingModeDisabled))>
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
   <#if (logTracingEnabled)>
@@ -178,8 +171,7 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
 <#if !test>
   add_executable(${comp.getFullName()} ${Utils.getDeployFile(comp)})
   target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
-  <#if targetPlatformIsDsaVcg
-  || targetPlatformIsDsaLab>
+  <#if targetPlatformIsDsa>
       ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [comp.getFullName()])}
   <#elseif targetPlatformIsRaspberry>
       ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [comp.getFullName()])}
@@ -188,7 +180,7 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${comp.getFullName()} ${r"${MOSQUITTO_LIB}"})
       endif()
-    <#elseif !splittingModeDisabled && brokerIsDDS>
+    <#elseif !(splittingModeDisabled) && brokerIsDDS>
       target_link_libraries(${comp.getFullName()} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>

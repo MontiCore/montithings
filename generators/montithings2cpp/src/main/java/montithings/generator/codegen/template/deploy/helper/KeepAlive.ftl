@@ -4,7 +4,7 @@ ${tc.signature("comp", "config")}
 
 LOG(DEBUG) << "Started.";
 
-<#if dummyName12>
+<#if ComponentHelper.isTimesync(comp) || (!(splittingModeDisabled) && brokerDisabled)>
   while (true)
   {
   auto end = std::chrono::high_resolution_clock::now()
