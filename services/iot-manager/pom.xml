@@ -72,16 +72,21 @@
       <version>1.2.0</version>
     </dependency>
 
-    <!--<dependency> <groupId>com.github.SWI-Prolog</groupId> <artifactId>packages-jpl</artifactId> 
-      <version>7.6.1</version> </dependency> -->
+    <!-- https://maven.pkg.github.com/swi-prolog/packages-jpl -->
+    <dependency>
+      <groupId>com.github.SWI-Prolog</groupId>
+      <artifactId>packages-jpl</artifactId>
+      <version>7.6.1</version>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/jpl/jpl -->
+    <!--
     <dependency>
       <groupId>jpl</groupId>
       <artifactId>jpl</artifactId>
       <version>7.4.0</version>
     </dependency>
-
+-->
 
     <!-- https://mvnrepository.com/artifact/com.github.java-prolog-connectivity/jpc -->
     <dependency>

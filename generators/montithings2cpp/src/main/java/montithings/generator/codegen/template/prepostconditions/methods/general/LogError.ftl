@@ -27,7 +27,7 @@ error << "Input port values: " << std::endl;
     </#if>
 </#list>
 <#list ComponentHelper.getPortsInBatchStatement(comp) as inPort>
-  if (${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().has_value()) {
+  if (!${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().empty()) {
   error << "Port \"${inPort.getName()}\": " << ${Identifier.getInputName()}.get${inPort.getName()?cap_first} () << std::endl;
   } else {
   error << "Port \"${inPort.getName()}\": No data." << std::endl;

@@ -1,14 +1,14 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.genesis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import montithings.services.iot_manager.server.exception.DeploymentException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Class for modifying a GENESIS deployment model. The model is kept in its

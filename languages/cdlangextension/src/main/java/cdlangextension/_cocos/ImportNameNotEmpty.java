@@ -11,23 +11,26 @@ import de.se_rwth.commons.logging.Log;
 public class ImportNameNotEmpty implements CDLangExtensionASTCDEImportNameCoCo {
   @Override
   public void check(ASTCDEImportName node) {
-    boolean empty = false;
-    if (node.isPresentString() && node.getString().equals("")) {
-      empty = true;
-    }
-    else if (node.isPresentAngledString() && node.getAngledString().equals("")) {
-      empty = true;
-    }
-    else if (node.isPresentMCQualifiedName() && node.getMCQualifiedName().equals("")) {
-      empty = true;
-    }
-    else if (node.isPresentCDEQualifiedColonName() && node.getCDEQualifiedColonName().equals("")) {
-      empty = true;
-    }
-    else if (node.isPresentCDEQualifiedDoubleColonName() && node.getCDEQualifiedDoubleColonName().equals("")) {
-      empty = true;
-    }
-    if (empty) {
+    boolean emptyString = node.isPresentString()
+      && node.getString().isEmpty();
+
+    boolean emptyAngledImport = node.isPresentAngledString()
+      && node.getAngledString().isEmpty();
+
+    boolean emptyQualifiedName = node.isPresentMCQualifiedName()
+      && node.getMCQualifiedName().isEmptyParts();
+
+    boolean emptyColonName = node.isPresentCDEQualifiedColonName()
+      && node.getCDEQualifiedColonName().isEmptyParts();
+
+    boolean emptyDoubleColon = node.isPresentCDEQualifiedDoubleColonName()
+      && node.getCDEQualifiedDoubleColonName().isEmptyParts();
+
+    if (emptyString
+      || emptyAngledImport
+      || emptyQualifiedName
+      || emptyColonName
+      || emptyDoubleColon) {
       Log.error(String.format(CDLangExtensionError.EMPTY_IMPORT_FIELD.toString(),
         node.get_SourcePositionStart().toString()));
     }

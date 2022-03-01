@@ -17,8 +17,7 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   protected IndentPrinter printer;
 
   public MontiThingsToMontiArcPrettyPrinter() {
-    IndentPrinter printer = new IndentPrinter();
-    this.printer = printer;
+    this.printer = new IndentPrinter();
   }
 
   public MontiThingsToMontiArcPrettyPrinter(@NotNull IndentPrinter printer) {
@@ -42,7 +41,7 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   }
 
   public <T extends ASTArcBasisNode> void acceptSeperatedList(@NotNull List<T> list) {
-    if (list.size() <= 0) {
+    if (list.isEmpty()) {
       return;
     }
     Iterator<T> iterator = list.iterator();
@@ -70,15 +69,15 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
 
   @Override
   public void handle(@NotNull ASTBehavior node) {
-
+    // intentionally left empty - not covered by MontiArc
   }
 
   @Override
   public void handle(@NotNull ASTIsPresentExpression node) {
-
+    // intentionally left empty - not covered by MontiArc
   }
 
   @Override public void handle(ASTPublishPort node) {
-
+    // intentionally left empty - not covered by MontiArc
   }
 }

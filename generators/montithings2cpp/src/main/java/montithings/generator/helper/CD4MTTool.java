@@ -17,6 +17,7 @@ import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.se_rwth.commons.logging.Log;
+import montithings.MontiThingsTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,14 +79,7 @@ public class CD4MTTool {
             .setEnclosingScope(CD4CodeMill.globalScope())
             .setSpannedScope(CD4CodeMill.scope())
             .build());
-    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").
-            setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
-    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").
-            setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
-    CD4CodeMill.globalScope().add(inPortType);
-    CD4CodeMill.globalScope().add(outPortType);
+    MontiThingsTool.addPortSymbolsToCD4CGlobalScope();
     ICD4CodeArtifactScope artifact = CD4CodeMill.scopesGenitorDelegator().createFromAST(ast);
     ast.accept(new CD4CodeSymbolTableCompleter(ast).getTraverser());
     return artifact;

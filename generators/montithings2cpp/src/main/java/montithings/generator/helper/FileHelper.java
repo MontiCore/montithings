@@ -4,19 +4,18 @@ package montithings.generator.helper;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.Models;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -26,46 +25,6 @@ import java.util.stream.Stream;
  * Utility class for file-related actions of the generator
  */
 public class FileHelper {
-
-  public static void copyHwcToTarget(File target, File hwcPath, ConfigParams config) {
-    try {
-      FileFilter filefilter = new FileFilter(){
-        public boolean accept(File pathname) {
-          if (pathname.getName().endsWith(".ftl") || pathname.getName().endsWith(".json")) {
-            return false;
-          } else {
-            return true;
-          }
-        }
-      };
-      if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
-        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath()).toFile(), (FileFilter) filefilter);
-      }
-      else {
-        FileUtils.copyDirectory(hwcPath, Paths.get(target.getAbsolutePath(), "hwc").toFile(), filefilter);
-      }
-    }
-    catch (IOException e) {
-      System.err.println(e.getMessage());
-      e.printStackTrace();
-    }
-  }
-
-  public static void copyDeploymentConfigToTarget(File target, File hwcPath){
-    File deploymentConfig = new File(hwcPath + File.separator + "deployment-config.json");
-    try {
-      if(deploymentConfig.exists()){
-          FileUtils.copyFileToDirectory(deploymentConfig, target);
-      } else {
-        File emptyConfig = new File(target + File.separator + "deployment-config.json");
-        FileUtils.touch(emptyConfig);
-        FileUtils.write(emptyConfig, "{}");
-      }
-    } catch (IOException e) {
-      System.err.println(e.getMessage());
-      e.printStackTrace();
-    }
-  }
 
   public static void copyHwcToTarget(File target, File hwcPath, String fqComponentName,
     ConfigParams config, Models models) {
@@ -96,7 +55,7 @@ public class FileHelper {
 
     for (File file : hwcFiles) {
       try {
-        if (config.getTargetPlatform() == ConfigParams.TargetPlatform.ARDUINO) {
+        if (config.getTargetPlatform() == TargetPlatform.ARDUINO) {
           FileUtils.copyFileToDirectory(file, Paths.get(target.getAbsolutePath()).toFile());
         }
         else {
@@ -111,7 +70,7 @@ public class FileHelper {
   }
 
   protected static void addNonImplFiles(File hwcPath, ConfigParams config, Set<File> hwcFiles) {
-    if (config.getSplittingMode() != ConfigParams.SplittingMode.OFF) {
+    if (config.getSplittingMode() != SplittingMode.OFF) {
       try {
         hwcFiles.addAll(getNonImplFiles(hwcPath));
       }
@@ -139,13 +98,15 @@ public class FileHelper {
 
   public static void makeExecutable(File targetPath, String name, String fileExtension) {
     Path path = Paths.get(targetPath.getAbsolutePath() + File.separator + name + fileExtension);
-    path.toFile().setExecutable(true);
+    if (!path.toFile().setExecutable(true)) {
+      Log.warn("Could not make '" + path + "' executable");
+    }
   }
 
   public static void copyGeneratedToTarget(File target) {
     try {
       Path targetDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources");
-      if(!targetDir.toAbsolutePath().toString().equals(target.getAbsolutePath().toString())) {
+      if(!targetDir.toAbsolutePath().toString().equals(target.getAbsolutePath())) {
         FileUtils.copyDirectory(Paths.get(target.getAbsolutePath()).toFile(), targetDir.toFile());
         Set<Path> executables;
         try (Stream<Path> walk = Files.walk(target.toPath().getParent())) {
@@ -157,7 +118,9 @@ public class FileHelper {
         for (Path executable : executables) {
           Path relative = executable.subpath(target.toPath().getNameCount(),executable.getNameCount());
           Path execPath = Paths.get(targetDir.toAbsolutePath().toString(), relative.toString());
-          execPath.toFile().setExecutable(true);
+          if (!execPath.toFile().setExecutable(true)) {
+            Log.warn("Could not make '" + execPath + "' executable");
+          }
         }
       }
     }
@@ -181,7 +144,7 @@ public class FileHelper {
   }
 
   /**
-   * @param hwcPath
+   * @param hwcPath path of handwritten code
    * @return Returns true if a handwritten implementation for the component exist
    */
   public static Boolean existsHWCClass(File hwcPath, String fqComponentName) {
@@ -193,7 +156,7 @@ public class FileHelper {
   public static Set<File> getHwcClasses(File hwcPath, String fqComponentName) {
     String compName = Names.getSimpleName(fqComponentName);
     String packageName = fqComponentName.substring(0, fqComponentName.lastIndexOf(".") + 1);
-    String compFilePrefix = packageName.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
+    String compFilePrefix = packageName.replace(".", Matcher.quoteReplacement(File.separator));
 
     String regex = Pattern.quote(compFilePrefix) + "(Deploy)?" + Pattern.quote(compName)
       + "(Impl|Input|Result|Precondition[0-9]*|Postcondition[0-9]*|Interface|State)?\\.(cpp|h)";
@@ -243,9 +206,7 @@ public class FileHelper {
         } catch (IOException e) {
           e.printStackTrace();
         }
-        for (String file : files) {
-          result.add(file);
-        }
+        Collections.addAll(result, files);
       }
     }
     return result;
@@ -266,15 +227,15 @@ public class FileHelper {
   /**
    * Returns list of all subpackages paths
    *
-   * @param modelPath
-   * @return
+   * @param modelPath location of models on the file system
+   * @return list of all subpackages paths
    */
   public static File[] getSubPackagesPath(String modelPath) {
     ArrayList<File> subPackagesPaths = new ArrayList<>();
     File[] subDirs = new File(modelPath).listFiles(File::isDirectory);
 
     // Iterate over subdirectories of the model folder and add the paths of the subdirs to array
-    for (File subDir : subDirs) {
+    for (File subDir : Objects.requireNonNull(subDirs)) {
       subPackagesPaths.add(new File(subDir.getAbsolutePath()));
     }
 

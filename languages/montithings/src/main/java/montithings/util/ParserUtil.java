@@ -48,7 +48,7 @@ public class ParserUtil {
         .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
     catch (IOException e) {
-      Log.error("Could not access " + path.toString()
+      Log.error("Could not access " + path
         + ", there was an I/O exception: " + e.getMessage());
     }
     return new HashSet<>();

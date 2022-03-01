@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.generator.codegen;
+package montithings.generator.config;
 
 import arcbasis._ast.ASTComponentInstance;
 import arcbasis._ast.ASTComponentType;
@@ -26,132 +26,6 @@ import java.util.Set;
  */
 public class ConfigParams {
 
-  public enum TargetPlatform {
-    GENERIC("GENERIC"),
-    DSA_VCG("DSA_VCG"), // based on dev-docker.sh and docker.dsa-ac.de:20001/dev-l06
-    ARDUINO("ARDUINO"),
-    DSA_LAB("DSA_LAB"), // connected cars lab, based on docker.dsa-ac.de:20001/dev-l06-customer
-    RASPBERRY("RASPBERRY"); // Raspberry Pi + Grove Base HAT
-
-    String name;
-
-    TargetPlatform(String name) {
-      this.name = name;
-    }
-
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-      return this.name;
-    }
-  }
-
-  /**
-   * Defines how the architecture is splitted in different binaries
-   * OFF = No splitting, create a single binary containing everything
-   * LOCAL = Deploy on a single machine
-   * DISTRIBUTED = Deploy on multiple machines
-   */
-  public enum SplittingMode {
-    OFF("OFF"),
-    LOCAL("LOCAL"),
-    DISTRIBUTED("DISTRIBUTED");
-
-    String name;
-
-    SplittingMode(String name) {
-      this.name = name;
-    }
-
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-      return this.name;
-    }
-  }
-
-  public enum MessageBroker {
-    OFF("OFF"),
-    MQTT("MQTT"),
-    DDS("DDS");
-
-    String name;
-
-    MessageBroker(String name) {
-      this.name = name;
-    }
-
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-      return this.name;
-    }
-  }
-
-  public enum LogTracing {
-    OFF("OFF"),
-    ON("ON");
-
-    String value;
-
-    LogTracing(String value) {
-      this.value = value;
-    }
-    
-
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-      return this.value;
-    }
-  }
-
-   public enum ReplayMode {
-    OFF("OFF"),
-    ON("ON");
-
-    String name;
-
-    ReplayMode(String name) {
-      this.name = name;
-    }
-
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-      return this.name;
-    }
-  }
-
-  public enum RecordingMode {
-    OFF("OFF"),
-    ON("ON");
-
-    String mode;
-
-    RecordingMode(String mode) {
-      this.mode = mode;
-    }
-
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-      return this.mode;
-    }
-   }
-
   /** property for message brokers */
   protected MessageBroker messageBroker = MessageBroker.OFF;
 
@@ -162,6 +36,8 @@ public class ConfigParams {
   protected ReplayMode replayMode = ReplayMode.OFF;
 
   protected RecordingMode recordingMode = RecordingMode.OFF;
+
+  protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
 
   /** property for target platform */
   protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
@@ -389,6 +265,14 @@ public class ConfigParams {
 
   public void setRecordingMode(RecordingMode recordingMode) {
     this.recordingMode = recordingMode;
+  }
+
+  public PortNameTrafo getPortNameTrafo() {
+    return portNameTrafo;
+  }
+
+  public void setPortNameTrafo(PortNameTrafo portNameTrafo) {
+    this.portNameTrafo = portNameTrafo;
   }
 
   public Multimap<ComponentTypeSymbol, String> getTypeArguments() {

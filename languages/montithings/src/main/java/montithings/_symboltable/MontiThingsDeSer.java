@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings._symboltable;
 
+import de.monticore.symboltable.serialization.ISymbolDeSer;
 import de.monticore.symboltable.serialization.JsonDeSers;
 import de.monticore.symboltable.serialization.json.JsonObject;
 import de.se_rwth.commons.logging.Log;
@@ -39,7 +40,7 @@ public class MontiThingsDeSer extends MontiThingsDeSerTOP {
 
       // The rest of this method is a copy-paste from the generated code because
       // its not in a single method that we could just override
-      de.monticore.symboltable.serialization.ISymbolDeSer deSer = montithings.MontiThingsMill
+      ISymbolDeSer deSer = montithings.MontiThingsMill
         .globalScope().getSymbolDeSer(kind);
       if (null == deSer) {
         Log.warn("0xA1234xx11645 No DeSer found to deserialize symbol of kind `" + kind

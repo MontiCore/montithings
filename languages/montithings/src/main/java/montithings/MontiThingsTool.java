@@ -19,6 +19,7 @@ import montithings._cocos.MontiThingsCoCoChecker;
 import montithings._parser.MontiThingsParser;
 import montithings._symboltable.*;
 import montithings.cocos.MontiThingsCoCos;
+import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.MontiThingsTrafo;
 import montithings.util.MontiThingsError;
 import org.apache.commons.io.FilenameUtils;
@@ -54,6 +55,8 @@ public class MontiThingsTool implements IMontiThingsTool {
     this(MontiThingsCoCos.createChecker());
   }
 
+  protected Set<ASTMACompilationUnit> models;
+
   public MontiThingsTool(@NotNull MontiThingsCoCoChecker checker) {
     this(checker, new MontiThingsParser(), new MontiThingsSymbols2Json());
   }
@@ -68,6 +71,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     this.parser = parser;
     this.deSer = deSer;
     this.checker = checker;
+    models = new HashSet<>();
     ((MontiThingsDeSer) MontiThingsMill.globalScope().getDeSer())
       .ignoreSymbolKind("de.monticore.cdbasis._symboltable.CDPackageSymbol");
   }
@@ -80,7 +84,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     return this.deSer;
   }
 
-  protected MontiThingsCoCoChecker getChecker() {
+  public MontiThingsCoCoChecker getChecker() {
     return this.checker;
   }
 
@@ -96,12 +100,12 @@ public class MontiThingsTool implements IMontiThingsTool {
     this.trafos.add(trafo);
   }
 
-  protected String getMTFileExtension() {
-    return this.MT_FILE_EXTENSION;
+  public String getMTFileExtension() {
+    return MT_FILE_EXTENSION;
   }
 
   protected String getSymFileExtension() {
-    return this.SYM_FILE_EXTENSION;
+    return SYM_FILE_EXTENSION;
   }
 
   @Override
@@ -115,7 +119,7 @@ public class MontiThingsTool implements IMontiThingsTool {
       return this.getParser().parse(file.toString());
     }
     catch (IOException e) {
-      Log.error(String.format(MontiThingsError.TOOL_PARSE_IOEXCEPTION.toString(), file.toString()),
+      Log.error(String.format(MontiThingsError.TOOL_PARSE_IOEXCEPTION.toString(), file),
         e);
     }
     return Optional.empty();
@@ -156,7 +160,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     }
     catch (IOException e) {
       Log.error(
-        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory),
         e);
     }
     return Collections.emptySet();
@@ -175,7 +179,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     }
     catch (IOException e) {
       Log.error(
-        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory.toString()),
+        String.format(MontiThingsError.TOOL_FILE_WALK_IOEXCEPTION.toString(), directory),
         e);
     }
     return Collections.emptySet();
@@ -209,7 +213,9 @@ public class MontiThingsTool implements IMontiThingsTool {
     MontiThingsFullSymbolTableCreator symTab = new MontiThingsFullSymbolTableCreator();
     MontiThingsMill.globalScope();
     this.loadAll(scope).forEach(scope::addSubScope);
-    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+    if (models.isEmpty()) {
+      models = new HashSet<>(this.parseAll(scope));
+    }
     models = applyTrafos(models);
     return models.stream().map(symTab::createFromAST).collect(Collectors.toSet());
   }
@@ -233,21 +239,36 @@ public class MontiThingsTool implements IMontiThingsTool {
     Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
     Set<ASTMACompilationUnit> result = new HashSet<>(models);
 
-    // iterate with an iterator in order to avoid ConcurrentModificationException,
-    // as models are transformed
-    for (Iterator<ASTMACompilationUnit> iterator = models.iterator(); iterator.hasNext(); ) {
-      ASTMACompilationUnit ast = iterator.next();
-
-      for (MontiThingsTrafo trafo : trafos) {
-        try {
-          additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
-        }
-        catch (Exception e) {
-          Log.error(e.getCause().getMessage());
-          e.printStackTrace();
+    boolean again = true;
+    boolean firstLoop = true;
+    while (again) {
+      again = false;
+      // iterate with an iterator in order to avoid ConcurrentModificationException,
+      // as models are transformed
+      for (ASTMACompilationUnit ast : models) {
+        for (MontiThingsTrafo trafo : trafos) {
+          if (firstLoop || trafo instanceof ComponentTypePortsNamingTrafo) {
+            try {
+              if (trafo instanceof ComponentTypePortsNamingTrafo) {
+                ((ComponentTypePortsNamingTrafo) trafo).setChanged(false);
+              }
+              additionalTrafoModels.addAll(trafo.transform(models, additionalTrafoModels, ast));
+              if (trafo instanceof ComponentTypePortsNamingTrafo) {
+                if (((ComponentTypePortsNamingTrafo) trafo).isChanged()) {
+                  again = true;
+                }
+              }
+            }
+            catch (Exception e) {
+              Log.error(e.getCause().getMessage());
+              e.printStackTrace();
+            }
+          }
         }
       }
+      firstLoop = false;
     }
+
     result.addAll(additionalTrafoModels);
     return result;
   }
@@ -363,7 +384,9 @@ public class MontiThingsTool implements IMontiThingsTool {
 
   public CD4CodeGlobalScope createClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
     Preconditions.checkArgument(scope != null);
-    Set<ASTMACompilationUnit> models = new HashSet<>(this.parseAll(scope));
+    if (models.isEmpty()) {
+      models = new HashSet<>(this.parseAll(scope));
+    }
 
     addPortSymbolsToCD4CGlobalScope();
 
@@ -375,7 +398,11 @@ public class MontiThingsTool implements IMontiThingsTool {
       }
     }
 
-    //convert scopes to symbol files
+    return convertCDScopesToSymbolFiles(symbolPath, scopes);
+  }
+
+  protected CD4CodeGlobalScope convertCDScopesToSymbolFiles(String symbolPath,
+    Set<CD4CodeArtifactScope> scopes) {
     for (CD4CodeArtifactScope artifactScope : scopes) {
       CD4CodeMill.globalScope().addSubScope(artifactScope);
       artifactScope.setEnclosingScope(CD4CodeMill.globalScope());
@@ -389,11 +416,41 @@ public class MontiThingsTool implements IMontiThingsTool {
     return (CD4CodeGlobalScope) CD4CodeMill.globalScope();
   }
 
-  protected void addPortSymbolsToCD4CGlobalScope() {
-    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder().setName("InPort").setFullName("InPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
-    TypeSymbol outPortType = CD4CodeMill.typeSymbolBuilder().setName("OutPort").setFullName("OutPort").setEnclosingScope(CD4CodeMill.globalScope()).setSpannedScope(CD4CodeMill.scope()).build();
-    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder().setName("T").setFullName("T").build());
+  public CD4CodeGlobalScope createMissingClassDiagrams(@NotNull MontiThingsGlobalScope scope, String symbolPath) {
+    Preconditions.checkArgument(scope != null);
+
+    //create scopes for class diagrams
+    Set<CD4CodeArtifactScope> scopes = new HashSet<>();
+    for (ASTMACompilationUnit compilationUnit : ComponentTypePortsNamingTrafo.getChangedCompilationUnits()) {
+      scopes.add(createClassDiagram(compilationUnit));
+    }
+
+    //convert scopes to symbol files
+    return convertCDScopesToSymbolFiles(symbolPath, scopes);
+  }
+
+  public static void addPortSymbolsToCD4CGlobalScope() {
+    TypeSymbol inPortType = CD4CodeMill.typeSymbolBuilder()
+      .setName("InPort")
+      .setFullName("InPort")
+      .setEnclosingScope(CD4CodeMill.globalScope())
+      .setSpannedScope(CD4CodeMill.scope())
+      .build();
+    inPortType
+      .addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder()
+        .setName("T")
+        .setFullName("T").build());
+    TypeSymbol outPortType = CD4CodeMill
+      .typeSymbolBuilder()
+      .setName("OutPort")
+      .setFullName("OutPort")
+      .setEnclosingScope(CD4CodeMill.globalScope())
+      .setSpannedScope(CD4CodeMill.scope())
+      .build();
+    inPortType.addTypeVarSymbol(CD4CodeMill.typeVarSymbolBuilder()
+      .setName("T")
+      .setFullName("T")
+      .build());
     CD4CodeMill.globalScope().add(inPortType);
     CD4CodeMill.globalScope().add(outPortType);
   }

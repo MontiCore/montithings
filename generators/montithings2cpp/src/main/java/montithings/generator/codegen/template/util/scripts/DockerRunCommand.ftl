@@ -30,5 +30,5 @@ CONTAINER=$(docker run -d --rm \
 <#if brokerIsDDS && !(splittingModeIsDistributed)>
   --DCPSConfigFile dcpsconfig.ini)
 </#if>
-echo docker stop $CONTAINER >> dockerStop.sh
-echo docker kill $CONTAINER >> dockerKill.sh
+echo docker stop $CONTAINER >> "$SCRIPTPATH"/dockerStop.sh
+echo docker kill $CONTAINER >> "$SCRIPTPATH"/dockerKill.sh

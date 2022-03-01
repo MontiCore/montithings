@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 
 public interface ICDLangExtensionScope extends ICDLangExtensionScopeTOP {
 
-  default
-  public Optional<CDEImportStatementSymbol> resolveASTCDEImportStatement(String language,
+  default Optional<CDEImportStatementSymbol> resolveASTCDEImportStatement(String language,
     OOTypeSymbol symbol) {
 
     // Construct string after which we use to resolve

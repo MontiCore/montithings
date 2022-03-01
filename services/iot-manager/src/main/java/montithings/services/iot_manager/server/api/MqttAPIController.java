@@ -1,31 +1,20 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.api;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map.Entry;
-
+import com.google.gson.*;
+import montithings.services.iot_manager.server.DeploymentManager;
+import montithings.services.iot_manager.server.data.*;
+import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
+import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
+import montithings.services.iot_manager.server.dto.DeploymentAssignmentDTO;
+import montithings.services.iot_manager.server.exception.DeploymentException;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-
-import montithings.services.iot_manager.server.DeploymentManager;
-import montithings.services.iot_manager.server.data.DeployClient;
-import montithings.services.iot_manager.server.data.DeploymentConfiguration;
-import montithings.services.iot_manager.server.data.DeploymentInfo;
-import montithings.services.iot_manager.server.data.Distribution;
-import montithings.services.iot_manager.server.data.NetworkInfo;
-import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
-import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
-import montithings.services.iot_manager.server.dto.DeploymentAssignmentDTO;
-import montithings.services.iot_manager.server.exception.DeploymentException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map.Entry;
 
 /**
  * Hosts an API for controlling a {@link DeploymentManager}.
@@ -129,7 +118,9 @@ public class MqttAPIController implements IDeployStatusListener {
         manager.setDeploymentInfo(deployInfo);
         publishSuccess(TOPIC_SETINFO_RESPONSE, true);
         return;
-      } catch(JsonParseException | ClassCastException | DeploymentException e) {}
+      } catch(JsonParseException | ClassCastException | DeploymentException e) {
+        e.printStackTrace();
+      }
     }
     // This is only executed when the above does not succeed in any way.
     publishSuccess(TOPIC_SETINFO_RESPONSE, false);

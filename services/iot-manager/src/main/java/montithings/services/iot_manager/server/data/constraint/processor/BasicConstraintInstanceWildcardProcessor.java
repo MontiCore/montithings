@@ -1,16 +1,16 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data.constraint.processor;
 
+import montithings.services.iot_manager.server.data.DeploymentConfiguration;
+import montithings.services.iot_manager.server.data.constraint.BasicConstraint;
+import montithings.services.iot_manager.server.data.constraint.Constraint;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import montithings.services.iot_manager.server.data.DeploymentConfiguration;
-import montithings.services.iot_manager.server.data.constraint.BasicConstraint;
-import montithings.services.iot_manager.server.data.constraint.Constraint;
 
 public class BasicConstraintInstanceWildcardProcessor implements ConstraintProcessor {
   

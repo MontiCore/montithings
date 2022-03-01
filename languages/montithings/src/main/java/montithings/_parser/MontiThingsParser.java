@@ -3,7 +3,9 @@ package montithings._parser;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
+import de.se_rwth.commons.Joiners;
 import de.se_rwth.commons.Names;
+import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._parser.MontiArcParser;
@@ -12,7 +14,12 @@ import org.codehaus.commons.nullanalysis.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static com.google.common.collect.Iterables.transform;
 
 /**
  * Copy-Paste from MontiArcParser that uses MontiThingsParserTOP instead of MontiArcParserTOP
@@ -38,7 +45,7 @@ public class MontiThingsParser extends MontiThingsParserTOP {
   @Override
   public Optional<ASTMACompilationUnit> parseMACompilationUnit(@NotNull String relativeFilePath)
     throws IOException {
-    Preconditions.checkArgument(relativeFilePath != null);
+    Preconditions.checkNotNull(relativeFilePath);
     Optional<ASTMACompilationUnit> optAst = super.parseMACompilationUnit(relativeFilePath);
     if (optAst.isPresent()) {
       String fileRoot = Files.getNameWithoutExtension(relativeFilePath);
@@ -51,17 +58,21 @@ public class MontiThingsParser extends MontiThingsParserTOP {
         packageOfFile = Names
           .getPackageFromPath(Names.getPathFromFilename(relativeFilePath, "/"), "/");
       }
-      String packageOfModel = Names.getQualifiedName(optAst.get().getPackage().getPartsList());
+
+      String packageOfModel = constructQualifiedName(optAst.get().isPresentPackage() ?
+        optAst.get().getPackage().getPartsList() : new ArrayList<>());
       if (!modelName.equals(fileRoot)) {
-        Log.error(String
-          .format(MontiArcError.COMPONENT_AND_FILE_NAME_DIFFER.toString(), modelName, fileRoot));
+        Log.error(String.format(MontiArcError.COMPONENT_AND_FILE_NAME_DIFFER.toString(),
+            modelName, fileRoot),
+          optAst.get().isPresentPackage() ? optAst.get().getPackage().get_SourcePositionStart()
+            : optAst.get().get_SourcePositionStart());
         setError(true);
       }
-      if (!packageOfFile.endsWith(packageOfModel)) {
-        Log.error(String
-          .format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(), packageOfModel,
-            modelName,
-            packageOfFile));
+      if (!Names.getPackageFromPath(packageOfFile).endsWith(packageOfModel)) {
+        Log.error(String.format(MontiArcError.COMPONENT_AND_FILE_PACKAGE_DIFFER.toString(),
+            packageOfModel, optAst.get().getComponentType().getName(), packageOfFile),
+          optAst.get().isPresentPackage() ? optAst.get().getPackage().get_SourcePositionStart()
+            : optAst.get().get_SourcePositionStart());
         setError(true);
       }
     }
@@ -71,6 +82,7 @@ public class MontiThingsParser extends MontiThingsParserTOP {
     return optAst;
   }
 
+
   /**
    * @see MontiArcParser#parseMACompilationUnit(String)
    */
@@ -79,5 +91,16 @@ public class MontiThingsParser extends MontiThingsParserTOP {
     Preconditions.checkArgument(relativeFilePath != null);
     return parseMACompilationUnit(relativeFilePath);
   }
+
+  protected String constructQualifiedName(Iterable<String> parts) {
+    return Joiners.DOT.join(
+      StreamSupport.stream(parts.spliterator(), false)
+        .map(StringTransformations.TRIM_WHITESPACE)
+        .collect(Collectors.toList()).stream()
+        .map(StringTransformations.TRIM_DOT)
+        .collect(Collectors.toList())
+    );
+  }
+
 }
 

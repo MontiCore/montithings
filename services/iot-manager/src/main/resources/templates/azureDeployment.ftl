@@ -6,7 +6,7 @@ ${tc.signature("modules", "deploymentInfo", "networkInfo")}
 "properties.desired": {
 "modules": {
 <#list modules as moduleName>
-    "${moduleName}": {
+    "${moduleName?replace(".", "-")}": {
     "settings": {
     "image": "${networkInfo.getDockerRepositoryPrefix()}${deploymentInfo.getInstanceInfo(moduleName).getComponentType()?lower_case}:latest",
     "createOptions": "{\"Entrypoint\":[\"sh\",\"entrypoint.sh\",\"-n\", \"${moduleName}\", \"--brokerHostname\", \"${networkInfo.getMqttHost()}\", \"--brokerPort\", \"${networkInfo.getMqttPort()?c}\"],\"NetworkingConfig\": {\"EndpointsConfig\": {\"host\": {}}},\"HostConfig\": {\"NetworkMode\": \"host\"}}"

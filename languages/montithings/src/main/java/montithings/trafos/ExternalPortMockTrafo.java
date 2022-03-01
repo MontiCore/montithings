@@ -18,7 +18,6 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
 import montithings._ast.ASTMTEveryBlockBuilder;
-import montithings._ast.ASTPublishPort;
 import montithings._visitor.FindPortNamesVisitor;
 import montithings.util.TrafoUtil;
 

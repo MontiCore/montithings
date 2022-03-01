@@ -1,15 +1,15 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution.suggestion;
 
-import java.util.ListIterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 import montithings.services.iot_manager.server.data.constraint.AdaptedDependencyConstraint;
 import montithings.services.iot_manager.server.data.constraint.Constraint;
 import montithings.services.iot_manager.server.data.constraint.DependencyConstraint;
 import montithings.services.iot_manager.server.util.InstanceNameResolver;
+
+import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SuggestionDependency implements Suggestion {
   
@@ -64,6 +64,48 @@ public class SuggestionDependency implements Suggestion {
     else {
       return null;
     }
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((dependency == null) ? 0 : dependency.hashCode());
+    result = prime * result + ((dependent == null) ? 0 : dependent.hashCode());
+    result = prime * result + (distinct ? 1231 : 1237);
+    result = prime * result + orgCount;
+    result = prime * result + satCount;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    SuggestionDependency other = (SuggestionDependency) obj;
+    if (dependency == null) {
+      if (other.dependency != null)
+        return false;
+    }
+    else if (!dependency.equals(other.dependency))
+      return false;
+    if (dependent == null) {
+      if (other.dependent != null)
+        return false;
+    }
+    else if (!dependent.equals(other.dependent))
+      return false;
+    if (distinct != other.distinct)
+      return false;
+    if (orgCount != other.orgCount)
+      return false;
+    if (satCount != other.satCount)
+      return false;
+    return true;
   }
   
 }

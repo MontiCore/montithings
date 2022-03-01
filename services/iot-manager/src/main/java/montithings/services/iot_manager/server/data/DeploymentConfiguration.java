@@ -1,28 +1,23 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import montithings.services.iot_manager.server.data.constraint.BasicConstraint;
-import montithings.services.iot_manager.server.data.constraint.Constraint;
-import montithings.services.iot_manager.server.data.constraint.DependencyConstraint;
-import montithings.services.iot_manager.server.data.constraint.IncompConstraint;
-import montithings.services.iot_manager.server.data.constraint.LocationConstraint;
+import montithings.services.iot_manager.server.data.constraint.*;
+import montithings.services.iot_manager.server.distribution.suggestion.SuggestionHardware;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.util.ThrowingFunction;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class DeploymentConfiguration {
   
   private DeploymentInfo deploymentInfo;
   private List<Constraint> constraints;
+  private List<SuggestionHardware> hardwareSuggestions = new LinkedList<>();
   
   public DeploymentInfo getDeploymentInfo() {
     return deploymentInfo;
@@ -40,8 +35,17 @@ public class DeploymentConfiguration {
     this.constraints = constraints;
   }
   
+  public List<SuggestionHardware> getHardwareSuggestions() {
+    return this.hardwareSuggestions;
+  }
+  
+  public void setHardwareSuggestions(List<SuggestionHardware> hardwareSuggestions) {
+    this.hardwareSuggestions = hardwareSuggestions;
+  }
+  
   public JsonObject getConstraintsAsJson() throws DeploymentException {
     JsonObject json = new JsonObject();
+    
     JsonArray jBasic = new JsonArray();
     json.add("basicConstraints", jBasic);
     
@@ -51,6 +55,9 @@ public class DeploymentConfiguration {
     JsonArray jIncomp = new JsonArray();
     json.add("incompConstraints", jIncomp);
     
+    JsonArray jHWSugg = new JsonArray();
+    json.add("hardwareSuggestions", jHWSugg);
+    
     for(Constraint con : this.constraints) {
       if(con instanceof BasicConstraint) {
         jBasic.add(con.serializeJson());        
@@ -59,6 +66,11 @@ public class DeploymentConfiguration {
       } else if(con instanceof IncompConstraint) {
         jIncomp.add(con.serializeJson());
       }
+    }
+    
+    // serialize list of hardware suggestions
+    for(SuggestionHardware hw : this.hardwareSuggestions) {
+      jHWSugg.add(hw.serialize());
     }
     
     return json;
@@ -109,8 +121,8 @@ public class DeploymentConfiguration {
   }
   
   @Override
-  public DeploymentConfiguration clone() {
-    DeploymentConfiguration cloned = new DeploymentConfiguration();
+  public DeploymentConfiguration clone() throws CloneNotSupportedException {
+    DeploymentConfiguration cloned = (DeploymentConfiguration) super.clone();
     cloned.setConstraints(new ArrayList<>(this.constraints));
     cloned.setDeploymentInfo(this.deploymentInfo);
     return cloned;
@@ -118,7 +130,7 @@ public class DeploymentConfiguration {
   
   @Override
   public String toString() {
-    return "DeploymentConfiguration [deploymentInfo=" + deploymentInfo + ", constraints=" + constraints + "]";
+    return "DeploymentConfiguration [deploymentInfo=" + deploymentInfo + ", constraints=" + constraints + ", hardwareSuggestions=" + hardwareSuggestions + "]";
   }
   
 }

@@ -1,41 +1,23 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.jpl7.Atom;
-import org.jpl7.Compound;
-import org.jpl7.PrologException;
-import org.jpl7.Query;
-import org.jpl7.Term;
-import org.jpl7.Util;
-import org.jpl7.Variable;
-
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-
 import montithings.services.iot_manager.server.data.DeployClient;
 import montithings.services.iot_manager.server.data.Distribution;
 import montithings.services.iot_manager.server.distribution.suggestion.Suggestion;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.exception.DistributionException;
 import montithings.services.iot_manager.server.util.InstanceNameResolver;
+import org.jpl7.*;
+
+import javax.annotation.Nullable;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 
 public class DefaultDistributionCalculator implements IDistributionCalculator {
   
@@ -58,9 +40,9 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     this.fileQuery = new File(this.workingDir, "query.pl");
   }
   
-  private Distribution computeDistributionSync(Pair<Collection<DeployClient>,List<String>> param) throws DistributionException {
-    Collection<DeployClient> deployTargets = param.getLeft();
-    List<String> components = param.getRight();
+  private Distribution computeDistributionSync(DistributionCalcRequest param) throws DistributionException {
+    Collection<DeployClient> deployTargets = param.getDeployTargets();
+    List<String> components = param.getComponents();
     try {
       if(deployTargets.size() == 0) {
         throw new DeploymentException("no clients for deployment available");
@@ -72,8 +54,14 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       // load Prolog files
       new Query(new Compound("consult", wrap(new Atom("query.pl")))).oneSolution();
       
+      DistributionQueryType queryType = DistributionQueryType.DISTRIBUTION;
+      if(param.getReferenceDistribution() != null) {
+        // use the given distribution as reference
+        queryType = DistributionQueryType.DISTRIBUTION_PERSIST;
+      }
+      
       // compute distribution solution
-      Query query = new Query(this.constructQueryTerm(components, false));
+      Query query = new Query(this.constructQueryTerm(components, queryType));
       Map<String, Term> solution = query.oneSolution();
       Distribution distribution = null;
       
@@ -143,20 +131,18 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       new Query(new Compound("consult", wrap(new Atom("query.pl")))).oneSolution();
       
       // compute distribution solutions
-      Query query = new Query(this.constructQueryTerm(components, true));
+      Query query = new Query(this.constructQueryTerm(components, DistributionQueryType.SUGGESTIONS));
       Map<Distribution, List<Suggestion>> results = new LinkedHashMap<>();
       
       int index = 0;
       int count = 0;
       
+      List<Set<Suggestion>> lastSuggestions = new LinkedList<>();
+      
       while(hasMoreSolutions(query) && count < request.getMaxCount()) {
         Map<String,Term> solution = query.nextSolution();
         
         index++;
-        if(index <= request.getOffset()) {
-          // Ignore this suggestion as it should be skipped.
-          continue;
-        }
         
         // parse solution
         if (solution != null) {
@@ -166,6 +152,28 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
           Lists.newArrayList(droppedConstraints).stream()
             .map((c)->Suggestion.parseProlog(c, request.getComponents()))
             .forEach(suggestions::add);
+          
+          // check, if there already is a super-set of suggestions
+          // that have been made
+          boolean foundSuperset = false;
+          for(Set<Suggestion> prevSuggestion : lastSuggestions) {
+            if(suggestions.containsAll(prevSuggestion)) {
+              index--;
+              foundSuperset = true;
+              break;
+            }
+          }
+          if(foundSuperset) {
+            // if these suggestions are a super-set of previously made
+            // suggestions, we do not want them.
+            continue;
+          }
+          lastSuggestions.add(new HashSet<>(suggestions));
+          
+          if(index <= request.getOffset()) {
+            // Ignore this suggestion as it should be skipped.
+            continue;
+          }
           
           solution.remove(PROLOG_VAR_DROPPEDCONSTRAINTS);
           solution.remove(PROLOG_VAR_DEPENDENCIES);
@@ -184,6 +192,11 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
             
             for (String clientID : clients) {
               List<String> instances = dmap.get(clientID);
+              if(instances == null) {
+                // this may be the case for dummy clients (hardware suggestions)
+                instances = new LinkedList<String>();
+                dmap.put(clientID, instances);
+              }
               instances.add(instanceName);
             }
           }
@@ -204,22 +217,63 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     }
   }
   
-  private Term constructQueryTerm(List<String> components, boolean withDroppedConstraints) {
-    LinkedList<Variable> vars = new LinkedList<>();
+  private Term constructQueryTerm(List<String> components, DistributionQueryType type) {
+    return this.constructQueryTerm(components, type, true, null);
+  }
+  
+  private Term constructQueryTerm(List<String> components, DistributionQueryType type, boolean distinct, @Nullable Distribution reference) {
+    LinkedList<Term> terms = new LinkedList<>();
     components.stream()
       .map((str) -> new Variable(str))
-      .forEach(vars::add);
+      .forEach(terms::add);
     
-    // add variable for constraint output
-    if(withDroppedConstraints) {
-      vars.add(new Variable(PROLOG_VAR_DROPPEDCONSTRAINTS));
+    if(type == DistributionQueryType.DISTRIBUTION_PERSIST) {
+      if(reference == null) {
+        // If we do not have a reference, we still have to add the expected
+        // terms to fit the query scheme.
+        reference = new Distribution(new HashMap<>());
+      }
+      
+      // try to persist reference distribution
+      // reconstruct prolog lists from distribution
+      Map<String, List<String>> cmap = new HashMap<String, List<String>>();
+      for(String comp : components) {
+        cmap.put(comp, new LinkedList<>());
+      }
+      for(Entry<String, String[]> e : reference.getDistributionMap().entrySet()) {
+        for(String comp : e.getValue()) {
+          List<String> clientList = cmap.get(comp);
+          if(clientList != null) {
+            clientList.add(e.getKey());
+          }
+        }
+      }
+      // add reference component list terms to query
+      for(String comp : components) {
+        List<String> clients = cmap.get(comp);
+        terms.add(Util.stringArrayToList(clients.toArray(new String[clients.size()])));
+      }
     }
     
-    vars.add(new Variable(PROLOG_VAR_DEPENDENCIES));
+    // add variable for constraint output
+    Variable varDroppedConstraints = new Variable(PROLOG_VAR_DROPPEDCONSTRAINTS);
+    if(type.withDroppedConstraints) {
+      terms.add(varDroppedConstraints);
+    }
+    terms.add(new Variable(PROLOG_VAR_DEPENDENCIES));
     
     // select proper goal
-    String goalName = withDroppedConstraints ? "distribution_suggest" : "distribution";
-    return new Compound(goalName, vars.toArray(new Variable[vars.size()]));
+    String goalName = type.prologName;
+    Compound goal = new Compound(goalName, terms.toArray(new Term[terms.size()]));
+    if(distinct) {
+      if(type.withDroppedConstraints) {
+        // find distinct solutions only regarding suggestions
+        goal = new Compound("distinct", new Term[]{varDroppedConstraints, goal});        
+      } else {
+        goal = new Compound("distinct", new Term[]{goal});
+      }
+    }
+    return goal;
   }
   
   private void prepareWorkspace() throws IOException {
@@ -244,16 +298,16 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   
   private void cleanup() throws IOException {
     if (this.fileFacts != null) {
-      this.fileFacts.delete();
+      //this.fileFacts.delete();
     }
     if (this.fileQuery != null) {
-      this.fileQuery.delete();
+      //this.fileQuery.delete();
     }
   }
   
   @Override
-  public CompletableFuture<Distribution> computeDistribution(Collection<DeployClient> targets, List<String> components) {
-    return CompletableFuture.supplyAsync(() -> Pair.of(targets, components)).thenApply(this::computeDistributionSync);
+  public CompletableFuture<Distribution> computeDistribution(DistributionCalcRequest request) {
+    return CompletableFuture.supplyAsync(() -> request).thenApply(this::computeDistributionSync);
   }
   
   @Override
@@ -273,6 +327,20 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       return query.hasMoreSolutions();
     } catch(PrologException e) {
       return false;
+    }
+  }
+  
+  private static enum DistributionQueryType {
+    DISTRIBUTION("distribution", false),
+    DISTRIBUTION_PERSIST("distribution_persist", false),
+    SUGGESTIONS("distribution_suggest", true);
+    
+    public final String prologName;
+    public final boolean withDroppedConstraints;
+    
+    private DistributionQueryType(String prologName, boolean withDroppedConstraints) {
+      this.prologName = prologName;
+      this.withDroppedConstraints = withDroppedConstraints;
     }
   }
   

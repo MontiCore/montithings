@@ -1,19 +1,19 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import montithings.services.iot_manager.server.Utils;
+import montithings.services.iot_manager.server.data.DeployClient;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import montithings.services.iot_manager.server.Utils;
-import montithings.services.iot_manager.server.data.DeployClient;
 
 public class RestPrologGenerator implements IPrologGenerator {
   
@@ -51,7 +51,7 @@ public class RestPrologGenerator implements IPrologGenerator {
   
   private String sendPost(String endpoint, String content) {
     try {
-      URL url = new URL("http://iotmngr:5004/" + endpoint);
+      URL url = new URL("http://prolog:5004/" + endpoint);
       byte[] payload = content.getBytes(StandardCharsets.UTF_8);
       
       HttpURLConnection con = (HttpURLConnection) url.openConnection();

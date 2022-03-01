@@ -69,7 +69,7 @@ public class SetExpressionsSymbolTableCompleterForMontiThings
 
   @Override
   public void visit(ASTSetVariableDeclaration node) {
-
+    // intentionally left empty
   }
 
   @Override

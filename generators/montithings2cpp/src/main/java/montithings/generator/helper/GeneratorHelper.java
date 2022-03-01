@@ -3,7 +3,7 @@ package montithings.generator.helper;
 
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.utils.Names;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
 import mtconfig._ast.ASTHookpoint;
 import mtconfig._symboltable.PortTemplateTagSymbol;
 import org.apache.commons.lang3.StringUtils;
@@ -59,11 +59,8 @@ public class GeneratorHelper {
     if(!(config.getMtConfigScope()==null)) {
       portTemplateTagSymbol = config.getMtConfigScope().resolvePortTemplateTag(config.getTargetPlatform().name(), port);
     }
-    if(portTemplateTagSymbol.isPresent()&&portTemplateTagSymbol.get().isPresentAstNode()&&!portTemplateTagSymbol.get().getAstNode().isEmptySinglePortTags()){
-      return true;
-    }
-
-    return false;
+    return portTemplateTagSymbol.isPresent() && portTemplateTagSymbol.get().isPresentAstNode()
+      && !portTemplateTagSymbol.get().getAstNode().isEmptySinglePortTags();
   }
 
   public static Optional<String> getMqttSensorActuatorName(PortSymbol port, ConfigParams config) {

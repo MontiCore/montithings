@@ -1,15 +1,14 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution.suggestion;
 
-import java.util.ListIterator;
-
 import com.google.common.base.Objects;
-
-import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
+import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.data.constraint.BasicConstraint;
-import montithings.services.iot_manager.server.data.constraint.Constraint;
 import montithings.services.iot_manager.server.data.constraint.BasicConstraint.Type;
+import montithings.services.iot_manager.server.data.constraint.Constraint;
+
+import java.util.ListIterator;
 
 public class BasicSuggestion implements Suggestion {
   
@@ -83,6 +82,48 @@ public class BasicSuggestion implements Suggestion {
     if(!foundMatch) {
       it.add(new BasicConstraint(instanceName, type, orgCount, location.getBuilding(), location.getFloor(), location.getRoom()).withAlteredReference(this.satCount));      
     }
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((instanceName == null) ? 0 : instanceName.hashCode());
+    result = prime * result + ((location == null) ? 0 : location.hashCode());
+    result = prime * result + orgCount;
+    result = prime * result + satCount;
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    return result;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    BasicSuggestion other = (BasicSuggestion) obj;
+    if (instanceName == null) {
+      if (other.instanceName != null)
+        return false;
+    }
+    else if (!instanceName.equals(other.instanceName))
+      return false;
+    if (location == null) {
+      if (other.location != null)
+        return false;
+    }
+    else if (!location.equals(other.location))
+      return false;
+    if (orgCount != other.orgCount)
+      return false;
+    if (satCount != other.satCount)
+      return false;
+    if (type != other.type)
+      return false;
+    return true;
   }
   
 }
