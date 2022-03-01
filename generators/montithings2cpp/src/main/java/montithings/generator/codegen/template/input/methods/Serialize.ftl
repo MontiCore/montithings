@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "config", "existsHWC")}
-<#include "/template/Preamble.ftl">
 <#include "/template/input/helper/GeneralPreamble.ftl">
 
 // can be used to serialize all input variables through cereal

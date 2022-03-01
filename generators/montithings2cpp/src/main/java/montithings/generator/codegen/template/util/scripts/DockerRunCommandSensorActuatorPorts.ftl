@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("typeName", "instanceName", "config")}
-<#include "/template/ConfigPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
 <#if !(splittingModeDisabled)>
     <#assign lineBreak = "\\">

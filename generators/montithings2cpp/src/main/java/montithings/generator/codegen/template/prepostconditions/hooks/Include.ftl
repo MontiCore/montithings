@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp")}
-<#include "/template/CompPreamble.ftl">
-<#include "/template/TcPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
 #include "${compname}Precondition.h"
 #include "${compname}Postcondition.h"

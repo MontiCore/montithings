@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#include "/template/ConfigPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
 while (!this->tryInitializeDDS (argc, argv)) {
 <#if splittingModeIsLocal>

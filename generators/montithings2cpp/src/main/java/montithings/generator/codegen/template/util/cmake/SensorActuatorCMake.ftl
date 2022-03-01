@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("pckg", "port", "libraryPath", "config", "test", "existsHWC")}
-<#include "/template/ConfigPreamble.ftl">
-<#include "/template/TcPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "../">
 

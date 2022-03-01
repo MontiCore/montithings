@@ -1,8 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "portSymbol", "portTemplateName", "everyTagOpt" "existsHWC")}
 <#include "/template/Copyright.ftl">
-<#include "/template/ConfigPreamble.ftl">
-<#include "/template/TcPreamble.ftl">
+<#include "/template/Preamble.ftl">
 #pragma once
 #include "easyloggingpp/easylogging++.h"
 #include "tl/optional.hpp"

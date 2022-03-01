@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("behavior", "comp","config","className")}
-<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}

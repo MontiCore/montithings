@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config")}
-<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if splittingModeDisabled || ComponentHelper.shouldIncludeSubcomponents(comp, config)>

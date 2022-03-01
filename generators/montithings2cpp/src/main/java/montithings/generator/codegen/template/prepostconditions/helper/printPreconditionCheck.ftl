@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "statement")}
-<#include "/template/CompPreamble.ftl">
-<#include "/template/TcPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
 <#list ComponentHelper.getPortsInGuardExpression(statement.guard) as port>
   <#if !ComponentHelper.isBatchPort(port, comp) && !ComponentHelper.portIsComparedToNoData(statement.guard, port.getName())>

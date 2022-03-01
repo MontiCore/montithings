@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config")}
-<#include "/template/ConfigPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
 # Cross compile
 set(CMAKE_SYSTEM_NAME Linux)

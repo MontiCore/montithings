@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "portSymbol")}
-<#include "/template/ConfigPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
   <#if recordingEnabled && portSymbol.isIncoming()>
     void recordMessage(T value) {

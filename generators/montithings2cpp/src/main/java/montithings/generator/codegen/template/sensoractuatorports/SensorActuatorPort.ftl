@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "isSensor", "portTemplateName", "everyTagOpt")}
-<#include "/template/TcPreamble.ftl">
-<#include "/template/ConfigPreamble.ftl">
+<#include "/template/Preamble.ftl">
 <#include "/template/Copyright.ftl">
 #pragma once
 #include "easyloggingpp/easylogging++.h"

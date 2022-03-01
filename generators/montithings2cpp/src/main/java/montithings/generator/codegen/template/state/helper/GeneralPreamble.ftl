@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-<#include "/template/CompPreamble.ftl">
-<#include "/template/TcPreamble.ftl">
+<#include "/template/Preamble.ftl">
 <#assign generics = Utils.printFormalTypeParameters(comp)>
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 <#assign className = compname + "State">

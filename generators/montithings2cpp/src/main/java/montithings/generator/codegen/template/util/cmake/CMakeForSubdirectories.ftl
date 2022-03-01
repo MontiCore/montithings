@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("subdirectories", "sensorActuatorPorts", "config", "existsHWC")}
-<#include "/template/ConfigPreamble.ftl">
+<#include "/template/Preamble.ftl">
 
 cmake_minimum_required (VERSION 3.8)
 project ("MontiThings Application")

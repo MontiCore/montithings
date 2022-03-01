@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","className","subcomponent","config")}
-<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>

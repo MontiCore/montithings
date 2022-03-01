@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className", "interfaceName", "ports")}
-<#include "/template/Preamble.ftl">
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#-- Types automatically generated for interfaces are prefixes with "Co" -->

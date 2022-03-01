@@ -1,8 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
-<#include "/template/TcPreamble.ftl">
-<#include "/template/CompPreamble.ftl">
+<#include "/template/Preamble.ftl">
 <#assign generics = Utils.printFormalTypeParameters(comp)>
 
 ${Utils.printTemplateArguments(comp)}
