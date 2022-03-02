@@ -4,7 +4,7 @@ ${tc.signature("comp", "config")}
 <#if logTracingEnabled>
   #include "logtracing/LogTracer.h"
 
-  <#if !(comp.getPorts()?size == 0)>
+  <#if ComponentHelper.componentHasPorts(comp)>
     #include "${compname}LogTraceObserver.h"
   </#if>
 

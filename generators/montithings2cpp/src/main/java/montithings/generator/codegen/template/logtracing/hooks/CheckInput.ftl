@@ -2,6 +2,6 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if logTracingEnabled && !(comp.getPorts()?size == 0)>
+<#if logTracingEnabled && ComponentHelper.componentHasPorts(comp)>
     logTraceObserver->checkInput(${Identifier.getInputName()});
 </#if>

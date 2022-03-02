@@ -40,7 +40,7 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
 </#if>
 
-<#if !(comp.getPorts()?size == 0)>
+<#if ComponentHelper.componentHasPorts(comp)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
 </#if>
 

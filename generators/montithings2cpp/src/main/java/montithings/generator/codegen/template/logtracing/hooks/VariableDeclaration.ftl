@@ -3,7 +3,7 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if logTracingEnabled>
-<#if !(comp.getPorts()?size == 0)>
+<#if ComponentHelper.componentHasPorts(comp)>
   ${comp.name}LogTraceObserver* logTraceObserver;
 </#if>
 

@@ -109,7 +109,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   </#if>
 </#if>
 
-<#if !(comp.getPorts()?size == 0)>
+<#if ComponentHelper.componentHasPorts(comp)>
   ${tc.includeArgs("template.interface.hooks.MethodDeclaration", [comp])}
 </#if>
 
