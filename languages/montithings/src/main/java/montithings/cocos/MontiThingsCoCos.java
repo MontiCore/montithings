@@ -69,7 +69,12 @@ public class MontiThingsCoCos {
     checker.addCoCo(new PostcondUsesOnlyOneOutport());
     checker.addCoCo((MontiThingsASTBehaviorCoCo) new DontReadOutports());
     checker.addCoCo((MontiThingsASTMTEveryBlockCoCo) new DontReadOutports());
-    checker.addCoCo(new PortsInBehaviorAreUsedCorrectly());
+    checker.addCoCo(new BehaviorDeclaresAllPortsItUses());
+    checker.addCoCo(new BehaviorDeclaresOnlyIncomingPorts());
+    checker.addCoCo(new BehaviorsAreNotSubsetOfEachOther());
+    checker.addCoCo(new BehaviorsDoNotDeclarePortUsageTwice());
+    checker.addCoCo(new BehaviorsDoNotUseTheSamePorts());
+    checker.addCoCo(new BehaviorsLeaveNoIncomingPortsUnused());
     checker.addCoCo(new InterfaceImplementedCorrectly());
 
     return checker;
