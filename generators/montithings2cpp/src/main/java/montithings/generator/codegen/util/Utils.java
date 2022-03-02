@@ -62,7 +62,7 @@ public class Utils {
     int i = 1;
     for (VariableSymbol param : comp.getParameters()) {
       SymTypeExpression type = param.getType();
-      if (type instanceof SymTypeOfNumericWithSIUnit){
+      if (type instanceof SymTypeOfNumericWithSIUnit) {
         type = ((SymTypeOfNumericWithSIUnit) type).getNumericType();
       }
       s.append(TypesHelper.java2cppTypeString(type.print()));
@@ -84,21 +84,22 @@ public class Utils {
       compInstance.getName());
 
     StringBuilder result = new StringBuilder();
-    for (int i = 0 ; i < params.size() ; i++) {
+    for (int i = 0; i < params.size(); i++) {
       result.append("config[\"").append(params.get(i).getName()).append("\"]")
         .append(" = dataToJson (").append(paramValues.get(i)).append(");\n");
     }
     return result.toString();
   }
 
-  public static String printSIParameters(ComponentTypeSymbol comp, ComponentInstanceSymbol compInstance){
+  public static String printSIParameters(ComponentTypeSymbol comp,
+    ComponentInstanceSymbol compInstance) {
     StringBuilder result = new StringBuilder();
-    for (PortSymbol ps : compInstance.getType().getAllPorts()){
-      if (isSIUnitPort(ps) && ps.isIncoming()){
-        for (ASTConnector c : comp.getAstNode().getConnectors()){
-          for (ASTPortAccess portAccess : c.getTargetList()){
+    for (PortSymbol ps : compInstance.getType().getAllPorts()) {
+      if (isSIUnitPort(ps) && ps.isIncoming()) {
+        for (ASTConnector c : comp.getAstNode().getConnectors()) {
+          for (ASTPortAccess portAccess : c.getTargetList()) {
             Optional<PortSymbol> ops = ComponentHelper.getPortSymbolFromPortAccess(portAccess);
-            if(ops.isPresent() && ops.get().equals(ps)){
+            if (ops.isPresent() && ops.get().equals(ps)) {
               result.append("config[\"").append(ps.getName()).append("ConversionFactor\"]")
                 .append(" = dataToJson (")
                 .append(getConversionFactorFromSourceAndTarget(c.getSource(), portAccess))
@@ -154,13 +155,13 @@ public class Utils {
     for (VariableSymbol param : comp.getParameters()) {
       if (param.getAstNode() instanceof ASTArcParameter) {
         ASTArcParameter parameter = (ASTArcParameter) param.getAstNode();
-        if(param.getType() instanceof SymTypeOfNumericWithSIUnit){
+        if (param.getType() instanceof SymTypeOfNumericWithSIUnit) {
           s.append(printMember(TypesPrinter.printCPPTypeName(param.getType(), comp, config),
-                  param.getName(), printSIExpression(parameter.getDefault(), param.getType())));
+            param.getName(), printSIExpression(parameter.getDefault(), param.getType())));
         }
         else {
           s.append(printMember(TypesPrinter.printCPPTypeName(param.getType(), comp, config),
-                  param.getName(), printExpression(parameter.getDefault())));
+            param.getName(), printExpression(parameter.getDefault())));
         }
       }
       else {
@@ -178,7 +179,8 @@ public class Utils {
     return printVariables(comp, config, true);
   }
 
-  public static String printVariables(ComponentTypeSymbol comp, ConfigParams config, boolean printStateVariablePrefix) {
+  public static String printVariables(ComponentTypeSymbol comp, ConfigParams config,
+    boolean printStateVariablePrefix) {
     StringBuilder s = new StringBuilder();
 
     // Sort to print params before fields
@@ -195,11 +197,11 @@ public class Utils {
     return s.toString();
   }
 
-  public static String getInitialValue (VariableSymbol variable) {
+  public static String getInitialValue(VariableSymbol variable) {
     String initialValue = "";
     if (variable.getAstNode() instanceof ASTArcField) {
       ASTArcField field = (ASTArcField) variable.getAstNode();
-      if(variable.getType() instanceof SymTypeOfNumericWithSIUnit){
+      if (variable.getType() instanceof SymTypeOfNumericWithSIUnit) {
         initialValue = printSIExpression(field.getInitial(), variable.getType());
       }
       else {
@@ -218,22 +220,19 @@ public class Utils {
 
   public static String printFormalTypeParameters(ComponentTypeSymbol comp,
     Boolean withClassPrefix) {
-    StringBuilder s = new StringBuilder();
-    int i = 1;
-    if (hasTypeParameter(comp)) {
-      s.append('<');
-      for (String generic : getGenericParameters(comp)) {
-        if (withClassPrefix) {
-          s.append("class ");
-        }
-        s.append(generic);
-        if (i != ((getGenericParameters(comp)).size())) {
-          s.append(',');
-        }
-        i++;
-      }
-      s.append('>');
+    if (!hasTypeParameter(comp)) {
+      return "";
     }
+
+    StringBuilder s = new StringBuilder();
+    s.append('<');
+    for (Iterator<String> it = getGenericParameters(comp).iterator(); it.hasNext(); ) {
+      s.append(withClassPrefix ? "class " : "");
+      s.append(it.next());
+      s.append(it.hasNext() ? ',' : "");
+    }
+    s.append('>');
+
     return s.toString();
   }
 
@@ -246,13 +245,6 @@ public class Utils {
 
   public static List<String> getGenericParameters(ComponentTypeSymbol comp) {
     List<String> output = new ArrayList<>();
-    /*TODO Check why not all typeParameters exist in ComponentTypeSymbols
-      if (comp.hasTypeParameter()) {
-      List<TypeVarSymbol> parameterList = comp.getTypeParameters();
-      for (TypeVarSymbol typeParameter : parameterList) {
-        output.add(typeParameter.getName());
-      }
-    }*/
     if (comp.getAstNode().getHead() instanceof ASTGenericComponentHead &&
       !((ASTGenericComponentHead) comp.getAstNode().getHead()).isEmptyArcTypeParameters()) {
       List<ASTArcTypeParameter> parameterList = ((ASTGenericComponentHead) comp.getAstNode()
@@ -369,7 +361,7 @@ public class Utils {
     return s.toString();
   }
 
-  public static String printComponentPrefix(ASTPortAccess access){
+  public static String printComponentPrefix(ASTPortAccess access) {
     StringBuilder s = new StringBuilder();
     if (access.isPresentComponent()) {
       s.append(access.getComponent());
@@ -389,14 +381,15 @@ public class Utils {
     return printExpression(expr, true);
   }
 
-  public static String printSIExpression(ASTExpression expr, SymTypeExpression type){
-    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+  public static String printSIExpression(ASTExpression expr, SymTypeExpression type) {
+    TypeCheck tc = new TypeCheck(new SynthesizeSymTypeFromMontiThings(),
+      new DeriveSymTypeOfMontiThingsCombine());
     SymTypeExpression exprType = tc.typeOf(expr);
     return MontiThingsSIUnitLiteralsPrettyPrinter
       .factorStart(MontiThingsSIUnitLiteralsPrettyPrinter.getSIConverter(type, exprType))
-            + printExpression(expr, true) +
-            MontiThingsSIUnitLiteralsPrettyPrinter
-              .factorEnd(MontiThingsSIUnitLiteralsPrettyPrinter.getSIConverter(type, exprType));
+      + printExpression(expr, true) +
+      MontiThingsSIUnitLiteralsPrettyPrinter
+        .factorEnd(MontiThingsSIUnitLiteralsPrettyPrinter.getSIConverter(type, exprType));
   }
 
   public static String printIncludes(ComponentTypeSymbol comp, ConfigParams config) {
@@ -445,7 +438,6 @@ public class Utils {
         + "\"";
       s.append(importStatement).append("\n");
     }
-
 
     for (PortSymbol port : comp.getPorts()) {
       if (TypesHelper.portUsesCdType(port)) {
@@ -517,7 +509,7 @@ public class Utils {
 
   public static String escapePackage(List<String> packageName) {
     StringBuilder result = new StringBuilder();
-    for (String ignored : packageName) {
+    for (int i = 0; i < packageName.size(); i++) {
       result.append("../");
     }
     return result.toString();
@@ -543,7 +535,7 @@ public class Utils {
   public static String printCDType(ASTCDEImportStatement importStatement) {
     String namespace = "montithings::";
     Optional<TypeSymbol> ts = importStatement.getSymbol().getEnclosingScope()
-        .resolveType(importStatement.getCdType().getQName());
+      .resolveType(importStatement.getCdType().getQName());
     if (!ts.isPresent()) {
       System.err.println(Arrays.toString(new Throwable().getStackTrace()));
       Log.error("CDType '" + importStatement.getCdType().getQName() + "' not present");
@@ -568,5 +560,6 @@ public class Utils {
       return fullNamespaceSubcomponent;
     }
   }
+
 }
 
