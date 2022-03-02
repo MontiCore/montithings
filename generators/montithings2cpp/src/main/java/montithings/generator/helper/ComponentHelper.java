@@ -157,25 +157,20 @@ public class ComponentHelper {
   public static String getPackagePath(ComponentTypeSymbol comp, ComponentTypeSymbol subComp) {
     // Get package name of subcomponent
     String subCompPackageName = subComp.getPackageName();
-    // Check if subcomponent is in different package than parent component
-    if (!subCompPackageName.equals(comp.getPackageName())) {
-      // Split packageName
-      String[] path = subCompPackageName.split("\\.");
-      // Build correct package path
-      StringBuilder correctPath = new StringBuilder();
-      boolean leaveFirstOut = true;
-      for (String dir : path) {
-        if (leaveFirstOut) {
-          leaveFirstOut = false;
-          continue;
-        }
-        correctPath.append(dir).append("/");
-      }
-      // Return correct path
-      return correctPath.toString();
-    }
     // If subcomponent is in the same package as component, then no package path before class import required
-    return "";
+    if (subCompPackageName.equals(comp.getPackageName())) {
+      return "";
+    }
+
+    // Split packageName
+    String[] path = subCompPackageName.split("\\.");
+    // Build correct package path
+    StringBuilder correctPath = new StringBuilder();
+    for (String dir : Arrays.stream(path).skip(1).collect(Collectors.toList())) {
+      correctPath.append(dir).append("/");
+    }
+    // Return correct path
+    return correctPath.toString();
   }
 
   public static List<String> getPackages(ComponentTypeSymbol component) {
@@ -210,7 +205,8 @@ public class ComponentHelper {
    * @return Set of components used as generic type argument as include string.
    * Is empty if include is not needed.
    */
-  public static Set<String> includeGenericComponent(ComponentTypeSymbol comp, ComponentInstanceSymbol instance) {
+  public static Set<String> includeGenericComponent(ComponentTypeSymbol comp,
+    ComponentInstanceSymbol instance) {
     ASTComponentInstantiation instantiation = getInstantiation(instance);
     if (instantiation.getMCType() instanceof ASTMCBasicGenericType) {
       List<ASTMCTypeArgument> types = new ArrayList<>(
@@ -254,10 +250,12 @@ public class ComponentHelper {
   /**
    * Get the names of all types generated for the interfaces implemented by the given component
    */
-  public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component, boolean addPrefix) {
+  public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component,
+    boolean addPrefix) {
     Set<String> namesOfImplementedInterfaces = new HashSet<>();
     for (ComponentTypeSymbol interf : getImplementedComponents(component)) {
-      namesOfImplementedInterfaces.add((addPrefix ? ClassDiagramUtil.COMPONENT_TYPE_PREFIX : "") + interf.getName());
+      namesOfImplementedInterfaces.add(
+        (addPrefix ? ClassDiagramUtil.COMPONENT_TYPE_PREFIX : "") + interf.getName());
     }
     return namesOfImplementedInterfaces;
   }
@@ -277,7 +275,8 @@ public class ComponentHelper {
       return implementsComps;
     }
 
-    for (Optional<ComponentTypeSymbol> compSymbol : astmtComponentType.getMTImplements().getNamesSymbolList()) {
+    for (Optional<ComponentTypeSymbol> compSymbol : astmtComponentType.getMTImplements()
+      .getNamesSymbolList()) {
       compSymbol.ifPresent(implementsComps::add);
     }
 
@@ -312,6 +311,13 @@ public class ComponentHelper {
     return new HashSet<>(requestedInterface.get().getPorts());
   }
 
+  /**
+   * Checks if component has an update interval
+   *
+   * @param comp the component to check
+   * @return true iff comp has update interval
+   * @deprecated
+   */
   @Deprecated
   public static boolean hasUpdateInterval(ComponentTypeSymbol comp) {
     return elementsOf(comp).filter(ASTCalculationInterval.class::isInstance)
@@ -320,6 +326,8 @@ public class ComponentHelper {
 
   /**
    * Gets a string that corresponds to the update interval of the component in CPP code
+   *
+   * @deprecated
    */
   @Deprecated
   public static String getExecutionIntervalMethod(ComponentTypeSymbol comp) {
@@ -332,7 +340,8 @@ public class ComponentHelper {
   }
 
   @Deprecated
-  public static String getExecutionIntervalMethod(ComponentTypeSymbol comp, ASTEveryBlock everyBlock) {
+  public static String getExecutionIntervalMethod(ComponentTypeSymbol comp,
+    ASTEveryBlock everyBlock) {
     String method = "std::chrono::";
     method += TypesPrinter.printTime(everyBlock.getSIUnitLiteral());
     return method;
@@ -353,17 +362,18 @@ public class ComponentHelper {
 
     switch (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit())) {
       case ("ns"):
-        return "" + (int) (value / (1000 * 1000));
+        return Integer.toString((int) (value / (1000 * 1000)));
       case ("μs"):
-        return "" + (int) (value / 1000);
+        return Integer.toString((int) (value / 1000));
       case ("ms"):
-        return "" + (int) (value);
+        return Integer.toString((int) (value));
       case ("s"):
-        return "" + (int) (value * 1000);
+        return Integer.toString((int) (value * 1000));
       case ("min"):
-        return "" + (int) (value * 1000 * 60);
+        return Integer.toString((int) (value * 1000 * 60));
+      default:
+        return "50";
     }
-    return "50";
   }
 
   public static List<VariableSymbol> getVariablesAndParameters(ComponentTypeSymbol comp) {
@@ -464,8 +474,7 @@ public class ComponentHelper {
 
   public static boolean isTimesync(ComponentTypeSymbol component) {
     return getTiming(component).stream()
-      .filter(e -> e.getArcTimeMode() instanceof ASTArcSync)
-      .collect(Collectors.toSet()).size() > 0;
+      .anyMatch(e -> e.getArcTimeMode() instanceof ASTArcSync);
   }
 
   public static boolean isApplication(ComponentTypeSymbol component, ConfigParams config) {
@@ -550,8 +559,6 @@ public class ComponentHelper {
       if (instantiation.getMCType() instanceof ASTMCBasicGenericType) {
         List<ASTMCTypeArgument> types = new ArrayList<>(
           ((ASTMCBasicGenericType) instantiation.getMCType()).getMCTypeArgumentList());
-        //TODO: we still need the following call
-        //types = addTypeParameterComponentPackage(instance, types);
         result += TypesPrinter.printActualTypeArguments(types);
       }
     }
@@ -563,9 +570,8 @@ public class ComponentHelper {
   // region Ports
   //============================================================================
 
-
   public static Boolean hasSyncGroups(ComponentTypeSymbol comp) {
-    return getSyncGroups(comp).size() > 0;
+    return !getSyncGroups(comp).isEmpty();
   }
 
   /**
@@ -726,22 +732,14 @@ public class ComponentHelper {
   }
 
   public static String getEveryBlockName(ComponentTypeSymbol comp, ASTEveryBlock ast) {
-    List<ASTEveryBlock> everyBlockList = getEveryBlocks(comp);
-    int i = 1;
-    for (ASTEveryBlock everyBlock : everyBlockList) {
-      if (everyBlock.equals(ast)) {
-        if (everyBlock.isPresentName()) {
-          return everyBlock.getName();
-        }
-        else {
-          return "__Every" + i;
-        }
-      }
-      i++;
-    }
+    int index = getEveryBlocks(comp).indexOf(ast);
 
-    //this code should normally not be executed
-    return "";
+    if (ast.isPresentName()) {
+      return ast.getName();
+    }
+    else {
+      return "__Every" + index;
+    }
   }
 
   public static boolean isEveryBlock(String name, ComponentTypeSymbol comp) {
@@ -814,8 +812,10 @@ public class ComponentHelper {
     return printJavaBlock(block, isLogTracingEnabled, false);
   }
 
-  public static String printJavaBlock(ASTMCJavaBlock block, boolean isLogTracingEnabled, boolean suppressPostconditions) {
-    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(isLogTracingEnabled, suppressPostconditions);
+  public static String printJavaBlock(ASTMCJavaBlock block, boolean isLogTracingEnabled,
+    boolean suppressPostconditions) {
+    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(isLogTracingEnabled,
+      suppressPostconditions);
     return printer.prettyprint(block);
   }
 
@@ -827,7 +827,8 @@ public class ComponentHelper {
     return CppPrettyPrinter.getPrinter().prettyprint(ast);
   }
 
-  public static String printStatementBehavior(ComponentTypeSymbol component, boolean isLogTracingEnabled) {
+  public static String printStatementBehavior(ComponentTypeSymbol component,
+    boolean isLogTracingEnabled) {
     return printJavaBlock(ComponentHelper.getBehavior(component), isLogTracingEnabled);
   }
 
@@ -839,7 +840,8 @@ public class ComponentHelper {
       .collect(Collectors.toList());
   }
 
-  public static String getPortSpecificInitBehaviorName(ComponentTypeSymbol comp, ASTInitBehavior ast) {
+  public static String getPortSpecificInitBehaviorName(ComponentTypeSymbol comp,
+    ASTInitBehavior ast) {
     StringBuilder name = new StringBuilder();
     for (String s : ast.getNameList()) {
       name.append("__");
@@ -859,11 +861,11 @@ public class ComponentHelper {
       .filter(ASTInitBehavior::isEmptyNames)
       .collect(Collectors.toList());
     Preconditions.checkArgument(!initBehaviors.isEmpty(),
-            "0xMT800 Trying to print behavior of component \"" + component.getName()
-                    + "\" that has no behavior.");
+      "0xMT800 Trying to print behavior of component \"" + component.getName()
+        + "\" that has no behavior.");
     Preconditions.checkArgument(initBehaviors.size() == 1,
-            "0xMT801 Trying to print behavior of component \"" + component.getName()
-                    + "\" which has multiple conflicting behaviors.");
+      "0xMT801 Trying to print behavior of component \"" + component.getName()
+        + "\" which has multiple conflicting behaviors.");
     return initBehaviors.get(0).getMCJavaBlock();
   }
 
@@ -875,17 +877,20 @@ public class ComponentHelper {
   }
 
   public static boolean hasInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
-    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)){
-      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(behavior.getNameList())){
+    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)) {
+      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(
+        behavior.getNameList())) {
         return true;
       }
     }
     return false;
   }
 
-  public static ASTInitBehavior getInitBehavior(ComponentTypeSymbol component, ASTBehavior behavior) {
-    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)){
-      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(behavior.getNameList())){
+  public static ASTInitBehavior getInitBehavior(ComponentTypeSymbol component,
+    ASTBehavior behavior) {
+    for (ASTInitBehavior initBehavior : getPortSpecificInitBehaviors(component)) {
+      if (behavior.containsAllNames(initBehavior.getNameList()) && initBehavior.containsAllNames(
+        behavior.getNameList())) {
         return initBehavior;
       }
     }
@@ -897,7 +902,8 @@ public class ComponentHelper {
       Objects.requireNonNull(getInitBehavior(component, behavior)));
   }
 
-  public static List<ASTInitBehavior> getInitBehaviorsWithoutBehaviors(ComponentTypeSymbol component) {
+  public static List<ASTInitBehavior> getInitBehaviorsWithoutBehaviors(
+    ComponentTypeSymbol component) {
     List<ASTBehavior> behaviors = getPortSpecificBehaviors(component);
     List<ASTInitBehavior> initBehaviors = getPortSpecificInitBehaviors(component);
     for (ASTBehavior behavior : behaviors) {
@@ -1065,7 +1071,7 @@ public class ComponentHelper {
   public static String getHighestAgoQualification(ComponentTypeSymbol comp, String name) {
     double valueInSeconds = getAgoQualifications(comp).get(name);
     //return as nanoseconds
-    return "" + ((long) (valueInSeconds * 1000000000));
+    return Long.toString((long) (valueInSeconds * 1000000000));
   }
 
   // endregion
@@ -1217,6 +1223,7 @@ public class ComponentHelper {
 
   /**
    * @return Returns true if a handwritten implementation for the IPC Server exists
+   * @deprecated
    */
   @Deprecated
   public static Boolean existsIPCServerHWCClass(File hwcPath, ComponentTypeSymbol comp,
@@ -1238,4 +1245,5 @@ public class ComponentHelper {
     return comp.getAstNode().getHead().get_PreCommentList().get(0).getText()
       .equals("RECORD_AND_REPLAY_GENERATED");
   }
+
 }

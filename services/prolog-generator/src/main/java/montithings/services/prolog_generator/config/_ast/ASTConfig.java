@@ -17,7 +17,7 @@ public class ASTConfig extends ASTConfigTOP {
 
     private int aSTJSONNumber2Int(ASTJSONNumber number) {
         ASTSignedLiteral literal = number.getSignedNumericLiteral();
-        if (literal instanceof ASTSignedLiteral) {
+        if (literal != null) {
             ASTSignedNatLiteral nat = (ASTSignedNatLiteral) literal;
             return nat.getValue();
         }
@@ -30,7 +30,7 @@ public class ASTConfig extends ASTConfigTOP {
         list.forEach(item -> {
             list.forEach(item2 -> {
                 if (!item.equals(item2)) {
-                    Map<String, String> comb = new HashMap<String, String>();
+                    Map<String, String> comb = new HashMap<>();
                     comb.put(item, item2);
                     res.add(comb);
                 }
@@ -39,18 +39,17 @@ public class ASTConfig extends ASTConfigTOP {
         return res;
     }
 
-
-    public ArrayList<Map<String, String>> getIncompatibilities() {
+    public List<Map<String, String>> getIncompatibilities() {
         ArrayList<Map<String, String>> result = new ArrayList<>();
         ASTJSONObject root = (ASTJSONObject) this.getJSONDocument().getJSONValue();
 
         for (ASTJSONProperty prop : root.getPropList()) {
             if (prop.getKey().equals("incompatibilities")) {
                 ((ASTJSONArray) prop.getValue())
-                        .forEachJSONValues(incompatibilitiesArray -> {
-                            ArrayList<String> stringOfComponents = new ArrayList<>();
-                            ((ASTJSONArray) incompatibilitiesArray).forEachJSONValues(value -> {
-                                String component = astJsonValue2String(value);
+                  .forEachJSONValues(incompatibilitiesArray -> {
+                      ArrayList<String> stringOfComponents = new ArrayList<>();
+                      ((ASTJSONArray) incompatibilitiesArray).forEachJSONValues(value -> {
+                          String component = astJsonValue2String(value);
                                 stringOfComponents.add(generatePrologCompliantName(component));
                             });
                             result.addAll(getAllPairsOfListItems(stringOfComponents));
@@ -154,20 +153,20 @@ public class ASTConfig extends ASTConfigTOP {
         return result;
     }
 
-    public ArrayList<Map<String, String>> getDependencies() {
+    public List<Map<String, String>> getDependencies() {
         ArrayList<Map<String, String>> result = new ArrayList<>();
         ASTJSONObject root = (ASTJSONObject) this.getJSONDocument().getJSONValue();
 
         for (ASTJSONProperty prop : root.getPropList()) {
             if (prop.getKey().equals("dependencies")) {
                 ((ASTJSONArray) prop.getValue())
-                        .forEachJSONValues(dependenciesArray -> {
+                  .forEachJSONValues(dependenciesArray -> {
 
-                            String dependent = null;
-                            String dependency = null;
-                            String type = null;
-                            Integer amount_at_least = null;
-                            String location = "any";
+                      String dependent = null;
+                      String dependency = null;
+                      String type = null;
+                      Integer amountAtLeast = null;
+                      String location = "any";
 
                             List<ASTJSONProperty> propList = ((ASTJSONObject) dependenciesArray).getPropList();
                             for (ASTJSONProperty dprop : propList) {
@@ -182,7 +181,8 @@ public class ASTConfig extends ASTConfigTOP {
                                         dependency = ((ASTJSONString) dprop.getValue()).getStringLiteral().getValue();
                                         break;
                                     case "amount_at_least":
-                                        amount_at_least = aSTJSONNumber2Int((ASTJSONNumber) dprop.getValue());
+                                        amountAtLeast = aSTJSONNumber2Int(
+                                          (ASTJSONNumber) dprop.getValue());
                                         break;
                                     case "location": 
                                         location = ((ASTJSONString) dprop.getValue()).getStringLiteral().getValue();
@@ -191,17 +191,17 @@ public class ASTConfig extends ASTConfigTOP {
                                         throw new IllegalStateException("Unexpected value: " + dprop.getKey());
                                 }
                             }
-                            if (amount_at_least != null &&
-                                    type != null &&
-                                    dependency != null &&
-                                    dependent != null) {
-                                Map<String, String> item = new HashMap<>();
-                                item.put("type", type);
-                                item.put("dependency", generatePrologCompliantName(dependency));
-                                item.put("dependent", generatePrologCompliantName(dependent));
-                                item.put("amount_at_least", amount_at_least.toString());
-                                item.put("location", location);
-                                result.add(item);
+                      if (amountAtLeast != null &&
+                        type != null &&
+                        dependency != null &&
+                        dependent != null) {
+                          Map<String, String> item = new HashMap<>();
+                          item.put("type", type);
+                          item.put("dependency", generatePrologCompliantName(dependency));
+                          item.put("dependent", generatePrologCompliantName(dependent));
+                          item.put("amount_at_least", amountAtLeast.toString());
+                          item.put("location", location);
+                          result.add(item);
                             }
                         });
             }
