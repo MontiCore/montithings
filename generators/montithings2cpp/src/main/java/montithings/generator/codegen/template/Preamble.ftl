@@ -32,7 +32,6 @@
     <#assign needsNng = (!(targetPlatformIsDsa) && !(splittingModeDisabled) && brokerDisabled)>
 </#if>
 
-
 <#if comp??>
     <#assign compname = comp.getName()>
     <#assign generics = Utils.printFormalTypeParameters(comp)>
