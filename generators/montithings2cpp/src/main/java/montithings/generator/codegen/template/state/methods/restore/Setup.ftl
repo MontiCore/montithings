@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "className")}
 <#include "/template/state/helper/GeneralPreamble.ftl">
-<#include "/template/Preamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${generics}::setup (<#if brokerIsMQTT>MqttClient* passedMqttClientInstance</#if>)

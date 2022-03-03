@@ -1,6 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp", "existsHWC")}
-<#include "/template/Preamble.ftl">
+<#include "/template/GeneralPreamble.ftl">
 <#include "/template/Copyright.ftl">
 
 #include "${compname}.h"

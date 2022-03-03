@@ -1,25 +1,24 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "existsHWC")}
 <#include "/template/Preamble.ftl">
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+
 [common]
 <#if splittingModeIsDistributed>
-DCPSBit=0
-DCPSGlobalTransportConfig=myconfig
+    DCPSBit=0
+    DCPSGlobalTransportConfig=myconfig
 
-[config/myconfig]
-transports=mytcp
+    [config/myconfig]
+    transports=mytcp
 
-[transport/mytcp]
-transport_type=tcp
+    [transport/mytcp]
+    transport_type=tcp
 
-[transport/myrtpsudp]
-transport_type=rtps_udp
-
+    [transport/myrtpsudp]
+    transport_type=rtps_udp
 <#else>
-DCPSGlobalTransportConfig=$file
-DCPSDefaultDiscovery=DEFAULT_RTPS
+    DCPSGlobalTransportConfig=$file
+    DCPSDefaultDiscovery=DEFAULT_RTPS
 
-[transport/the_rtps_transport]
-transport_type=rtps_udp
+    [transport/the_rtps_transport]
+    transport_type=rtps_udp
 </#if>

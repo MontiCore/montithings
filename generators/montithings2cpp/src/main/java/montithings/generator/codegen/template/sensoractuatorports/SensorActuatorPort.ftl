@@ -2,6 +2,7 @@
 ${tc.signature("config", "isSensor", "portTemplateName", "everyTagOpt")}
 <#include "/template/Preamble.ftl">
 <#include "/template/Copyright.ftl">
+
 #pragma once
 #include "easyloggingpp/easylogging++.h"
 #include "tl/optional.hpp"

@@ -1,6 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("port", "comp", "config", "existsHWC")}
-<#include "/template/Preamble.ftl">
 <#include "/template/input/helper/AdapterPreamble.ftl">
 
 <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>

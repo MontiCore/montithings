@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp")}
 <#include "/template/Preamble.ftl">
-<#assign generics = Utils.printFormalTypeParameters(comp)>
 
 <#assign preconditions = ComponentHelper.getPreconditions(comp)>
 <#if preconditions?size gt 0>
