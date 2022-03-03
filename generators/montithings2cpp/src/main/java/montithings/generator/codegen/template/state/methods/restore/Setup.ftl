@@ -3,9 +3,9 @@ ${tc.signature("comp", "className")}
 <#include "/template/state/helper/GeneralPreamble.ftl">
 
 ${Utils.printTemplateArguments(comp)}
-void ${className}${generics}::setup (<#if config.getMessageBroker().toString() == "MQTT">MqttClient* passedMqttClientInstance</#if>)
+void ${className}${generics}::setup (<#if brokerIsMQTT>MqttClient* passedMqttClientInstance</#if>)
 {
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   std::string instanceNameTopic = replaceDotsBySlashes (this->instanceName);
   mqttClientInstance = passedMqttClientInstance;
   mqttClientInstance->addUser (this);

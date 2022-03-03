@@ -5,14 +5,14 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 #include "${className}.h"
 #include "messages/PortToSocket.h"
-<#if config.getSplittingMode().toString() == "LOCAL">
+<#if splittingModeIsLocal>
   #include "json/json.hpp"
   #include ${"<fstream>"}
 </#if>
 
 ${Utils.printNamespaceStart(comp)}
 
-<#if config.getSplittingMode().toString() == "LOCAL">
+<#if splittingModeIsLocal>
   using json = nlohmann::json;
 </#if>
 

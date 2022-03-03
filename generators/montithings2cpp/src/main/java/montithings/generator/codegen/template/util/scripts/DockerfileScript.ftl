@@ -5,7 +5,7 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
 # Build Image -----------------------------
-<#if config.getMessageBroker().toString() == "DDS">
+<#if brokerIsDDS>
     FROM montithings/mtcmakedds AS build
 <#else>
     FROM montithings/mtcmake AS build
@@ -22,17 +22,17 @@ RUN rm -rf build
 
 # Build our binary/binaries
 <#-- comp is the application -->
-<#if config.getSplittingMode().toString() == "OFF">
+<#if splittingModeDisabled>
 RUN ./build.sh ${comp.getPackageName()}
 <#else>
 RUN ./build.sh ${comp.getFullName()}
 </#if>
 # -----------------------------------------
 
-<#if config.getSplittingMode().toString() == "OFF">
+<#if splittingModeDisabled>
     # COMPONENT: ${comp.getFullName()}
     <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
-    <#if config.getMessageBroker().toString() == "DDS">
+    <#if brokerIsDDS>
     FROM ubuntu:groovy AS ${comp.getFullName()?lower_case}
     <#else>
     FROM alpine AS ${comp.getFullName()?lower_case}
@@ -40,7 +40,7 @@ RUN ./build.sh ${comp.getFullName()}
     RUN apk add --update-cache libgcc libstdc++
     </#if>
 
-    <#if config.getMessageBroker().toString() == "MQTT">
+    <#if brokerIsMQTT>
     ADD deployment-config.json /.montithings/deployment-config.json
 
     RUN apk add --update-cache mosquitto-libs++
@@ -65,7 +65,7 @@ RUN ./build.sh ${comp.getFullName()}
 
             # COMPONENT: ${pair.getKey().fullName}
             <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
-            <#if config.getMessageBroker().toString() == "DDS">
+            <#if brokerIsDDS>
             FROM debian:buster AS ${pair.getKey().fullName}
             <#else>
             FROM alpine AS ${pair.getKey().fullName}
@@ -73,7 +73,7 @@ RUN ./build.sh ${comp.getFullName()}
             RUN apk add --update-cache libgcc libstdc++
             </#if>
 
-            <#if config.getMessageBroker().toString() == "MQTT">
+            <#if brokerIsMQTT>
             ADD deployment-config.json /.montithings/deployment-config.json
 
             RUN apk add --update-cache mosquitto-libs++
@@ -90,7 +90,7 @@ RUN ./build.sh ${comp.getFullName()}
         </#if>
     </#list>
 </#if>
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
     <#list sensorActuatorPorts as port >
 
             # SENSORACTUATOR: ${port}

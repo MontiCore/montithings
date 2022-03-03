@@ -9,7 +9,7 @@ for (int i = 0; i < threads.size (); i++)
 {
 threads[i].join ();
 }
-<#if config.getSplittingMode().toString() == "OFF">
+<#if splittingModeDisabled>
   <#list comp.subComponents as subcomponent >
     this->${subcomponent.getName()}.threadJoin();
   </#list>

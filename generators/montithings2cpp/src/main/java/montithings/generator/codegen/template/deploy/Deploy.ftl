@@ -5,9 +5,9 @@ ${tc.signature("comp", "config", "existsHWC")}
 
 
 #include "${compname}.h"
-<#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
+<#if !(splittingModeDisabled) && brokerDisabled>
   #include "${compname}Manager.h"
-<#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+<#elseif !(splittingModeDisabled) && brokerIsDDS>
   #include "${compname}DDSClient.h"
 </#if>
 
@@ -16,7 +16,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<chrono>"}
 #include ${"<thread>"}
 #include ${"<regex>"}
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
 #include "MqttConfigRequester.h"
 </#if>
 
@@ -45,7 +45,7 @@ try
 TCLAP::CmdLine cmd("${compname} MontiThings component", ' ', "${config.getProjectVersion()}");
 ${tc.includeArgs("template.deploy.helper.CmdParameters", [comp, config])}
 ${tc.includeArgs("template.deploy.helper.ComponentStart", [comp, config])}
-<#if config.getMessageBroker().toString() == "DDS">
+<#if brokerIsDDS>
   ${tc.includeArgs("template.deploy.helper.DDSCleanup", [comp, config])}
 </#if>
 }

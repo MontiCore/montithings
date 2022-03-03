@@ -1,24 +1,24 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("subdirectories", "sensorActuatorPorts", "config", "existsHWC")}
+<#include "/template/Preamble.ftl">
 
 cmake_minimum_required (VERSION 3.8)
 project ("MontiThings Application")
 
 add_compile_options(-Wno-psabi)
-
-<#if !(config.getMessageBroker().toString() == "DDS")>
+<#if !(brokerIsDDS)>
   set(EXCLUDE_DDS 1)
 </#if>
-<#if !(config.getMessageBroker().toString() == "MQTT")>
+<#if !(brokerIsMQTT)>
   set(EXCLUDE_MQTT 1)
 </#if>
-<#if (config.getSplittingMode().toString() != "OFF") && (config.getMessageBroker().toString() != "OFF")>
+<#if !(splittingModeDisabled || brokerDisabled)>
   set(EXCLUDE_COMM_MANAGER 1)
 </#if>
-<#if (config.getLogTracing().toString() == "ON")>
+<#if (logTracingEnabled)>
   set(ENABLE_LOG_TRACING 1)
 </#if>
-<#if config.getTargetPlatform().toString() == "RASPBERRY">
+<#if targetPlatformIsRaspberry>
   add_compile_options(${"$<$<CXX_COMPILER_ID:GNU>"}:-Wno-psabi>)
   add_subdirectory(lib/lib/raspberrypi)
 </#if>

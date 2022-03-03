@@ -3,7 +3,7 @@ ${tc.signature("comp","config","isMonitor","behavior")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if !ComponentHelper.usesBatchMode(comp)>
-  ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()}<#if comp.getAllIncomingPorts()?has_content>(<#list comp.getAllIncomingPorts() as inPort >
+  ${compname}Input${Utils.printFormalTypeParameters(comp)} ${Identifier.getInputName()}<#if ComponentHelper.componentHasIncomingPorts(comp)>(<#list comp.getAllIncomingPorts() as inPort >
   <#if behavior != "false" && !ComponentHelper.usesPort(behavior, inPort)>
     tl::nullopt
   <#else>

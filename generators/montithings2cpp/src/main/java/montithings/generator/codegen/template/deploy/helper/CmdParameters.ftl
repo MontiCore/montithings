@@ -29,15 +29,15 @@ cmd.add (monochrome);
   </#list>
 </#if>
 
-<#if config.getSplittingMode().toString() == "LOCAL" && config.getMessageBroker().toString() == "OFF">
+<#if splittingModeIsLocal && brokerDisabled>
   ${tc.includeArgs("template.deploy.helper.CommunicationManagerArgs", [comp, config])}
-<#elseif config.getMessageBroker().toString() == "MQTT">
+<#elseif brokerIsMQTT>
   ${tc.includeArgs("template.deploy.helper.MqttArgs")}
-<#elseif config.getMessageBroker().toString() == "DDS">
+<#elseif brokerIsDDS>
   ${tc.includeArgs("template.deploy.helper.DDSArgs", [comp, config])}
 </#if>
 
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
     TCLAP::SwitchArg muteRecorder ("", "muteRecorder", "Suppress all logs from the recorder", false);
     cmd.add (muteRecorder);
 </#if>
@@ -57,19 +57,19 @@ el::Loggers::removeFlag(el::LoggingFlag::ColoredTerminalOutput);
 
 
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   if (muteMqttLogger.getValue ())
   {
   el::Loggers::reconfigureLogger ("MQTT_PORT", el::ConfigurationType::Enabled, "false");
   }
-<#elseif config.getMessageBroker().toString() == "DDS">
+<#elseif brokerIsDDS>
   if (muteDdsLogger.getValue ())
   {
   el::Loggers::reconfigureLogger ("DDS", el::ConfigurationType::Enabled, "false");
   }
 </#if>
 
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
   if (muteRecorder.getValue ())
   {
     el::Loggers::reconfigureLogger ("RECORDER", el::ConfigurationType::Enabled, "false");

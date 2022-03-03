@@ -8,7 +8,7 @@ friend class cereal::access;
 template<class Archive>
 void serialize(Archive & archive)
 {
-<#if comp.getAllIncomingPorts()?has_content>
+<#if ComponentHelper.componentHasIncomingPorts(comp)>
   archive(
     <#list comp.getAllIncomingPorts() as port>
       CEREAL_NVP_("${port.getName()}", ${port.getName()})

@@ -1,6 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 #!/bin/sh
 ${tc.signature("comp","hwcPythonScripts","config", "existsHWC")}
+<#include "/template/Preamble.ftl">
 
 #
 # Set "export USE_CONAN=1" to make this script call conan
@@ -37,7 +38,7 @@ fi
 CALLER_PWD="$PWD"
 cd "$SCRIPTPATH" > /dev/null
 
-<#if config.getTargetPlatform().toString() == "DSA_VCG">
+<#if targetPlatformIsDsaVcg>
   dev-docker.sh l06 build
   cd build_dev-l06_*
 <#else>
@@ -47,7 +48,7 @@ cd "$SCRIPTPATH" > /dev/null
   then
   conan install --build missing ..
   fi
-    <#if config.getTargetPlatform().toString() == "DSA_LAB">
+    <#if targetPlatformIsDsaLab>
       $CMAKE -G Ninja ..
     <#else>
       cmake -G Ninja ..
@@ -55,25 +56,25 @@ cd "$SCRIPTPATH" > /dev/null
   ninja
 </#if>
 
-<#if config.getSplittingMode().toString() != "OFF">
+<#if !(splittingModeDisabled)>
 echo Copy Scripts for "$COMPNAME"
 cd ..
 find hwc -name "*.py" | cpio -pdm build/bin/ > /dev/null 2>&1
 cd build/bin
 cp ../../"$COMPNAME"/*.sh .
-<#if config.getMessageBroker().toString() == "DDS">
+<#if brokerIsDDS>
 cp ../../"$COMPNAME"/*.ini .
 </#if>
-<#if config.getMessageBroker().toString() == "MQTT" && hwcPythonScripts?size!=0>
+<#if brokerIsMQTT && hwcPythonScripts?size!=0>
 mkdir python
 cp ../../python/sensoractuatormanager.py python/.
 cp ../../python/montithingsconnector.py python/.
 cp ../../python/requirements.txt python/.
 </#if>
-<#if config.getSplittingMode().toString() == "LOCAL">
+<#if splittingModeIsLocal>
 cp -r ../../"$COMPNAME"/ports .
 </#if>
-<#if config.getReplayMode().toString() == "ON">
+<#if replayEnabled>
 cp ../../../../recordings.json .
 </#if>
 

@@ -1,7 +1,8 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "portSymbol")}
+<#include "/template/Preamble.ftl">
 
-<#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
+<#if recordingEnabled && portSymbol.isIncoming()>
   ddsRecorder = std::make_unique${"<DDSRecorder>"}();
   ddsRecorder->setInstanceName(instanceName);
   ddsRecorder->setTopicName(instanceName + ".${portSymbol.getName()}/out");

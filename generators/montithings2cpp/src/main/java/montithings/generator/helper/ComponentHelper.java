@@ -1245,5 +1245,13 @@ public class ComponentHelper {
     return comp.getAstNode().getHead().get_PreCommentList().get(0).getText()
       .equals("RECORD_AND_REPLAY_GENERATED");
   }
+  
+  public static boolean componentHasIncomingPorts(ComponentTypeSymbol comp){
+    return !comp.getAllIncomingPorts().isEmpty();
+  }
+  
+  public static boolean componentHasPorts(ComponentTypeSymbol comp){
+    return !comp.getPorts().isEmpty();
+  }
 
 }

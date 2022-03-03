@@ -10,7 +10,7 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
   ${tc.includeArgs("template.deploy.helper.DDSInit", [comp, config])}
   ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name} cmp (
   instanceNameArg.getValue ()
-  <#if config.getMessageBroker().toString() == "MQTT">
+  <#if brokerIsMQTT>
   , mqttClientInstance
   , mqttClientLocalInstance
   </#if>
@@ -77,7 +77,7 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
     {
       ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.name}${"<"}${typeArguments}${">"} cmp (
       instanceNameArg.getValue ()
-      <#if config.getMessageBroker().toString() == "MQTT">
+      <#if brokerIsMQTT>
         , mqttClientInstance
         , mqttClientLocalInstance
       </#if>
