@@ -25,7 +25,7 @@ public class MontiThingsConfiguration implements Configuration {
   /**
    * Object that is should be used by the Generator to retrieve its configuration.
    */
-  public ConfigParams configParams = new ConfigParams();
+  public static final ConfigParams configParams = new ConfigParams();
 
   protected final Configuration configuration;
 

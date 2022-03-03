@@ -156,7 +156,7 @@ public class FileHelper {
   public static Set<File> getHwcClasses(File hwcPath, String fqComponentName) {
     String compName = Names.getSimpleName(fqComponentName);
     String packageName = fqComponentName.substring(0, fqComponentName.lastIndexOf(".") + 1);
-    String compFilePrefix = packageName.replace(".", Matcher.quoteReplacement(File.separator));
+    String compFilePrefix = packageName.replace(".", File.separator);
 
     String regex = Pattern.quote(compFilePrefix) + "(Deploy)?" + Pattern.quote(compName)
       + "(Impl|Input|Result|Precondition[0-9]*|Postcondition[0-9]*|Interface|State)?\\.(cpp|h)";

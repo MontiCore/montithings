@@ -56,8 +56,9 @@ public enum MontiThingsError implements montithings.util.Error {
     "Multiple port-specific behaviors exist for the set of ports '%s' in component '%s'."),
   BEHAVIOR_PORTS_USED_ALREADY("0xMT1634",
     "Port-specific behavior for ports in component '%s' which works on the ports '%s' can never be executed, "
-      +
-      "as another port-specific behavior uses a subset of these ports."),
+      + "as another port-specific behavior uses a subset of these ports."),
+  BEHAVIOR_REFERENCES_PORT_MULTIPLE_TIMES("0xMT1635", "Port-specific behavior for ports '%s'"
+    + " of component '%s' declares its use of port '%s' is used multiple times"),
 
   TOOL_PARSE_IOEXCEPTION("0xMT1902", "Could not parse the file \"%s\"."),
   TOOL_FILE_WALK_IOEXCEPTION("0xMT1903",
