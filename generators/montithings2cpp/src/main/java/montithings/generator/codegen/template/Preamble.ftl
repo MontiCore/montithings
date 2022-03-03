@@ -1,4 +1,15 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+
+<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
+<#assign GeneratorHelper = tc.instantiate("montithings.generator.helper.GeneratorHelper")>
+<#assign StatechartHelper = tc.instantiate("montithings.generator.helper.StatechartHelper")>
+<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
+<#assign PrettyPrinter = tc.instantiate("montithings._visitor.MontiThingsFullPrettyPrinter")>
+<#assign TypesHelper = tc.instantiate("montithings.generator.helper.TypesHelper")>
+<#assign TypesPrinter = tc.instantiate("montithings.generator.helper.TypesPrinter")>
+<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
+
 <#if config??>
     <#assign brokerIsMQTT = config.getMessageBroker().toString() == "MQTT">
     <#assign brokerDisabled = config.getMessageBroker().toString() == "OFF">
@@ -21,23 +32,9 @@
     <#assign needsNng = (!(targetPlatformIsDsa) && !(splittingModeDisabled) && brokerDisabled)>
 </#if>
 
-<#if tc??>
-    <#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-    <#assign GeneratorHelper = tc.instantiate("montithings.generator.helper.GeneratorHelper")>
-    <#assign StatechartHelper = tc.instantiate("montithings.generator.helper.StatechartHelper")>
-    <#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
-    <#assign Identifier = tc.instantiate("montithings.generator.codegen.util.Identifier")>
-    <#assign PrettyPrinter = tc.instantiate("montithings._visitor.MontiThingsFullPrettyPrinter")>
-    <#assign TypesHelper = tc.instantiate("montithings.generator.helper.TypesHelper")>
-    <#assign TypesPrinter = tc.instantiate("montithings.generator.helper.TypesPrinter")>
-    <#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
-</#if>
 
 <#if comp??>
     <#assign compname = comp.getName()>
-</#if>
-
-<#if tc?? && comp??>
     <#assign generics = Utils.printFormalTypeParameters(comp)>
 </#if>
 
