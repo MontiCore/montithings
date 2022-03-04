@@ -24,8 +24,8 @@ public class SymbolTableTest extends AbstractTest {
 
   protected static Stream<Arguments> validModelPathAndExpectedValuesProvider() {
     return Stream.of(
-      Arguments.of(Paths.get("cd").toString(), "cd.Example", 5),
-      Arguments.of(Paths.get("ocl").toString(), "ocl.Example", 5)
+      Arguments.of(Paths.get("cd").toString(), "cd.Example", 6),
+      Arguments.of(Paths.get("ocl").toString(), "ocl.Example", 6)
     );
   }
 
