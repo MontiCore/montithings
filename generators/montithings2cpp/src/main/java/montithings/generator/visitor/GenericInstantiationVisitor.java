@@ -13,6 +13,7 @@ import com.google.common.collect.Multimap;
 import montithings.MontiThingsMill;
 import montithings._visitor.MontiThingsTraverser;
 import montithings.generator.helper.TypesHelper;
+import montithings.util.IdentifierUtils;
 
 /**
  * Finds all type arguments with which a component type is ever instantiated in the architecture
@@ -32,7 +33,7 @@ public class GenericInstantiationVisitor
       "ASTComponentInstance node '%s' has no symbol. "
         + "Did you forget to run the SymbolTableCreator before checking cocos?", node.getName());
     final ComponentInstanceSymbol instance = node.getSymbol();
-    final ComponentTypeSymbol component = instance.getType();
+    final ComponentTypeSymbol component = IdentifierUtils.resolveComponentTypeSymbolSurrogate(instance.getType());
 
     String typeArgs = TypesHelper.getTypeArguments(instance);
 
