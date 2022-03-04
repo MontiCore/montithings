@@ -4,15 +4,21 @@ package montithings.generator.prettyprinter;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.ast.ASTNode;
+import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
+import de.monticore.types.check.TypeCheck;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.helper.ComponentHelper;
 
 import java.util.List;
 import java.util.Optional;
+
+import static montithings.util.IdentifierUtils.getPortForName;
 
 public class CppPrettyPrinterUtils {
 
@@ -44,6 +50,23 @@ public class CppPrettyPrinterUtils {
     return componentScope;
   }
 
+  protected static boolean usesSiUnit(PortSymbol port) {
+    return port.getType() instanceof SymTypeOfNumericWithSIUnit;
+  }
+
+  protected static boolean usesSiUnit(SymTypeExpression expr) {
+    return expr instanceof SymTypeOfNumericWithSIUnit;
+  }
+
+  protected static boolean assignmentUsesSiUnits(ASTAssignmentExpression node, TypeCheck tc) {
+    return usesSiUnit(tc.typeOf(node.getLeft())) && usesSiUnit(tc.typeOf(node.getRight()));
+  }
+
+  protected static boolean isPort(ASTExpression node) {
+    ASTNameExpression nameExpr = (ASTNameExpression) node;
+    return getPortForName(nameExpr).isPresent();
+  }
+
   protected static boolean isStateVariable(ASTExpression node) {
     IMontiThingsScope componentScope = getScopeOfEnclosingComponent(node);
     ComponentTypeSymbol component = (ComponentTypeSymbol) componentScope.getSpanningSymbol();
@@ -52,9 +75,6 @@ public class CppPrettyPrinterUtils {
     ASTNameExpression nameExpr = (ASTNameExpression) node;
     IMontiThingsScope scope = (IMontiThingsScope) node.getEnclosingScope();
     Optional<VariableSymbol> foundVariable = scope.resolveVariable(nameExpr.getName());
-    if (foundVariable.isPresent()) {
-      return stateVariables.contains(foundVariable.get());
-    }
-    return false;
+    return foundVariable.filter(stateVariables::contains).isPresent();
   }
 }
