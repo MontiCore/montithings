@@ -51,7 +51,7 @@ public class CppPrettyPrinterUtils {
   }
 
   protected static boolean usesSiUnit(PortSymbol port) {
-    return port.getType() instanceof SymTypeOfNumericWithSIUnit;
+    return usesSiUnit(port.getType());
   }
 
   protected static boolean usesSiUnit(SymTypeExpression expr) {
