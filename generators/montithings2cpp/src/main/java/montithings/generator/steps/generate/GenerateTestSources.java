@@ -47,7 +47,7 @@ public class GenerateTestSources extends GeneratorStep {
       /* ============================================================ */
       /* ====== Copy generated-sources to generated-test-sources ==== */
       /* ============================================================ */
-      copyGeneratedToTarget(state.getTestPath());
+      copyGeneratedToTarget(state.getTarget());
       copyTestToTarget(state.getTestPath(), state.getTarget(), comp);
       if (ComponentHelper.isApplication(comp, state.getConfig())) {
         Path target = Paths.get(
