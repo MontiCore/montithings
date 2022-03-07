@@ -25,7 +25,7 @@ ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
 #include "easyloggingpp/easylogging++.h"
 #include ${"<iostream>"}
 #include <fstream>
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   #include "MqttClient.h"
   #include "MqttPort.h"
   #include "Utils.h"
@@ -44,6 +44,6 @@ ${tc.includeArgs("template.logtracing.hooks.Include", [comp, config])}
     ${tc.includeArgs("template.result.hooks.Include", [comp])}
 </#if>
 
-<#if config.getRecordingMode().toString() == "ON">
+<#if recordingEnabled>
   #include "record-and-replay/recorder/HWCInterceptor.h"
 </#if>

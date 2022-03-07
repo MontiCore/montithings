@@ -32,7 +32,7 @@ ${tc.includeArgs("template.state.methods.restore.IsReplayTimeout", [comp, classN
 ${tc.includeArgs("template.state.methods.restore.IsReceivedState", [comp, className])}
 ${tc.includeArgs("template.state.methods.restore.IsRestoredState", [comp, className])}
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   ${tc.includeArgs("template.state.methods.restore.RequestState", [comp, className])}
   ${tc.includeArgs("template.state.methods.restore.RequestReplay", [comp, className])}
   ${tc.includeArgs("template.state.methods.restore.PublishState", [comp, className])}

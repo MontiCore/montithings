@@ -11,7 +11,7 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
     <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
         <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
         ${Identifier.getInterfaceName()}.addInPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<Message<${type}>>(instanceName
-        <#if config.getMessageBroker().toString() == "DDS">
+        <#if brokerIsDDS>
           , argc, &argv
         </#if>));
     </#if>
@@ -22,7 +22,7 @@ ${tc.includeArgs("template.component.helper.DDSInjectRecordedData", [comp, confi
     <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">
         <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
         ${Identifier.getInterfaceName()}.addOutPort${port.getName()?cap_first}(new ${Names.getSimpleName(additionalPort.get())?cap_first}<Message<${type}>>(instanceName
-        <#if config.getMessageBroker().toString() == "DDS">
+        <#if brokerIsDDS>
           , argc, &argv
         </#if>));
     </#if>

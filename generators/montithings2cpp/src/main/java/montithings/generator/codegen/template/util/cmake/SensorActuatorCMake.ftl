@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("pckg", "port", "libraryPath", "config", "test", "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign Utils = tc.instantiate("montithings.generator.codegen.util.Utils")>
+<#include "/template/Preamble.ftl">
 
 <#assign commonCodePrefix = "../">
 
@@ -9,10 +8,7 @@ cmake_minimum_required(VERSION 3.8.2)
 project("${pckg}.${port}")
 set(CMAKE_CXX_STANDARD 11)
 
-<#if config.getSplittingMode().toString() != "OFF"
-  && config.getTargetPlatform().toString() != "DSA_VCG"
-  && config.getTargetPlatform().toString() != "DSA_LAB"
-  && config.getMessageBroker().toString() == "DDS">
+<#if needsDDS>
   # DDS specificcd
   find_package(OpenDDS REQUIRED)
 
@@ -31,13 +27,12 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS_DEBUG "${r"${CMAKE_CXX_FLAGS_DEBUG}"} -gdwarf-3")
 set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
 
-<#if config.getTargetPlatform().toString() == "DSA_VCG"
-|| config.getTargetPlatform().toString() == "DSA_LAB">
+<#if targetPlatformIsDsa>
   ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
 </#if>
-<#if config.getTargetPlatform().toString() == "RASPBERRY">
+<#if targetPlatformIsRaspberry>
   ${tc.includeArgs("template.util.cmake.platform.raspberrypi.Parameters", [config, commonCodePrefix])}
-  <#if config.getSplittingMode().toString() == "OFF">
+  <#if splittingModeDisabled>
     add_subdirectory(lib/lib/raspberrypi)
   </#if>
 </#if>
@@ -51,10 +46,6 @@ include(${r"${CMAKE_BINARY_DIR}"}/conanbuildinfo.cmake)
 conan_basic_setup()
 endif()
 
-<#assign needsNng = config.getTargetPlatform().toString() != "DSA_VCG"
-&& config.getTargetPlatform().toString() != "DSA_LAB"
-&& config.getSplittingMode().toString() != "OFF"
-&& config.getMessageBroker().toString() == "OFF">
 <#if needsNng>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   find_package(nng 1.3.0 CONFIG REQUIRED)
@@ -90,7 +81,7 @@ file(GLOB_RECURSE ${pckg?upper_case}_SOURCES "*.cpp" "*.h")
 list(FILTER ${pckg?upper_case}_SOURCES EXCLUDE REGEX "Deploy.*")
 include_directories(".")
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   # Include Mosquitto Library
   if(APPLE)
@@ -106,14 +97,14 @@ else()
   endif()
 </#if>
 
-<#if test || config.getSplittingMode().toString() == "OFF">
-  <#if config.getMessageBroker().toString() != "DDS">
+<#if test || splittingModeDisabled>
+  <#if !(brokerIsDDS)>
     set(EXCLUDE_DDS 1)
   </#if>
-  <#if config.getMessageBroker().toString() != "MQTT">
+  <#if !(brokerIsMQTT)>
     set(EXCLUDE_MQTT 1)
   </#if>
-  <#if !(config.getMessageBroker().toString() == "OFF" && config.getSplittingMode().toString() != "OFF")>
+  <#if !(brokerDisabled && !(splittingModeDisabled))>
     set(EXCLUDE_COMM_MANAGER 1)
   </#if>
 </#if>
@@ -135,17 +126,16 @@ install(TARGETS ${pckg}_${port}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 <#if !test>
   add_executable(${pckg}.${port} Deploy${port}.cpp)
   target_link_libraries(${pckg}.${port} ${pckg}_${port}Lib)
-  <#if config.getTargetPlatform().toString() == "DSA_VCG"
-  || config.getTargetPlatform().toString() == "DSA_LAB">
+  <#if targetPlatformIsDsa>
       ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [pckg+"."+port])}
-  <#elseif config.getTargetPlatform().toString() == "RASPBERRY">
+  <#elseif targetPlatformIsRaspberry>
       ${tc.includeArgs("template.util.cmake.platform.raspberrypi.LinkLibraries", [pckg+"."+port])}
   <#else>
-    <#if config.getMessageBroker().toString() == "MQTT">
+    <#if brokerIsMQTT>
       if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
       target_link_libraries(${pckg}.${port} ${r"${MOSQUITTO_LIB}"})
       endif()
-    <#elseif config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "DDS">
+    <#elseif !(splittingModeDisabled) && brokerIsDDS>
       target_link_libraries(${pckg}.${port} "${r"${opendds_libs}"}")
     </#if>
     <#if needsNng>

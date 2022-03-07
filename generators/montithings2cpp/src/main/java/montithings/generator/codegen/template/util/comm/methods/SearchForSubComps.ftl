@@ -17,7 +17,7 @@ ${className}::searchSubcomponents ()
       // ${subcomponentSymbol.getName()} ${subcomponent.getName()}
       ${tc.includeArgs("template.util.comm.helper.SCDetailsHelper", [comp, subcomponent])}
 
-      <#if config.getSplittingMode().toString() == "LOCAL">
+      <#if splittingModeIsLocal>
         std::ifstream i (this->portConfigFilePath);
         json j;
         i >> j;

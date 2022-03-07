@@ -24,8 +24,8 @@ import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.IMontiThingsScope;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
-import montithings.generator.codegen.ConfigParams;
 import montithings.generator.codegen.util.Utils;
+import montithings.generator.config.ConfigParams;
 import montithings.util.ClassDiagramUtil;
 
 import javax.measure.unit.Unit;
@@ -115,7 +115,7 @@ public class TypesHelper {
    * @return True if the given port uses a type from a class diagram, false otherwise
    */
   public static boolean portUsesCdType(PortSymbol portSymbol) {
-    return portSymbol.getTypeInfo() instanceof OOTypeSymbol;
+    return portSymbol.getTypeInfo() instanceof OOTypeSymbol && !isJavaType(portSymbol.getType().print());
   }
 
   //============================================================================

@@ -20,7 +20,7 @@ ${ComponentHelper.printPackageNamespaceForComponent(comp)}${comp.getName()}* com
 ManagementCommunication* comm;
 std::string managementPort;
 std::string communicationPort;
-<#if config.getSplittingMode().toString() == "LOCAL">
+<#if splittingModeIsLocal>
   std::string portConfigFilePath;
 </#if>
 

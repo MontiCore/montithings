@@ -2,22 +2,22 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getLogTracing().toString() == "ON">
+<#if logTracingEnabled>
 ${Utils.printTemplateArguments(comp)}
 void ${hostclassName}${Utils.printFormalTypeParameters(comp)}::initLogTracer(
-  <#if config.getMessageBroker().toString() == "DDS">
+  <#if brokerIsDDS>
     DDSClient &ddsClient
   </#if>
 ){
 
-  <#if !(comp.getPorts()?size == 0)>
+  <#if ComponentHelper.componentHasPorts(comp)>
     logTraceObserver = new ${comp.name}LogTraceObserver(this);
   </#if>
 
-  <#if config.getMessageBroker().toString() == "DDS">
+  <#if brokerIsDDS>
     logTracerInterface = new LogTracerDDSClient(ddsClient,
       instanceName, false, true, true, false);
-    <#elseif config.getMessageBroker().toString() == "MQTT">
+    <#elseif brokerIsMQTT>
       logTracerInterface = new LogTracerMQTTClient(instanceName, false);
   </#if>
 

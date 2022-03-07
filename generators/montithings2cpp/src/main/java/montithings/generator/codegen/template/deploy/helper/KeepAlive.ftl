@@ -4,7 +4,7 @@ ${tc.signature("comp", "config")}
 
 LOG(DEBUG) << "Started.";
 
-<#if ComponentHelper.isTimesync(comp) || (config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF")>
+<#if ComponentHelper.isTimesync(comp) || (!(splittingModeDisabled) && brokerDisabled)>
   while (true)
   {
   auto end = std::chrono::high_resolution_clock::now()
@@ -17,11 +17,11 @@ LOG(DEBUG) << "Started.";
   }
 <#else>
   cmp.threadJoin();
-  <#if config.getMessageBroker().toString() == "MQTT">
+  <#if brokerIsMQTT>
       mqttClientInstance->wait();
   </#if>
 
-  <#if config.getMessageBroker().toString() == "DDS">
+  <#if brokerIsDDS>
       while(true) {
           std::this_thread::yield();
           std::this_thread::sleep_for(std::chrono::seconds(1));

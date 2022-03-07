@@ -4,7 +4,10 @@ package generation;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
 import montithings.generator.MontiThingsGeneratorTool;
-import montithings.generator.codegen.ConfigParams;
+import montithings.generator.config.ConfigParams;
+import montithings.generator.config.MessageBroker;
+import montithings.generator.config.SplittingMode;
+import montithings.generator.config.TargetPlatform;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.experimental.theories.DataPoints;
@@ -42,32 +45,32 @@ public class SimpleGenerationTest {
   }
 
   @DataPoints("targetPlatforms")
-  public static ConfigParams.TargetPlatform[] targetPlatforms = {
-    ConfigParams.TargetPlatform.GENERIC,
-    ConfigParams.TargetPlatform.DSA_VCG,
-    ConfigParams.TargetPlatform.DSA_LAB,
-    ConfigParams.TargetPlatform.ARDUINO
+  public static TargetPlatform[] targetPlatforms = {
+    TargetPlatform.GENERIC,
+    TargetPlatform.DSA_VCG,
+    TargetPlatform.DSA_LAB,
+    TargetPlatform.ARDUINO
   };
 
   @DataPoints("splittingModes")
-  public static ConfigParams.SplittingMode[] splittingModes = {
-    ConfigParams.SplittingMode.OFF,
-    ConfigParams.SplittingMode.LOCAL,
-    ConfigParams.SplittingMode.DISTRIBUTED
+  public static SplittingMode[] splittingModes = {
+    SplittingMode.OFF,
+    SplittingMode.LOCAL,
+    SplittingMode.DISTRIBUTED
   };
 
   @DataPoints("messageBroker")
-  public static ConfigParams.MessageBroker[] messageBrokers = {
-    ConfigParams.MessageBroker.OFF,
-    ConfigParams.MessageBroker.MQTT,
-    ConfigParams.MessageBroker.DDS
+  public static MessageBroker[] messageBrokers = {
+    MessageBroker.OFF,
+    MessageBroker.MQTT,
+    MessageBroker.DDS
   };
 
   @Theory
   public void generatorDoesNotCrash(
-    @FromDataPoints("targetPlatforms") ConfigParams.TargetPlatform targetPlatform,
-    @FromDataPoints("splittingModes") ConfigParams.SplittingMode splittingMode,
-    @FromDataPoints("messageBroker") ConfigParams.MessageBroker messageBroker
+    @FromDataPoints("targetPlatforms") TargetPlatform targetPlatform,
+    @FromDataPoints("splittingModes") SplittingMode splittingMode,
+    @FromDataPoints("messageBroker") MessageBroker messageBroker
   ) throws IOException {
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
     Log.info("Target: " + targetPlatform.toString() + ", " +

@@ -18,7 +18,7 @@ LOG(DEBUG) << "Component instance '"
            << "' could not restore state from local file.";
 }
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   // 2. Option restore state and replay messages since state
   ${Identifier.getStateName()}.requestState ();
   auto requestStateTimeout = std::chrono::high_resolution_clock::now () + std::chrono::seconds (1);

@@ -10,9 +10,11 @@ import de.monticore.io.paths.ModelPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeExpressionFactory;
+import de.monticore.types.check.SymTypeOfGenerics;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -84,7 +86,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     return this.deSer;
   }
 
-  protected MontiThingsCoCoChecker getChecker() {
+  public MontiThingsCoCoChecker getChecker() {
     return this.checker;
   }
 
@@ -100,7 +102,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     this.trafos.add(trafo);
   }
 
-  protected String getMTFileExtension() {
+  public String getMTFileExtension() {
     return MT_FILE_EXTENSION;
   }
 
@@ -280,6 +282,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     mtScope.setModelPath(modelPath);
     mtScope.setFileExt(this.getMTFileExtension());
     this.addBasicTypes();
+    this.addCollectionTypes();
     addAllLibraryFunctions(mtScope);
     return mtScope;
   }
@@ -314,6 +317,39 @@ public class MontiThingsTool implements IMontiThingsTool {
       .setSpannedScope(MontiThingsMill.scope())
       .build());
   }
+
+  public void addCollectionTypes() {
+    IMontiThingsArtifactScope artifactScope = MontiThingsMill.artifactScope();
+    artifactScope.setEnclosingScope(MontiThingsMill.globalScope());
+    artifactScope.setName("java.util");
+
+    TypeVarSymbol typeVarSymbol = MontiThingsMill.typeVarSymbolBuilder().setName("X").build();
+
+    TypeSymbol collectionType = createCollectionType("Collection", artifactScope, Optional.empty(), typeVarSymbol);
+    add2Scope(artifactScope, collectionType);
+
+    TypeSymbol listType = createCollectionType("List", artifactScope, Optional.of(collectionType), typeVarSymbol);
+    add2Scope(artifactScope, listType);
+
+    TypeSymbol setType = createCollectionType("Set", artifactScope, Optional.of(collectionType), typeVarSymbol);
+    add2Scope(artifactScope, setType);
+  }
+
+  private TypeSymbol createCollectionType(String name, IMontiThingsArtifactScope enclosingScope, Optional<TypeSymbol> collectionType, TypeVarSymbol typeVarSymbol) {
+    TypeSymbol type = MontiThingsMill.typeSymbolBuilder()
+      .setName(name)
+      .setEnclosingScope(enclosingScope)
+      .setSpannedScope(MontiThingsMill.scope())
+      .build();
+    if (collectionType.isPresent()) {
+      type.addSuperTypes(SymTypeExpressionFactory.createTypeObject(collectionType.get()));
+    }
+    type.getSpannedScope().setName(name);
+    type.addTypeVarSymbol(typeVarSymbol);
+    return type;
+  }
+
+
 
   protected void add2Scope(@NotNull IBasicSymbolsScope scope, @NotNull TypeSymbol... symbols) {
     Preconditions.checkNotNull(scope);

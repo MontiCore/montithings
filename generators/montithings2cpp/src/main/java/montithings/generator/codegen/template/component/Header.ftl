@@ -12,7 +12,7 @@ ${Utils.printNamespaceStart(comp)}
 
 ${Utils.printTemplateArguments(comp)}
 class ${className} : public IComponent
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   , public MqttUser
 </#if>
 <#if comp.isPresentParentComponent()>
@@ -32,7 +32,7 @@ ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, con
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
 ${tc.includeArgs("template.component.declarations.DDS", [config])}
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
   json sensorActuatorTypes;
@@ -58,7 +58,7 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 </#if>
 
 <#if comp.isDecomposed()>
-  <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
+  <#if needsRunMethod>
     void run();
   </#if>
   ${tc.includeArgs("template.component.helper.SubcompIncludes", [comp, config])}
@@ -72,14 +72,14 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 
 public:
 ${className}(std::string instanceName
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   , MqttClient* passedMqttClientInstance
   , MqttClient* passedMqttClientLocalInstance
 </#if>
 <#if comp.getParameters()?has_content>,</#if>
 ${TypesPrinter.printConstructorArguments(comp)});
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
   void publishConnectors();
   void publishConfigForSubcomponent (std::string instanceName);
@@ -87,16 +87,16 @@ ${TypesPrinter.printConstructorArguments(comp)});
   MqttClient *getMqttClientInstance () const;
 </#if>
 
-<#if config.getMessageBroker().toString() == "DDS">
+<#if brokerIsDDS>
   // sensor actuator ports require cmd args in order to set up their DDS clients
   void setDDSCmdArgs (int argc, char *argv[]);
 </#if>
 
 <#if comp.isDecomposed()>
-  <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
+  <#if !(splittingModeDisabled) && brokerDisabled>
     ${tc.includeArgs("template.component.helper.SubcompMethodDeclarations", [comp, config])}
   </#if>
-  <#if config.getSplittingMode().toString() == "OFF">
+  <#if splittingModeDisabled>
     <#list comp.getSubComponents() as subcomponent>
       <#if Utils.getGenericParameters(comp)?seq_contains(subcomponent.getGenericType().getName())>
         <#assign type = subcomponent.getGenericType().getName()>
@@ -109,7 +109,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   </#if>
 </#if>
 
-<#if !(comp.getPorts()?size == 0)>
+<#if ComponentHelper.componentHasPorts(comp)>
   ${tc.includeArgs("template.interface.hooks.MethodDeclaration", [comp])}
 </#if>
 

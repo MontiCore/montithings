@@ -16,6 +16,8 @@ public class SynthesizeSymTypeFromMontiThings
 
   private SynthesizeSymTypeFromMCSimpleGenericTypes symTypeFromMCSimpleGenericTypes;
 
+  private SynthesizeSymTypeFromMCCollectionTypes symTypeFromMCCollectionTypes;
+
   private SynthesizeSymTypeFromSIUnitTypes4Math symTypeFromSIUnitTypes4Math;
 
   private SynthesizeSymTypeFromSIUnitTypes4Computing symTypeFromSIUnitTypes4Computing;
@@ -25,6 +27,7 @@ public class SynthesizeSymTypeFromMontiThings
 
     symTypeFromMCBasicTypes = new SynthesizeSymTypeFromMCBasicTypes();
     symTypeFromMCSimpleGenericTypes = new SynthesizeSymTypeFromMCSimpleGenericTypes();
+    symTypeFromMCCollectionTypes = new SynthesizeSymTypeFromMCCollectionTypes();
     symTypeFromSIUnitTypes4Math = new SynthesizeSymTypeFromSIUnitTypes4Math();
     symTypeFromSIUnitTypes4Computing = new SynthesizeSymTypeFromSIUnitTypes4Computing();
 
@@ -34,6 +37,8 @@ public class SynthesizeSymTypeFromMontiThings
     traverser.add4MCBasicTypes(symTypeFromMCBasicTypes);
     traverser.setMCSimpleGenericTypesHandler(symTypeFromMCSimpleGenericTypes);
     traverser.add4MCSimpleGenericTypes(symTypeFromMCSimpleGenericTypes);
+    traverser.setMCCollectionTypesHandler(symTypeFromMCCollectionTypes);
+    traverser.add4MCCollectionTypes(symTypeFromMCCollectionTypes);
     traverser.setSIUnitTypes4MathHandler(symTypeFromSIUnitTypes4Math);
     traverser.setSIUnitTypes4ComputingHandler(symTypeFromSIUnitTypes4Computing);
     setTypeCheckResult(typeCheckResult);
@@ -66,6 +71,7 @@ public class SynthesizeSymTypeFromMontiThings
     this.typeCheckResult = typeCheckResult;
     this.symTypeFromMCBasicTypes.setTypeCheckResult(typeCheckResult);
     this.symTypeFromMCSimpleGenericTypes.setTypeCheckResult(typeCheckResult);
+    this.symTypeFromMCCollectionTypes.setTypeCheckResult(typeCheckResult);
     this.symTypeFromSIUnitTypes4Math.setTypeCheckResult(typeCheckResult);
     this.symTypeFromSIUnitTypes4Computing.setTypeCheckResult(typeCheckResult);
   }

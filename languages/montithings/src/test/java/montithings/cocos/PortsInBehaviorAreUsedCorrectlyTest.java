@@ -10,7 +10,12 @@ import java.util.stream.Stream;
 class PortsInBehaviorAreUsedCorrectlyTest extends AbstractCoCoTest {
   protected static MontiThingsCoCoChecker getChecker() {
     MontiThingsCoCoChecker cocos = new MontiThingsCoCoChecker();
-    cocos.addCoCo(new PortsInBehaviorAreUsedCorrectly());
+    cocos.addCoCo(new BehaviorDeclaresAllPortsItUses());
+    cocos.addCoCo(new BehaviorDeclaresOnlyIncomingPorts());
+    cocos.addCoCo(new BehaviorsAreNotSubsetOfEachOther());
+    cocos.addCoCo(new BehaviorsDoNotDeclarePortUsageTwice());
+    cocos.addCoCo(new BehaviorsDoNotUseTheSamePorts());
+    cocos.addCoCo(new BehaviorsLeaveNoIncomingPortsUnused());
     return cocos;
   }
 

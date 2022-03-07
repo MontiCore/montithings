@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getLogTracing().toString() == "ON" && !(comp.getPorts()?size == 0)>
+<#if logTracingEnabled && ComponentHelper.componentHasPorts(comp)>
   <#list comp.getPorts() as port>
     <#assign additionalPort = GeneratorHelper.getPortHwcTemplateName(port, config)>
     <#if config.getTemplatedPorts()?seq_contains(port) && additionalPort!="Optional.empty">

@@ -3,22 +3,22 @@ ${tc.signature("comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
 <#if comp.isDecomposed()>
-  <#if config.getSplittingMode().toString() != "OFF" && config.getMessageBroker().toString() == "OFF">
+  <#if !(splittingModeDisabled) && brokerDisabled>
     ${tc.includeArgs("template.component.helper.SubcompMethodDefinitions", [comp, config])}
   </#if>
 
-  <#if ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config)>
+  <#if needsRunMethod>
     ${tc.includeArgs("template.component.methods.Run", [comp, config, className])}
   </#if>
   ${tc.includeArgs("template.component.methods.ComputeDecomposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.StartDecomposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupComposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
-  <#if config.getMessageBroker().toString() == "MQTT">
+  <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
   </#if>
 
-  <#if config.getSplittingMode().toString() == "OFF">
+  <#if splittingModeDisabled>
     <#list comp.getSubComponents() as subcomponent>
       ${tc.includeArgs("template.component.methods.GetSubcomp", [comp, className, subcomponent, config])}
     </#list>
@@ -33,14 +33,14 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.Run", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupAtomic", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitAtomic", [comp, config, className])}
-  <#if config.getMessageBroker().toString() == "MQTT">
+  <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
   </#if>  ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
 </#if>
 
-<#if !(comp.getPorts()?size == 0)>
+<#if ComponentHelper.componentHasPorts(comp)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}
 </#if>
 
@@ -59,14 +59,14 @@ ${tc.includeArgs("template.component.methods.ShouldComputePortSpecificBehavior",
 
 ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   ${tc.includeArgs("template.component.methods.PublishConfigForSubcomponent", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.PublishConnectors", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.OnMessage", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetMqttClientInstance", [comp, config, className])}
 </#if>
 
-<#if config.getMessageBroker().toString() == "DDS">
+<#if brokerIsDDS>
   ${tc.includeArgs("template.component.methods.SetDDSCmdArgs", [comp, config, className])}
 </#if>
 

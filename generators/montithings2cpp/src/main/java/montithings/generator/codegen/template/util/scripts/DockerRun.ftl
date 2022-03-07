@@ -28,21 +28,21 @@ case "${r"${os}"}" in
     *)          echo "unknown os!" && exit 1
 esac
 
-<#if config.getMessageBroker().toString() == "DDS" && config.getSplittingMode().toString() == "DISTRIBUTED">
+<#if brokerIsDDS && splittingModeIsDistributed>
   # Start DCPSInfoRepo
   CONTAINER=$(docker run --name dcpsinforepo -h dcpsinforepo --rm -d --net montithings registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo)
   echo docker stop $CONTAINER >> "$SCRIPTPATH"/dockerStop.sh
   echo docker kill $CONTAINER >> "$SCRIPTPATH"/dockerKill.sh
 </#if>
 
-<#if config.getSplittingMode().toString() == "OFF">
+<#if splittingModeDisabled>
     ${tc.includeArgs("template.util.scripts.DockerRunCommand", [comp.getFullName(), comp.getFullName()?lower_case, config])}
 <#else>
   <#list instances as pair >
       ${tc.includeArgs("template.util.scripts.DockerRunCommand", [pair.getKey().fullName, pair.getValue(), config])}
   </#list>
 </#if>
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
     <#list sensorActuatorPorts as port >
         ${tc.includeArgs("template.util.scripts.DockerRunCommandSensorActuatorPorts", [port, port?lower_case, config])}
     </#list>

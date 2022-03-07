@@ -12,14 +12,14 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 </#if>
 
 
-<#if config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp,config)>
+<#if splittingModeDisabled || ComponentHelper.shouldIncludeSubcomponents(comp,config)>
   <#list comp.getSubComponents() as subcomponent >
     ${subcomponent.getName()}.setUp(enclosingComponentTiming);
   </#list>
 
   <#list comp.getAstNode().getConnectors() as connector>
     <#list connector.getTargetList() as target>
-      <#if !ComponentHelper.isIncomingPort(comp, target) && (config.getMessageBroker().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp,config))>
+      <#if !ComponentHelper.isIncomingPort(comp, target) && (brokerDisabled || ComponentHelper.shouldIncludeSubcomponents(comp,config))>
         // implements "${connector.getSource().getQName()} -> ${target.getQName()}"
         ${Utils.printGetPort(target)}->setDataProvidingPort (${Utils.printGetPort(connector.getSource())});
       </#if>
@@ -27,7 +27,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   </#list>
 </#if>
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   std::ifstream file_input("/.montithings/deployment-config.json");
   if(!file_input.good()){
     file_input.close();
@@ -52,7 +52,7 @@ ${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, classNam
   this->restoreState ();
 </#if>
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   this->publishConnectors();
 
   mqttClientInstance->publish (replaceDotsBySlashes ("/components"),

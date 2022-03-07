@@ -27,7 +27,7 @@ bool ${className}${Utils.printFormalTypeParameters(comp)}::shouldCompute() {
     )
     { return true; }
 </#if>
-<#if comp.getAllIncomingPorts()?size == 0>
+<#if !ComponentHelper.componentHasIncomingPorts(comp)>
     return true;
 <#else>
     return false;

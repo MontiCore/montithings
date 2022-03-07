@@ -4,7 +4,7 @@ ${tc.signature("comp", "config", "className")}
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 
 <#if !isBatch>
-  <#if !(comp.getAllIncomingPorts()?size == 0)>
+  <#if ComponentHelper.componentHasIncomingPorts(comp)>
     ${tc.includeArgs("template.input.methods.Constructor", [comp, config, existsHWC])}
   </#if>
 </#if>

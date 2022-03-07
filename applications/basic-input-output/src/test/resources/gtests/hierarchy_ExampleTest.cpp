@@ -61,9 +61,9 @@ TEST_F (ExampleTest, SourceTEST)
 {
   montithings::hierarchy::SourceResult result = {};
 
-  for (int i = 0; i < 33; i++)
+  for (int i = 1; i < 33; i++)
     {
-      result = sourceImpl->compute__Every1 (montithings::hierarchy::SourceInput ());
+      result = sourceImpl->compute__Every0 (montithings::hierarchy::SourceInput ());
       ASSERT_TRUE (result.getValue ().has_value ());
       EXPECT_EQ (result.getValue ().value (), i);
     }
@@ -104,7 +104,7 @@ public:
   onEvent () override
   {
     tl::optional<int> value
-        = component->getInterface ()->getPortValue ()->getCurrentValue (this->getUuid ());
+        = component->getInterface ()->getPortValue ()->getCurrentValue (this->getUuid ())->getPayload();
     recordedMessages.push_back (value);
   }
 };
@@ -121,7 +121,7 @@ public:
   onEvent () override
   {
     tl::optional<int> value
-        = component->getInterface ()->getPortValue ()->getCurrentValue (this->getUuid ());
+        = component->getInterface ()->getPortValue ()->getCurrentValue (this->getUuid ())->getPayload();
     recordedMessages.push_back (value);
   }
 };
@@ -136,14 +136,14 @@ TEST_F (ExampleTest, SourcePort)
   // When
   for (int i = 0; i < 33; i++)
     {
-      sourceImpl->compute__Every1 (montithings::hierarchy::SourceInput ());
+      sourceImpl->compute__Every0 (montithings::hierarchy::SourceInput ());
     }
 
   // Then
   for (int i = 0; i < 33; i++)
     {
       ASSERT_TRUE (portSpyExampleSourceValue.getRecordedMessages ().at (i).has_value ());
-      EXPECT_EQ (portSpyExampleSourceValue.getRecordedMessages ().at (i).value (), i);
+      EXPECT_EQ (portSpyExampleSourceValue.getRecordedMessages ().at (i).value (), i+1);
     }
 }
 
@@ -162,15 +162,15 @@ TEST_F (ExampleTest, Wiring)
   cmp->init();
   for (int i = 0; i < 33; i++)
   {
-    source->compute__Every1 ();
+    source->compute__Every0 ();
   }
 
   // Then
   for (int i = 0; i < 2; i++)
   {
     ASSERT_TRUE (portSpyExampleSourceValue.getRecordedMessages ().at (i).has_value ());
-    EXPECT_EQ (portSpyExampleSourceValue.getRecordedMessages ().at (i).value (), i);
+    EXPECT_EQ (portSpyExampleSourceValue.getRecordedMessages ().at (i).value (), i+1);
     ASSERT_TRUE (portSpySinkValue.getRecordedMessages ().at (i).has_value ());
-    EXPECT_EQ (portSpySinkValue.getRecordedMessages ().at (i).value (), i);
+    EXPECT_EQ (portSpySinkValue.getRecordedMessages ().at (i).value (), i+1);
   }
 }

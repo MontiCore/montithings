@@ -17,7 +17,7 @@ ${Utils.printIncludes(comp,config)}
 
 using namespace montithings::library;
 
-<#if config.getReplayMode().toString() == "ON">
+<#if replayEnabled>
   #include "record-and-replay/mtlibrary-extension/MTReplayLibrary.h"
 
   using namespace montithings::library::replayer;

@@ -8,7 +8,7 @@
 ${tc.signature("comp", "config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-<#if config.getReplayMode().toString() == "ON" && !ComponentHelper.isFlaggedAsGenerated(comp)>
+<#if replayEnabled && !ComponentHelper.isFlaggedAsGenerated(comp)>
 {
     // Fill system call replayer with recorded data
     std::ifstream ifstreamRecordings("recordings.json");

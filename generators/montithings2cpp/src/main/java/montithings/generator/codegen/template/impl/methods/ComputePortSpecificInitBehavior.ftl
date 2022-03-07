@@ -1,7 +1,6 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("behavior", "comp", "config", "existsHWC")}
 <#include "/template/impl/helper/GeneralPreamble.ftl">
-<#assign isLogTracingEnabled = config.getLogTracing().toString() == "ON">
 
 ${Utils.printTemplateArguments(comp)}
 ${compname}Result${generics}
@@ -11,7 +10,7 @@ ${className}${generics}::init${ComponentHelper.getPortSpecificInitBehaviorName(c
 ${compname}Result${generics} ${Identifier.getResultName()};
 ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [comp, config])}
-${ComponentHelper.printJavaBlock(behavior.getMCJavaBlock(), isLogTracingEnabled)}
+${ComponentHelper.printJavaBlock(behavior.getMCJavaBlock(), logTracingEnabled)}
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementEnd", [comp, config])}
 <#list ComponentHelper.getPublishedPorts(comp, behavior.getMCJavaBlock()) as port>
     ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);

@@ -2,7 +2,7 @@
 ${tc.signature("comp", "config", "hostclassName")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getLogTracing().toString() == "ON">
+<#if logTracingEnabled>
     ${Utils.printTemplateArguments(comp)}
     LogTracer* ${hostclassName}${Utils.printFormalTypeParameters(comp)}::getLogTracer(){
         return logTracer;

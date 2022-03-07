@@ -1,9 +1,7 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config", "portSymbol", "portTemplateName", "everyTagOpt" "existsHWC")}
-<#assign ComponentHelper = tc.instantiate("montithings.generator.helper.ComponentHelper")>
-<#assign TypesPrinter = tc.instantiate("montithings.generator.helper.TypesPrinter")>
-<#assign Names = tc.instantiate("de.se_rwth.commons.Names")>
 <#include "/template/Copyright.ftl">
+<#include "/template/Preamble.ftl">
 #pragma once
 #include "easyloggingpp/easylogging++.h"
 #include "tl/optional.hpp"
@@ -77,7 +75,7 @@ protected:
   }
 
   void setNextValue(T nextVal) override {
-    <#if config.getRecordingMode().toString() == "ON" && portSymbol.isIncoming()>
+    <#if recordingEnabled && portSymbol.isIncoming()>
         recordMessage(nextVal);
     </#if>
 
@@ -94,7 +92,7 @@ protected:
 
   ${tc.includeArgs("template.util.ports.methods.DDSRecorderRecord", [config, portSymbol])}
 
-  <#if config.getMessageBroker().toString() == "DDS">
+  <#if brokerIsDDS>
     ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName, int argc, char *argv[]) : instanceName(instanceName)
   <#else>
     ${Names.getSimpleName(portTemplateName)?cap_first} (std::string instanceName) : instanceName(instanceName)

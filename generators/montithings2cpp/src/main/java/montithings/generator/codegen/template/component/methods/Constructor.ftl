@@ -1,12 +1,12 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
-<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (config.getSplittingMode().toString() == "OFF" || ComponentHelper.shouldIncludeSubcomponents(comp, config))>
+<#assign shouldPrintSubcomponents = comp.subComponents?has_content && (splittingModeDisabled || ComponentHelper.shouldIncludeSubcomponents(comp, config))>
 
 ${Utils.printTemplateArguments(comp)}
 ${className}${Utils.printFormalTypeParameters(comp)}::${className}
 (std::string instanceName
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
   , MqttClient* passedMqttClientInstance
   , MqttClient* passedMqttClientLocalInstance
 </#if>
@@ -38,7 +38,7 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
 {
 this->instanceName = instanceName;
 
-<#if config.getMessageBroker().toString() == "MQTT">
+<#if brokerIsMQTT>
 mqttClientInstance = passedMqttClientInstance;
 mqttClientLocalInstance = passedMqttClientLocalInstance;
 </#if>
@@ -48,7 +48,7 @@ mqttClientLocalInstance = passedMqttClientLocalInstance;
 </#list>
 <#if comp.isAtomic()>
   this->${Identifier.getStateName()}.setInstanceName (instanceName);
-  this->${Identifier.getStateName()}.setup (<#if config.getMessageBroker().toString() == "MQTT">mqttClientInstance</#if>);
+  this->${Identifier.getStateName()}.setup (<#if brokerIsMQTT>mqttClientInstance</#if>);
   ${tc.includeArgs("template.prepostconditions.hooks.Constructor", [comp])}
   state__at__pre = ${Identifier.getStateName()};
 </#if>

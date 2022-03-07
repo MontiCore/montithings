@@ -2,6 +2,6 @@
 ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
-<#if config.getLogTracing().toString() == "ON">
+<#if logTracingEnabled>
 LogTracer* getLogTracer();
 </#if>

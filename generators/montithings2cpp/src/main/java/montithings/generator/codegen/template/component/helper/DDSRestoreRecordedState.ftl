@@ -6,7 +6,7 @@
 ${tc.signature("comp", "config")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-<#if config.getReplayMode().toString() == "ON" && !ComponentHelper.isFlaggedAsGenerated(comp)>
+<#if replayEnabled && !ComponentHelper.isFlaggedAsGenerated(comp)>
 {
     // Restore internal state
     std::ifstream ifstreamRecordings("recordings.json");
