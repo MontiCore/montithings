@@ -28,6 +28,8 @@ include(':cli')
 include(':services:iot-manager')
 include(':services:prolog-generator')
 include(':services:prolog-generator:server')
+//include(':tools')
+//include(':tools:sd4componenttesting')
 
 project(':languages:montithings').projectDir = file('languages/montithings')
 //project(':languages:bindings').projectDir = file('languages/bindings')

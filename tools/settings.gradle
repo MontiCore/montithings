@@ -1,11 +1,15 @@
+/* (c) https://github.com/MontiCore/monticore */
+
 pluginManagement {
     repositories {
         maven {
-            url "https://nexus.se.rwth-aachen.de/content/groups/public"
+            credentials.username mavenUser
+            credentials.password mavenPassword
+            url repo
         }
         gradlePluginPortal()
-        mavenLocal()
     }
 }
 include 'montithings-language-server'
 include 'montithings-vscode-plugin'
+include 'sd4componenttesting'

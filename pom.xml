@@ -17,6 +17,7 @@
 		<module>languages</module>
 		<module>services</module>
 		<module>cli</module>
+		<module>tools</module>
 	</modules>
 
 	<!-- == PROJECT PROPERTIES ============================================== -->
