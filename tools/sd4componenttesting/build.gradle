@@ -2,8 +2,10 @@
 
 plugins {
     id 'java'
+    id 'application'
     id 'maven-publish'
     id 'monticore' version "$monticore_version"
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
 }
 
 def grammarDir = "$projectDir/src/main/grammars"
@@ -91,6 +93,7 @@ version = '7.0.0-SNAPSHOT'
 description = 'sd4componenttesting'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
+
 java {
     withSourcesJar()
 }
@@ -101,6 +104,18 @@ publishing {
             from(components.java)
         }
     }
+}
+
+// all in one tool-jar
+mainClassName = 'de.monticore.lang.sd4componenttesting.SD4ComponentTestingCLI'
+shadowJar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+    archiveBaseName.set('sd4componenttesting')
+    archiveVersion.set('7.0.0')
+    archiveClassifier = "SNAPSHOT"
+    minimize()
 }
 
 task generateGrammarBindings(type: MCTask) {
