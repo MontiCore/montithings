@@ -70,6 +70,9 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   </#list>
 </#if>
 
+// if set to true, loop-threads will stop after their current iteration
+bool stopSignalReceived;
+
 public:
 ${className}(std::string instanceName
 <#if brokerIsMQTT>
@@ -131,6 +134,7 @@ bool shouldCompute();
   bool initialized${ComponentHelper.getPortSpecificInitBehaviorName(comp, initBehavior)} = false;
 </#list>
 void start() override;
+void stop();
 void onEvent () override;
 <#if ComponentHelper.retainState(comp)>
   bool restoreState ();
