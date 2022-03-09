@@ -63,29 +63,23 @@ dependencies {
     implementation 'commons-cli:commons-cli:1.4'
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'org.slf4j:slf4j-simple:1.7.30'
-    implementation 'de.se_rwth.commons:se-commons-logging:1.7.9'
-    implementation 'com.google.guava:guava:25.1-jre'
-    implementation 'org.antlr:antlr4:4.7.1'
-    implementation 'de.monticore:monticore-runtime:7.0.0'
-    implementation 'de.monticore:monticore-grammar:7.0.0'
-    implementation 'de.monticore:monticore-grammar:7.0.0'
-    implementation 'de.monticore:siunits:7.0.0'
-    implementation 'de.monticore:siunits:7.0.0'
+    implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "org.antlr:antlr4:$antlr_version"
+    implementation "de.monticore:monticore-runtime:$monticore_version"
+    implementation "de.monticore:monticore-grammar:$monticore_version"
+    implementation "de.monticore:siunits:$siunits_version"
     implementation 'de.monticore.lang:sd-language:7.0.0'
-    implementation 'de.monticore.lang:ocl:7.0.0'
-    implementation 'de.monticore.lang:ocl:7.0.0'
+    implementation "de.monticore.lang:ocl:$ocl_version"
     implementation 'montiarc.languages:arc-fe:7.0.0-SNAPSHOT'
-    implementation 'montiarc.languages:arc-fe:7.0.0-SNAPSHOT'
-    implementation 'montiarc.languages:montiarc-fe:7.0.0-SNAPSHOT'
-    implementation 'montiarc.languages:montiarc-fe:7.0.0-SNAPSHOT'
-    implementation 'montiarc.languages:behavior-fe:7.0.0-SNAPSHOT'
-    implementation 'montiarc.languages:behavior-fe:7.0.0-SNAPSHOT'
-    implementation 'montithings.generators:montithings2cpp:7.0.0-SNAPSHOT'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.5.2'
-    testImplementation 'org.assertj:assertj-core:3.7.0'
-    testImplementation 'de.monticore:monticore-runtime:7.0.0'
+    implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+    implementation "montiarc.languages:behavior-fe:$montiarc_version"
+    implementation "montithings.generators:montithings2cpp:$montithings_version"
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+    testImplementation "org.assertj:assertj-core:$assertj_version"
+    testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
 group = 'de.monticore.lang'
