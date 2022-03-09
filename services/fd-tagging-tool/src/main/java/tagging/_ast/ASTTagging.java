@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ASTTagging extends ASTTaggingTOP{
     protected List<ASTMCQualifiedName> allComponents;
+    protected List<String> allFeatures;
 
     protected ASTTagging() { super();}
 
@@ -21,6 +22,14 @@ public class ASTTagging extends ASTTaggingTOP{
         }
     }
 
+    public void initAllFeatures () {
+        allFeatures = new ArrayList();
+        for (ASTTag tag : this.getTagList()){
+            allFeatures.add(tag.getFeature().getQName());
+        }
+    }
+
     public List<ASTMCQualifiedName> getAllComponents() {return this.allComponents;}
+    public List<String> getAllFeatures() {return this.allFeatures;}
 
 }

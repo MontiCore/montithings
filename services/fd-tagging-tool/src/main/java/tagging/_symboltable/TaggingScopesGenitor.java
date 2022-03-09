@@ -19,6 +19,7 @@ public class TaggingScopesGenitor extends TaggingScopesGenitorTOP {
     public ITaggingArtifactScope createFromAST(ASTTagging rootNode) {
         ITaggingArtifactScope artifactScope = super.createFromAST(rootNode);
         rootNode.initAllComponents();
+        rootNode.initAllFeatures();
         artifactScope.setAstNode(rootNode);
         artifactScope.setName(rootNode.getName());
         artifactScope.setPackageName(rootNode.getPackage().getQName());

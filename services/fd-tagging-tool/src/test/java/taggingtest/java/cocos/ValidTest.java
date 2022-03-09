@@ -21,10 +21,7 @@ public class ValidTest extends AbstractTest {
         return Arrays.asList("0xTAG0000");
     }
     @Test
-    /*void testCorrect() {
-        testCorrectExamples("ValidCombination/BasicValidTest");
-    }*/
     void testCorrect() {
-        testCorrectExamples("SmartHomeProject/SmartHome");
+        testCorrectExamples("ValidCombination/BasicValidTest");
     }
 }

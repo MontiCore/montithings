@@ -28,6 +28,8 @@ public class TagSymbol extends TagSymbolTOP{
         return this.componentSymbolList;
     }
 
+    public Optional<ComponentInstanceSymbol> getComponentSymbolListIndex(int i) { return this.componentSymbolList.get(i);}
+
     public void setComponentSymbolList (List<Optional<ComponentInstanceSymbol>> l) {
         this.componentSymbolList = l;
     }

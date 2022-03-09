@@ -15,6 +15,7 @@ import com.google.gson.JsonParser;
 import de.monticore.featureconfiguration._ast.ASTFeatureConfiguration;
 import de.monticore.featureconfiguration._ast.ASTFeatures;
 import de.monticore.featureconfigurationpartial._ast.ASTSelect;
+import de.monticore.featureconfigurationpartial._ast.ASTUnselect;
 import de.monticore.featurediagram.FeatureDiagramMill;
 import de.monticore.featurediagram._ast.ASTFeatureDiagram;
 import de.monticore.featurediagram._parser.FeatureDiagramParser;
@@ -50,7 +51,15 @@ public class TaggingTool {
     Path directory = Paths.get(modelFile).getParent();
     return new ModelPath(directory);
   }
-
+  public void terminate() {
+    tgGS = null;
+    mtGS = null;
+    fdGS = null;
+    mtTool = null;
+    fdCLI = null;
+    factTool = null;
+    mtConfigTool = null;
+  }
   public String getIotManagerURL() {
     return iotManagerURL;
   }
@@ -122,51 +131,10 @@ public class TaggingTool {
     FeatureDiagramParser fdParser = new FeatureDiagramParser();
     fdCLI.createSymbolTable(fdCLI.parse(modelsDirectory + ".fd", fdParser));
   }
-
-  /*
-  public boolean isConfigurationPossible(String modelsDirectory){
-    //extract model path
-    ModelPath modelPath = getModelPathFromModel(modelsDirectory);
-    modelPath.addEntry(Paths.get("target"));
-
-    //load tagging model
-    ASTTagging tagging = loadModel(modelsDirectory);
-
-    //load feature configuration (and diagram from global scope)
-    //ASTFeatureDiagram featureDiagram = factTool.readFeatureDiagram(modelsDirectory + ".fd", "target", modelPath);
-    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes().get(0).getAstNode();
-    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(modelsDirectory + ".fc", modelPath);
-
-    return isConfigurationPossible(tagging, featureDiagram, featureConfiguration);
-  }
-
-  public boolean isConfigurationPossible(ASTTagging tagging, ASTFeatureDiagram fd, ASTFeatureConfiguration fc){
-    //Check if configuration is valid
-    if(!factTool.execIsValid(fd, fc)){
-      Log.warn(String.format("The Feature Configuration '%s' is not valid w.r.t the Feature Diagram.", fc.getName()));
-      return false;
-    }
-
-    //Now check if the features are tagged to a component
-    ASTSelect features = (ASTSelect) fc.getFCElement(0);
-    boolean isTagged = false;
-    int untaggedComponents = 0;
-    for(String featureName : features.getNameList()){
-      for (ASTTag tag : tagging.getTagList()){
-        if (featureName.equals(tag.getFeature().getBaseName())){
-          isTagged = true;
-        }
-      }
-      if (!isTagged) {
-        untaggedComponents++;
-        Log.warn(String.format("The feature '%s' is not bound to a component", featureName));
-      }
-      isTagged = false;
-    }
-    return untaggedComponents == 0;
-  }
-*/
+/*--------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------*/
   public List<ASTFeatureConfiguration>  findMaximalConfigurations (String modelsDirectory){
+    loadModel(modelsDirectory);
     List<ASTFeatureConfiguration> outputList = new ArrayList<ASTFeatureConfiguration>();
 
     //load feature diagram from global scope
@@ -248,6 +216,63 @@ public class TaggingTool {
     return minimalPotentialConfigurations;
   }
 
+  public List<ASTFeatureConfiguration> findConfigurationOfSize (List<ASTFeatureConfiguration> configurations, int size) {
+    List<ASTFeatureConfiguration> outputList = new ArrayList<ASTFeatureConfiguration>();
+    for (ASTFeatureConfiguration configuration : configurations){
+      if (((ASTSelect) configuration.getFCElement(0)).sizeNames() == size) {outputList.add(configuration);}
+    }
+    return outputList;
+  }
+
+  public List<ASTFeatureConfiguration> findMaximalDeployableConfiguration (String modelsDirectory) {
+    List<ASTFeatureConfiguration> outputList = new ArrayList<ASTFeatureConfiguration>();
+
+    //get maximum number of elements as start point
+    int maxSize = ((ASTSelect) findMaximalConfigurations(modelsDirectory).get(0).getFCElement(0)).sizeNames();
+
+    //load feature diagram from global scope and extract all configurations
+    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes().get(0).getAstNode();
+    List<ASTFeatureConfiguration> configurations = factTool.execAllProducts(featureDiagram);
+
+    //now try deploying configurations
+    while (maxSize > 0) {
+      for (ASTFeatureConfiguration configuration : findConfigurationOfSize(configurations, maxSize)) {
+        if (isConfigurationDeployable(modelsDirectory, configuration)) {outputList.add(configuration);}
+      }
+      if (outputList.size() != 0) {break;}
+      outputList.clear();
+      maxSize--;
+    }
+    return outputList;
+  }
+
+  public boolean isConfigurationDeployable (String modelsDirectory, String configuration){
+    loadModel(modelsDirectory);
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration, getModelPathFromModel(modelsDirectory));
+    return isConfigurationDeployable(modelsDirectory, featureConfiguration);
+  }
+
+  public boolean isConfigurationDeployable (String modelsDirectory, ASTFeatureConfiguration configuration){
+    String result = tryDeployingConfig(modelsDirectory, configuration);
+    return result.equals("{\"success\":true}");
+  }
+
+  //user chooses feature, generate rules and let prolog decide if we can deploy it
+  public boolean isFeatureDeployable (String modelsDirectory, String feature){
+    //for now let factTool generate a featureconfig and use it
+    loadModel(modelsDirectory);
+    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes().get(0).getAstNode();
+    ASTFeatureConfiguration configuration = factTool.execAllProducts(featureDiagram).get(0);
+
+    //modify it so it only contains this feature and nothing else
+    List<String> featuresList = new ArrayList<String>();
+    featuresList.add(feature);
+    configuration.setName("ConfigFor" + feature);
+    ((ASTSelect) configuration.getFCElement(0)).setNameList(featuresList);
+    ((ASTUnselect) configuration.getFCElement(1)).setNameList(new ArrayList<String>());
+
+    return isConfigurationDeployable(modelsDirectory, configuration);
+  }
 
   public List<ASTMCQualifiedName> findActivatedComponents (String modelsDirectory, String featureConfigurationDirectory){
     ModelPath modelPath = getModelPathFromModel(featureConfigurationDirectory);
@@ -257,11 +282,11 @@ public class TaggingTool {
   }
 
   public List<ASTMCQualifiedName> findActivatedComponents (String modelsDirectory, ASTFeatureConfiguration featureConfiguration){
-    ASTFeatures features = (ASTFeatures) featureConfiguration.getFCElement(0);
+    ASTSelect selectedFeatures = (ASTSelect) featureConfiguration.getFCElement(0);
     ASTTagging tagging = loadModel(modelsDirectory);
 
     List<ASTMCQualifiedName> activatedComponents = new ArrayList<ASTMCQualifiedName>();
-    for(String featureName : features.getNameList()){
+    for(String featureName : selectedFeatures.getNameList()){
       for(ASTTag tag : tagging.getTagList()){
         if (featureName.equals(tag.getFeature().getBaseName())){
           for (ASTMCQualifiedName component : tag.getComponentsList()){
@@ -309,13 +334,10 @@ public class TaggingTool {
     }
     return allPotentialFeatures;
   }
-  //user chooses feature, generate rules and let prolog decide if we can deploy it
-  public boolean isFeatureDeployable (String feature){
-    return false;
-  }
 
-
-  //given a configuration generate json (choose existing json library and tell how the file would look) for the prolog generator
+/*--------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------*/
+  //given a configuration generate json for the prolog generator
   public JsonObject generateJSONFromConfiguration (String modelsDirectory, String configuration){
     //setup models
     ASTTagging tagging = loadModel(modelsDirectory);
@@ -371,14 +393,11 @@ public class TaggingTool {
     }
   }
 
-  public String updateIotManager (String modelsDirectory, String configuration) {
+  public String communicateWithIoTManager (byte[] payload, String requestMethod, URL passedUrl) {
     try {
-      String generatedJSON = generateJSONFromConfiguration(modelsDirectory, configuration).toString();
-      byte[] payload = generatedJSON.getBytes(StandardCharsets.UTF_8);
-
-      URL url = new URL(iotManagerURL + "addFCToDeployment");
+      URL url = passedUrl;
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("PUT");
+      connection.setRequestMethod(requestMethod);
       connection.setRequestProperty("Content-Length", String.valueOf(payload.length));
       connection.setDoOutput(true);
       connection.getOutputStream().write(payload);
@@ -392,6 +411,38 @@ public class TaggingTool {
       connection.getInputStream().close();
 
       return outputStream.toString();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public String updateIoTManager (String modelsDirectory, String configuration) {
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration, getModelPathFromModel(modelsDirectory));
+    return updateIotManager(modelsDirectory, featureConfiguration);
+  }
+
+  public String updateIotManager (String modelsDirectory, ASTFeatureConfiguration configuration) {
+    try {
+      String generatedJSON = generateJSONFromConfiguration(modelsDirectory, configuration).toString();
+      byte[] payload = generatedJSON.getBytes(StandardCharsets.UTF_8);
+
+      return communicateWithIoTManager(payload, "PUT", new URL(iotManagerURL + "addFCToDeployment"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public String tryDeployingConfig (String modelsDirectory, String configuration) {
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration, getModelPathFromModel(modelsDirectory));
+    return tryDeployingConfig(modelsDirectory, featureConfiguration);
+  }
+
+  public String tryDeployingConfig (String modelsDirectory, ASTFeatureConfiguration configuration) {
+    try {
+      String generatedJSON = generateJSONFromConfiguration(modelsDirectory, configuration).toString();
+      byte[] payload = generatedJSON.getBytes(StandardCharsets.UTF_8);
+
+      return communicateWithIoTManager(payload, "PUT", new URL(iotManagerURL + "tryDeployingFC"));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

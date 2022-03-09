@@ -1,7 +1,7 @@
 package valid.PossibleConfiguration;
 
 tagging PossibleConfiguration {
-    feature valid.PossibleConfiguration.PossibleConfiguration.Car contains valid.PossibleConfiguration.PossibleConfiguration;
-    feature valid.PossibleConfiguration.PossibleConfiguration.SmallTrunk contains valid.PossibleConfiguration.PossibleConfiguration.sink;
-    feature valid.PossibleConfiguration.PossibleConfiguration.PanoramicRoof contains valid.PossibleConfiguration.PossibleConfiguration.sink;
+    feature Car contains PossibleConfiguration;
+    feature SmallTrunk contains sink;
+    feature vPanoramicRoof contains sink;
 }

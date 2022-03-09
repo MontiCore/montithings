@@ -1,4 +1,4 @@
-// Basic grammar for the tagging language
+// Grammar for the tagging language
 grammar Tagging extends de.monticore.types.MCBasicTypes {
 
 // A tagging is a collection of tags

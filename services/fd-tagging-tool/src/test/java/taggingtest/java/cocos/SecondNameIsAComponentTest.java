@@ -19,7 +19,7 @@ public class SecondNameIsAComponentTest extends AbstractTest {
     }
     @Test
     void testCocoViolation() {
-        testCocoViolation("NoComponentPresent/NoComponentPresent", 2, 2);
+        testCocoViolation("NoComponentPresent/NoComponentPresent", 1, 1);
     }
 
 }
