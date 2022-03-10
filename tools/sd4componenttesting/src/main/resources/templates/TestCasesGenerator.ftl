@@ -36,4 +36,6 @@ TEST_F (${mainCompName}Test, ${ast.getTestDiagram().getName()})
 
   <#-- asserts -->
   <@asserts.printAsserts ast prettyPrinter cppPrettyPrinter componentHelper mainComp mainCompName/>
+
+  cmp${mainCompName}->stop();
 }
