@@ -95,4 +95,10 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
   DisconnectStatement implements MCStatement =
     source:PortAccess "-/>" target:(PortAccess || ",")+ ";"
   ;
+
+  ObjectExpression implements Expression <500> =
+    ":" MCObjectType "{" (AttributeAssignment)* "}"
+  ;
+
+  AttributeAssignment = Name "=" Expression ";";
 }

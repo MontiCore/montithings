@@ -88,4 +88,20 @@ public class BehaviorPrettyPrinter implements BehaviorHandler {
     }
     getPrinter().print(";");
   }
+
+  @Override
+  public void handle(ASTObjectExpression node) {
+    getPrinter().print(": {");
+    for (ASTAttributeAssignment assignment : node.getAttributeAssignmentList()) {
+      assignment.accept(getTraverser());
+    }
+    getPrinter().print("}");
+  }
+
+  @Override
+  public void handle(ASTAttributeAssignment node) {
+    getPrinter().print(node.getName());
+    getPrinter().print(" = ");
+    node.getExpression().accept(getTraverser());
+  }
 }
