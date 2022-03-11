@@ -238,13 +238,57 @@
                 <artifactId>se-groovy-maven-plugin</artifactId>
                 <version>${se-groovy.maven.version}</version>
                 <configuration>
+                    <baseClass>de.monticore.lang.sd4componenttesting.generator.script.SD4CGeneratorScript</baseClass>
+                    <arguments>
+                        <out>${basedir}/src/test/resources/generated-test-sources/</out> <!-- todo target-->
+                        <modelPath>${basedir}/src/main/resources/models/hierarchy/</modelPath>
+                        <testPath>${basedir}/src/test/resources/models/hierarchy/</testPath>
+                    </arguments>
+                    <script>de/monticore/lang/sd4componenttesting/generator/script/sd4cgenerator.groovy</script>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                        <version>${guava.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>montithings.generators</groupId>
+                        <artifactId>montithings2cpp</artifactId>
+                        <version>${project.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>de.monticore.bs</groupId>
+                                <artifactId>monticore-runtime</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>de.se_rwth.commons</groupId>
+                        <artifactId>se-commons-utilities</artifactId>
+                        <version>${se-commons.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <!--
+            <plugin>
+                <groupId>de.se_rwth.maven</groupId>
+                <artifactId>se-groovy-maven-plugin</artifactId>
+                <version>${se-groovy.maven.version}</version>
+                <configuration>
                     <baseClass>montithings.generator.codegen.MontiThingsGeneratorScript</baseClass>
                     <arguments>
                         <out>${basedir}/target/generated-sources/</out>
                         <modelPath>${basedir}/src/main/resources/models</modelPath>
                         <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                         <main>hierarchy.Example</main>
-                        <!--<platform>DSA</platform>-->
                         <version>${project.version}</version>
                     </arguments>
                     <script>montithings/generator/mtgenerator.groovy</script>
@@ -279,6 +323,24 @@
                         <version>${se-commons.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/target/generated-sources/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

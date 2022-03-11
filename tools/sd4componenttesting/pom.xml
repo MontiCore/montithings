@@ -19,52 +19,6 @@
 
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 
-    <properties>
-
-        <!-- .. SE-Libraries .................................................. -->
-        <monticore.version>7.0.0</monticore.version>
-        <sequencediagram.version>${monticore.version}</sequencediagram.version>
-        <ocl.version>${monticore.version}</ocl.version>
-        <siunits.version>7.0.0</siunits.version>
-        <montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
-        <montithings.version>7.0.0-SNAPSHOT</montithings.version>
-        <se-commons.version>1.7.9</se-commons.version>
-        <mc.grammars.assembly.version>0.0.10</mc.grammars.assembly.version>
-
-        <!-- .. Libraries .................................................. -->
-        <guava.version>25.1-jre</guava.version>
-        <junit.jupiter.version>5.5.2</junit.jupiter.version>
-        <junit.vintage.version>${junit.jupiter.version}</junit.vintage.version>
-        <junit.version>4.12</junit.version>
-        <junit.platform.version>1.1.0</junit.platform.version>
-        <assertj.version>3.7.0</assertj.version>
-        <logback.version>1.1.2</logback.version>
-        <jscience.version>4.3.1</jscience.version>
-        <slf4j.version>1.7.30</slf4j.version>
-
-        <!-- .. Plugins ....................................................... -->
-        <assembly.plugin>3.2.0</assembly.plugin>
-        <compiler.plugin>3.8.1</compiler.plugin>
-        <plexus.plugin>2.8.8</plexus.plugin>
-        <source.plugin>3.2.1</source.plugin>
-        <shade.plugin>2.4.3</shade.plugin>
-        <jacoco.plugin>0.8.5</jacoco.plugin>
-        <jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
-        <surefire.plugin>3.0.0-M4</surefire.plugin>
-        <failsafe.plugin>3.0.0-M4</failsafe.plugin>
-
-        <!-- Classifiers -->
-        <grammars.classifier>grammars</grammars.classifier>
-        <cli.classifier>cli</cli.classifier>
-
-        <!-- .. Misc .......................................................... -->
-        <java.version>1.8</java.version>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <github.global.server>github</github.global.server>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -226,48 +180,48 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>de.se_rwth.commons</groupId>
+            <artifactId>se-commons-groovy</artifactId>
+        </dependency>
+
     </dependencies>
 
     <!-- == PROJECT BUILD SETTINGS =========================================== -->
 
     <!-- Deploy Configuration -->
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>${assembly.plugin}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>de.monticore</groupId>
-                            <artifactId>mc-assemblies</artifactId>
-                            <version>${mc.grammars.assembly.version}</version>
-                        </dependency>
-                    </dependencies>
-                    <executions>
-                        <execution>
-                            <id>grammars</id>
-                            <configuration>
-                                <finalName>${project.artifactId}-${project.version}</finalName>
-                                <descriptorRefs>
-                                    <descriptorRef>grammars-assembly</descriptorRef>
-                                </descriptorRefs>
-                                <formats>
-                                    <format>jar</format>
-                                </formats>
-                            </configuration>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>single</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-
         <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${assembly.plugin}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>de.monticore</groupId>
+                        <artifactId>mc-assemblies</artifactId>
+                        <version>${mc.grammars.assembly.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>grammars</id>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <descriptorRefs>
+                                <descriptorRef>grammars-assembly</descriptorRef>
+                            </descriptorRefs>
+                            <formats>
+                                <format>jar</format>
+                            </formats>
+                        </configuration>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -361,43 +315,6 @@
                 </executions>
             </plugin>
 
-            <!-- Enables Jacoco Coverage Report for this submodule -->
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.plugin}</version>
-                <configuration>
-                    <argLine>${argLine}</argLine>
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                </configuration>
-            </plugin>
-
-
-            <!-- Coverage Report -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.plugin}</version>
-                <executions>
-                    <execution>
-                        <id>pre-unit-test</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>**/_*/*.class</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -417,39 +334,7 @@
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>se-nexus</id>
-            <url>https://nexus.se.rwth-aachen.de/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>montibelle-gitlab-maven</id>
-            <url>https://git.rwth-aachen.de/api/v4/groups/montibelle/-/packages/maven</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>se-nexus</id>
-            <url>https://nexus.se.rwth-aachen.de/content/groups/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
-
-    <distributionManagement>
-        <repository>
-            <id>se-nexus</id>
-            <url>https://nexus.se.rwth-aachen.de/content/repositories/monticore-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>se-nexus</id>
-            <url>https://nexus.se.rwth-aachen.de/content/repositories/monticore-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 </project>

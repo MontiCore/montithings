@@ -30,6 +30,7 @@
 		<ocl.version>7.0.0</ocl.version>
 		<siunits.version>7.0.0</siunits.version>
 		<montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
+		<sequencediagram.version>${monticore.version}</sequencediagram.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
 		<monticore.version>7.0.0</monticore.version>
@@ -78,6 +79,7 @@
 
 		<!-- .. Misc .......................................................... -->
 		<java.version>1.8</java.version>
+		<slf4j.version>1.7.30</slf4j.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
