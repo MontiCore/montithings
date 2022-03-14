@@ -194,7 +194,7 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     os << "{ ";
     <#-- attributes -->
     <#list type.getFieldList() as field>
-      os << "\"${field.getName()}\": \"" << ${thisVar}.${field.getName()} << "\"";
+      os << "\"${field.getName()}\": \"" << ${thisVar}.${field.getName()} << "\"<#sep>, </#sep>";
     </#list>
 
     <#-- associations -->
