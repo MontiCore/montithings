@@ -18,7 +18,8 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    * statement will be executed without delay.
    *
    * @attribute SIUnitLiteral
-   *            Amount of time by which the execution of the  statements shall be deferred
+   *            Amount of time by which the execution of the  statements shall be
+   *            deferred
    * @attribute MCJavaBlock
    *            Statements to be executed later
    */
@@ -96,9 +97,33 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
     source:PortAccess "-/>" target:(PortAccess || ",")+ ";"
   ;
 
-  ObjectExpression implements Expression <500> =
+  /**
+   * ASTObjectExpression allows the creation of objects in an expression.
+   * Note that the syntax of this nonterminal is modeled after the nonterminal
+   * ODAnonymousObject which can be found in the MontiCore grammar ODBasis.
+   * Because a modifier is not needed either for the object itself nor for the
+   * attributes and the attributes needed in MontiThings are more simple, we
+   * decided to recreate the nonterminal to better fit the purpose of
+   * MontiThings.
+   *
+   * @attribute MCObjectType
+   *            Type of the object which should be created
+   * @attribute AttributeAssignment
+   *            Attribute(s) which should be assigned to a certain value with
+   *            their respective value
+   */
+  ObjectExpression implements Expression =
     ":" MCObjectType "{" (AttributeAssignment)* "}"
   ;
 
+  /**
+   * ASTAttributeAssignment allows the assignment of fields to values when
+   * creating objects.
+   *
+   * @attribute Name
+   *            Name of the field which should be assigned to a certain value
+   * @attribute Expression
+   *            Value the field should be assigned to
+   */
   AttributeAssignment = Name "=" Expression ";";
 }
