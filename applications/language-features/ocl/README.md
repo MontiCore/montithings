@@ -13,7 +13,7 @@ values it receives.
 The `Sink` component consumes these values and displays them on the 
 terminal.
 
-<img src="../../../docs/OCL.png" alt="drawing" height="200px"/>
+<img src="../../../docs/OCL.png" alt="drawing" width="600px"/>
 
 Overall this architecture gives the sums of numbers which are dividable by three
 and less then one hundered, or more formally (and simplified):

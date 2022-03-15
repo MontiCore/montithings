@@ -7,7 +7,7 @@ For simplicity, this example is mainly based on the basic-input-output example
 with the exception of the `RunningSum` component that calculates the running
 total of its incoming values:
 
-<img src="../../docs/RetainState.png" alt="drawing" height="200px"/>
+<img src="../../docs/RetainState.png" alt="drawing" width="600px"/>
 
 There is, however one important difference in the `Source` component:
 ```

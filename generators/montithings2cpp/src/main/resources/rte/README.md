@@ -6,7 +6,7 @@ Whenever the generator generates code, the RTE is copied to the target
 directory.
 Here's an overview of the most important classes of the RTE:
 
-<img src="../../../../../../docs/RteCDv2.png" alt="drawing" height="400px"/>
+<img src="../../../../../../docs/RteCDv2.png" alt="drawing" width="500px"/>
 
 The `UniqueElement` just provides a UUID (`sole::uuid4`) to each class that 
 extends it. 

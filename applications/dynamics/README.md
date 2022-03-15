@@ -6,7 +6,7 @@ This means that components get connected at runtime instead of at design time.
 To demonstrate this, we create a modified version of the basic-input-output example.
 In case you haven't read this example yet, please first read the basic-input-output example.
 
-<img src="../../docs/Dynamics.png" alt="drawing" height="400px"/>
+<img src="../../docs/Dynamics.png" alt="drawing" width="600px"/>
 
 In this modified version, the `Source` component is not a subcomponent of the `Example` component.
 Instead, the `Source` component will be instantiated dynamically, i.e., at runtime, and the 
