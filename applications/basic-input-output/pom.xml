@@ -246,9 +246,9 @@
                         <configuration>
                             <baseClass>de.monticore.lang.sd4componenttesting.generator.script.SD4CGeneratorScript</baseClass>
                             <arguments>
-                                <out>${basedir}/src/test/resources/generated-test-sources/</out> <!-- todo target-->
-                                <modelPath>${basedir}/src/main/resources/models/hierarchy/</modelPath>
-                                <testPath>${basedir}/src/test/resources/models/hierarchy/</testPath>
+                                <out>${basedir}/target/sd4c/</out>
+                                <modelPath>${basedir}/src/main/resources/models/</modelPath>
+                                <testPath>${basedir}/src/test/resources/models/</testPath>
                             </arguments>
                             <script>de/monticore/lang/sd4componenttesting/generator/script/sd4cgenerator.groovy</script>
                         </configuration>
@@ -263,6 +263,7 @@
                             <arguments>
                                 <out>${basedir}/target/generated-sources/</out>
                                 <modelPath>${basedir}/src/main/resources/models</modelPath>
+                                <testPath>${basedir}/target/sd4c/cpp/</testPath>
                                 <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                                 <main>hierarchy.Example</main>
                                 <version>${project.version}</version>

@@ -28,13 +28,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
@@ -86,13 +84,11 @@
         <dependency>
           <groupId>de.monticore.lang</groupId>
           <artifactId>sd-language</artifactId>
-          <version>${sequencediagram.version}</version>
         </dependency>
 
         <dependency>
             <groupId>de.monticore.lang</groupId>
             <artifactId>sd-language</artifactId>
-            <version>${sequencediagram.version}</version>
             <classifier>${grammars.classifier}</classifier>
         </dependency>
 
@@ -249,35 +245,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${source.plugin}</version>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>de.monticore</groupId>
-                        <artifactId>mc-assemblies</artifactId>
-                        <version>${mc.grammars.assembly.version}</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>grammars</id>
-                        <configuration>
-                            <finalName>${project.artifactId}-${project.version}</finalName>
-                            <descriptorRefs>
-                                <descriptorRef>grammars-assembly</descriptorRef>
-                            </descriptorRefs>
-                            <formats>
-                                <format>jar</format>
-                            </formats>
-                        </configuration>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>

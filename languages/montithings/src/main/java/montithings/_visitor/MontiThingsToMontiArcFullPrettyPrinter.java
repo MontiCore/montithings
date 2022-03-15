@@ -21,6 +21,7 @@ import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCSimpleGenericTypesPrettyPrinter;
 import genericarc._visitor.GenericArcPrettyPrinter;
 import montiarc._ast.ASTMontiArcNode;
+import montiarc._visitor.MontiArcPrettyPrinter;
 import montithings.MontiThingsMill;
 import montithings._ast.ASTMontiThingsNode;
 
@@ -39,6 +40,7 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
     traverser = MontiThingsMill.traverser();
     MCCommonLiteralsPrettyPrinter mccommonliteralspp = new MCCommonLiteralsPrettyPrinter(printer);
     traverser.setMCCommonLiteralsHandler(mccommonliteralspp);
+    traverser.add4MCCommonLiterals(mccommonliteralspp);
     CommonExpressionsPrettyPrinter commonExpressionsPrettyPrinter =
       new CommonExpressionsPrettyPrinter(printer);
     traverser.setCommonExpressionsHandler(commonExpressionsPrettyPrinter);
@@ -78,7 +80,9 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
     traverser.setComfortableArcHandler(comfortableArcPrettyPrinter);
     GenericArcPrettyPrinter genericArcPrettyPrinter = new GenericArcPrettyPrinter(printer);
     traverser.setGenericArcHandler(genericArcPrettyPrinter);
-
+    MontiArcPrettyPrinter montiArcPrettyPrinter = new MontiArcPrettyPrinter(printer);
+    traverser.setMontiArcHandler(montiArcPrettyPrinter);
+    
     SIUnitTypes4ComputingPrettyPrinter siunittypes4computingpp =
       new SIUnitTypes4ComputingPrettyPrinter(printer);
     traverser.setSIUnitTypes4ComputingHandler(siunittypes4computingpp);
