@@ -3,6 +3,7 @@ package montithings.cocos;
 
 import arcbasis._cocos.*;
 import behavior.cocos.AttributeAssignmentTypesCorrect;
+import behavior.cocos.DuplicateAttributeAssignments;
 import behavior.cocos.SIUnitLiteralsDescribeTime;
 import de.monticore.siunittypes4computing._cocos.PrimitiveIsNumericType;
 import de.monticore.types.check.TypeCheck;
@@ -70,6 +71,7 @@ public class MontiThingsCoCos {
     checker.addCoCo(new NameExpressionsAreResolvable());
     checker.addCoCo(new SIUnitLiteralsDescribeTime());
     checker.addCoCo(new AttributeAssignmentTypesCorrect(tc));
+    checker.addCoCo(new DuplicateAttributeAssignments());
     checker.addCoCo(new OCLExpressionsValid());
     checker.addCoCo(new UnsupportedOperator());
     checker.addCoCo(new NoIncomingPortsInEveryBlocks());
