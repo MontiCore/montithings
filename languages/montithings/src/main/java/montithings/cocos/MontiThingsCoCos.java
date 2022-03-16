@@ -2,14 +2,19 @@
 package montithings.cocos;
 
 import arcbasis._cocos.*;
+import behavior.cocos.AttributeAssignmentTypesCorrect;
 import behavior.cocos.SIUnitLiteralsDescribeTime;
 import de.monticore.siunittypes4computing._cocos.PrimitiveIsNumericType;
+import de.monticore.types.check.TypeCheck;
 import montithings._cocos.MontiThingsASTBehaviorCoCo;
 import montithings._cocos.MontiThingsASTMTEveryBlockCoCo;
 import montithings._cocos.MontiThingsCoCoChecker;
 import montithings.cocos.montiarcCopyPaste.MTConfigurationParameterAssignment;
 import montithings.cocos.montiarcCopyPaste.MTConnectorSourceAndTargetExistAndFit;
 import montithings.cocos.montiarcCopyPaste.MTPortUsage;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.MontiThingsTypeCheck;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import portextensions.cocos.PortsInBatchStatementAreIncoming;
 import portextensions.cocos.PortsInSyncGroupAreIncoming;
 import portextensions.cocos.SyncGroupIsNoSubset;
@@ -20,6 +25,9 @@ import portextensions.cocos.SyncGroupIsNoSubset;
 public class MontiThingsCoCos {
   public static MontiThingsCoCoChecker createChecker() {
     final MontiThingsCoCoChecker checker = new MontiThingsCoCoChecker();
+
+    final TypeCheck tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(),
+        new DeriveSymTypeOfMontiThingsCombine());
 
     // ARCBASIS
     checker.addCoCo(new CircularInheritance());
@@ -61,6 +69,7 @@ public class MontiThingsCoCos {
     checker.addCoCo(MontiThingsTypeCheckCoCo.getCoCo());
     checker.addCoCo(new NameExpressionsAreResolvable());
     checker.addCoCo(new SIUnitLiteralsDescribeTime());
+    checker.addCoCo(new AttributeAssignmentTypesCorrect(tc));
     checker.addCoCo(new OCLExpressionsValid());
     checker.addCoCo(new UnsupportedOperator());
     checker.addCoCo(new NoIncomingPortsInEveryBlocks());
