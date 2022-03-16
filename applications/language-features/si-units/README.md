@@ -5,7 +5,7 @@ This example shows how to components can uses SI units.
 The example is again based on the Basic-Input-Ouput example with a number of 
 changes to demonstrate SI unit usage.
 
-<img src="../../../docs/SIUnitsMT.png" alt="drawing" height="200px"/>
+<img src="../../../docs/SIUnitsMT.png" alt="drawing" width="300px"/>
 
 The `Source` component now has a parameter whose type is defined as m/s:
 ```

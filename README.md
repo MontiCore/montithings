@@ -48,7 +48,7 @@ The `Example` component contains two subcomponents. The `Source` component produ
 values, the `Sink` component consumes these values and displays them on the
 terminal.
 
-<img src="docs/BasicInputOutputPackaged.png" alt="drawing" height="200px"/>
+<img src="docs/BasicInputOutputPackaged.png" alt="drawing" width="400px"/>
 
 We support four ways of building an application:
 1. Using the command line [(*instructions*)](./docs/building-apps/cmd.md)
