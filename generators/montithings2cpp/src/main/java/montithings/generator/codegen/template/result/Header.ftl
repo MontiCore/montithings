@@ -11,6 +11,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<list>"}
 #include ${"<set>"}
 #include ${"<deque>"}
+#include "collections/Set.h"
 
 #include "Message.h"
 

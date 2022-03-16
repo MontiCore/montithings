@@ -23,6 +23,7 @@ import montithings._symboltable.*;
 import montithings.cocos.MontiThingsCoCos;
 import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.MontiThingsTrafo;
+import montithings.util.CollectionsUtil;
 import montithings.util.MontiThingsError;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -332,6 +333,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     add2Scope(artifactScope, listType);
 
     TypeSymbol setType = createCollectionType("Set", artifactScope, Optional.of(collectionType), typeVarSymbol);
+    CollectionsUtil.addMethodsAndFields(setType, typeVarSymbol);
     add2Scope(artifactScope, setType);
   }
 

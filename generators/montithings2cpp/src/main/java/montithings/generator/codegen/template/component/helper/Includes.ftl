@@ -22,6 +22,7 @@ ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
 #include ${"<assert.h>"}
 #include "sole/sole.hpp"
 #include "json/json.hpp"
+#include "collections/Set.h"
 #include "easyloggingpp/easylogging++.h"
 #include ${"<iostream>"}
 #include <fstream>
