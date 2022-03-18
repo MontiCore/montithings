@@ -9,5 +9,5 @@ enable_testing()
 </#list>
 
 <#list cppFileNames as cppFileName>
-    package_add_test(${cppFileName}TestSuite ${cppFileName})
+    package_add_test(${cppFileName?string?remove_ending(".cpp")}TestSuite ${cppFileName})
 </#list>
