@@ -61,8 +61,6 @@ dependencies {
     }
 
     implementation 'commons-cli:commons-cli:1.4'
-    implementation 'org.slf4j:slf4j-api:1.7.30'
-    implementation 'org.slf4j:slf4j-simple:1.7.30'
     implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
     implementation "com.google.guava:guava:$guava_version"
     implementation "org.antlr:antlr4:$antlr_version"

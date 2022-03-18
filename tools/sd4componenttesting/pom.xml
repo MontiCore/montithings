@@ -23,16 +23,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>de.se_rwth.commons</groupId>
             <artifactId>se-commons-logging</artifactId>
         </dependency>
