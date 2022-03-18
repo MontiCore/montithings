@@ -82,7 +82,7 @@ dependencies {
     testImplementation "de.monticore:monticore-runtime:$monticore_version"
 }
 
-group = 'de.monticore.lang'
+group = 'montithings.tools'
 version = '7.0.0-SNAPSHOT'
 description = 'sd4componenttesting'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
@@ -101,7 +101,7 @@ publishing {
 }
 
 // all in one tool-jar
-mainClassName = 'de.monticore.lang.sd4componenttesting.SD4ComponentTestingCLI'
+mainClassName = 'montithings.tools.sd4componenttesting.SD4ComponentTestingCLI'
 shadowJar {
     manifest {
         attributes "Main-Class": "$mainClassName"

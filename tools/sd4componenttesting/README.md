@@ -293,7 +293,7 @@ For example the following command will generate `M.cpp` and `E.cpp` from `MainTe
 java -jar sd4componenttesting-cli.jar -i MainTest.sd4c Example.sd4c -path models/example -g tests/M.cpp tests/E.cpp
 ```
 
-For more Information about how the Generator works and how the generated C++ Test is structured read the [Generator](src/main/java/de/monticore/lang/sd4componenttesting/generator/README.md) documentation.
+For more Information about how the Generator works and how the generated C++ Test is structured read the [Generator](src/main/java/montithings/tools/sd4componenttesting/generator/README.md) documentation.
 
 # Tool
 
@@ -377,7 +377,7 @@ In case that we use MontiThings models they can be converted to MontiArc models 
 In order to use the tool we just do the following:
 
 ```java
-de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool tool = new de.monticore.lang.sd4componenttesting.SD4ComponentTestingTool();
+montithings.tools.sd4componenttesting.SD4ComponentTestingTool tool = new montithings.tools.sd4componenttesting.SD4ComponentTestingTool();
 ```
 
 Now that we are able to use the tool we can make use of our three basic tool functions, which will be explained in the following:

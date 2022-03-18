@@ -244,13 +244,13 @@
                             <goal>execute</goal>
                         </goals>
                         <configuration>
-                            <baseClass>de.monticore.lang.sd4componenttesting.generator.script.SD4CGeneratorScript</baseClass>
+                            <baseClass>montithings.tools.sd4componenttesting.generator.script.SD4CGeneratorScript</baseClass>
                             <arguments>
                                 <out>${basedir}/target/sd4c/</out>
                                 <modelPath>${basedir}/src/main/resources/models/</modelPath>
                                 <testPath>${basedir}/src/test/resources/models/</testPath>
                             </arguments>
-                            <script>de/monticore/lang/sd4componenttesting/generator/script/sd4cgenerator.groovy</script>
+                            <script>montithings/tools/sd4componenttesting/generator/script/sd4cgenerator.groovy</script>
                         </configuration>
                     </execution>
                     <execution>
@@ -279,7 +279,7 @@
                         <version>${guava.version}</version>
                     </dependency>
                     <dependency>
-                        <groupId>de.monticore.lang</groupId>
+                        <groupId>montithings.tools</groupId>
                         <artifactId>sd4componenttesting</artifactId>
                         <version>${project.version}</version>
                         <exclusions>
