@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Context Conditions
 
 In this Project several context conditions are used to apply context-sensitive restrictions on the SD4ComponentTesting grammar. For more Information about the overall structure of the grammar itself please read the [Grammar](../../../../../../grammars/de/monticore/lang/Readme.md) documentation.

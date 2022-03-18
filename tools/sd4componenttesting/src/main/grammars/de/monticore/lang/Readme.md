@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Overview
 As we have seen before, with our tool _SD4ComponentTestingTool_ we want to offer a new and easier way to describe tests for given models in an IoT scope. Therefore, it is necessary to extend an already existing grammar or to write a complete new one. Because of usability and, i.e., reusability we decided to extend an existing grammar.
 In the following sections we will describe the structure and offered functionality of the extended grammar.

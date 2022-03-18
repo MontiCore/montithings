@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package examples.incorrect;
 
 component Sum {

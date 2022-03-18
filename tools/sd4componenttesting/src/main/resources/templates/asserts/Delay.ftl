@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printDelay componentHelper prettyPrinter sD4CElement>
   // delay
   LOG(INFO) << "${prettyPrinter.prettyprint(sD4CElement)?replace("\n", "")?replace("\r", "")}";

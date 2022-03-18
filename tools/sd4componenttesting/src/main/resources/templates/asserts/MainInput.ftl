@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printMainInput sD4CElement mainComp mainCompName>
   // set input of mainComp
   <#assign portName = sD4CElement.getTarget(0).getPort()?cap_first>

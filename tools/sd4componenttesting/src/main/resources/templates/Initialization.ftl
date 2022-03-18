@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printInitialization mainComp>
 // initialization
 #include "easyloggingpp/easylogging++.h"

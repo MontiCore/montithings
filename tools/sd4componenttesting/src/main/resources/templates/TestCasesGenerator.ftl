@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 // (c) https://github.com/MontiCore/monticore
 <#import "/templates/Struct.ftl" as struct>
 <#import "/templates/Initialization.ftl" as initialization>

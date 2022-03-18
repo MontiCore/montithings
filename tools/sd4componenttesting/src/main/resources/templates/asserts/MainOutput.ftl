@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printMainOutput sD4CElement mainCompName>
   // check output of mainComp
   <#assign compTypeName = mainCompName>

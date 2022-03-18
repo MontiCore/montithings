@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printAsserts ast prettyPrinter cppPrettyPrinter componentHelper mainComp mainCompName>
 <#import "/templates/asserts/MainInput.ftl" as mainInput>
 <#import "/templates/asserts/MainOutput.ftl" as mainOutput>

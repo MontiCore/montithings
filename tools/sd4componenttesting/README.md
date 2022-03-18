@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # SD4ComponentTesting
 
 This project implements a language with a generator for writing tests of Internet of Things applications generated using MontiThings.

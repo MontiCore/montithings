@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Overview
 
 The _SD4ComponentTestingGenerator_ generates a C++ test file out of one SD4ComponentTesting model. Actually the CoCos of SD4ComponentTesting work only on MontiArc models but in the future it is planned that one also can use MontiThings models with behavior. MontiThings offers a PrettyPrinter which transforms valid MontiThings models to MontiArc models. The PrettyPrinter can be found [here](https://git.rwth-aachen.de/monticore/montithings/core/-/blob/develop/languages/montithings/src/main/java/montithings/_visitor/MontiThingsToMontiArcFullPrettyPrinter.java). The C++ test works with the generated C++ classes from MontiThings models, but all MontiArc models can be transfered to MontiThings models. The main restriction is that MontiArc has no behavior.

@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting._cocos;
 
 import de.monticore.lang.sd4componenttesting.AbstractCoCoTest;

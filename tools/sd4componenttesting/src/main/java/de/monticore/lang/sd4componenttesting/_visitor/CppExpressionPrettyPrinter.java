@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package de.monticore.lang.sd4componenttesting._visitor;
 
 import arcbasis._symboltable.ComponentTypeSymbol;

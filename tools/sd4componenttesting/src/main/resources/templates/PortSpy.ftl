@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printPortSpy compTypeName portName package port compName="" isComponent=false>
 <#if isComponent == true>
   <#assign displayName = compName>

@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printObserver mainComp package>
 <#import "/templates/PortSpy.ftl" as portSpy>
 /**

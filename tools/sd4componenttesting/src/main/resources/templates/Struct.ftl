@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printStruct mainComp mainCompName package>
 // struct for test
 struct ${mainComp.getName()}Test : testing::Test

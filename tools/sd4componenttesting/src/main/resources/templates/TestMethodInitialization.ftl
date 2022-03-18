@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#macro printTestMethodInitialization ast mainComp mainCompName>
   <#assign compTypeName = mainCompName>
   // PortSpy of the "${compTypeName}" component

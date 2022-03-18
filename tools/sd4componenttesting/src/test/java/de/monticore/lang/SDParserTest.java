@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package de.monticore.lang;
 
 import de.monticore.lang.sd4componenttesting._ast.ASTSD4Artifact;
