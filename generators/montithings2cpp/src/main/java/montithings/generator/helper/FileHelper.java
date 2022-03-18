@@ -81,14 +81,11 @@ public class FileHelper {
     }
   }
 
-  public static void copyTestToTarget(File testPath, File target, ComponentTypeSymbol comp) {
-    String fileName = comp.getFullName().replace('.','_') + "Test.cpp";
+  public static void copyTestToTarget(File testPath, File target) {
     try {
-        Path targetTestDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),"generated-test-sources","test","gtests");
-        Path testFile = Paths.get(testPath.getAbsolutePath(),fileName);
-      if(testFile.toFile().isFile()) {
-        FileUtils.copyFileToDirectory(testFile.toFile(), targetTestDir.toFile());
-      }
+      Path targetTestDir = Paths.get(Paths.get(target.getAbsolutePath()).getParent().toString(),
+        "generated-test-sources", "sd4c", "cpp");
+      FileUtils.copyDirectory(testPath, targetTestDir.toFile());
     }
     catch (IOException e) {
       System.err.println(e.getMessage());

@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 <#include "TopLevelCMake.ftl">
 
-add_subdirectory(test/gtests)
+add_subdirectory(test/gtests/lib)
+add_subdirectory(sd4c/cpp)

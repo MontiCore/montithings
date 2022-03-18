@@ -63,7 +63,7 @@ For the example, the generator prints the following:
 ```cpp
 // initialization
 #include "easyloggingpp/easylogging++.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <chrono>
 #include <thread>
 

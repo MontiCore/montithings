@@ -263,7 +263,7 @@
                             <arguments>
                                 <out>${basedir}/target/generated-sources/</out>
                                 <modelPath>${basedir}/src/main/resources/models</modelPath>
-                                <testPath>${basedir}/target/sd4c/cpp/</testPath>
+                                <!--<testPath>${basedir}/target/sd4c/cpp/</testPath>-->
                                 <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                                 <main>hierarchy.Example</main>
                                 <version>${project.version}</version>
