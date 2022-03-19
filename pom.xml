@@ -93,6 +93,13 @@
 				<groupId>de.monticore.lang</groupId>
 				<artifactId>sd-language</artifactId>
 				<version>${sequencediagram.version}</version>
+				<exclusions>
+					<!--  Automata Library is not publicly available and also unnecessary -->
+					<exclusion>
+						<groupId>de.se_rwth</groupId>
+						<artifactId>automata-library</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -100,6 +107,13 @@
 				<artifactId>sd-language</artifactId>
 				<version>${sequencediagram.version}</version>
 				<classifier>${grammars.classifier}</classifier>
+				<exclusions>
+					<!--  Automata Library is not publicly available and also unnecessary -->
+					<exclusion>
+						<groupId>de.se_rwth</groupId>
+						<artifactId>automata-library</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
