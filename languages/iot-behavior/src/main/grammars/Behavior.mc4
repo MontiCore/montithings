@@ -101,10 +101,11 @@ component grammar Behavior extends de.monticore.literals.MCCommonLiterals,
    * ASTObjectExpression allows the creation of objects in an expression.
    * Note that the syntax of this nonterminal is modeled after the nonterminal
    * ODAnonymousObject which can be found in the MontiCore grammar ODBasis.
-   * Because a modifier is not needed either for the object itself nor for the
-   * attributes and the attributes needed in MontiThings are more simple, we
-   * decided to recreate the nonterminal to better fit the purpose of
-   * MontiThings.
+   * Because modifiers and stereotypes are needed neither for the object 
+   * itself nor for the attributes and the attributes needed in MontiThings 
+   * are simpler, we decided to recreate the nonterminal to better fit the 
+   * purpose of MontiThings. Moreover, the ODs allow underspecification, which 
+   * MontiThings does not (we want to instantiate the objects). 
    *
    * @attribute MCObjectType
    *            Type of the object which should be created
