@@ -195,3 +195,13 @@ install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJ
   </#if>
   set_target_properties(${comp.getFullName()} PROPERTIES LINKER_LANGUAGE CXX)
 </#if>
+
+<#if test>
+  macro(package_add_test TESTNAME)
+  add_executable(${"$"}{TESTNAME} ${"$"}{ARGN})
+  target_link_libraries(${"$"}{TESTNAME} gtest gmock gtest_main)
+  target_link_libraries(${"$"}{TESTNAME} ${comp.getFullName()?replace(".","_")}Lib)
+  add_test(NAME ${"$"}{TESTNAME} COMMAND ${"$"}{TESTNAME})
+  set_target_properties(${"$"}{TESTNAME} PROPERTIES FOLDER tests)
+  endmacro()
+</#if>

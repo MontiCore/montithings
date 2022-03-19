@@ -48,7 +48,7 @@ public class GenerateTestSources extends GeneratorStep {
       /* ====== Copy generated-sources to generated-test-sources ==== */
       /* ============================================================ */
       copyGeneratedToTarget(state.getTarget());
-      copyTestToTarget(state.getTestPath(), state.getTarget(), comp);
+      copyTestToTarget(state.getTestPath(), state.getTarget());
       if (ComponentHelper.isApplication(comp, state.getConfig())) {
         Path target = Paths.get(
           Paths.get(state.getTarget().getAbsolutePath()).getParent().toString(),
@@ -60,7 +60,7 @@ public class GenerateTestSources extends GeneratorStep {
         // generate make file
         if (state.getConfig().getTargetPlatform() != TargetPlatform.ARDUINO) {
           // Arduino uses its own build system
-          state.getMtg().generateTestMakeFile(target.toFile(), comp, libraryPath, subPackagesPath);
+          state.getMtg().generateTestMakeFiles(target.toFile(), comp, libraryPath, subPackagesPath);
         }
       }
     }

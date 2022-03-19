@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static montithings.generator.helper.FileHelper.makeExecutable;
@@ -225,11 +226,13 @@ public class MTGenerator {
       "template/util/cmake/CMakeForSubdirectories.ftl", sortedDirs, sensorActuatorPorts, config);
   }
 
-  public void generateTestMakeFile(File targetPath, ComponentTypeSymbol comp,
-    File libraryPath, File[] subPackagesPath) {
+  public void generateTestMakeFiles(File targetPath, ComponentTypeSymbol comp,
+                                    File libraryPath, File[] subPackagesPath) {
+    File cppPath = Paths.get(targetPath.toString(), "sd4c", "cpp").toFile();
+    generateMakeFilesForTestCode(cppPath);
+    
     FileGenerator fg = new FileGenerator(targetPath, hwcDir);
-    fg.generate(Paths.get(targetPath.toString(), "test", "gtests").toFile(), "CMakeLists", ".txt",
-      "template/util/cmake/GoogleTestParameters.ftl", comp);
+    
     fg.generate(targetPath, "CMakeLists", ".txt",
       "template/util/cmake/LinkTestLibraries.ftl",
       targetPath.listFiles(),
@@ -238,7 +241,54 @@ public class MTGenerator {
       targetPath.toPath().toAbsolutePath().relativize(libraryPath.toPath().toAbsolutePath())
         .toString(), subPackagesPath, config, true, new ArrayList<>());
   }
-
+  
+  /**
+   * generates cmake Files for the test code.
+   * Calls itself recursively to create cmake files in all subdirectories
+   *
+   * @param testCodePath location of the directory where the test code is located
+   */
+  public void generateMakeFilesForTestCode(File testCodePath){
+    Set<String> cppFileNames = getCppFileNames(testCodePath);
+    Set<String> subDirNames = getSubDirNames(testCodePath);
+    FileGenerator fg = new FileGenerator(testCodePath, hwcDir);
+   
+    fg.generate(testCodePath, "CMakeLists", ".txt", "template/util/cmake/GoogleTestParameters.ftl",
+      cppFileNames, subDirNames);
+    
+    for(String subDir : subDirNames){
+      generateMakeFilesForTestCode(Paths.get(testCodePath.toString(), subDir).toFile());
+    }
+  }
+  
+  /**
+   * gets the names of all subdirectories of a directory as String for further processing in a ftl
+   *
+   * @param file a directory
+   * @return the names of all subdirectories in that directory as Strings
+   */
+  private Set<String> getSubDirNames(File file) {
+    File[] subDirs = file.listFiles(File::isDirectory);
+    if(subDirs == null){
+      return new HashSet<>();
+    }
+    return Arrays.stream(subDirs).map(File::getName).collect(Collectors.toSet());
+  }
+  
+  /**
+   * gets the names of all .cpp files in a directory as String for further processing in a ftl
+   *
+   * @param file a directory
+   * @return the names of all .cpp in that directory as String (including file extension
+   */
+  private Set<String> getCppFileNames(File file) {
+    File[] subDirs = file.listFiles(f -> f.getName().endsWith(".cpp"));
+    if(subDirs == null){
+      return new HashSet<>();
+    }
+    return Arrays.stream(subDirs).map(File::getName).collect(Collectors.toSet());
+  }
+  
   public void generateScripts(File targetPath, ComponentTypeSymbol comp,
     List<String> sensorActuatorPorts, List<String> hwcPythonScripts, List<String> subdirectories) {
     List<String> sortedDirs = new ArrayList<>(subdirectories);

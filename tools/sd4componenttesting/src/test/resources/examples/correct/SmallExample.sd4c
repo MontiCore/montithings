@@ -1,0 +1,13 @@
+package examples.correct;
+
+testdiagram SmallExample for Main {
+  -> value : 33;
+  value -> sumCom.first : 33;
+  value -> sumCom.second : 33;
+  foo -> : 66;
+  foo -> : 66;
+
+  delay 500ms;
+
+  assert sumCom.result < 67 && sumCom.result > 65;
+}

@@ -80,4 +80,9 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   @Override public void handle(ASTPublishPort node) {
     // intentionally left empty - not covered by MontiArc
   }
+  
+  @Override
+  public void handle(ASTMTEveryBlock node) {
+    // intentionally left empty - not covered by MontiArc
+  }
 }

@@ -17,6 +17,7 @@
 		<module>languages</module>
 		<module>services</module>
 		<module>cli</module>
+		<module>tools</module>
 	</modules>
 
 	<!-- == PROJECT PROPERTIES ============================================== -->
@@ -29,6 +30,7 @@
 		<ocl.version>7.0.0</ocl.version>
 		<siunits.version>7.0.0</siunits.version>
 		<montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
+		<sequencediagram.version>${monticore.version}</sequencediagram.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
 		<monticore.version>7.0.0</monticore.version>
@@ -86,6 +88,19 @@
 	<!-- == DEPENDENCIES ==================================================== -->
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+				<groupId>de.monticore.lang</groupId>
+				<artifactId>sd-language</artifactId>
+				<version>${sequencediagram.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>de.monticore.lang</groupId>
+				<artifactId>sd-language</artifactId>
+				<version>${sequencediagram.version}</version>
+				<classifier>${grammars.classifier}</classifier>
+			</dependency>
 
 			<dependency>
 				<groupId>org.jscience</groupId>

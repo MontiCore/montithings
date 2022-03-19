@@ -12,6 +12,7 @@ ${tc.signature("comp","config","className")}
   </#if>
   ${tc.includeArgs("template.component.methods.ComputeDecomposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.StartDecomposed", [comp, config, className])}
+  ${tc.includeArgs("template.component.methods.StopDecomposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupComposed", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
   <#if brokerIsMQTT>
@@ -30,6 +31,7 @@ ${tc.signature("comp","config","className")}
     ${tc.includeArgs("template.component.methods.ComputeAtomic", [comp, config, className, everyBlockName])}
   </#list>
   ${tc.includeArgs("template.component.methods.StartAtomic", [comp, config, className])}
+  ${tc.includeArgs("template.component.methods.StopAtomic", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.Run", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.SetupAtomic", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.InitAtomic", [comp, config, className])}
