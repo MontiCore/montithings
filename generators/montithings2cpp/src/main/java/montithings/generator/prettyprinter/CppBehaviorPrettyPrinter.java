@@ -113,6 +113,19 @@ public class CppBehaviorPrettyPrinter
     }
   }
 
+  @Override
+  public void handle(ASTObjectExpression node) {
+    getPrinter().print("[=](){");
+    node.getMCObjectType().accept(getTraverser());
+    getPrinter().print(" __object__to__instantiate; ");
+    for (ASTAttributeAssignment assignment : node.getAttributeAssignmentList()) {
+      getPrinter().print("__object__to__instantiate.set" + capitalize(assignment.getName()) + "(");
+      assignment.getExpression().accept(getTraverser());
+      getPrinter().print("); ");
+    }
+    getPrinter().print("return __object__to__instantiate;}()");
+  }
+
   protected void printGetExternalPortAccessFQN(ASTPortAccess portAccess) {
     getPrinter().print(
       "input.get" + StringTransformations.capitalize(portAccess.getComponent()) + " ().value ()" +

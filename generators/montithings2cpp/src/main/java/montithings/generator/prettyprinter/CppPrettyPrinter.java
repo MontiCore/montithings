@@ -33,6 +33,7 @@ public class CppPrettyPrinter {
     printer.getTraverser().setMCVarDeclarationStatementsHandler(new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setBehaviorHandler(new CppBehaviorPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setMCCommonStatementsHandler(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setMCBasicTypesHandler(new CppMCBasicTypesPrettyPrinter(printer.getPrinter()));
 
 
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
