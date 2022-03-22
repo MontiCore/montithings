@@ -6,9 +6,9 @@
 #define MQTT_LOG_ID "MQTT_PORT"
 
 MqttClient *
-MqttClient::instance (const std::string &brokerHostname, int brokerPort)
+MqttClient::instance (const std::string &brokerHostname, int brokerPort, const char *clientID)
 {
-  static MqttClient *_instance = new MqttClient (brokerHostname, brokerPort);
+  static MqttClient *_instance = new MqttClient (brokerHostname, brokerPort, clientID);
   return _instance;
 }
 
@@ -19,7 +19,7 @@ MqttClient::localInstance (const std::string &brokerHostname, int brokerPort)
   return _instance;
 }
 
-MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort)
+MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort, const char *clientID)
 {
   // Log version number
   int major, minor, revision;
@@ -30,7 +30,7 @@ MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort)
   mosquitto_lib_init ();
 
   // Create instance
-  mosq = mosquitto_new (nullptr, true, this);
+  mosq = mosquitto_new (clientID, clientID == nullptr, this);
   if (!mosq)
     {
       throw std::runtime_error ("Failed to initialize libmosquitto");
@@ -49,12 +49,13 @@ MqttClient::MqttClient (const std::string &brokerHostname, int brokerPort)
         currentInstance->onDisconnect (mosquitto, obj, result);
       }
   });
-  mosquitto_message_callback_set (mosq, [] (struct mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) {
-    if (MqttClient *currentInstance = static_cast<MqttClient *> (obj))
-      {
-        currentInstance->onMessage (mosquitto, obj, message);
-      }
-  });
+  mosquitto_message_callback_set (
+      mosq, [] (struct mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) {
+        if (MqttClient *currentInstance = static_cast<MqttClient *> (obj))
+          {
+            currentInstance->onMessage (mosquitto, obj, message);
+          }
+      });
 
   // Connect to MQTT broker
   int keepalive = 60;
@@ -88,10 +89,21 @@ MqttClient::publishRetainedMessage (const std::string &topic, const std::string 
                      topic.c_str (), message.length (), message.c_str (), qos, true);
 }
 
-
 void
 MqttClient::subscribe (std::string topic)
 {
+  this->subscriptions.emplace (topic);
+
+  if (topic.rfind ("/ports/", 0) == 0)
+    {
+      for (mosquitto_message* msg : pre_resubscribe_cache[topic])
+        {
+          this->onMessage (mosq, nullptr, msg);
+          delete msg;
+        }
+      pre_resubscribe_cache.erase (topic);
+    }
+
   int returnCode = mosquitto_subscribe (mosq, nullptr, topic.c_str (), qos);
   switch (returnCode)
     {
@@ -119,7 +131,6 @@ MqttClient::subscribe (std::string topic)
         break;
       */
     }
-  this->subscriptions.emplace (topic);
 }
 
 void
@@ -132,8 +143,8 @@ MqttClient::unsubscribe (std::string topic)
       CLOG (DEBUG, MQTT_LOG_ID) << "Unsubscribed from MQTT topic " << topic;
       break;
     case MOSQ_ERR_INVAL:
-      CLOG (DEBUG, MQTT_LOG_ID) << "Invalid Input Parameters. Could not unsubscribe from MQTT topic "
-                                << topic;
+      CLOG (DEBUG, MQTT_LOG_ID)
+          << "Invalid Input Parameters. Could not unsubscribe from MQTT topic " << topic;
       break;
     case MOSQ_ERR_NOMEM:
       CLOG (DEBUG, MQTT_LOG_ID) << "Out of memory. Could not unsubscribe from MQTT topic " << topic;
@@ -143,16 +154,17 @@ MqttClient::unsubscribe (std::string topic)
                                 << topic;
       break;
     case MOSQ_ERR_MALFORMED_UTF8:
-      CLOG (DEBUG, MQTT_LOG_ID) << "Topic is not UTF-8. Could not unsubscribe from MQTT topic " << topic;
+      CLOG (DEBUG, MQTT_LOG_ID) << "Topic is not UTF-8. Could not unsubscribe from MQTT topic "
+                                << topic;
       break;
       /*
       // Not available on Raspberry Pi
       case MOSQ_ERR_OVERSIZE_PACKET:
-        CLOG (DEBUG, MQTT_LOG_ID) << "Packet too large. Could not unsubscribe from MQTT topic " << topic;
-        break;
+        CLOG (DEBUG, MQTT_LOG_ID) << "Packet too large. Could not unsubscribe from MQTT topic " <<
+      topic; break;
       */
     }
-  this->subscriptions.erase(topic);
+  this->subscriptions.erase (topic);
 }
 
 void
@@ -178,6 +190,14 @@ MqttClient::onDisconnect (mosquitto *mosquitto, void *obj, int result)
 void
 MqttClient::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message)
 {
+  std::string topic = std::string ((char *)message->topic);
+  if (topic.rfind ("/ports/", 0) == 0 && subscriptions.find (topic) == subscriptions.end ())
+    {
+      mosquitto_message* msg_to_store = new mosquitto_message;
+      mosquitto_message_copy (msg_to_store, message);
+      pre_resubscribe_cache[topic].push_back (msg_to_store);
+    }
+
   for (MqttUser *user : users)
     {
       user->onMessage (mosquitto, obj, message);

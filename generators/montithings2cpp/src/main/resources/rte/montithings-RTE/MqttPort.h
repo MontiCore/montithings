@@ -123,8 +123,8 @@ void
 MqttPort<T>::subscribe (std::string portFqn)
 {
   std::string topic = "/ports/" + replaceDotsBySlashes (portFqn);
-  mqttClientInstance->subscribe (topic);
   subscriptions.emplace (topic);
+  mqttClientInstance->subscribe (topic);
 }
 
 template <typename T>

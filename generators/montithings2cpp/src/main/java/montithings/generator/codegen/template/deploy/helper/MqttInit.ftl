@@ -3,7 +3,7 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if brokerIsMQTT>
-  MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue ());
+  MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue (), instanceNameArg.getValue().c_str());
   MqttClient* mqttClientLocalInstance;
   if((brokerHostnameArg.getValue() == localHostnameArg.getValue())){
     mqttClientLocalInstance = mqttClientInstance;
