@@ -2,21 +2,21 @@
 // (c) https://github.com/MontiCore/monticore
 
 #pragma once
-#include "Port.h"
-#include <string>
-#include <iostream>
-#include <utility>
-#include <set>
 #include "MqttUser.h"
-#include <mosquitto.h>
+#include "Port.h"
 #include <future>
+#include <iostream>
+#include <mosquitto.h>
+#include <set>
+#include <string>
+#include <utility>
 
 class MqttClient
 {
 public:
   /// Singleton getter
   static MqttClient *instance (const std::string& brokerHostname = "localhost",
-                               int brokerPort = 1883);
+                               int brokerPort = 1883, const char* clientID = nullptr);
 
   /// Singleton getter for broker on local device
   static MqttClient *localInstance (const std::string& brokerHostname = "localhost",
@@ -47,6 +47,12 @@ protected:
   std::set<std::string> subscriptions;
 
   /**
+   * Caches messages received after joining a non-clean session until resubscribing to the topic
+   * The key of the map contains the topic
+   */
+  std::map<std::string, std::vector<mosquitto_message*>> pre_resubscribe_cache;
+
+  /**
    * Endless loop for asynchronously executing MQTT
    */
   std::future<void> _loop;
@@ -62,7 +68,7 @@ protected:
    * \param brokerPort port of the broker to connect to
    */
   explicit MqttClient (const std::string &brokerHostname = "localhost",
-                       int brokerPort = 1883);
+                       int brokerPort = 1883, const char* clientID = nullptr);
 
   /**
    * Destroys the MQTT connection
