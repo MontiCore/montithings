@@ -43,6 +43,7 @@ namespace montithings {
             {
                 internalSet.clear();
             };
+
             bool
             contains (key e)
             {
@@ -64,7 +65,7 @@ namespace montithings {
             bool
             equals (set<key> c)
             {
-                return containsAll(c) && size() == c.size();
+                return this == c;
             };
 
             bool

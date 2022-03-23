@@ -7,7 +7,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include "InOutPort.h"
 #include "easyloggingpp/easylogging++.h"
 #include "Message.h"
-#include "collections/Set.h"
+#include "collections/Collection.h"
 
 ${Utils.printIncludes(comp, config)}
 

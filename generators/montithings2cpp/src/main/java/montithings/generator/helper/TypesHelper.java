@@ -54,7 +54,7 @@ public class TypesHelper {
     type = type.replaceAll("(\\W|^)Integer(\\W|$)", "$1int$2");
     type = type.replaceAll("(\\W|^)Map(\\W|$)", "$1std::map$2");
     type = type.replaceAll("(\\W|^)Set(\\W|$)", "$1collections::set$2");
-    type = type.replaceAll("(\\W|^)List(\\W|$)", "$1std::list$2");
+    type = type.replaceAll("(\\W|^)List(\\W|$)", "$1collections::list$2");
     type = type.replaceAll("(\\W|^)Boolean(\\W|$)", "$1bool$2");
     type = type.replaceAll("(\\W|^)boolean(\\W|$)", "$1bool$2");
     type = type.replaceAll("(\\W|^)Character(\\W|$)", "$1char$2");

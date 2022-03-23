@@ -24,13 +24,9 @@ public class ListType {
     addFunctionContains();
     addFunctionContainsAll();
     addFunctionGet();
-    addFunctionFirst();
-    addFunctionLast();
-    addFunctionRest();
     addFunctionIndexOf();
     addFunctionLastIndexOf();
     addFunctionIsEmpty();
-    addFunctionCount();
     addFunctionRemove();
     addFunctionRemoveAtIndex();
     addFunctionRemoveAll();
@@ -106,24 +102,6 @@ public class ListType {
     listSymbol.getSpannedScope().add(function);
   }
 
-  protected static void addFunctionFirst() {
-    FunctionSymbol function = createMethod("first");
-    function.setReturnType(SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
-    listSymbol.getSpannedScope().add(function);
-  }
-
-  protected static void addFunctionLast() {
-    FunctionSymbol function = createMethod("last");
-    function.setReturnType(SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
-    listSymbol.getSpannedScope().add(function);
-  }
-
-  protected static void addFunctionRest() {
-    FunctionSymbol function = createMethod("rest");
-    function.setReturnType(getListOfXSymType());
-    listSymbol.getSpannedScope().add(function);
-  }
-
   protected static void addFunctionIndexOf() {
     FunctionSymbol function = createMethod("indexOf");
     addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
@@ -141,13 +119,6 @@ public class ListType {
   protected static void addFunctionIsEmpty() {
     FunctionSymbol function = createMethod("isEmpty");
     function.setReturnType(getBoolSymType());
-    listSymbol.getSpannedScope().add(function);
-  }
-
-  protected static void addFunctionCount() {
-    FunctionSymbol function = createMethod("count");
-    addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
-    function.setReturnType(getIntSymType());
     listSymbol.getSpannedScope().add(function);
   }
 

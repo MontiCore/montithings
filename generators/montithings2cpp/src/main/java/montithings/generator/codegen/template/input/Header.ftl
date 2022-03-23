@@ -15,7 +15,7 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include ${"<cereal/access.hpp>"}
 #include ${"<cereal/types/string.hpp>"}
 
-#include "collections/Set.h"
+#include "collections/Collection.h"
 #include "tl/optional.hpp"
 #include "Message.h"
 
