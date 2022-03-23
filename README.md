@@ -64,7 +64,7 @@ We support four ways of building an application:
 
 # Reference
 
-Please cite MontiThings using it's publication in the Journal of Systems and Software  [(Free Preprint Link)][jss-preprint].
+Please cite MontiThings using its publication in the Journal of Systems and Software  [(Free Preprint Link)][jss-preprint].
 > Jörg Christian Kirchhof, Bernhard Rumpe, David Schmalzing, Andreas Wortmann,
 MontiThings: Model-Driven Development and Deployment of Reliable IoT Applications, In: W.K. Chan, editor, Journal of Systems and Software (JSS), Volume 183, January 2022, 111087, Elsevier, https://doi.org/10.1016/j.jss.2021.111087.
 
