@@ -14,7 +14,6 @@ import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeExpressionFactory;
-import de.monticore.types.check.SymTypeOfGenerics;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -23,7 +22,8 @@ import montithings._symboltable.*;
 import montithings.cocos.MontiThingsCoCos;
 import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.MontiThingsTrafo;
-import montithings.util.CollectionsUtil;
+import montithings.util.library.ListType;
+import montithings.util.library.SetType;
 import montithings.util.MontiThingsError;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -330,10 +330,11 @@ public class MontiThingsTool implements IMontiThingsTool {
     add2Scope(artifactScope, collectionType);
 
     TypeSymbol listType = createCollectionType("List", artifactScope, Optional.of(collectionType), typeVarSymbol);
+    ListType.addMethodsAndFields(listType, typeVarSymbol);
     add2Scope(artifactScope, listType);
 
     TypeSymbol setType = createCollectionType("Set", artifactScope, Optional.of(collectionType), typeVarSymbol);
-    CollectionsUtil.addMethodsAndFields(setType, typeVarSymbol);
+    SetType.addMethodsAndFields(setType, typeVarSymbol);
     add2Scope(artifactScope, setType);
   }
 

@@ -1,10 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package setdefinitions._visitor;
 
+import afu.org.checkerframework.checker.oigj.qual.O;
 import com.google.common.base.Preconditions;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpressionsBasisNode;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
+import setdefinitions._ast.ASTListExpression;
 import setdefinitions._ast.ASTSetDefinitionsNode;
 import setdefinitions._ast.ASTSetValueRange;
 import setdefinitions._ast.ASTSetValueRegEx;
@@ -81,5 +83,12 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   public void handle(ASTSetValueRegEx node) {
     this.getPrinter().print("format :");
     node.getFormat().accept(getTraverser());
+  }
+
+  @Override
+  public void handle(ASTListExpression node) {
+    getPrinter().print("[");
+    acceptSeperatedList(node.getExpressionList());
+    getPrinter().print("]");
   }
 }

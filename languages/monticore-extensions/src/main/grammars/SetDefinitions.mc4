@@ -21,4 +21,16 @@ component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
     SetValueRegEx implements SetCollectionItem =
       "format" ":" format:StringLiteral
     ;
+
+    ListExpression implements Expression <40> =
+      "[" (Expression || ",")* "]"
+    ;
+
+    MapExpression implements Expression <40> =
+      "{" (KeyValuePair || ",")* "}"
+    ;
+
+    KeyValuePair =
+      "\"" Name "\"" ":" Expression
+    ;
 }

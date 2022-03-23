@@ -9,8 +9,7 @@ import montithings.MontiThingsMill;
 import montithings._symboltable.IMontiThingsScope;
 import org.codehaus.commons.nullanalysis.NotNull;
 
-import static montithings.util.SymbolUtil.addParam;
-import static montithings.util.SymbolUtil.createFunction;
+import static montithings.util.SymbolUtil.*;
 
 /**
  * Helpers to add function symbols for MontiThings' library to the symbol table
@@ -53,11 +52,11 @@ public class LibraryFunctionsUtil {
 
   public static void addFunctionDelay(@NotNull IMontiThingsScope scope) {
     FunctionSymbol delay = createFunction("delay", scope);
-    addParam(delay, "milliseconds", SymTypeExpressionFactory.createTypeConstant("int"));
+    addParam(delay, "milliseconds", getIntSymType());
   }
 
   public static void addFunctionNow(@NotNull IMontiThingsScope scope) {
-    createFunction("now", SymTypeExpressionFactory.createTypeConstant("long"), scope);
+    createFunction("now", getLongSymType(), scope);
   }
 
   public static void addFunctionNow_Ns(@NotNull IMontiThingsScope scope) {
@@ -71,32 +70,30 @@ public class LibraryFunctionsUtil {
   // assume long = unsigned long long since Monticore does not support all types
 
   public static void addFunctionGetNanoTimestamp(@NotNull IMontiThingsScope scope) {
-    createFunction("getNanoTimestamp", SymTypeExpressionFactory.createTypeConstant("long"),
-      scope);
+    createFunction("getNanoTimestamp", getLongSymType(), scope);
   }
 
   public static void addFunctionDelayNanoseconds(@NotNull IMontiThingsScope scope) {
     FunctionSymbol delayNanoseconds = createFunction("delayNanoseconds", scope);
-    addParam(delayNanoseconds, "nanoseconds", SymTypeExpressionFactory.createTypeConstant("long"));
+    addParam(delayNanoseconds, "nanoseconds", getLongSymType());
   }
 
   public static void addFunctionSubtract(@NotNull IMontiThingsScope scope) {
     FunctionSymbol subtract = createFunction("subtract",
       SymTypeExpressionFactory.createTypeConstant("long"), scope);
-    addParam(subtract, "v1", SymTypeExpressionFactory.createTypeConstant("long"));
-    addParam(subtract, "v2", SymTypeExpressionFactory.createTypeConstant("long"));
+    addParam(subtract, "v1", getLongSymType());
+    addParam(subtract, "v2", getLongSymType());
   }
 
   public static void addFunctionGetNsFromMap(@NotNull IMontiThingsScope scope) {
-    FunctionSymbol getNsFromMap = createFunction("getNsFromMap",
-      SymTypeExpressionFactory.createTypeConstant("long"), scope);
-    addParam(getNsFromMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
+    FunctionSymbol getNsFromMap = createFunction("getNsFromMap", getLongSymType(), scope);
+    addParam(getNsFromMap, "index", getIntSymType());
   }
 
   public static void addFunctionStoreNsInMap(@NotNull IMontiThingsScope scope) {
     FunctionSymbol storeNsInMap = createFunction("storeNsInMap", scope);
-    addParam(storeNsInMap, "index", SymTypeExpressionFactory.createTypeConstant("int"));
-    addParam(storeNsInMap, "ts", SymTypeExpressionFactory.createTypeConstant("long"));
+    addParam(storeNsInMap, "index", getIntSymType());
+    addParam(storeNsInMap, "ts", getLongSymType());
   }
 
   // Non-determinism wrapper for replayer

@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package montithings.util;
+package montithings.util.library;
 
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
@@ -8,9 +8,9 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
 import montithings.MontiThingsMill;
 
-import static montithings.util.SymbolUtil.addParam;
+import static montithings.util.SymbolUtil.*;
 
-public class CollectionsUtil {
+public class SetType {
 
   protected static TypeSymbol setSymbol;
 
@@ -117,21 +117,5 @@ public class CollectionsUtil {
   protected static SymTypeExpression getSetOfXSymType() {
     return SymTypeExpressionFactory
         .createGenerics(setSymbol, SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
-  }
-  
-  protected static SymTypeExpression getIntSymType() {
-    return SymTypeExpressionFactory.createTypeConstant("int");
-  }
-
-  protected static SymTypeExpression getLongSymType() {
-    return SymTypeExpressionFactory.createTypeConstant("long");
-  }
-
-  protected static SymTypeExpression getBoolSymType() {
-    return SymTypeExpressionFactory.createTypeConstant("boolean");
-  }
-
-  protected static TypeSymbol getSetType() {
-    return SymTypeExpressionFactory.createTypeConstant("Set").getTypeInfo();
   }
 }
