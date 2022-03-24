@@ -15,7 +15,6 @@ MACRO(HEADER_DIRECTORIES input return_list)
     SET(${return_list} ${dir_list})
 ENDMACRO()
 SET(dir_list "")
-SET(EXCLUDE_DDS 1)
 
 if (NOT EXCLUDE_DDS)
     find_package(OpenDDS REQUIRED)
