@@ -31,6 +31,6 @@ component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
     ;
 
     KeyValuePair =
-      "\"" Name "\"" ":" Expression
+      "\"" key:Expression "\"" ":" value:Expression
     ;
 }

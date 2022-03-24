@@ -6,10 +6,7 @@ import com.google.common.base.Preconditions;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpressionsBasisNode;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
-import setdefinitions._ast.ASTListExpression;
-import setdefinitions._ast.ASTSetDefinitionsNode;
-import setdefinitions._ast.ASTSetValueRange;
-import setdefinitions._ast.ASTSetValueRegEx;
+import setdefinitions._ast.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -90,5 +87,20 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
     getPrinter().print("[");
     acceptSeperatedList(node.getExpressionList());
     getPrinter().print("]");
+  }
+
+  @Override
+  public void handle(ASTMapExpression node) {
+    getPrinter().print("{");
+    acceptSeperatedSetList(node.getKeyValuePairList());
+    getPrinter().print("}");
+  }
+
+  @Override
+  public void handle(ASTKeyValuePair node) {
+    getPrinter().print("\"");
+    getPrinter().print(node.getName());
+    getPrinter().print("\" : ");
+    node.getExpression().accept(getTraverser());
   }
 }

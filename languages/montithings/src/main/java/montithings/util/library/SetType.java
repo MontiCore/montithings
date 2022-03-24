@@ -23,6 +23,7 @@ public class SetType {
     addFunctionAddAll();
     addFunctionContains();
     addFunctionContainsAll();
+    addFunctionEquals();
     addFunctionIsEmpty();
     addFunctionRemove();
     addFunctionRemoveAll();
@@ -48,6 +49,11 @@ public class SetType {
     setSymbol.getSpannedScope().add(function);
   }
 
+  protected static void addFunctionClear() {
+    FunctionSymbol function = createMethod("clear");
+    setSymbol.getSpannedScope().add(function);
+  }
+
   protected static void addFunctionContains() {
     FunctionSymbol function = createMethod("contains");
     addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
@@ -62,10 +68,10 @@ public class SetType {
     setSymbol.getSpannedScope().add(function);
   }
 
-  protected static void addFunctionCount() {
-    FunctionSymbol function = createMethod("count");
-    addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
-    function.setReturnType(getIntSymType());
+  protected static void addFunctionEquals() {
+    FunctionSymbol function = createMethod("equals");
+    addParam(function, "o", getSetOfXSymType());
+    function.setReturnType(getBoolSymType());
     setSymbol.getSpannedScope().add(function);
   }
 

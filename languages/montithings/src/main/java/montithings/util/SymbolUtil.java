@@ -65,6 +65,10 @@ public class SymbolUtil {
     return SymTypeExpressionFactory.createTypeConstant("Set").getTypeInfo();
   }
 
+  public static TypeSymbol getMapType() {
+    return SymTypeExpressionFactory.createTypeConstant("Map").getTypeInfo();
+  }
+
   public static TypeSymbol getCollectionType() {
     return SymTypeExpressionFactory.createTypeConstant("Collection").getTypeInfo();
   }

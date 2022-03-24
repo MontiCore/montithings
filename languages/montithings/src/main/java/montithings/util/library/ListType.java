@@ -18,11 +18,12 @@ public class ListType {
     typeVarSymbol = typeVar;
     addFunctionAdd();
     addFunctionAdd2();
-    addFunctionPrepend();
     addFunctionAddAll();
     addFunctionAddAll2();
+    addFunctionClear();
     addFunctionContains();
     addFunctionContainsAll();
+    addFunctionEquals();
     addFunctionGet();
     addFunctionIndexOf();
     addFunctionLastIndexOf();
@@ -36,14 +37,6 @@ public class ListType {
     addFunctionSubList();
   }
 
-  protected static FunctionSymbol createMethod(String name) {
-    return MontiThingsMill.functionSymbolBuilder().setName(name).setEnclosingScope(listSymbol.getSpannedScope()).setSpannedScope(MontiThingsMill.scope()).build();
-  }
-
-  protected static SymTypeExpression getListOfXSymType() {
-    return SymTypeExpressionFactory.createGenerics(listSymbol, new SymTypeExpression[]{SymTypeExpressionFactory.createTypeVariable(typeVarSymbol)});
-  }
-
   protected static void addFunctionAdd() {
     FunctionSymbol function = createMethod("add");
     addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
@@ -54,13 +47,6 @@ public class ListType {
   protected static void addFunctionAdd2() {
     FunctionSymbol function = createMethod("add");
     addParam(function, "index", getIntSymType());
-    addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
-    function.setReturnType(getListOfXSymType());
-    listSymbol.getSpannedScope().add(function);
-  }
-
-  protected static void addFunctionPrepend() {
-    FunctionSymbol function = createMethod("prepend");
     addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
     function.setReturnType(getListOfXSymType());
     listSymbol.getSpannedScope().add(function);
@@ -81,6 +67,12 @@ public class ListType {
     listSymbol.getSpannedScope().add(function);
   }
 
+  protected static void addFunctionClear() {
+    FunctionSymbol function = createMethod("clear");
+    listSymbol.getSpannedScope().add(function);
+  }
+
+
   protected static void addFunctionContains() {
     FunctionSymbol function = createMethod("contains");
     addParam(function, "o", SymTypeExpressionFactory.createTypeVariable(typeVarSymbol));
@@ -91,6 +83,13 @@ public class ListType {
   protected static void addFunctionContainsAll() {
     FunctionSymbol function = createMethod("containsAll");
     addParam(function, "c", getListOfXSymType());
+    function.setReturnType(getBoolSymType());
+    listSymbol.getSpannedScope().add(function);
+  }
+
+  protected static void addFunctionEquals() {
+    FunctionSymbol function = createMethod("equals");
+    addParam(function, "o", getListOfXSymType());
     function.setReturnType(getBoolSymType());
     listSymbol.getSpannedScope().add(function);
   }
@@ -170,5 +169,17 @@ public class ListType {
     addParam(function, "toIndex", getIntSymType());
     function.setReturnType(getListOfXSymType());
     listSymbol.getSpannedScope().add(function);
+  }
+
+  /* ============================================================ */
+  /* ========================= HELPERS ========================== */
+  /* ============================================================ */
+
+  protected static FunctionSymbol createMethod(String name) {
+    return MontiThingsMill.functionSymbolBuilder().setName(name).setEnclosingScope(listSymbol.getSpannedScope()).setSpannedScope(MontiThingsMill.scope()).build();
+  }
+
+  protected static SymTypeExpression getListOfXSymType() {
+    return SymTypeExpressionFactory.createGenerics(listSymbol, new SymTypeExpression[]{SymTypeExpressionFactory.createTypeVariable(typeVarSymbol)});
   }
 }
