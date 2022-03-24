@@ -99,8 +99,8 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   @Override
   public void handle(ASTKeyValuePair node) {
     getPrinter().print("\"");
-    getPrinter().print(node.getName());
+    node.getKey().accept(getTraverser());
     getPrinter().print("\" : ");
-    node.getExpression().accept(getTraverser());
+    node.getValue().accept(getTraverser());
   }
 }
