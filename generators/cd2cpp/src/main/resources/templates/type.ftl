@@ -20,6 +20,7 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
   <#assign output = output?replace("Set", "std::set")>
   <#assign output = output?replace("List", "std::list")>
   <#assign output = output?replace("Boolean", "bool")>
+  <#assign output = output?replace("boolean", "bool")>
   <#assign output = output?replace("Character", "char")>
   <#assign output = output?replace("Double", "double")>
   <#assign output = output?replace("Float", "float")>
@@ -193,7 +194,7 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     os << "{ ";
     <#-- attributes -->
     <#list type.getFieldList() as field>
-      os << "\"${field.getName()}\": \"" << ${thisVar}.${field.getName()} << "\"";
+      os << "\"${field.getName()}\": \"" << ${thisVar}.${field.getName()} << "\"<#sep>, </#sep>";
     </#list>
 
     <#-- associations -->

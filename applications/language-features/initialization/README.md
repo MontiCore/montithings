@@ -8,7 +8,7 @@ For this, MontiThings provides the `init` construct.
 In can be used in two variants: with and without referencing ports. 
 The following example of a `Loop` component showcases both of these variants.
 
-<img src="../../../docs/Initialization.png" alt="drawing" height="200px"/>
+<img src="../../../docs/Initialization.png" alt="drawing" width="200px"/>
 
 The `Example` component specifies that the outgoing port `output` shall be 
 connected to the incoming port `input` of the same `Loop` component.

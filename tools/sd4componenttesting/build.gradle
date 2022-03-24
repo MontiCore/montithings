@@ -1,0 +1,127 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'maven-publish'
+    id 'monticore' version "$monticore_version"
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
+}
+
+def grammarDir = "$projectDir/src/main/grammars"
+def reportsDir = "$buildDir/generated-sources/monticore/sourcecode/reports/"
+
+sourceSets {
+    main {
+        java.srcDirs += ["$buildDir/generated-sources/monticore/sourcecode"]
+    }
+    test {
+        java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+    }
+    grammars {
+        resources {
+            srcDirs(grammarDir, reportsDir)
+            include("**/*.mc4", "**/*.cd")
+        }
+    }
+}
+
+repositories {
+    maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        url repo
+    }
+    maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        url sePrivateRepo
+    }
+
+    maven {
+        url = uri('https://git.rwth-aachen.de/api/v4/groups/montibelle/-/packages/maven')
+    }
+
+    mavenCentral()
+}
+
+dependencies {
+    grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+    grammar("montiarc.languages:montiarc-fe:$montiarc_version:$grammars_classifier"){
+        exclude group:'de.monticore', module:'monticore-grammar'
+    }
+    grammar("de.monticore:siunits:$siunits_version:$grammars_classifier"){
+        exclude group:'de.monticore', module:'monticore-grammar'
+    }
+    grammar("de.monticore.lang:sd-language:7.0.0:$grammars_classifier"){
+        exclude group:'de.monticore', module:'monticore-grammar'
+    }
+    grammar("de.monticore.lang:ocl:$ocl_version:$grammars_classifier"){
+        exclude group:'de.monticore', module:'monticore-grammar'
+    }
+
+    implementation 'commons-cli:commons-cli:1.4'
+    implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "org.antlr:antlr4:$antlr_version"
+    implementation "de.monticore:monticore-runtime:$monticore_version"
+    implementation "de.monticore:monticore-grammar:$monticore_version"
+    implementation "de.monticore:siunits:$siunits_version"
+    implementation 'de.monticore.lang:sd-language:7.0.0'
+    implementation "de.monticore.lang:ocl:$ocl_version"
+    implementation 'montiarc.languages:arc-fe:7.0.0-SNAPSHOT'
+    implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+    implementation "montiarc.languages:behavior-fe:$montiarc_version"
+    implementation "montithings.generators:montithings2cpp:$montithings_version"
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+    testImplementation "org.assertj:assertj-core:$assertj_version"
+    testImplementation "de.monticore:monticore-runtime:$monticore_version"
+}
+
+group = 'montithings.tools'
+version = '7.0.0-SNAPSHOT'
+description = 'sd4componenttesting'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+
+java {
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+// all in one tool-jar
+mainClassName = 'montithings.tools.sd4componenttesting.SD4ComponentTestingCLI'
+shadowJar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+    archiveBaseName.set('sd4componenttesting')
+    archiveVersion.set('7.0.0')
+    archiveClassifier = "SNAPSHOT"
+    minimize()
+}
+
+task generateGrammarBindings(type: MCTask) {
+    grammar = file "src/main/grammars/de/monticore/lang/SD4ComponentTesting.mc4"
+    outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
+    handcodedPath = [file("$projectDir/src/main/java")]
+    def upToDate = incCheck("SD4ComponentTesting.mc4")
+    outputs.upToDateWhen { upToDate }
+}
+
+compileJava {
+    dependsOn project.collect { it.tasks.findAll { task -> task.name.startsWith("generateGrammar") } }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

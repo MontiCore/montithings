@@ -11,7 +11,7 @@ bool hasUpdateInterval = ${ComponentHelper.hasUpdateInterval(comp)?c};
 
 if (timeMode == TIMESYNC || hasUpdateInterval) {
 LOG(DEBUG) << "Thread for ${compname} started";
-while (true)
+while (!this->stopSignalReceived)
 {
 auto end = std::chrono::high_resolution_clock::now()
 + ${ComponentHelper.getExecutionIntervalMethod(comp)};

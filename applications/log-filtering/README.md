@@ -1,7 +1,7 @@
 <!-- (c) https://github.com/MontiCore/monticore -->
 # Log Filtering
 
-<img src="../../docs/LogFilteringExample.png" alt="drawing" height="200px"/>
+<img src="../../docs/LogFilteringExample.png" alt="drawing" width="700px"/>
 
 A simple application to show off various tracing possibilities.
 A source yields increasing integer values which are received by two sink components.

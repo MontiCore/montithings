@@ -6,7 +6,7 @@ generally speaking, hardware.
 The example is based on the basic-input-output example but has two additional
 ports:
 
-<img src="../../docs/SensorActuatorAccess.png" alt="drawing" height="200px"/>
+<img src="../../docs/SensorActuatorAccess.png" alt="drawing" width="400px"/>
 
 The additional unconnected ports can be used for accessing hardware such as 
 sensors and actuators.

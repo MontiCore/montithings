@@ -214,15 +214,15 @@ public class MontiThingsConfiguration implements Configuration {
     }
     else if (getModelPath() != null) {
       Path defaultTestPath = getModelPath().toPath();
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < 4; i++) {
         defaultTestPath = defaultTestPath.getParent();
         if (defaultTestPath == null) {
-          return null;
+          Log.error("default test path could not be found");
         }
       }
-      if (Paths.get(defaultTestPath.toString(), "test", "resources", "gtests").toFile()
+      if (Paths.get(defaultTestPath.toString(), "target", "sd4c", "cpp").toFile()
         .isDirectory()) {
-        return Paths.get(defaultTestPath.toString(), "test", "resources", "gtests").toFile();
+        return Paths.get(defaultTestPath.toString(), "target", "sd4c", "cpp").toFile();
       }
     }
     return new File("");

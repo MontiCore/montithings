@@ -13,7 +13,7 @@ ${tc.signature("comp","config","className")}
   {
 
   LOG(DEBUG) << "Every-thread ${everyname?replace("__", "")} for ${compname} started";
-  while (true)
+  while (!stopSignalReceived)
   {
   auto end = std::chrono::high_resolution_clock::now()
   + ${ComponentHelper.getExecutionIntervalMethod(comp, everyBlock)};
