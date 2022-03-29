@@ -76,14 +76,14 @@ public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter 
     else {
       type = tc.typeOf(node.getExpression(0));
     }
-    TypesPrinter.printCPPTypeName(type);
+    getPrinter().print(TypesPrinter.printCPPTypeName(type));
     getPrinter().print( "> __list__init (");
     acceptSeperatedList(node.getExpressionList());
     getPrinter().print(");");
     getPrinter().print("collections::list<");
-    TypesPrinter.printCPPTypeName(type);
+    getPrinter().print(TypesPrinter.printCPPTypeName(type));
     getPrinter().print("> __list__init__2 (__list__init);");
-    getPrinter().print("return collections::list(__list__init);}()");
+    getPrinter().print("return __list__init__2;}()");
   }
 
   /* ============================================================ */

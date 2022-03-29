@@ -164,4 +164,16 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       super.handle(node);
     }
   }
+
+  @Override
+  public void handle(ASTCallExpression node) {
+    CommentPrettyPrinter.printPreComments(node, getPrinter());
+    node.getExpression().accept(getTraverser());
+    if (!(node.getExpression() instanceof ASTNameExpression) ||
+        !((ASTNameExpression) node.getExpression()).getName().equals(node.getName())) {
+        getPrinter().print("." + node.getName());
+    }
+    node.getArguments().accept(getTraverser());
+    CommentPrettyPrinter.printPostComments(node, getPrinter());
+  }
 }
