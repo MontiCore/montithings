@@ -19,7 +19,7 @@ The Object Constraint Language (OCL) defines a set of various practical expressi
 
 Suppose the project for which tests are to be generated has the following structure, as shown in this diagram.
 
-![Diagram of Main Component with Sum as Subcomponent](docs/Diagram.svg)
+<img src="docs/Diagram.svg" width="700px"/>
 
 The connections from the diagram would be written down components as shown in the following two code sections.
 
@@ -53,7 +53,7 @@ Having the application specified, we come up with an idea of a test case for the
 
 An exemplary test case would be to check if the application returns 24 for an input of 12. Representing this test case in a graphical syntax would result in something like the following test diagram, which is a variation of the sequence diagram from sd-language.
 
-![Diagram of 12+12=24 Test Case](docs/TestCaseSD.svg)
+<img src="docs/TestCaseSD.svg" width="700px"/>
 
 Transforming this into textual syntax for generating tests would result in such a SD4C test diagram that we would save as `MainTest.sd4c`.
 
@@ -424,7 +424,7 @@ IoT is not only a technology for home use but very useful in Industry as well. I
 
 In the following, we have a somewhat more realistic Example Application. This more in-depth example should give an idea of the wide range of appliances for the tool. Let’s say we have installed a solar panel on the roof and a Battery in the House. This whole system is connected to the power grid. Now we want to decide where the energy from our solar panel goes. On the left, we have modeled a Control Unit for our Solar Power Panel. We have a few subcomponents that we can just consider as a Blackbox. We just know the inputs and outputs of this System. We have the electricity price (which we consider the same for buying and selling), the battery charge level, and the current house consumption level as inputs. Furthermore, the output is the instruction on how to use the energy. One Example for input can be seen in the Test diagram on the right side. If we have 0,31€ as the price we expect the prize Checker to value that as a high price. If we have 2 kWh the charge checker values that at 25% energy level for the battery (for a Battery with 8 kWh capacity). If we have 3kW as our current consumption the consumption checker values this as 50% because our solar panel currently outputs 6kW. With these inputs to the power distribution manager, we expect that 50% should be sold. SD4ComponentTesting is now able to generate a test case for this instance.
 
-![Diagram of the Solar Power Example](docs/solar_testdiagram.png)
+<img src="docs/solar_testdiagram.png" width="700px"/>
 
 # License
 
