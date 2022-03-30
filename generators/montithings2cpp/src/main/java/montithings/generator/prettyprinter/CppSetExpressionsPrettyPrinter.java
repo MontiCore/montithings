@@ -10,6 +10,7 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
+import de.monticore.types.check.SymTypeOfGenerics;
 import de.se_rwth.commons.logging.Log;
 import montithings._auxiliary.SetExpressionsMillForMontiThings;
 import montithings.generator.helper.TypesPrinter;
@@ -17,6 +18,7 @@ import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
+import java.util.List;
 import java.util.Stack;
 
 
@@ -131,10 +133,30 @@ public class CppSetExpressionsPrettyPrinter extends SetExpressionsPrettyPrinter 
       type = SymTypeExpressionFactory.createTypeConstant("Object");
     }
     else {
-      type = SymTypeExpressionFactory.createTypeConstant("Object");
+      type = tc.typeOf(expressions.peek());
+      if (type instanceof SymTypeOfGenerics) {
+        type = ((SymTypeOfGenerics)type).getArgument(0);
+      }
     }
     getPrinter().print(TypesPrinter.printCPPTypeName(type));
     getPrinter().print( "> __set__init ({");
+    for (int i = 0; i < node.sizeSetCollectionItems(); i++) {
+      if (!(node.getSetCollectionItem(i) instanceof ASTSetValueItem)) {
+        Log.error("In SetEnumerations used for AssignmentExpressions, only SetValueItems are allowed as SetCollectionItems");
+      }
+      else {
+        if (i != 0) {
+          getPrinter().print(",");
+        }
+        List<ASTExpression> expressionList = ((ASTSetValueItem) node.getSetCollectionItem(i)).getExpressionList();
+        for (int j = 0; j < expressionList.size(); j++) {
+          if (j != 0) {
+            getPrinter().print(",");
+          }
+          expressionList.get(j).accept(getTraverser());
+        }
+      }
+    }
     getPrinter().print("});");
     getPrinter().print("collections::set<");
     getPrinter().print(TypesPrinter.printCPPTypeName(type));

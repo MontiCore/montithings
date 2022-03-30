@@ -218,7 +218,7 @@ namespace montithings {
                         os << elem;
                     }
                     else {
-                        os << "," << elem;
+                        os << ", " << elem;
                     }
                 }
                 return os << "]";

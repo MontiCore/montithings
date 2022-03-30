@@ -17,7 +17,7 @@ std::stringstream error;
 error << "Violated <#if !isPrecondition>pre<#else>post</#if>condition " << toString () << " on component '" << instanceName << "'" << std::endl;
 error << "Input port values: " << std::endl;
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort>
-    <#if inPort.isIncoming() && !inPort.getType().isGenericType()>
+    <#if inPort.isIncoming()>
       if (${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().has_value()) {
       error << "Port \"${inPort.getName()}\": " << ${Identifier.getInputName()}.get${inPort.getName()?cap_first} ().value() << std::endl;
       } else {
@@ -34,13 +34,11 @@ error << "Input port values: " << std::endl;
 </#list>
 <#if !isPrecondition>
     <#list comp.getAllOutgoingPorts() as outPort>
-      <#if !outPort.getType().isGenericType()>
-        if (${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().has_value()) {
-        error << "Out port \"${outPort.getName()}\": " << ${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().value() << std::endl;
-        } else {
-        error << "Out port \"${outPort.getName()}\": No data." << std::endl;
-        }
-      </#if>
+      if (${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().has_value()) {
+      error << "Out port \"${outPort.getName()}\": " << ${Identifier.getResultName()}.get${outPort.getName()?cap_first} ().value() << std::endl;
+      } else {
+      error << "Out port \"${outPort.getName()}\": No data." << std::endl;
+      }
     </#list>
 </#if>
 LOG (FATAL) << error.str ();
