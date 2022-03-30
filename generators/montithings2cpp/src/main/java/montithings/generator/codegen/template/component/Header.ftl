@@ -71,7 +71,7 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 </#if>
 
 // if set to true, loop-threads will stop after their current iteration
-bool stopSignalReceived;
+bool stopSignalReceived = false;
 
 public:
 ${className}(std::string instanceName
