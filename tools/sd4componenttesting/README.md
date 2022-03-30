@@ -19,7 +19,7 @@ The Object Constraint Language (OCL) defines a set of various practical expressi
 
 Suppose the project for which tests are to be generated has the following structure, as shown in this diagram.
 
-![Diagram of Main Component with Sum as Subcomponent](docs/Diagram.svg)
+<img src="docs/Diagram.svg" width="700px"/>
 
 The connections from the diagram would be written down components as shown in the following two code sections.
 
