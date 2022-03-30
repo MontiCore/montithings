@@ -9,9 +9,7 @@ import montithings.generator.helper.TypesPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
-import setdefinitions._ast.ASTListExpression;
-import setdefinitions._ast.ASTSetValueRange;
-import setdefinitions._ast.ASTSetValueRegEx;
+import setdefinitions._ast.*;
 import setdefinitions._visitor.SetDefinitionsPrettyPrinter;
 
 import java.util.Stack;
@@ -19,7 +17,7 @@ import java.util.Stack;
 
 public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter {
 
-  Stack<ASTExpression> expressions;
+  protected static Stack<ASTExpression> expressions;
 
   MontiThingsTypeCheck tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
 
@@ -77,13 +75,46 @@ public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter 
       type = tc.typeOf(node.getExpression(0));
     }
     getPrinter().print(TypesPrinter.printCPPTypeName(type));
-    getPrinter().print( "> __list__init (");
+    getPrinter().print( "> __list__init ({");
     acceptSeperatedList(node.getExpressionList());
-    getPrinter().print(");");
+    getPrinter().print("});");
     getPrinter().print("collections::list<");
     getPrinter().print(TypesPrinter.printCPPTypeName(type));
     getPrinter().print("> __list__init__2 (__list__init);");
     getPrinter().print("return __list__init__2;}()");
+  }
+
+  @Override
+  public void handle(ASTMapExpression node) {
+    SymTypeExpression keyType, valueType;
+    if (node.isEmptyKeyValuePairs()) {
+      keyType = SymTypeExpressionFactory.createTypeConstant("Object");
+      valueType = SymTypeExpressionFactory.createTypeConstant("Object");
+    }
+    else {
+      keyType = tc.typeOf(node.getKeyValuePair(0).getKey());
+      valueType = tc.typeOf(node.getKeyValuePair(0).getValue());
+    }
+    getPrinter().print("[=](){");
+    getPrinter().print("collections::map");
+    getPrinter().print("<" + TypesPrinter.printCPPTypeName(keyType) + ", ");
+    getPrinter().print(TypesPrinter.printCPPTypeName(valueType) + ">");
+    getPrinter().print(" __map__init (std::map");
+    getPrinter().print("<" + TypesPrinter.printCPPTypeName(keyType) + ", ");
+    getPrinter().print(TypesPrinter.printCPPTypeName(valueType) + ">");
+    getPrinter().print("({");
+    acceptSeperatedSetList(node.getKeyValuePairList());
+    getPrinter().print("}));");
+    getPrinter().print("return __map__init;}()");
+  }
+
+  @Override
+  public void handle(ASTKeyValuePair node) {
+    getPrinter().print("{");
+    node.getKey().accept(getTraverser());
+    getPrinter().print(",");
+    node.getValue().accept(getTraverser());
+    getPrinter().print("}");
   }
 
   /* ============================================================ */

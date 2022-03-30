@@ -107,6 +107,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
 
   @Override
   public void handle(ASTAssignmentExpression node) {
+    CppSetExpressionsPrettyPrinter.getExpressions().push(node);
     if (node.getLeft() instanceof ASTNameExpression) {
       ASTNameExpression nameExpression = (ASTNameExpression) node.getLeft();
       if (isPort(nameExpression) || isStateVariable(nameExpression)) {
@@ -119,6 +120,7 @@ public class CppAssignmentPrettyPrinter extends AssignmentExpressionsPrettyPrint
     else {
       super.handle(node);
     }
+    CppSetExpressionsPrettyPrinter.getExpressions().pop();
   }
 
   protected void handlePortAndVariableAssignments(ASTAssignmentExpression node,

@@ -1,21 +1,31 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.prettyprinter;
 
+import de.monticore.expressions.assignmentexpressions._ast.ASTAssignmentExpression;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.ocl.setexpressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeExpressionFactory;
 import de.se_rwth.commons.logging.Log;
 import montithings._auxiliary.SetExpressionsMillForMontiThings;
+import montithings.generator.helper.TypesPrinter;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.MontiThingsTypeCheck;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 
 import java.util.Stack;
 
 
 public class CppSetExpressionsPrettyPrinter extends SetExpressionsPrettyPrinter {
 
-  Stack<ASTExpression> expressions;
+  protected static Stack<ASTExpression> expressions;
+
+  MontiThingsTypeCheck tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+
 
   public CppSetExpressionsPrettyPrinter(IndentPrinter printer) {
     super(printer);
@@ -95,14 +105,41 @@ public class CppSetExpressionsPrettyPrinter extends SetExpressionsPrettyPrinter 
 
   @Override
   public void handle(ASTSetEnumeration node) {
-    for (int i = 0; i < node.sizeSetCollectionItems(); i++) {
-      getPrinter().print("(");
-      node.getSetCollectionItem(i).accept(getTraverser());
-      getPrinter().print(")");
-      if (i < node.sizeSetCollectionItems() - 1) {
-        getPrinter().print(" || ");
+    if (expressions.size() > 1) {
+      Log.error("SetEnumeration was used in an AssignmentExpression and LetInExpression at the same time");
+    }
+    else if (expressions.size() > 0 && expressions.peek() instanceof ASTAssignmentExpression) {
+      handleSetEnumerationInAssignment(node);
+    }
+    else {
+      for (int i = 0; i < node.sizeSetCollectionItems(); i++) {
+        getPrinter().print("(");
+        node.getSetCollectionItem(i).accept(getTraverser());
+        getPrinter().print(")");
+        if (i < node.sizeSetCollectionItems() - 1) {
+          getPrinter().print(" || ");
+        }
       }
     }
+  }
+
+  protected void handleSetEnumerationInAssignment(ASTSetEnumeration node) {
+    getPrinter().print("[=](){");
+    getPrinter().print("std::set<" );
+    SymTypeExpression type;
+    if (node.isEmptySetCollectionItems()) {
+      type = SymTypeExpressionFactory.createTypeConstant("Object");
+    }
+    else {
+      type = SymTypeExpressionFactory.createTypeConstant("Object");
+    }
+    getPrinter().print(TypesPrinter.printCPPTypeName(type));
+    getPrinter().print( "> __set__init ({");
+    getPrinter().print("});");
+    getPrinter().print("collections::set<");
+    getPrinter().print(TypesPrinter.printCPPTypeName(type));
+    getPrinter().print("> __set__init__2 (__set__init);");
+    getPrinter().print("return __set__init__2;}()");
   }
 
   @Override
@@ -162,12 +199,11 @@ public class CppSetExpressionsPrettyPrinter extends SetExpressionsPrettyPrinter 
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
 
-  public Stack<ASTExpression> getExpressions() {
+  public static Stack<ASTExpression> getExpressions() {
     return expressions;
   }
 
-  public void setExpressions(
-    Stack<ASTExpression> expressions) {
-    this.expressions = expressions;
+  public static void setExpressions(Stack<ASTExpression> expressions) {
+    expressions = expressions;
   }
 }
