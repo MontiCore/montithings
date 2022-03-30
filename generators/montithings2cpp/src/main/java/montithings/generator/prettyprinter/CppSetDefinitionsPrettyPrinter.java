@@ -17,8 +17,6 @@ import java.util.Stack;
 
 public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter {
 
-  protected static Stack<ASTExpression> expressions;
-
   MontiThingsTypeCheck tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
 
   public CppSetDefinitionsPrettyPrinter(IndentPrinter printer) {
@@ -30,7 +28,7 @@ public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter 
     getPrinter().print("(");
     getPrinter().print("std::regex_match(");
     getPrinter().print("((std::ostringstream&)(std::ostringstream(\"\") << ");
-    expressions.peek().accept(getTraverser());
+    CppSetExpressionsPrettyPrinter.getExpressions().peek().accept(getTraverser());
     getPrinter().print(")).str(), ");
 
     getPrinter().print("std::regex(");
@@ -41,14 +39,14 @@ public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter 
   @Override
   public void handle(ASTSetValueRange node) {
     getPrinter().print("(");
-    expressions.peek().accept(getTraverser());
+    CppSetExpressionsPrettyPrinter.getExpressions().peek().accept(getTraverser());
     getPrinter().print(" >= ");
     node.getLowerBound().accept(getTraverser());
     getPrinter().print(" && ");
 
     if (node.isPresentStepsize()) {
       getPrinter().print("((");
-      expressions.peek().accept(getTraverser());
+      CppSetExpressionsPrettyPrinter.getExpressions().peek().accept(getTraverser());
       getPrinter().print(" - ");
       node.getLowerBound().accept(getTraverser());
       getPrinter().print(")");
@@ -57,7 +55,7 @@ public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter 
       getPrinter().print(" == 0 ");
       getPrinter().print(") && ");
     }
-    expressions.peek().accept(getTraverser());
+    CppSetExpressionsPrettyPrinter.getExpressions().peek().accept(getTraverser());
     getPrinter().print(" <= ");
     node.getUpperBound().accept(getTraverser());
     getPrinter().print(")");
@@ -115,18 +113,5 @@ public class CppSetDefinitionsPrettyPrinter extends SetDefinitionsPrettyPrinter 
     getPrinter().print(",");
     node.getValue().accept(getTraverser());
     getPrinter().print("}");
-  }
-
-  /* ============================================================ */
-  /* ======================= GENERATED CODE ===================== */
-  /* ============================================================ */
-
-  public Stack<ASTExpression> getExpressions() {
-    return expressions;
-  }
-
-  public void setExpressions(
-    Stack<ASTExpression> expressions) {
-    this.expressions = expressions;
   }
 }
