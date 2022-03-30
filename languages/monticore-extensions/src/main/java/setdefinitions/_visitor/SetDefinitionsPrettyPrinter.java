@@ -69,10 +69,10 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   public void handle(ASTSetValueRange node) {
     node.getLowerBound().accept(getTraverser());
     if (node.isPresentStepsize()) {
-      this.getPrinter().print(":");
+      this.getPrinter().print("..");
       node.getStepsize().accept(getTraverser());
     }
-    this.getPrinter().print(":");
+    this.getPrinter().print("..");
     node.getUpperBound().accept(getTraverser());
   }
 
@@ -99,7 +99,7 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   @Override
   public void handle(ASTKeyValuePair node) {
     node.getKey().accept(getTraverser());
-    getPrinter().print("->");
+    getPrinter().print(":");
     node.getValue().accept(getTraverser());
   }
 }

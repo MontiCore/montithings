@@ -22,7 +22,7 @@ import java.util.Stack;
 
 public class CppSetExpressionsPrettyPrinter extends SetExpressionsPrettyPrinter {
 
-  protected static Stack<ASTExpression> expressions;
+  protected static Stack<ASTExpression> expressions = new Stack<>();
 
   MontiThingsTypeCheck tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
 

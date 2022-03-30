@@ -13,8 +13,8 @@ component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
     @Override
     SetValueRange implements SetCollectionItem =
       lowerBound:Expression
-      (":" stepsize:Expression)?
-      ":" upperBound:Expression
+      (".." stepsize:Expression)?
+      ".." upperBound:Expression
     ;
 
     // RegEx to which value has to conform
@@ -31,6 +31,6 @@ component grammar SetDefinitions extends de.monticore.literals.MCCommonLiterals,
     ;
 
     KeyValuePair =
-      key:Expression "->" value:Expression
+      key:Expression ":" value:Expression
     ;
 }
