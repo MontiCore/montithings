@@ -56,7 +56,6 @@ namespace montithings {
                 for (auto elem : c.getInternalList())
                 {
                     internalList.insert(it, elem);
-                    it = std::next(it, 1);
                 }
                 return !c.isEmpty();
             };
@@ -70,10 +69,12 @@ namespace montithings {
             bool
             contains (key e)
             {
-                std::list<key> copy(internalList);
-                copy.sort();
-                copy.unique();
-                return copy.size() == internalList.size();
+                for (key elem : internalList) {
+                    if (elem == e) {
+                        return true;
+                    }
+                }
+                return false;
             };
 
             bool
@@ -91,7 +92,7 @@ namespace montithings {
             bool
             equals (list<key> c)
             {
-                return this == c;
+                return internalList == c.getInternalList();
             };
 
             key
@@ -170,12 +171,14 @@ namespace montithings {
             bool
             retainAll (list<key> c)
             {
+                list<key> l(std::list<key> ({}));
                 for (auto elem : internalList)
                 {
                     if (!c.contains(elem)) {
-                        remove(elem);
+                        l.add(elem);
                     }
                 }
+                removeAll(l);
                 return true;
             };
 
@@ -197,13 +200,29 @@ namespace montithings {
             list<key>
             sublist(int fromIndex, int toIndex)
             {
+                for (int i = size()-1; i >= toIndex; i--) {
+                    removeAtIndex(i);
+                }
                 for (int i = 0; i < fromIndex; i++) {
-                    remove(i);
+                    removeAtIndex(0);
                 }
-                for (int i = toIndex; i < size(); i++) {
-                    remove(i);
-                }
+                return *this;
             };
+
+            friend std::ostream &operator<<(std::ostream &os, const list &list) {
+                os << "[";
+                bool first = true;
+                for (auto elem : list.getInternalList()) {
+                    if (first) {
+                        first = false;
+                        os << elem;
+                    }
+                    else {
+                        os << "," << elem;
+                    }
+                }
+                return os << "]";
+            }
         };
     }
 }

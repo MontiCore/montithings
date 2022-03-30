@@ -25,6 +25,7 @@ public class MapType {
     addFunctionContainsValue();
     addFunctionEquals();
     addFunctionGet();
+    addFunctionIsEmpty();
     addFunctionPut();
     addFunctionPutAll();
     addFunctionRemove();
@@ -66,6 +67,12 @@ public class MapType {
     FunctionSymbol function = createMethod("get");
     addParam(function, "key", SymTypeExpressionFactory.createTypeVariable(typeVarSymbolKey));
     function.setReturnType(SymTypeExpressionFactory.createTypeVariable(typeVarSymbolValue));
+    mapSymbol.getSpannedScope().add(function);
+  }
+
+  protected static void addFunctionIsEmpty() {
+    FunctionSymbol function = createMethod("isEmpty");
+    function.setReturnType(getBoolSymType());
     mapSymbol.getSpannedScope().add(function);
   }
 

@@ -5,6 +5,7 @@
 
 #include "Set.h"
 #include "List.h"
+#include "Map.h"
 
 namespace montithings {
     namespace collections {

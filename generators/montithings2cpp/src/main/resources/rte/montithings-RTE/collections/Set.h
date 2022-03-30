@@ -12,6 +12,9 @@ namespace montithings {
             std::set<key> internalSet;
 
         public:
+
+            set(const std::set<key> &internalSet) : internalSet(internalSet) {}
+
             const std::set<key> &
             getInternalSet () const
             {
@@ -47,7 +50,7 @@ namespace montithings {
             bool
             contains (key e)
             {
-                return internalSet.find(e) != std::set<key>::end();
+                return internalSet.find(e) != internalSet.end();
             };
 
             bool
@@ -65,7 +68,7 @@ namespace montithings {
             bool
             equals (set<key> c)
             {
-                return this == c;
+                return internalSet == c.getInternalSet();
             };
 
             bool
@@ -96,15 +99,15 @@ namespace montithings {
             bool
             retainAll (set<key> c)
             {
-                bool changed = false;
+                set<key> l(std::set<key> ({}));
                 for (auto elem : internalSet)
                 {
                     if (!c.contains(elem)) {
-                        remove(elem);
-                        changed = true;
+                        l.add(elem);
                     }
                 }
-                return changed;
+                removeAll(l);
+                return true;
             };
 
             int
@@ -112,6 +115,21 @@ namespace montithings {
             {
                 return internalSet.size();
             };
+
+            friend std::ostream &operator<<(std::ostream &os, const set &set) {
+                os << "{";
+                bool first = true;
+                for (auto elem : set.getInternalSet()) {
+                    if (first) {
+                        first = false;
+                        os << elem;
+                    }
+                    else {
+                        os << ", " << elem;
+                    }
+                }
+                return os << "}";
+            }
         };
     }
 }
