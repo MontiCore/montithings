@@ -9,7 +9,7 @@ component Source {
 
   every 10ms {
     lastValue++;
-    if (exists i in {x in {1:100} | x % 3 == 0}: i == lastValue) {
+    if (exists i in {x in {1..100} | x % 3 == 0}: i == lastValue) {
       value = lastValue;
     }
   }
@@ -17,7 +17,7 @@ component Source {
   post value % 3 == 0;
   post lastValue == lastValue@pre + 1;
 
-  post exists i in {x in {1:100} | x % 3 == 0}:
+  post exists i in {x in {1..100} | x % 3 == 0}:
          i == value;
   catch { value = 0; }
 }

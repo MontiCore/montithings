@@ -76,7 +76,7 @@ component Source {
 
   behavior {
     lastValue++;
-    if (exists i in {x in {1:100} | x % 3 == 0}: i == lastValue) {
+    if (exists i in {x in {1..100} | x % 3 == 0}: i == lastValue) {
       value = lastValue;
     }
   }
