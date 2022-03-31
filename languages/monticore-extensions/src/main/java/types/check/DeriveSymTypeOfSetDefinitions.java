@@ -10,8 +10,7 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
 import de.monticore.types.check.SymTypeOfGenerics;
 import de.se_rwth.commons.logging.Log;
-import setdefinitions._ast.ASTSetValueRange;
-import setdefinitions._ast.ASTSetValueRegEx;
+import setdefinitions._ast.*;
 import setdefinitions._visitor.SetDefinitionsHandler;
 import setdefinitions._visitor.SetDefinitionsTraverser;
 
@@ -130,5 +129,85 @@ public class DeriveSymTypeOfSetDefinitions extends DeriveSymTypeOfSetExpressions
   public void traverse(ASTSetValueRegEx node) {
     //int is the only type of RegEx which is currently supported in this non-terminal
     this.typeCheckResult.setCurrentResult(SymTypeExpressionFactory.createTypeConstant("int"));
+  }
+
+  @Override
+  public void traverse(ASTListExpression node) {
+    SymTypeExpression innerResult = null;
+
+    SymTypeExpression result = SymTypeExpressionFactory.createGenerics("List", getScope(node.getEnclosingScope()));
+
+    if (!node.isEmptyExpressions()) {
+      //check type of elements in list
+      for (ASTExpression e : node.getExpressionList()) {
+        e.accept(getTraverser());
+        if (typeCheckResult.isPresentCurrentResult()) {
+          if (innerResult == null) {
+            innerResult = typeCheckResult.getCurrentResult();
+            typeCheckResult.reset();
+          }
+          else if (!compatible(innerResult, typeCheckResult.getCurrentResult())) {
+            Log.error("different types in ListExpression");
+          }
+        }
+        else {
+          Log.error("Could not determine type of an expression in ListExpression");
+        }
+      }
+    }
+    else {
+      innerResult = SymTypeExpressionFactory.createTypeConstant("Object");
+    }
+
+    ((SymTypeOfGenerics) result).addArgument(innerResult);
+    typeCheckResult.setCurrentResult(result);
+  }
+
+  @Override
+  public void traverse(ASTMapExpression node) {
+    SymTypeExpression keyResult = null;
+
+    SymTypeExpression valueResult = null;
+
+    SymTypeExpression result = SymTypeExpressionFactory.createGenerics("Map", getScope(node.getEnclosingScope()));
+
+    if (!node.isEmptyKeyValuePairs()) {
+      //check type of elements in map
+      for (ASTKeyValuePair e : node.getKeyValuePairList()) {
+        e.getKey().accept(getTraverser());
+        if (typeCheckResult.isPresentCurrentResult()) {
+          if (keyResult == null) {
+            keyResult = typeCheckResult.getCurrentResult();
+            typeCheckResult.reset();
+          }
+          else if (!compatible(keyResult, typeCheckResult.getCurrentResult())) {
+            Log.error("different types in MapExpression");
+          }
+        }
+        else {
+          Log.error("Could not determine type of a key in MapExpression");
+        }
+        e.getValue().accept(getTraverser());
+        if (typeCheckResult.isPresentCurrentResult()) {
+          if (valueResult == null) {
+            valueResult = typeCheckResult.getCurrentResult();
+            typeCheckResult.reset();
+          }
+          else if (!compatible(valueResult, typeCheckResult.getCurrentResult())) {
+            Log.error("different types in ListExpression");
+          }
+        }
+        else {
+          Log.error("Could not determine type of a value in MapExpression");
+        }
+      }
+    }
+    else {
+      keyResult = SymTypeExpressionFactory.createTypeConstant("Object");
+    }
+
+    ((SymTypeOfGenerics) result).addArgument(keyResult);
+    ((SymTypeOfGenerics) result).addArgument(valueResult);
+    typeCheckResult.setCurrentResult(result);
   }
 }

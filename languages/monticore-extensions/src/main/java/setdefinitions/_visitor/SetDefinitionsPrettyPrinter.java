@@ -1,13 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
 package setdefinitions._visitor;
 
+import afu.org.checkerframework.checker.oigj.qual.O;
 import com.google.common.base.Preconditions;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpressionsBasisNode;
 import de.monticore.prettyprint.IndentPrinter;
 import org.codehaus.commons.nullanalysis.NotNull;
-import setdefinitions._ast.ASTSetDefinitionsNode;
-import setdefinitions._ast.ASTSetValueRange;
-import setdefinitions._ast.ASTSetValueRegEx;
+import setdefinitions._ast.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -70,10 +69,10 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   public void handle(ASTSetValueRange node) {
     node.getLowerBound().accept(getTraverser());
     if (node.isPresentStepsize()) {
-      this.getPrinter().print(":");
+      this.getPrinter().print("..");
       node.getStepsize().accept(getTraverser());
     }
-    this.getPrinter().print(":");
+    this.getPrinter().print("..");
     node.getUpperBound().accept(getTraverser());
   }
 
@@ -81,5 +80,26 @@ public class SetDefinitionsPrettyPrinter implements SetDefinitionsHandler {
   public void handle(ASTSetValueRegEx node) {
     this.getPrinter().print("format :");
     node.getFormat().accept(getTraverser());
+  }
+
+  @Override
+  public void handle(ASTListExpression node) {
+    getPrinter().print("[");
+    acceptSeperatedList(node.getExpressionList());
+    getPrinter().print("]");
+  }
+
+  @Override
+  public void handle(ASTMapExpression node) {
+    getPrinter().print("{");
+    acceptSeperatedSetList(node.getKeyValuePairList());
+    getPrinter().print("}");
+  }
+
+  @Override
+  public void handle(ASTKeyValuePair node) {
+    node.getKey().accept(getTraverser());
+    getPrinter().print(":");
+    node.getValue().accept(getTraverser());
   }
 }

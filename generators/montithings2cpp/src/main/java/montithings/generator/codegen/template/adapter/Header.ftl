@@ -11,6 +11,7 @@ ${tc.signature("packageName", "compname", "config", "existsHWC")}
 #include ${"<set>"}
 #include ${"<utility>"}
 #include "tl/optional.hpp"
+#include "collections/Collection.h"
 #include "easyloggingpp/easylogging++.h"
 ${Utils.printIncludes(escape, ComponentHelper.getImportStatements(compname,config))}
 

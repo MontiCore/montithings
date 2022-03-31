@@ -3,6 +3,7 @@ package montithings.util;
 
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.IBasicSymbolsScope;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionFactory;
@@ -44,4 +45,31 @@ public class SymbolUtil {
     function.getSpannedScope().add(param);
   }
 
+  public static SymTypeExpression getIntSymType() {
+    return SymTypeExpressionFactory.createTypeConstant("int");
+  }
+
+  public static SymTypeExpression getLongSymType() {
+    return SymTypeExpressionFactory.createTypeConstant("long");
+  }
+
+  public static SymTypeExpression getBoolSymType() {
+    return SymTypeExpressionFactory.createTypeConstant("boolean");
+  }
+
+  public static TypeSymbol getListType() {
+    return SymTypeExpressionFactory.createTypeConstant("List").getTypeInfo();
+  }
+
+  public static TypeSymbol getSetType() {
+    return SymTypeExpressionFactory.createTypeConstant("Set").getTypeInfo();
+  }
+
+  public static TypeSymbol getMapType() {
+    return SymTypeExpressionFactory.createTypeConstant("Map").getTypeInfo();
+  }
+
+  public static TypeSymbol getCollectionType() {
+    return SymTypeExpressionFactory.createTypeConstant("Collection").getTypeInfo();
+  }
 }

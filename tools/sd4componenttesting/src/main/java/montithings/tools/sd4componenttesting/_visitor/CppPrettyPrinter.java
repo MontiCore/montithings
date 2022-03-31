@@ -34,7 +34,6 @@ public class CppPrettyPrinter {
     Stack<ASTExpression> expressions = new Stack<>();
     CppSetDefinitionsPrettyPrinter setDefinitionsPrettyPrinter = new CppSetDefinitionsPrettyPrinter(printer.getPrinter());
     CppSetExpressionsPrettyPrinter setExpressionsPrettyPrinter = new CppSetExpressionsPrettyPrinter(printer.getPrinter());
-    setDefinitionsPrettyPrinter.setExpressions(expressions);
     setExpressionsPrettyPrinter.setExpressions(expressions);
     return printer;
   }

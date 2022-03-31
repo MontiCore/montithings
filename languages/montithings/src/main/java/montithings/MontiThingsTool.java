@@ -14,7 +14,6 @@ import de.monticore.symbols.basicsymbols._symboltable.TypeVarSymbol;
 import de.monticore.symbols.oosymbols._symboltable.IOOSymbolsScope;
 import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeExpressionFactory;
-import de.monticore.types.check.SymTypeOfGenerics;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._cocos.MontiThingsCoCoChecker;
@@ -23,6 +22,9 @@ import montithings._symboltable.*;
 import montithings.cocos.MontiThingsCoCos;
 import montithings.trafos.ComponentTypePortsNamingTrafo;
 import montithings.trafos.MontiThingsTrafo;
+import montithings.util.library.ListType;
+import montithings.util.library.MapType;
+import montithings.util.library.SetType;
 import montithings.util.MontiThingsError;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
@@ -328,11 +330,19 @@ public class MontiThingsTool implements IMontiThingsTool {
     TypeSymbol collectionType = createCollectionType("Collection", artifactScope, Optional.empty(), typeVarSymbol);
     add2Scope(artifactScope, collectionType);
 
-    TypeSymbol listType = createCollectionType("List", artifactScope, Optional.of(collectionType), typeVarSymbol);
-    add2Scope(artifactScope, listType);
+    TypeSymbol list = createCollectionType("List", artifactScope, Optional.of(collectionType), typeVarSymbol);
+    ListType.addMethodsAndFields(list, typeVarSymbol);
+    add2Scope(artifactScope, list);
 
-    TypeSymbol setType = createCollectionType("Set", artifactScope, Optional.of(collectionType), typeVarSymbol);
-    add2Scope(artifactScope, setType);
+    TypeSymbol set = createCollectionType("Set", artifactScope, Optional.of(collectionType), typeVarSymbol);
+    SetType.addMethodsAndFields(set, typeVarSymbol);
+    add2Scope(artifactScope, set);
+
+    TypeSymbol map = createCollectionType("Map", artifactScope, Optional.of(collectionType), typeVarSymbol);
+    TypeVarSymbol valueTypeVarSymbol = MontiThingsMill.typeVarSymbolBuilder().setName("Y").build();
+    map.addTypeVarSymbol(valueTypeVarSymbol);
+    MapType.addMethodsAndFields(map, typeVarSymbol, valueTypeVarSymbol);
+    add2Scope(artifactScope, map);
   }
 
   private TypeSymbol createCollectionType(String name, IMontiThingsArtifactScope enclosingScope, Optional<TypeSymbol> collectionType, TypeVarSymbol typeVarSymbol) {

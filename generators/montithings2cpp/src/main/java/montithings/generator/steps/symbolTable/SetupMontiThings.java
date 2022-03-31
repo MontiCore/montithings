@@ -27,6 +27,7 @@ public class SetupMontiThings extends GeneratorStep {
     mtScope.setModelPath(state.getMcModelPath());
     mtScope.setFileExt(state.getTool().getMTFileExtension());
     state.getTool().addBasicTypes();
+    state.getTool().addCollectionTypes();
     addAllLibraryFunctions(mtScope);
     return mtScope;
   }

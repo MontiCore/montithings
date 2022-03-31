@@ -18,9 +18,9 @@ class ComponentHelperTest {
     "Stringify, Stringify",
     "std::string, std::string",
     "std::string, std::string",
-    "List<String>, std::list<std::string>",
-    "List<Stringer>, std::list<Stringer>",
-    "List<List<String>>, std::list<std::list<std::string>>"
+    "List<String>, collections::list<std::string>",
+    "List<Stringer>, collections::list<Stringer>",
+    "List<List<String>>, collections::list<collections::list<std::string>>"
   })
   void java2cppTypeString(String given, String expected) {
     // given
