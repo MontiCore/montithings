@@ -1,0 +1,13 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+    
+testdiagram ThreeTest for Three {
+  -> input : 1;
+  state -> : NotDividable;
+
+  -> input : 3;
+  state -> Dividable;
+
+  -> input : 0;
+  state -> Dividable;
+}

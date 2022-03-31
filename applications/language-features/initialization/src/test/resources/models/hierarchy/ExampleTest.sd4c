@@ -1,0 +1,9 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+    
+testdiagram ExampleTest for Example {
+  delay 500 ms;
+  loop.output -> loop.input : 0;
+  delay 1000 ms;
+  loop.output -> loop.input : 1;
+}
