@@ -4,9 +4,13 @@ package hierarchy;
 testdiagram SumTest for Sum {
   -> in1 : 1;
   -> in2 : 2;
-  result -> : 3;
+  out -> : 3;
+
+  -> in1 : 1;
+  -> in2 : -2;
+  out -> : -1;
 
   -> in1 : 1;
   -> in2 : 0;
-  result -> : 1;
+  out -> : 1;
 }

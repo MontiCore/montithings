@@ -7,7 +7,7 @@ component Source {
 
   int lastValue = 0;
 
-  every 10ms {
+  every 500ms {
     lastValue++;
     if (exists i in {x in {1:100} | x % 3 == 0}: i == lastValue) {
       value = lastValue;

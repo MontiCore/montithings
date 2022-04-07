@@ -12,6 +12,7 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals.prettyprint.SIUnitLiteralsPrettyPrinter;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrettyPrinter;
+import de.monticore.siunittypes4math.prettyprint.SIUnitTypes4MathPrettyPrinter;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
@@ -88,9 +89,9 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
     traverser.setSIUnitTypes4ComputingHandler(siunittypes4computingpp);
     SIUnitsPrettyPrinter siunitspp = new SIUnitsPrettyPrinter(printer);
     traverser.setSIUnitsHandler(siunitspp);
+    traverser.add4SIUnits(siunitspp);
     SIUnitLiteralsPrettyPrinter siunitliteralspp = new SIUnitLiteralsPrettyPrinter(printer);
     traverser.setSIUnitLiteralsHandler(siunitliteralspp);
-
     MontiThingsToMontiArcPrettyPrinter montithingspp =
       new MontiThingsToMontiArcPrettyPrinter(printer);
     traverser.setMontiThingsHandler(montithingspp);

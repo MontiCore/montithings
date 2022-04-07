@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
-
-testdiagram Main for Example {
+    
+testdiagram ExampleTest for Example {
   delay 500 ms;
   source.value -> sink.value : 1;
 }
