@@ -240,22 +240,6 @@
                 <version>${se-groovy.maven.version}</version>
                 <executions>
                     <execution>
-                        <id>sd4c</id>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <baseClass>montithings.tools.sd4componenttesting.generator.script.SD4CGeneratorScript
-                            </baseClass>
-                            <arguments>
-                                <out>${basedir}/target/sd4c/</out>
-                                <modelPath>${basedir}/src/main/resources/models/</modelPath>
-                                <testPath>${basedir}/src/test/resources/models/</testPath>
-                            </arguments>
-                            <script>montithings/tools/sd4componenttesting/generator/script/sd4cgenerator.groovy</script>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>montithings2cpp</id>
                         <goals>
                             <goal>execute</goal>
@@ -282,17 +266,6 @@
                         <groupId>com.google.guava</groupId>
                         <artifactId>guava</artifactId>
                         <version>${guava.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>montithings.tools</groupId>
-                        <artifactId>sd4componenttesting</artifactId>
-                        <version>${project.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>de.monticore.bs</groupId>
-                                <artifactId>monticore-runtime</artifactId>
-                            </exclusion>
-                        </exclusions>
                     </dependency>
                     <dependency>
                         <groupId>montithings.generators</groupId>

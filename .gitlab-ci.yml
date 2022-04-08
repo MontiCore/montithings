@@ -214,6 +214,7 @@ Unit Test Gradle:
     paths:
       - generators/montithings2cpp/target/
       - "applications/**/target/generated-sources"
+      - "applications/**/target/generated-test-sources"
 
 Unit Test JDK 8:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
@@ -263,6 +264,23 @@ Compile Applications:
   script:
     - cd applications
     - ./compile.sh
+
+.test-application-template: &test-application-definition
+  image: $CI_REGISTRY_IMAGE/mtcmake
+  dependencies:
+    - Unit Test JDK 11 #download generated-test-sources
+  needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
+  stage: generator-test
+  script:
+    - cd applications/$APPLICATION_NAME/target/generated-test-sources
+    - ./build.sh
+    - cd build/bin
+    - for f in *; do ./"$f"; done
+
+Test Basic-input-output:
+  variables:
+    APPLICATION_NAME: basic-input-output
+  <<: *test-application-definition
 
 Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
