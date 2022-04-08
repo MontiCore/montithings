@@ -277,9 +277,74 @@ Compile Applications:
     - cd build/bin
     - for f in *; do ./"$f"; done
 
-Test Basic-input-output:
+basic-input-output:
   variables:
     APPLICATION_NAME: basic-input-output
+  <<: *test-application-definition
+
+dds-ports:
+  variables:
+    APPLICATION_NAME: dds-ports
+  <<: *test-application-definition
+
+hierarchy:
+  variables:
+    APPLICATION_NAME: hierarchy
+  <<: *test-application-definition
+
+language-features/behavior:
+  variables:
+    APPLICATION_NAME: language-features/behavior
+  <<: *test-application-definition
+
+language-features/class-diagrams:
+  variables:
+    APPLICATION_NAME: language-features/class-diagrams
+  <<: *test-application-definition
+
+language-features/initilization:
+  variables:
+    APPLICATION_NAME: language-features/initilization
+  <<: *test-application-definition
+
+language-features/interface-components:
+  variables:
+    APPLICATION_NAME: language-features/interface-components
+  <<: *test-application-definition
+
+language-features/interface-componentsMTB:
+  variables:
+    APPLICATION_NAME: language-features/interface-componentsMTB
+  <<: *test-application-definition
+
+language-features/ocl:
+  variables:
+    APPLICATION_NAME: language-features/ocl
+  <<: *test-application-definition
+
+language-features/pre-postconditions:
+  variables:
+    APPLICATION_NAME: language-features/pre-postconditions
+  <<: *test-application-definition
+
+language-features/statecharts:
+  variables:
+    APPLICATION_NAME: language-features/statecharts
+  <<: *test-application-definition
+
+mqtt-ports:
+  variables:
+    APPLICATION_NAME: mqtt-ports
+  <<: *test-application-definition
+
+record-transform-replay:
+  variables:
+    APPLICATION_NAME: record-transform-replay
+  <<: *test-application-definition
+
+retain-state:
+  variables:
+    APPLICATION_NAME: retain-state
   <<: *test-application-definition
 
 Deploy Nexus:

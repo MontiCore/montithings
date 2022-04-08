@@ -3,15 +3,15 @@ package hierarchy;
     
 testdiagram ExampleTest for Example {
   delay 250 ms;
-  source.value -> rs.in : 0;
-  rs.result -> sink.value : 0;
+  source.value -> rs.input : 0;
+  rs.value -> sink.value : 0;
 
   delay 1000 ms;
-  source.value -> rs.in : 3;
-  rs.result -> sink.value : 3;
+  source.value -> rs.input : 2;
+  rs.value -> sink.value : 3;
 
 
   delay 1500 ms;
-  source.value -> rs.in : 6;
-  rs.result -> sink.value : 9;
+  source.value -> rs.input : 5;
+  rs.value -> sink.value : 15;
 }

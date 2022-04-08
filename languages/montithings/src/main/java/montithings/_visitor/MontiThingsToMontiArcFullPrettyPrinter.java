@@ -2,6 +2,7 @@
 package montithings._visitor;
 
 import arcbasis._visitor.ArcBasisPrettyPrinter;
+import clockcontrol._visitor.ClockControlToMontiArcPrettyPrinter;
 import comfortablearc._visitor.ComfortableArcPrettyPrinter;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
@@ -12,7 +13,6 @@ import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals.prettyprint.SIUnitLiteralsPrettyPrinter;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrettyPrinter;
-import de.monticore.siunittypes4math.prettyprint.SIUnitTypes4MathPrettyPrinter;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.statements.prettyprint.MCCommonStatementsPrettyPrinter;
 import de.monticore.statements.prettyprint.MCVarDeclarationStatementsPrettyPrinter;
@@ -95,6 +95,8 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
     MontiThingsToMontiArcPrettyPrinter montithingspp =
       new MontiThingsToMontiArcPrettyPrinter(printer);
     traverser.setMontiThingsHandler(montithingspp);
+    ClockControlToMontiArcPrettyPrinter clockpp = new ClockControlToMontiArcPrettyPrinter();
+    traverser.setClockControlHandler(clockpp);
   }
 
   public IndentPrinter getPrinter() {
