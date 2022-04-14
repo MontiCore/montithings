@@ -3,7 +3,7 @@ package hierarchy;
 
 component Example {
   Source source;
-  LowPassFilter lpf (5, 0);
+  LowPassFilter lpf (2, 0);
   Sink sink;
 
   source.value -> lpf.givenValue;

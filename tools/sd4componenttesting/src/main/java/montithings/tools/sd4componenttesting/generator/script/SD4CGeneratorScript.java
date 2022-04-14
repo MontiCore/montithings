@@ -10,6 +10,7 @@ import de.se_rwth.commons.logging.Log;
 import groovy.lang.Script;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.generator.config.Options;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 import java.io.File;
@@ -70,6 +71,7 @@ public class SD4CGeneratorScript extends Script implements GroovyRunner {
       createDirs(CPP_FILES_TARGET);
 
       prettyPrintMtToArc(modelPath.toPath(), ARC_MODELS_TARGET);
+      copyAllFilesWithExtension(".cd", modelPath.toPath(), new File(ARC_MODELS_TARGET).toPath());
       generateCppFromSd4c(testPath, ARC_MODELS_TARGET, CPP_FILES_TARGET, testPath.toPath());
 
     } catch (java.io.IOException e) {
@@ -103,8 +105,23 @@ public class SD4CGeneratorScript extends Script implements GroovyRunner {
       writeToNewFile(arcFilePath, arcFileContent);
     }
   }
-
-
+  
+  /**
+   * copies all files with a given file extension from one directory to another
+   *
+   * @param srcPath the source directory
+   * @param targetPath the target directory
+   * @throws IOException if there is a problem reading or copying the files
+  */
+  private void copyAllFilesWithExtension(String extension, Path srcPath, Path targetPath) throws IOException {
+    Set<Path> files = getAllFilesWithExtension(extension, srcPath);
+    for(Path file : files){
+      info("copying file " + file.getFileName());
+      File dest = new File(targetPath.toString() + file.toString().replace(srcPath.toString(), ""));
+      FileUtils.copyFile(file.toFile(), dest);
+    }
+  }
+  
   /**
    * generates cpp test files from sd4c model files
    *

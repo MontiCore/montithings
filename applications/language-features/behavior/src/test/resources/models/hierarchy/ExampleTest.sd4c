@@ -2,11 +2,19 @@
 package hierarchy;
     
 testdiagram ExampleTest for Example {
-  delay 500 ms;
+  delay 250 ms;
+  source.value -> lpf.givenValue : 0;
+  lpf.filteredValue -> sink.value : 0;
+
+  delay 500ms;
   source.value -> lpf.givenValue : 1;
   lpf.filteredValue -> sink.value : 1;
 
-  delay 4000 ms;
-  source.value -> lpf.givenValue : 5;
+  delay 500ms;
+  source.value -> lpf.givenValue : 2;
+  lpf.filteredValue -> sink.value : 2;
+
+  delay 500ms;
+  source.value -> lpf.givenValue : 3;
   lpf.filteredValue -> sink.value : 0;
 }
