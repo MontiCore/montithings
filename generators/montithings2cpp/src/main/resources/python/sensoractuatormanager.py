@@ -10,6 +10,7 @@ import parse_cmd
 class SensorActuatorManager:
     def __init__(self, broker_hostname, broker_port):
         self.topics = dict()
+        self.waitingForAssignments = dict()
         self.mqttc = mqtt.Client()
         self.connected = False
         self.connect_to_broker(broker_hostname, broker_port)
@@ -34,8 +35,39 @@ class SensorActuatorManager:
     def on_message(self, client, userdata, message):
         print("Got Message " + message.payload.decode("utf-8") + " on topic " + message.topic)
         json_dict = ast.literal_eval(message.payload.decode("utf-8"))
-        if json_dict["occupiedBy"]:
+        if 'occupiedBy' in json_dict:
             self.topics[message.topic] = (dt.datetime.now(), json_dict["occupiedBy"])
+
+        elif 'assignment' in json_dict:
+            instanceName = '/'.join(message.topic.split("/")[2:])
+            mqttTopic = json_dict['assignment']
+
+            #check whether there exists an uuid for a certain topic already
+            exists = False
+            for topic in self.topics:
+                if mqttTopic == topic.split("/")[-2]:
+                    if not self.topics[topic][1]:
+                        self.mqttc.publish(message.topic, '{"topic": "' + topic.split("/")[-1] +  '"}', qos=1, retain=True)
+                        self.topics[topic] = (dt.datetime.now(), instanceName)
+                        exists = True
+            if not exists:
+                if mqttTopic in self.waitingForAssignments:
+                    self.waitingForAssignments[mqttTopic].append(instanceName)
+                else:
+                    self.waitingForAssignments[mqttTopic] = [instanceName]
+
+        elif 'external' in json_dict:
+            topic_uuid = message.topic.split("/")[-1]
+            mqttTopic = message.topic.split("/")[-2]
+            self.topics[message.topic] = (dt.datetime.now(), False)
+            if mqttTopic in self.waitingForAssignments:
+                instanceName = self.waitingForAssignments[mqttTopic][0]
+                self.waitingForAssignments[mqttTopic].pop()
+                if not self.waitingForAssignments[mqttTopic]:
+                    self.waitingForAssignments.pop(mqttTopic)
+                self.mqttc.publish("/sensorActuator/config/" + instanceName, '{"topic": "' + topic_uuid + '"}', qos=1, retain=True)
+                self.topics[message.topic] = (dt.datetime.now(), instanceName)
+
 
     def free_topic(self, topic):
         info = self.mqttc.publish(topic, '{"occupiedBy": "False"}', qos=1, retain=True)
@@ -55,8 +87,7 @@ if __name__ == '__main__':
         # Send a message to MontiThings (sensor port)
         time.sleep(5)
         for topic in mtc.topics:
-            if(((dt.datetime.now() - mtc.topics[topic][0]).total_seconds() >= 10) & (mtc.topics[topic][1] != "False")):
+            if(((dt.datetime.now() - mtc.topics[topic][0]).total_seconds() >= 10) & (mtc.topics[topic][1] != False)):
                 mtc.topics[topic] = (dt.datetime.now(), False)
                 mtc.free_topic(topic)
-
 

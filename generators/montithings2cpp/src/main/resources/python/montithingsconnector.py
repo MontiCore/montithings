@@ -2,13 +2,14 @@
 import paho.mqtt.client as mqtt
 import json
 import parse_cmd
+import uuid
 
 
 class MontiThingsConnector:
     def __init__(self, topic_name, receive, broker_hostname='localhost', broker_port=1883, parse_cmd_args=False):
         if parse_cmd_args:
             broker_hostname, broker_port = parse_cmd.parse_cmd_args()
-        self.topic_name = topic_name
+        self.topic_name = topic_name + '/' + str(uuid.uuid4()) #add uuid to topic name in order to have unique topic name
         self.mqttc = mqtt.Client()
         if receive is None:
             self._receive = lambda *args: None
@@ -23,6 +24,7 @@ class MontiThingsConnector:
         self.mqttc.on_connect = self.on_connect
         self.mqttc.on_disconnect = self.on_disconnect
         self.mqttc.connect(broker_hostname, broker_port)
+        self.mqttc.publish("/sensorActuator/config" + self.topic_name, '{"external":"' + self.topic_name + '"', qos=0)
         self.mqttc.subscribe("/sensorActuator/" + self.topic_name, qos=0)
         if receive is None:
             self.mqttc.loop_start()
