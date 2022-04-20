@@ -61,12 +61,12 @@ public:
 
   /**
    * Set the name of the local sensor / actuator to connect to
-   * \param sensorName topic name without "/sensorActuator/" prefix
+   * \param sensorName topic name without "/sensorActuator/data/" prefix
    */
   void setSensorActuatorName (std::string sensorName, bool shouldSubscribe);
 
   /**
-   * Get the name of the local sensor / actuator connected to without "/sensorActuator/" prefix
+   * Get the name of the local sensor / actuator connected to without "/sensorActuator/data/" prefix
    */
   std::string getSensorActuatorName ();
 
@@ -149,7 +149,7 @@ MqttPort<T>::setSensorActuatorName (std::string sensorName, bool shouldSubscribe
   }
 
   // set new sensorActuatorName
-  sensorActuatorTopic = "/sensorActuator/" + replaceDotsBySlashes (sensorName);
+  sensorActuatorTopic = "/sensorActuator/data/" + replaceDotsBySlashes (sensorName);
 
   isSensorActuator = true;
   if (shouldSubscribe)
@@ -164,7 +164,7 @@ template <typename T>
 std::string
 MqttPort<T>::getSensorActuatorName ()
 {
-  std::string prefix = "/sensorActuator/";
+  std::string prefix = "/sensorActuator/data/";
   return sensorActuatorTopic.substr(prefix.length());
 }
 
@@ -183,7 +183,7 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
           // check if this message informs us about new data
           if (topic.find ("/ports/") != std::string::npos
               || topic.find ("/portsInject/") != std::string::npos
-              || (isSensorActuator && topic.find ("/sensorActuator/") != std::string::npos))
+              || (isSensorActuator && topic.find ("/sensorActuator/data/") != std::string::npos))
             {
               try
                 {

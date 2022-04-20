@@ -44,7 +44,6 @@ class SensorActuatorManager:
         print("Got Message " + message.payload.decode("utf-8") + " on topic " + message.topic)
         json_dict = ast.literal_eval(message.payload.decode("utf-8"))
 
-
         if messageTopic == "heartbeat":
             #refresh mapping of topic with current time and received component instance
             self.topics[(json_dict["type"],message.topic.split("/")[3])] = (dt.datetime.now(), json_dict["occupiedBy"])
@@ -84,7 +83,7 @@ class SensorActuatorManager:
             if offeredType in self.waitingForAssignments:
                 instancePortName = self.waitingForAssignments[offeredType][0]
 
-                self.waitingForAssignments[offeredType].pop()
+                self.waitingForAssignments[offeredType].pop(0)
                 if not self.waitingForAssignments[offeredType]:
                     #remove type from dict if there are no component instances waiting for an assignment to this type
                     self.waitingForAssignments.pop(offeredType)
@@ -114,5 +113,4 @@ if __name__ == '__main__':
         for topic in mtc.topics:
             if(((dt.datetime.now() - mtc.topics[topic][0]).total_seconds() >= 10) & (mtc.topics[topic][1] != False)):
                 mtc.topics[topic] = (dt.datetime.now(), False)
-                #TODO: necessary?
                 #mtc.free_topic("/sensorActuator/heartbeat/" + topic[0])
