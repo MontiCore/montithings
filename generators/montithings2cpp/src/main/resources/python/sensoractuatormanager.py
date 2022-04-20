@@ -21,7 +21,7 @@ class SensorActuatorManager:
         self.mqttc.on_connect = self.on_connect
         self.mqttc.on_disconnect = self.on_disconnect
         self.mqttc.connect(broker_hostname, broker_port)
-        self.mqttc.subscribe("/sensorActuator/config/#", qos=0)
+        self.mqttc.subscribe("/sensorActuator/#", qos=0)
         self.mqttc.loop_start()
 
     def on_connect(self, mqttc, obj, flags, rc):
@@ -33,44 +33,69 @@ class SensorActuatorManager:
         self.connected = False
 
     def on_message(self, client, userdata, message):
+
+        #get the type of message that was received
+        messageTopic = message.topic.split("/")[2]
+
+        #do not consider data or response messages
+        if messageTopic == "data" or messageTopic == "response":
+            return
+
         print("Got Message " + message.payload.decode("utf-8") + " on topic " + message.topic)
         json_dict = ast.literal_eval(message.payload.decode("utf-8"))
-        if 'occupiedBy' in json_dict:
-            self.topics[message.topic] = (dt.datetime.now(), json_dict["occupiedBy"])
 
-        elif 'assignment' in json_dict:
-            instanceName = '/'.join(message.topic.split("/")[2:])
-            mqttTopic = json_dict['assignment']
+
+        if messageTopic == "heartbeat":
+            #refresh mapping of topic with current time and received component instance
+            self.topics[(json_dict["type"],message.topic.split("/")[3])] = (dt.datetime.now(), json_dict["occupiedBy"])
+
+        elif messageTopic == "request":
+            instancePortName = message.topic.split("/")[3]
+
+            requestedType = json_dict['type']
 
             #check whether there exists an uuid for a certain topic already
             exists = False
             for topic in self.topics:
-                if mqttTopic == topic.split("/")[-2]:
+                if requestedType == topic[0]:
                     if not self.topics[topic][1]:
-                        self.mqttc.publish(message.topic, '{"topic": "' + topic.split("/")[-1] +  '"}', qos=1, retain=True)
-                        self.topics[topic] = (dt.datetime.now(), instanceName)
+                        #topic is not occupied yet
+                        responseTopic = '/sensorActuator/response/' + instancePortName
+                        spec = '"spec":{"type":"' + topic[0] + '"}'
+                        self.mqttc.publish(responseTopic, '{"topic": "' + topic[1] + ',' + spec + '"}', qos=1, retain=True)
+                        self.topics[topic] = (dt.datetime.now(), instancePortName)
                         exists = True
+
             if not exists:
-                if mqttTopic in self.waitingForAssignments:
-                    self.waitingForAssignments[mqttTopic].append(instanceName)
+                #add component instance to instances waiting for connections
+                if requestedType in self.waitingForAssignments:
+                    self.waitingForAssignments[requestedType].append(instancePortName)
                 else:
-                    self.waitingForAssignments[mqttTopic] = [instanceName]
+                    self.waitingForAssignments[requestedType] = [instancePortName]
 
-        elif 'external' in json_dict:
-            topic_uuid = message.topic.split("/")[-1]
-            mqttTopic = message.topic.split("/")[-2]
-            self.topics[message.topic] = (dt.datetime.now(), False)
-            if mqttTopic in self.waitingForAssignments:
-                instanceName = self.waitingForAssignments[mqttTopic][0]
-                self.waitingForAssignments[mqttTopic].pop()
-                if not self.waitingForAssignments[mqttTopic]:
-                    self.waitingForAssignments.pop(mqttTopic)
-                self.mqttc.publish("/sensorActuator/config/" + instanceName, '{"topic": "' + topic_uuid + '"}', qos=1, retain=True)
-                self.topics[message.topic] = (dt.datetime.now(), instanceName)
+        elif messageTopic == "offer":
+            topic_uuid = json_dict['topic']
+            offeredType = json_dict['spec']['type']
 
+            #add entry to topic mapping with the offered type
+            self.topics[(offeredType, topic_uuid)] = (dt.datetime.now(), False)
+
+            #check whether component instances are waiting for assignments with the offered type
+            if offeredType in self.waitingForAssignments:
+                instancePortName = self.waitingForAssignments[offeredType][0]
+
+                self.waitingForAssignments[offeredType].pop()
+                if not self.waitingForAssignments[offeredType]:
+                    #remove type from dict if there are no component instances waiting for an assignment to this type
+                    self.waitingForAssignments.pop(offeredType)
+
+                #send response to component instance which requested connection
+                self.mqttc.publish("/sensorActuator/response/" + instancePortName, message.payload, qos=1, retain=True)
+                #update mapping
+                self.topics[message.topic] = (dt.datetime.now(), instancePortName)
 
     def free_topic(self, topic):
-        info = self.mqttc.publish(topic, '{"occupiedBy": "False"}', qos=1, retain=True)
+        info = self.mqttc.publish(topic, '{"occupiedBy": False}', qos=1, retain=True)
         info.wait_for_publish()
 
     def wait_for_connection(self):
@@ -89,5 +114,5 @@ if __name__ == '__main__':
         for topic in mtc.topics:
             if(((dt.datetime.now() - mtc.topics[topic][0]).total_seconds() >= 10) & (mtc.topics[topic][1] != False)):
                 mtc.topics[topic] = (dt.datetime.now(), False)
-                mtc.free_topic(topic)
-
+                #TODO: necessary?
+                #mtc.free_topic("/sensorActuator/heartbeat/" + topic[0])
