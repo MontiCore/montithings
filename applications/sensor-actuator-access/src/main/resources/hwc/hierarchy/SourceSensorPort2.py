@@ -5,7 +5,7 @@ import time
 
 if __name__ == '__main__':
     # Set up MontiThings port connection
-    mtc = MTC("second-source-sensor-topic", None, parse_cmd_args=True)
+    mtc = MTC("source", None, parse_cmd_args=True)
     i = 0
     while True:
         # Send a message to MontiThings (sensor port)
