@@ -12,9 +12,9 @@ std::string modelInstanceNameOut = getModelInstanceName(this->getInstanceName())
   ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}", false, mqttClientInstance, mqttClientLocalInstance);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
-    std::string sensorActuatorRequestTopicActuator = "/sensorActuator/request/" + this->getInstanceName() + ".${p.getName()}";
+    std::string sensorActuatorRequestTopic${p.getName()?cap_first} = "/sensorActuator/request/" + this->getInstanceName() + ".${p.getName()}";
     mqttClientLocalInstance->subscribe ("/sensorActuator/response/" + this->getInstanceName() + ".${p.getName()}");
-    mqttClientLocalInstance->publishRetainedMessage (sensorActuatorConfigTopicActuator, "{\"type\":\"${sensorActuatorType}\"}");
+    mqttClientLocalInstance->publishRetainedMessage (sensorActuatorRequestTopic${p.getName()?cap_first}, "{\"type\":\"${sensorActuatorType}\"}");
   </#if>
   <#if !comp.isAtomic()>
     <#--
