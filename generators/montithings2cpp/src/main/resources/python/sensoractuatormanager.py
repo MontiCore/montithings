@@ -45,8 +45,9 @@ class SensorActuatorManager:
         json_dict = ast.literal_eval(message.payload.decode("utf-8"))
 
         if messageTopic == "heartbeat":
-            #refresh mapping of topic with current time and received component instance
-            self.topics[(json_dict["type"],message.topic.split("/")[3])] = (dt.datetime.now(), json_dict["occupiedBy"])
+            if json_dict["occupiedBy"] != False:
+                #refresh mapping of topic with current time and received component instance
+                self.topics[(json_dict["type"],message.topic.split("/")[3])] = (dt.datetime.now(), json_dict["occupiedBy"])
 
         elif messageTopic == "request":
             instancePortName = message.topic.split("/")[3]
@@ -91,7 +92,7 @@ class SensorActuatorManager:
                 #send response to component instance which requested connection
                 self.mqttc.publish("/sensorActuator/response/" + instancePortName, message.payload, qos=1, retain=True)
                 #update mapping
-                self.topics[message.topic] = (dt.datetime.now(), instancePortName)
+                self.topics[(offeredType, topic_uuid)] = (dt.datetime.now(), instancePortName)
 
     def free_topic(self, topic):
         info = self.mqttc.publish(topic, '{"occupiedBy": False}', qos=1, retain=True)
@@ -113,4 +114,4 @@ if __name__ == '__main__':
         for topic in mtc.topics:
             if(((dt.datetime.now() - mtc.topics[topic][0]).total_seconds() >= 10) & (mtc.topics[topic][1] != False)):
                 mtc.topics[topic] = (dt.datetime.now(), False)
-                #mtc.free_topic("/sensorActuator/heartbeat/" + topic[0])
+                mtc.free_topic("/sensorActuator/heartbeat/" + topic[1])
