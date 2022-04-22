@@ -43,6 +43,7 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
     <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
       std::thread th${p.getName()?cap_first};
       std::promise<void> exitSignal${p.getName()?cap_first};
+      std::string currentTopic${p.getName()?cap_first};
     </#if>
   </#list>
 </#if>

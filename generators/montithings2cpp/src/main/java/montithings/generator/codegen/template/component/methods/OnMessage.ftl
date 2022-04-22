@@ -19,19 +19,30 @@ std::string payload = std::string ((char *)message->payload, message->payloadlen
             json jsonMessage = json::parse(payload);
 
             if(jsonMessage.find("topic") != jsonMessage.end()){
-                //exitSignal${p.getName()?cap_first}.set_value();
-                //th${p.getName()?cap_first}.join();
-
-                std::string newTopic = jsonMessage["topic"];
+                currentTopic${p.getName()?cap_first} = jsonMessage["topic"];
                 <#if p.isIncoming()>
-                ${p.getName()}->setSensorActuatorName (newTopic, true);
+                ${p.getName()}->setSensorActuatorName (currentTopic${p.getName()?cap_first}, true);
                 <#else>
-                ${p.getName()}->setSensorActuatorName (newTopic, false);
+                ${p.getName()}->setSensorActuatorName (currentTopic${p.getName()?cap_first}, false);
                 </#if>
-                mqttClientLocalInstance->subscribe ("/sensorActuator/data/" + newTopic);
-                //exitSignal${p.getName()?cap_first} = std::promise<void>();
-                //std::future<void> keepAliveFuture${p.getName()?cap_first} = exitSignal${p.getName()?cap_first}.get_future();
-                //th${p.getName()?cap_first} = std::thread(&${className}::sendKeepAlive, this, "/sensorActuator/heartbeat/" + newTopic, "${p.getName()}", "${sensorActuatorType}", std::move(keepAliveFuture${p.getName()?cap_first}));
+                mqttClientLocalInstance->subscribe ("/sensorActuator/data/" + currentTopic${p.getName()?cap_first});
+                mqttClientLocalInstance->subscribe ("/sensorActuator/heartbeat/" + currentTopic${p.getName()?cap_first});
+                exitSignal${p.getName()?cap_first} = std::promise<void>();
+                std::future<void> keepAliveFuture${p.getName()?cap_first} = exitSignal${p.getName()?cap_first}.get_future();
+                th${p.getName()?cap_first} = std::thread(&${className}::sendKeepAlive, this, "/sensorActuator/heartbeat/" + currentTopic${p.getName()?cap_first}, "${p.getName()}", "${sensorActuatorType}", std::move(keepAliveFuture${p.getName()?cap_first}));
+            }
+        }
+        else if (topic == ("/sensorActuator/heartbeat/" + currentTopic${p.getName()?cap_first})) {
+            json jsonMessage = json::parse(payload);
+            if (jsonMessage["occupiedBy"] != ${p.getName()}PortIdentifier && jsonMessage["occupiedBy"] != "False") {
+                mqttClientLocalInstance->unsubscribe("/sensorActuator/data/" + currentTopic${p.getName()?cap_first});
+                mqttClientLocalInstance->unsubscribe("/sensorActuator/data/" + currentTopic${p.getName()?cap_first});
+                exitSignal${p.getName()?cap_first}.set_value();
+                th${p.getName()?cap_first}.join();
+
+                std::string sensorActuatorRequestTopic${p.getName()?cap_first} = "/sensorActuator/request/" + this->getInstanceName() + ".${p.getName()}";
+                mqttClientLocalInstance->subscribe ("/sensorActuator/response/" + this->getInstanceName() + ".${p.getName()}");
+                mqttClientLocalInstance->publishRetainedMessage (sensorActuatorRequestTopic${p.getName()?cap_first}, "{\"type\":\"${sensorActuatorType}\"}");
             }
         }
     </#if>
