@@ -108,7 +108,7 @@ public class SD4CGeneratorScript extends Script implements GroovyRunner {
   }
   
   /**
-   * copies all files with a given file extension from one directory to another
+   * copies all files with a given file extension from one directory tree to another, preserving the directory structure
    *
    * @param srcPath the source directory
    * @param targetPath the target directory
