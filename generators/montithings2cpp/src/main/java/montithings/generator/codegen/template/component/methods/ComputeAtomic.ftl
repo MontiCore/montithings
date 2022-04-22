@@ -16,7 +16,7 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
 <#if !ComponentHelper.isEveryBlock(computeName, comp)>
   remainingComputes++;
-  while (remainingComputes > 0)
+  while (remainingComputes > 0 && !(this->stopSignalReceived))
   {
   if (shouldCompute())
   {

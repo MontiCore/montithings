@@ -2,7 +2,9 @@
 package hierarchy;
     
 testdiagram ExampleTest for Example {
-  delay 750 ms;
+  delay 1 s;
+  loop.output -> loop.input : 0;
+  delay 500 ms;
   loop.output -> loop.input : 1;
   delay 500 ms;
   loop.output -> loop.input : 2;

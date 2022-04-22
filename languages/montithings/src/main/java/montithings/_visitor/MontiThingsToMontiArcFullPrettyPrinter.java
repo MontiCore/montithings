@@ -20,7 +20,6 @@ import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCSimpleGenericTypesPrettyPrinter;
-import genericarc._visitor.GenericArcPrettyPrinter;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._visitor.MontiArcPrettyPrinter;
 import montithings.MontiThingsMill;
@@ -83,6 +82,8 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
     traverser.setGenericArcHandler(genericToMontiArcPrettyPrinter);
     MontiArcPrettyPrinter montiArcPrettyPrinter = new MontiArcPrettyPrinter(printer);
     traverser.setMontiArcHandler(montiArcPrettyPrinter);
+    PrePostConditionToMontiArcPrettyPrinter prePostConditionToMontiArcpp = new PrePostConditionToMontiArcPrettyPrinter();
+    traverser.setPrePostConditionHandler(prePostConditionToMontiArcpp);
     
     SIUnitTypes4ComputingPrettyPrinter siunittypes4computingpp =
       new SIUnitTypes4ComputingPrettyPrinter(printer);

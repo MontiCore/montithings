@@ -2,9 +2,9 @@
 package hierarchy;
     
 testdiagram LoopTest for Loop {
-  delay 500ms;
+  delay 250 ms;
   output -> : 0;
   -> input : 3;
-  delay 1000ms;
+  delay 500 ms;
   output -> : 4;
 }

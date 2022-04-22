@@ -13,7 +13,7 @@
   <modules>
 
     <module>behavior</module>
-    <module>class-diagrams</module>
+    <!--<module>class-diagrams</module>-->
     <module>initialization</module>
     <module>interface-components</module>
     <module>interface-componentsMTB</module>
