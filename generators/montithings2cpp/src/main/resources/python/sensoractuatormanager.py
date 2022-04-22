@@ -62,9 +62,10 @@ class SensorActuatorManager:
                         #topic is not occupied yet
                         responseTopic = '/sensorActuator/response/' + instancePortName
                         spec = '"spec":{"type":"' + topic[0] + '"}'
-                        self.mqttc.publish(responseTopic, '{"topic": "' + topic[1] + ',' + spec + '"}', qos=1)
+                        self.mqttc.publish(responseTopic, '{"topic": "' + topic[1] + ',' + spec + '}', qos=1)
                         self.topics[topic] = (dt.datetime.now(), instancePortName)
                         exists = True
+                        break
 
             if not exists:
                 #add component instance to instances waiting for connections
@@ -109,9 +110,28 @@ if __name__ == '__main__':
     mtc = SensorActuatorManager(host, port)
 
     while True:
-        # Send a message to MontiThings (sensor port)
         time.sleep(5)
         for topic in mtc.topics:
+            #check if a new message was sent to this topic in the last 10 seconds even though it is free
             if(((dt.datetime.now() - mtc.topics[topic][0]).total_seconds() >= 10) & (mtc.topics[topic][1] != False)):
                 mtc.topics[topic] = (dt.datetime.now(), False)
                 mtc.free_topic("/sensorActuator/heartbeat/" + topic[1])
+
+                #check if someone is waiting for assignment to the type which was freed
+                offeredType = topic[0]
+                if offeredType in mtc.waitingForAssignments:
+                    instancePortName = mtc.waitingForAssignments[offeredType][0]
+
+                    mtc.waitingForAssignments[offeredType].pop(0)
+                    if not mtc.waitingForAssignments[offeredType]:
+                        #remove type from dict if there are no component instances waiting for an assignment to this type
+                        mtc.waitingForAssignments.pop(offeredType)
+
+                    #build message
+                    spec = '"spec":{"type":"' + topic[0] + '"}'
+                    responseMessage = '{"topic": "' + topic[1] + '",' + spec + '}'
+
+                    #send response to component instance which requested connection
+                    mtc.mqttc.publish("/sensorActuator/response/" + instancePortName, responseMessage, qos=1)
+                    #update mapping
+                    mtc.topics[(offeredType, topic[1])] = (dt.datetime.now(), instancePortName)

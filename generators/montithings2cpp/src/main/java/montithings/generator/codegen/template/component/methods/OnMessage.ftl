@@ -36,7 +36,7 @@ std::string payload = std::string ((char *)message->payload, message->payloadlen
             json jsonMessage = json::parse(payload);
             if (jsonMessage["occupiedBy"] != ${p.getName()}PortIdentifier && jsonMessage["occupiedBy"] != "False") {
                 mqttClientLocalInstance->unsubscribe("/sensorActuator/data/" + currentTopic${p.getName()?cap_first});
-                mqttClientLocalInstance->unsubscribe("/sensorActuator/data/" + currentTopic${p.getName()?cap_first});
+                mqttClientLocalInstance->unsubscribe("/sensorActuator/heartbeat/" + currentTopic${p.getName()?cap_first});
                 exitSignal${p.getName()?cap_first}.set_value();
                 th${p.getName()?cap_first}.join();
 
