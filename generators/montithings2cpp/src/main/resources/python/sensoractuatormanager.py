@@ -62,7 +62,7 @@ class SensorActuatorManager:
                         #topic is not occupied yet
                         responseTopic = '/sensorActuator/response/' + instancePortName
                         spec = '"spec":{"type":"' + topic[0] + '"}'
-                        self.mqttc.publish(responseTopic, '{"topic": "' + topic[1] + ',' + spec + '"}', qos=1, retain=True)
+                        self.mqttc.publish(responseTopic, '{"topic": "' + topic[1] + ',' + spec + '"}', qos=1)
                         self.topics[topic] = (dt.datetime.now(), instancePortName)
                         exists = True
 
@@ -90,7 +90,7 @@ class SensorActuatorManager:
                     self.waitingForAssignments.pop(offeredType)
 
                 #send response to component instance which requested connection
-                self.mqttc.publish("/sensorActuator/response/" + instancePortName, message.payload, qos=1, retain=True)
+                self.mqttc.publish("/sensorActuator/response/" + instancePortName, message.payload, qos=1)
                 #update mapping
                 self.topics[(offeredType, topic_uuid)] = (dt.datetime.now(), instancePortName)
 

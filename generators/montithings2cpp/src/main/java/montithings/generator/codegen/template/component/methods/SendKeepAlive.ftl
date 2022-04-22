@@ -10,7 +10,6 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendKeepAlive(
   j["occupiedBy"] = this->getInstanceName() + "." + portName;
   j["type"] = typeName;
   std::string message = j.dump();
-  mqttClientLocalInstance->unsubscribe (sensorActuatorHeartbeatTopic);
   while (keepAliveFuture.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout){
     mqttClientLocalInstance->publishRetainedMessage (sensorActuatorHeartbeatTopic, message);
     std::this_thread::sleep_for(std::chrono::seconds(5));
