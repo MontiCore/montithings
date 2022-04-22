@@ -1,8 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.tools.sd4componenttesting;
 
+import arcbasis._cocos.ConnectorSourceAndTargetComponentDiffer;
 import com.google.common.collect.Sets;
 import de.monticore.io.paths.ModelPath;
+import montiarc._cocos.MontiArcCoCoChecker;
+import montiarc._cocos.MontiArcCoCos;
 import montithings.tools.sd4componenttesting._cocos.SD4ComponentTestingCoCos;
 import de.se_rwth.commons.logging.Log;
 import montithings.tools.sd4componenttesting._ast.ASTSD4Artifact;
@@ -58,8 +61,13 @@ public class SD4ComponentTestingTool {
 
       this.maGlobalScope = MontiArcMill.globalScope();
       this.maGlobalScope.setModelPath(mp);
-
-      MontiArcTool tool = new MontiArcTool();
+  
+      MontiArcCoCoChecker checker = MontiArcCoCos.createChecker();
+      //remove unwanted cocos here
+      checker.getTraverser().getArcBasisVisitorList()
+        .removeIf(c -> c instanceof ConnectorSourceAndTargetComponentDiffer);
+      
+      MontiArcTool tool = new MontiArcTool(checker);
       tool.addBasicTypes();
       tool.processModels(this.maGlobalScope);
     }

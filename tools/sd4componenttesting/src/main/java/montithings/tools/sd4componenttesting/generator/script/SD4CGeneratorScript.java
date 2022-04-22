@@ -72,6 +72,7 @@ public class SD4CGeneratorScript extends Script implements GroovyRunner {
 
       prettyPrintMtToArc(modelPath.toPath(), ARC_MODELS_TARGET);
       copyAllFilesWithExtension(".cd", modelPath.toPath(), new File(ARC_MODELS_TARGET).toPath());
+      copyAllFilesWithExtension(".cde", modelPath.toPath(), new File(ARC_MODELS_TARGET).toPath());
       generateCppFromSd4c(testPath, ARC_MODELS_TARGET, CPP_FILES_TARGET, testPath.toPath());
 
     } catch (java.io.IOException e) {

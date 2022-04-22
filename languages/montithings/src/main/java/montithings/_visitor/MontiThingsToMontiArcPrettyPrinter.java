@@ -3,9 +3,19 @@ package montithings._visitor;
 
 import arcbasis._ast.ASTArcBasisNode;
 import com.google.common.base.Preconditions;
+import de.monticore.expressions.commonexpressions._ast.ASTBracketExpression;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.scbasis._ast.ASTStatechart;
+import de.monticore.statements.mcexceptionstatements._ast.ASTCatchClause;
+import genericarc._ast.ASTGenericArcNode;
+import genericarc._ast.ASTGenericComponentHead;
+import genericarc._visitor.GenericArcHandler;
 import montithings._ast.*;
 import org.codehaus.commons.nullanalysis.NotNull;
+import prepostcondition._ast.ASTConstantsPrePostCondition;
+import prepostcondition._ast.ASTPostcondition;
+import prepostcondition._ast.ASTPostconditionBuilder;
+import prepostcondition._ast.ASTPrePostConditionNode;
 
 import java.util.Iterator;
 import java.util.List;
@@ -71,7 +81,17 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   public void handle(@NotNull ASTBehavior node) {
     // intentionally left empty - not covered by MontiArc
   }
-
+  
+  @Override
+  public void handle(@NotNull ASTInitBehavior node) {
+    // intentionally left empty - not covered by MontiArc
+  }
+  
+  @Override
+  public void handle(@NotNull ASTArcStatechart node) {
+    // intentionally left empty - not covered by MontiArc
+  }
+  
   @Override
   public void handle(@NotNull ASTIsPresentExpression node) {
     // intentionally left empty - not covered by MontiArc
@@ -85,4 +105,5 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   public void handle(ASTMTEveryBlock node) {
     // intentionally left empty - not covered by MontiArc
   }
+  
 }

@@ -79,8 +79,8 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
     ComfortableArcPrettyPrinter comfortableArcPrettyPrinter =
       new ComfortableArcPrettyPrinter(printer);
     traverser.setComfortableArcHandler(comfortableArcPrettyPrinter);
-    GenericArcPrettyPrinter genericArcPrettyPrinter = new GenericArcPrettyPrinter(printer);
-    traverser.setGenericArcHandler(genericArcPrettyPrinter);
+    GenericToMontiArcPrettyPrinter genericToMontiArcPrettyPrinter = new GenericToMontiArcPrettyPrinter(printer);
+    traverser.setGenericArcHandler(genericToMontiArcPrettyPrinter);
     MontiArcPrettyPrinter montiArcPrettyPrinter = new MontiArcPrettyPrinter(printer);
     traverser.setMontiArcHandler(montiArcPrettyPrinter);
     
