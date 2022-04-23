@@ -25,7 +25,6 @@ std::string payload = std::string ((char *)message->payload, message->payloadlen
                 <#else>
                 ${p.getName()}->setSensorActuatorName (currentTopic${p.getName()?cap_first}, false);
                 </#if>
-                mqttClientLocalInstance->subscribe ("/sensorActuator/data/" + currentTopic${p.getName()?cap_first});
                 mqttClientLocalInstance->subscribe ("/sensorActuator/heartbeat/" + currentTopic${p.getName()?cap_first});
                 exitSignal${p.getName()?cap_first} = std::promise<void>();
                 std::future<void> keepAliveFuture${p.getName()?cap_first} = exitSignal${p.getName()?cap_first}.get_future();
