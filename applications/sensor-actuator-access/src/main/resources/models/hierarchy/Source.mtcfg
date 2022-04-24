@@ -3,6 +3,6 @@ package hierarchy;
 
 config Source for GENERIC {
   sensor {
-    mqtt = "source";
+    requiredType = "source";
   }
 }

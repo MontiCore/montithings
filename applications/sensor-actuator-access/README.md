@@ -21,7 +21,7 @@ should be connected to hardware which considers itself to be of "example-type".
 ```
 config Sink for GENERIC {
     actuator {
-        mqtt = "example-type";
+        requiredType = "example-type";
     }
 }
 ```
@@ -38,8 +38,9 @@ component and port you want to inject your code into:
 use `<ComponentName><PortName>Provide.ftl`
 - To process values from the component (i.e. implement an outgoing port), 
 use `<ComponentName><PortName>Consume.ftl`
-- To specify the type of the port use `<ComponentName><PortName>Type.ftl`
-- To provide the type of hardware which the port should be for MontiThings
+- To specify the data type of the port use `<ComponentName><PortName>Type.ftl`
+- To provide the type of hardware which the port should represent towards the
+MontiThings application use
 `<ComponentName><PortName>Topic.ftl`
 
 For example, we can implement an actuator port like this: 

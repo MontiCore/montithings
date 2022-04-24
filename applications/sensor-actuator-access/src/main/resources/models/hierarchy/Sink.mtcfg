@@ -3,6 +3,6 @@ package hierarchy;
 
 config Sink for GENERIC {
   actuator {
-    mqtt = "sink";
+    requiredType = "sink";
   }
 }

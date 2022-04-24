@@ -3,6 +3,6 @@ package sourceSensor;
 
 config Source for GENERIC {
   sensor {
-    mqtt = "example-sensor-topic";
+    requiredType = "example-sensor-topic";
   }
 }

@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class HookpointExists implements MTConfigASTHookpointCoCo {
   final Set<String> validHookpoints = new HashSet<>(
-    Arrays.asList("init", "body", "include", "provide", "consume", "mqtt")
+    Arrays.asList("init", "body", "include", "provide", "consume", "requiredType")
   );
 
   @Override public void check(ASTHookpoint node) {

@@ -3,6 +3,6 @@ package logFilteringApp;
 
 config Sink for GENERIC {
   actuator {
-    mqtt = "sink";
+    requiredType = "sink";
   }
 }
