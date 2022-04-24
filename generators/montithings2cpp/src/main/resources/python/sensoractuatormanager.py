@@ -62,7 +62,7 @@ class SensorActuatorManager:
                         #topic is not occupied yet
                         responseTopic = '/sensorActuator/response/' + instancePortName
                         spec = '"spec":{"type":"' + topic[0] + '"}'
-                        self.mqttc.publish(responseTopic, '{"topic": "' + topic[1] + ',' + spec + '}', qos=1)
+                        self.mqttc.publish(responseTopic, '{"topic": "' + topic[1] + '"",' + spec + '}', qos=1)
                         self.topics[topic] = (dt.datetime.now(), instancePortName)
                         exists = True
                         break
