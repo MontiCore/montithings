@@ -7,15 +7,21 @@ import montithings.generator.config.SplittingMode;
 import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static montithings.generator.helper.FileHelper.getFileEndings;
-import static montithings.generator.helper.FileHelper.getFilesWithEnding;
+import static montithings.generator.MontiThingsGeneratorTool.TOOL_NAME;
+import static montithings.generator.helper.FileHelper.*;
 
 public class GenerateSensorActuatorPorts extends GeneratorStep {
 
@@ -28,10 +34,43 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
         new File(state.getHwcPath() + File.separator + pckg.getName()), getFileEndings());
       for (String port : sensorActuatorPorts) {
         if (!templatePortBelongsToComponent(port, state)) {
+          Log.debug("Processing handwritten port '" + port + "'", TOOL_NAME);
           state.getMtg().generateSensorActuatorPort(port, pckg.getName(), state.getConfig());
           generateCMakeForSensorActuatorPort(pckg.getName(), port, state);
           executableSensorActuatorPorts.add(pckg.getName() + "." + port);
         }
+      }
+    }
+
+    for (File pckg : Objects.requireNonNull(packages)) {
+      Set<String> sensorActuatorPorts = getFilesWithPrefix(
+        new File(state.getHwcPath() + File.separator + pckg.getName()), Collections.singleton("&"));
+      for (String port : sensorActuatorPorts) {
+        Log.debug("Processing handwritten port '" + port + "'", TOOL_NAME);
+
+        // Sensorname = Get name without &
+        String cleanName = FilenameUtils.removeExtension(port.substring(1));
+        String fullName = pckg.getName() + "." + cleanName;
+
+        // Create folder
+        File directory = Paths.get(state.getTarget().getPath(), fullName).toFile();
+        directory.mkdir();
+
+        // Copy to Target-generated sources to "package + . + Sensorname"
+        try {
+          Files.copy(Paths.get(pckg.toString(), port), Paths.get(directory.toPath().toString(), port.substring(1)));
+        }
+        catch (IOException e) {
+          e.printStackTrace();
+          Log.error("0xMT1201 Could not copy '" + Paths.get(pckg.toString(), port) + "' to '"
+            + Paths.get(directory.toPath().toString(), port.substring(1)) + "'");
+        }
+
+        // Generate CMake
+        generateCMakeForCppPort(pckg.getName(), cleanName, state);
+
+        // add to executableSensorActuatorPorts (so it is processed in overall CMake)
+        executableSensorActuatorPorts.add(fullName);
       }
     }
 
@@ -59,8 +98,17 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
     GeneratorToolState state) {
     if (state.getConfig().getTargetPlatform()
       != TargetPlatform.ARDUINO) { // Arduino uses its own build system
-      Log.info("Generate CMake file for " + port, "MontiThingsGeneratorTool");
+      Log.info("Generate CMake file for " + port, TOOL_NAME);
       state.getMtg().generateMakeFileForSensorActuatorPort(pckg, port, "montithings-RTE");
+    }
+  }
+
+  protected void generateCMakeForCppPort(String pckg, String port,
+    GeneratorToolState state) {
+    if (state.getConfig().getTargetPlatform()
+      != TargetPlatform.ARDUINO) { // Arduino uses its own build system
+      Log.info("Generate CMake file for " + port, TOOL_NAME);
+      state.getMtg().generateCMakeFileForCppPort(pckg, port, "montithings-RTE");
     }
   }
 

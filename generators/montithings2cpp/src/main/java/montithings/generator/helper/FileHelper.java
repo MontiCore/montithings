@@ -44,6 +44,9 @@ public class FileHelper {
       hwcFiles.removeIf(File::isDirectory);
       hwcFiles.removeIf(f -> f.getName().toLowerCase().endsWith(".ftl"));
 
+      // Remove independent ports
+      hwcFiles.removeIf(f -> f.getName().startsWith("&"));
+
       // Now, we're left with the classes for the current component and files not
       // related to any component
     }
@@ -199,7 +202,30 @@ public class FileHelper {
       for (String ending : fileEndings) {
         String[] files = new String[0];
         try {
-          files = Files.walk(hwcPath.toPath()).filter(name -> name.toString().endsWith(ending)).map(path -> path.getFileName().toString().split(ending)[0]).toArray(String[]::new);
+          files = Files.walk(hwcPath.toPath()).filter(name -> name.toString()
+            .endsWith(ending))
+            .map(path -> path.getFileName().toString().split(ending)[0])
+            .toArray(String[]::new);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        Collections.addAll(result, files);
+      }
+    }
+    return result;
+  }
+
+  public static Set<String> getFilesWithPrefix(File hwcPath, Set<String> filePrefix) {
+    Set<String> result = new HashSet<>();
+
+    if (hwcPath.isDirectory()) {
+      for (String prefix : filePrefix) {
+        String[] files = new String[0];
+        try {
+          files = Files.walk(hwcPath.toPath())
+            .map(path -> path.getFileName().toString())
+            .filter(name -> name.startsWith(prefix))
+            .toArray(String[]::new);
         } catch (IOException e) {
           e.printStackTrace();
         }
