@@ -93,6 +93,11 @@ public class GeneratorToolState {
 
   protected List<String> executableSensorActuatorPorts;
 
+  /**
+   * Determines which components (value) code is needed to execute a component (key)
+   * For example, if a component instantiates another component and separate is off,
+   * then it needs this component's code.
+   */
   protected Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks;
 
   protected List<String> hwcPythonScripts;

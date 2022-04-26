@@ -107,6 +107,8 @@ include_directories("${commonCodePrefix}${libraryPath?replace("\\","/")}")
   file(GLOB_RECURSE ${subdir.getName()?upper_case}_SOURCES "${subdir.getName()}/*.cpp" "${subdir.getName()}/*.h")
   list(FILTER ${subdir.getName()?upper_case}_SOURCES EXCLUDE REGEX "${Utils.getDeployFile(comp)}")
   include_directories("${subdir.getName()}")
+  HEADER_DIRECTORIES("${subdir.getName()}" ${subdir.getName()}_HEADERS)
+  include_directories(${r"${"}${subdir.getName()}${r"_HEADERS}"})
 </#list>
 
 # Include Subcomponent Headers
