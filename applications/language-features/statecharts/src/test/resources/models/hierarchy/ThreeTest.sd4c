@@ -2,12 +2,18 @@
 package hierarchy;
     
 testdiagram ThreeTest for Three {
+  -> input : 0;
+  output -> : 0;
+
   -> input : 1;
-  state -> : NotDividable;
+  output -> : 0;
 
   -> input : 3;
-  state -> Dividable;
+  output -> : 3;
 
-  -> input : 0;
-  state -> Dividable;
+  -> input : 5;
+  output -> : 3;
+
+  -> input : 6;
+  output -> : 6;
 }
