@@ -272,7 +272,9 @@ Compile Applications:
   needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
   stage: generator-test
   script:
-    - cd applications/$APPLICATION_NAME/target/generated-test-sources
+    - cd applications/$APPLICATION_NAME
+    - mvn clean install
+    - cd target/generated-test-sources
     - ./build.sh
     - cd build/bin
     - for f in *; do ./"$f"; done
@@ -282,40 +284,40 @@ basic-input-output:
     APPLICATION_NAME: basic-input-output
   <<: *test-application-definition
 
-dds-ports:
-  variables:
-    APPLICATION_NAME: dds-ports
-  <<: *test-application-definition
+#dds-ports:
+#  variables:
+#    APPLICATION_NAME: dds-ports
+#  <<: *test-application-definition
 
-hierarchy:
-  variables:
-    APPLICATION_NAME: hierarchy
-  <<: *test-application-definition
+#hierarchy:
+#  variables:
+#    APPLICATION_NAME: hierarchy
+#  <<: *test-application-definition
 
 language-features/behavior:
   variables:
     APPLICATION_NAME: language-features/behavior
   <<: *test-application-definition
 
-language-features/class-diagrams:
-  variables:
-    APPLICATION_NAME: language-features/class-diagrams
-  <<: *test-application-definition
+#language-features/class-diagrams:
+#  variables:
+#    APPLICATION_NAME: language-features/class-diagrams
+#  <<: *test-application-definition
 
 language-features/initilization:
   variables:
     APPLICATION_NAME: language-features/initilization
   <<: *test-application-definition
 
-language-features/interface-components:
-  variables:
-    APPLICATION_NAME: language-features/interface-components
-  <<: *test-application-definition
+#language-features/interface-components:
+#  variables:
+#    APPLICATION_NAME: language-features/interface-components
+#  <<: *test-application-definition
 
-language-features/interface-componentsMTB:
-  variables:
-    APPLICATION_NAME: language-features/interface-componentsMTB
-  <<: *test-application-definition
+#language-features/interface-componentsMTB:
+#  variables:
+#    APPLICATION_NAME: language-features/interface-componentsMTB
+#  <<: *test-application-definition
 
 language-features/ocl:
   variables:
@@ -332,15 +334,15 @@ language-features/statecharts:
     APPLICATION_NAME: language-features/statecharts
   <<: *test-application-definition
 
-mqtt-ports:
-  variables:
-    APPLICATION_NAME: mqtt-ports
-  <<: *test-application-definition
+#mqtt-ports:
+#  variables:
+#    APPLICATION_NAME: mqtt-ports
+#  <<: *test-application-definition
 
-record-transform-replay:
-  variables:
-    APPLICATION_NAME: record-transform-replay
-  <<: *test-application-definition
+#record-transform-replay:
+#  variables:
+#    APPLICATION_NAME: record-transform-replay
+#  <<: *test-application-definition
 
 retain-state:
   variables:
