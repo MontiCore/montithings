@@ -78,6 +78,11 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   }
   
   @Override
+  public void handle(@NotNull ASTMTCatch node) {
+    // intentionally left empty - not covered by MontiArc
+  }
+  
+  @Override
   public void handle(@NotNull ASTArcStatechart node) {
     // intentionally left empty - not covered by MontiArc
   }
