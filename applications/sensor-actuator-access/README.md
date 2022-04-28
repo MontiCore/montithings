@@ -26,60 +26,50 @@ config Sink for GENERIC {
 }
 ```
 
+## External Ports in C++
 
-## Freemarker-based external Ports
+External ports defined in C++ are indicated to the generator by files starting 
+with a `&`.
+The `&` enables the generator to distinguish them from handwritten code files 
+that overwrite generated files of a component.
+The C++ files use the `MontiThingsConnector` to communicate with MontiThings.
+The `MontiThingsConnector` accepts a callback with which values from port can 
+be received and processed in case of an outgoing port (from the 
+architecture's point of view).
+For example, an integer value is received and logged here:
 
-MontiThings uses the templates to inject code in the ports.
-To enable MontiThings to find the templates, you have to give them specific 
-names and replace `<ComponentName>` and `<PortName>` with the names of the 
-component and port you want to inject your code into: 
-- To add import statements, use `<ComponentName><PortName>Include.ftl`
-- To provide values to the component (i.e. implement an incoming port), 
-use `<ComponentName><PortName>Provide.ftl`
-- To process values from the component (i.e. implement an outgoing port), 
-use `<ComponentName><PortName>Consume.ftl`
-- To specify the data type of the port use `<ComponentName><PortName>Type.ftl`
-- To provide the type of hardware which the port should represent towards the
-MontiThings application use
-`<ComponentName><PortName>Topic.ftl`
+```
+void onReceive(int value) {
+  LOG (INFO) << "Received: " << value;
+}
 
-For example, we can implement an actuator port like this: 
-For the purpose of not requiring any hardware to run this example, we just print
-the values to the console.
-This is done by `TestActuatorConsume.ftl`:
-```
-if (nextVal)
-  {
-    std::cout << "Sink: " << nextVal.value () << std::endl;
-  }
-else
-  { 
-    std::cout << "Sink: " << "No data." << std::endl; 
-  }
-```
-If there's a value at the port it prints "Sink: " followed by the value at the 
-port. 
-Otherwise (if the compute method does not write data to that port), we only 
-print "Sink: No data.".
-As this uses `std::cout` our C++ code also requires an include statement which
-we add with the `TestActuatorInclude.ftl` template:
-```
-#include <iostream>
+int main(int argc, char* argv[])
+{
+  MontiThingsConnector<int> mtc ("sink", onReceive);
+  mtc.connectToBroker();
+  mtc.wait();
+}
 ```
 
-Accordingly, running this example will result in both of the actuators printing
-increasing numbers:
+If values are to be sent from the external port to the architecture, the send 
+method can be used:
+
 ```
-Sink: 0
-Sink: 1
-Sink: 2
-Sink: 3
-Sink: 4
-Sink: 5
-Sink: 6
+int main(int argc, char* argv[]) {
+  MontiThingsConnector<int> mtc ("source", nullptr);
+  mtc.connectToBroker();
+  int i = 0;
+  while (1)
+    {
+      LOG (DEBUG) << "Sending '" << i << "'";
+      mtc.send (i++);
+      std::this_thread::sleep_for (std::chrono::seconds(2));
+    }
+}
 ```
 
-## External Ports in other programming languages
+
+## External Ports In Python
 
 Sometimes C++ just isn't the right choice to access a sensor or actuator.
 For example, if the sensor's manufacturer only provides a library in a
@@ -130,4 +120,57 @@ while True:
     mtc.send(i)
     i = i + 1
     time.sleep(2)
+```
+
+
+## Freemarker-based External Ports
+
+MontiThings uses the templates to inject code in the ports.
+To enable MontiThings to find the templates, you have to give them specific
+names and replace `<ComponentName>` and `<PortName>` with the names of the
+component and port you want to inject your code into:
+- To add import statements, use `<ComponentName><PortName>Include.ftl`
+- To provide values to the component (i.e. implement an incoming port),
+  use `<ComponentName><PortName>Provide.ftl`
+- To process values from the component (i.e. implement an outgoing port),
+  use `<ComponentName><PortName>Consume.ftl`
+- To specify the data type of the port use `<ComponentName><PortName>Type.ftl`
+- To provide the type of hardware which the port should represent towards the
+  MontiThings application use
+  `<ComponentName><PortName>Topic.ftl`
+
+For example, we can implement an actuator port like this:
+For the purpose of not requiring any hardware to run this example, we just print
+the values to the console.
+This is done by `TestActuatorConsume.ftl`:
+```
+if (nextVal)
+  {
+    std::cout << "Sink: " << nextVal.value () << std::endl;
+  }
+else
+  { 
+    std::cout << "Sink: " << "No data." << std::endl; 
+  }
+```
+If there's a value at the port it prints "Sink: " followed by the value at the
+port.
+Otherwise (if the compute method does not write data to that port), we only
+print "Sink: No data.".
+As this uses `std::cout` our C++ code also requires an include statement which
+we add with the `TestActuatorInclude.ftl` template:
+```
+#include <iostream>
+```
+
+Accordingly, running this example will result in both of the actuators printing
+increasing numbers:
+```
+Sink: 0
+Sink: 1
+Sink: 2
+Sink: 3
+Sink: 4
+Sink: 5
+Sink: 6
 ```
