@@ -47,14 +47,15 @@ protected:
   void (*onReceive) (T) = nullptr;
 
   /// Endless loop for asynchronously executing MQTT
-  std::future<void> _loop;
+  std::thread _loop;
 
   /**
    * Publish the given message on the given port
    * \param topic the topic to publish the message on
    * \param message content of the message to publish
+   * \param retain true if the message should be published as a retained message
    */
-  void publish (const std::string &topic, const std::string &message);
+  void publish (const std::string &topic, const std::string &message, const bool retain = false);
 
   /**
    * Subscribe to the messages of the port with the provided name
@@ -144,14 +145,12 @@ MontiThingsConnector<T>::MontiThingsConnector (std::string brokerHostname, const
     : brokerHostname (std::move (brokerHostname)), brokerPort (brokerPort),
       portType (std::move (portType)), onReceive (onReceive)
 {
-  connectToBroker ();
 }
 
 template <typename T>
 MontiThingsConnector<T>::MontiThingsConnector (std::string portType, void (*onReceive) (T))
     : portType (std::move (portType)), onReceive (onReceive)
 {
-  connectToBroker ();
 }
 
 template <typename T>
@@ -194,14 +193,7 @@ MontiThingsConnector<T>::connectToBroker ()
       throw std::runtime_error ("Unable to connect to MQTT broker.");
     }
 
-  json topicSpecification;
-  topicSpecification["topic"] = this->uuid.str ();
-  topicSpecification["spec"]["type"] = this->portType;
-
-  publish ("/sensorActuator/offer/" + this->getUuid ().str (), topicSpecification.dump ());
-  subscribe ("/sensorActuator/data/" + this->uuid.str ());
-
-  _loop = std::async (std::launch::async, &MontiThingsConnector<T>::loop, this);
+  _loop = std::thread (&MontiThingsConnector<T>::loop, this);
 }
 
 template <typename T>
@@ -217,14 +209,15 @@ template <typename T>
 void
 MontiThingsConnector<T>::loop ()
 {
-  mosquitto_loop_forever (mosq, 1, 1);
+  LOG (DEBUG) << "MOSQ: " << mosq;
+  mosquitto_loop_forever (mosq, -1, 1);
 }
 
 template <typename T>
 void
 MontiThingsConnector<T>::wait ()
 {
-  _loop.wait ();
+  _loop.join();
 }
 
 template <typename T>
@@ -233,6 +226,13 @@ MontiThingsConnector<T>::onConnect (mosquitto *mosquitto, void *obj, int result)
 {
   LOG (DEBUG) << "Connected to MQTT broker " << mosquitto;
   isConnected = true;
+
+  json topicSpecification;
+  topicSpecification["topic"] = this->uuid.str ();
+  topicSpecification["spec"]["type"] = this->portType;
+
+  publish ("/sensorActuator/offer/" + this->getUuid ().str (), topicSpecification.dump (), true);
+  subscribe ("/sensorActuator/data/" + this->uuid.str ());
 }
 
 template <typename T>
@@ -253,7 +253,6 @@ MontiThingsConnector<T>::onMessage (mosquitto *mosquitto, void *obj,
   try
     {
       Message<T> result = jsonToData<Message<T>> (payload);
-      LOG (DEBUG) << "Received '" << payload << "'";
       if (this->onReceive != nullptr)
         {
           this->onReceive (result.getPayload().value());
@@ -267,11 +266,11 @@ MontiThingsConnector<T>::onMessage (mosquitto *mosquitto, void *obj,
 
 template <typename T>
 void
-MontiThingsConnector<T>::publish (const std::string &topic, const std::string &message)
+MontiThingsConnector<T>::publish (const std::string &topic, const std::string &message, const bool retain)
 {
   mosquitto_publish (mosq,
                      nullptr, // could be used to set a msg id
-                     topic.c_str (), message.length (), message.c_str (), 2, false);
+                     topic.c_str (), message.length (), message.c_str (), 2, retain);
 }
 
 template <typename T>
