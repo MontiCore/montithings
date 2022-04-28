@@ -87,7 +87,7 @@ public class GeneratorToolState {
 
   protected MTConfigTool mtConfigTool;
 
-  protected HashSet<ComponentTypeSymbol> executableComponents;
+  protected Set<ComponentTypeSymbol> executableComponents;
 
   protected List<String> executableSubdirs;
 
@@ -246,12 +246,11 @@ public class GeneratorToolState {
     this.mtConfigTool = mtConfigTool;
   }
 
-  public HashSet<ComponentTypeSymbol> getExecutableComponents() {
+  public Set<ComponentTypeSymbol> getExecutableComponents() {
     return executableComponents;
   }
 
-  public void setExecutableComponents(
-    HashSet<ComponentTypeSymbol> executableComponents) {
+  public void setExecutableComponents(Set<ComponentTypeSymbol> executableComponents) {
     this.executableComponents = executableComponents;
   }
 
@@ -297,5 +296,4 @@ public class GeneratorToolState {
     List<Pair<ComponentTypeSymbol, String>> instances) {
     this.instances = instances;
   }
-
 }
