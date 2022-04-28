@@ -5,7 +5,7 @@ ${tc.signature("comp","config")}
 
 <#list comp.subComponents as subcomponent>
   ${subcomponent.getName()}( instanceName + ".${subcomponent.getName()}"
-  <#if brokerIsMQTT && ComponentHelper.getDynamicallyConnectedSubcomps(comp)?seq_contains(subcomponent.getType())>
+  <#if brokerIsMQTT && (ComponentHelper.getDynamicallyConnectedSubcomps(comp)?seq_contains(subcomponent.getType()) || splittingModeDisabled)>
     , passedMqttClientInstance
     , passedMqttClientLocalInstance
   </#if>
