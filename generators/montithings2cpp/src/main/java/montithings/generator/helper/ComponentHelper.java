@@ -7,6 +7,7 @@ import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.IArcBasisScope;
 import arcbasis._symboltable.PortSymbol;
+import behavior._ast.ASTConnectStatement;
 import behavior._ast.ASTEveryBlock;
 import cdlangextension._ast.ASTCDEImportStatement;
 import cdlangextension._symboltable.DepLanguageSymbol;
@@ -36,14 +37,12 @@ import montiarc._ast.ASTArcTiming;
 import montithings._ast.*;
 import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
+import montithings._visitor.MontiThingsTraverser;
 import montithings.generator.codegen.util.Utils;
 import montithings.generator.config.ConfigParams;
 import montithings.generator.config.SplittingMode;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
-import montithings.generator.visitor.FindAgoQualificationsVisitor;
-import montithings.generator.visitor.FindPublishedPortsVisitor;
-import montithings.generator.visitor.GuardExpressionVisitor;
-import montithings.generator.visitor.NoDataComparisionsVisitor;
+import montithings.generator.visitor.*;
 import montithings.util.ClassDiagramUtil;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
@@ -565,10 +564,49 @@ public class ComponentHelper {
     return result;
   }
 
+  public static Set<ComponentTypeSymbol> getDynamicallyConnectedSubcomps(
+    ComponentTypeSymbol enclosingComp) {
+    Set<ComponentTypeSymbol> result = new HashSet<>();
+
+    // Find all connect statements
+    FindConnectStatementsVisitor visitor = new FindConnectStatementsVisitor();
+    Set<ASTBehavior> behaviors = enclosingComp.getAstNode().getBody().getArcElementList().stream()
+      .filter(e -> e instanceof ASTBehavior)
+      .map(e -> (ASTBehavior) e)
+      .collect(Collectors.toSet());
+    MontiThingsTraverser traverser = visitor.createTraverser();
+    for (ASTBehavior b : behaviors) {
+      b.accept(traverser);
+    }
+
+    // Get the types of all component instances accessed in connect statements
+    for (ASTConnectStatement cs : visitor.getConnectStatements()) {
+      Set<ASTPortAccess> portAccesses = new HashSet<>();
+      portAccesses.add(cs.getConnector().getSource());
+      portAccesses.addAll(cs.getConnector().getTargetList());
+
+      for (ASTPortAccess pa : portAccesses) {
+        if (pa.isPresentComponentSymbol()) {
+          result.add(pa.getComponentSymbol().getType());
+        }
+      }
+    }
+
+    return result;
+  }
+
   // endregion
   //============================================================================
   // region Ports
   //============================================================================
+
+  public static boolean componentHasIncomingPorts(ComponentTypeSymbol comp){
+    return !comp.getAllIncomingPorts().isEmpty();
+  }
+
+  public static boolean componentHasPorts(ComponentTypeSymbol comp){
+    return !comp.getPorts().isEmpty();
+  }
 
   public static Boolean hasSyncGroups(ComponentTypeSymbol comp) {
     return !getSyncGroups(comp).isEmpty();
@@ -1244,14 +1282,6 @@ public class ComponentHelper {
 
     return comp.getAstNode().getHead().get_PreCommentList().get(0).getText()
       .equals("RECORD_AND_REPLAY_GENERATED");
-  }
-  
-  public static boolean componentHasIncomingPorts(ComponentTypeSymbol comp){
-    return !comp.getAllIncomingPorts().isEmpty();
-  }
-  
-  public static boolean componentHasPorts(ComponentTypeSymbol comp){
-    return !comp.getPorts().isEmpty();
   }
 
 }

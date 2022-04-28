@@ -87,12 +87,17 @@ public class GeneratorToolState {
 
   protected MTConfigTool mtConfigTool;
 
-  protected HashSet<ComponentTypeSymbol> executableComponents;
+  protected Set<ComponentTypeSymbol> executableComponents;
 
   protected List<String> executableSubdirs;
 
   protected List<String> executableSensorActuatorPorts;
 
+  /**
+   * Determines which components (value) code is needed to execute a component (key)
+   * For example, if a component instantiates another component and separate is off,
+   * then it needs this component's code.
+   */
   protected Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks;
 
   protected List<String> hwcPythonScripts;
@@ -241,12 +246,11 @@ public class GeneratorToolState {
     this.mtConfigTool = mtConfigTool;
   }
 
-  public HashSet<ComponentTypeSymbol> getExecutableComponents() {
+  public Set<ComponentTypeSymbol> getExecutableComponents() {
     return executableComponents;
   }
 
-  public void setExecutableComponents(
-    HashSet<ComponentTypeSymbol> executableComponents) {
+  public void setExecutableComponents(Set<ComponentTypeSymbol> executableComponents) {
     this.executableComponents = executableComponents;
   }
 
@@ -292,5 +296,4 @@ public class GeneratorToolState {
     List<Pair<ComponentTypeSymbol, String>> instances) {
     this.instances = instances;
   }
-
 }

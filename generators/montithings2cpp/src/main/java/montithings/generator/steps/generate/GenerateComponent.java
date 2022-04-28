@@ -1,15 +1,11 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.steps.generate;
 
-import arcbasis._ast.ASTPortAccess;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
-import behavior._ast.ASTConnectStatement;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
-import montithings._visitor.MontiThingsTraverser;
 import montithings.generator.codegen.MTGenerator;
 import montithings.generator.config.ConfigParams;
 import montithings.generator.config.MessageBroker;
@@ -20,17 +16,15 @@ import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.GeneratorHelper;
 import montithings.generator.steps.GeneratorStep;
 import montithings.generator.steps.helper.GenerateCDEAdapter;
-import montithings.generator.visitor.FindConnectStatementsVisitor;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static montithings.generator.MontiThingsGeneratorTool.TOOL_NAME;
+import static montithings.generator.helper.ComponentHelper.getDynamicallyConnectedSubcomps;
 import static montithings.generator.helper.FileHelper.copyHwcToTarget;
 import static montithings.generator.helper.FileHelper.getSubPackagesPath;
 
@@ -73,9 +67,10 @@ public class GenerateComponent extends GeneratorStep {
         // All the other enclosed components should communicate using native ports.
         // Unless its dynamically connected. Then it needs to communicate.
         state.getConfig().setSplittingMode(genDeploy ? orgSplit : SplittingMode.OFF);
-        if (!dynConnectedSubcomps.contains(symModel)) {
-          state.getConfig()
-            .setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
+        if (dynConnectedSubcomps.contains(symModel)) {
+          state.getConfig().setMessageBroker(orgBroker);
+        } else {
+          state.getConfig().setMessageBroker(genDeploy ? orgBroker : MessageBroker.OFF);
         }
 
         generateCppForComponent(model, compTarget, state, genDeploy);
@@ -170,37 +165,6 @@ public class GenerateComponent extends GeneratorStep {
           MTGenerator.generateAdditionalPort(config.getHwcTemplatePath(), target, s, config, port));
       }
     }
-  }
-
-  protected Set<ComponentTypeSymbol> getDynamicallyConnectedSubcomps(
-    ComponentTypeSymbol enclosingComp) {
-    Set<ComponentTypeSymbol> result = new HashSet<>();
-
-    // Find all connect statements
-    FindConnectStatementsVisitor visitor = new FindConnectStatementsVisitor();
-    Set<ASTBehavior> behaviors = enclosingComp.getAstNode().getBody().getArcElementList().stream()
-      .filter(e -> e instanceof ASTBehavior)
-      .map(e -> (ASTBehavior) e)
-      .collect(Collectors.toSet());
-    MontiThingsTraverser traverser = visitor.createTraverser();
-    for (ASTBehavior b : behaviors) {
-      b.accept(traverser);
-    }
-
-    // Get the types of all component instances accessed in connect statements
-    for (ASTConnectStatement cs : visitor.getConnectStatements()) {
-      Set<ASTPortAccess> portAccesses = new HashSet<>();
-      portAccesses.add(cs.getConnector().getSource());
-      portAccesses.addAll(cs.getConnector().getTargetList());
-
-      for (ASTPortAccess pa : portAccesses) {
-        if (pa.isPresentComponentSymbol()) {
-          result.add(pa.getComponentSymbol().getType());
-        }
-      }
-    }
-
-    return result;
   }
 
 }
