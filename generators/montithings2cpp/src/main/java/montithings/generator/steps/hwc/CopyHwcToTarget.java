@@ -18,8 +18,10 @@ public class CopyHwcToTarget extends GeneratorStep {
 
   @Override public void action(GeneratorToolState state) {
     try {
-      FileFilter filefilter = pathname -> !pathname.getName().endsWith(".ftl")
-        && !pathname.getName().endsWith(".json");
+      FileFilter filefilter = pathname ->
+        !pathname.getName().endsWith(".ftl") // Freemarker templates
+          && !pathname.getName().endsWith(".json") // Config files
+          && !pathname.getName().startsWith("&"); // C++ Sensors / Actuators
       if (state.getConfig().getTargetPlatform() == TargetPlatform.ARDUINO) {
         FileUtils.copyDirectory(state.getHwcPath(),
           Paths.get(state.getTarget().getAbsolutePath()).toFile(), filefilter);

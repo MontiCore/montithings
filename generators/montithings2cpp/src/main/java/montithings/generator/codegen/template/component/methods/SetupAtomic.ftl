@@ -13,17 +13,6 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 
 
 <#if brokerIsMQTT>
-  std::ifstream file_input("../../deployment-config.json");
-  if(!file_input.good()){
-    file_input.close();
-    file_input.open("/.montithings/deployment-config.json");
-    if(!file_input.good()){
-      LOG(ERROR) << "No deployment-config file provided.";
-    }
-  }
-
-  sensorActuatorTypes = json::parse(file_input)["sensorActuatorTypes"];
-
   mqttClientInstance->addUser (this);
   mqttClientLocalInstance->addUser (this);
 

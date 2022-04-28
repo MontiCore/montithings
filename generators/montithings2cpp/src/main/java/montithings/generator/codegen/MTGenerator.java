@@ -217,6 +217,12 @@ public class MTGenerator {
       pckg, port, libraryPath, config, false);
   }
 
+  public void generateCMakeFileForCppPort(String pckg, String port, String libraryPath) {
+    fg.generate(new File(genSrcDir, pckg + "." + port), "CMakeLists", ".txt",
+      "template/util/cmake/CppPort.ftl",
+      pckg, port, libraryPath, config, false);
+  }
+
   public void generateMakeFileForSubdirs(File targetPath, List<String> subdirectories,
     List<String> sensorActuatorPorts, ConfigParams config) {
     List<String> sortedDirs = new ArrayList<>(subdirectories);

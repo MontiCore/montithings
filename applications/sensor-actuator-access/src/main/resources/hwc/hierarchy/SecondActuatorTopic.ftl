@@ -1,1 +1,1 @@
-"second-sink-actuator-topic"
+"sink"

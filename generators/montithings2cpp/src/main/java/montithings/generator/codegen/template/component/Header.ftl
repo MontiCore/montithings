@@ -43,6 +43,7 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
     <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
       std::thread th${p.getName()?cap_first};
       std::promise<void> exitSignal${p.getName()?cap_first};
+      std::string currentTopic${p.getName()?cap_first};
     </#if>
   </#list>
 </#if>
@@ -86,7 +87,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_message *message) override;
   void publishConnectors();
   void publishConfigForSubcomponent (std::string instanceName);
-  void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::future<void> keepAliveFuture);
+  void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::string typeName, std::future<void> keepAliveFuture);
   MqttClient *getMqttClientInstance () const;
 </#if>
 

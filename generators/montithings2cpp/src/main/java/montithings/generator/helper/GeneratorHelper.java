@@ -70,7 +70,7 @@ public class GeneratorHelper {
     }
     if (portTemplateTagSymbol.isPresent() && portTemplateTagSymbol.get().isPresentAstNode()) {
       for (ASTHookpoint hook : portTemplateTagSymbol.get().getAstNode().getHookpointList()) {
-        if (hook.getName().equals("mqtt")) {
+        if (hook.getName().equals("requiredType")) {
           return Optional.of(hook.getTemplate());
         }
       }
