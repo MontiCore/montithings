@@ -239,6 +239,7 @@
                 <artifactId>se-groovy-maven-plugin</artifactId>
                 <version>${se-groovy.maven.version}</version>
                 <executions>
+                    <!--
                     <execution>
                         <id>sd4c</id>
                         <goals>
@@ -255,6 +256,7 @@
                             <script>montithings/tools/sd4componenttesting/generator/script/sd4cgenerator.groovy</script>
                         </configuration>
                     </execution>
+                    -->
                     <execution>
                         <id>montithings2cpp</id>
                         <goals>
