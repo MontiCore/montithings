@@ -272,9 +272,7 @@ Compile Applications:
   needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
   stage: generator-test
   script:
-    - cd applications/$APPLICATION_NAME
-    - mvn clean install
-    - cd target/generated-test-sources
+    - cd applications/$APPLICATION_NAME/target/generated-test-sources
     - ./build.sh
     - cd build/bin
     - for f in *; do ./"$f"; done
