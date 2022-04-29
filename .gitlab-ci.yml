@@ -302,7 +302,7 @@ language-features/behavior:
 #    APPLICATION_NAME: language-features/class-diagrams
 #  <<: *test-application-definition
 
-language-features/initilization:
+language-features/initialization:
   variables:
     APPLICATION_NAME: language-features/initilization
   <<: *test-application-definition
