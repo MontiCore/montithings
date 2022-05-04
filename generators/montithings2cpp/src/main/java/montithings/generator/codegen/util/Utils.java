@@ -431,6 +431,11 @@ public class Utils {
         continue;
       }
 
+      // Skip star imports if splitting mode is off
+      if (imp.isStar() && config.getSplittingMode() != SplittingMode.OFF) {
+        continue;
+      }
+
       String importStatement = "#include \""
         + escape
         + imp.getStatement().replaceAll("\\.", "/")
