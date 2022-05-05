@@ -12,7 +12,9 @@ public class GeneratePackageFiles extends GeneratorStep {
 
   @Override
   public void action(GeneratorToolState state) {
-    //skip execution if splitting mode is off
+    // Skip execution if splitting mode is off. As the Package files are currently not used for anything,
+    // this does not influence the correctness of the generated code. Package file generation for other
+    // splitting modes can be added later in this method if it becomes necessary.
     if (state.getConfig().getSplittingMode() != SplittingMode.OFF) {
       return;
     }
@@ -29,7 +31,6 @@ public class GeneratePackageFiles extends GeneratorStep {
   }
 
   public Map<String, List<File>> handleDirectories(File[] directories, String currentPackage, boolean subPackage) {
-    //Set<String> packages = new HashSet<>();
     Map<String, List<File>> packages = new HashMap<>();
     for (File dir : directories) {
       //add current package with its components only if it is not base package
