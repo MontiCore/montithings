@@ -6,7 +6,7 @@ component Source {
 
   int lastValue = 0;
 
-  every 1s {
+  every 500ms {
     log "Source: $lastValue";
     value = lastValue++;
   }

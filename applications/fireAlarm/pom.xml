@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- (c) https://github.com/MontiCore/monticore -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <!-- == PROJECT COORDINATES ============================================= -->
     <parent>
         <artifactId>applications</artifactId>
         <groupId>montithings.applications</groupId>
-        <version>6.5.0-SNAPSHOT</version>
+        <version>7.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -180,23 +181,42 @@
                 <groupId>de.se_rwth.maven</groupId>
                 <artifactId>se-groovy-maven-plugin</artifactId>
                 <version>${se-groovy.maven.version}</version>
-                <configuration>
-                    <baseClass>montithings.generator.codegen.MontiThingsGeneratorScript</baseClass>
-                    <arguments>
-                        <out>${basedir}/target/generated-sources/</out>
-                        <modelPath>${basedir}/src/main/resources/models</modelPath>
-                        <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
-                        <main>fireAlarm.FireAlarm</main>
-                        <!--<platform>DSA</platform>-->
-                        <version>${project.version}</version>
-                    </arguments>
-                    <script>montithings/generator/mtgenerator.groovy</script>
-                </configuration>
                 <executions>
+                    <!--
                     <execution>
+                        <id>sd4c</id>
                         <goals>
                             <goal>execute</goal>
                         </goals>
+                        <configuration>
+                            <baseClass>montithings.tools.sd4componenttesting.generator.script.SD4CGeneratorScript
+                            </baseClass>
+                            <arguments>
+                                <out>${basedir}/target/sd4c/</out>
+                                <modelPath>${basedir}/src/main/resources/models/</modelPath>
+                                <testPath>${basedir}/src/test/resources/models/</testPath>
+                            </arguments>
+                            <script>montithings/tools/sd4componenttesting/generator/script/sd4cgenerator.groovy</script>
+                        </configuration>
+                    </execution>
+                    -->
+                    <execution>
+                        <id>montithings2cpp</id>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <baseClass>montithings.generator.codegen.MontiThingsGeneratorScript</baseClass>
+                            <arguments>
+                                <out>${basedir}/target/generated-sources/</out>
+                                <modelPath>${basedir}/src/main/resources/models</modelPath>
+                                <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
+                                <main>fireAlarm.FireAlarm</main>
+                                <!--<platform>DSA</platform>-->
+                                <version>${project.version}</version>
+                            </arguments>
+                            <script>montithings/generator/mtgenerator.groovy</script>
+                        </configuration>
                     </execution>
                 </executions>
                 <dependencies>
@@ -205,6 +225,19 @@
                         <artifactId>guava</artifactId>
                         <version>${guava.version}</version>
                     </dependency>
+                    <!--
+                    <dependency>
+                        <groupId>montithings.tools</groupId>
+                        <artifactId>sd4componenttesting</artifactId>
+                        <version>${project.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>de.monticore.bs</groupId>
+                                <artifactId>monticore-runtime</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    -->
                     <dependency>
                         <groupId>montithings.generators</groupId>
                         <artifactId>montithings2cpp</artifactId>

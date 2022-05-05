@@ -4,6 +4,6 @@ package fireAlarm.actuator;
 component Sprinkler {
 
   port
-    in Boolean onn;
+    in boolean onn;
     
 }

@@ -1,0 +1,11 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+    
+testdiagram ExampleTest for Example {
+  source.value -> cn.input : 0;
+  cn.output -> sink.value : 0;
+  source.value -> cn.input : 1;
+  cn.output -> sink.value : 1;
+  source.value -> cn.input : 2;
+  cn.output -> sink.value : 2;
+}

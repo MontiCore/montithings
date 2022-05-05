@@ -16,7 +16,8 @@ SourceImpl::getInitialValues ()
 SourceResult
 SourceImpl::compute (SourceInput input)
 {
-  uint8_t vector = {static_cast<uint8_t>(rand () % 3)};
+
+  uint8_t vector = {static_cast<uint8_t>(lastValue++ % 3)};
   SourceResult result;
   result.setValue (vector);
   interface.getPortValue()->setNextValue(result.getValueMessage());

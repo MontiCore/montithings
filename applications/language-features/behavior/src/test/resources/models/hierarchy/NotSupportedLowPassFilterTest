@@ -1,0 +1,16 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+    
+testdiagram LowPassFilterTest for LowPassFilter {
+
+  //currently not operational because threshold and defaultValue cannot be set
+
+  -> givenValue : 1;
+  filteredValue -> : 1;
+
+  -> givenValue : 2;
+  filteredValue -> : 2;
+
+  -> givenValue : 3;
+  filteredValue -> : 1;
+}

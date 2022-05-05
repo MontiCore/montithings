@@ -1,0 +1,15 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+    
+testdiagram ConverterTest for Converter{
+  outport -> : 0;
+
+  -> inport : 0;
+  outport -> : 0;
+
+  -> inport : 1;
+  outport -> : 1;
+
+  -> inport : 0;
+  outport -> : 0;
+}

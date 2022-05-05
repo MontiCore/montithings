@@ -2,5 +2,5 @@
 package fireAlarm.sensors;
 
 component SmokeSensor {
-  port out Boolean value;
+  port out boolean value;
 }

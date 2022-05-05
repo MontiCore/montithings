@@ -11,14 +11,14 @@ component Loop {
 
   init input {
     log("First Input: " + input);
-    after 1s {
+    after 500ms {
       output = input + 1;
     }
   }
 
   behavior input {
     log("Input: " + input);
-    after 1s {
+    after 500ms {
       output = input + 1;
     }
   }

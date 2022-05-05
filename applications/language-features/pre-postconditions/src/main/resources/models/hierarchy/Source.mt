@@ -7,7 +7,7 @@ component Source {
 
   int lastValue = 0;
 
-  every 1s {
+  every 500ms {
     log("Source: " + lastValue);
     value = lastValue++;
   }
@@ -16,8 +16,8 @@ component Source {
   // Only allow values between 0 and 5,
   // default to 3 if actual value not between 0 and 5
   // Will return 1, 2, 3, 4, 5, 3, 3, 3, ...
-  //post value isin { 0 : 5 };
-  //catch {value = 3;}
+  post value isin { 0 : 5 };
+  catch {value = 3;}
 
   // Check if a value is one of the given values.
   // Only allow values 0, 1, and 4,

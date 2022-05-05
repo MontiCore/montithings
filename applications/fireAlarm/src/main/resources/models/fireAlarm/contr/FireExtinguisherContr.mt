@@ -4,9 +4,9 @@ package fireAlarm.contr;
 component FireExtinguisherContr {
 
   port
-  	in  Boolean smoke,
+  	in  boolean smoke,
   	in  int temp,
-    out Boolean alarmOn,
-    out Boolean sprinklerOn;
+    out boolean alarmOn,
+    out boolean sprinklerOn;
     
 }
