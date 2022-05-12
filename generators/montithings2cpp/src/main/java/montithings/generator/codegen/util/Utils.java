@@ -431,6 +431,16 @@ public class Utils {
         continue;
       }
 
+      // Skip star imports for components if splitting mode is off, as no Package.h file is generated in these cases.
+      // If this changes, this skip can be removed.
+      if (imp.isStar() && config.getSplittingMode() != SplittingMode.OFF) {
+        // Find out if import handles components or class diagrams by comparing package names
+        boolean isComponentImport = comp.getPackageName().split("\\.")[0].equals(imp.getStatement().split("\\.")[0]);
+        if (isComponentImport) {
+          continue;
+        }
+      }
+
       String importStatement = "#include \""
         + escape
         + imp.getStatement().replaceAll("\\.", "/")

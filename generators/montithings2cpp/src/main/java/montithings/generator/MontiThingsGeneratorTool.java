@@ -63,6 +63,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .setNextStep(new FindModelPacks())
       .setNextStep(new GenerateCMakeLists())
       .setNextStep(new GenerateComponent())
+      .setNextStep(new GeneratePackageFiles())
       .setNextStep(new GenerateCDEAdapter())
       .setNextStep(new GenerateCD())
       .setNextStep(new GenerateBuildScripts())
