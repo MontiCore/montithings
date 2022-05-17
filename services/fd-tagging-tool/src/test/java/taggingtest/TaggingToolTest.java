@@ -1,5 +1,6 @@
 package taggingtest;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tagging.cocos.FirstNameIsAFeature;
 import tagging.cocos.NoComponentIsMentionedTwiceInASingleTag;
@@ -23,6 +24,7 @@ public class TaggingToolTest extends AbstractTest {
         return Arrays.asList("0xTAG0000");
     }
 
+    @Disabled
     @Test
     public void testIsPossible() {
         testValidToolCombination("SmartHomeProject/SmartHome", "SmartHomeProject/TestConfiguration.fc");
