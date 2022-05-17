@@ -3,6 +3,7 @@ package tagging;
 public class TaggingToolServer {
 
     public static void main(String[] args) {
+        //Class that can be used to start the HTTP controller.
         System.out.println("TaggingToolServer is starting...");
         TaggingTool tool = new TaggingTool();
 

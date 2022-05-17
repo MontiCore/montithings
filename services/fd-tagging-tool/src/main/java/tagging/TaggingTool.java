@@ -51,6 +51,7 @@ public class TaggingTool {
     Path directory = Paths.get(modelFile).getParent();
     return new ModelPath(directory);
   }
+
   public void terminate() {
     tgGS = null;
     mtGS = null;
@@ -60,6 +61,7 @@ public class TaggingTool {
     factTool = null;
     mtConfigTool = null;
   }
+
   public String getIotManagerURL() {
     return iotManagerURL;
   }
@@ -93,7 +95,9 @@ public class TaggingTool {
   }
 
   public ASTTagging loadModel(String modelFile) {
+    //Main function that loads the tagging model and sets up the other two scopes
       if (tgGS != null) {
+        //Check if model is already loaded to skip unnecessary loading
         List<TaggingArtifactScope> scopesList = (List<TaggingArtifactScope>) tgGS.getSubScopes();
         String file = Paths.get(modelFile).getFileName().toString();
         for (TaggingArtifactScope scope : scopesList) {
@@ -240,7 +244,6 @@ public class TaggingTool {
         if (isConfigurationDeployable(modelsDirectory, configuration)) {outputList.add(configuration);}
       }
       if (outputList.size() != 0) {break;}
-      outputList.clear();
       maxSize--;
     }
     return outputList;
@@ -285,6 +288,7 @@ public class TaggingTool {
     ASTSelect selectedFeatures = (ASTSelect) featureConfiguration.getFCElement(0);
     ASTTagging tagging = loadModel(modelsDirectory);
 
+    //Search through tags. If one tags refers to the feature name add all listed components.
     List<ASTMCQualifiedName> activatedComponents = new ArrayList<ASTMCQualifiedName>();
     for(String featureName : selectedFeatures.getNameList()){
       for(ASTTag tag : tagging.getTagList()){
@@ -307,6 +311,7 @@ public class TaggingTool {
     List<ASTMCQualifiedName> potentialFeatures = new ArrayList<ASTMCQualifiedName>();
     int numberOfActivatedComponents = 0;
     int numberOfActivatedFeatures = 0;
+    //Check if all components of each tag are activated. If yes, consider feature as potential.
     for (ASTTag tag : tagging.getTagList()){
       for (ASTMCQualifiedName component : tag.getComponentsList()){
         if (activatedComponents.stream().filter(o -> o.getQName().equals(component.getQName())).findFirst().isPresent()){
@@ -329,6 +334,7 @@ public class TaggingTool {
     ASTFeatures features = (ASTFeatures) featureConfiguration.getFCElement(0);
     List<String> activatedFeatures = features.getNameList();
 
+    //Filter out features that are already in featureConfigurationDirectory.
     for (String feature : activatedFeatures){
         allPotentialFeatures.removeIf(o -> o.getBaseName().equals(feature));
     }
@@ -337,6 +343,21 @@ public class TaggingTool {
 
 /*--------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------*/
+  //simple return of activated instance
+  public JsonObject activatedComponentsAsJSON (String modelsDirectory, ASTFeatureConfiguration configuration){
+    ASTTagging tagging = loadModel(modelsDirectory);
+
+    JsonObject outputJson = new JsonObject();
+    JsonArray componentsArray = new JsonArray();
+    List<ASTMCQualifiedName> activatedComponents = findActivatedComponents(modelsDirectory, configuration);
+    String qName = tagging.getPackage().getQName() + "." + tagging.getName() + ".";
+    for (ASTMCQualifiedName component : activatedComponents){
+      componentsArray.add(qName + component.getQName());
+    }
+    outputJson.add("activatedComponents", componentsArray);
+    return outputJson;
+  }
+
   //given a configuration generate json for the prolog generator
   public JsonObject generateJSONFromConfiguration (String modelsDirectory, String configuration){
     //setup models
@@ -447,20 +468,15 @@ public class TaggingTool {
       throw new RuntimeException(e);
     }
   }
-  /*
-  public void findMissingHardware(String modelsDirectory){
-    //extract model path
-    Path directory = Paths.get(modelsDirectory).getParent();
-    //load tagging model
-    ASTTagging tagging = loadModel(modelsDirectory);
-    List<ASTMTConfigUnit> configsList = new ArrayList();
 
-    //load configs
-    mtConfigTool.setMtGlobalScope(mtGS);
-    IMontiThingsGlobalScope mtcfgGS = mtConfigTool.initSymbolTable(directory.toFile());
-    for (ASTMCQualifiedName component : tagging.getAllComponents()){
-      configsList.add(mtConfigTool.processFile(directory.toString() + component.getBaseName() + "/.mtcfg"));
+  public String removeFeatureConstraint (String modelsDirectory, ASTFeatureConfiguration configuration){
+    try {
+      String generatedJSON = generateJSONFromConfiguration(modelsDirectory, configuration).toString();
+      byte[] payload = generatedJSON.getBytes(StandardCharsets.UTF_8);
+
+      return communicateWithIoTManager(payload, "PUT", new URL(iotManagerURL + "removeFeatureConstraint"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-  }*/
-
+  }
 }
