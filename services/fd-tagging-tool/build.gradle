@@ -3,6 +3,7 @@
 plugins {
   id 'java-library'
   id 'monticore'  version '7.0.0' // MontiCore Plugin
+  id 'com.github.johnrengelman.shadow' version "5.1.0"
 }
 
 group = "my.tagging"
@@ -53,6 +54,18 @@ task generate (type: MCTask) {
 compileJava {
   dependsOn project.collect { it.tasks.withType(MCTask) }
 }
+
+// all in one deployment jar
+shadowJar {
+  manifest {
+    attributes "Main-Class": "tagging.TaggingToolServer"
+  }
+  archiveFileName = "TaggingToolServer.${archiveExtension.get()}"
+  archiveClassifier = "tagging-tool"
+}
+
+jar.dependsOn shadowJar
+
 
 test {
     useJUnitPlatform()
