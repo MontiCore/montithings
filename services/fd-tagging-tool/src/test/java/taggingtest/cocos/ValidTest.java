@@ -1,16 +1,16 @@
-package taggingtest;
+package taggingtest.cocos;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tagging.cocos.FirstNameIsAFeature;
 import tagging.cocos.NoComponentIsMentionedTwiceInASingleTag;
 import tagging.cocos.NoTagIsMentionedTwice;
 import tagging.cocos.SecondNameIsAComponent;
+import taggingtest.AbstractTest;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class TaggingToolTest extends AbstractTest {
+public class ValidTest extends AbstractTest {
   @Override
   protected void initCoCoChecker() {
     this.checker.addCoCo(new FirstNameIsAFeature());
@@ -24,10 +24,8 @@ public class TaggingToolTest extends AbstractTest {
     return Arrays.asList("0xTAG0000");
   }
 
-  @Disabled
   @Test
-  public void testIsPossible() {
-    testValidToolCombination("SmartHomeProject/SmartHome", "SmartHomeProject/TestConfiguration.fc");
+  void testCorrect() {
+    testCorrectExamples("ValidCombination/BasicValidTest");
   }
-
 }

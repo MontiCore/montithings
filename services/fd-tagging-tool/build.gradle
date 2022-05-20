@@ -2,7 +2,7 @@
 
 plugins {
   id 'java-library'
-  id 'monticore'  version '7.0.0' // MontiCore Plugin
+  id 'monticore' version '7.0.0' // MontiCore Plugin
   id 'com.github.johnrengelman.shadow' version "5.1.0"
 }
 
@@ -10,26 +10,22 @@ group = "my.tagging"
 version = '1.0.0-SNAPSHOT'
 
 buildDir = file("$projectDir/target")
-def mcversion  = '7.0.0'
-def fdversion = '7.0.0'
-def mtversion = '7.0.0-SNAPSHOT'
-def se_commons_version = '7.1.1-SNAPSHOT'
 def grammarName = 'Tagging'
 def outDir = "$buildDir/generated-sources/"
 
 dependencies {
-  implementation "de.monticore:monticore-runtime:$mcversion"
-  implementation "de.monticore:monticore-grammar:$mcversion"
-  implementation "de.monticore.lang:fd-lang:$fdversion"
-  implementation "de.monticore.lang:fd-analysis:$fdversion"
-  implementation "montithings.languages:mtconfig:$mtversion"
-  implementation "montithings.languages:montithings:$mtversion"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
+  implementation "de.monticore:monticore-grammar:$monticore_version"
+  implementation "de.monticore.lang:fd-lang:$fd_version"
+  implementation "de.monticore.lang:fd-analysis:$fd_version"
+  implementation project(":montithings.languages:mtconfig")
+  implementation project(":montithings.languages:montithings")
   implementation "commons-cli:commons-cli:1.4"
   implementation 'com.google.code.gson:gson:2.8.9'
   implementation 'com.sparkjava:spark-core:2.3'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-  grammar "de.monticore:monticore-grammar:$mcversion:grammars"
+  grammar "de.monticore:monticore-grammar:$monticore_version:grammars"
   implementation "de.se_rwth.commons:se-commons-utilities:$se_commons_version"
 }
 
@@ -42,10 +38,10 @@ repositories {
 
 // configure non-standard source sets
 sourceSets {
-  main.java.srcDirs += [ outDir ]
+  main.java.srcDirs += [outDir]
 }
 
-task generate (type: MCTask) {
+task generate(type: MCTask) {
   grammar = file "src/main/grammars/${grammarName}.mc4"
   outputDir = file outDir
   outputs.upToDateWhen { incCheck("${grammarName}.mc4") }
@@ -68,5 +64,5 @@ jar.dependsOn shadowJar
 
 
 test {
-    useJUnitPlatform()
+  useJUnitPlatform()
 }

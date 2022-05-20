@@ -1,14 +1,5 @@
 package tagging;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,38 +7,62 @@ import de.monticore.featureconfiguration._ast.ASTFeatureConfiguration;
 import de.monticore.featureconfiguration._ast.ASTFeatures;
 import de.monticore.featureconfigurationpartial._ast.ASTSelect;
 import de.monticore.featureconfigurationpartial._ast.ASTUnselect;
+import de.monticore.featurediagram.FeatureDiagramCLI;
 import de.monticore.featurediagram.FeatureDiagramMill;
 import de.monticore.featurediagram._ast.ASTFeatureDiagram;
 import de.monticore.featurediagram._parser.FeatureDiagramParser;
 import de.monticore.featurediagram._symboltable.IFeatureDiagramGlobalScope;
 import de.monticore.io.paths.ModelPath;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
+import de.se_rwth.commons.logging.Log;
 import mcfdtool.FACT;
+import montithings.MontiThingsTool;
+import montithings._symboltable.IMontiThingsGlobalScope;
 import mtconfig.MTConfigTool;
 import org.antlr.v4.runtime.RecognitionException;
-import de.se_rwth.commons.logging.Log;
 import tagging._ast.ASTTag;
-import tagging._symboltable.*;
 import tagging._ast.ASTTagging;
-import tagging._cocos.*;
+import tagging._cocos.TaggingCoCoChecker;
 import tagging._parser.TaggingParser;
-import de.monticore.featurediagram.FeatureDiagramCLI;
-import montithings._symboltable.IMontiThingsGlobalScope;
-import montithings.MontiThingsTool;
-import tagging.cocos.*;
+import tagging._symboltable.ITaggingGlobalScope;
+import tagging._symboltable.TaggingArtifactScope;
+import tagging._symboltable.TaggingSymbol;
+import tagging.cocos.FirstNameIsAFeature;
+import tagging.cocos.NoComponentIsMentionedTwiceInASingleTag;
+import tagging.cocos.NoTagIsMentionedTwice;
+import tagging.cocos.SecondNameIsAComponent;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class TaggingTool {
 
   protected ITaggingGlobalScope tgGS;
+
   protected IMontiThingsGlobalScope mtGS;
+
   protected IFeatureDiagramGlobalScope fdGS;
+
   protected MontiThingsTool mtTool = new MontiThingsTool();
+
   protected FeatureDiagramCLI fdCLI = new FeatureDiagramCLI();
+
   protected FACT factTool = new FACT();
+
   protected MTConfigTool mtConfigTool = new MTConfigTool();
+
   protected String iotManagerURL = "http://localhost:4210/";
 
-  protected ModelPath getModelPathFromModel (String modelFile){
+  protected ModelPath getModelPathFromModel(String modelFile) {
     Path directory = Paths.get(modelFile).getParent();
     return new ModelPath(directory);
   }
@@ -66,13 +81,13 @@ public class TaggingTool {
     return iotManagerURL;
   }
 
-  public void setIotManagerURL(String url){
+  public void setIotManagerURL(String url) {
     this.iotManagerURL = url;
   }
 
   public static ASTTagging parse(String model) {
     try {
-      TaggingParser parser = new TaggingParser() ;
+      TaggingParser parser = new TaggingParser();
       Optional<ASTTagging> optTagging = parser.parse(model);
 
       if (!parser.hasErrors() && optTagging.isPresent()) {
@@ -86,7 +101,7 @@ public class TaggingTool {
     return null;
   }
 
-  public ITaggingGlobalScope initTaggingGlobalScope (ModelPath modelPath){
+  public ITaggingGlobalScope initTaggingGlobalScope(ModelPath modelPath) {
     ITaggingGlobalScope globalScope = TaggingMill.globalScope();
     globalScope.clear();
     globalScope.setModelPath(modelPath);
@@ -96,32 +111,32 @@ public class TaggingTool {
 
   public ASTTagging loadModel(String modelFile) {
     //Main function that loads the tagging model and sets up the other two scopes
-      if (tgGS != null) {
-        //Check if model is already loaded to skip unnecessary loading
-        List<TaggingArtifactScope> scopesList = (List<TaggingArtifactScope>) tgGS.getSubScopes();
-        String file = Paths.get(modelFile).getFileName().toString();
-        for (TaggingArtifactScope scope : scopesList) {
-          Optional<TaggingSymbol> taggingSymbol = scope.resolveTagging(file);
-          if (taggingSymbol.isPresent()) {
-            return taggingSymbol.get().getAstNode();
-          }
+    if (tgGS != null) {
+      //Check if model is already loaded to skip unnecessary loading
+      List<TaggingArtifactScope> scopesList = (List<TaggingArtifactScope>) tgGS.getSubScopes();
+      String file = Paths.get(modelFile).getFileName().toString();
+      for (TaggingArtifactScope scope : scopesList) {
+        Optional<TaggingSymbol> taggingSymbol = scope.resolveTagging(file);
+        if (taggingSymbol.isPresent()) {
+          return taggingSymbol.get().getAstNode();
         }
       }
-        setUpScopes(modelFile);
-        ASTTagging ast = parse(modelFile + ".tg");
-        TaggingMill.scopesGenitorDelegator().createFromAST(ast);
+    }
+    setUpScopes(modelFile);
+    ASTTagging ast = parse(modelFile + ".tg");
+    TaggingMill.scopesGenitorDelegator().createFromAST(ast);
 
-        //Check cocos
-        TaggingCoCoChecker customCoCos = new TaggingCoCoChecker();
-        customCoCos.addCoCo(new FirstNameIsAFeature());
-        customCoCos.addCoCo(new SecondNameIsAComponent());
-        customCoCos.addCoCo(new NoTagIsMentionedTwice());
-        customCoCos.addCoCo(new NoComponentIsMentionedTwiceInASingleTag());
-        customCoCos.checkAll(ast);
-        return ast;
+    //Check cocos
+    TaggingCoCoChecker customCoCos = new TaggingCoCoChecker();
+    customCoCos.addCoCo(new FirstNameIsAFeature());
+    customCoCos.addCoCo(new SecondNameIsAComponent());
+    customCoCos.addCoCo(new NoTagIsMentionedTwice());
+    customCoCos.addCoCo(new NoComponentIsMentionedTwiceInASingleTag());
+    customCoCos.checkAll(ast);
+    return ast;
   }
 
-  public void setUpScopes (String modelsDirectory){
+  public void setUpScopes(String modelsDirectory) {
     //Extract model path from directory
     ModelPath modelPath = getModelPathFromModel(modelsDirectory);
 
@@ -135,18 +150,21 @@ public class TaggingTool {
     FeatureDiagramParser fdParser = new FeatureDiagramParser();
     fdCLI.createSymbolTable(fdCLI.parse(modelsDirectory + ".fd", fdParser));
   }
-/*--------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------*/
-  public List<ASTFeatureConfiguration>  findMaximalConfigurations (String modelsDirectory){
+
+  /*--------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------*/
+  public List<ASTFeatureConfiguration> findMaximalConfigurations(String modelsDirectory) {
     loadModel(modelsDirectory);
     List<ASTFeatureConfiguration> outputList = new ArrayList<ASTFeatureConfiguration>();
 
     //load feature diagram from global scope
-    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes().get(0).getAstNode();
+    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes()
+      .get(0).getAstNode();
 
     //if feature diagram is void don't bother continuing
-    if (factTool.execIsVoidFeatureModel(featureDiagram)){
-      Log.warn(String.format("The feature diagram '%s% does not have valid configurations", featureDiagram.getName()));
+    if (factTool.execIsVoidFeatureModel(featureDiagram)) {
+      Log.warn(String.format("The feature diagram '%s% does not have valid configurations",
+        featureDiagram.getName()));
       return outputList;
     }
 
@@ -154,30 +172,32 @@ public class TaggingTool {
     List<ASTFeatureConfiguration> configurations = factTool.execAllProducts(featureDiagram);
     ASTSelect selectedFeatures;
     int maxSize = 0;
-    for(ASTFeatureConfiguration candidate : configurations){
+    for (ASTFeatureConfiguration candidate : configurations) {
       selectedFeatures = (ASTSelect) candidate.getFCElement(0);
-      if (selectedFeatures.getNameList().size() > maxSize){
-          maxSize = selectedFeatures.getNameList().size();
-        }
+      if (selectedFeatures.getNameList().size() > maxSize) {
+        maxSize = selectedFeatures.getNameList().size();
       }
-    for(ASTFeatureConfiguration candidate : configurations){
+    }
+    for (ASTFeatureConfiguration candidate : configurations) {
       selectedFeatures = (ASTSelect) candidate.getFCElement(0);
-      if (selectedFeatures.getNameList().size() == maxSize){
+      if (selectedFeatures.getNameList().size() == maxSize) {
         outputList.add(candidate);
       }
     }
     return outputList;
   }
 
-  public List<ASTFeatureConfiguration> findMinimalConfigurations (String modelsDirectory){
+  public List<ASTFeatureConfiguration> findMinimalConfigurations(String modelsDirectory) {
     List<ASTFeatureConfiguration> outputList = new ArrayList<ASTFeatureConfiguration>();
 
     //load feature diagram from global scope
-    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes().get(0).getAstNode();
+    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes()
+      .get(0).getAstNode();
 
     //if feature diagram is void don't bother continuing
-    if (factTool.execIsVoidFeatureModel(featureDiagram)){
-      Log.warn(String.format("The feature diagram '%s% does not have valid configurations", featureDiagram.getName()));
+    if (factTool.execIsVoidFeatureModel(featureDiagram)) {
+      Log.warn(String.format("The feature diagram '%s% does not have valid configurations",
+        featureDiagram.getName()));
       return outputList;
     }
 
@@ -185,86 +205,105 @@ public class TaggingTool {
     List<ASTFeatureConfiguration> configurations = factTool.execAllProducts(featureDiagram);
     ASTSelect selectedFeatures;
     int minSize = Integer.MAX_VALUE;
-    for(ASTFeatureConfiguration candidate : configurations){
+    for (ASTFeatureConfiguration candidate : configurations) {
       selectedFeatures = (ASTSelect) candidate.getFCElement(0);
-      if (selectedFeatures.getNameList().size() < minSize){
+      if (selectedFeatures.getNameList().size() < minSize) {
         minSize = selectedFeatures.getNameList().size();
       }
     }
-    for(ASTFeatureConfiguration candidate : configurations){
+    for (ASTFeatureConfiguration candidate : configurations) {
       selectedFeatures = (ASTSelect) candidate.getFCElement(0);
-      if (selectedFeatures.getNameList().size() == minSize){
+      if (selectedFeatures.getNameList().size() == minSize) {
         outputList.add(candidate);
       }
     }
     return outputList;
   }
 
-  public List<ASTFeatureConfiguration> findMinimalPotentialConfiguration (String modelsDirectory, List<ASTMCQualifiedName> activatedComponents){
-    List<ASTFeatureConfiguration> minimalConfigurations = findMinimalConfigurations(modelsDirectory);
+  public List<ASTFeatureConfiguration> findMinimalPotentialConfiguration(String modelsDirectory,
+    List<ASTMCQualifiedName> activatedComponents) {
+    List<ASTFeatureConfiguration> minimalConfigurations = findMinimalConfigurations(
+      modelsDirectory);
     List<ASTFeatureConfiguration> minimalPotentialConfigurations = new ArrayList<>();
     ASTSelect features;
     List<String> featureNames;
-    List<ASTMCQualifiedName> activatedFeatures = findPotentialFeatures(modelsDirectory, activatedComponents);
+    List<ASTMCQualifiedName> activatedFeatures = findPotentialFeatures(modelsDirectory,
+      activatedComponents);
     int foundFeatures = 0;
 
-    for (ASTFeatureConfiguration configuration : minimalConfigurations){
+    for (ASTFeatureConfiguration configuration : minimalConfigurations) {
       features = (ASTSelect) configuration.getFCElement(0);
       featureNames = features.getNameList();
-      for (String name : featureNames){
-        if (activatedFeatures.stream().filter(o -> o.getBaseName().equals(name)).findFirst().isPresent()) foundFeatures ++;
+      for (String name : featureNames) {
+        if (activatedFeatures.stream().filter(o -> o.getBaseName().equals(name)).findFirst()
+          .isPresent())
+          foundFeatures++;
       }
-      if (foundFeatures == featureNames.size()) minimalPotentialConfigurations.add(configuration);
+      if (foundFeatures == featureNames.size())
+        minimalPotentialConfigurations.add(configuration);
       foundFeatures = 0;
     }
     return minimalPotentialConfigurations;
   }
 
-  public List<ASTFeatureConfiguration> findConfigurationOfSize (List<ASTFeatureConfiguration> configurations, int size) {
+  public List<ASTFeatureConfiguration> findConfigurationOfSize(
+    List<ASTFeatureConfiguration> configurations, int size) {
     List<ASTFeatureConfiguration> outputList = new ArrayList<ASTFeatureConfiguration>();
-    for (ASTFeatureConfiguration configuration : configurations){
-      if (((ASTSelect) configuration.getFCElement(0)).sizeNames() == size) {outputList.add(configuration);}
+    for (ASTFeatureConfiguration configuration : configurations) {
+      if (((ASTSelect) configuration.getFCElement(0)).sizeNames() == size) {
+        outputList.add(configuration);
+      }
     }
     return outputList;
   }
 
-  public List<ASTFeatureConfiguration> findMaximalDeployableConfiguration (String modelsDirectory) {
+  public List<ASTFeatureConfiguration> findMaximalDeployableConfiguration(String modelsDirectory) {
     List<ASTFeatureConfiguration> outputList = new ArrayList<ASTFeatureConfiguration>();
 
     //get maximum number of elements as start point
-    int maxSize = ((ASTSelect) findMaximalConfigurations(modelsDirectory).get(0).getFCElement(0)).sizeNames();
+    int maxSize = ((ASTSelect) findMaximalConfigurations(modelsDirectory).get(0)
+      .getFCElement(0)).sizeNames();
 
     //load feature diagram from global scope and extract all configurations
-    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes().get(0).getAstNode();
+    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes()
+      .get(0).getAstNode();
     List<ASTFeatureConfiguration> configurations = factTool.execAllProducts(featureDiagram);
 
     //now try deploying configurations
     while (maxSize > 0) {
-      for (ASTFeatureConfiguration configuration : findConfigurationOfSize(configurations, maxSize)) {
-        if (isConfigurationDeployable(modelsDirectory, configuration)) {outputList.add(configuration);}
+      for (ASTFeatureConfiguration configuration : findConfigurationOfSize(configurations,
+        maxSize)) {
+        if (isConfigurationDeployable(modelsDirectory, configuration)) {
+          outputList.add(configuration);
+        }
       }
-      if (outputList.size() != 0) {break;}
+      if (outputList.size() != 0) {
+        break;
+      }
       maxSize--;
     }
     return outputList;
   }
 
-  public boolean isConfigurationDeployable (String modelsDirectory, String configuration){
+  public boolean isConfigurationDeployable(String modelsDirectory, String configuration) {
     loadModel(modelsDirectory);
-    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration, getModelPathFromModel(modelsDirectory));
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration,
+      getModelPathFromModel(modelsDirectory));
     return isConfigurationDeployable(modelsDirectory, featureConfiguration);
   }
 
-  public boolean isConfigurationDeployable (String modelsDirectory, ASTFeatureConfiguration configuration){
+  public boolean isConfigurationDeployable(String modelsDirectory,
+    ASTFeatureConfiguration configuration) {
     String result = tryDeployingConfig(modelsDirectory, configuration);
     return result.equals("{\"success\":true}");
   }
 
   //user chooses feature, generate rules and let prolog decide if we can deploy it
-  public boolean isFeatureDeployable (String modelsDirectory, String feature){
+  public boolean isFeatureDeployable(String modelsDirectory, String feature) {
     //for now let factTool generate a featureconfig and use it
     loadModel(modelsDirectory);
-    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes().get(0).getAstNode();
+    ASTFeatureDiagram featureDiagram = (ASTFeatureDiagram) fdGS.getSubScopes().get(0).getSubScopes()
+      .get(0).getAstNode();
     ASTFeatureConfiguration configuration = factTool.execAllProducts(featureDiagram).get(0);
 
     //modify it so it only contains this feature and nothing else
@@ -277,24 +316,28 @@ public class TaggingTool {
     return isConfigurationDeployable(modelsDirectory, configuration);
   }
 
-  public List<ASTMCQualifiedName> findActivatedComponents (String modelsDirectory, String featureConfigurationDirectory){
+  public List<ASTMCQualifiedName> findActivatedComponents(String modelsDirectory,
+    String featureConfigurationDirectory) {
     ModelPath modelPath = getModelPathFromModel(featureConfigurationDirectory);
     loadModel(modelsDirectory);
-    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(featureConfigurationDirectory, modelPath);
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(
+      featureConfigurationDirectory, modelPath);
     return findActivatedComponents(modelsDirectory, featureConfiguration);
   }
 
-  public List<ASTMCQualifiedName> findActivatedComponents (String modelsDirectory, ASTFeatureConfiguration featureConfiguration){
+  public List<ASTMCQualifiedName> findActivatedComponents(String modelsDirectory,
+    ASTFeatureConfiguration featureConfiguration) {
     ASTSelect selectedFeatures = (ASTSelect) featureConfiguration.getFCElement(0);
     ASTTagging tagging = loadModel(modelsDirectory);
 
     //Search through tags. If one tags refers to the feature name add all listed components.
     List<ASTMCQualifiedName> activatedComponents = new ArrayList<ASTMCQualifiedName>();
-    for(String featureName : selectedFeatures.getNameList()){
-      for(ASTTag tag : tagging.getTagList()){
-        if (featureName.equals(tag.getFeature().getBaseName())){
-          for (ASTMCQualifiedName component : tag.getComponentsList()){
-            if (!activatedComponents.stream().filter(o -> o.getQName().equals(component.getQName())).findFirst().isPresent()){
+    for (String featureName : selectedFeatures.getNameList()) {
+      for (ASTTag tag : tagging.getTagList()) {
+        if (featureName.equals(tag.getFeature().getBaseName())) {
+          for (ASTMCQualifiedName component : tag.getComponentsList()) {
+            if (!activatedComponents.stream().filter(o -> o.getQName().equals(component.getQName()))
+              .findFirst().isPresent()) {
               activatedComponents.add(component);
             }
           }
@@ -304,7 +347,8 @@ public class TaggingTool {
     return activatedComponents;
   }
 
-  public List<ASTMCQualifiedName> findPotentialFeatures (String modelsDirectory, List<ASTMCQualifiedName> activatedComponents){
+  public List<ASTMCQualifiedName> findPotentialFeatures(String modelsDirectory,
+    List<ASTMCQualifiedName> activatedComponents) {
     //setup before execution
     ASTTagging tagging = loadModel(modelsDirectory);
 
@@ -312,46 +356,53 @@ public class TaggingTool {
     int numberOfActivatedComponents = 0;
     int numberOfActivatedFeatures = 0;
     //Check if all components of each tag are activated. If yes, consider feature as potential.
-    for (ASTTag tag : tagging.getTagList()){
-      for (ASTMCQualifiedName component : tag.getComponentsList()){
-        if (activatedComponents.stream().filter(o -> o.getQName().equals(component.getQName())).findFirst().isPresent()){
-          numberOfActivatedComponents ++;
+    for (ASTTag tag : tagging.getTagList()) {
+      for (ASTMCQualifiedName component : tag.getComponentsList()) {
+        if (activatedComponents.stream().filter(o -> o.getQName().equals(component.getQName()))
+          .findFirst().isPresent()) {
+          numberOfActivatedComponents++;
         }
       }
-      if (numberOfActivatedComponents == tag.getComponentsList().size()){
+      if (numberOfActivatedComponents == tag.getComponentsList().size()) {
         potentialFeatures.add(tag.getFeature());
-        numberOfActivatedFeatures ++;
+        numberOfActivatedFeatures++;
       }
       numberOfActivatedComponents = 0;
     }
-    if (numberOfActivatedFeatures == tagging.getTagList().size()) potentialFeatures.add(tagging.getPackage());
+    if (numberOfActivatedFeatures == tagging.getTagList().size())
+      potentialFeatures.add(tagging.getPackage());
     return potentialFeatures;
   }
 
-  public List<ASTMCQualifiedName> findPotentialExtraFeatures (String modelsDirectory, String featureConfigurationDirectory, List<ASTMCQualifiedName> activatedComponents){
-    List<ASTMCQualifiedName> allPotentialFeatures = findPotentialFeatures(modelsDirectory, activatedComponents);
-    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(featureConfigurationDirectory, getModelPathFromModel(modelsDirectory));
+  public List<ASTMCQualifiedName> findPotentialExtraFeatures(String modelsDirectory,
+    String featureConfigurationDirectory, List<ASTMCQualifiedName> activatedComponents) {
+    List<ASTMCQualifiedName> allPotentialFeatures = findPotentialFeatures(modelsDirectory,
+      activatedComponents);
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(
+      featureConfigurationDirectory, getModelPathFromModel(modelsDirectory));
     ASTFeatures features = (ASTFeatures) featureConfiguration.getFCElement(0);
     List<String> activatedFeatures = features.getNameList();
 
     //Filter out features that are already in featureConfigurationDirectory.
-    for (String feature : activatedFeatures){
-        allPotentialFeatures.removeIf(o -> o.getBaseName().equals(feature));
+    for (String feature : activatedFeatures) {
+      allPotentialFeatures.removeIf(o -> o.getBaseName().equals(feature));
     }
     return allPotentialFeatures;
   }
 
-/*--------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------*/
+  /*--------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------*/
   //simple return of activated instance
-  public JsonObject activatedComponentsAsJSON (String modelsDirectory, ASTFeatureConfiguration configuration){
+  public JsonObject activatedComponentsAsJSON(String modelsDirectory,
+    ASTFeatureConfiguration configuration) {
     ASTTagging tagging = loadModel(modelsDirectory);
 
     JsonObject outputJson = new JsonObject();
     JsonArray componentsArray = new JsonArray();
-    List<ASTMCQualifiedName> activatedComponents = findActivatedComponents(modelsDirectory, configuration);
+    List<ASTMCQualifiedName> activatedComponents = findActivatedComponents(modelsDirectory,
+      configuration);
     String qName = tagging.getPackage().getQName() + "." + tagging.getName() + ".";
-    for (ASTMCQualifiedName component : activatedComponents){
+    for (ASTMCQualifiedName component : activatedComponents) {
       componentsArray.add(qName + component.getQName());
     }
     outputJson.add("activatedComponents", componentsArray);
@@ -359,18 +410,21 @@ public class TaggingTool {
   }
 
   //given a configuration generate json for the prolog generator
-  public JsonObject generateJSONFromConfiguration (String modelsDirectory, String configuration){
+  public JsonObject generateJSONFromConfiguration(String modelsDirectory, String configuration) {
     //setup models
     ASTTagging tagging = loadModel(modelsDirectory);
-    ASTFeatureDiagram featureDiagram = tagging.getSymbol().getFeatureDiagramSymbol().get().getAstNode();
-    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration, getModelPathFromModel(modelsDirectory));
+    ASTFeatureDiagram featureDiagram = tagging.getSymbol().getFeatureDiagramSymbol().get()
+      .getAstNode();
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration,
+      getModelPathFromModel(modelsDirectory));
 
     //if (factTool.execIsValid(featureDiagram, featureConfiguration)) {
     return generateJSONFromConfiguration(modelsDirectory, featureConfiguration);
     //}
   }
 
-  public JsonObject generateJSONFromConfiguration (String modelsDirectory, ASTFeatureConfiguration configuration){
+  public JsonObject generateJSONFromConfiguration(String modelsDirectory,
+    ASTFeatureConfiguration configuration) {
     try {
       //Load tagging model and extract qualified name to use later
       ASTTagging tagging = loadModel(modelsDirectory);
@@ -383,7 +437,8 @@ public class TaggingTool {
       JsonObject deploymentInfoJSON = JsonParser.parseString(deploymentInfo).getAsJsonObject();
 
       //Load feature diagram and check if configuration is even valid (disabled for now)
-      ASTFeatureDiagram featureDiagram = tagging.getSymbol().getFeatureDiagramSymbol().get().getAstNode();
+      ASTFeatureDiagram featureDiagram = tagging.getSymbol().getFeatureDiagramSymbol().get()
+        .getAstNode();
       //if (factTool.execIsValid(featureDiagram, configuration)) {
 
       //Prepare the output JSON file and attach deployment info from earlier
@@ -392,9 +447,10 @@ public class TaggingTool {
       outputJson.add("deploymentInfo", deploymentInfoJSON);
 
       //Access configurations of component instances list and then add them to json
-      List<ASTMCQualifiedName> activatedComponents = findActivatedComponents(modelsDirectory, configuration);
+      List<ASTMCQualifiedName> activatedComponents = findActivatedComponents(modelsDirectory,
+        configuration);
       String qName = tagging.getPackage().getQName() + "." + tagging.getName() + ".";
-      for (ASTMCQualifiedName component : activatedComponents){
+      for (ASTMCQualifiedName component : activatedComponents) {
         JsonObject constraint = new JsonObject();
         constraint.addProperty("instanceSelector", qName + component.getQName());
         constraint.addProperty("type", "GREATER_EQUAL");
@@ -408,13 +464,14 @@ public class TaggingTool {
 
       return outputJson;
       //}
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       Log.error("Deployment info file not found.");
       return null;
     }
   }
 
-  public String communicateWithIoTManager (byte[] payload, String requestMethod, URL passedUrl) {
+  public String communicateWithIoTManager(byte[] payload, String requestMethod, URL passedUrl) {
     try {
       URL url = passedUrl;
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -432,50 +489,62 @@ public class TaggingTool {
       connection.getInputStream().close();
 
       return outputStream.toString();
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public String updateIoTManager (String modelsDirectory, String configuration) {
-    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration, getModelPathFromModel(modelsDirectory));
+  public String updateIoTManager(String modelsDirectory, String configuration) {
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration,
+      getModelPathFromModel(modelsDirectory));
     return updateIotManager(modelsDirectory, featureConfiguration);
   }
 
-  public String updateIotManager (String modelsDirectory, ASTFeatureConfiguration configuration) {
+  public String updateIotManager(String modelsDirectory, ASTFeatureConfiguration configuration) {
     try {
-      String generatedJSON = generateJSONFromConfiguration(modelsDirectory, configuration).toString();
+      String generatedJSON = generateJSONFromConfiguration(modelsDirectory,
+        configuration).toString();
       byte[] payload = generatedJSON.getBytes(StandardCharsets.UTF_8);
 
-      return communicateWithIoTManager(payload, "PUT", new URL(iotManagerURL + "addFCToDeployment"));
-    } catch (IOException e) {
+      return communicateWithIoTManager(payload, "PUT",
+        new URL(iotManagerURL + "addFCToDeployment"));
+    }
+    catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public String tryDeployingConfig (String modelsDirectory, String configuration) {
-    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration, getModelPathFromModel(modelsDirectory));
+  public String tryDeployingConfig(String modelsDirectory, String configuration) {
+    ASTFeatureConfiguration featureConfiguration = factTool.readFeatureConfiguration(configuration,
+      getModelPathFromModel(modelsDirectory));
     return tryDeployingConfig(modelsDirectory, featureConfiguration);
   }
 
-  public String tryDeployingConfig (String modelsDirectory, ASTFeatureConfiguration configuration) {
+  public String tryDeployingConfig(String modelsDirectory, ASTFeatureConfiguration configuration) {
     try {
-      String generatedJSON = generateJSONFromConfiguration(modelsDirectory, configuration).toString();
+      String generatedJSON = generateJSONFromConfiguration(modelsDirectory,
+        configuration).toString();
       byte[] payload = generatedJSON.getBytes(StandardCharsets.UTF_8);
 
       return communicateWithIoTManager(payload, "PUT", new URL(iotManagerURL + "tryDeployingFC"));
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public String removeFeatureConstraint (String modelsDirectory, ASTFeatureConfiguration configuration){
+  public String removeFeatureConstraint(String modelsDirectory,
+    ASTFeatureConfiguration configuration) {
     try {
-      String generatedJSON = generateJSONFromConfiguration(modelsDirectory, configuration).toString();
+      String generatedJSON = generateJSONFromConfiguration(modelsDirectory,
+        configuration).toString();
       byte[] payload = generatedJSON.getBytes(StandardCharsets.UTF_8);
 
-      return communicateWithIoTManager(payload, "PUT", new URL(iotManagerURL + "removeFeatureConstraint"));
-    } catch (IOException e) {
+      return communicateWithIoTManager(payload, "PUT",
+        new URL(iotManagerURL + "removeFeatureConstraint"));
+    }
+    catch (IOException e) {
       throw new RuntimeException(e);
     }
   }

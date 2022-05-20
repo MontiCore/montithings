@@ -12,17 +12,22 @@ public class SecondNameIsAComponent implements TaggingASTTaggingCoCo {
   @Override
   public void check(ASTTagging tagging) {
     //Check if the main component even exists.
-	  if (!tagging.getSymbol().getMainComponentSymbol().isPresent()) {
-		  Log.error(String.format("0xTAG0003 The main component '%s' does not exist.", tagging.getName()), tagging.get_SourcePositionStart());
-	  }
+    if (!tagging.getSymbol().getMainComponentSymbol().isPresent()) {
+      Log.error(
+        String.format("0xTAG0003 The main component '%s' does not exist.", tagging.getName()),
+        tagging.get_SourcePositionStart());
+    }
 
-	  //Check each tag to see if the components exist.
+    //Check each tag to see if the components exist.
     for (ASTTag tag : tagging.getTagList()) {
-    	for (ASTMCQualifiedName component : tag.getComponentsList()) {
-    			if (!tag.getSymbol().getComponentSymbolList().get(tag.getComponentsList().indexOf(component)).isPresent()) {
-    				Log.error(String.format("0xTAG0004 The component '%s' does not exist.", component.getQName()), tagging.get_SourcePositionStart());
-    			}
-    		}
-    	}
+      for (ASTMCQualifiedName component : tag.getComponentsList()) {
+        if (!tag.getSymbol().getComponentSymbolList()
+          .get(tag.getComponentsList().indexOf(component)).isPresent()) {
+          Log.error(
+            String.format("0xTAG0004 The component '%s' does not exist.", component.getQName()),
+            tagging.get_SourcePositionStart());
+        }
+      }
     }
   }
+}

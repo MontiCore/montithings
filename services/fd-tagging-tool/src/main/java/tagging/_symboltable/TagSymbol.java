@@ -7,34 +7,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TagSymbol extends TagSymbolTOP{
-    protected Optional<FeatureSymbol> featureSymbol;
-    protected List<Optional<ComponentInstanceSymbol>> componentSymbolList;
+public class TagSymbol extends TagSymbolTOP {
+  protected Optional<FeatureSymbol> featureSymbol;
 
-    public TagSymbol(String name) {
-        super(name);
-        componentSymbolList = new ArrayList<>();
-    }
+  protected List<Optional<ComponentInstanceSymbol>> componentSymbolList;
 
-    public Optional<FeatureSymbol> getFeatureSymbol () {
-        return this.featureSymbol;
-    }
+  public TagSymbol(String name) {
+    super(name);
+    componentSymbolList = new ArrayList<>();
+  }
 
-    public void setFeatureSymbol (Optional<FeatureSymbol> f) {
-        this.featureSymbol = f;
-    }
+  public Optional<FeatureSymbol> getFeatureSymbol() {
+    return this.featureSymbol;
+  }
 
-    public List<Optional<ComponentInstanceSymbol>> getComponentSymbolList(){
-        return this.componentSymbolList;
-    }
+  public void setFeatureSymbol(Optional<FeatureSymbol> f) {
+    this.featureSymbol = f;
+  }
 
-    public Optional<ComponentInstanceSymbol> getComponentSymbolListIndex(int i) { return this.componentSymbolList.get(i);}
+  public List<Optional<ComponentInstanceSymbol>> getComponentSymbolList() {
+    return this.componentSymbolList;
+  }
 
-    public void setComponentSymbolList (List<Optional<ComponentInstanceSymbol>> l) {
-        this.componentSymbolList = l;
-    }
+  public Optional<ComponentInstanceSymbol> getComponentSymbolListIndex(int i) {
+    return this.componentSymbolList.get(i);
+  }
 
-    public void setComponentSymbol (int i, Optional<ComponentInstanceSymbol> c){
-        this.componentSymbolList.set(i, c);
-    }
+  public void setComponentSymbolList(List<Optional<ComponentInstanceSymbol>> l) {
+    this.componentSymbolList = l;
+  }
+
+  public void setComponentSymbol(int i, Optional<ComponentInstanceSymbol> c) {
+    this.componentSymbolList.set(i, c);
+  }
 }
