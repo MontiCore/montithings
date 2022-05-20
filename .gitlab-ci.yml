@@ -156,6 +156,8 @@ Docker FD Tagging Tool:
     CHANGES_PATH: 'services/fd-tagging-tool/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - cd services/iot-manager/
+    - mvn clean install -DskipTests
     - docker build -t $CI_REGISTRY_IMAGE/fd-tagging-tool -f services/fd-tagging-tool/Dockerfile .
     - docker tag $CI_REGISTRY_IMAGE/recorder montithings/fd-tagging-tool
     - docker push montithings/fd-tagging-tool
