@@ -156,12 +156,13 @@ Docker FD Tagging Tool:
     CHANGES_PATH: 'services/fd-tagging-tool/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - cd services/iot-manager/
+    - cd services/fd-tagging-tool/
     - mvn clean install -DskipTests
-    - docker build -t $CI_REGISTRY_IMAGE/fd-tagging-tool -f services/fd-tagging-tool/Dockerfile .
-    - docker tag $CI_REGISTRY_IMAGE/recorder montithings/fd-tagging-tool
+    - docker build -t $CI_REGISTRY_IMAGE/fd-tagging-tool  .
+    - docker tag $CI_REGISTRY_IMAGE/fd-tagging-tool montithings/fd-tagging-tool
     - docker push montithings/fd-tagging-tool
     - docker push $CI_REGISTRY_IMAGE/fd-tagging-tool
+
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
