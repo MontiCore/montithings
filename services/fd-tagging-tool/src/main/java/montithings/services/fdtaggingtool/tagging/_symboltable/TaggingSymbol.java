@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package tagging._symboltable;
+package montithings.services.fdtaggingtool.tagging._symboltable;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.featurediagram._symboltable.FeatureDiagramSymbol;

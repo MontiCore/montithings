@@ -1,12 +1,12 @@
 // (c) https://github.com/MontiCore/monticore
-package taggingtest;
+package montithings.services.fdtaggingtool.tagging;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import tagging.cocos.FirstNameIsAFeature;
-import tagging.cocos.NoComponentIsMentionedTwiceInASingleTag;
-import tagging.cocos.NoTagIsMentionedTwice;
-import tagging.cocos.SecondNameIsAComponent;
+import montithings.services.fdtaggingtool.tagging.cocos.FirstNameIsAFeature;
+import montithings.services.fdtaggingtool.tagging.cocos.NoComponentIsMentionedTwiceInASingleTag;
+import montithings.services.fdtaggingtool.tagging.cocos.NoTagIsMentionedTwice;
+import montithings.services.fdtaggingtool.tagging.cocos.SecondNameIsAComponent;
 
 import java.util.Arrays;
 import java.util.List;

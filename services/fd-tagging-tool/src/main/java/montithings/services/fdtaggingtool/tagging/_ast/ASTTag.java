@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package tagging._ast;
+package montithings.services.fdtaggingtool.tagging._ast;
 
 public class ASTTag extends ASTTagTOP {
   @Override

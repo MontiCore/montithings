@@ -1,15 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
-package taggingtest;
+package montithings.services.fdtaggingtool.tagging;
 
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import tagging.TaggingMill;
-import tagging.TaggingTool;
-import tagging._ast.ASTTagging;
-import tagging._cocos.TaggingCoCoChecker;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTagging;
+import montithings.services.fdtaggingtool.tagging._cocos.TaggingCoCoChecker;
 
 import java.util.List;
 import java.util.stream.Collectors;

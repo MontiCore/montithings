@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package tagging;
+package montithings.services.fdtaggingtool.tagging;
 
 public class TaggingToolServer {
 

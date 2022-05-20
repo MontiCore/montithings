@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package tagging._ast;
+package montithings.services.fdtaggingtool.tagging._ast;
 
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 

@@ -61,7 +61,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        tagging.TaggingToolServer
+                                        montithings.services.fdtaggingtool.tagging.TaggingToolServer
                                     </mainClass>
                                 </manifest>
                             </archive>

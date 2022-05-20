@@ -1,13 +1,13 @@
 // (c) https://github.com/MontiCore/monticore
 
 // CoCo to check if the second qualified name(s) of a tag refer to MontiThings components.
-package tagging.cocos;
+package montithings.services.fdtaggingtool.tagging.cocos;
 
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
-import tagging._ast.ASTTag;
-import tagging._ast.ASTTagging;
-import tagging._cocos.TaggingASTTaggingCoCo;
+import montithings.services.fdtaggingtool.tagging._cocos.TaggingASTTaggingCoCo;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTag;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTagging;
 
 public class SecondNameIsAComponent implements TaggingASTTaggingCoCo {
 

@@ -1,9 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
-package taggingtest.cocos;
+package montithings.services.fdtaggingtool.tagging.cocos;
 
+import montithings.services.fdtaggingtool.tagging.AbstractTest;
 import org.junit.jupiter.api.Test;
-import tagging.cocos.FirstNameIsAFeature;
-import taggingtest.AbstractTest;
 
 import java.util.Arrays;
 import java.util.List;

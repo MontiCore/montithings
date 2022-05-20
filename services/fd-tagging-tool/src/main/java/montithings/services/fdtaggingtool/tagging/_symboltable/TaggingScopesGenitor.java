@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package tagging._symboltable;
+package montithings.services.fdtaggingtool.tagging._symboltable;
 
 import arcbasis._symboltable.ComponentInstanceSymbol;
 import arcbasis._symboltable.ComponentTypeSymbol;
@@ -9,8 +9,8 @@ import de.monticore.featurediagram._symboltable.IFeatureDiagramGlobalScope;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import montithings.MontiThingsMill;
 import montithings._symboltable.IMontiThingsGlobalScope;
-import tagging._ast.ASTTag;
-import tagging._ast.ASTTagging;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTag;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTagging;
 
 import java.util.List;
 import java.util.Optional;

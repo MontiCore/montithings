@@ -1,5 +1,5 @@
 // (c) https://github.com/MontiCore/monticore
-package tagging;
+package montithings.services.fdtaggingtool.tagging;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -19,19 +19,19 @@ import de.se_rwth.commons.logging.Log;
 import mcfdtool.FACT;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsGlobalScope;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTag;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTagging;
+import montithings.services.fdtaggingtool.tagging._cocos.TaggingCoCoChecker;
+import montithings.services.fdtaggingtool.tagging._parser.TaggingParser;
+import montithings.services.fdtaggingtool.tagging._symboltable.ITaggingGlobalScope;
+import montithings.services.fdtaggingtool.tagging._symboltable.TaggingArtifactScope;
+import montithings.services.fdtaggingtool.tagging._symboltable.TaggingSymbol;
+import montithings.services.fdtaggingtool.tagging.cocos.FirstNameIsAFeature;
+import montithings.services.fdtaggingtool.tagging.cocos.NoComponentIsMentionedTwiceInASingleTag;
+import montithings.services.fdtaggingtool.tagging.cocos.NoTagIsMentionedTwice;
+import montithings.services.fdtaggingtool.tagging.cocos.SecondNameIsAComponent;
 import mtconfig.MTConfigTool;
 import org.antlr.v4.runtime.RecognitionException;
-import tagging._ast.ASTTag;
-import tagging._ast.ASTTagging;
-import tagging._cocos.TaggingCoCoChecker;
-import tagging._parser.TaggingParser;
-import tagging._symboltable.ITaggingGlobalScope;
-import tagging._symboltable.TaggingArtifactScope;
-import tagging._symboltable.TaggingSymbol;
-import tagging.cocos.FirstNameIsAFeature;
-import tagging.cocos.NoComponentIsMentionedTwiceInASingleTag;
-import tagging.cocos.NoTagIsMentionedTwice;
-import tagging.cocos.SecondNameIsAComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

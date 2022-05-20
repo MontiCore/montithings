@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
-package tagging.cocos;
+package montithings.services.fdtaggingtool.tagging.cocos;
 
 import de.se_rwth.commons.logging.Log;
-import tagging._ast.ASTTag;
-import tagging._ast.ASTTagging;
-import tagging._cocos.TaggingASTTaggingCoCo;
+import montithings.services.fdtaggingtool.tagging._cocos.TaggingASTTaggingCoCo;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTag;
+import montithings.services.fdtaggingtool.tagging._ast.ASTTagging;
 
 public class NoTagIsMentionedTwice implements TaggingASTTaggingCoCo {
 
