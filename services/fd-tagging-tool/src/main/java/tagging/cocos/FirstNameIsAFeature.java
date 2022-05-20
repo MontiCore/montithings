@@ -1,3 +1,5 @@
+// (c) https://github.com/MontiCore/monticore
+
 // CoCo to check if the first qualified name of a tag refers to a feature in the feature diagram of the same name.
 package tagging.cocos;
 

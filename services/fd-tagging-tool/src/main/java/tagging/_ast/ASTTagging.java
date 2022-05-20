@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package tagging._ast;
 
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;

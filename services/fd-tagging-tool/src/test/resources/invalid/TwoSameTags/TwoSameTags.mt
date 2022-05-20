@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package invalid.TwoSameTags;
 
 component TwoSameTags {

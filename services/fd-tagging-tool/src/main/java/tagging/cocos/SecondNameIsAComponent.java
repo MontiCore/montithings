@@ -1,3 +1,5 @@
+// (c) https://github.com/MontiCore/monticore
+
 // CoCo to check if the second qualified name(s) of a tag refer to MontiThings components.
 package tagging.cocos;
 

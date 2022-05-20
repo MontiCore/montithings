@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package tagging._symboltable;
 
 import arcbasis._symboltable.ComponentInstanceSymbol;

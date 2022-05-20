@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package tagging.cocos;
 
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;

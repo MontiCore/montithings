@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package taggingtest;
 
 import org.junit.jupiter.api.Disabled;
