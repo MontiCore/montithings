@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 FROM openjdk:8
 
 RUN apt-get update -y
