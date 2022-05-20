@@ -1,0 +1,7 @@
+package valid.PossibleConfiguration;
+
+tagging PossibleConfiguration {
+    feature Car contains PossibleConfiguration;
+    feature SmallTrunk contains sink;
+    feature vPanoramicRoof contains sink;
+}

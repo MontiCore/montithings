@@ -1,0 +1,12 @@
+package invalid.NoComponentPresent;
+
+featurediagram NoComponentPresent {
+
+  Car -> ElectricWindowOpener? & PanoramicRoof?;
+
+  Car -> SmallTrunk ^ LargeTrunk;
+
+  PanoramicRoof -> Electric?;
+
+  Electric requires ElectricWindowOpener;
+}

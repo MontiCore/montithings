@@ -1,0 +1,13 @@
+// Grammar for the tagging language
+grammar Tagging extends de.monticore.types.MCBasicTypes {
+
+// A tagging is a collection of tags
+symbol scope Tagging =
+  ("package" package:MCQualifiedName ";")
+  "tagging" Name "{" Tag* "}" ;
+
+// Each tag binds a feature with components
+symbol scope Tag =
+  "feature" feature:MCQualifiedName "contains" components:(MCQualifiedName || ",")+ ";" ;
+
+}

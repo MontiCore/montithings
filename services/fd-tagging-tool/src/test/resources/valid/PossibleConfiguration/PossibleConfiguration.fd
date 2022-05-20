@@ -1,0 +1,12 @@
+package valid.PossibleConfiguration;
+
+featurediagram PossibleConfiguration {
+
+  Car -> ElectricWindowOpener? & PanoramicRoof?;
+
+  Car -> SmallTrunk ^ LargeTrunk;
+
+  PanoramicRoof -> Electric?;
+
+  Electric requires ElectricWindowOpener;
+}

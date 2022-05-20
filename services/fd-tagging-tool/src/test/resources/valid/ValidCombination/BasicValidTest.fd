@@ -1,0 +1,12 @@
+package valid.ValidCombination;
+
+featurediagram BasicValidTest {
+
+  Car -> ElectricWindowOpener? & PanoramicRoof?;
+
+  Car -> SmallTrunk ^ LargeTrunk;
+
+  PanoramicRoof -> Electric?;
+
+  Electric requires ElectricWindowOpener;
+}
