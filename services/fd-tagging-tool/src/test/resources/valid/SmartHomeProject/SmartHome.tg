@@ -1,0 +1,12 @@
+package valid.SmartHomeProject;
+
+tagging SmartHome{
+    feature SmartAssistant contains alexa;
+    feature SmartLights contains lightSensor, lightSwitch;
+    feature Refrigerator contains fridge;
+    feature LargeFridge contains fridge.largeFridge;
+    feature ConnectedFridge contains fridge.wireless;
+    feature Blinds contains lightSensor, blindsMotor;
+    feature AntiFire contains smokeDetector, sprinkler;
+    feature TemperatureControl contains thermostat, ac, heatSensor;
+}

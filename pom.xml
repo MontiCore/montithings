@@ -31,6 +31,7 @@
 		<siunits.version>7.0.0</siunits.version>
 		<montiarc.version>7.0.0-SNAPSHOT</montiarc.version>
 		<sequencediagram.version>7.0.0</sequencediagram.version>
+		<fd.version>7.0.0</fd.version>
 
 		<!-- .. SE-Libraries ..................................................... -->
 		<monticore.version>7.0.2-SNAPSHOT</monticore.version>
@@ -203,6 +204,25 @@
 				<artifactId>cd4analysis</artifactId>
 				<version>${cd4a.version}</version>
 				<classifier>sources</classifier>
+			</dependency>
+
+			<dependency>
+				<groupId>de.monticore.lang</groupId>
+				<artifactId>fd-lang</artifactId>
+				<version>${fd.version}</version>
+				<classifier>grammars</classifier>
+			</dependency>
+
+			<dependency>
+				<groupId>de.monticore.lang</groupId>
+				<artifactId>fd-lang</artifactId>
+				<version>${fd.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>de.monticore.lang</groupId>
+				<artifactId>fd-analysis</artifactId>
+				<version>${fd.version}</version>
 			</dependency>
 
 			<dependency>

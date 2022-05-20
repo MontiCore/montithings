@@ -1,0 +1,5 @@
+package invalid.NoFeaturePresent;
+
+tagging NoFeaturePresent {
+    feature Truck contains sink;
+}

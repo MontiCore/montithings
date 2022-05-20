@@ -1,0 +1,209 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>montithings.services</groupId>
+        <artifactId>services</artifactId>
+        <version>7.0.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>fd-tagging-tool</artifactId>
+
+    <properties>
+        <skipTests>true</skipTests>
+        <release.plugin>2.5.1</release.plugin>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <build>
+        <!-- Other Configuration -->
+        <sourceDirectory>src/main/java</sourceDirectory>
+
+        <plugins>
+            <!-- MontiCore Generation -->
+            <plugin>
+                <groupId>de.monticore.mojo</groupId>
+                <artifactId>monticore-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>libs/TaggingToolServer</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>
+                                        montithings.services.fdtaggingtool.tagging.TaggingToolServer
+                                    </mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.plugin}</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                    <argLine>${argLine}</argLine>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                </configuration>
+            </plugin>
+
+            <plugin> <!-- TODO Why is this here? -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${release.plugin}</version>
+                <configuration>
+                    <tagNameFormat>json-@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${source.plugin}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
+
+    <dependencies>
+
+        <!-- MontiCore Dependencies -->
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-runtime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-grammar</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore</groupId>
+            <artifactId>monticore-grammar</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>fd-lang</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.monticore.lang</groupId>
+            <artifactId>fd-analysis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>montithings</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>mtconfig</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.eclipse.paho/mqtt-client -->
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+        </dependency>
+
+        <!-- .. Test Libraries ............................................... -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+            <!-- doc: http://junit.org/junit5/ -->
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Framework for a simple web server -->
+        <!-- https://mvnrepository.com/artifact/com.sparkjava/spark-core -->
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-core</artifactId>
+            <version>2.9.3</version>
+        </dependency>
+    </dependencies>
+</project>

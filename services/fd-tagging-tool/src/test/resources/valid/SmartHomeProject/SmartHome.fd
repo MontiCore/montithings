@@ -1,0 +1,20 @@
+package valid.SmartHomeProject;
+
+featurediagram SmartHome {
+
+    SmartHome -> SmartLights & Refrigerator? & AntiFire? & TemperatureControl & SmartAssistant;
+
+    SmartHome -> Blinds ^ Curtains;
+
+    Refrigerator -> SmallFridge ^ LargeFridge;
+
+    Refrigerator -> OfflineFridge ^ ConnectedFridge;
+
+    SmartAssistant -> MusicPlayback | PodcastPlayback;
+
+    ConnectedFridge requires SmartAssistant;
+
+    AntiFire requires TemperatureControl;
+
+    SmallFridge excludes ConnectedFridge;
+}

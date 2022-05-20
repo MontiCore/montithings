@@ -1,0 +1,5 @@
+package invalid.NoComponentPresent;
+
+tagging NoComponentPresent {
+    feature Car contains sink2;
+}
