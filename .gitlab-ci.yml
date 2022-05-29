@@ -319,7 +319,7 @@ language-features/initialization:
   variables:
     APPLICATION_NAME: language-features/initialization
   <<: *test-application-definition
-  timout: 10 minutes
+  timeout: 10 minutes
   retry:
     max: 2
     when:
