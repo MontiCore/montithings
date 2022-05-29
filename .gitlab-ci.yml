@@ -319,6 +319,12 @@ language-features/initialization:
   variables:
     APPLICATION_NAME: language-features/initialization
   <<: *test-application-definition
+  timeout: 10 minutes
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 #language-features/interface-components:
 #  variables:
