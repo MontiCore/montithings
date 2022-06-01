@@ -25,7 +25,7 @@ public class FindModelPacks extends GeneratorStep {
       ComponentTypeSymbol comp = state.getTool().modelToSymbol(model, state.getSymTab());
 
       // If this component does not need its own executable, then we can just
-      // ignore it right here. If splitting is turned of, we will generate
+      // ignore it right here. If splitting is turned off, we will generate
       // everything due to compatibility reasons.
       if (state.getExecutableComponents().contains(comp)
         || state.getConfig().getSplittingMode() == SplittingMode.OFF) {

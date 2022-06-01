@@ -150,6 +150,19 @@ Docker IoT Manager:
     - docker push montithings/iot-manager
     - docker push $CI_REGISTRY_IMAGE/iot-manager
 
+Docker FD Tagging Tool:
+  <<: *docker_build_definition
+  variables:
+    CHANGES_PATH: 'services/fd-tagging-tool/**/*'
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - cd services/fd-tagging-tool/
+    - mvn clean install -DskipTests
+    - docker build -t $CI_REGISTRY_IMAGE/fd-tagging-tool  .
+    - docker tag $CI_REGISTRY_IMAGE/fd-tagging-tool montithings/fd-tagging-tool
+    - docker push montithings/fd-tagging-tool
+    - docker push $CI_REGISTRY_IMAGE/fd-tagging-tool
+
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -214,6 +227,7 @@ Unit Test Gradle:
     paths:
       - generators/montithings2cpp/target/
       - "applications/**/target/generated-sources"
+      - "applications/**/target/generated-test-sources"
 
 Unit Test JDK 8:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
@@ -263,6 +277,94 @@ Compile Applications:
   script:
     - cd applications
     - ./compile.sh
+
+.test-application-template: &test-application-definition
+  image: $CI_REGISTRY_IMAGE/mtcmake
+  dependencies:
+    - Unit Test JDK 11 #download generated-test-sources
+  needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
+  stage: generator-test
+  script:
+    - cd applications/$APPLICATION_NAME/target/generated-test-sources
+    - ./build.sh
+    - cd build/bin
+    - for f in *; do ./"$f"; done
+
+basic-input-output:
+  variables:
+    APPLICATION_NAME: basic-input-output
+  <<: *test-application-definition
+
+#dds-ports:
+#  variables:
+#    APPLICATION_NAME: dds-ports
+#  <<: *test-application-definition
+
+#hierarchy:
+#  variables:
+#    APPLICATION_NAME: hierarchy
+#  <<: *test-application-definition
+
+language-features/behavior:
+  variables:
+    APPLICATION_NAME: language-features/behavior
+  <<: *test-application-definition
+
+#language-features/class-diagrams:
+#  variables:
+#    APPLICATION_NAME: language-features/class-diagrams
+#  <<: *test-application-definition
+
+language-features/initialization:
+  variables:
+    APPLICATION_NAME: language-features/initialization
+  <<: *test-application-definition
+  timeout: 10 minutes
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+#language-features/interface-components:
+#  variables:
+#    APPLICATION_NAME: language-features/interface-components
+#  <<: *test-application-definition
+
+#language-features/interface-componentsMTB:
+#  variables:
+#    APPLICATION_NAME: language-features/interface-componentsMTB
+#  <<: *test-application-definition
+
+language-features/ocl:
+  variables:
+    APPLICATION_NAME: language-features/ocl
+  <<: *test-application-definition
+
+language-features/pre-postconditions:
+  variables:
+    APPLICATION_NAME: language-features/pre-postconditions
+  <<: *test-application-definition
+
+language-features/statecharts:
+  variables:
+    APPLICATION_NAME: language-features/statecharts
+  <<: *test-application-definition
+
+#mqtt-ports:
+#  variables:
+#    APPLICATION_NAME: mqtt-ports
+#  <<: *test-application-definition
+
+#record-transform-replay:
+#  variables:
+#    APPLICATION_NAME: record-transform-replay
+#  <<: *test-application-definition
+
+retain-state:
+  variables:
+    APPLICATION_NAME: retain-state
+  <<: *test-application-definition
 
 Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8

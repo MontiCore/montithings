@@ -1,0 +1,106 @@
+{
+  "instances": [
+    {
+      "componentType": "valid.SmartHomeProject.SmartHome",
+      "instanceName": "valid.SmartHomeProject.SmartHome",
+      "dockerImage": "valid.smarthomeproject.smarthome:latest",
+      "requirements": []
+    },
+    {
+      "componentType": "valid.SmartHomeProject.SmartSpeaker",
+      "instanceName": "valid.SmartHomeProject.SmartHome.alexa",
+      "dockerImage": "valid.smarthomeproject.smartspeaker:latest",
+      "requirements": [
+        "wifi_module"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.AudioChip",
+      "instanceName": "valid.SmartHomeProject.SmartHome.alexa.audioChip",
+      "dockerImage": "valid.smarthomeproject.audiochip:latest",
+      "requirements": []
+    },
+    {
+      "componentType": "valid.SmartHomeProject.LightSensor",
+      "instanceName": "valid.SmartHomeProject.SmartHome.lightSensor",
+      "dockerImage": "valid.smarthomeproject.lightsensor:latest",
+      "requirements": [
+        "light_sensor"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.LightSwitch",
+      "instanceName": "valid.SmartHomeProject.SmartHome.lightSwitch",
+      "dockerImage": "valid.smarthomeproject.lightswitch:latest",
+      "requirements": [
+        "light_sensor"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.Refrigerator",
+      "instanceName": "valid.SmartHomeProject.SmartHome.fridge",
+      "dockerImage": "valid.smarthomeproject.refrigerator:latest",
+      "requirements": []
+    },
+    {
+      "componentType": "valid.SmartHomeProject.LargeFridge",
+      "instanceName": "valid.SmartHomeProject.SmartHome.fridge.largeFridge",
+      "dockerImage": "valid.smarthomeproject.largefridge:latest",
+      "requirements": []
+    },
+    {
+      "componentType": "valid.SmartHomeProject.WiFi",
+      "instanceName": "valid.SmartHomeProject.SmartHome.fridge.wireless",
+      "dockerImage": "valid.smarthomeproject.wifi:latest",
+      "requirements": [
+        "wifi_module"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.Motor",
+      "instanceName": "valid.SmartHomeProject.SmartHome.blindsMotor",
+      "dockerImage": "valid.smarthomeproject.motor:latest",
+      "requirements": []
+    },
+    {
+      "componentType": "valid.SmartHomeProject.Sprinkler",
+      "instanceName": "valid.SmartHomeProject.SmartHome.sprinkler",
+      "dockerImage": "valid.smarthomeproject.sprinkler:latest",
+      "requirements": [
+        "smoke_detector"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.SmokeDetector",
+      "instanceName": "valid.SmartHomeProject.SmartHome.smokeDetector",
+      "dockerImage": "valid.smarthomeproject.smokedetector:latest",
+      "requirements": [
+        "smoke_detector"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.Thermostat",
+      "instanceName": "valid.SmartHomeProject.SmartHome.thermostat",
+      "dockerImage": "valid.smarthomeproject.thermostat:latest",
+      "requirements": [
+        "heat_controller"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.AirConditioning",
+      "instanceName": "valid.SmartHomeProject.SmartHome.ac",
+      "dockerImage": "valid.smarthomeproject.airconditioning:latest",
+      "requirements": [
+        "heat_controller"
+      ]
+    },
+    {
+      "componentType": "valid.SmartHomeProject.HeatSensor",
+      "instanceName": "valid.SmartHomeProject.SmartHome.heatSensor",
+      "dockerImage": "valid.smarthomeproject.heatsensor:latest",
+      "requirements": [
+        "heat_controller"
+      ]
+    }
+  ]
+}

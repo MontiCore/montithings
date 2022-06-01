@@ -371,6 +371,13 @@ public class MTGenerator {
       "template/adapter/ImplementationFile.ftl", packageName, simpleName, config);
   }
 
+  public void generatePackageFile(String targetPath, List<File> components) {
+    File target = new File(genSrcDir + File.separator + targetPath);
+    //convert file objects to names of components
+    List<String> componentNames = components.stream().map(f -> f.getName().substring(0, f.getName().length() - 3)).collect(Collectors.toList());
+    fg.generate(target, "Package", ".h", "template/util/packageFiles/Package.ftl", componentNames);
+  }
+
   /**
    * This method creates independent sensor / actuator ports. Not to be confused with
    * {@code generateAdditionalPort} method that generates code for sensor / actuator ports that

@@ -7,7 +7,7 @@ component Source {
 
   int lastValue = 0;
 
-  every 1s {
+  every 500ms {
     log("Source: " + lastValue);
     value = lastValue++;
   }
@@ -16,8 +16,8 @@ component Source {
   // Only allow values between 0 and 5,
   // default to 3 if actual value not between 0 and 5
   // Will return 1, 2, 3, 4, 5, 3, 3, 3, ...
-  //post value isin { 0 : 5 };
-  //catch {value = 3;}
+  post value isin { 0 .. 5 };
+  catch {value = 3;}
 
   // Check if a value is one of the given values.
   // Only allow values 0, 1, and 4,
@@ -32,7 +32,7 @@ component Source {
   // All allowed values: 1, 3, 7, 11, 15
   // default to 15 if actual value does not match
   // Will return 1, 15, 3, 15, 15, 15, 7, 15, 15, 15, 11, 15, 15, 15, 15, 15, ...
-  // post value isin { 1, 3:4:11, 15 };
+  // post value isin { 1, 3 .. 4 .. 11, 15 };
   // catch {value = 15;}
 
   // Check if value matches a regular expression.

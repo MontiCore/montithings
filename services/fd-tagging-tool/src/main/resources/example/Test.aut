@@ -1,0 +1,10 @@
+// This is a taggingtest tag
+
+taggig SmartHome {
+
+feature Thermostat contains TempSensor;
+
+feature SmartWindows contains WindowMotor, AQMeter, BlindsMotor; 
+
+
+}

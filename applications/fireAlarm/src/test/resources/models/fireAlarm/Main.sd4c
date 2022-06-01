@@ -1,0 +1,10 @@
+// (c) https://github.com/MontiCore/monticore
+package fireAlarm;
+
+testdiagram Main for FireAlarm {
+  delay 500 ms;
+  fireExt.alarmOn -> alarm.onn : true;
+  fireExt.sprinklerOn -> sprinkler.onn : true;
+  smokeSensor.value -> fireExt.smoke : true;
+  tempSensor.value -> fireExt.temp : 1;
+}

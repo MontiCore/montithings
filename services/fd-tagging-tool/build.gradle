@@ -1,0 +1,88 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+  id 'java-library'
+  id 'monticore'
+  id 'com.github.johnrengelman.shadow'
+}
+
+group = 'montithings.services.fdtaggingtool'
+version = '7.0.0-SNAPSHOT'
+
+buildDir = file("$projectDir/target")
+def grammarName = 'montithings/services/fdtaggingtool/Tagging'
+def outDir = "$buildDir/generated-sources/monticore/sourcecode"
+def grammarDir = "$projectDir/src/main/grammars"
+def reportsDir = "$buildDir/generated-sources/monticore/sourcecode/reports"
+
+// configure non-standard source sets
+sourceSets {
+  main {
+    java.srcDirs += ["$buildDir/generated-sources/monticore/sourcecode"]
+  }
+  test {
+    java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+  }
+  grammars {
+    resources {
+      srcDirs(grammarDir, reportsDir)
+      include("**/*.mc4", "**/*.cd")
+    }
+  }
+}
+
+dependencies {
+  implementation "de.monticore:monticore-runtime:$monticore_version"
+  implementation "de.monticore:monticore-grammar:$monticore_version"
+  implementation "de.monticore.lang:fd-lang:$fd_version"
+  implementation "de.monticore.lang:fd-analysis:$fd_version"
+  implementation project(':languages:montithings')
+  implementation project(':languages:error-handling')
+  implementation project(':languages:iot-behavior')
+  implementation project(':languages:montiarc-extensions')
+  implementation project(':languages:monticore-extensions')
+  implementation project(':languages:mtconfig')
+  implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+  implementation "de.monticore:siunits:$siunits_version"
+  implementation "de.monticore.lang:ocl:$ocl_version"
+  implementation "commons-cli:commons-cli:1.4"
+  implementation 'com.google.code.gson:gson:2.8.9'
+  implementation 'com.sparkjava:spark-core:2.3'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+  grammar "de.monticore:monticore-grammar:$monticore_version:grammars"
+  implementation "de.se_rwth.commons:se-commons-utilities:$se_commons_version"
+}
+
+repositories {
+  maven {
+    url "https://nexus.se.rwth-aachen.de/content/groups/public"
+  }
+  mavenCentral()
+}
+
+task generate(type: MCTask) {
+  grammar = file "src/main/grammars/${grammarName}.mc4"
+  outputDir = file outDir
+  outputs.upToDateWhen { incCheck("${grammarName}.mc4") }
+}
+
+compileJava {
+  dependsOn project.collect { it.tasks.withType(MCTask) }
+}
+
+// all in one deployment jar
+shadowJar {
+  manifest {
+    attributes "Main-Class": "tagging.TaggingToolServer"
+  }
+  archiveFileName = "TaggingToolServer.${archiveExtension.get()}"
+  archiveClassifier = "tagging-tool"
+}
+
+jar.dependsOn shadowJar
+
+
+test {
+  useJUnitPlatform()
+}

@@ -1,0 +1,6 @@
+package invalid.TwoSameTags;
+
+tagging TwoSameTags {
+    feature Car contains source;
+    feature Car contains sink;
+}

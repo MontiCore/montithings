@@ -6,9 +6,9 @@ component Source {
 
   int lastValue = 0;
 
-  every 1s {
-    lastValue++;
+  every 500 ms {
     log("Source: " + lastValue);
     value = lastValue;
+    lastValue++;
   }
 }

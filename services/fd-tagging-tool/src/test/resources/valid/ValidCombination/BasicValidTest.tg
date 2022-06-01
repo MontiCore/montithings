@@ -1,0 +1,5 @@
+package valid.ValidCombination;
+
+tagging BasicValidTest {
+    feature Car contains sink;
+}

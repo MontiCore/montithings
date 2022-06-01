@@ -71,7 +71,22 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   public void handle(@NotNull ASTBehavior node) {
     // intentionally left empty - not covered by MontiArc
   }
-
+  
+  @Override
+  public void handle(@NotNull ASTInitBehavior node) {
+    // intentionally left empty - not covered by MontiArc
+  }
+  
+  @Override
+  public void handle(@NotNull ASTMTCatch node) {
+    // intentionally left empty - not covered by MontiArc
+  }
+  
+  @Override
+  public void handle(@NotNull ASTArcStatechart node) {
+    // intentionally left empty - not covered by MontiArc
+  }
+  
   @Override
   public void handle(@NotNull ASTIsPresentExpression node) {
     // intentionally left empty - not covered by MontiArc
@@ -85,4 +100,5 @@ public class MontiThingsToMontiArcPrettyPrinter implements MontiThingsHandler {
   public void handle(ASTMTEveryBlock node) {
     // intentionally left empty - not covered by MontiArc
   }
+  
 }

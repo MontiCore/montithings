@@ -14,7 +14,7 @@ class SourceImpl : public SourceImplTOP
 
   public:
   using SourceImplTOP::SourceImplTOP;
-  int lastValue;
+  int lastValue = 0;
   SourceResult getInitialValues () override;
   SourceResult compute (SourceInput input) override;
 };

@@ -1,0 +1,18 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+    
+testdiagram ExampleTest for Example {
+  delay 250 ms;
+  source.value -> three.input : 0;
+  three.output -> sink.value : 0;
+
+  delay 500 ms;
+  source.value -> three.input : 1;
+
+  delay 500 ms;
+  source.value -> three.input : 2;
+
+  delay 500 ms;
+  source.value -> three.input : 3;
+  three.output -> sink.value : 3;
+}

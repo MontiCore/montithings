@@ -2,6 +2,7 @@
 package montithings._visitor;
 
 import arcbasis._visitor.ArcBasisPrettyPrinter;
+import clockcontrol._visitor.ClockControlToMontiArcPrettyPrinter;
 import comfortablearc._visitor.ComfortableArcPrettyPrinter;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.expressions.prettyprint.AssignmentExpressionsPrettyPrinter;
@@ -19,7 +20,6 @@ import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCCollectionTypesPrettyPrinter;
 import de.monticore.types.prettyprint.MCSimpleGenericTypesPrettyPrinter;
-import genericarc._visitor.GenericArcPrettyPrinter;
 import montiarc._ast.ASTMontiArcNode;
 import montiarc._visitor.MontiArcPrettyPrinter;
 import montithings.MontiThingsMill;
@@ -78,22 +78,26 @@ public class MontiThingsToMontiArcFullPrettyPrinter {
     ComfortableArcPrettyPrinter comfortableArcPrettyPrinter =
       new ComfortableArcPrettyPrinter(printer);
     traverser.setComfortableArcHandler(comfortableArcPrettyPrinter);
-    GenericArcPrettyPrinter genericArcPrettyPrinter = new GenericArcPrettyPrinter(printer);
-    traverser.setGenericArcHandler(genericArcPrettyPrinter);
+    GenericToMontiArcPrettyPrinter genericToMontiArcPrettyPrinter = new GenericToMontiArcPrettyPrinter(printer);
+    traverser.setGenericArcHandler(genericToMontiArcPrettyPrinter);
     MontiArcPrettyPrinter montiArcPrettyPrinter = new MontiArcPrettyPrinter(printer);
     traverser.setMontiArcHandler(montiArcPrettyPrinter);
+    PrePostConditionToMontiArcPrettyPrinter prePostConditionToMontiArcpp = new PrePostConditionToMontiArcPrettyPrinter();
+    traverser.setPrePostConditionHandler(prePostConditionToMontiArcpp);
     
     SIUnitTypes4ComputingPrettyPrinter siunittypes4computingpp =
       new SIUnitTypes4ComputingPrettyPrinter(printer);
     traverser.setSIUnitTypes4ComputingHandler(siunittypes4computingpp);
     SIUnitsPrettyPrinter siunitspp = new SIUnitsPrettyPrinter(printer);
     traverser.setSIUnitsHandler(siunitspp);
+    traverser.add4SIUnits(siunitspp);
     SIUnitLiteralsPrettyPrinter siunitliteralspp = new SIUnitLiteralsPrettyPrinter(printer);
     traverser.setSIUnitLiteralsHandler(siunitliteralspp);
-
     MontiThingsToMontiArcPrettyPrinter montithingspp =
       new MontiThingsToMontiArcPrettyPrinter(printer);
     traverser.setMontiThingsHandler(montithingspp);
+    ClockControlToMontiArcPrettyPrinter clockpp = new ClockControlToMontiArcPrettyPrinter();
+    traverser.setClockControlHandler(clockpp);
   }
 
   public IndentPrinter getPrinter() {

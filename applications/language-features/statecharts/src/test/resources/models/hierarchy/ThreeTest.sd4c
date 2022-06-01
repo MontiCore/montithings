@@ -1,0 +1,19 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+    
+testdiagram ThreeTest for Three {
+  -> input : 0;
+  output -> : 0;
+
+  -> input : 1;
+  output -> : 0;
+
+  -> input : 3;
+  output -> : 3;
+
+  -> input : 5;
+  output -> : 3;
+
+  -> input : 6;
+  output -> : 6;
+}

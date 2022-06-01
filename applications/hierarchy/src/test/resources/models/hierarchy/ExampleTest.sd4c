@@ -1,0 +1,23 @@
+// (c) https://github.com/MontiCore/monticore
+package hierarchy;
+
+testdiagram ExampleTest for Example {
+  delay 500 ms;
+  source.value -> lpf.inport : 1;
+  lpf.outport -> c.inport : 1;
+  c.outport -> d.x : 1;
+  d.y -> sink.value : 2;
+
+  delay 1000 ms;
+  source.value -> lpf.inport : 2;
+  lpf.outport -> c.inport : 2;
+  c.outport -> d.x : 2;
+  d.y -> sink.value : 4;
+
+
+  delay 3000 ms;
+  source.value -> lpf.inport : 5;
+  lpf.outport -> c.inport : 0;
+  c.outport -> d.x : 0;
+  d.y -> sink.value : 0;
+}
