@@ -68,7 +68,11 @@ public class Utils {
         return nameAsPrologVariable;
     }
 
-    protected static String capitalize(String input) {
+    public static String toFirstLower(String input) {
+        return Character.toLowerCase(input.charAt(0)) + input.substring(1);
+    }
+
+    public static String capitalize(String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 

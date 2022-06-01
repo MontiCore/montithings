@@ -1,0 +1,11 @@
+objectdiagram testObjectDiagram {
+    private ws : WeightSensor {
+        private manufacturer = "ABC";
+        private partNo = 123;
+        private versionNo = 10;
+    };
+
+    private : Accuracy {
+        private acc = 10;
+    };
+}
