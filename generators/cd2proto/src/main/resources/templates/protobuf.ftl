@@ -1,3 +1,6 @@
+<#-- @ftlvariable name="types" type="java.util.List<de.monticore.cdbasis._symboltable.CDTypeSymbol>" -->
+<#-- @ftlvariable name="tc" type="de.monticore.generating.templateengine.TemplateController" -->
+
 <#-- (c) https://github.com/MontiCore/monticore -->
 // (c) https://github.com/MontiCore/monticore
 ${tc.signature("types")}
@@ -14,7 +17,9 @@ syntax = "proto3";
     <#assign output = output?replace("([^<]*)\\[]", "std::vector<$1>")>
     <#assign output = output?replace("String", "string")>
     <#assign output = output?replace("Integer", "int32")>
-    <#assign output = output?replace("Long", "long")>
+    <#assign output = output?replace("int", "int32")>
+    <#assign output = output?replace("Long", "int64")>
+    <#assign output = output?replace("long", "int64")>
     <#assign output = output?replace("Map", "map")>
     <#assign output = output?replace("Set", "")>
     <#assign output = output?replace("List<(.*)>", "repeated $1")>
