@@ -9,6 +9,7 @@ import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
+import montithings.generator.cd2proto.helper.TypeHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +67,6 @@ public class ProtoGenerator {
     setup.setOutputDirectory(this.outputDir.toFile());
     GeneratorEngine engine = new GeneratorEngine(setup);
     String outFilename = modelName.replace('.', File.separatorChar) + ".proto";
-    engine.generate("templates/protobuf.ftl", Paths.get(outFilename), this.compilationUnit, this.cdTypeSymbols);
+    engine.generate("templates/protobuf.ftl", Paths.get(outFilename), this.compilationUnit, this.cdTypeSymbols, new TypeHelper());
   }
 }
