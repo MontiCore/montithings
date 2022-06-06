@@ -53,7 +53,7 @@ public class ListWrapperTest {
         generator.generate();
 
         ProtobufRunner pr = new ProtobufRunner();
-        pr.setTargetLang(ProtobufRunner.TargetLang.JAVA);
+        pr.setTargetLang(ProtobufRunner.TargetLang.CPP);
         pr.setOutDir(outDir);
         try (DirectoryStream<Path> paths = Files.newDirectoryStream(outDir)) {
             for (Path p: paths) {
