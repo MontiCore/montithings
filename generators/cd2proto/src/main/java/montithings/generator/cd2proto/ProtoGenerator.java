@@ -66,7 +66,15 @@ public class ProtoGenerator {
     GeneratorEngine engine = new GeneratorEngine(setup);
     String outFilename = modelName.replace('.', File.separatorChar) + ".proto";
     Path outfile = Paths.get(outFilename);
-    engine.generate("templates/protobuf.ftl", outfile, this.compilationUnit, this.cdTypeSymbols, new TypeHelper());
+
+    // Mimic the package name creation from cd2cpp
+    String package_name = compilationUnit.getEnclosingScope().getRealPackageName();
+    if (package_name.isEmpty()) {
+      package_name = compilationUnit.getEnclosingScope().getName();
+    }
+    String _package = "montithings.protobuf." + package_name;
+
+    engine.generate("templates/protobuf.ftl", outfile, this.compilationUnit, this.cdTypeSymbols, new TypeHelper(), _package);
     return Collections.singleton(setup.getOutputDirectory().toPath().resolve(outfile));
   }
 }

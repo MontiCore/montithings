@@ -4,11 +4,13 @@
 
 <#-- (c) https://github.com/MontiCore/monticore -->
 // (c) https://github.com/MontiCore/monticore
-${tc.signature("types", "TypeHelper")}
+${tc.signature("types", "TypeHelper", "package")}
 
 syntax = "proto3";
 <#-- TODO: Class hierarchies -->
 <#-- TODO: associations -->
+
+package ${package};
 
 <#list types as type>
 message ${type.name} {
