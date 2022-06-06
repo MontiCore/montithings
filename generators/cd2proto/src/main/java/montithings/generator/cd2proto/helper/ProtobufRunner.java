@@ -73,8 +73,23 @@ public class ProtobufRunner {
             throw new IllegalArgumentException("No input files specified");
         }
         ProcessBuilder pb = new ProcessBuilder();
-        String inFiles = inputFiles.stream().map(Path::toString).collect(Collectors.joining(" "));
-        pb.command("protoc", "--" + targetLang.name().toLowerCase() + "_out="+outDir.toString(), inFiles);
+        List<String> args = new ArrayList<>();
+        args.add("protoc");
+        args.add("--" + targetLang.name().toLowerCase() + "_out=" +
+            outDir.toString());
+        /* Adding the parent directories of the protobuf files is necessary to
+        ensure that the protocol buffer files are relocatable. Otherwise the
+        cpp source files will try to include the corresponding headers with a
+        relative path starting at the _current_ working directory, e.g.
+        `#include "target/out/Domain.pb.h"` instead of the desired
+        `#include "Domain.pb.h"`. */
+        args.addAll(inputFiles.stream()
+            .map(p -> "--proto_path=" + p.getParent().toString())
+            .collect(Collectors.toList()));
+        args.addAll(inputFiles.stream()
+            .map(Path::toString)
+            .collect(Collectors.toList()));
+        pb.command(args);
         Log.info("Invoking protoc: " + String.join(" ", pb.command()), "CD2Proto");
         pb.inheritIO();
 
