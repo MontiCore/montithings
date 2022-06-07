@@ -13,9 +13,20 @@ syntax = "proto3";
 package ${package};
 
 <#list types as type>
+    <#if type.isInterface>
+        <#-- We don't care for interfaces as they do not have data. -->
+        <#continue >
+    </#if>
+<#assign nextFieldNumber=1>
 message ${type.name} {
+    <#if type.presentSuperClass>
+        ${type.superClass.typeInfo.name} super = ${nextFieldNumber};
+        <#assign nextFieldNumber+=1>
+    </#if>
+
     <#list type.fieldList as field>
-    ${TypeHelper.translate(field.getType())} ${field.name} = ${field?counter};
+    ${TypeHelper.translate(field.getType())} ${field.name} = ${nextFieldNumber};
+        <#assign nextFieldNumber+=1>
     </#list>
 }
 </#list>
