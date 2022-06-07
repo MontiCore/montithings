@@ -4,7 +4,7 @@
 
 <#-- (c) https://github.com/MontiCore/monticore -->
 // (c) https://github.com/MontiCore/monticore
-${tc.signature("types", "TypeHelper", "package")}
+${tc.signature("types", "TypeHelper", "package", "AssociationHelper")}
 
 syntax = "proto3";
 <#-- TODO: associations -->
@@ -28,6 +28,14 @@ message ${type.name} {
     <#list type.fieldList as field>
     ${TypeHelper.translate(field.getType())} ${field.name} = ${nextFieldNumber};
         <#assign nextFieldNumber+=1>
+    </#list>
+
+    <#list AssociationHelper.getAssociations(ast, type) as association>
+        <#-- Composition -->
+        <#if association.left.CDCardinality.one && association.right.CDCardinality.one>
+            ${AssociationHelper.getOtherSideTypeName(association, type)} ${AssociationHelper.getDerivedName(association, type)} = ${nextFieldNumber};
+            <#assign nextFieldNumber+=1>
+        </#if>
     </#list>
 }
 

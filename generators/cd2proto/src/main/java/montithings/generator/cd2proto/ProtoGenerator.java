@@ -9,6 +9,7 @@ import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
+import montithings.generator.cd2cpp.AssociationHelper;
 import montithings.generator.cd2proto.helper.TypeHelper;
 
 import java.io.File;
@@ -74,7 +75,7 @@ public class ProtoGenerator {
     }
     String _package = "montithings.protobuf." + package_name;
 
-    engine.generate("templates/protobuf.ftl", outfile, this.compilationUnit, this.cdTypeSymbols, new TypeHelper(), _package);
+    engine.generate("templates/protobuf.ftl", outfile, this.compilationUnit, this.cdTypeSymbols, new TypeHelper(), _package, new AssociationHelper());
     return Collections.singleton(setup.getOutputDirectory().toPath().resolve(outfile));
   }
 }
