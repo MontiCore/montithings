@@ -7,7 +7,6 @@
 ${tc.signature("types", "TypeHelper", "package")}
 
 syntax = "proto3";
-<#-- TODO: Class hierarchies -->
 <#-- TODO: associations -->
 
 package ${package};
@@ -16,7 +15,9 @@ package ${package};
     <#if type.isInterface>
         <#-- We don't care for interfaces as they do not have data. -->
         <#continue >
-    </#if>
+
+    <#elseif type.isClass>
+
 <#assign nextFieldNumber=1>
 message ${type.name} {
     <#if type.presentSuperClass>
@@ -29,6 +30,17 @@ message ${type.name} {
         <#assign nextFieldNumber+=1>
     </#list>
 }
+
+    <#elseif type.isEnum>
+message ${type.name} {
+        enum Values {
+        <#list type.fieldList as field>
+            ${field.name} = ${field?counter-1};
+        </#list>
+        }
+}
+    </#if>
+
 </#list>
 
 ${TypeHelper.getNestedListHelper().generateWrappers()}
