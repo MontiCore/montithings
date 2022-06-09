@@ -37,12 +37,10 @@ message ${type.name} {
 }
 
     <#elseif type.isEnum>
-message ${type.name} {
-    enum Values {
+enum ${type.name} {
     <#list type.fieldList as field>
-        ${field.name} = ${field?counter-1};
+    ${field.name} = ${field?counter-1};
     </#list>
-    }
 }
     </#if>
 
