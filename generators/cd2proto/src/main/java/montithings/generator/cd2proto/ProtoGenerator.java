@@ -38,12 +38,18 @@ public class ProtoGenerator {
     CD4CodeMill.globalScope().setModelPath(new ModelPath(modelPath));
 
     ((CD4CodeGlobalScope) CD4CodeMill.globalScope()).addBuiltInTypes();
-    CD4CodeMill.globalScope().add(CD4CodeMill.typeSymbolBuilder()
-        .setName("String")
-        .setFullName("String")
-        .setEnclosingScope(CD4CodeMill.globalScope())
-        .setSpannedScope(CD4CodeMill.scope())
-        .build());
+    registerObjectType("String", "Integer", "Double", "Float");
+  }
+
+  private void registerObjectType(String... names) {
+    for(String name : names) {
+      CD4CodeMill.globalScope().add(CD4CodeMill.typeSymbolBuilder()
+              .setName(name)
+              .setFullName(name)
+              .setEnclosingScope(CD4CodeMill.globalScope())
+              .setSpannedScope(CD4CodeMill.scope())
+              .build());
+    }
   }
 
   public void parse() throws IOException {

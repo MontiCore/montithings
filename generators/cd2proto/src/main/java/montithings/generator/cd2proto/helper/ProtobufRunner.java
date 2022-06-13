@@ -62,6 +62,10 @@ public class ProtobufRunner {
         this.inputFiles.addAll(Arrays.asList(inputFile));
     }
 
+    public void clearInputFiles() {
+        this.inputFiles.clear();
+    }
+
     public void start() {
         if(targetLang == null) {
             throw new IllegalArgumentException("Target language is not set");

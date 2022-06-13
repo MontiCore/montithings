@@ -1,7 +1,6 @@
 package montithings.generator.cd2proto.helper;
 
 import de.monticore.types.check.SymTypeExpression;
-import de.se_rwth.commons.logging.Log;
 import montithings.generator.cd2proto.helper.resolver.*;
 
 import java.util.HashMap;
@@ -19,7 +18,7 @@ public class TypeHelper {
     public TypeHelper() {
         typeMap.put(SymTypeExpression::isTypeConstant, new PrimitiveTypeResolver());
         typeMap.put(SymTypeExpression::isArrayType, new ArrayTypeResolver(this));
-        typeMap.put(SymTypeExpression::isGenericType, new GenericTypeResolver(this, nlh));
+        typeMap.put(SymTypeExpression::isGenericType, new GenericTypeResolver(this));
         typeMap.put(SymTypeExpression::isObjectType, new ObjectTypeResolver());
     }
 
