@@ -3,9 +3,10 @@ objectdiagram testObjectDiagram {
         private manufacturer = "ABC";
         private partNo = 123;
         private versionNo = 10;
-    };
+        private accuracy = 10;
+        private : Accuracy {
+            private updaterate = 10;
+        };
 
-    private : Accuracy {
-        private acc = 10;
     };
 }

@@ -4,6 +4,7 @@ import de.monticore.ocl.oclexpressions._ast.*;
 import de.monticore.ocl.oclexpressions.prettyprint.OCLExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
+import montithings.services.prolog_generator.Utils;
 
 public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPrinter {
   public OCLExpressionsToPrologPrettyPrinter(IndentPrinter indentPrinter) {
@@ -12,7 +13,7 @@ public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPri
 
   @Override
   public void handle(ASTOCLVariableDeclaration node) {
-    getPrinter().print(node.getName());
+    getPrinter().print(Utils.capitalize(node.getName()));
     if (node.isPresentExpression()) {
       getPrinter().print(" is ");
       node.getExpression().accept(getTraverser());
@@ -112,7 +113,7 @@ public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPri
 
   @Override
   public void handle(ASTInDeclarationVariable node) {
-    getPrinter().print(node.getName());
+    getPrinter().print(Utils.capitalize(node.getName()));
   }
 
   @Override

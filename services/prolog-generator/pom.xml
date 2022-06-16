@@ -135,14 +135,14 @@
     <dependency>
       <groupId>de.monticore.lang</groupId>
       <artifactId>od</artifactId>
-      <version>${monticore.version}</version>
+      <version>7.0.0</version>
       <classifier>grammars</classifier>
     </dependency>
 
     <dependency>
       <groupId>de.monticore.lang</groupId>
       <artifactId>od</artifactId>
-      <version>${monticore.version}</version>
+      <version>7.0.0</version>
     </dependency>
 
     <dependency>

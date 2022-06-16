@@ -1,1 +1,1 @@
-accuracy > 50 implies accuracy > 100
+accuracy > 50 implies accuracy > 100 && let x = partNo in x < 200
