@@ -82,4 +82,10 @@ public class CommonExpressionsToPrologPrettyPrinter extends CommonExpressionsPre
     node.getExpression().accept(getTraverser());
     getPrinter().print(")");
   }
+
+  @Override
+  public void handle(ASTFieldAccessExpression node) {
+    node.getExpression().accept(this.getTraverser());
+    this.getPrinter().print("__" + node.getName());
+  }
 }

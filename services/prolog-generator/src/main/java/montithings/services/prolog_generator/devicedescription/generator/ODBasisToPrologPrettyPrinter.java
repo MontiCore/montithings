@@ -3,17 +3,22 @@ package montithings.services.prolog_generator.devicedescription.generator;
 import de.monticore.odbasis._ast.*;
 import de.monticore.odbasis.prettyprinter.ODBasisPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.types.mcbasictypes._ast.ASTMCObjectType;
 import de.monticore.types.prettyprint.MCFullGenericTypesFullPrettyPrinter;
 import de.se_rwth.commons.logging.Log;
 import montithings.services.prolog_generator.Utils;
 
 public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
 
+  private String hardwareName;
+
+  private String currentObjectName;
+
   public ODBasisToPrologPrettyPrinter(IndentPrinter printer) {
     super(printer);
+    hardwareName = "";
+    currentObjectName= "";
   }
-
-  private String hardwareName;
 
   @Override
   public void handle(ASTObjectDiagram node) {
@@ -28,9 +33,8 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
 
   @Override
   public void handle(ASTODNamedObject node) {
-    //ignore modifier
-    hardwareName = node.getMCObjectType().printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));
-    hardwareName = Utils.toFirstLower(hardwareName);
+    //check to see if current object is outermost object
+    outerObjectCheck(node.getMCObjectType());
     //print type
     getPrinter().println("type(" + node.getName() + ", " + hardwareName + ").");
     for (ASTODAttribute attribute : node.getODAttributeList()) {
@@ -40,9 +44,8 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
 
   @Override
   public void handle(ASTODAnonymousObject node) {
-    //ignore modifier
-    hardwareName = node.getMCObjectType().printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));
-    hardwareName = Utils.toFirstLower(hardwareName);
+    //check to see if current object is outermost object
+    outerObjectCheck(node.getMCObjectType());
     for (ASTODAttribute attribute : node.getODAttributeList()) {
       attribute.accept(getTraverser());
     }
@@ -50,10 +53,23 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
 
   @Override
   public void handle(ASTODAttribute node) {
-    getPrinter().print(node.getName() + "(" + hardwareName + ", ");
     if (!node.isPresentODValue()) {
       Log.error("A value has to be present for every attribute in the object diagrams used by the prolog generator");
     }
+
+    //skip if attribute is assigned to object
+    if (node.getODValue() instanceof ASTODObject){
+      node.getODValue().accept(getTraverser());
+      return;
+    }
+
+    String name = "";
+    //attach prefix for attributes in inner objects
+    if (currentObjectName.length() > 0) {
+      name = currentObjectName + "__";
+    }
+    name += node.getName();
+    getPrinter().print(name + "(" + hardwareName + ", ");
     node.getODValue().accept(getTraverser());
     getPrinter().println(").");
   }
@@ -71,5 +87,16 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
   @Override
   public void handle(ASTODName node) {
     getPrinter().print(node.getName());
+  }
+
+  private void outerObjectCheck(ASTMCObjectType mcObjectType) {
+    if (hardwareName.length() == 0) {
+      hardwareName = mcObjectType.printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));
+      hardwareName = Utils.toFirstLower(hardwareName);
+    }
+    else {
+      currentObjectName = mcObjectType.printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));
+      currentObjectName = Utils.toFirstLower(currentObjectName);
+    }
   }
 }
