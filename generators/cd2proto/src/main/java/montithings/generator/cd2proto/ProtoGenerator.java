@@ -73,7 +73,7 @@ public class ProtoGenerator {
     if (package_name.isEmpty()) {
       package_name = compilationUnit.getEnclosingScope().getName();
     }
-    String _package = "montithings.protobuf." + package_name;
+    String _package = "montithings." + package_name + ".protobuf";
 
     engine.generate("templates/protobuf.ftl", outfile, this.compilationUnit, this.cdTypeSymbols, new TypeHelper(), _package, new AssociationHelper());
     return Collections.singleton(setup.getOutputDirectory().toPath().resolve(outfile));
