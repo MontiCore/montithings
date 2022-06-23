@@ -1,0 +1,3 @@
+[submodule "generators/cd2proto"]
+	path = generators/cd2proto
+	url = git@git.rwth-aachen.de:se-student/ss22/lectures/sle/student-projects/protobuf/cd2proto.git
