@@ -9,14 +9,14 @@ import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
+import montithings.generator.cd2cpp.AssociationHelper;
+import montithings.generator.cd2proto.helper.TypeHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ProtoGenerator {
 
@@ -61,11 +61,21 @@ public class ProtoGenerator {
     cdTypeSymbols = new ArrayList<>((scope.getCDTypeSymbols().values()));
   }
 
-  public void generate() {
+  public Set<Path> generate() {
     GeneratorSetup setup = new GeneratorSetup();
     setup.setOutputDirectory(this.outputDir.toFile());
     GeneratorEngine engine = new GeneratorEngine(setup);
     String outFilename = modelName.replace('.', File.separatorChar) + ".proto";
-    engine.generate("templates/protobuf.ftl", Paths.get(outFilename), this.compilationUnit, this.cdTypeSymbols);
+    Path outfile = Paths.get(outFilename);
+
+    // Mimic the package name creation from cd2cpp
+    String package_name = compilationUnit.getEnclosingScope().getRealPackageName();
+    if (package_name.isEmpty()) {
+      package_name = compilationUnit.getEnclosingScope().getName();
+    }
+    String _package = "montithings.protobuf." + package_name;
+
+    engine.generate("templates/protobuf.ftl", outfile, this.compilationUnit, this.cdTypeSymbols, new TypeHelper(), _package, new AssociationHelper());
+    return Collections.singleton(setup.getOutputDirectory().toPath().resolve(outfile));
   }
 }
