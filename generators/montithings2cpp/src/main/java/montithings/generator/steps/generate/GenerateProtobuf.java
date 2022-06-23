@@ -20,6 +20,7 @@ public class GenerateProtobuf extends GeneratorStep {
   @Override
   public void action(GeneratorToolState state) {
     List<String> foundModels = Modelfinder.getModelsInModelPath(state.getModelPath(), CD4AnalysisGlobalScope.EXTENSION);
+    Log.info("Generating Protocol Buffer files for " + foundModels.size() + " models...", TOOL_NAME);
     for (String model : foundModels) {
       Log.info("Generate CD model protocol buffers: " + model, TOOL_NAME);
       Path outDir = Paths.get(state.getTarget().getAbsolutePath());
