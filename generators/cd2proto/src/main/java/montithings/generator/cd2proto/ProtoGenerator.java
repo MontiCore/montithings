@@ -46,7 +46,7 @@ public class ProtoGenerator {
         .build());
   }
 
-  public void parse() throws IOException {
+  private void parse() throws IOException {
     final Optional<ASTCDCompilationUnit> astcdCompilationUnit = CD4CodeMill.parser().parse(modelPath.toFile().getPath() + "/" + modelName.replace(".", File.separator) + ".cd");
 
     if (!astcdCompilationUnit.isPresent()) {
@@ -61,7 +61,9 @@ public class ProtoGenerator {
     cdTypeSymbols = new ArrayList<>((scope.getCDTypeSymbols().values()));
   }
 
-  public Set<Path> generate() {
+  public Set<Path> generate() throws IOException {
+    parse();
+
     GeneratorSetup setup = new GeneratorSetup();
     setup.setOutputDirectory(this.outputDir.toFile());
     GeneratorEngine engine = new GeneratorEngine(setup);

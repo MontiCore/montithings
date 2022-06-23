@@ -15,7 +15,6 @@ public class TestProtoGenerator {
     Path modelPath = Paths.get("src/test/resources/models");
     String modelName = "domain.Domain";
     ProtoGenerator generator = new ProtoGenerator(outDir, modelPath, modelName);
-    generator.parse();
     Set<Path> protoFiles = generator.generate();
 
     ProtobufRunner pr = new ProtobufRunner();

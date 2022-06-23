@@ -40,7 +40,7 @@ public class ListWrapperTest {
                 }
             }
         } else {
-            Files.createDirectory(outDir);
+            Files.createDirectories(outDir);
         }
     }
 
@@ -49,7 +49,6 @@ public class ListWrapperTest {
         Path modelPath = Paths.get("src/test/resources/classdiagrams");
         String modelName = "ListWrapper";
         ProtoGenerator generator = new ProtoGenerator(outDir, modelPath, modelName);
-        generator.parse();
         generator.generate();
 
         ProtobufRunner pr = new ProtobufRunner();
