@@ -1,0 +1,8 @@
+package hierarchy;
+
+classdiagram Foo {
+    class Foo {
+        double i;
+        int d;
+    }
+}
