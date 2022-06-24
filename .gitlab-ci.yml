@@ -284,6 +284,7 @@ Compile Applications:
     - Unit Test JDK 11 #download generated-test-sources
   needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
   stage: generator-test
+  retry: 5
   script:
     - cd applications/$APPLICATION_NAME/target/generated-test-sources
     - ./build.sh
@@ -320,11 +321,7 @@ language-features/initialization:
     APPLICATION_NAME: language-features/initialization
   <<: *test-application-definition
   timeout: 10 minutes
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+
 
 #language-features/interface-components:
 #  variables:
