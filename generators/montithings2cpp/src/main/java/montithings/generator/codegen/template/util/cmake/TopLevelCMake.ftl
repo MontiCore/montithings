@@ -35,9 +35,11 @@ add_compile_options(-Wno-psabi)
   )
 </#if>
 
+if(${r"${CMAKE_HOST_SYSTEM_NAME}"} STREQUAL Darwin)
 # Enable (more comfortable) debugging
 set(CMAKE_CXX_FLAGS_DEBUG "${r"${CMAKE_CXX_FLAGS_DEBUG}"} -gdwarf-3")
 set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
+endif()
 
 # Find all subdirectories with .h files
 # Adapted from https://stackoverflow.com/a/31004567
