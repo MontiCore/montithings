@@ -112,6 +112,13 @@ public class TypesPrinter {
             typeName.substring(2)) != null) {
       typeName = typeName + "." + typeName;
     }
+
+    if (!typeName.contains(".")) {
+      String diagramName = typeSymbol.getEnclosingScope().getLocalDiagramSymbols().get(0)
+        .getName();
+      typeName = diagramName + "." + typeName;
+    }
+
     return typeName.replaceAll("\\.", "::");
   }
 
