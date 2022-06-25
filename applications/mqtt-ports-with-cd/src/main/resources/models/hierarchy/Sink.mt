@@ -1,8 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-import Foo.Foo;
+import Foo.*;
 
 component Sink {
-  port in Foo value;
+  port in Foo.Foo value;
 }

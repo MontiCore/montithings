@@ -1,10 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-import Foo.Foo;
+import Foo.*;
 
 component Source {
-  port out Foo value;
+  port out Foo.Foo value;
 
   int lastValue = 0;
 
@@ -13,4 +13,3 @@ component Source {
     // value = lastValue++;
   }
 }
-
