@@ -9,7 +9,10 @@ component Source {
   int lastValue = 0;
 
   every 1s {
-    log("Source: " + lastValue);
-    // value = lastValue++;
+    value = :Foo.Foo{
+      isschuld = lastValue;
+      sebastian = lastValue * 0.2;
+    };
+    lastValue++;
   }
 }

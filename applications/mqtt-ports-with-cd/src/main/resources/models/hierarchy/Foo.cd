@@ -3,8 +3,8 @@ package hierarchy;
 classdiagram Foo {
 package Foo {
     class Foo {
-        double i;
-        int d;
+        double sebastian;
+        int isschuld;
     }
     }
 }
