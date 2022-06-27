@@ -72,14 +72,37 @@ class JsonSerializer : public Serializer<T> {
   }
 };
 
+/// This should allow us to specialize stuff like std::vector, etc.
+template<typename T>
+auto make_protobuf(const T& data) -> typename T::protobuf_type {
+    return data.make_protobuf();
+}
+
 template<typename T>
 class ProtobufSerializer : public Serializer<T> {
+  using ProtocolBuffer = typename T::protobuf_type;
+
   auto serialize(const T& data) -> std::string override {
-    return data.make_protobuf();
+    ProtocolBuffer buffer = make_protobuf(data.getPayload());
+    auto res = buffer.SerializeAsString();
+    if (res.empty()) {
+        // TODO: Handle failed serialization :(
+        // Not all required fields were set.
+        throw std::exception{};
+    }
+    // Putting the serialized message into the JSON-Message-Envelope is a bit of a hack but at least
+    // we won't break everything at once this way.
+    return dataToJson(Message<std::string>{res});
   }
+
   auto deserialize(const std::string& data) -> T override {
-    // TODO: read from string into protobuf message here
-    return T{};
+    auto envelope = jsonToData<Message<T>>(data);
+    auto pb = ProtocolBuffer{};
+    if (!pb.ParseFromString(envelope.getPayload())) {
+        // TODO: Handle failed parsing :(
+        throw std::exception{};
+    }
+    return T{pb};
   }
 };
 
