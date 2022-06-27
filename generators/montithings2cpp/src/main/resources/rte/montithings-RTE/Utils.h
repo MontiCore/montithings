@@ -55,6 +55,35 @@ jsonToData (char *json)
 }
 
 template<typename T>
+struct Serializer {
+  virtual ~Serializer() = default;
+  virtual auto serialize(const T& data) -> std::string = 0;
+  virtual auto deserialize(const std::string& data) -> T = 0;
+};
+
+template<typename T>
+class JsonSerializer : public Serializer<T> {
+  auto serialize(const T& data) -> std::string override {
+    return dataToJson(data);
+  };
+
+  auto deserialize(const std::string& data) -> T override {
+    return jsonToData<T>(data);
+  }
+};
+
+template<typename T>
+class ProtobufSerializer : public Serializer<T> {
+  auto serialize(const T& data) -> std::string override {
+    return data.make_protobuf();
+  }
+  auto deserialize(const std::string& data) -> T override {
+    // TODO: read from string into protobuf message here
+    return T{};
+  }
+};
+
+template<typename T>
 std::string
 concat(const std::string& first, T second) {
   std::stringstream ss;
