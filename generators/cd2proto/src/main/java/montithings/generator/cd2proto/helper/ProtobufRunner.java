@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class ProtobufRunner {
 
-    private TargetLang targetLang = TargetLang.CPP;
+    private TargetLang targetLang = TargetLang.PYTHON;
 
     public enum TargetLang {
         CPP,
