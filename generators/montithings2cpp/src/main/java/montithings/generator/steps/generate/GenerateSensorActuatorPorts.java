@@ -27,30 +27,40 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
 
   @Override public void action(GeneratorToolState state) {
     File[] packages = state.getHwcPath().listFiles();
+
+    try {
+      packages = Files.walk(Paths.get(state.getHwcPath().getAbsolutePath()))
+        .filter(Files::isDirectory)
+        .map(Path::toFile)
+        .distinct()
+        .toArray(File[]::new);
+    }
+    catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
     List<String> executableSensorActuatorPorts = new ArrayList<>();
 
     for (File pckg : Objects.requireNonNull(packages)) {
-      Set<String> sensorActuatorPorts = getFilesWithEnding(
-        new File(state.getHwcPath() + File.separator + pckg.getName()), getFileEndings());
+      Set<String> sensorActuatorPorts = getFilesWithEnding(pckg, getFileEndings(), false);
       for (String port : sensorActuatorPorts) {
         if (!templatePortBelongsToComponent(port, state)) {
           Log.debug("Processing handwritten port '" + port + "'", TOOL_NAME);
-          state.getMtg().generateSensorActuatorPort(port, pckg.getName(), state.getConfig());
-          generateCMakeForSensorActuatorPort(pckg.getName(), port, state);
-          executableSensorActuatorPorts.add(pckg.getName() + "." + port);
+          state.getMtg().generateSensorActuatorPort(port, getFullPackageName(pckg, state.getHwcPath()), state.getConfig());
+          generateCMakeForSensorActuatorPort(getFullPackageName(pckg, state.getHwcPath()), port, state);
+          executableSensorActuatorPorts.add(getFullPackageName(pckg, state.getHwcPath()) + "." + port);
         }
       }
     }
 
     for (File pckg : Objects.requireNonNull(packages)) {
-      Set<String> sensorActuatorPorts = getFilesWithPrefix(
-        new File(state.getHwcPath() + File.separator + pckg.getName()), Collections.singleton("&"));
+      Set<String> sensorActuatorPorts = getFilesWithPrefix(pckg, Collections.singleton("&"), false);
       for (String port : sensorActuatorPorts) {
         Log.debug("Processing handwritten port '" + port + "'", TOOL_NAME);
 
         // Sensorname = Get name without &
         String cleanName = FilenameUtils.removeExtension(port.substring(1));
-        String fullName = pckg.getName() + "." + cleanName;
+        String fullName = getFullPackageName(pckg, state.getHwcPath()) + "." + cleanName;
 
         // Create folder
         File directory = Paths.get(state.getTarget().getPath(), fullName).toFile();
@@ -67,7 +77,7 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
         }
 
         // Generate CMake
-        generateCMakeForCppPort(pckg.getName(), cleanName, state);
+        generateCMakeForCppPort(getFullPackageName(pckg, state.getHwcPath()), cleanName, state);
 
         // add to executableSensorActuatorPorts (so it is processed in overall CMake)
         executableSensorActuatorPorts.add(fullName);
