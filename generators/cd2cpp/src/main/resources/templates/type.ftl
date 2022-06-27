@@ -51,6 +51,8 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 #include "${import}"
 </#list>
 
+#include "../${typeName}.pb.h"
+
 namespace ${package}
 {
 
@@ -251,7 +253,7 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     public: ${typeName}() {
     }
     </#if>
-/*
+
   /// Constructor for deserialization from Protocol Buffer messages
   explicit ${typeName}(const protobuf::${typeName}& other)
   <#if super != "" || type.fieldList?size != 0>
@@ -307,7 +309,6 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
 
   return msg;
   }
-  */
     
   </#if><#-- /class -->
 };

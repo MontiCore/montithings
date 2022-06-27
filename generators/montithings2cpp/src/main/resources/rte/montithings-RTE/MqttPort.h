@@ -7,6 +7,7 @@
 #include "MqttUser.h"
 #include "Port.h"
 #include "Utils.h"
+#include "Serializers.h"
 #include <iostream>
 #include <mosquitto.h>
 #include <string>

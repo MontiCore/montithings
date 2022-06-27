@@ -21,6 +21,8 @@ private:
     sole::uuid uuid{};
 
 public:
+    using payload_type = T;
+
     // For more convenient use, multiple constructors are allowed. The payload can be empty but the uuid cannot be null.
     Message(T payload, const sole::uuid &uuid) : payload(tl::optional<T>(payload)), uuid(uuid) {}
 

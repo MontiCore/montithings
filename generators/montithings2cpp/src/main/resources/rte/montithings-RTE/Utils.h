@@ -13,6 +13,7 @@
 #include "cereal/types/map.hpp"
 #include "cereal/types/unordered_map.hpp"
 #include "sole/sole.hpp"
+#include "Message.h"
 
 template <class T> class Message;
 
@@ -54,57 +55,6 @@ jsonToData (char *json)
   return jsonToData<T>((std::string(json)));
 }
 
-template<typename T>
-struct Serializer {
-  virtual ~Serializer() = default;
-  virtual auto serialize(const T& data) -> std::string = 0;
-  virtual auto deserialize(const std::string& data) -> T = 0;
-};
-
-template<typename T>
-class JsonSerializer : public Serializer<T> {
-  auto serialize(const T& data) -> std::string override {
-    return dataToJson(data);
-  };
-
-  auto deserialize(const std::string& data) -> T override {
-    return jsonToData<T>(data);
-  }
-};
-
-/// This should allow us to specialize stuff like std::vector, etc.
-template<typename T>
-auto make_protobuf(const T& data) -> typename T::protobuf_type {
-    return data.make_protobuf();
-}
-
-template<typename T>
-class ProtobufSerializer : public Serializer<T> {
-  using ProtocolBuffer = typename T::protobuf_type;
-
-  auto serialize(const T& data) -> std::string override {
-    ProtocolBuffer buffer = make_protobuf(data.getPayload());
-    auto res = buffer.SerializeAsString();
-    if (res.empty()) {
-        // TODO: Handle failed serialization :(
-        // Not all required fields were set.
-        throw std::exception{};
-    }
-    // Putting the serialized message into the JSON-Message-Envelope is a bit of a hack but at least
-    // we won't break everything at once this way.
-    return dataToJson(Message<std::string>{res});
-  }
-
-  auto deserialize(const std::string& data) -> T override {
-    auto envelope = jsonToData<Message<T>>(data);
-    auto pb = ProtocolBuffer{};
-    if (!pb.ParseFromString(envelope.getPayload())) {
-        // TODO: Handle failed parsing :(
-        throw std::exception{};
-    }
-    return T{pb};
-  }
-};
 
 template<typename T>
 std::string
