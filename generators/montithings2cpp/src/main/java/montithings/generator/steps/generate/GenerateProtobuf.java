@@ -34,7 +34,8 @@ public class GenerateProtobuf extends GeneratorStep {
       }
 
       ProtobufRunner pr = new ProtobufRunner();
-      pr.setTargetLang(ProtobufRunner.TargetLang.CPP);
+      pr.setTargetLang(ProtobufRunner.TargetLang.CPP)
+        .addTargetLang(ProtobufRunner.TargetLang.PYTHON);
       pr.setOutDir(outDir);
       protoFiles.forEach(pr::addInputFiles);
       pr.start();
