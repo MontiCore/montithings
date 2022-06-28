@@ -10,7 +10,9 @@ import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.StringTransformations;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
@@ -116,8 +118,20 @@ public class CppBehaviorPrettyPrinter
   @Override
   public void handle(ASTObjectExpression node) {
     getPrinter().print("[=](){");
-    node.getMCObjectType().accept(getTraverser());
-    getPrinter().print(" __object__to__instantiate; ");
+
+    if (node.getMCObjectType() instanceof ASTMCQualifiedType) {
+      // Handle CD types without package
+      String typename = ((ASTMCQualifiedType) node.getMCObjectType()).getMCQualifiedName().getQName();
+      Optional<TypeSymbol> ts = node.getEnclosingScope().resolveType(typename);
+      if (!typename.contains(".") && ts.isPresent()) {
+        typename = ts.get().getEnclosingScope().getLocalDiagramSymbols().get(0).getName() + "." + typename;
+      }
+      getPrinter().print(typename.replace(".", "::"));
+    } else {
+      node.getMCObjectType().accept(getTraverser());
+    }
+
+      getPrinter().print(" __object__to__instantiate; ");
     for (ASTAttributeAssignment assignment : node.getAttributeAssignmentList()) {
       getPrinter().print("__object__to__instantiate.set" + capitalize(assignment.getName()) + "(");
       assignment.getExpression().accept(getTraverser());

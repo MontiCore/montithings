@@ -194,15 +194,26 @@ public class FileHelper {
     return result;
   }
 
-
   public static Set<String> getFilesWithEnding(File hwcPath, Set<String> fileEndings) {
+    return getFilesWithEnding(hwcPath, fileEndings, true);
+  }
+
+  public static Set<String> getFilesWithEnding(File hwcPath, Set<String> fileEndings, boolean recursive) {
     Set<String> result = new HashSet<>();
 
     if (hwcPath.isDirectory()) {
       for (String ending : fileEndings) {
         String[] files = new String[0];
         try {
-          files = Files.walk(hwcPath.toPath()).filter(name -> name.toString()
+          Stream<Path> pathStream;
+          if (recursive) {
+            pathStream = Files.walk(hwcPath.toPath());
+          } else {
+            pathStream = Arrays.stream(Objects.requireNonNull(hwcPath.listFiles())).map(File::toPath);
+          }
+
+          files = pathStream
+            .filter(name -> name.toString()
             .endsWith(ending))
             .map(path -> path.getFileName().toString().split(ending)[0])
             .toArray(String[]::new);
@@ -216,13 +227,25 @@ public class FileHelper {
   }
 
   public static Set<String> getFilesWithPrefix(File hwcPath, Set<String> filePrefix) {
+    return getFilesWithPrefix(hwcPath, filePrefix, true);
+  }
+
+  public static Set<String> getFilesWithPrefix(File hwcPath, Set<String> filePrefix, boolean recursive) {
     Set<String> result = new HashSet<>();
 
     if (hwcPath.isDirectory()) {
       for (String prefix : filePrefix) {
         String[] files = new String[0];
         try {
-          files = Files.walk(hwcPath.toPath())
+          Stream<Path> pathStream;
+
+          if (recursive) {
+            pathStream = Files.walk(hwcPath.toPath());
+          } else {
+            pathStream = Arrays.stream(Objects.requireNonNull(hwcPath.listFiles())).map(File::toPath);
+          }
+
+          files = pathStream
             .map(path -> path.getFileName().toString())
             .filter(name -> name.startsWith(prefix))
             .toArray(String[]::new);
@@ -245,6 +268,15 @@ public class FileHelper {
     fileEndings.add("Topic.ftl");
     fileEndings.add("Type.ftl");
     return fileEndings;
+  }
+
+  public static String getFullPackageName(File directory, File hwcDirectory) {
+    String result = directory.toString().substring(hwcDirectory.toString().length());
+    if (result.startsWith(File.separator)) {
+      result = result.substring(1);
+    }
+    result = result.replace(File.separator, ".");
+    return result;
   }
 
   /**
