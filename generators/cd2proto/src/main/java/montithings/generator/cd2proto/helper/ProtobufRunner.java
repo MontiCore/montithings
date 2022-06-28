@@ -22,7 +22,13 @@ public class ProtobufRunner {
         CPP,
         JAVA,
         PYTHON,
-        GO
+        //GO, TODO: make this available. proto-gen-go provides --go_out
+        PYI,
+        CSHARP,
+        KOTLIN,
+        OBJC,
+        PHP,
+        RUBY
     }
 
     private Set<TargetLang> targetLangSet = new HashSet<TargetLang>();
