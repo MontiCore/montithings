@@ -102,10 +102,13 @@ public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPri
 
   @Override
   public void handle(ASTInDeclaration node) {
-    //TODO: Generator in Prolog
     for (int i = 0; i < node.sizeInDeclarationVariables(); i++) {
+      node.getInDeclarationVariable(i).accept(getTraverser());
+      if (node.isPresentExpression()) {
+        getPrinter().print(" = ");
+        node.getExpression().accept(getTraverser());
+      }
       if (i != node.sizeInDeclarationVariables() - 1) {
-        node.getInDeclarationVariable(i).accept(getTraverser());
         getPrinter().print(", ");
       }
     }

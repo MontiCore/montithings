@@ -7,6 +7,7 @@ config SpeedLimiter for DSA {
     consume  = "template3.ftl";
     provide  = "template4.ftl";
   }
+  requires (accuracy > 50 implies accuracy > 100) && let x = test.count in x < 200 && if test.count > 100 then versionNo < 6 else versionNo == 10;
 }
 
 config SpeedLimiter for GENERIC {

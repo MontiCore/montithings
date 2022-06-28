@@ -1234,11 +1234,18 @@ public class ComponentHelper {
       // Iterate over all MTCFG tags and find the requirement statements.
       for (ASTMTCFGTag tag : acc.getMTCFGTagList()) {
         if (tag instanceof ASTRequirementStatement) {
-          ASTRequirementStatement rtag = (ASTRequirementStatement) tag;
-          IMTConfigScope rtagScope = rtag.getSpannedScope();
-          if (rtagScope != null) {
-            // Merge the requirements of this scope into our requirements.
-            requirements.addAll(rtag.getSpannedScope().getPropertySymbols().keySet());
+          if (((ASTRequirementStatement) tag).isPresentExpression()) {
+            //in this case, an ocl expression is provided as a requirement
+            MontiThingsFullPrettyPrinter pp = new MontiThingsFullPrettyPrinter();
+            requirements.add("OCL: " + pp.prettyprint(((ASTRequirementStatement) tag).getExpression()));
+          }
+          else {
+            ASTRequirementStatement rtag = (ASTRequirementStatement) tag;
+            IMTConfigScope rtagScope = rtag.getSpannedScope();
+            if (rtagScope != null) {
+              // Merge the requirements of this scope into our requirements.
+              requirements.addAll(rtag.getSpannedScope().getPropertySymbols().keySet());
+            }
           }
         }
       }
