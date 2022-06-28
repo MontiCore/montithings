@@ -9,14 +9,14 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 public class ProtobufRunner {
-
-    private TargetLang targetLang = TargetLang.PYTHON;
 
     public enum TargetLang {
         CPP,
@@ -25,8 +25,8 @@ public class ProtobufRunner {
         GO
     }
 
+    private Set<TargetLang> targetLangSet = new HashSet<TargetLang>();
     private Path outDir;
-
     private List<Path> inputFiles = new ArrayList<>();
 
     public ProtobufRunner() {
@@ -42,10 +42,10 @@ public class ProtobufRunner {
                 throw ex;
             }
             String version = new BufferedReader(new InputStreamReader(p.getInputStream())).lines().collect(Collectors.joining("\n"));
-            Log.info(version, "CD2Proto");
+            Log.info(version+" (please use v21.0 or newer)", "CD2Proto");
         } catch(IOException ex) {
             ex.printStackTrace();
-            Log.error("Failed to start protoc, is the executable in your path?");
+            Log.error("Failed to start protoc, is the executable on your PATH?");
             throw new UncheckedIOException(ex);
         }  catch(InterruptedException ignored) {}
     }
@@ -54,8 +54,15 @@ public class ProtobufRunner {
         this.outDir = outDir;
     }
 
-    public void setTargetLang(TargetLang targetLang) {
-        this.targetLang = targetLang;
+    public ProtobufRunner setTargetLang(TargetLang targetLang) {
+        this.targetLangSet.clear();
+        this.addTargetLang(targetLang);
+        return this;
+    }
+
+    public ProtobufRunner addTargetLang(TargetLang targetLang) {
+        this.targetLangSet.add(targetLang);
+        return this;
     }
 
     public void addInputFiles(Path... inputFile) {
@@ -63,7 +70,8 @@ public class ProtobufRunner {
     }
 
     public void start() {
-        if(targetLang == null) {
+
+        if(targetLangSet.size() == 0) {
             throw new IllegalArgumentException("Target language is not set");
         }
         if(outDir == null) {
@@ -72,11 +80,13 @@ public class ProtobufRunner {
         if(inputFiles.size() == 0) {
             throw new IllegalArgumentException("No input files specified");
         }
-        ProcessBuilder pb = new ProcessBuilder();
+
         List<String> args = new ArrayList<>();
         args.add("protoc");
-        args.add("--" + targetLang.name().toLowerCase() + "_out=" +
-            outDir.toString());
+        for (TargetLang lang : targetLangSet) {
+            args.add(String.format(" --%s_out=%s", lang.name().toLowerCase(), outDir));
+        }
+
         /* Adding the parent directories of the protobuf files is necessary to
         ensure that the protocol buffer files are relocatable. Otherwise the
         cpp source files will try to include the corresponding headers with a
@@ -89,11 +99,16 @@ public class ProtobufRunner {
         args.addAll(inputFiles.stream()
             .map(Path::toString)
             .collect(Collectors.toList()));
+
+        ProcessBuilder pb = new ProcessBuilder();
         pb.command(args);
         Log.info("Invoking protoc: " + String.join(" ", pb.command()), "CD2Proto");
         pb.inheritIO();
 
         //TODO: Should probably make this timeout configurable
+        //EDIT: Really? Shouldn't we just let it keep running?
+        //The process is instantiated by the user, so would eventually be SIGTERMed when not progressing
+        //If so, the InterruptedException needs to be caught, `pb` terminated and rethrown.
         try {
             Process proc = pb.start();
             if(!proc.waitFor(60, TimeUnit.SECONDS)) {
