@@ -84,7 +84,7 @@ public class ProtobufRunner {
         List<String> args = new ArrayList<>();
         args.add("protoc");
         for (TargetLang lang : targetLangSet) {
-            args.add(String.format(" --%s_out=%s", lang.name().toLowerCase(), outDir));
+            args.add(String.format("--%s_out=%s", lang.name().toLowerCase(), outDir));
         }
 
         /* Adding the parent directories of the protobuf files is necessary to
