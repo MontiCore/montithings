@@ -1,11 +1,13 @@
 package montithings.generator.cd2proto;
 
+import com.google.common.collect.LinkedListMultimap;
 import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCompleter;
 import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
 import de.monticore.cdbasis._symboltable.CDTypeSymbol;
+import de.monticore.cdbasis._symboltable.ICDBasisScope;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProtoGenerator {
 
@@ -59,6 +62,15 @@ public class ProtoGenerator {
     this.compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
 
     cdTypeSymbols = new ArrayList<>((scope.getCDTypeSymbols().values()));
+
+    scope
+        .getSubScopes()
+        .stream()
+        .map(ICDBasisScope::getCDTypeSymbols)
+        .collect(Collectors.toList())
+        .stream()
+        .map(LinkedListMultimap::values)
+        .forEach(l -> cdTypeSymbols.addAll(l));
   }
 
   public Set<Path> generate() throws IOException {
