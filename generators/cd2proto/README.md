@@ -67,8 +67,13 @@ Depending on what you are making, it can be a good idea to include screenshots o
 
 1. use montithings2cpp dependency in your project
 #### Development
+you may skip the tests with `-Dmaven.skip.tests=true`
+and building the docker container with `Dexec.skip`
+* `mvn clean install` the `cd2proto` artifact locally
+* `mvn clean install` the `cd2cpp` artifact locally
 * `mvn clean install` the `montithings2cpp` artifact locally
-* see 1.p
+* eventually `mvn clean install` the `montithings` artifact locally
+* see 1.
 
 Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
