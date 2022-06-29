@@ -100,7 +100,7 @@ public:
 template <typename T>
 MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe, MqttClient *client, MqttClient *localClient)
     : fullyQualifiedName (std::move (name)),
-    serializer{new JsonSerializer<T>}
+    serializer{new ProtobufSerializer<T>}
 {
   mqttClientInstance = client;
   mqttClientInstance->addUser (this);

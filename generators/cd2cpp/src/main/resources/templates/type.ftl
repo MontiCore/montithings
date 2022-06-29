@@ -254,6 +254,8 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     }
     </#if>
 
+  using ProtocolBuffer = protobuf::Foo;
+
   /// Constructor for deserialization from Protocol Buffer messages
   explicit ${typeName}(const protobuf::${typeName}& other)
   <#if super != "" || type.fieldList?size != 0>
