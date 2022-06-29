@@ -39,7 +39,15 @@ public class CppGenerator {
 
   private TypeHelper typeHelper;
 
-  private GeneratorSetup generatorSetup;
+  public GeneratorSetup getGeneratorSetup() {
+    return generatorSetup;
+  }
+
+  public void setGeneratorSetup(GeneratorSetup generatorSetup) {
+    this.generatorSetup = generatorSetup;
+  }
+
+  private GeneratorSetup generatorSetup = new GeneratorSetup();
 
   private GeneratorEngine ge;
 
@@ -140,7 +148,6 @@ public class CppGenerator {
       String artifactPackage = symbol.getEnclosingScope().getRealPackageName();
       _package = targetPackage.orElse(symbolPackage.equals("") ? artifactPackage : symbolPackage);
       this.typeHelper = new TypeHelper(_package);
-      this.generatorSetup = new GeneratorSetup();
       this.generatorSetup.setOutputDirectory(this.outputDir.toFile());
       this.ge = new GeneratorEngine(this.generatorSetup);
       this.generate(symbol);
