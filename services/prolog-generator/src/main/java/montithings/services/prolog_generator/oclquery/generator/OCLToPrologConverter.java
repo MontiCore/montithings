@@ -25,6 +25,8 @@ public class OCLToPrologConverter {
   private MCBasicsPrettyPrinter mCBasicsPrettyPrinter;
   private SIUnitsPrettyPrinter siUnitsPrettyPrinter;
   private SIUnitTypes4ComputingPrettyPrinter siUnitTypes4ComputingPrettyPrinter;
+  private SetDefinitionsToPrologPrettyPrinter setDefinitionsToPrologPrettyPrinter;
+  private SetExpressionsToPrologPrettyPrinter setExpressionsToPrologPrettyPrinter;
 
   private MontiThingsTraverser traverser;
   private IndentPrinter printer;
@@ -60,6 +62,12 @@ public class OCLToPrologConverter {
 
     siUnitTypes4ComputingPrettyPrinter = new SIUnitTypes4ComputingPrettyPrinter(printer);
     traverser.setSIUnitTypes4ComputingHandler(siUnitTypes4ComputingPrettyPrinter);
+
+    setDefinitionsToPrologPrettyPrinter = new SetDefinitionsToPrologPrettyPrinter(printer);
+    traverser.setSetDefinitionsHandler(setDefinitionsToPrologPrettyPrinter);
+
+    setExpressionsToPrologPrettyPrinter = new SetExpressionsToPrologPrettyPrinter(printer);
+    traverser.setSetExpressionsHandler(setExpressionsToPrologPrettyPrinter);
   }
 
   public String printOCLQuery(ASTExpression node) {

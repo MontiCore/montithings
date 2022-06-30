@@ -167,3 +167,5 @@ find_prop_match(MatchPredicate,A,[B|Bs],Ms) :-
     Ms=Msr
   ),
   find_prop_match(MatchPredicate,A,Bs,Msr).
+
+:- use_module(library(lists)).
