@@ -2,7 +2,6 @@
 package montithings.generator.steps.generate;
 
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
-import de.monticore.generating.GeneratorSetup;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.generator.cd2cpp.CppGenerator;
