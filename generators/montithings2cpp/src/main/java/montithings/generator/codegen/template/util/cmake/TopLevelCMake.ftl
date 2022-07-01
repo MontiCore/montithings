@@ -177,7 +177,10 @@ set_target_properties(${comp.getFullName()?replace(".","_")}Lib PROPERTIES LINKE
 install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
 <#if !test>
-  add_executable(${comp.getFullName()} ${Utils.getDeployFile(comp)})
+  find_package(Protobuf REQUIRED)
+  <#-- TODO: the required protocol buffer files must be discovered -->
+  add_executable(${comp.getFullName()} ../Foo.pb.cc ${Utils.getDeployFile(comp)})
+  target_link_libraries(${comp.getFullName()} protobuf::libprotobuf)
   target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
   <#if targetPlatformIsDsa>
       ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [comp.getFullName()])}

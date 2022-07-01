@@ -139,3 +139,5 @@ if (NOT EXCLUDE_COMM_MANAGER)
 endif ()
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+
+add_executable(Serializers.test Serializers.test.cpp)
