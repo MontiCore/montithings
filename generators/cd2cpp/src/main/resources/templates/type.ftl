@@ -51,7 +51,9 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 #include "${import}"
 </#list>
 
-${defineHookPoint("CDType:Includes")}
+<#if generateProtobufInterface>
+${tc.includeArgs("templates.proto-header", [type.getName()])}
+</#if>
 
 namespace ${package}
 {
@@ -254,7 +256,9 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     }
     </#if>
 
-  ${defineHookPoint("CDType:Body")}
+    <#if generateProtobufInterface>
+      ${tc.includeArgs("templates.proto-methods", [type, typeName, super, associations])}
+    </#if>
 
   </#if><#-- /class -->
 };

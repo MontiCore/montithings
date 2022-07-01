@@ -1,5 +1,6 @@
+${tc.signature("type", "typeName", "super", "associations")}
 
-using ProtocolBuffer = protobuf::Foo;
+using ProtocolBuffer = protobuf::${typeName};
 
 /// Constructor for deserialization from Protocol Buffer messages
 explicit ${typeName}(const protobuf::${typeName}& other)

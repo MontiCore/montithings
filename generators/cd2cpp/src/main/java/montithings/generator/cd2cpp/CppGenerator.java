@@ -39,15 +39,15 @@ public class CppGenerator {
 
   private TypeHelper typeHelper;
 
-  public GeneratorSetup getGeneratorSetup() {
-    return generatorSetup;
+  public boolean isGenerateProtobufInterface() {
+    return generateProtobufInterface;
   }
 
-  public void setGeneratorSetup(GeneratorSetup generatorSetup) {
-    this.generatorSetup = generatorSetup;
+  public void setGenerateProtobufInterface(boolean generateProtobufInterface) {
+    this.generateProtobufInterface = generateProtobufInterface;
   }
 
-  private GeneratorSetup generatorSetup = new GeneratorSetup();
+  private boolean generateProtobufInterface = false;
 
   private GeneratorEngine ge;
 
@@ -140,6 +140,12 @@ public class CppGenerator {
 
 
   public void generate(Optional<String> targetPackage) {
+    GeneratorSetup generatorSetup = new GeneratorSetup();
+    generatorSetup.setOutputDirectory(this.outputDir.toFile());
+    generatorSetup.getGlex().defineGlobalVar(
+        "generateProtobufInterface", generateProtobufInterface);
+    this.ge = new GeneratorEngine(generatorSetup);
+
     for (CDTypeSymbol symbol : cdSymbols) {
       // CD4A uses different packages. If there's a package _within_ the diagram
       // that is the symbolPackage. If there's no such package, the artifact
@@ -148,8 +154,6 @@ public class CppGenerator {
       String artifactPackage = symbol.getEnclosingScope().getRealPackageName();
       _package = targetPackage.orElse(symbolPackage.equals("") ? artifactPackage : symbolPackage);
       this.typeHelper = new TypeHelper(_package);
-      this.generatorSetup.setOutputDirectory(this.outputDir.toFile());
-      this.ge = new GeneratorEngine(this.generatorSetup);
       this.generate(symbol);
     }
     
