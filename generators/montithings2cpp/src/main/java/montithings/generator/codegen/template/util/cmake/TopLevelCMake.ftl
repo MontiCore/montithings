@@ -177,9 +177,9 @@ set_target_properties(${comp.getFullName()?replace(".","_")}Lib PROPERTIES LINKE
 install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
 <#if !test>
-  find_package(Protobuf REQUIRED)
-  <#-- TODO: the required protocol buffer files must be discovered -->
-  add_executable(${comp.getFullName()} ../Foo.pb.cc ${Utils.getDeployFile(comp)})
+  find_package(Protobuf 3 REQUIRED)
+  file(GLOB_RECURSE PROTOBUF_SOURCES ${r"${CMAKE_SOURCE_DIR}"}/*.pb.cc)
+  add_executable(${comp.getFullName()} ${r"${PROTOBUF_SOURCES}"} ${Utils.getDeployFile(comp)})
   target_link_libraries(${comp.getFullName()} protobuf::libprotobuf)
   target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
   <#if targetPlatformIsDsa>
