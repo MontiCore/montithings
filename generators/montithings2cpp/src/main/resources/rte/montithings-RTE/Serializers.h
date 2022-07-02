@@ -1,9 +1,10 @@
 #ifndef MONTITHINGS_RTE_SERIALIZERS_H
 #define MONTITHINGS_RTE_SERIALIZERS_H
 
-#include "Utils.h"
 #include <stdexcept>
 #include <string>
+#include <cpp-base64/base64.h>
+#include "Utils.h"
 
 class parse_error : public std::exception {
   std::string m_msg;
@@ -79,16 +80,19 @@ class ProtobufSerializer<Message<CDPayload>>
 public:
   auto serialize(const Message<CDPayload> &data) const -> std::string final {
     const auto payload = mInner.serialize(data.getPayload().value());
+
+	const auto encoded_payload = base64_encode(payload);
     // Putting the serialized message into the JSON-Message-Envelope is a bit of
     // a hack but at least we won't break anything this way.
-    const auto msg = Message<std::string>{payload, data.getUuid()};
+    const auto msg = Message<std::string>{encoded_payload, data.getUuid()};
     return dataToJson(msg);
   }
 
   auto deserialize(const std::string &data) const -> Message<CDPayload> final {
     // Extract the actual payload from the Message envelope
     const auto envelope = jsonToData<Message<std::string>>(data);
-    const auto actual_payload = envelope.getPayload().value();
+	const auto encoded_payload = envelope.getPayload().value();
+    const auto actual_payload = base64_decode(encoded_payload);
 
     // Deserialize
     const auto buffer = mInner.deserialize(actual_payload);
