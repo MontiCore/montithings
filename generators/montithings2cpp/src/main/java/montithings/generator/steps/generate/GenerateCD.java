@@ -23,9 +23,11 @@ public class GenerateCD extends GeneratorStep {
     for (String model : foundModels) {
       Log.info("Generate CD model: " + model, TOOL_NAME);
       Path outDir = Paths.get(state.getTarget().getAbsolutePath());
-      new CppGenerator(outDir, Paths.get(state.getModelPath().getAbsolutePath()),
-        Paths.get(state.getHwcPath().getAbsolutePath()), model)
-        .generate(Optional.empty());
+      CppGenerator cppGenerator = new CppGenerator(outDir, Paths.get(state.getModelPath().getAbsolutePath()),
+        Paths.get(state.getHwcPath().getAbsolutePath()), model);
+
+      cppGenerator.setGenerateProtobufInterface(true);
+      cppGenerator.generate(Optional.empty());
     }
   }
 
