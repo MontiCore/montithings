@@ -5,8 +5,10 @@ import Foo.*;
 
 component Sink {
   port in Foo.Foo value;
+  port out Foo.Foo python;
 
   behavior value {
-    log("Sink: " + value);
+    log("Sink foo: " + value);
+    python = value;
   }
 }
