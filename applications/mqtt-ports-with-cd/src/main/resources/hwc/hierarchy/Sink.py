@@ -16,8 +16,6 @@ class Sink(MontiThingsConnector, SinkImpl):
         self.mqttc.on_disconnect = self.on_disconnect
         self.mqttc.connect(broker_hostname, broker_port)
         self.mqttc.subscribe("/ports/hierarchy/Example/source/value", qos=0)
-
-    def wait_for_connection(self):
         self.mqttc.loop_forever()
 
 
