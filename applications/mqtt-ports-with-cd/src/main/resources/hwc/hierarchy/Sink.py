@@ -1,31 +1,14 @@
 import sys
 import time
+from base64 import b64decode
 
 from montithingsconnector import MontiThingsConnector
-import Foo_pb2
-from IComputable import IComputable, GenericResult, GenericInput
-
+from Foo_pb2 import Foo
+from SinkImpl import SinkImpl
 
 print("sys.path:", sys.path)
 
-_foo = Foo_pb2.Foo()
-
-class SinkResult(GenericResult):
-    payload = {}
-
-    def __init__(self, payload) -> None:
-        self.payload = payload
-
-class SinkImpl(IComputable):
-
-    def getInitialValues(self) -> SinkResult:
-        return {}
-
-    def compute(self, _input: GenericInput) -> SinkResult:
-        print(_input.getValue())
-        return {}
-
-class Sink(MontiThingsConnector):
+class Sink(MontiThingsConnector, SinkImpl):
 
     def connect_to_broker(self, receive, broker_hostname, broker_port):
         self.mqttc.on_message = self.on_message
@@ -33,16 +16,17 @@ class Sink(MontiThingsConnector):
         self.mqttc.on_disconnect = self.on_disconnect
         self.mqttc.connect(broker_hostname, broker_port)
         self.mqttc.subscribe("/ports/hierarchy/Example/source/value", qos=0)
-        if receive is None:
-            self.mqttc.loop_start()
-        else:
-            self.mqttc.loop_forever()
+
+    def wait_for_connection(self):
+        self.mqttc.loop_forever()
 
 
 def deserialize_and_log(input_):
-    print("Hairy furball smells:", _foo.ParseFromString(input_))
+    proto_payload = b64decode(input_)
+    foo = Foo()
+    foo.ParseFromString(proto_payload)
+    print("Hairy furball smells:")
+    print(foo)
 
 if __name__=="__main__":
-    mtc = Sink(offered_type=Foo_pb2.Foo, parse_command_args=True)
-    while True:
-        time.sleep(5) # TODO: <-- wait for SIGTERM
+    Sink(offered_type="foo", receive=deserialize_and_log)
