@@ -4,11 +4,23 @@ from base64 import b64encode, b64decode
 
 from montithingsconnector import MontiThingsConnector
 from Foo_pb2 import Foo
-from SinkImpl import SinkImpl
+from DoublerImpl import DoublerImpl
 
 print("sys.path:", sys.path)
 
-class Sink(MontiThingsConnector, SinkImpl):
+class Doubler(MontiThingsConnector):
+
+    def on_message(self, client, userdata, message):
+        m_decode = message.payload.decode("utf-8")
+        m_in = json.loads(m_decode) #decode json data
+        data = b64decode(m_in["value0"]["payload"]["data"])
+
+        foo = Foo()
+        foo.ParseFromString(data)
+
+        result = self._receive.compute(foo)
+
+        self.send(b64encode(result.SerializeToString()))
 
     def connect_to_broker(self, receive, broker_hostname, broker_port):
         self.mqttc.on_message = self.on_message
@@ -19,12 +31,6 @@ class Sink(MontiThingsConnector, SinkImpl):
         self.mqttc.loop_forever()
 
 
-def deserialize_and_log(input_):
-    proto_payload = b64decode(input_)
-    foo = Foo()
-    foo.ParseFromString(proto_payload)
-    print("Hairy furball smells:")
-    print(foo)
-
 if __name__=="__main__":
-    Sink(offered_type="foo", receive=deserialize_and_log)
+    doubler = DoublerImpl()
+    Doubler(offered_type="foo", receive=doubler)

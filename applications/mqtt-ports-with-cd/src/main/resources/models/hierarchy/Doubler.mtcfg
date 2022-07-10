@@ -1,0 +1,11 @@
+package hierarchy;
+
+config Doubler for GENERIC {
+  py_value {
+    requiredType = "py_value";
+  }
+
+  py_doubled_value {
+    requiredType = "py_doubled_value";
+  }
+}
