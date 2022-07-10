@@ -62,7 +62,7 @@ class ProtoConnector(MQTTConnector, COMPONENT_IMPL):
         return b64encode(proto.SerializeToString(p))
 
 if __name__=="__main__":
-    connector = Connector()
+    connector = ProtoConnector()
 
     # Block forever
     connector.connect()
