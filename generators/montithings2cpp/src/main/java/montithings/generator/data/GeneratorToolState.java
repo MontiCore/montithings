@@ -15,10 +15,8 @@ import mtconfig._symboltable.IMTConfigGlobalScope;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 
 public class GeneratorToolState {
 
@@ -103,6 +101,8 @@ public class GeneratorToolState {
   protected List<String> hwcPythonScripts;
 
   protected List<Pair<ComponentTypeSymbol, String>> instances;
+
+  protected List<Path> protoFiles = new ArrayList<>();
 
   /* ============================================================ */
   /* ======================= GENERATED CODE ===================== */
@@ -295,5 +295,13 @@ public class GeneratorToolState {
   public void setInstances(
     List<Pair<ComponentTypeSymbol, String>> instances) {
     this.instances = instances;
+  }
+
+  public List<Path> getProtoFiles() {
+    return protoFiles;
+  }
+
+  public void setProtoFiles(Collection<Path> protoFiles) {
+    this.protoFiles = new ArrayList<>(protoFiles);
   }
 }

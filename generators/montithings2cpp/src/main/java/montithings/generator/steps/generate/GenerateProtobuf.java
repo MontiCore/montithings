@@ -33,6 +33,8 @@ public class GenerateProtobuf extends GeneratorStep {
         throw new RuntimeException("How else should I abort the GeneratorStep?");
       }
 
+      state.setProtoFiles(protoFiles);
+
       ProtobufRunner pr = new ProtobufRunner();
       pr.setTargetLang(ProtobufRunner.TargetLang.CPP)
         .addTargetLang(ProtobufRunner.TargetLang.PYTHON);
