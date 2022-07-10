@@ -1,8 +1,0 @@
-// (c) https://github.com/MontiCore/monticore
-package hierarchy;
-
-config Sink for GENERIC {
-  python {
-    requiredType = "sink";
-  }
-}
