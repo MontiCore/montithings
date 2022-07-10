@@ -9,7 +9,7 @@ class SinkResult(GenericResult):
 class SinkImplTOP(IComputable):
 
     def getInitialValues(self) -> GenericResult:
-        super.getInitialValues()
+        super().getInitialValues()
 
     def compute(self, _input: GenericInput) -> GenericResult:
-        super.compute(_input)
+        super().compute(_input)

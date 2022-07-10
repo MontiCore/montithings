@@ -1,30 +1,65 @@
 import sys
 import time
+import json
 from base64 import b64encode, b64decode
+from MQTTClient import MQTTConnector
 
-from montithingsconnector import MontiThingsConnector
 from Foo_pb2 import Foo
 from SinkImpl import SinkImpl
+from SinkImplTOP import SinkInput, SinkResult
 
-print("sys.path:", sys.path)
+PROTO_CLASS = Foo
+proto = PROTO_CLASS()
 
-class Sink(MontiThingsConnector, SinkImpl):
+COMPONENT_IMPL = SinkImpl
+COMPONENT_INPUT = SinkInput
+COMPONENT_RESULT = SinkResult
 
-    def connect_to_broker(self, receive, broker_hostname, broker_port):
-        self.mqttc.on_message = self.on_message
-        self.mqttc.on_connect = self.on_connect
-        self.mqttc.on_disconnect = self.on_disconnect
-        self.mqttc.connect(broker_hostname, broker_port)
-        self.mqttc.subscribe("/ports/hierarchy/Example/source/value", qos=0)
-        self.mqttc.loop_forever()
+COMPONENT_PORTS_IN = [
+"hierarchy.Example.sink.value",
+]
+COMPONENT_PORTS_OUT = [
+"test"
+]
 
+class ProtoConnector(MQTTConnector, COMPONENT_IMPL):
+    ports_in = set(COMPONENT_PORTS_IN)
+    ports_out = set(COMPONENT_PORTS_OUT)
 
-def deserialize_and_log(input_):
-    proto_payload = b64decode(input_)
-    foo = Foo()
-    foo.ParseFromString(proto_payload)
-    print("Hairy furball smells:")
-    print(foo)
+    def on_message(self, client, userdata, message):
+        decoded_msg = message.payload.decode("utf-8")
+        if message.topic.startswith("/connectors/"):
+            topic = f"/ports/{decoded_msg}".replace(".", "/")
+            print(message.topic, "->", topic)
+            self.subscribe(topic, qos=0)
+        else:
+            payload_msg = json.loads(decoded_msg)["value0"]["payload"]["data"]
+            payload_uuid = json.loads(decoded_msg)["value0"]["uuid"]
+            result = self.compute(
+                COMPONENT_INPUT(self.deserialize(payload_msg), payload_uuid)
+            )
+
+            # TODO: only publish on correct port
+            for port in self.ports_out:
+                self.publish(
+                    port,
+                    result
+                )
+
+    def on_connect(self, client, obj, flags, rc):
+        connect = super().on_connect(client, obj, flags, rc)
+        # TODO: handle getInitialValues
+        return connect
+
+    def deserialize(self, s: str) -> PROTO_CLASS:
+        proto.ParseFromString(b64decode(s))
+        return proto
+
+    def serialize(self, p: PROTO_CLASS) -> str:
+        return b64encode(proto.SerializeToString(p))
 
 if __name__=="__main__":
-    Sink(offered_type="foo", receive=deserialize_and_log)
+    connector = Connector()
+
+    # Block forever
+    connector.connect()

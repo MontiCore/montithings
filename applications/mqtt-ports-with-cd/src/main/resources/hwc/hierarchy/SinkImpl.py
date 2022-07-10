@@ -7,4 +7,4 @@ class SinkImpl(SinkImplTOP):
 
     def compute(self, _input: SinkInput) -> SinkResult:
         print(_input.payload)
-        return SinkResult()
+        return SinkResult(_input.payload)

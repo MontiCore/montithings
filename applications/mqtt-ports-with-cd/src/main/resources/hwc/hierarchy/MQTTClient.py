@@ -1,4 +1,3 @@
-from msilib.schema import PublishComponent
 from paho.mqtt.client import MQTTMessage, Client as MQTTClient
 import json
 import uuid
@@ -8,7 +7,7 @@ def JSONDump(msg, uuid, nullopt=False):
         'value0': {
             'payload': {
                 'nullopt': nullopt,
-                'data': msg
+                'data': str(msg)
             },
             'uuid': str(uuid)
         }
@@ -16,18 +15,14 @@ def JSONDump(msg, uuid, nullopt=False):
 
 class MQTTConnector(MQTTClient):
 
-    def __init__(self, client_id="", clean_session=None, userdata=None, protocol=..., transport="tcp", reconnect_on_failure=True):
-        super().__init__(client_id, clean_session, userdata, protocol, transport, reconnect_on_failure)
+    serialize = lambda x: x
+    deserialize = lambda x: x
+    # sets of fully qualified port-Strings
+    ports_in = set()
+    ports_out = set()
 
-
-class MQTTSensorActuator(MQTTClient):
-
-    topic = "/sensorActuator/{}/{}"
-
-    def __init__(self, offered_type="N.A.", client_id="", clean_session=None, userdata=None, protocol=..., transport="tcp", reconnect_on_failure=True):
-        super().__init__(client_id, clean_session, userdata, protocol, transport, reconnect_on_failure)
-        self.offered_type = "N.A."
-        self.uuid = str(uuid.uuid4())
+    def __init__(self, client_id="", reconnect_on_failure=True):
+        super().__init__(client_id, reconnect_on_failure)
 
     def on_message(self, client, userdata, message):
         """ Implementation callback:
@@ -37,39 +32,30 @@ class MQTTSensorActuator(MQTTClient):
         deserialized result.
         If the in-port is connected to an out-port, the result should be published.
         """
-        decoded_msg = json.loads(message.payload.decode("utf-8"))["value0"]["payload"]["data"]
         raise NotImplementedError()
 
-    def publish(self, payload, **kwargs) -> MQTTMessage:
-        msg = MQTTMessage()
-        if self.serialize:
-            msg.payload = JSONDump(self.serialize(payload), uuid.uuid4())
-        else:
-            msg.payload = JSONDump(payload, uuid.uuid4())
-        super().publish(self.topic.format("data", self.uuid), payload, **kwargs)
+    def publish(self, port_out, payload, **kwargs) -> MQTTMessage:
+        """Takes a fully qualified port, turns it into a "/ports/[port]"-topic and
+        publishes the payload under this topic"""
+        msg_payload = JSONDump(self.serialize(payload), uuid.uuid4())
+        return super().publish(
+            f"/ports/{port_out}".replace(".", "/"),
+            msg_payload,
+            **kwargs
+        )
 
     def on_connect(self, client, obj, flags, rc):
-        print("Sensor / Actuator", self.uuid, "connected")
+        print(self.ports_in, "connected to MQTT Broker")
         self.connected = True
-        return super().on_disconnect
 
     def on_disconnect(self, client, userdata, rc):
-        print("Sensor / Actuator", self.uuid, "disconnected")
+        print(self.ports_in, "disconnected from MQTT Broker")
+        self.connected = False
 
-        return super().on_disconnect
-
-    def connect(self, host, port=1883, keepalive=60, bind_address="", bind_port=0, clean_start=..., properties=None):
-        super().connect(host, port, keepalive, bind_address, bind_port, clean_start, properties)
-        super().publish(
-            self.topic.format("offer", self.uuid),
-            json.dumps({
-                'topic': self.uuid,
-                'spec': {
-                    'type': self.offered_type
-                }
-            }),
-            qos=0,
-            retain=True
-        )
-        super().subscribe(self.topic.format("data", self.uuid), qos=0)
-        super().loop_forever()
+    def connect(self, host='localhost', port=1883, keepalive=60):
+        super().connect(host, port, keepalive)
+        for montithings_port in self.ports_in:
+            topic = f"/connectors/{montithings_port}".replace(".", "/")
+            print(topic, "awaiting connection...")
+            self.subscribe(topic, qos=0)
+        self.loop_forever()
