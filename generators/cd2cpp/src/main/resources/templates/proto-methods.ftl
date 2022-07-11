@@ -1,9 +1,9 @@
 ${tc.signature("type", "typeName", "super", "associations")}
 
-using ProtocolBuffer = protobuf::${typeName};
+using ProtocolBuffer = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName};
 
 /// Constructor for deserialization from Protocol Buffer messages
-explicit ${typeName}(const protobuf::${typeName}& other)
+explicit ${typeName}(const ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName}& other)
 <#if super != "" || type.fieldList?size != 0>
     : <#-- Initializer for the parent class -->
     <#if super != "">${super}{other.super()}
@@ -23,9 +23,9 @@ explicit ${typeName}(const protobuf::${typeName}& other)
 }
 
 /// Member method for serialization to Protocol Buffer messages
-auto make_protobuffer() const -> protobuf::${typeName} {
+auto make_protobuffer() const -> ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName} {
 <#-- Take an fresh and empty message -->
-auto msg = protobuf::${typeName}{};
+auto msg = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName}{};
 
 <#-- Handle possible parent base class -->
 <#if super != "">
