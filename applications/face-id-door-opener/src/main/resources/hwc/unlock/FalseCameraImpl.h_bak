@@ -1,0 +1,15 @@
+// (c) https://github.com/MontiCore/monticore
+#pragma once
+#include <CameraImplTOP.h>
+
+namespace montithings {
+namespace unlock {
+
+class CameraImpl : public CameraImplTOP {
+public:
+	using CameraImplTOP::CameraImplTOP;
+	CameraResult getInitialValues() override;
+	CameraResult compute(CameraInput input) override;
+};
+
+}}
