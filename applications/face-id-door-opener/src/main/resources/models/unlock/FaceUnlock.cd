@@ -10,7 +10,7 @@ classdiagram FaceUnlock {
     }
     package Image {
         class Image {
-            int personId;
+            int person_id;
         }
     }
 }
