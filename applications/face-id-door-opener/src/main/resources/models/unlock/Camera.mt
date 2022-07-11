@@ -1,9 +1,7 @@
 package unlock;
 
-component Camera {
-    port out Camera.Image image;
+import FaceUnlock.*;
 
-    every 1s {
-        image = "Sebastian";
-    }
+component Camera {
+    port out Image.Image image;
 }
