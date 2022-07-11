@@ -11,7 +11,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mqtt-ports-with-cd</artifactId>
+    <artifactId>face-id-door-unlock</artifactId>
 
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 
@@ -269,7 +269,7 @@
                                 <modelPath>${basedir}/src/main/resources/models</modelPath>
                                 <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                                 <!--<platform>DSA</platform>-->
-                                <main>hierarchy.Example</main>
+                                <main>unlock.FaceUnlock</main>
                                 <version>${project.version}</version>
                                 <splitting>LOCAL</splitting>
                                 <messageBroker>MQTT</messageBroker>

@@ -94,7 +94,7 @@ task groovyTask(type: SEGroovyTask) {
   outputDir = file "$buildDir/generated-sources"
   modelPath(file("$projectDir/src/main/resources/models"))
   handcodedPath(file("$projectDir/src/main/resources/hwc"))
-  arguments.put("mainComponent", "hierarchy.Example")
+  arguments.put("mainComponent", "unlock.FaceUnlock")
   arguments.put("splitting", "LOCAL")
   arguments.put("messageBroker", "MQTT")
   arguments.put("version", "$version")
