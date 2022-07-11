@@ -842,6 +842,11 @@ public class ComponentHelper {
       .map(ASTArcStatechart.class::cast).findAny().isPresent();
   }
 
+  public static boolean hasHandwrittenPythonBehaviour(File hwcPath, ComponentTypeSymbol component) {
+    File implFile = Paths.get(hwcPath.toString(), component.getFullName().replace('.', File.separatorChar)).toFile();
+    return implFile.exists() && implFile.isFile();
+  }
+
   public static Set<PortSymbol> getPublishedPortsForBehavior(ComponentTypeSymbol component) {
     return getPublishedPorts(component, getBehavior(component));
   }

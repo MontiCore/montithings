@@ -1,6 +1,9 @@
 package unlock;
 
 component Camera {
-    port in String raw_image;
     port out String image;
+
+    every 1s {
+        image = "imaaaaage";
+    }
 }
