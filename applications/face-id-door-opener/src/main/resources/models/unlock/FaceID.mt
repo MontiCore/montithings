@@ -1,7 +1,7 @@
 package unlock;
 
 component FaceID {
-    port in String image;
+    port in Camera.Image image;
     port out Visitor.Person visitor;
 
     behavior image {

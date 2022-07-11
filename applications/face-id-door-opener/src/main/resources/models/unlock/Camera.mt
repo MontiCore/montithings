@@ -1,7 +1,7 @@
 package unlock;
 
 component Camera {
-    port out String image;
+    port out Camera.Image image;
 
     every 1s {
         image = "Sebastian";
