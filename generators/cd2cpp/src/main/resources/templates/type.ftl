@@ -52,7 +52,7 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 </#list>
 
 <#if generateProtobufInterface>
-${tc.includeArgs("templates.proto-header", [type.getName()])}
+${tc.includeArgs("templates.proto-header", [type])}
 </#if>
 
 namespace ${package}

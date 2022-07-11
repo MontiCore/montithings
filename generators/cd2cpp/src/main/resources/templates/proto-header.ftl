@@ -1,3 +1,3 @@
-${tc.signature("typeName")}
+${tc.signature("type")}
 
-#include "../${typeName}.pb.h"
+#include "../${type.getEnclosingScope().getEnclosingScope().getName()}.pb.h"
