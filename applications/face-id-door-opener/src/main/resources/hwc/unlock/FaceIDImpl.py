@@ -1,23 +1,26 @@
 from random import choice
 
 from FaceIDImplTOP import FaceIDImplTOP, FaceIDInput, FaceIDResult
+from FaceUnlock_pb2 import Person
 
 
 class FaceIDImpl(FaceIDImplTOP):
 
     personDB = {
+        0: "Tim",
         1: "Sebastian",
         2: "Andre",
         3: "Danyls",
         4: "Merlin",
-        5: "Tim"
     }
     def getInitialValues(self) -> FaceIDResult:
         return FaceIDResult()
 
     def compute(self, _input: FaceIDInput) -> FaceIDResult:
-        name = self.personDB[_input.payload.personId]
-        result = name in [ "Sebastian", "Andre", "Tim"]
+        person = Person()
+        person.id = _input.payload.personId
+        person.name = self.personDB[person.id]
+        person.allowed = person.name in [ "Sebastian", "Andre", "Tim"]
 
-        print("[FaceID-Python] visitor", name, "authorized" if result else "not authorized")
-        return FaceIDResult(result)
+        print("[FaceID-Python] visitor", person.name, "authorized" if person.result else "not authorized")
+        return FaceIDResult(person)

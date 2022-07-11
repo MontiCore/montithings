@@ -56,7 +56,7 @@ class ProtoConnector(MQTTConnector, COMPONENT_IMPL):
         return image
 
     def serialize(self, p: Person) -> str:
-        return b64encode(person.SerializeToString(p))
+        return b64encode(p.SerializeToString())
 
 if __name__=="__main__":
     connector = ProtoConnector()

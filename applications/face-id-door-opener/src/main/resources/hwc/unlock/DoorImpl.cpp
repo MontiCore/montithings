@@ -19,14 +19,14 @@ DoorImpl::compute (DoorInput input)
       auto visitor = input.getVisitor().value();
       if (visitor.getAllowed())
         {
-          std::cout << "[Door] Access granted to: " << visitor.getName() << std::endl;
+          std::cout << "[Door-C++] Access granted to: " << visitor.getName() << std::endl;
         } else {
-          std::cout << "[Door] Access denied to: " << visitor.getName() << std::endl;
+          std::cout << "[Door-C++] Access denied to: " << visitor.getName() << std::endl;
         }
     }
   else
     {
-      std::cout << "[Door] No data." << std::endl;
+      std::cout << "[Door-C++] No data." << std::endl;
     }
 
   return {};
