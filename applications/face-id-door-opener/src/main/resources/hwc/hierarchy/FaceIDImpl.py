@@ -8,10 +8,5 @@ class FaceIDImpl(FaceIDImplTOP):
         return FaceIDResult()
 
     def compute(self, _input: FaceIDInput) -> FaceIDResult:
-        names = [
-            "Sebastian"
-            "Andre",
-            "Tim"
-        ]
-        result = _input.payload in names
+        result = _input.payload in [ "Sebastian", "Andre", "Tim"]
         return FaceIDResult(result)
