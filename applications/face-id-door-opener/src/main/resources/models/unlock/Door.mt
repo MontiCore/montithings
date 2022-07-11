@@ -1,9 +1,9 @@
 package unlock;
 
 component Door {
-    port in String name;
+    port in Person visitor;
 
-    behavior name {
+    behavior visitor {
         log("Checking access");
     }
 }

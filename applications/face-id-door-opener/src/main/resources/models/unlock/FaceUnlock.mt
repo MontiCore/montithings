@@ -6,5 +6,5 @@ component FaceUnlock {
     Door door;
 
     camera.image -> faceid.image;
-    faceid.name -> door.name;
+    faceid.visitor -> door.visitor;
 }

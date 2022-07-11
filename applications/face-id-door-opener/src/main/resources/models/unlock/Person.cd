@@ -1,0 +1,11 @@
+package unlock;
+
+classdiagram Visitor {
+    package Visitor {
+        class Person {
+            String name;
+            boolean allowed;
+            int visitorId;
+        }
+    }
+}
