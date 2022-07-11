@@ -7,7 +7,7 @@ component Camera {
     int click = 0;
     every 1s {
       image = :Image.Image{
-        personId = click % 5;
+        person_id = click % 5;
       };
       click++;
     }
