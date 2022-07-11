@@ -1,4 +1,4 @@
-${tc.signature("protobufModule", "componentName", "publishTopic", "subscribeTopic")}
+${tc.signature("protobufModule", "componentName", "publishTopic", "subscribeTopic", "portProtoClass")}
 
 import sys
 import time

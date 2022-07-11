@@ -5,7 +5,6 @@ import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.Names;
 import montithings.MontiThingsTool;
 import montithings._symboltable.IMontiThingsScope;
-import montithings.generator.cd2proto.ProtoGenerator;
 import montithings.generator.config.ConfigParams;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.*;
@@ -60,7 +59,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .setNextStep(new CheckMTConfig())
       .setNextStep(new ConditionalStop(stopAfterCoCoCheck))
       .setNextStep(new GenerateSensorActuatorPorts())
-      .setNextStep(new GeneratePythonPorts())
+      .setNextStep(new GeneratePythonHwcComponent())
       .setNextStep(new ClearTemplatesIfReplay())
       .setNextStep(new FindExecutableComponents())
       .setNextStep(new FindModelPacks())
