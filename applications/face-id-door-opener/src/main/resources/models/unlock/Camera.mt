@@ -6,6 +6,7 @@ component Camera {
 
     int click = 0;
     every 1s {
+      log("[Camera-Montithings] took picture");
       image = :Image.Image{
         person_id = click % 5;
       };

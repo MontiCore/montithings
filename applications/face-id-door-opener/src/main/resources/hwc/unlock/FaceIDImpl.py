@@ -16,5 +16,8 @@ class FaceIDImpl(FaceIDImplTOP):
         return FaceIDResult()
 
     def compute(self, _input: FaceIDInput) -> FaceIDResult:
-        result = self.personDB[_input.payload.personId] in [ "Sebastian", "Andre", "Tim"]
+        name = self.personDB[_input.payload.personId]
+        result = name in [ "Sebastian", "Andre", "Tim"]
+
+        print("[FaceID-Python] visitor", name, "authorized" if result else "not authorized")
         return FaceIDResult(result)
