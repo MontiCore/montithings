@@ -59,7 +59,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .setNextStep(new CheckMTConfig())
       .setNextStep(new ConditionalStop(stopAfterCoCoCheck))
       .setNextStep(new GenerateSensorActuatorPorts())
-      .setNextStep(new GeneratePythonHwcComponent())
+      //.setNextStep(new GeneratePythonHwcComponent())
       .setNextStep(new ClearTemplatesIfReplay())
       .setNextStep(new FindExecutableComponents())
       .setNextStep(new FindModelPacks())
