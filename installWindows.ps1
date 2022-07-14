@@ -165,3 +165,8 @@ cd ..
 if ( $null -eq $env:SKIP_MVN -or $env:SKIP_MVN -ne 1) {
   mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
 }
+else {
+  "###################################"
+  "Montithings installed successfully!"
+  "###################################"
+}

@@ -74,6 +74,10 @@ if [ -z "${SKIP_MVN}" ] || [ "${SKIP_MVN}" != "1" ]
 then
 # Install MontiThings
 mvn clean install -Dexec.skip
+else
+  echo "###################################"
+  echo "Montithings installed successfully!"
+  echo "###################################"
 fi
 
 
