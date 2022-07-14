@@ -1,12 +1,18 @@
+# (c) https://github.com/MontiCore/monticore
+
 # Stop on first error
 $ErrorActionPreference = "Stop"
+
+#
+# Set "$env:SKIP_MVN = 1" to skip the maven build at the end of this skript
+#
 
 <#
  # checks using "Get-Command" if a specific program is installed on the system
  # the try-catch Block requires $ErrorActionPreference = "Stop"
  #
  # @param $ProgramName name of the program that should be checked
- # @return $true if $ProgramName is already installed on the System, $false otherwise
+ # @return $true if $ProgramName is already installed on the system, $false otherwise
  #>
 function Get-IsInstalled {
     param(
@@ -144,7 +150,6 @@ Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nano
 Expand-Archive -DestinationPath "$PWD" nng.zip
 rm .\nng.zip
 cd .\nng-1.3.0\
-#todo wip
 mkdir build
 cd .\build\
 cmake -G Ninja ..
@@ -157,4 +162,6 @@ cd ..
 ##########################################
 # Install MontiThings
 ##########################################
-mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
+if ( $null -eq $env:SKIP_MVN -or $env:SKIP_MVN -ne 1) {
+  mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
+}

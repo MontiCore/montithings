@@ -1,6 +1,11 @@
 #!/bin/bash
 # (c) https://github.com/MontiCore/monticore
 
+#
+# Set "export SKIP_MVN=1" to skip the maven build at the end of this skript
+# Or call "SKIP_MVN=1 ./installLinux.sh"
+#
+
 # Check if a command is available on this system
 # Taken from https://get.docker.com/
 command_exists() {
@@ -63,5 +68,8 @@ fi
 cd $MONTITHINGS_DIRECTORY
 rm -rf dependencies
 
+if [ -z "${SKIP_MVN}" ] || [ "${SKIP_MVN}" != "1" ]
+then
 # Install MontiThings
 mvn clean install -Dexec.skip
+fi
