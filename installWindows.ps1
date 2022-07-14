@@ -4,7 +4,7 @@
 $ErrorActionPreference = "Stop"
 
 #
-# Set "$env:SKIP_MVN = 1" to skip the maven build at the end of this skript
+# Set "$env:SKIP_MVN = 1" to skip the maven build at the end of this script
 #
 
 <#

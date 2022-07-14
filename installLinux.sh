@@ -2,7 +2,7 @@
 # (c) https://github.com/MontiCore/monticore
 
 #
-# Set "export SKIP_MVN=1" to skip the maven build at the end of this skript
+# Set "export SKIP_MVN=1" to skip the maven build at the end of this script
 # Or call "SKIP_MVN=1 ./installLinux.sh"
 #
 
