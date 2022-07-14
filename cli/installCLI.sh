@@ -10,20 +10,20 @@ MT_FULL_INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/MontiCore/montithi
 
 #############################################
 
-read -r -p "Would you like to run the Montithings installer as well? (y/N): " answer
+read -r -p "Would you like to install the MontiThings dependencies as well? (y/N): " answer
 if [ "$answer" = "y" ]
 then
-  echo "Installing Montithings"
+  echo "Installing MontiThings"
   export SKIP_MVN=1
   curl -sfL $MT_FULL_INSTALL_SCRIPT_URL | sh
 fi
 
-echo "Installing Montithings CLI"
+echo "Installing MontiThings CLI"
 
 mkdir -p $HOME/.montithings/jar/
 curl -o $HOME/.montithings/jar/$JAR_NAME $JAR_DOWNLOAD_URL
 sudo curl -o /usr/local/bin/montithings $MT_CLI_SH_DOWNLOAD_URL
 sudo chmod -v a+x /usr/local/bin/montithings
 
-echo "Montithings CLI installed successfully!"
+echo "MontiThings CLI installed successfully!"
 montithings

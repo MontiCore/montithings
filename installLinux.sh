@@ -74,6 +74,6 @@ then
 mvn clean install -Dexec.skip
 else
   echo "###################################"
-  echo "Montithings installed successfully!"
+  echo "MontiThings installed successfully!"
   echo "###################################"
 fi

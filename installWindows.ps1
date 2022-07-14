@@ -167,6 +167,6 @@ if ( $null -eq $env:SKIP_MVN -or $env:SKIP_MVN -ne 1) {
 }
 else {
   "###################################"
-  "Montithings installed successfully!"
+  "MontiThings installed successfully!"
   "###################################"
 }
