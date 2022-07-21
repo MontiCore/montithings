@@ -5,6 +5,7 @@ import de.monticore.odbasis.prettyprinter.ODBasisPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.mcbasictypes._ast.ASTMCObjectType;
 import de.monticore.types.prettyprint.MCFullGenericTypesFullPrettyPrinter;
+import de.se_rwth.commons.Util;
 import de.se_rwth.commons.logging.Log;
 import montithings.services.prolog_generator.Utils;
 
@@ -34,9 +35,7 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
   @Override
   public void handle(ASTODNamedObject node) {
     //check to see if current object is outermost object
-    outerObjectCheck(node.getMCObjectType());
-    //print type
-    getPrinter().println("type(" + node.getName() + ", " + hardwareName + ").");
+    outerObjectCheck(node.getMCObjectType(), node.getName());
     for (ASTODAttribute attribute : node.getODAttributeList()) {
       attribute.accept(getTraverser());
     }
@@ -45,7 +44,7 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
   @Override
   public void handle(ASTODAnonymousObject node) {
     //check to see if current object is outermost object
-    outerObjectCheck(node.getMCObjectType());
+    outerObjectCheck(node.getMCObjectType(), "");
     for (ASTODAttribute attribute : node.getODAttributeList()) {
       attribute.accept(getTraverser());
     }
@@ -89,10 +88,17 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
     getPrinter().print(node.getName());
   }
 
-  private void outerObjectCheck(ASTMCObjectType mcObjectType) {
+  private void outerObjectCheck(ASTMCObjectType mcObjectType, String name) {
     if (hardwareName.length() == 0) {
+      //current object is outermost object
       hardwareName = mcObjectType.printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));
-      hardwareName = Utils.toFirstLower(hardwareName);
+      if (name.length() == 0) {
+        name = hardwareName;
+      }
+      name = Utils.toFirstLower(name);
+      //print type
+      getPrinter().println("deviceType(" + name + ", \"" + hardwareName + "\").");
+      hardwareName = name;
     }
     else {
       currentObjectName = mcObjectType.printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));

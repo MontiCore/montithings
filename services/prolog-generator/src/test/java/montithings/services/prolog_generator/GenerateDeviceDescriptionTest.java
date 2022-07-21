@@ -30,7 +30,7 @@ public class GenerateDeviceDescriptionTest {
 
   @Test
   public void testGenerateDeviceDescription() throws IOException {
-    Path model = Paths.get("src/test/resources/iot-config/devicedescription.od");
+    Path model = Paths.get("src/test/resources/iot-config/VL53L0X.od");
     DeviceDescriptionParser parser = new DeviceDescriptionParser();
 
 

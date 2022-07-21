@@ -171,3 +171,13 @@ find_prop_match(MatchPredicate,A,[B|Bs],Ms) :-
     Ms=Msr
   ),
   find_prop_match(MatchPredicate,A,Bs,Msr).
+
+:- use_module(library(lists)).
+
+instanceOf(Device, Type) :-
+    deviceType(Device, SubType), recSubType(SubType, Type).
+
+recSubType(Type, Type).
+
+recSubType(SubType, Type) :-
+    recSubType(SubType, IntermediateType), recSubType(IntermediateType, Type).

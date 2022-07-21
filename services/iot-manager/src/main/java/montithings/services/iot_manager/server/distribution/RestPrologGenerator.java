@@ -75,9 +75,26 @@ public class RestPrologGenerator implements IPrologGenerator {
   public CompletableFuture<String> generateQuery(String jsonConfig) {
     return CompletableFuture.supplyAsync(() -> jsonConfig).thenApply(this::requestPrologQuery);
   }
-  
+
+  @Override
+  public CompletableFuture<String> generateDeviceDescription(String objectDiagram) {
+    return CompletableFuture.supplyAsync(() -> objectDiagram).thenApply(this::requestPrologDeviceDescription);
+  }
+
+  @Override
+  public CompletableFuture<String> generateOCLQuery(String ocl) {
+    return CompletableFuture.supplyAsync(() -> ocl).thenApply(this::requestPrologOCLQuery);
+  }
+
   private String requestPrologQuery(String strConfigJson) {
     return sendPost("config", strConfigJson);
   }
-  
+
+  private String requestPrologDeviceDescription(String strObjectDiagram) {
+    return sendPost("device-description", strObjectDiagram);
+  }
+
+  private String requestPrologOCLQuery(String strOCL) {
+    return sendPost("ocl-query", strOCL);
+  }
 }

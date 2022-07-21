@@ -79,14 +79,12 @@ public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPri
 
   @Override
   public void handle(ASTExistsExpression node) {
-    getPrinter().print("(\\+ forall(");
+    //opens a scope with a new Variable name / new Variable names
     for (ASTInDeclaration inDeclaration : node.getInDeclarationList()) {
       inDeclaration.accept(getTraverser());
       getPrinter().print(", ");
     }
-    getPrinter().print("\\+ ");
     node.getExpression().accept(getTraverser());
-    getPrinter().print("))");
   }
 
   @Override
@@ -103,10 +101,19 @@ public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPri
   @Override
   public void handle(ASTInDeclaration node) {
     for (int i = 0; i < node.sizeInDeclarationVariables(); i++) {
-      node.getInDeclarationVariable(i).accept(getTraverser());
       if (node.isPresentExpression()) {
+        //TODO: remove?
+        node.getInDeclarationVariable(i).accept(getTraverser());
         getPrinter().print(" = ");
         node.getExpression().accept(getTraverser());
+      }
+      else {
+        //call custom prolog function instanceOf
+        getPrinter().print("instanceOf(");
+        node.getInDeclarationVariable(i).accept(getTraverser());
+        getPrinter().print(", \"");
+        node.getMCType().accept(getTraverser());
+        getPrinter().print("\")");
       }
       if (i != node.sizeInDeclarationVariables() - 1) {
         getPrinter().print(", ");
@@ -116,7 +123,7 @@ public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPri
 
   @Override
   public void handle(ASTInDeclarationVariable node) {
-    getPrinter().print(Utils.capitalize(node.getName()));
+    getPrinter().print("__" + Utils.capitalize(node.getName()));
   }
 
   @Override

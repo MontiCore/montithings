@@ -24,8 +24,8 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   private static final String PROLOG_VAR_DROPPEDCONSTRAINTS = "DroppedConstraints";
   private static final String PROLOG_VAR_DEPENDENCIES = "Dependencies";
   
-  private String plFacts, plQuery;
-  private File fileFacts, fileQuery, workingDir;
+  private String plFacts, plQuery, plDeviceDescription, plOCLQuery;
+  private File fileFacts, fileQuery, fileDeviceDescription, fileOCLQuery, workingDir;
   
   /**
    * @param plFacts facts as Prolog-source
@@ -38,6 +38,14 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     this.workingDir = workingDir.getAbsoluteFile();
     this.fileFacts = new File(this.workingDir, "facts.pl");
     this.fileQuery = new File(this.workingDir, "query.pl");
+  }
+
+  public DefaultDistributionCalculator(String devicedesciption, String plOCLQuery, File workingDir, boolean ocl) {
+    this.plDeviceDescription = devicedesciption;
+    this.plOCLQuery = plOCLQuery;
+    this.workingDir = workingDir.getAbsoluteFile();
+    this.fileDeviceDescription = new File(this.workingDir, "devicedescription.pl");
+    this.fileOCLQuery = new File(this.workingDir, "oclquery.pl");
   }
   
   private Distribution computeDistributionSync(DistributionCalcRequest param) throws DistributionException {
@@ -216,6 +224,17 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       throw new DistributionException(e);
     }
   }
+
+  public boolean compatibilityCheck() throws IOException {
+    prepareOCLWorkspace();
+    // change working directory
+    new Query(new Compound("working_directory", wrap(new Variable(), new Atom(workingDir.getAbsolutePath())))).oneSolution();
+    // load Prolog files
+    new Query(new Compound("consult", wrap(new Atom("devicedescription.pl")))).oneSolution();
+    Term t = Term.textToTerm(plOCLQuery);
+    Query q = new Query(t);
+    return !q.oneSolution().isEmpty();
+  }
   
   private Term constructQueryTerm(List<String> components, DistributionQueryType type) {
     return this.constructQueryTerm(components, type, true, null);
@@ -291,6 +310,26 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       }
     }
     
+    // Retract facts from previous queries.
+    new Query(new Compound("retract", wrap(new Atom("property")))).oneSolution();
+    new Query(new Compound("retract", wrap(new Atom("distribution")))).oneSolution();
+  }
+
+  private void prepareOCLWorkspace() throws IOException {
+    // Ensure the working directory exists.
+    this.workingDir.mkdirs();
+
+    Files.write(plDeviceDescription, fileDeviceDescription, StandardCharsets.UTF_8);
+    Files.write(plOCLQuery, fileOCLQuery, StandardCharsets.UTF_8);
+
+    // Write helpers.pl prolog file.
+    File fileHelpers = new File(workingDir, "helpers.pl");
+    try (InputStream inputHelpers = getClass().getResourceAsStream("/scripts/helpers.pl")) {
+      try (OutputStream outputHelpers = new FileOutputStream(fileHelpers)) {
+        ByteStreams.copy(inputHelpers, outputHelpers);
+      }
+    }
+
     // Retract facts from previous queries.
     new Query(new Compound("retract", wrap(new Atom("property")))).oneSolution();
     new Query(new Compound("retract", wrap(new Atom("distribution")))).oneSolution();

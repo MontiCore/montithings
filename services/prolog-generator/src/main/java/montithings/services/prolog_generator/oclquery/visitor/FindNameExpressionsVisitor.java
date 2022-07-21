@@ -44,7 +44,18 @@ public class FindNameExpressionsVisitor implements MontiThingsTraverser {
 
   @Override
   public void handle(ASTFieldAccessExpression node) {
-    String expression = pp.prettyprint(node.getExpression());
-    names.add(expression + "__" + node.getName());
+    names.add(handleFieldAccessExpression(node));
+  }
+
+  public String handleFieldAccessExpression(ASTFieldAccessExpression node) {
+    String expression = "";
+    if (node.getExpression() instanceof ASTFieldAccessExpression) {
+      //correctly print fieldAccesses which have multiple field accesses in one expression
+      expression = handleFieldAccessExpression((ASTFieldAccessExpression) node.getExpression()) + "__";
+    }
+    else {
+      expression = pp.prettyprint(node.getExpression()) + "__";
+    }
+    return expression + node.getName();
   }
 }

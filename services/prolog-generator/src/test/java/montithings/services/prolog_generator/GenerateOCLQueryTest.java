@@ -28,7 +28,7 @@ public class GenerateOCLQueryTest {
 
   @Test
   public void testGenerateOCLQuery() throws IOException {
-    Path model = Paths.get("src/test/resources/iot-config/oclexpression.ocl");
+    Path model = Paths.get("src/test/resources/iot-config/requiredDistanceSensor.ocl");
     OCLParser parser = new OCLParser();
 
     Optional<ASTExpression> ocl = parser.parseExpression(model.toString());
