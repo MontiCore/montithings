@@ -1,0 +1,5 @@
+classdiagram Map {
+    class ClassWithMap {
+        List<Map<String, int>> listOfStringToIntMap;
+    }
+}

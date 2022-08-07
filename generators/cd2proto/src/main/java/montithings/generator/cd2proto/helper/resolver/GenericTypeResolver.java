@@ -1,18 +1,21 @@
 package montithings.generator.cd2proto.helper.resolver;
 
 import de.monticore.types.check.SymTypeOfGenerics;
-import montithings.generator.cd2proto.helper.NestedListHelper;
 import montithings.generator.cd2proto.helper.StringHelper;
 import montithings.generator.cd2proto.helper.TypeHelper;
 
+/**
+ * Resolves types involving generics such as {@link java.util.List} or {@link java.util.Map}
+ */
 public class GenericTypeResolver implements ITypeResolver<SymTypeOfGenerics> {
 
     private final TypeHelper th;
-    private final NestedListHelper nlh;
-
-    public GenericTypeResolver(TypeHelper th, NestedListHelper nlh) {
+    /**
+     *
+     * @param th A TypeHelper used to resolve the argument(s) of the generic type
+     */
+    public GenericTypeResolver(TypeHelper th) {
         this.th = th;
-        this.nlh = nlh;
     }
 
     @Override
@@ -25,12 +28,15 @@ public class GenericTypeResolver implements ITypeResolver<SymTypeOfGenerics> {
                     //not a fan of the replace here but as a temporary measure for testing it works fine
                     //ideally this class is going to recognize whether repeated should be applied based on the nesting state
                     String typeName = "ListOf" + StringHelper.upperFirst(th.translate(sym.getArgument(0)).replace("repeated ", ""));
-                    nlh.addListWrapper((SymTypeOfGenerics) sym.getArgument(0), typeName);
+                    th.getNestedListHelper().addListWrapper((SymTypeOfGenerics) sym.getArgument(0), typeName);
                     return "repeated " + typeName;
+                } else if(sym.getArgument(0).getTypeInfo().getName().equals("Map")) {
+                    throw new UnsupportedOperationException("Protobuf does not support repeating the map type and no wrapper is currently implemented");
                 }
                 String genericType = th.translate(sym.getArgument(0));
                 return "repeated " + genericType;
-                //TODO: do we need Map/Set/Collection?
+            case "Map":
+                return String.format("map<%s,%s>", th.translate(sym.getArgument(0)), th.translate(sym.getArgument(1)));
             default:
                 throw new IllegalArgumentException("Unsupported generic type: " + sym.getTypeInfo().getName());
         }

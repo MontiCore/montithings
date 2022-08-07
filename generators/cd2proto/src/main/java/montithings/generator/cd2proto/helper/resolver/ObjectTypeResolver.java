@@ -9,7 +9,17 @@ import de.monticore.types.check.SymTypeOfObject;
 public class ObjectTypeResolver implements ITypeResolver<SymTypeOfObject> {
     @Override
     public String resolve(SymTypeOfObject sym) {
-        if(sym.getBaseName().equals("String")) return "string";
-        return sym.getBaseName();
+        switch(sym.getBaseName()) {
+            case "String":
+                return "string";
+            case "Integer":
+                return "int32";
+            case "Double":
+                return "double";
+            case "Float":
+                return "float";
+            default:
+                return sym.getBaseName();
+        }
     }
 }
