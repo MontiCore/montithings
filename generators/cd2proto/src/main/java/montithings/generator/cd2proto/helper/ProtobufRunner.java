@@ -36,24 +36,7 @@ public class ProtobufRunner {
     private List<Path> inputFiles = new ArrayList<>();
 
     public ProtobufRunner() {
-        Log.info("Checking protoc version", "CD2Proto");
-        ProcessBuilder pb = new ProcessBuilder();
-        pb.command("protoc", "--version");
-        try {
-            Process p = pb.start();
-            p.waitFor(10, TimeUnit.SECONDS);
-            if(p.isAlive()) {
-                RuntimeException ex = new IllegalStateException("protoc invocation timed out");
-                Log.error("protoc invocation timed out", ex);
-                throw ex;
-            }
-            String version = new BufferedReader(new InputStreamReader(p.getInputStream())).lines().collect(Collectors.joining("\n"));
-            Log.info(version+" (please use v21.0 or newer)", "CD2Proto");
-        } catch(IOException ex) {
-            ex.printStackTrace();
-            Log.error("Failed to start protoc, is the executable on your PATH?");
-            throw new UncheckedIOException(ex);
-        }  catch(InterruptedException ignored) {}
+
     }
 
     public void setOutDir(Path outDir) {
@@ -80,6 +63,27 @@ public class ProtobufRunner {
     }
 
     public void start() {
+        {
+            Log.info("Checking protoc version", "CD2Proto");
+            ProcessBuilder pb = new ProcessBuilder();
+            pb.command("protoc", "--version");
+            try {
+                Process p = pb.start();
+                p.waitFor(10, TimeUnit.SECONDS);
+                if (p.isAlive()) {
+                    RuntimeException ex = new IllegalStateException("protoc invocation timed out");
+                    Log.error("protoc invocation timed out", ex);
+                    throw ex;
+                }
+                String version = new BufferedReader(new InputStreamReader(p.getInputStream())).lines().collect(Collectors.joining("\n"));
+                Log.info(version + " (please use v21.0 or newer)", "CD2Proto");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                Log.error("Failed to start protoc, is the executable on your PATH?");
+                throw new UncheckedIOException(ex);
+            } catch (InterruptedException ignored) {
+            }
+        }
 
         if(targetLangSet.size() == 0) {
             throw new IllegalArgumentException("Target language is not set");
