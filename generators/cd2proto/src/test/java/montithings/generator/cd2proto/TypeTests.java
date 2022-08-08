@@ -68,7 +68,6 @@ public class TypeTests {
 
     private void generateProto(String name) throws Exception {
         ProtoGenerator generator = new ProtoGenerator(outDir, modelDir, name);
-        generator.parse();
         generator.generate();
     }
     //</editor-fold>
