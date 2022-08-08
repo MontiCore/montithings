@@ -2,7 +2,6 @@ package montithings.generator.cd2proto;
 
 import de.monticore.generating.templateengine.freemarker.MontiCoreFreeMarkerException;
 import de.se_rwth.commons.logging.Log;
-import freemarker.core._TemplateModelException;
 import montithings.generator.cd2proto.helper.ProtobufRunner;
 import org.junit.*;
 
