@@ -1,0 +1,34 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+group = "montithings.generators"
+
+test { useJUnit() }
+
+dependencies {
+    implementation "de.monticore:monticore-runtime:7.0.2-SNAPSHOT"
+    implementation "de.monticore:monticore-grammar:7.0.2-SNAPSHOT"
+    implementation "de.monticore.lang:cd4analysis:7.0.1"
+
+    testImplementation "junit:junit:4.13"
+}
+
+java {
+    withSourcesJar()
+    registerFeature("tests") {
+        usingSourceSet(sourceSets.test)
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from(components.java)
+        }
+    }
+    repositories.maven {
+        name = "$SE_Nexus_ID"
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        url = version.endsWith("SNAPSHOT") ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+    }
+}
