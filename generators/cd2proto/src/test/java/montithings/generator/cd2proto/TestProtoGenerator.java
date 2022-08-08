@@ -2,6 +2,7 @@ package montithings.generator.cd2proto;
 
 import montithings.generator.cd2proto.helper.ProtobufRunner;
 import org.junit.Test;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ public class TestProtoGenerator {
     ProtoGenerator generator = new ProtoGenerator(outDir, modelPath, modelName);
     Set<Path> protoFiles = generator.generate();
 
+    assumeTrue(ProtobufRunner.isProtocInPATH());
     ProtobufRunner pr = new ProtobufRunner();
     pr.setTargetLang(ProtobufRunner.TargetLang.CPP);
     pr.setOutDir(outDir);

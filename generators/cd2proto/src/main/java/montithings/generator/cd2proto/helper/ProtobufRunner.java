@@ -137,4 +137,15 @@ public class ProtobufRunner {
             Log.error("Protobuf execution failed: " + ex.getMessage(), ex);
         }
     }
+
+    public static boolean isProtocInPATH() {
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("protoc", "--version");
+        try {
+            Process p = pb.start();
+            return p.waitFor() == 0;
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
 }
