@@ -26,6 +26,7 @@ variables:
   DOCKER_DRIVER: overlay2
   SAST_DISABLED: "true"
   SAST_EXCLUDED_PATHS: "test, services, cereal, json, nngpp, message-types, cpp-httplib, easyloggingpp, sole, curl, rigtorp"
+  CI_REGISTRY_IMAGE: sebastian.grabowski/registry-stub
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
