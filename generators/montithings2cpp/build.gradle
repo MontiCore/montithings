@@ -32,6 +32,7 @@ dependencies {
   implementation "de.monticore:monticore-grammar:$monticore_version"
   implementation "org.jscience:jscience:$jscience_version"
   implementation "javax.json:javax.json-api:$javax_json_version"
+  implementation project(":generators:cd2proto")
   implementation project(":languages:bindings")
   implementation project(":languages:monticore-extensions")
   implementation project(":languages:cdlangextension")
