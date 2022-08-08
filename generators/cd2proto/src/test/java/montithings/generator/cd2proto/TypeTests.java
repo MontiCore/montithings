@@ -4,6 +4,7 @@ import de.monticore.generating.templateengine.freemarker.MontiCoreFreeMarkerExce
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.cd2proto.helper.ProtobufRunner;
 import org.junit.*;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -78,12 +79,14 @@ public class TypeTests {
     @Test
     public void WHEN_NestedListPresent_THEN_WrapperIsGenerated() throws Exception {
         generateProto("ListWrapper");
+        assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
     }
 
     @Test
     public void WHEN_MapPresent_THEN_MapIsTranslated() throws Exception {
         generateProto("Map");
+        assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
     }
 
