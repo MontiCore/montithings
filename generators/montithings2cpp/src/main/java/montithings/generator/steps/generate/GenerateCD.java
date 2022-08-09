@@ -5,6 +5,7 @@ import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.generator.cd2cpp.CppGenerator;
+import montithings.generator.config.SerializationMode;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 
@@ -26,7 +27,9 @@ public class GenerateCD extends GeneratorStep {
       CppGenerator cppGenerator = new CppGenerator(outDir, Paths.get(state.getModelPath().getAbsolutePath()),
         Paths.get(state.getHwcPath().getAbsolutePath()), model);
 
-      cppGenerator.setGenerateProtobufInterface(true);
+      if (state.getConfig().getSerializationMode() == SerializationMode.PROTOBUF) {
+        cppGenerator.setGenerateProtobufInterface(true);
+      }
       cppGenerator.generate(Optional.empty());
     }
   }
