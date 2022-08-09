@@ -27,6 +27,11 @@ variables:
   SAST_DISABLED: "true"
   SAST_EXCLUDED_PATHS: "test, services, cereal, json, nngpp, message-types, cpp-httplib, easyloggingpp, sole, curl, rigtorp"
   CI_REGISTRY_IMAGE: registry.git.rwth-aachen.de/sebastian.grabowski/registry
+  CI_SKIP_UNIT_TESTS:
+    value: ""
+    description: >-
+      Skips jobs in the test stage if set to non-empty string. Helps to get quickly to the
+      generator-test stage.
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -216,8 +221,12 @@ Unit Test Gradle:
   stage: test
   coverage: '/\d+.\d+ \% covered/'
   script:
-    - mvn $MAVEN_CLI_OPTS test package -Dexec.skip
-    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
+    - |
+      if [[ -z "${CI_SKIP_UNIT_TESTS}" ]]
+      then
+        mvn $MAVEN_CLI_OPTS test package -Dexec.skip
+        awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
+      fi
   dependencies: 
     - Validate Maven #download artifacts from build
   needs: ["Validate Maven"]
