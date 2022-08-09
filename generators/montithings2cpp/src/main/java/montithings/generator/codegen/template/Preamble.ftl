@@ -28,8 +28,11 @@
     <#assign targetPlatformIsDsaLab = config.getTargetPlatform().toString() == "DSA_LAB">
     <#assign targetPlatformIsDsa = (targetPlatformIsDsaVcg || targetPlatformIsDsaLab)>
 
+    <#assign serializationModeProtobuf = config.getSerializationMode().toString() == "PROTOBUF">
+
     <#assign needsDDS = (!(targetPlatformIsDsa) && !(splittingModeDisabled) && brokerIsDDS)>
     <#assign needsNng = (!(targetPlatformIsDsa) && !(splittingModeDisabled) && brokerDisabled)>
+    <#assign needsProtobuf = serializationModeProtobuf>
 </#if>
 
 <#if comp??>
