@@ -158,8 +158,9 @@ include_directories("hwc" ${r"${dir_list}"})
 </#if>
 
 file(GLOB SOURCES "*.cpp")
+file(GLOB_RECURSE PROTOBUF_SOURCES ${r"${CMAKE_SOURCE_DIR}"}/*.pb.cc)
 list(FILTER SOURCES EXCLUDE REGEX "${Utils.getDeployFile(comp)}")
-add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
+add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${PROTOBUF_SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}
 </#list>)
@@ -169,6 +170,14 @@ target_link_libraries(${comp.getFullName()?replace(".","_")}Lib MontiThingsRTE)
   target_link_libraries(${comp.getFullName()?replace(".","_")}Lib nng::nng)
   endif()
 </#if>
+<#if needsProtobuf>
+  if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
+    find_package(protobuf)
+  else()
+    find_package(Protobuf 3 REQUIRED)
+  endif()
+  target_link_libraries(${comp.getFullName()?replace(".","_")}Lib protobuf::libprotobuf)
+</#if>
 if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
 target_link_libraries(${comp.getFullName()?replace(".","_")}Lib ${r"${CONAN_LIBS}"})
 endif()
@@ -177,10 +186,7 @@ set_target_properties(${comp.getFullName()?replace(".","_")}Lib PROPERTIES LINKE
 install(TARGETS ${comp.getFullName()?replace(".","_")}Lib DESTINATION ${r"${PROJECT_SOURCE_DIR}"}/lib)
 
 <#if !test>
-  find_package(Protobuf 3 REQUIRED)
-  file(GLOB_RECURSE PROTOBUF_SOURCES ${r"${CMAKE_SOURCE_DIR}"}/*.pb.cc)
-  add_executable(${comp.getFullName()} ${r"${PROTOBUF_SOURCES}"} ${Utils.getDeployFile(comp)})
-  target_link_libraries(${comp.getFullName()} protobuf::libprotobuf)
+  add_executable(${comp.getFullName()} ${Utils.getDeployFile(comp)})
   target_link_libraries(${comp.getFullName()} ${comp.getFullName()?replace(".","_")}Lib)
   <#if targetPlatformIsDsa>
       ${tc.includeArgs("template.util.cmake.platform.dsa.LinkLibraries", [comp.getFullName()])}

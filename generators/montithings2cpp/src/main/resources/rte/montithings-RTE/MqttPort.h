@@ -43,10 +43,13 @@ protected:
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
 
+  /**
+   * The used serializer.
+   */
   const std::unique_ptr<Serializer<T>> serializer;
 
 public:
-  explicit MqttPort (std::string name, bool shouldSubscribe = true,
+  explicit MqttPort (std::string name, std::unique_ptr<Serializer<T>> serializer, bool shouldSubscribe = true,
                      MqttClient *client = MqttClient::instance (), MqttClient *localClient = MqttClient::localInstance ());
   ~MqttPort () = default;
 
@@ -98,9 +101,9 @@ public:
 };
 
 template <typename T>
-MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe, MqttClient *client, MqttClient *localClient)
+MqttPort<T>::MqttPort (std::string name, std::unique_ptr<Serializer<T>> serializer, bool shouldSubscribe, MqttClient *client, MqttClient *localClient)
     : fullyQualifiedName (std::move (name)),
-    serializer{new ProtobufSerializer<T>}
+    serializer{std::move(serializer)}
 {
   mqttClientInstance = client;
   mqttClientInstance->addUser (this);

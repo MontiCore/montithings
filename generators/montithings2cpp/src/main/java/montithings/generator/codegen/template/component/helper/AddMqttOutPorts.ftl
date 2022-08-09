@@ -9,7 +9,13 @@ std::string modelInstanceNameOut = getModelInstanceName(this->getInstanceName())
 
   // outgoing port ${p.getName()}
 
-  ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}", false, mqttClientInstance, mqttClientLocalInstance);
+  ${p.getName()} = new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}",
+  <#if serializationModeProtobuf>
+    std::unique_ptr<ProtobufSerializer<Message<${type}>>>{new ProtobufSerializer<Message<${type}>>{}}
+  <#else>
+    std::unique_ptr<JsonSerializer<Message<${type}>>>{new JsonSerializer<Message<${type}>>{}}
+  </#if>,
+  false, mqttClientInstance, mqttClientLocalInstance);
   <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
     <#assign sensorActuatorType = GeneratorHelper.getMqttSensorActuatorName(p, config).get()>
     std::string sensorActuatorRequestTopic${p.getName()?cap_first} = "/sensorActuator/request/" + this->getInstanceName() + ".${p.getName()}";
@@ -23,7 +29,13 @@ std::string modelInstanceNameOut = getModelInstanceName(this->getInstanceName())
       because each InPort get the messages from compute() via setNextValue()
       and each of them will trigger the outgoing ports (-> duplicated messages)
     -->
-    this->interface.addInPort${p.getName()?cap_first} (new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}", true,mqttClientInstance, mqttClientLocalInstance));
+    this->interface.addInPort${p.getName()?cap_first} (new MqttPort<Message<${type}>>(this->getInstanceName () + "/${p.getName()}",
+      <#if serializationModeProtobuf>
+        std::unique_ptr<ProtobufSerializer<Message<${type}>>>{new ProtobufSerializer<Message<${type}>>{}}
+      <#else>
+        std::unique_ptr<JsonSerializer<Message<${type}>>>{new JsonSerializer<Message<${type}>>{}}
+      </#if>,
+      true,mqttClientInstance, mqttClientLocalInstance));
   </#if>
   this->interface.addOutPort${p.getName()?cap_first} (${p.getName()});
 </#list>
