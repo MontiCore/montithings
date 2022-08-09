@@ -4,7 +4,6 @@ import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
 import montithings.generator.cd2proto.ProtoGenerator;
-import montithings.generator.cd2proto.helper.ProtobufRunner;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 
@@ -34,13 +33,6 @@ public class GenerateProtobuf extends GeneratorStep {
       }
 
       state.setProtoFiles(protoFiles);
-
-      ProtobufRunner pr = new ProtobufRunner();
-      pr.setTargetLang(ProtobufRunner.TargetLang.CPP)
-        .addTargetLang(ProtobufRunner.TargetLang.PYTHON);
-      pr.setOutDir(outDir);
-      protoFiles.forEach(pr::addInputFiles);
-      pr.start();
     }
   }
 }
