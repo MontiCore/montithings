@@ -8,7 +8,8 @@ RUN apk add --update-cache \
 	cmake \
 	make \
 	mosquitto \
-	mosquitto-dev
+	mosquitto-dev \
+	protobuf-dev py3-protobuf
 
 # Switch into our working directory for building NNG
 WORKDIR /usr/src/app

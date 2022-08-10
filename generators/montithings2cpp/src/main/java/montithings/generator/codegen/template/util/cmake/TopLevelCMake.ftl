@@ -157,10 +157,21 @@ include_directories("hwc" ${r"${dir_list}"})
   add_subdirectory(montithings-RTE)
 </#if>
 
+<#if needsProtobuf>
+  if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
+    find_package(protobuf)
+  else()
+    find_package(Protobuf 3 REQUIRED)
+  endif()
+  file(GLOB_RECURSE PROTOBUF_SOURCES ${r"${CMAKE_SOURCE_DIR}"}/*.proto)
+  protobuf_generate_cpp(PROTOBUF_CPP_SOURCES PROTOBUF_CPP_HEADERS ${r"${PROTOBUF_SOURCES}"})
+  # Include directory with generated .pb.h files
+  include_directories(${r"${CMAKE_CURRENT_BINARY_DIR}"})
+</#if>
+
 file(GLOB SOURCES "*.cpp")
-file(GLOB_RECURSE PROTOBUF_SOURCES ${r"${CMAKE_SOURCE_DIR}"}/*.pb.cc)
 list(FILTER SOURCES EXCLUDE REGEX "${Utils.getDeployFile(comp)}")
-add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${PROTOBUF_SOURCES}"} ${r"${HWC_SOURCES}"}
+add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${PROTOBUF_CPP_SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}
 </#list>)
@@ -171,11 +182,6 @@ target_link_libraries(${comp.getFullName()?replace(".","_")}Lib MontiThingsRTE)
   endif()
 </#if>
 <#if needsProtobuf>
-  if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
-    find_package(protobuf)
-  else()
-    find_package(Protobuf 3 REQUIRED)
-  endif()
   target_link_libraries(${comp.getFullName()?replace(".","_")}Lib protobuf::libprotobuf)
 </#if>
 if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
