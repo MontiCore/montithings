@@ -57,7 +57,7 @@ template <typename T>
 auto
 make_protobuffer (const T &data) -> typename T::ProtocolBuffer
 {
-  return data.make_protobuffer ();
+  return data.to_protobuffer ();
 }
 
 template <typename CDType> class ProtobufSerializer : public Serializer<CDType>

@@ -19,12 +19,18 @@ explicit ${typeName}(const ${type.getEnclosingScope().getEnclosingScope().getNam
 <#-- TODO: associations probably need some special handling for e.g. optionals and repeated -->
     <#assign assocName=AssociationHelper.getDerivedName(assoc, type)>
     <#assign assoc_t=AssociationHelper.getOtherSideTypeName(assoc, type)>
-    this->${assocName} = ${assoc_t}{other.${assocName}()};
+    <#if AssociationHelper.getOtherSideCardinality(assoc, type).isMult() >
+        this->${assocName}.reserve (other.${assocName} ().size ());
+        std::transform (other.${assocName} ().cbegin (), other.${assocName} ().cend (), this->${assocName}.begin (),
+        [] (const ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${assoc_t} &item) { return ${assoc_t}{ item }; });
+    <#else >
+        this->${assocName} = ${assoc_t}{other.${assocName}()};
+    </#if>
 </#list>
 }
 
 /// Member method for serialization to Protocol Buffer messages
-auto make_protobuffer() const -> ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName} {
+auto to_protobuffer() const -> ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName} {
 <#-- Take an fresh and empty message -->
 auto msg = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName}{};
 
@@ -32,7 +38,7 @@ auto msg = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::
 <#if super != "">
     { // Copy the parent class into the message
     auto* super = msg.mutable_super();
-    *super = static_cast<${super}*>(this)->make_protobuffer();
+    *super = make_protobuffer(static_cast<${super}>(*this));
     }
 </#if>
 
@@ -47,10 +53,16 @@ auto msg = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::
 <#list associations>
     // Set all associations
     <#items as assoc>
-        {
         <#assign assocName=AssociationHelper.getDerivedName(assoc, type)>
-        auto * ${assocName}_p = msg.mutable_${assocName}();
-        *${assocName}_p = this->${assocName}.make_protobuffer();
+        <#assign assoc_t=AssociationHelper.getOtherSideTypeName(assoc, type)>
+        {
+        <#if AssociationHelper.getOtherSideCardinality(assoc, type).isMult() >
+            msg.mutable_${assocName}()->Reserve (this->${assocName}.size());
+            std::transform (this->${assocName}.cbegin(), this->${assocName}.cend(), msg.mutable_${assocName}()->begin(), [](const ${assoc_t}& item){ return make_protobuffer (item); });
+        <#else >
+            auto * ${assocName}_p = msg.mutable_${assocName}();
+            *${assocName}_p = make_protobuffer(this->${assocName});
+        </#if>
         }
     </#items>
 </#list>

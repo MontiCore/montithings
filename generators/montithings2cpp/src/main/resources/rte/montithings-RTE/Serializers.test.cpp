@@ -72,7 +72,7 @@ template <typename T> struct FakeCDType {
   explicit FakeCDType(T value) : value{value} {}
   explicit FakeCDType(FakeProtocolBuffer<T> buffer) : value{buffer.m_value} {}
 
-  auto make_protobuffer() const -> FakeProtocolBuffer<T> {
+  auto to_protobuffer() const -> FakeProtocolBuffer<T> {
     return FakeProtocolBuffer<T>{value};
   }
 
