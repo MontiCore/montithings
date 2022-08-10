@@ -273,6 +273,7 @@
                                 <version>${project.version}</version>
                                 <splitting>LOCAL</splitting>
                                 <messageBroker>MQTT</messageBroker>
+                                <serialization>PROTOBUF</serialization>
                             </arguments>
                             <script>montithings/generator/mtgenerator.groovy</script>
                         </configuration>

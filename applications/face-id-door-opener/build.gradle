@@ -97,6 +97,7 @@ task groovyTask(type: SEGroovyTask) {
   arguments.put("mainComponent", "unlock.FaceUnlock")
   arguments.put("splitting", "LOCAL")
   arguments.put("messageBroker", "MQTT")
+  arguments.put("serialization", "PROTOBUF")
   arguments.put("version", "$version")
 }
 
