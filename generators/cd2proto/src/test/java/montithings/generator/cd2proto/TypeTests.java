@@ -97,4 +97,10 @@ public class TypeTests {
         });
     }
 
+    @Test
+    public void WHEN_PrimitivePresent_THEN_PrimitiveIsTranslated() throws Exception {
+        generateProto("PrimitiveTypes");
+        assumeTrue(ProtobufRunner.isProtocInPATH());
+        runProtobuf();
+    }
 }
