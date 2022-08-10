@@ -12,6 +12,20 @@ sleep 5
 echo "Starting components..."
 </#if>
 
+
+
+<#if brokerIsMQTT && hwcPythonScripts?size!=0>
+  exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
+</#if>
+
+# Run Python Ports
+if [ -d "hwc" ]; then
+echo starting python ports...
+find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "$0" > "$0.log" 2>&1 &' '{}' \;
+sleep 2 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
+echo python ports started
+fi
+
 <#list instances as pair >
   <#if brokerIsMQTT>
   ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
@@ -31,11 +45,3 @@ echo "Starting components..."
   </#list>
 </#if>
 
-# Run Python Ports
-if [ -d "hwc" ]; then
-find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "$0" > "$0.log" 2>&1 &' '{}' \;
-fi
-
-<#if brokerIsMQTT && hwcPythonScripts?size!=0>
-exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
-</#if>
