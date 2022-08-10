@@ -1,4 +1,4 @@
-${tc.signature("type", "typeName", "super", "associations")}
+${tc.signature("AssociationHelper", "type", "typeName", "super", "associations")}
 
 using ProtocolBuffer = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName};
 
@@ -18,7 +18,8 @@ explicit ${typeName}(const ${type.getEnclosingScope().getEnclosingScope().getNam
 <#list associations as assoc>
 <#-- TODO: associations probably need some special handling for e.g. optionals and repeated -->
     <#assign assocName=AssociationHelper.getDerivedName(assoc, type)>
-    this->${assocName} = other.${assocName}();
+    <#assign assoc_t=AssociationHelper.getOtherSideTypeName(assoc, type)>
+    this->${assocName} = ${assoc_t}{other.${assocName}()};
 </#list>
 }
 
@@ -42,7 +43,6 @@ auto msg = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::
         msg.set_${field.name}(this->${field.name});
     </#items>
 </#list>
-
 <#-- Handle associations -->
 <#list associations>
     // Set all associations

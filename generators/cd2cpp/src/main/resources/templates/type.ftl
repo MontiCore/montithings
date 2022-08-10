@@ -257,7 +257,7 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     </#if>
 
     <#if generateProtobufInterface>
-      ${tc.includeArgs("templates.proto-methods", [type, typeName, super, associations])}
+      ${tc.includeArgs("templates.proto-methods", [AssociationHelper, type, typeName, super, associations])}
     </#if>
 
   </#if><#-- /class -->
