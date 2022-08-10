@@ -31,7 +31,8 @@ message ${type.name} {
     <#if association?is_first>
     // Associations
     </#if>
-    <#if AssociationHelper.getOtherSide(association, type).CDCardinality.mult>repeated </#if>${AssociationHelper.getOtherSideTypeName(association, type)} ${AssociationHelper.getDerivedName(association, type)} = ${nextFieldNumber};
+        <#assign isRepeated=AssociationHelper.getOtherSide(association, type).CDCardinality.mult || AssociationHelper.getOtherSide(association, type).CDCardinality.opt>
+    <#if isRepeated>repeated </#if>${AssociationHelper.getOtherSideTypeName(association, type)} ${AssociationHelper.getDerivedName(association, type)} = ${nextFieldNumber};
     <#assign nextFieldNumber+=1>
     </#list>
 }
