@@ -19,7 +19,7 @@ COMPONENT_PORTS_IN = [
 "unlock.FaceUnlock.faceid.image",
 ]
 COMPONENT_PORTS_OUT = [
-"unlock.FaceUnlock.faceid.visitor"
+"unlock.FaceUnlock.faceid.visitor",
 ]
 
 class ProtoConnector(MQTTConnector, COMPONENT_IMPL):
@@ -55,8 +55,8 @@ class ProtoConnector(MQTTConnector, COMPONENT_IMPL):
         image.ParseFromString(b64decode(s))
         return image
 
-    def serialize(self, p: Person) -> str:
-        return b64encode(p.SerializeToString())
+    def serialize(self, p: FaceIDResult) -> str:
+        return b64encode(p.payload.SerializeToString()).decode('utf-8')
 
 if __name__=="__main__":
     connector = ProtoConnector()
