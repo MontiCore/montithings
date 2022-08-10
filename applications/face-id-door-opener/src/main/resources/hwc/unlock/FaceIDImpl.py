@@ -22,5 +22,5 @@ class FaceIDImpl(FaceIDImplTOP):
         person.name = self.personDB[person.visitor_id]
         person.allowed = person.name in [ "Sebastian", "Andre", "Tim"]
 
-        print("[FaceID-Python] visitor", person.name, "authorized" if person.result else "not authorized")
+        print("[FaceID-Python] visitor", person.name, "authorized" if person.allowed else "not authorized")
         return FaceIDResult(person)
