@@ -12,6 +12,7 @@ classdiagram FaceUnlock {
             int person_id;
         }
 
-        association [1] Person -> Image [*];
+        association [1] Person (side1) -> (side2) Image [*];
+        association [1] Person -> Image [0..1];
     }
 }
