@@ -72,10 +72,11 @@ cp ../../python/montithingsconnector.py python/.
 cp ../../python/requirements.txt python/.
 cp ../../python/MQTTClient.py python/.
 cp ../../python/IComputable.py python/.
+
+PROTO_FILES=$(find ../../ -name "*.proto")
 echo "compiling .proto files:"
-PROTO_FILES=`find ../../ -name "*.proto"
-echo "${PROTO_FILES}"
-echo ${PROTO_FILES} | xargs protoc --python_out=python/.
+echo "${r"${PROTO_FILES}"}"
+echo ${r"${PROTO_FILES}"} | xargs protoc --python_out=python/.
 </#if>
 <#if splittingModeIsLocal>
 cp -r ../../"$COMPNAME"/ports .
