@@ -103,4 +103,11 @@ public class TypeTests {
         assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
     }
+
+    @Test
+    public void WHEN_EnumPresent_THEN_EnumIsTranslated() throws Exception {
+        generateProto("Enums");
+        assumeTrue(ProtobufRunner.isProtocInPATH());
+        runProtobuf();
+    }
 }
