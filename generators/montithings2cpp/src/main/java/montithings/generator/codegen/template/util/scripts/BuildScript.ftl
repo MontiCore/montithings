@@ -66,17 +66,18 @@ cp ../../"$COMPNAME"/*.sh .
 cp ../../"$COMPNAME"/*.ini .
 </#if>
 <#if brokerIsMQTT && hwcPythonScripts?size!=0>
-mkdir python
+mkdir -p python
 cp ../../python/sensoractuatormanager.py python/.
 cp ../../python/montithingsconnector.py python/.
 cp ../../python/requirements.txt python/.
 cp ../../python/MQTTClient.py python/.
 cp ../../python/IComputable.py python/.
 
-PROTO_FILES=$(find ../../ -name "*.proto")
+PROTO_PATH="../../"
+PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto")
 echo "compiling .proto files:"
 echo "${r"${PROTO_FILES}"}"
-echo ${r"${PROTO_FILES}"} | xargs protoc --python_out=python/.
+echo ${r"${PROTO_FILES}"} | xargs protoc --python_out=python/. --proto_path="${r"${PROTO_PATH}"}"
 </#if>
 <#if splittingModeIsLocal>
 cp -r ../../"$COMPNAME"/ports .
