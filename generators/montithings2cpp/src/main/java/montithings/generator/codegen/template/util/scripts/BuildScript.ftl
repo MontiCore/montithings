@@ -74,10 +74,13 @@ cp ../../python/MQTTClient.py python/.
 cp ../../python/IComputable.py python/.
 
 PROTO_PATH="../../"
-PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto")
-echo "compiling .proto files:"
-echo "${r"${PROTO_FILES}"}"
-echo ${r"${PROTO_FILES}"} | xargs protoc --python_out=python/. --proto_path="${r"${PROTO_PATH}"}"
+PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto" -print0)
+if [[ -n ${r"${PROTO_FILES}"} ]]
+then
+  echo "compiling .proto files:"
+  echo "${r"${PROTO_FILES}"}"
+  find "${r"${PROTO_PATH}"}" -name "*.proto" -print0 | xargs -0 protoc --python_out=python/. --proto_path="${r"${PROTO_PATH}"}"
+fi
 </#if>
 <#if splittingModeIsLocal>
 cp -r ../../"$COMPNAME"/ports .
