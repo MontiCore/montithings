@@ -17,10 +17,11 @@ public class PrimitiveTypeResolver implements ITypeResolver<SymTypeConstant> {
         map.put("int", "int32");
         map.put("long", "int64");
         map.put("boolean", "bool");
-        map.put("byte", "byte");
-        map.put("char", "char");
+        map.put("byte", "int32");
+        map.put("char", "uint32");
         map.put("double", "double");
         map.put("float", "float");
+        map.put("short", "int32");
     }
 
     @Override
