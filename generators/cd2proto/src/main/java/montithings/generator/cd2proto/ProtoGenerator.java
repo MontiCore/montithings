@@ -21,16 +21,41 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Generate Protocol Buffer files (.proto) from class diagrams.
+ */
 public class ProtoGenerator {
 
+  /**
+   * The directory where to put the generated files.
+   */
   final private Path outputDir;
 
+  /**
+   * The directory with the models to parse.
+   */
   final private Path modelPath;
 
+  /**
+   * The name of the class diagram to parse.
+   */
   final private String modelName;
+
+  /**
+   *  The parsed model.
+   */
   private ASTCDCompilationUnit compilationUnit;
+
+  /**
+   * List of all parsed classes and enums in the class diagram.
+   */
   private List<CDTypeSymbol> cdTypeSymbols;
 
+  /**
+   * @param outDir directory to put the Protocol Buffer files into
+   * @param modelPath directory where to find the model
+   * @param modelName name of the model to parse
+   */
   public ProtoGenerator(Path outDir, Path modelPath, String modelName) {
     this.outputDir = outDir;
     this.modelPath = modelPath;
@@ -79,6 +104,12 @@ public class ProtoGenerator {
         .forEach(l -> cdTypeSymbols.addAll(l));
   }
 
+  /**
+   * Generate the .proto files.
+   *
+   * @return set of paths containing each generated file
+   * @throws IOException thrown if a file could not be parsed
+   */
   public Set<Path> generate() throws IOException {
     parse();
 

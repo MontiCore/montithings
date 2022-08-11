@@ -138,6 +138,9 @@ public class ProtobufRunner {
         }
     }
 
+    /**
+     * @return true iff the "protoc" executable is in PATH
+     */
     public static boolean isProtocInPATH() {
         ProcessBuilder pb = new ProcessBuilder();
         pb.command("protoc", "--version");
