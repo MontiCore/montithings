@@ -849,7 +849,7 @@ public class ComponentHelper {
    * expected to be found.
    */
   public static Path getPythonBehaviourFile(ComponentTypeSymbol comp) {
-    return Paths.get(comp.getFullName().replace('.', File.separatorChar) + ".py");
+    return Paths.get(comp.getFullName().replace('.', File.separatorChar) + "Impl.py");
   }
 
   /**
