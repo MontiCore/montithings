@@ -32,8 +32,8 @@ public class TypeTests {
         Log.enableFailQuick(false);
     }
 
-    @Before
-    public void cleanOutDir() throws Exception {
+    @BeforeClass
+    public static void cleanOutDir() throws Exception {
         if (Files.exists(outDir)) {
             Files.walkFileTree(outDir, new SimpleFileVisitor<Path>() {
                 @Override
