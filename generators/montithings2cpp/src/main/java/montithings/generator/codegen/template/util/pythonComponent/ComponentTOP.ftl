@@ -25,7 +25,7 @@ class ${componentName}Result(GenericResult):
     # reference: https://developers.google.com/protocol-buffers/docs/pythontutorial - last visited 12.8.22
     # if unclear, use help(xResult.port_name) or dir(xResult.port_name)
     def __init__(self):
-        self.uuid = uuid4()
+        self.uuid = uuid.uuid4()
         ports = {}
 <#list outPorts as port>
         ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
@@ -82,7 +82,7 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
 
     def on_connect(self, client, obj, flags, rc) -> None:
         connect = super().on_connect(client, obj, flags, rc)
-        # TODO: handle getInitialValues
+        self.getInitialValues()
 
     # MQTT publish ports
 <#list outPorts as port>

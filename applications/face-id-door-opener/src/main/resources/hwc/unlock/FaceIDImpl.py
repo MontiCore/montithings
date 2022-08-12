@@ -1,8 +1,4 @@
-from random import choice
-
-from FaceIDImplTOP import FaceIDImplTOP, FaceIDInput, FaceIDResult
-from FaceUnlock_pb2 import Person
-from MQTTClient import MQTTConnector
+from FaceIDImplTOP import FaceIDImplTOP
 
 class FaceIDImpl(FaceIDImplTOP):
 
@@ -20,15 +16,17 @@ class FaceIDImpl(FaceIDImplTOP):
             reconnect_on_failure=True
         )
 
-    def getInitialValues(self) -> FaceIDResult:
-        return FaceIDResult()
+    def getInitialValues(self) -> None:
+        self._result["visitor"].visitor_id = 1
+        self._result["visitor"].name = "Bert"
+        self._result["visitor"].allowed = False
 
     def compute(self) -> None:
         # manipulate the visitor field
-        _result["visitor"].visitor_id = _input.payload.personId
-        _result["visitor"].name = self.personDB[person.visitor_id]
-        _result["visitor"].allowed = person.name in [ "Sebastian", "Andre", "Tim"]
+        self._result["visitor"].visitor_id = self._input.payload.personId
+        self._result["visitor"].name = self.personDB[self._result["visitor"].visitor_id]
+        self._result["visitor"].allowed = self._result["visitor"].name in [ "Sebastian", "Andre", "Tim"]
 
-        print("[FaceID-Python] visitor", person.name, "authorized" if person.allowed else "not authorized")
+        print("[FaceID-Python] visitor", self._result["visitor"].name, "authorized" if self._result["visitor"].allowed else "not authorized")
         # send the current state of visitor on /ports/unlock/FaceUnlock/faceid/visitor
         self.send_port_visitor()
