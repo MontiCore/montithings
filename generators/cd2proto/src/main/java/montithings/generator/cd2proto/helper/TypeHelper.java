@@ -27,9 +27,9 @@ public class TypeHelper {
      * @param type The type from the CD
      * @return A corresponding Protobuf type declaration
      */
+    @SuppressWarnings("unchecked")
     public String translate(SymTypeExpression type) {
         //the type should be guaranteed to be correct by the predicate
-        //noinspection unchecked
         return typeMap.entrySet()
                 .stream()
                 .filter(e -> e.getKey().test(type))
