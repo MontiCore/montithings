@@ -10,6 +10,7 @@ ${tc.signature("comp","hwcPythonScripts","config", "existsHWC")}
 
 
 set -e # Stop on first error
+set -x
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 <#if config.getSplittingMode().toString() == "OFF">

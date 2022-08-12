@@ -2,7 +2,7 @@ from random import choice
 
 from FaceIDImplTOP import FaceIDImplTOP, FaceIDInput, FaceIDResult
 from FaceUnlock_pb2 import Person
-
+from MQTTClient import MQTTConnector
 
 class FaceIDImpl(FaceIDImplTOP):
 

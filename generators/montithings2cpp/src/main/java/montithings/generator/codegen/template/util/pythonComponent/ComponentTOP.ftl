@@ -2,10 +2,11 @@ ${tc.signature("componentName", "protobufModule", "inPorts", "outPorts")}
 
 <#assign NameHelper = tc.instantiate("montithings.generator.codegen.template.util.pythonComponent.NameHelper")>
 
+import sys, time, json
+from base64 import b64encode, b64decode
 from IComputable import IComputable, GenericResult, GenericInput
 from ${protobufModule} import *
-
-# TODO: get unlock.FaceUnlock parameter
+from MQTTClient import MQTTConnector
 
 class ${componentName}Input(GenericInput):
     # protobuf already provides methods respectively
@@ -16,7 +17,7 @@ class ${componentName}Input(GenericInput):
     def __init__(self):
         ports = {}
 <#list inPorts as port>
-    ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
+        ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
 </#list>
 
 class ${componentName}Result(GenericResult):
