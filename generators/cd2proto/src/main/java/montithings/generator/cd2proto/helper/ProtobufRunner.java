@@ -131,7 +131,7 @@ public class ProtobufRunner {
                 throw new IllegalStateException("protoc terminated abnormally: " + exit);
             }
         } catch(InterruptedException ignored) {
-        } catch(IOException | TimeoutException ex) {
+        } catch(IOException ex) {
             Log.error("Protobuf execution failed: " + ex.getMessage(), ex);
         }
     }
