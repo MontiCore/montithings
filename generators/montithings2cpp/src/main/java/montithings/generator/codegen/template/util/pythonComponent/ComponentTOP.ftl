@@ -46,7 +46,7 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
 
     _input = ${componentName}Input()
     _result = ${componentName}Result()
-    serialize = lambda x: b64encode(x.serializeToString()).decode("UTF-8")
+    serialize = lambda x: b64encode(x.SerializeToString()).decode("UTF-8")
     deserialize = lambda x: b64decode(x)
 
     # MQTTConnector implementation
@@ -76,7 +76,8 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
             payload_uuid = json.loads(decoded_msg)["value0"]["uuid"]
             if self.connectors.get(message.topic, False):
                 self.published_on_port = port # possibly racy, when compute is not finished before next message enters
-                self.compute(self.connectors[message.topic].deserializeFromString(payload_msg), payload_uuid)
+                self.connectors[message.topic].ParseFromString(payload_msg)
+                self.compute(self._input, payload_uuid)
             else:
                 print(f"Received unroutable message on topic {message.topic}")
 
