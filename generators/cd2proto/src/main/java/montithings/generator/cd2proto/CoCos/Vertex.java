@@ -1,16 +1,15 @@
-/*
- * This Class together with the Graph class builds the infrastructure to build a graph,
- * which is then used to check whether associations inside a Classdiagram are acyclic.
- * Inspiration for the algorithm and corresponding Graph and Vertex classes is
- * taken from https://www.baeldung.com/java-graph-has-a-cycle - last visited: 12.08.2022
- */
-
 package montithings.generator.cd2proto.CoCos;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This Class together with the Graph class builds the infrastructure to build a graph,
+ * which is then used to check whether associations inside a Classdiagram are acyclic.
+ * Inspiration for the algorithm and corresponding Graph and Vertex classes is
+ * taken from https://www.baeldung.com/java-graph-has-a-cycle - last visited: 12.08.2022
+ */
 public class Vertex {
     final private String label;
     private boolean beingVisited;
