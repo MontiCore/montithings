@@ -1,0 +1,10 @@
+classdiagram ArraysAndCollections {
+    class WithArraysAndCollections {
+        int[] primitive_array;
+
+        List<int> primitive_list;
+        Map<int, int> primitive_map;
+        Set<int> primitive_set;
+        Optional<int> primitive_optional;
+    }
+}

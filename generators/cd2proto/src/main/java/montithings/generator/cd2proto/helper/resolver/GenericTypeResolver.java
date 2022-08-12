@@ -21,6 +21,8 @@ public class GenericTypeResolver implements ITypeResolver<SymTypeOfGenerics> {
     @Override
     public String resolve(SymTypeOfGenerics sym) {
         switch(sym.getTypeInfo().getName()) {
+            case "Optional":
+            case "Set":
             case "List":
                 if(sym.getArgument(0).getTypeInfo().getName().equals("List")) {
                     //nested list! we need to generate a wrapper message
