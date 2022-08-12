@@ -5,13 +5,16 @@ import de.monticore.cd4code.CD4CodeMill;
 import de.monticore.cd4code._symboltable.CD4CodeGlobalScope;
 import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCompleter;
 import de.monticore.cd4code._symboltable.ICD4CodeArtifactScope;
+import de.monticore.cdbasis._ast.ASTCDBasisNode;
 import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
+import de.monticore.cdbasis._cocos.CDBasisCoCoChecker;
 import de.monticore.cdbasis._symboltable.CDTypeSymbol;
 import de.monticore.cdbasis._symboltable.ICDBasisScope;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.io.paths.ModelPath;
 import montithings.generator.cd2cpp.AssociationHelper;
+import montithings.generator.cd2proto.CoCos.CD2ProtoCoCos;
 import montithings.generator.cd2proto.helper.TypeHelper;
 
 import java.io.File;
@@ -63,6 +66,9 @@ public class ProtoGenerator {
       throw new RuntimeException("Whoot?");
     }
     this.compilationUnit = astcdCompilationUnit.get();
+
+    CDBasisCoCoChecker checker = new CD2ProtoCoCos().getCheckerForAllCocos();
+    checker.checkAll((ASTCDBasisNode) this.compilationUnit.getCDDefinition());
 
     final ICD4CodeArtifactScope scope = CD4CodeMill.scopesGenitorDelegator().createFromAST(compilationUnit);
     this.compilationUnit.accept(new CD4CodeSymbolTableCompleter(compilationUnit).getTraverser());
