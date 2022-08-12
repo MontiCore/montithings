@@ -74,8 +74,8 @@ cp ../../python/MQTTClient.py python/.
 cp ../../python/IComputable.py python/.
 
 PROTO_PATH="../../"
-PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto" -print0)
-if [[ -n ${r"${PROTO_FILES}"} ]]
+PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto")
+if [[ -n "${r"${PROTO_FILES}"}" ]]
 then
   echo "compiling .proto files:"
   echo "${r"${PROTO_FILES}"}"
