@@ -46,8 +46,8 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
 
     _input = ${componentName}Input()
     _result = ${componentName}Result()
-    serialize = lambda x: b64encode(x.SerializeToString()).decode("UTF-8")
-    deserialize = lambda x: b64decode(x)
+    serialize = lambda _,x: b64encode(x.SerializeToString()).decode("UTF-8")
+    deserialize = lambda _,x: b64decode(x)
 
     # MQTTConnector implementation
 
