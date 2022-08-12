@@ -17,16 +17,16 @@ class FaceIDImpl(FaceIDImplTOP):
         )
 
     def getInitialValues(self) -> None:
-        self._result["visitor"].visitor_id = 1
-        self._result["visitor"].name = "Bert"
-        self._result["visitor"].allowed = False
+        self._result.ports["visitor"].visitor_id = 1
+        self._result.ports["visitor"].name = "Bert"
+        self._result.ports["visitor"].allowed = False
 
     def compute(self) -> None:
         # manipulate the visitor field
-        self._result["visitor"].visitor_id = self._input.payload.personId
-        self._result["visitor"].name = self.personDB[self._result["visitor"].visitor_id]
-        self._result["visitor"].allowed = self._result["visitor"].name in [ "Sebastian", "Andre", "Tim"]
+        self._result.ports["visitor"].visitor_id = self._input.ports["image"].person_id
+        self._result.ports["visitor"].name = self.personDB[self._result.ports["visitor"].visitor_id]
+        self._result.ports["visitor"].allowed = self._result.ports["visitor"].name in [ "Sebastian", "Andre", "Tim"]
 
-        print("[FaceID-Python] visitor", self._result["visitor"].name, "authorized" if self._result["visitor"].allowed else "not authorized")
+        print("[FaceID-Python] visitor", self._result.ports["visitor"].name, "authorized" if self._result.ports["visitor"].allowed else "not authorized")
         # send the current state of visitor on /ports/unlock/FaceUnlock/faceid/visitor
         self.send_port_visitor()
