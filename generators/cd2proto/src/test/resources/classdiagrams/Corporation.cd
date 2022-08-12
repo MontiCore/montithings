@@ -13,5 +13,5 @@ classdiagram Corporation {
         boolean getsPaid;
     }
 
-    association [0..1] Employee <- (reportsTo) Employee [*];
+    association [0..1] Employee <- (reportsTo) Intern [*];
 }
