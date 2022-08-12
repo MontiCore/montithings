@@ -15,9 +15,9 @@ class ${componentName}Input(GenericInput):
     # note that because the mapping for ports is dynamic (MQTT instructions), a mapping at runtime is much harder in
     # static languages. Therefore the mapping is done with a dict and the port-name
     def __init__(self):
-        ports = {}
+        self.ports = {}
 <#list inPorts as port>
-        ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
+        self.ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
 </#list>
 
 class ${componentName}Result(GenericResult):
@@ -26,9 +26,9 @@ class ${componentName}Result(GenericResult):
     # if unclear, use help(xResult.port_name) or dir(xResult.port_name)
     def __init__(self):
         self.uuid = uuid.uuid4()
-        ports = {}
+        self.ports = {}
 <#list outPorts as port>
-        ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
+        self.ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
 </#list>
 
 class ${componentName}ImplTOP(IComputable, MQTTConnector):
@@ -65,7 +65,7 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
 
     def on_message(self, client, userdata, message) -> None:
         decoded_msg = message.payload.decode("utf-8")
-        port = {message.topic.split("/")[-1]}
+        port = message.topic.split("/")[-1]
         if message.topic.startswith("/connectors/"):
             topic = f"/ports/{decoded_msg}".replace(".", "/")
             print(port, "now listening on", topic)
@@ -81,7 +81,7 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
                 print(f"Received unroutable message on topic {message.topic}")
 
     def on_connect(self, client, obj, flags, rc) -> None:
-        connect = super().on_connect(client, obj, flags, rc)
+        super().on_connect(client, obj, flags, rc)
         self.getInitialValues()
 
     # MQTT publish ports
