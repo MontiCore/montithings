@@ -119,15 +119,13 @@ public class ProtobufRunner {
         Log.info("Invoking protoc: " + String.join(" ", pb.command()), "CD2Proto");
         pb.inheritIO();
 
-        //TODO: Should probably make this timeout configurable
-        //EDIT: Really? Shouldn't we just let it keep running?
-        //The process is instantiated by the user, so would eventually be SIGTERMed when not progressing
-        //If so, the InterruptedException needs to be caught, `pb` terminated and rethrown.
         try {
             Process proc = pb.start();
-            if(!proc.waitFor(60, TimeUnit.SECONDS)) {
-                throw new TimeoutException("Protobuf timed out");
-            }
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                if(proc.isAlive()) {
+                    proc.destroy();
+                }
+            }));
             int exit = proc.waitFor();
             if(exit != 0) {
                 throw new IllegalStateException("protoc terminated abnormally: " + exit);

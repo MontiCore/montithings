@@ -28,7 +28,6 @@ public class TypeTests {
         runner = new ProtobufRunner();
         runner.setTargetLang(ProtobufRunner.TargetLang.JAVA);
         runner.setOutDir(outDir);
-        //TODO: Doesn't stop the program from crashing when an error appears which is wanted for some tests
         Log.enableFailQuick(false);
     }
 
