@@ -12,8 +12,6 @@ public class NestedListHelper {
     public void addListWrapper(SymTypeOfGenerics ts, String name) {
         this.requiredWrappers.put(name, ts);
     }
-
-    //TODO: get the actual field name from somewhere and pass it here
     public String generateWrappers() {
         StringBuilder sb = new StringBuilder();
         requiredWrappers.forEach((k, v) -> {
