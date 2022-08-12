@@ -14,7 +14,7 @@ import static org.junit.Assume.assumeTrue;
 
 public class TestCycle {
   @Test
-  public void test() throws IOException {
+  public void test() throws Exception {
     Log.init();
     Log.enableFailQuick(false);
     Log.getFindings().clear();
