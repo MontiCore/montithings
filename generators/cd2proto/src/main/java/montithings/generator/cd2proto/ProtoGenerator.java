@@ -83,12 +83,11 @@ public class ProtoGenerator {
     }
   }
 
-  private void parse() throws IOException {
+  private void parse() throws IOException, ParseException {
     final Optional<ASTCDCompilationUnit> astcdCompilationUnit = CD4CodeMill.parser().parse(modelPath.toFile().getPath() + "/" + modelName.replace(".", File.separator) + ".cd");
 
     if (!astcdCompilationUnit.isPresent()) {
-      // FIXME: What should we do here?
-      throw new RuntimeException("Whoot?");
+      throw new ParseException("the model \"" + modelName + "\" could not be parsed");
     }
     this.compilationUnit = astcdCompilationUnit.get();
 
@@ -114,9 +113,10 @@ public class ProtoGenerator {
    * Generate the .proto files.
    *
    * @return set of paths containing each generated file
-   * @throws IOException thrown if a file could not be parsed
+   * @throws IOException    thrown if a file could not be found
+   * @throws ParseException thrown if parsing failed
    */
-  public Set<Path> generate() throws IOException {
+  public Set<Path> generate() throws IOException, ParseException {
     parse();
 
     GeneratorSetup setup = new GeneratorSetup();
