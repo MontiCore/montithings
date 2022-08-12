@@ -1,7 +1,10 @@
 ${tc.signature("componentName", "protobufModule", "inPorts", "outPorts")}
 
+<#assign NameHelper = tc.instantiate("montithings.generator.codegen.template.util.pythonComponent.NameHelper")>
+
 from IComputable import IComputable, GenericResult, GenericInput
 from ${protobufModule} import *
+
 # TODO: get unlock.FaceUnlock parameter
 
 class ${componentName}Input(GenericInput):
@@ -13,7 +16,7 @@ class ${componentName}Input(GenericInput):
     def __init__(self):
         ports = {}
 <#list inPorts as port>
-        ports["${port.name}"] = ${port.type.getTypeInfo().name}()
+    ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
 </#list>
 
 class ${componentName}Result(GenericResult):
@@ -24,19 +27,19 @@ class ${componentName}Result(GenericResult):
         self.uuid = uuid4()
         ports = {}
 <#list outPorts as port>
-        ports["${port.name}"] = ${port.type.getTypeInfo().name}()
+        ports["${port.name}"] = ${NameHelper.getLastPart(port.type.getTypeInfo().name)}()
 </#list>
 
 class ${componentName}ImplTOP(IComputable, MQTTConnector):
     # convenience dicts to lookup ports and their respective protobuf-types
     COMPONENT_PORTS_IN = {
 <#list inPorts as port>
-        "${port.name}": ${port.type.getTypeInfo().name},
+        "${port.name}": ${NameHelper.getLastPart(port.type.getTypeInfo().name)},
 </#list>
     }
     COMPONENT_PORTS_OUT = {
 <#list outPorts as port>
-        "${port.name}": ${port.type.getTypeInfo().name},
+        "${port.name}": ${NameHelper.getLastPart(port.type.getTypeInfo().name)},
 </#list>
     }
 
