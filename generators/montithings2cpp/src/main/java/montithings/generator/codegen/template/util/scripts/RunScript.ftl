@@ -15,7 +15,7 @@ echo "Starting components..."
 
 
 <#if brokerIsMQTT && hwcPythonScripts?size!=0>
-  exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
+  exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" --name "SA-Manager"> "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
   find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python:python; python3 -u "$0" > "$0.log" 2>&1 &' '{}' \;
   sleep 1 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
 </#if>

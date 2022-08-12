@@ -2,7 +2,7 @@ ${tc.signature("componentName", "protobufModule", "inPorts", "outPorts")}
 
 <#assign NameHelper = tc.instantiate("montithings.generator.codegen.template.util.pythonComponent.NameHelper")>
 
-import sys, time, json
+import sys, time, json, uuid
 from base64 import b64encode, b64decode
 from IComputable import IComputable, GenericResult, GenericInput
 from ${protobufModule} import *
@@ -59,20 +59,20 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
 
     def __init__(self, client_id, **kwargs) -> None:
         self.client_id = client_id # call the constructor of this ImplTOP in your __init__ and set the client_id
-        for port in COMPONENT_PORTS_IN.keys():
-            ports_in.add(".".join([client_id, port]))
+        for port in self.COMPONENT_PORTS_IN.keys():
+            self.ports_in.add(".".join([client_id, port]))
         super().__init__(client_id=client_id, **kwargs)
 
     def on_message(self, client, userdata, message) -> None:
         decoded_msg = message.payload.decode("utf-8")
         port = {message.topic.split("/")[-1]}
-        if message.topic.startswith("/connectors/"): # TODO: only subscribe on correct connectors
+        if message.topic.startswith("/connectors/"):
             topic = f"/ports/{decoded_msg}".replace(".", "/")
             print(port, "now listening on", topic)
             self.subscribe(topic, qos=0)
             self.connectors[topic] = self._input.ports[port]
         else:
-            payload_msg = deserialize(json.loads(decoded_msg)["value0"]["payload"]["data"]) # b64decode payload
+            payload_msg = self.deserialize(json.loads(decoded_msg)["value0"]["payload"]["data"]) # b64decode payload
             payload_uuid = json.loads(decoded_msg)["value0"]["uuid"]
             if self.connectors.get(message.topic, False):
                 self.published_on_port = port # possibly racy, when compute is not finished before next message enters
@@ -91,6 +91,6 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
         Use this in your hand-written-code to publish to the port ${port.name}"""
         self.publish(
             ".".join([self.client_id, "${port.name}"]),
-            _result.ports["${port.name}"]
+            self._result.ports["${port.name}"]
         )
 </#list>
