@@ -110,4 +110,11 @@ public class TypeTests {
         assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
     }
+
+    @Test
+    public void WHEN_SimpleGenericPresent_THEN_SimpleGenericIsTranslated() throws Exception {
+        generateProto("ArraysAndCollections");
+        assumeTrue(ProtobufRunner.isProtocInPATH());
+        runProtobuf();
+    }
 }
