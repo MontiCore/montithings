@@ -1,10 +1,7 @@
 ${tc.signature("componentName", "protobufModule", "inPorts", "outPorts")}
-inports= [
-    "unlock.FaceUnlock.faceid.visitor"
-]
 
-from python.IComputable import IComputable, GenericResult, GenericInput
-from python.unlock.${protobufModule} import *
+from IComputable import IComputable, GenericResult, GenericInput
+from ${protobufModule} import *
 # TODO: get unlock.FaceUnlock parameter
 
 class ${componentName}Input(GenericInput):
@@ -16,7 +13,7 @@ class ${componentName}Input(GenericInput):
     def __init__(self):
         ports = {}
 <#list inPorts as port>
-        ports["${port.name}"] = ${port.type.print()}()
+        ports["${port.name}"] = ${port.type.getTypeInfo().name}()
 </#list>
 
 class ${componentName}Result(GenericResult):
@@ -27,19 +24,19 @@ class ${componentName}Result(GenericResult):
         self.uuid = uuid4()
         ports = {}
 <#list outPorts as port>
-        ports["${port.name}"] = ${port.type.print()}()
+        ports["${port.name}"] = ${port.type.getTypeInfo().name}()
 </#list>
 
 class ${componentName}ImplTOP(IComputable, MQTTConnector):
     # convenience dicts to lookup ports and their respective protobuf-types
     COMPONENT_PORTS_IN = {
 <#list inPorts as port>
-        "${port.name}": ${port.type.print()},
+        "${port.name}": ${port.type.getTypeInfo().name},
 </#list>
     }
     COMPONENT_PORTS_OUT = {
 <#list outPorts as port>
-        "${port.name}": ${port.type.print()},
+        "${port.name}": ${port.type.getTypeInfo().name},
 </#list>
     }
 
@@ -48,28 +45,26 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
     serialize = lambda x: b64encode(x.serializeToString()).decode("UTF-8")
     deserialize = lambda x: b64decode(x)
 
-<#list outPorts as port>
-    def sendPort${port.name}(self) -> ${componentName}Result:
-        """publish the current value of _result.${port.name} to MQTT:/ports/...
-        Use this in your hand-written-code to publish to the port ${port.name}"""
-        self.publish(
-            "${port.getFullName()}",
-            _result.ports["${port.name}"]
-        )
-</#list>
+    # MQTTConnector implementation
 
-    ports_in = []
-    ports_out = COMPONENT_PORTS_IN.keys()
+    ports_in = set()
+    ports_out = set()
     # after startup the component will receive instructions on which topics a port should listen to
     # especially: one port may listen to several topics
     connectors = {}
 
-    def on_message(self, client, userdata, message):
+    def __init__(self, client_id, **kwargs) -> None:
+        self.client_id = client_id # call the constructor of this ImplTOP in your __init__ and set the client_id
+        for port in COMPONENT_PORTS_IN.keys():
+            ports_in.add(".".join([client_id, port]))
+        super().__init__(client_id=client_id, **kwargs)
+
+    def on_message(self, client, userdata, message) -> None:
         decoded_msg = message.payload.decode("utf-8")
         port = {message.topic.split("/")[-1]}
         if message.topic.startswith("/connectors/"): # TODO: only subscribe on correct connectors
             topic = f"/ports/{decoded_msg}".replace(".", "/")
-            print(port, "listening on", topic)
+            print(port, "now listening on", topic)
             self.subscribe(topic, qos=0)
             self.connectors[topic] = self._input.ports[port]
         else:
@@ -81,8 +76,17 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
             else:
                 print(f"Received unroutable message on topic {message.topic}")
 
-    def on_connect(self, client, obj, flags, rc):
+    def on_connect(self, client, obj, flags, rc) -> None:
         connect = super().on_connect(client, obj, flags, rc)
-        # TODO?: Publish new active component /components unlock/FaceUnlock/faceid
         # TODO: handle getInitialValues
-        return connect
+
+    # MQTT publish ports
+<#list outPorts as port>
+    def send_port_${port.name}(self) -> None:
+        """publish the current value of _result.${port.name} to MQTT:/ports/...
+        Use this in your hand-written-code to publish to the port ${port.name}"""
+        self.publish(
+            ".".join([self.client_id, "${port.name}"]),
+            _result.ports["${port.name}"]
+        )
+</#list>

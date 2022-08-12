@@ -36,7 +36,7 @@ public class GeneratePythonHwcComponent extends GeneratorStep {
         String[] res = compName.split("\\.");
         String simpleName = res[res.length - 1];
 
-        // TODO: Fill with real values
+        // TODO: Remove first x.x.x.x
         ArrayList<PortSymbol> InPorts = (ArrayList<PortSymbol>) comp.getIncomingPorts();
         ArrayList<PortSymbol> OutPorts = (ArrayList<PortSymbol>) comp.getOutgoingPorts();
 
