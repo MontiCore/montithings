@@ -7,12 +7,10 @@ classdiagram FaceUnlock {
             public boolean allowed;
             public int visitor_id;
         }
-
+    }
+    package Image {
         class Image {
             int person_id;
         }
-
-        association [1] Person (side1) -> (side2) Image [*];
-        association [1] Person -> Image [0..1];
     }
 }

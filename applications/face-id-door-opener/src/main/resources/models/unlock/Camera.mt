@@ -2,12 +2,12 @@ package unlock;
 
 import FaceUnlock.*;
 component Camera {
-    port out Person.Image image;
+    port out Image.Image image;
 
     int click = 0;
     every 1s {
       log("[Camera-Montithings] took picture");
-      image = :Person.Image{
+      image = :Image.Image{
         person_id = click % 5;
       };
       click++;
