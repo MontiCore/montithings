@@ -162,6 +162,7 @@ Thus cd2proto directly translates maps into the Protocol Buffer `map<,>` type.
 
 Unfortunately Protocol Buffers do not support nested lists and lists of maps.
 If necessary one can create intermediate Message types, e.g. for using `Set<Set<int>` create an extra `SetOfint` Message like this:
+
 Example:
 ```cd
 // cd4analysis
@@ -178,6 +179,7 @@ message ListOfString {
   repeated ListOfString strings = 1;
 }
 ```
+
 Automatic creation of such intermediate Message Types is currently implemented for `List<>` only.
 
 ### Associations
@@ -187,14 +189,35 @@ In case of a cardinality of exactly 1 the associated type is just embedded into 
 
 Otherwise, a `repeated` field is used to embed the associated type.
 
-__TODO: ADD EXAMPLE WITH ASSOCIATIONS__
+Example:
+
+```cd
+// cd4analysis
+class SomeClass {}
+class OtherClass {}
+association SomeClass -> (mult) OtherClass [*];
+association SomeClass -> (opt) OtherClass [0..1];
+association SomeClass -> (single) OtherClass [1];
+```
+
+```protobuf
+// Protocol Buffer
+message SomeClass {
+  repeated OtherClass mult = 1;
+  repeated OtherClass opt = 2;
+  OtherClass single = 3;
+}
+message OtherClass {
+}
+```
 
 #### Note: Cyclic Associations
 
-Bidirectional, cyclic and unspecified associations are _not supported_ by cd2proto as these might result in cyclic dependencies.
+Bidirectional, cyclic and unspecified associations are _not supported_ by cd2proto as these might
+result in cyclic dependencies.
 Serialization of cyclic data structures is non-trivial and hard to handle with code generators.
 For further information see:
-TODO: Reference to Andres CoCo description 
+TODO: Reference to Andres CoCo description
 
 ### Packages
 
