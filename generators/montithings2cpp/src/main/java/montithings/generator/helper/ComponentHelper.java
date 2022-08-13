@@ -852,6 +852,10 @@ public class ComponentHelper {
     return Paths.get(comp.getFullName().replace('.', File.separatorChar) + "Impl.py");
   }
 
+  public static String getPythonMainScriptName(ComponentTypeSymbol comp) {
+    return getPythonBehaviourFile(comp).getFileName().toString().replace("Impl", "");
+  }
+
   /**
    * Returns true iff the component has a python behaviour implementation file
    * below hwcRoot.

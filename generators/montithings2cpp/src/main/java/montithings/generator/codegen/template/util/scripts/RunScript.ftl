@@ -14,25 +14,15 @@ sleep 5
 echo "Starting components..."
 </#if>
 
-
-
-<#if brokerIsMQTT && hwcPythonScripts?size!=0>
-  export PYTHONPATH=$PYTHONPATH:../../python:python;
-  find python -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python:python; python3 -u "$0" > "$0.log" 2>&1 &' '{}' \;
-  sleep 1 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
-</#if>
-
 <#list instances as pair >
   <#if brokerIsMQTT && ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
-    <#assign hwcPythonFile = ComponentHelper.getPythonBehaviourFile(pair.key)>
-    # ${hwcPythonFile}
-    # ${hwcPythonFile.getFileName()}
-    # ${hwcPythonFile.getFileName().toString()}
+    <#assign hwcPythonFile = ComponentHelper.getPythonMainScriptName(pair.key)>
     OLD_PYTHONPATH="${r"${PYTHONPATH}"}"
     export PYTHONPATH="$PYTHONPATH:python"
     # start hwc-component ${hwcPythonFile}
-    python3 -u "python/${hwcPythonFile.replace("Impl", "")}" > "python/${hwcPythonFile.replace("Impl.py", "")}.log" 2>&1 &
+    python3 -u "python/${hwcPythonFile}" > "python/${hwcPythonFile}.log" 2>&1 &
     export PYTHONPATH="$OLD_PYTHONPATH"
+    sleep 1 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
   </#if>
 </#list>
 

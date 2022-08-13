@@ -76,8 +76,8 @@ PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto")
 echo "compiling .proto files:"
 echo "${r"${PROTO_FILES}"}"
 echo ${r"${PROTO_FILES}"} | xargs protoc --python_out=hwc/. --proto_path="${r"${PROTO_PATH}"}"
-echo "Move all hwc python-code to python directory" # This avoids directory based clashes with imports
-mv -n `find hwc/* -name "*.py"` python/.
+echo "Copy all hwc python-code to python directory" # This avoids directory based clashes with imports
+cp -n `find hwc/* -name "*.py"` python/.
 
 </#if>
 <#if splittingModeIsLocal>
