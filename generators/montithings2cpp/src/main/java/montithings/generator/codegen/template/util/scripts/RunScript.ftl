@@ -25,7 +25,15 @@ echo "Starting components..."
 
 <#list instances as pair >
   <#if brokerIsMQTT && ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
-    <#-- FILL WITH PY RUN COMMANDS -->
+    <#assign hwcPythonFile = ComponentHelper.getPythonBehaviourFile(pair.key)>
+    # ${hwcPythonFile}
+    # ${hwcPythonFile.getFileName()}
+    # ${hwcPythonFile.getFileName().toString()}
+    OLD_PYTHONPATH="${r"${PYTHONPATH}"}"
+    export PYTHONPATH="$PYTHONPATH:python"
+    # start hwc-component ${hwcPythonFile}
+    python3 -u "python/${hwcPythonFile.replace("Impl", "")}" > "python/${hwcPythonFile.replace("Impl.py", "")}.log" 2>&1 &
+    export PYTHONPATH="$OLD_PYTHONPATH"
   </#if>
 </#list>
 
