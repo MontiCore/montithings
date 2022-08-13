@@ -3,6 +3,7 @@ package montithings.generator.steps.generate;
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
 import de.se_rwth.commons.logging.Log;
 import montiarc.util.Modelfinder;
+import montithings.generator.cd2proto.ParseException;
 import montithings.generator.cd2proto.ProtoGenerator;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
@@ -27,12 +28,11 @@ public class GenerateProtobuf extends GeneratorStep {
       Set<Path> protoFiles;
       try {
         protoFiles = generator.generate();
-      } catch (IOException e) {
-        Log.error("ProtoGenerator is exceptional: ", e);
-        throw new RuntimeException("How else should I abort the GeneratorStep?");
+        state.setProtoFiles(protoFiles);
+      } catch (IOException | ParseException e) {
+        e.printStackTrace();
+        Log.error("0xMT1337 Could not generate Protocol Buffer description file for \"" + model + "\":", e);
       }
-
-      state.setProtoFiles(protoFiles);
     }
   }
 }

@@ -24,3 +24,7 @@ mosquitto_sub -h localhost -W 1 -F '%t' -t '#' 2>/dev/null | grep '^/sensorActua
 <#if brokerIsDDS && splittingModeIsDistributed>
   docker stop dcpsinforepo
 </#if>
+
+if [ -d "python" ]; then
+find python -name "*.py" -exec pkill -f '{}' \;
+fi

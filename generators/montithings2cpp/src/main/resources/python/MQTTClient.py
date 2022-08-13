@@ -15,8 +15,8 @@ def JSONDump(msg, uuid, nullopt=False):
 
 class MQTTConnector(MQTTClient):
 
-    serialize = lambda x: x
-    deserialize = lambda x: x
+    serialize = lambda _,x: x
+    deserialize = lambda _,x: x
     # sets of fully qualified port-Strings
     ports_in = set()
     ports_out = set()
