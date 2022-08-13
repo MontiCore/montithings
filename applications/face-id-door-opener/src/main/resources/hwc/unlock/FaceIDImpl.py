@@ -1,8 +1,4 @@
-from random import choice
-
-from FaceIDImplTOP import FaceIDImplTOP, FaceIDInput, FaceIDResult
-from FaceUnlock_pb2 import Person
-
+from FaceIDImplTOP import FaceIDImplTOP
 
 class FaceIDImpl(FaceIDImplTOP):
 
@@ -13,14 +9,24 @@ class FaceIDImpl(FaceIDImplTOP):
         3: "Danyls",
         4: "Merlin",
     }
-    def getInitialValues(self) -> FaceIDResult:
-        return FaceIDResult()
 
-    def compute(self, _input: FaceIDInput) -> FaceIDResult:
-        person = Person()
-        person.visitor_id = _input.payload.personId
-        person.name = self.personDB[person.visitor_id]
-        person.allowed = person.name in [ "Sebastian", "Andre", "Tim"]
+    def __init__(self):
+        super().__init__(
+            client_id="unlock.FaceUnlock.faceid", # client ID has to match the fully qualified name in FaceUnlock.mt
+            reconnect_on_failure=True
+        )
 
-        print("[FaceID-Python] visitor", person.name, "authorized" if person.allowed else "not authorized")
-        return FaceIDResult(person)
+    def getInitialValues(self) -> None:
+        self._result.ports["visitor"].visitor_id = 1
+        self._result.ports["visitor"].name = "Bert"
+        self._result.ports["visitor"].allowed = False
+
+    def compute(self) -> None:
+        # manipulate the visitor field
+        self._result.ports["visitor"].visitor_id = self._input.ports["image"].person_id
+        self._result.ports["visitor"].name = self.personDB[self._result.ports["visitor"].visitor_id]
+        self._result.ports["visitor"].allowed = self._result.ports["visitor"].name in [ "Sebastian", "Andre", "Tim"]
+
+        print("[FaceID-Python] visitor", self._result.ports["visitor"].name, "authorized" if self._result.ports["visitor"].allowed else "not authorized")
+        # send the current state of visitor on /ports/unlock/FaceUnlock/faceid/visitor
+        self.send_port_visitor()

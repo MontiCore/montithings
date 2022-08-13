@@ -4,6 +4,8 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 <#include "/template/Preamble.ftl">
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
+set -e
+
 <#if brokerIsDDS && splittingModeIsDistributed>
 echo "Starting DCPSInfoRepo..."
 docker run --name dcpsinforepo --rm -d -p 12345:12345 registry.git.rwth-aachen.de/monticore/montithings/core/openddsdcpsinforepo
@@ -12,31 +14,31 @@ sleep 5
 echo "Starting components..."
 </#if>
 
-
-
-<#if brokerIsMQTT && hwcPythonScripts?size!=0>
-  exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
-</#if>
-
-# Run Python Ports
-if [ -d "hwc" ]; then
-echo starting python ports...
-find hwc -name "*.py" -exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "$0" > "$0.log" 2>&1 &' '{}' \;
-sleep 2 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
-echo python ports started
-fi
+<#list instances as pair >
+  <#if brokerIsMQTT && ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
+    <#assign hwcPythonFile = ComponentHelper.getPythonMainScriptName(pair.key)>
+    OLD_PYTHONPATH="${r"${PYTHONPATH}"}"
+    export PYTHONPATH="$PYTHONPATH:python"
+    # start hwc-component ${hwcPythonFile}
+    python3 -u "python/${hwcPythonFile}" > "python/${hwcPythonFile}.log" 2>&1 &
+    export PYTHONPATH="$OLD_PYTHONPATH"
+    sleep 1 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
+  </#if>
+</#list>
 
 <#list instances as pair >
-  <#if brokerIsMQTT>
-  ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
-  <#elseif brokerIsDDS>
-    <#if splittingModeIsDistributed>
-      ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini --DCPSInfoRepo localhost:12345 > ${pair.getValue()}.log 2>&1 &
+  <#if !ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
+    <#if brokerIsMQTT>
+    ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
+    <#elseif brokerIsDDS>
+      <#if splittingModeIsDistributed>
+        ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini --DCPSInfoRepo localhost:12345 > ${pair.getValue()}.log 2>&1 &
+      <#else>
+        ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini > ${pair.getValue()}.log 2>&1 &
+      </#if>
     <#else>
-      ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini > ${pair.getValue()}.log 2>&1 &
-    </#if>
-  <#else>
   ./${pair.getKey().fullName} --name ${pair.getValue()} --managementPort ${config.getComponentPortMap().getManagementPort(pair.getValue())} --dataPort ${config.getComponentPortMap().getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
+  </#if>
   </#if>
 </#list>
 <#if brokerIsMQTT>
@@ -45,3 +47,6 @@ fi
   </#list>
 </#if>
 
+<#if brokerIsMQTT && hwcPythonScripts?size!=0>
+exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
+</#if>

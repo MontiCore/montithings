@@ -6,6 +6,8 @@ def parse_cmd_args():
                         help='Network port of the MQTT broker')
     parser.add_argument('--brokerHostname', nargs='?', default='localhost', type=str,
                         help='Hostname of the MQTT broker')
+    parser.add_argument('--name', nargs='?', default=__name__, type=str,
+                        help='Identifier for this python component (e.g. MQTT-Communication)')
     args_temp, unknown = parser.parse_known_args()
     args = vars(args_temp)
-    return args['brokerHostname'], args['brokerPort']
+    return args['brokerHostname'], args['brokerPort'], args['name']

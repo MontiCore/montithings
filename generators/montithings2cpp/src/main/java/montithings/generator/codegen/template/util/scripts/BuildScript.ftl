@@ -8,9 +8,6 @@ ${tc.signature("comp","hwcPythonScripts","config", "existsHWC")}
 # Or call "USE_CONAN=1 ./build.sh componentName"
 #
 
-
-set -e # Stop on first error
-
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 <#if config.getSplittingMode().toString() == "OFF">
   COMPNAME=${comp.getPackageName()}
@@ -72,6 +69,7 @@ cp ../../python/montithingsconnector.py python/.
 cp ../../python/requirements.txt python/.
 cp ../../python/MQTTClient.py python/.
 cp ../../python/IComputable.py python/.
+cp ../../python/parse_cmd.py python/.
 
 PROTO_PATH="../../"
 PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto")
@@ -81,6 +79,9 @@ then
   echo "${r"${PROTO_FILES}"}"
   find "${r"${PROTO_PATH}"}" -name "*.proto" -print0 | xargs -0 protoc --python_out=python/. --proto_path="${r"${PROTO_PATH}"}"
 fi
+echo "Copy all hwc python-code to python directory" # This avoids directory based clashes with imports
+cp -n `find hwc/* -name "*.py"` python/.
+
 </#if>
 <#if splittingModeIsLocal>
 cp -r ../../"$COMPNAME"/ports .
