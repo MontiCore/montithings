@@ -16,7 +16,6 @@ explicit ${typeName}(const ${type.getEnclosingScope().getEnclosingScope().getNam
 </#if>
 {
 <#list associations as assoc>
-<#-- TODO: associations probably need some special handling for e.g. optionals and repeated -->
     <#assign assocName=AssociationHelper.getDerivedName(assoc, type)>
     <#assign assoc_t=AssociationHelper.getOtherSideTypeName(assoc, type)>
     {
