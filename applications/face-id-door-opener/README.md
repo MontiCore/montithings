@@ -1,16 +1,64 @@
 <!-- (c) https://github.com/MontiCore/monticore -->
-# Basic Input Output
+# FaceUnlock - FaceID Door Opener with Google's "Protocol Buffers"
 
-This example shows how to use MQTT to connect components to each other.
-Architecture-wise it uses the same models and hand-written code as the 
-Basic-Input-Output example:
+This example shows how to set up a pipeline with components using different high-level-programming-languages. 
+Additionally, by using the protobuf-generator "cd2proto", we leverage the language-spanning capabilities of the
+[Google-Protobuf-Language](https://developers.google.com/protocol-buffers) ([Github](https://github.com/protocolbuffers/protobuf)).
 
-<img src="../../docs/BasicInputOutput.png" alt="drawing" width="400px"/>
+The elegance of retrieving a resembling `FaceUnlock.proto` definition out of a descriptive class diagram (i.e. `src/main/resources/models/unlock/FaceUnlock.cd`)
+can be found in generating all necessary type safe bindings for arbitrary (yet *supported*) languages,
+with a fast, memory efficient and stable implementation.
+This example shows the communication between montithings-behaviour, a python implementation and a C++ implementation.
+The montithings-behaviour is defined in 
 
-In the configuration, we however added two parameters to modify the generation:
+<img src="../../docs/FaceUnlock-MontiThings.png" alt="drawing" width="1053px"/>
+
+We will also show how a language can be integrated into the montithings-Code-Generator "montithings2cpp" 
+at the example of the duck-typed language [Python](https://python.org), but also
+what guidelines and design patterns may be followed to integrate a new language with the Generator.
+
+## Getting started
+To get the example up and running generate the code:
+```bash
+mvn clean install
 ```
+and build the binaries for all compiled components:
+```bash
+cd target/generated-sources
+./build.sh
+```
+After the C++-code and proto-code are built, and the python files are in place, make sure you have an MQTT-Broker running.
+You could use mosquitto, if you don't have any.
+```bash
+# check if you have mosquitto running and start (if not running already)
+systemctl info mosquitto.service
+systemctl start mosquitto.service
+
+# or run it locally in another terminal:
+systemctl stop mosquitto.service # (if the service is running)
+mosquitto                        # starts an MQTT-Broker on localhost
+
+# listen to all MQTT-Topics:
+mosquitto_sub -v -t "#"
+```
+After you made sure there is an MQTT-Broker that can be used for communication, start all components:
+```bash
+cd build/bin
+./run.sh
+```
+You may observe the component-logs with tail. Omit "-f", if you just want a peek into logs.
+```bash
+tail -f unlock.FaceUnlock.camera.log # Montithings-Behaviour
+tail -f python/FaceID.log            # Python-Behaviour
+tail -f unlock.FaceUnlock.door.log   # C++-Behaviour
+```
+To stop the processes
+
+This code generation is built for/with the following maven configuration parameter
+```xml
 <splitting>LOCAL</splitting>
 <messageBroker>MQTT</messageBroker>
+<serialization>Protobuf</serialization>
 ```
 
 Since `splitting` is set to `LOCAL` (default is `OFF`) the generator will create 
@@ -96,3 +144,5 @@ different machines, and thus, to let distributed components communicate.
 [mqtt]: https://en.wikipedia.org/wiki/MQTT
 [mitm]: https://en.wikipedia.org/wiki/Man-in-the-middle_attack
 [mosquitto]: https://mosquitto.org/
+
+# Design decisions
