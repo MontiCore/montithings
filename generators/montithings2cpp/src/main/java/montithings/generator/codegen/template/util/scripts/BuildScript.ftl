@@ -77,7 +77,7 @@ if [[ -n "${r"${PROTO_FILES}"}" ]]
 then
   echo "compiling .proto files:"
   echo "${r"${PROTO_FILES}"}"
-  find "${r"${PROTO_PATH}"}" -name "*.proto" -print0 | xargs -0 protoc --python_out=python/. --proto_path="${r"${PROTO_PATH}"}"
+  find "${r"${PROTO_PATH}"}" -name "*.proto" -print0 | xargs -0 protoc --python_out=hwc/. --proto_path="${r"${PROTO_PATH}"}"
 fi
 echo "Copy all hwc python-code to python directory" # This avoids directory based clashes with imports
 cp -n `find hwc/* -name "*.py"` python/.
