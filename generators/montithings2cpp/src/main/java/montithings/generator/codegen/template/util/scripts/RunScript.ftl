@@ -24,6 +24,12 @@ echo "Starting components..."
 </#if>
 
 <#list instances as pair >
+  <#if brokerIsMQTT && ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
+    <#-- FILL WITH PY RUN COMMANDS -->
+  </#if>
+</#list>
+
+<#list instances as pair >
   <#if !ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
     <#if brokerIsMQTT>
     ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
@@ -44,3 +50,6 @@ echo "Starting components..."
   </#list>
 </#if>
 
+<#if brokerIsMQTT && hwcPythonScripts?size!=0>
+exec bash -c 'export PYTHONPATH=$PYTHONPATH:../../python; python3 -u "python/sensoractuatormanager.py" > "python/sensoractuatormanager.log" 2>&1 &' '{}' \;
+</#if>
