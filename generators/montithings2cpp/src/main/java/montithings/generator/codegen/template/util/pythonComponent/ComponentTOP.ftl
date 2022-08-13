@@ -77,7 +77,7 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
             if self.connectors.get(message.topic, False):
                 self.published_on_port = port # possibly racy, when compute is not finished before next message enters
                 self.connectors[message.topic].ParseFromString(payload_msg)
-                self.compute(self._input, payload_uuid)
+                self.compute()
             else:
                 print(f"Received unroutable message on topic {message.topic}")
 
