@@ -24,16 +24,18 @@ echo "Starting components..."
 </#if>
 
 <#list instances as pair >
-  <#if brokerIsMQTT>
-  ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
-  <#elseif brokerIsDDS>
-    <#if splittingModeIsDistributed>
-      ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini --DCPSInfoRepo localhost:12345 > ${pair.getValue()}.log 2>&1 &
+  <#if !ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
+    <#if brokerIsMQTT>
+    ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
+    <#elseif brokerIsDDS>
+      <#if splittingModeIsDistributed>
+        ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini --DCPSInfoRepo localhost:12345 > ${pair.getValue()}.log 2>&1 &
+      <#else>
+        ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini > ${pair.getValue()}.log 2>&1 &
+      </#if>
     <#else>
-      ./${pair.getKey().fullName} --name ${pair.getValue()} --DCPSConfigFile dcpsconfig.ini > ${pair.getValue()}.log 2>&1 &
-    </#if>
-  <#else>
   ./${pair.getKey().fullName} --name ${pair.getValue()} --managementPort ${config.getComponentPortMap().getManagementPort(pair.getValue())} --dataPort ${config.getComponentPortMap().getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
+  </#if>
   </#if>
 </#list>
 <#if brokerIsMQTT>
