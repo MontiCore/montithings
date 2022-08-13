@@ -21,7 +21,6 @@
     <module>hierarchy</module>
     <module>language-features</module>
     <module>mqtt-ports</module>
-    <module>mqtt-ports-with-cd</module>
     <module>face-id-door-opener</module>
     <module>dds-ports</module>
     <module>retain-state</module>
