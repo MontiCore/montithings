@@ -5,7 +5,6 @@ ${tc.signature("comp", "sensorActuatorPorts", "hwcPythonScripts", "config", "exi
 <#assign instances = ComponentHelper.getExecutableInstances(comp, config)>
 
 set -e
-set -x
 
 <#if brokerIsDDS && splittingModeIsDistributed>
 echo "Starting DCPSInfoRepo..."
