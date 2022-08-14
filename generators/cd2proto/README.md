@@ -43,7 +43,8 @@ A ``.proto`` file mainly consists of ``messages``. Below is an example of such a
 ```
 This ``message`` defines a ``Person`` and has three attributes ``name``, ``id`` and ``email``. These attributes are defined
 by their corresponding ``fields``, e.g. line 2-4 are three separate fields, one for each attribute.
-Each field has to have a field identifier, denoted by the equal sign and the following number. [?]
+Each field has to have a field identifier, denoted by the equal sign and the following number.
+It is used to [safely allow updates](https://developers.google.com/protocol-buffers/docs/proto3#updating) to the Protocol Buffer description.
 
 Additionally, each field also supports an additional keyword such as ``repeated`` (line 4), which in this case simply denotes, that there might be multiple separate ``email`` values to be serialized.
 
