@@ -203,10 +203,12 @@ with the pattern `send_port_[out-port]`, and may be used for every out-port alik
 for a side-effect-ful `publish` on every desired out-port.
 
 ### Serialization and Deserialization of in-/out-port-data
-One key decision to why to use protobuf is the efficient format of serialized data. 
-The deserialization on receiving on an in-port and serialization when sending to an 
+One key decision to why to use protocol buffers, is to send and receive serialized data,
+that is automatically formulated into discrete data.
+To parse and serialize into the protocol buffer format is one part of the pipeline.  
+Yet, the deserialization on receiving on an in-port and serialization when sending to an 
 out-port is done implicitly. 
-The user does not have to interact with the de-/serialization-process.
+The user does not, and should not have to interact with the de-/serialization-process.
 Because we know which data type will be delivered to which port, when instantiating
 `Input` and `Result`, the appropriate Protobuf-constructors are already in place.
 Therefore, when receiving data on in-port `image`, this is directly translated to
