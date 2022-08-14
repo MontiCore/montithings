@@ -27,7 +27,7 @@ What we ended up with is an independent, easy to use generator that takes a clas
 These methods can then be used in other projects such as MontiThings to share data cross languages.
 
 In this document we give a short overview of the different technologies used as well as the generator itself, its limitations and design decisions.
-Later on we discuss our Evaluation, for which we used MontiThings, with more detailed documentation [inside the corresponding module](../montithings/applications/face-id-door-opener), before we conclude
+Later on we discuss our Evaluation, for which we used MontiThings, with more detailed documentation [inside the corresponding module](https://git.rwth-aachen.de/se-student/ss22/lectures/sle/student-projects/protobuf/montithings/-/tree/protobuf-serialization/applications/face-id-door-opener), before we conclude
 this document by discussing what we achieved and what Future Work is left to be done.
 
 ## Protobuf <a name="Protobuf"></a>
