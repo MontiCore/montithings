@@ -219,7 +219,7 @@ all `visitor`-information, is serialized implicitly when publishing.
 
 ## Integrate another language to use Google's "Protocol Buffers"
 Because using Google's "Protocol Buffers" and its compiler `protoc` already provides
-us with the option to generate a language specific implementation for all types of our
+us with the option to generate a language specific implementation for all types in our
 Classdiagram, it is quite straight forward to integrate a new language.
 
 However, the difficulty is to apply the respective design principles of MontiThings:
@@ -242,6 +242,12 @@ However, the difficulty is to apply the respective design principles of MontiThi
    - Handle log files 
 6. Stop the Code, when executing the kill-script
 7. language-specific quirks and design principles
+
+Although not every feature in this guideline that is described below is implemented in the
+the implementations, it contains a lot of lessons learned, that arose during the 
+integration of Python, C++ and Go.
+This guide specifically follows the threads on how to integrate python into MontiThings,
+but should be generically applicable to new languages.
 
 > Following, the instantiation of a component is referred to as a "service"
 
@@ -316,6 +322,8 @@ all packages, and *don't* shadow imports by providing them on multiple paths.
 
 
 ### Step 3. - Generate Code
+This step resembles the execution of `mvn clean install` in the appropriate `application` 
+folder.
 To generate code we use the `generators/montithings2cpp`-Generator, that provides the
 infrastructure we need to embrace a new language.
 > In the following we "generator" refers to `generators/montithings2cpp/src/main/java/montithings/generator` 
@@ -353,16 +361,50 @@ For python, there is a dedicated folder with all necessary static imports:
 - MQTTConnector.py
 
 ### Step 4. - build-script - compile the generated Code
+The build-script is defined in `codegen/template/util/scripts/BuildScript.ftl`
+
 Generating Code is one job, but bundling all generated Code, such that the compiler can 
-build a binary from it, is not trivial.
+build a binary from or interpret it correctly is not trivial.
 Especially imports that depend on packaging or folder structure will make it *much harder*
 to generate correctly imported code.
 Especially generating code that depends on folder structure may be avoided to reduce
-integration complexity. 
+integration complexity.
+
+The build-script should not generate any code, but instead compile and bundle code into the
+`target/generated-sources/build/bin` directory.
+Depending on your language implementation you should the `protoc`-call here.
+Choose the appropriate `--<language>_out=` folder where you would like to output the
+compile protocol buffer file for your language.
+You can find the exact option to use when executing
+```bash
+protoc --help
+# for python3 
+protoc --python_out=hwc/.
+```
+Notice that you may need to install a plugin to use the protoc compiler with your language.
+For example on the branch `lang/go` you would need to work with the appropriate go plugin.
 
 ### Step 5. - run-script - run the generated and compiled Code
-   - Handle log files 
+The run-script is defined in `codegen/template/util/scripts/RunScript.ftl`
+
+When adding the execution of a binary or interpreted code to the run-script, it is
+necessary to explicitly set a client_id that can handle
+The run-script should also make sure, that executed service writes all output, like logging,
+errors, etc. into a discrete log-file.
+The log-file follows the pattern `Component.log`.
+For a python component-file `python/FaceID.py` the log-file would look like 
+`python/FaceID.log`
+
 ### Step 6. - kill-script - stop the Code
+The kill-script is defined in `codegen/template/util/scripts/KillScript.ftl`.
+
+When adding the termination of all new processes to the kill-script,
+one should *only* handle the termination of the respective process.
+Generic kills, like `killall python3`, should be avoided as this can easily interfere
+with other started processes.
+As a rule of thumb, the specifications of the kill-script are similar to the run-script,
+and may be set up similarly.
+
 ### Step 7. - language-specific quirks and design principles
 Depending on the language you want to integrate, different quirks may arise.
 For statically compiled code, like C++, the language will hinder you on integrating, 
