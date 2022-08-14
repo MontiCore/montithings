@@ -22,7 +22,8 @@ public class ProtobufRunner {
         CPP,
         JAVA,
         PYTHON,
-        //GO, TODO: make this available. proto-gen-go provides --go_out
+        // Go lang support is not provided by protoc, requires go extension
+        //GO
         PYI,
         CSHARP,
         KOTLIN,
