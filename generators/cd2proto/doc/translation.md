@@ -123,8 +123,6 @@ hierarchies only.
 But since cd4analysis does not permit multiple inheritance this should not become a problem.
 The benefit of this restriction is simplicity of implementation and usage.
 
-__TODO: Why is the usage simpler?__
-
 ### Arrays and Collections
 
 
