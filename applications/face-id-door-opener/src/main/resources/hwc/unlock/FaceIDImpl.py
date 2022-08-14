@@ -21,7 +21,8 @@ class FaceIDImpl(FaceIDImplTOP):
         self._result.ports["visitor"].name = "Bert"
         self._result.ports["visitor"].allowed = False
 
-    def compute(self) -> None:
+    def compute(self, port) -> None:
+        print(f"New values on port {port}")
         # manipulate the visitor field
         self._result.ports["visitor"].visitor_id = self._input.ports["image"].person_id
         self._result.ports["visitor"].name = self.personDB[self._result.ports["visitor"].visitor_id]

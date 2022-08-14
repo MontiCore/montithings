@@ -1,3 +1,4 @@
+import string
 from uuid import UUID, uuid4
 
 class GenericInput:
@@ -11,14 +12,13 @@ class GenericResult:
     payload = {}
 
     def __init__(self, payload) -> None:
-        # TODO: map to value0->payload->data
         self.payload = payload
         self.uuid = uuid4()
 
 class IComputable:
 
-    def getInitialValues(self) -> GenericResult:
+    def getInitialValues(self) -> None:
         raise NotImplementedError()
 
-    def compute(self, input_: GenericInput) -> GenericResult:
+    def compute(self, in_port: string) -> None:
         raise NotImplementedError()
