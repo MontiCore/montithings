@@ -27,11 +27,11 @@ What we ended up with is an independent, easy to use generator that takes a clas
 These methods can then be used in other projects such as MontiThings to share data cross languages.
 
 In this document we give a short overview of the different technologies used as well as the generator itself, its limitations and design decisions.
-Later on we discuss our Evaluation, for which we used MontiThings, with more detailed documentation inside the corresponding module [link], before we conclude
+Later on we discuss our Evaluation, for which we used MontiThings, with more detailed documentation [inside the corresponding module](../montithings/applications/face-id-door-opener), before we conclude
 this document by discussing what we achieved and what Future Work is left to be done.
 
 ## Protobuf <a name="Protobuf"></a>
-Google Protobuf (https://developers.google.com/protocol-buffers) is a mechanism to serialize data in a fast and efficient way.
+Google Protobuf (https://developers.google.com/protocol-buffers) is a set of tools to serialize data in a fast and efficient way.
 It is an Interface Definition Language, developed by Google, that enables easy to use cross language compatability and offers a compact serialized format to use.
 A ``.proto`` file mainly consists of ``messages``. Below is an example of such a ``message``.
 ```
