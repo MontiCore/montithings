@@ -269,3 +269,10 @@ The linked README describes the current state and is needed to be done.
 As mentioned in the **Limitations** section, associations that form a cycle are not supported. We think that this can be achieved though. As described earlier, using a `uuid` system, we think that associated elements could be further tracked
 beyond the first full cycle, but it has not been implemented yet. Aside from that further testing with a larger variety of different test cases is needed.
 Although in theory a lot of languages are already supported, actual testing so far has only been done with C++ and Python and should be done with a larger variety of languages.
+
+## Authors and acknowledgment
+
+* André Fugmann
+* Merlin Freiherr von Rössing
+* Sebastian Grabowski
+* Tim Nebel
