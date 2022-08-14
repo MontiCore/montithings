@@ -270,6 +270,24 @@ As mentioned in the **Limitations** section, associations that form a cycle are 
 beyond the first full cycle, but it has not been implemented yet. Aside from that further testing with a larger variety of different test cases is needed.
 Although in theory a lot of languages are already supported, actual testing so far has only been done with C++ and Python and should be done with a larger variety of languages.
 
+### Adding support for more types
+
+If the CD4A language is extended with more types or support for currently unsupported types is required, adding support for
+extra types is very straightforward.
+
+The way cd2proto resolves a type from the class diagram to a java type is with the help of the `TypeHelper` (helper/TypeHelper.java).
+The TypeHelper supports four types of `SymTypeExpression`'s from MontiCore, each resolved by their own class implementing the `ITypeResolver`
+interface (found in `helper/resolver/`).
+
+* SymTypeConstant for primitive types (`PrimitiveTypeResolver`, int, long, ...)
+* SymTypeArray for arrays (`ArrayTypeResolver`, Currently, only one-dimensional arrays are supported)
+* SymTypeOfGenerics for generic types (`GenericTypeResolver`, List<T>, Map<T, E>, ...)
+* SymTypeOfObject for types other types registered in the scope of the CD (`ObjectTypeResolver`)
+
+To add support for a new type extend the implementation of the corresponding type resolver. If support for a new kind of type is required,
+also extend the implementation of `TypeHelper` by creating a new `ITypeResolver` class that handles the new types and adding it to the `typeMap`
+in the constructor.
+
 ## Authors and acknowledgment
 
 * André Fugmann
