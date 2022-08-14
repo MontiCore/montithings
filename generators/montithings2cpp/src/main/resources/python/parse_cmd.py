@@ -10,4 +10,4 @@ def parse_cmd_args():
                         help='Identifier for this python component (e.g. MQTT-Communication)')
     args_temp, unknown = parser.parse_known_args()
     args = vars(args_temp)
-    return args['brokerHostname'], args['brokerPort'], args['name']
+    return args['brokerHostname'], args['brokerPort']
