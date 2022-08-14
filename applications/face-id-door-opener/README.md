@@ -71,7 +71,7 @@ mvn clean install
 and build the binaries for all compiled components:
 ```bash
 cd target/generated-sources
-./build.sh
+bash ./build.sh
 ```
 After the C++-code and proto-code are built, and the python files are in place,
 make sure you have an MQTT-Broker running.
@@ -190,12 +190,11 @@ which one initializes with `FaceID.getInitialValues()`.
 Therefore the implementation was required to retain state, which is done by providing
 the stateful instances of `_input` and `_result`.
 That way, when receiving on an in-port, the HWC may decide to use/save the state of
-`_input.ports`
-so that when receiving on another in-port the previously set port may be used.
-Also, as the `compute` method is now state-bound to `ImplTOP`, we don't directly see 
-from which port the `compute` was initiated.
-For that purpose, a field `FaceIDImplTOP.published_on_port` may be used for additional
-control flow.
+`_input.ports` so that when receiving on another in-port the previously set port may be used.
+Also, as the `compute` method is now state-bound to the the `ImplTOP`-class, the argument
+to the method is *not* a member of `FaceIDInput`, but rather the *string* that represents 
+the port in `self._input.ports`.
+As such, the HWC can identify the port from which `FaceIDInput` was last manipulated from.
 
 Once the HWC has manipulated all fields and is ready to send, this can be done via
 the method `FaceIDImplTOP.send_port_visitor()` for the out-port `visitor`.
@@ -217,13 +216,166 @@ when calling `send_port_visitor()`, the corresponding `Person()`-object, that ho
 all `visitor`-information, is serialized implicitly when publishing. 
 
 ## Integrate another language to use Google's "Protocol Buffers"
+Because using Google's "Protocol Buffers" and its compiler `protoc` already provides
+us with the option to generate a language specific implementation for all types of our
+Classdiagram, it is quite straight forward to integrate a new language.
 
+However, the difficulty is to apply the respective design principles of MontiThings:
+1. Handle communication with other services/components (over MQTT)
+2. Handle all necessary symbols
+   - Package names
+   - ClientID (name of the instance)
+   - Ports
+   - Types
+   - Imports
+3. Generate and provide the Code that is needed, so that a HWC works with MontiThings
+   - IComputable
+   - MQTTConnector
+   - ImplTOP (for example `FaceIDImplTOP`)
+   - Client (for example `FaceID`)
+4. Compile the generated Code
+   - Bundle all generated Code, such that the compiler can build the binary
+   - Handle imports and their respective paths *correctly* 
+5. Run the Code, when executing the build-script
+   - Handle log files 
+6. Stop the Code, when executing the kill-script
+7. language-specific quirks and design principles
+
+> Following, the instantiation of a component is referred to as a "service"
+
+### Step 1. - Communication
+The first step is to get to know the communication interface that the new language should use.
+The MontiThings MQTT-Connector uses different mechanics to interface with a service.
+#### Register Service
+Every component should "sign in" when connecting to MQTT.
+For that, the service will publish their respective symbol (e.g. `unlock/FaceUnlock/faceid`)
+to the topic `/components`.
+#### Dealing with connectors
+This will also trigger the `FaceUnlock` service to publish the connectors.
+The connectors will be published to the respective topics in the form of
+```bash
+# generic
+/connectors/client/id/in-port other/client/id/out-port
+# specific
+/connectors/unlock/FaceUnlock/faceid/image unlock/FaceUnlock/camera/image
+```
+> Please make sure you subscribe to the in-port-topics *before* registering your service.
+
+> It is possible, that one in-port may receive data from several out-ports. Handle them accordingly!
+
+Every in-port should subscribe to the respective topics published on `/connectors`.
+Every port-topic is of the format:
+```bash
+# generic
+/ports/other/client/id/out-port
+# specific
+/ports/unlock/FaceUnlock/camera/image
+```
+
+#### Send to out-ports
+In contrast to the in-ports, the out-ports are quite simple and static in their behaviour.
+To send to another service, respectively to send to an out-port, our service publishes 
+to the topic
+```bash
+# generic
+/ports/client/id/out-port
+# specific
+/ports/unlock/FaceUnlock/faceid/visitor
+```
+
+### Step 2. - Symbols
+#### Package, components, class diagram names
+The MontiThings definition will use different symbols to identify different parts of the
+definition.
+Make sure you use the appropriate symbol for the task.
+A fully qualified symbol will have different ways to access them in a GeneratorStep.
+Watch out for 
+- package names
+- class diagram names
+- component names
+- variable names
+
+#### ClientID - name of the service
+The client id is handed to an executable service to distinguish it, for example via MQTT.
+Be sure to not have different running instances with the same client id.
+This will force the MQTT-Connector to disconnect/reconnect, when two services identify as
+the same.
+
+#### Ports and Types
+The in- and out-ports are defined in the `.mt`-definitions (e.g. `FaceID.mt`).
+Every port has a type, that is equivalent to the protobuf class for that specific port.
+> In the current implementation of `cd2proto` package names are ignored!
+  A proto class of `Image.Image()` will be provided as `Image()`.
+
+#### Imports
+In most languages imports resemble some kind of package or folder structure.
+When dealing with imports always make sure, that a compiler/interpreter is able to find
+all packages, and *don't* shadow imports by providing them on multiple paths.
+
+
+### Step 3. - Generate Code
+To generate code we use the `generators/montithings2cpp`-Generator, that provides the
+infrastructure we need to embrace a new language.
+> In the following we "generator" refers to `generators/montithings2cpp/src/main/java/montithings/generator` 
+#### Generator Step
+You will need to add a new GeneratorStep to the `MontiThingsGeneratorTool`.
+You can put your code into `steps/generate`.
+There you can also refer to `GenerateProtobuf` and `GeneratePythonHwcComponent`.
+In our approach we used Freemarker Templates, or FTL, as they nicely resemble the
+generated code, and even offers some Java-interop inside the FTL.
+You can refer to `codegen/template/util/pythonComponent` for the Python `.ftl`-files.
+- ComponentTOP.ftl - ImplTOP (for example `FaceIDImplTOP`)
+- Component.ftl - Client (for example `FaceID`)
+
+##### TOP
+The TOP mechanism should provide everything needed for the hand-written code:
+The instantiation of the Input and Result types, and the Computable interface.
+
+Furthermore, the handling of in-ports and out-ports should be implemented here.
+- A static implementation for out-ports is needed, e.g. by generating a `send_port_x`-method
+- A dynamic implementation for in-ports is needed, that can handle the dynamic 
+  connectors mechanism of in-ports
+- encapsulate deserialization of in-ports 
+- encapsulate serialization of out-ports
+
+##### Component
+The component is the entry-point to the service, and thus the main-function.
+This should provide the actual compiled or interpreted entrypoint to execute in the
+run-script.
+Here, the MQTT-Connector is finally called and runs forever in a listening, subscribed state.
+
+##### Libraries, static code and generic imports
+Static code can be put in the `resources` folder.
+For python, there is a dedicated folder with all necessary static imports:
+- IComputable.py
+- MQTTConnector.py
+
+### Step 4. - build-script - compile the generated Code
+Generating Code is one job, but bundling all generated Code, such that the compiler can 
+build a binary from it, is not trivial.
+Especially imports that depend on packaging or folder structure will make it *much harder*
+to generate correctly imported code.
+Especially generating code that depends on folder structure may be avoided to reduce
+integration complexity. 
+
+### Step 5. - run-script - run the generated and compiled Code
+   - Handle log files 
+### Step 6. - kill-script - stop the Code
+### Step 7. - language-specific quirks and design principles
+Depending on the language you want to integrate, different quirks may arise.
+For statically compiled code, like C++, the language will hinder you on integrating, 
+whenever you have to specify a type.
+For dynamic, interpreted languages, like Python, the language will provide a good amount 
+of fault tolerance, when it comes to specifying types.
+This on the other hand makes it much harder to spot implementation errors, and thus the 
+generated code *must* be tested much more meticulous, before a generated implementation
+is ready. 
 
 ## Design Decisions
 #### json-encapsulation
 @Sebastian
-Although protobuf could be put published solely as the protobuf-String, this interferes
-with MontiThings' mechanism to keep track on messages.
+Although protobuf could be published solely as the protobuf-String, this interferes
+with MontiThings' mechanism to monitor messages.
 The protobuf string is instead encapsulated in a JSON-Format that MontiThings already
 knows:
 ```json
@@ -237,92 +389,5 @@ knows:
     }
 }
 ```
-> The base64-encoding has to happen, because the C++-Implementation for JSON crashes for null-Bytes in protobuf
-
---------
-# DELETE / REWRITE / ...
-Since `splitting` is set to `LOCAL` (default is `OFF`) the generator will create 
-multiple independent applications from the code. 
-These applications are intended to be executed on a single machine.  
-Secondly, `messageBroker` set to `MQTT` specifies that the generated 
-applications will use a [MQTT message broker][mqtt] to enable the applications 
-to communicate. 
-In our case, we use [Eclipse Mosquitto][mosquitto] for that purpose. 
-Therefore, before starting the applications you must install and start 
-Mosquitto on your local machine (use `mosquitto &` for starting Mosquitto). 
-
-The applications will use MQTT for both management traffic and data traffic.
-Composed components tell their subcomponents to which other ports their ports
-are connected.
-This is done using the MQTT topics that start with `/connectors/`. 
-
-Let's try that out by playing [man-in-the-middle][mitm]: 
-Open a terminal window and start listening to all topics starting with 
-`/connectors/`: 
-```
-mosquitto_sub -v -t '/connectors/#'
-```
-In a second terminal window, build the application and start only the 
-`hierarchy.Example` component:
-```
-./build.sh hierarchy.Example/
-cd build/bin
-./hierarchy.Example hierarchy.Example 30006 30007
-```
-
-The numbers 30006 30007 are normally provided by the `run.sh` script and tell 
-MontiThings which network ports to use in case there's no MQTT. 
-In the first terminal window you should now see something like this:
-```
-/connectors/hierarchy/Example/sink/value hierarchy/Example/source/value
-```
-That's the connector you can see in the picture above. 
-The port with the name fully qualified name `hierarchy/Example/sink/value` is 
-told to get its data from the port with the fully qualified name 
-`hierarchy/Example/source/value`. 
-
-
-Next, lets try to look at how the data flows through MQTT. 
-The data is exchanged using the topics that start with `/ports/`
-In your first terminal window, listen to those topics:
-```
-mosquitto_sub -v -t '/ports/#'
-```
-Next, start all of the applications as usual using your second terminal window:
-```
-./run.sh
-```
-
-Now, you should see the messages exchanged by the components running through 
-the first terminal window:
-```
-/ports/hierarchy/Example/source/value {
-    "value0": 1
-}
-/ports/hierarchy/Example/source/value {
-    "value0": 2
-}
-/ports/hierarchy/Example/source/value {
-    "value0": 3
-}
-```
-As you can see the `hierarchy/Example/source/value` port sends increasing 
-numbers. Great!
-
-Now stop the application in the second terminal window:
-```
-./kill.sh
-```
-In the first terminal window you should now see that there are no new messages 
-coming in.
-
-If you provide the hostname and port number of the MQTT broker to the 
-application when starting it, it is also possible to use MQTT brokers located on
-different machines, and thus, to let distributed components communicate.
-
-
-[mqtt]: https://en.wikipedia.org/wiki/MQTT
-[mitm]: https://en.wikipedia.org/wiki/Man-in-the-middle_attack
-[mosquitto]: https://mosquitto.org/
-
-# Design decisions
+> The base64-encoding has to happen, because the C++-Implementation for JSON crashes
+  for null-Bytes in protobuf (not compatible with UTF-8)
