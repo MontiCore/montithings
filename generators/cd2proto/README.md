@@ -57,9 +57,15 @@ data structures.
 
 ## Proto Generator <a name="Proto Generator"></a>
 
+The central piece of cd2proto is
+the [ProtoGenerator class](src/main/java/montithings/generator/cd2proto/ProtoGenerator.java).
+It looks for class diagram files (.cd) in the specified directories and generates the corresponding
+Protocol Buffer description files (.proto).
+
 ### Example <a name="Example"></a>
 
 Coorperation.cd
+
 ```
 classdiagram Corporation {
     abstract class Person {
@@ -79,13 +85,62 @@ classdiagram Corporation {
     association [0..1] Employee <- (reportsTo) Intern [*];
 }
 ```
+
 The class diagram above shows a simple class diagram that holds three classes:
+
 * ``abstract Person``
 * ``Employee``
 * ``Intern``
 
-With Employee and Intern being subclasses of Person, thus inheriting the ```firstname``` and ```lastname``` attributes.
+With Employee and Intern being subclasses of Person, thus inheriting the ```firstname```
+and ```lastname``` attributes.
 
+Running the ProtoGenerator like this...
+
+```java
+// The directory to place the generated .proto files to
+Path outDir = Paths.get("target/output_directory");
+// The directory to look for class diagrams
+Path modelPath = Paths.get("src/test/resources/classdiagrams");
+// The fully qualified name of the model to translate
+String modelName = "Corporation";
+
+ProtoGenerator generator = new ProtoGenerator(outDir, modelPath, modelName);
+Set<Path> protoFiles = generator.generate();
+```
+
+...yields a Protocol Buffer description of the model.
+
+```protobuf
+syntax = "proto3";
+package montithings.Corporation.protobuf;
+
+message Person {
+    // Fields
+    string firstname = 1;
+    string lastname = 2;
+}
+
+message Employee {
+    // Parent class
+    Person super = 1;
+    // Fields
+    int32 employeeId = 2;
+    int64 salary = 3;
+}
+
+message Intern {
+    // Parent class
+    Person super = 1;
+    // Fields
+    bool getsPaid = 2;
+    // Associations
+    repeated Employee employee = 3;
+}
+```
+
+For further details on the translation of class diagrams to Protocol Buffer
+descriptions [see here](doc/translation.md).
 
 ## Limitations <a name="Limitations"></a>
 
