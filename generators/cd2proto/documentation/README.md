@@ -9,7 +9,6 @@
    1. [Example](#Example)
 6. [Limitations](#Limitations)
    1. [Circular Associations](#Circular Associations)
-   2. [MQTT Implementation](#MQTT Implementation)
 7. [Design Decisions](#Design Decisions)
    1. [Templates](#Templates)
    2. [The Super Attribute](#The Super Attribute)
@@ -44,16 +43,19 @@ Additionally, each field also supports an additional keyword such as ``repeated`
 
 Protobuf supports more features such as ``enums`` and ``package`` declarations, that we make use of.
 
-## CD4A Language <a name="CD4A Language"></a>
-As models to generate from, we use the Class Diagram Language **CD4A** (https://github.com/MontiCore/cd4analysis). An example can be found in the **Example** section further down.
+## CD4Analysis Language <a name="CD4A Language"></a>
+As models to generate from, we use the Class Diagram Language **CD4Analysis** (https://github.com/MontiCore/cd4analysis). An example can be found in the **Example** section further down.
+The CD4Analysis (CD4A) language is mainly used to model data structures or UML class diagrams. 
+From a top-level view, a class diagram, modeled in CD4A consists of ``classes``, ``attributes``, ``associations`` and ``enumerations``.
+A ``class diagram`` mainly consists of ``classes``, which contain corresponding ``attribues`` and can be wrapped inside ``packages``.
+These classes can additionally be associated with one another by using ``associations`` to model more elaborate data stuctures.
 
+A detailed documentation and more complex examples can be found at: https://github.com/MontiCore/cd4analysis/blob/master/src/main/grammars/de/monticore/cd4analysis.md
+
+We use this language mainly to derive the specified data structures and generate corresponding protocol buffers, which enable easy to use serializing and deserializing of the defined
+data structures.
 
 ## Proto Generator <a name="Proto Generator"></a>
-
-## Installation <a name="Installation"></a>
-
-Kurzer Test wie denn installiert wird.
-Was für Packages werden benötigt, etc.
 
 ### Example <a name="Example"></a>
 
@@ -106,10 +108,6 @@ To detect loops we use ```NoCircleCoCo```, a Context Condition, using the CoCo i
 When parsing a class diagram, a ```ASTCDCompilationUnit``` element is generated, which builds the root of the AST. 
 This compilation unit element contains a definition (```ASTCDDefinition```), which in turn holds a list of all associations occurring inside the parsed class diagram.
 Since every association also holds information about the classes that are associated, we can use this list to build a graph, using ```Graph.java``` and ```Vertex.java```, and run a simple algorithm, that computes, whether the proivded graph contains a cycle.
-
-
-
-### MQTT Implementation <a name="MQTT Implementation"></a>
 
 ## Design Decisions <a name="Design Decisions"></a>
 
@@ -171,12 +169,17 @@ classdiagram FaceUnlock {
 ```
 
 And used the resulting ```.proto``` to serialize data, inside an architecture, that was running both MontiThings behaviour (C++) and __handwritten__ Python code.
-More details on this can be found in the corresponding project.
+More details on this can be found in the corresponding project. 
 
 ## Conclusion
-In this small document we presented our work of the last few months and gave a short introduction to the 
+In this document we presented our work of the last few months and gave a short introduction to the 
 technologies used and presented the main work of this module, the `cd2proto` generator. We would like to emphasize here again, that this module, although being evaluated
 in MontiThings, is independent of it and can be used in any project that wants to use protocol buffers generated from 
 class diagrams.
 
 In short, this generator takes a class diagram file (`.cd`) and generates a Protobuf file (`.proto`) from it.
+From this `.proto` file, methods to serialize and deserialize data within the defined data structures can be generated in a target language of choice using the corresponding Protobuf compiler.
+The main advantage for our purposes was that we can generate into different languages, and enable cross language support for applications.
+
+## Future Work
+As mentioned in the **Limitations** section, cyclic 
