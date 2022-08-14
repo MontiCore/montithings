@@ -22,9 +22,31 @@ This module contains our implementation of a generator that takes a Class Diagra
 The Protobuf file can then be compiled by a compiler that is provided by Google to generate a file in a target language of choice, which then contains all necessary methods to serialize data conform with the provided class diagram. 
 However, due to limitations from Protobuf and time limitations not all features of the Class Diagram language can be supported or are not supported yet, mainly concerning associations.
 
+In this small documentation we will present the ``cd2proto generator``, its limitations and discuss some of our design decisions.
+For more detailed descriptions of the many different classes we have also written a README, that can be found inside the top directory.
+
 ## Protobuf <a name="Protobuf"></a>
+Google Protobuf (https://developers.google.com/protocol-buffers) is a mechanism to serialize data in a fast and efficient way.
+It is an Interface Definition Language, developed by Google, that enables easy to use cross language compatability and offers a compact serialized format to use.
+A ``.proto`` file mainly consists of ``messages``. Below is an example of such a ``message``.
+```
+1   message Person {
+2     string name = 1;
+3     int32 id = 2;
+4     repeated string email = 3;
+5   }
+```
+This ``message`` defines a ``Person`` and has three attributes ``name``, ``id`` and ``email``. These attributes are defined
+by their corresponding ``fields``, e.g. line 2-4 are three separate fields, one for each attribute.
+Each field has to have a field identifier, denoted by the equal sign and the following number. [?]
+
+Additionally, each field also supports an additional keyword such as ``repeated`` (line 4), which in this case simply denotes, that there might be multiple separate ``email`` values to be serialized.
+
+Protobuf supports more features such as ``enums`` and ``package`` declarations, that we make use of.
 
 ## CD4A Language <a name="CD4A Language"></a>
+As models to generate from, we use the Class Diagram Language **CD4A** (https://github.com/MontiCore/cd4analysis). An example can be found in the **Example** section further down.
+
 
 ## Proto Generator <a name="Proto Generator"></a>
 
@@ -56,9 +78,9 @@ classdiagram Corporation {
 }
 ```
 The class diagram above shows a simple class diagram that holds three classes:
-* abstract Person
-* Employee
-* Intern
+* ``abstract Person``
+* ``Employee``
+* ``Intern``
 
 With Employee and Intern being subclasses of Person, thus inheriting the ```firstname``` and ```lastname``` attributes.
 
@@ -117,3 +139,44 @@ The initial goal of the pitch was to eventually use this generator to serialize 
 More detailed information can be found in the MontiThings repository and our other project.
 
 ### MontiThings <a name="MontiThings"></a>
+MontiThings is a DSL for designing Internet of Things architectures. A model consists of several elements:
+* components - The building block of any architecture
+* port - A place where information can be transmitted
+* connector - Connection between ports of components
+
+In short, a model consists of ``components``, these ``components`` have ``ports``, with ``connectors`` connecting the ports and thus the different components.
+Additionally, the behaviour of a component can be modeled inside the language.
+Sometimes, this native behaviour is not enough and one might want to have __handwritten code__ defined behaviour.
+This is the most relevant part for our evaluation, since the overall goal was to enable different components to share protobuf serialized data with cross-language support.
+Since MontiThings natively translates MontiThings behaviour into C++ code, a component running e.g. Python code, is always running handwritten code.
+
+To evaluate the generator we generated from the following model:
+```
+package unlock;
+
+classdiagram FaceUnlock {
+    package Person {
+        class Person {
+            public String name;
+            public boolean allowed;
+            public int visitor_id;
+        }
+    }
+    package Image {
+        class Image {
+            int person_id;
+        }
+    }
+}
+```
+
+And used the resulting ```.proto``` to serialize data, inside an architecture, that was running both MontiThings behaviour (C++) and __handwritten__ Python code.
+More details on this can be found in the corresponding project.
+
+## Conclusion
+In this small document we presented our work of the last few months and gave a short introduction to the 
+technologies used and presented the main work of this module, the `cd2proto` generator. We would like to emphasize here again, that this module, although being evaluated
+in MontiThings, is independent of it and can be used in any project that wants to use protocol buffers generated from 
+class diagrams.
+
+In short, this generator takes a class diagram file (`.cd`) and generates a Protobuf file (`.proto`) from it.
