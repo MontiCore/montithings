@@ -7,6 +7,8 @@ Additionally, by using the protobuf-generator "cd2proto", we leverage the langua
 capabilities of the
 [Google-Protobuf-Language](https://developers.google.com/protocol-buffers)
 ([GitHub](https://github.com/protocolbuffers/protobuf)).
+The Google protocol buffer language is an IDL (Interface Description Language) for efficient
+serialization structures.
 
 The elegance of retrieving a resembling `FaceUnlock.proto` definition for a descriptive
 class diagram (i.e. `src/main/resources/models/unlock/FaceUnlock.cd`)
@@ -434,3 +436,10 @@ knows:
 ```
 > The base64-encoding has to happen, because the C++-Implementation for JSON crashes
   for null-Bytes in protobuf (not compatible with UTF-8)
+
+## Authors and acknowledgment
+
+* André Fugmann
+* Merlin Freiherr von Rössing
+* Sebastian Grabowski
+* Tim Nebel
