@@ -417,7 +417,6 @@ is ready.
 
 ## Design Decisions
 #### json-encapsulation
-@Sebastian
 Although protobuf could be published solely as the protobuf-String, this interferes
 with MontiThings' mechanism to monitor messages.
 The protobuf string is instead encapsulated in a JSON-Format that MontiThings already
