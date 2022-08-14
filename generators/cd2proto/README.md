@@ -237,4 +237,11 @@ From this `.proto` file, methods to serialize and deserialize data within the de
 The main advantage for our purposes was that we can generate into different languages, and enable cross language support for applications.
 
 ## Future Work
+
+### Component Behaviour Written in the Go language
+
+This repository [has a branch](https://git.rwth-aachen.de/se-student/ss22/lectures/sle/student-projects/protobuf/montithings/-/blob/lang/go/READMEGO.MD) which aims to add support for handwritten behaviour files written in the [Go Programming Laguage](https://go.dev/).
+Unfortunately the implementation is incomplete as of now and needs further work.
+The linked README describes the current state and is needed to be done.
+
 As mentioned in the **Limitations** section, cyclic 
