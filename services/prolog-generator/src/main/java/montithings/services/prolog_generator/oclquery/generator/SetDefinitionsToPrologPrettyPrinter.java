@@ -28,7 +28,6 @@ public class SetDefinitionsToPrologPrettyPrinter extends SetDefinitionsPrettyPri
 
   @Override
   public void handle(ASTListExpression node) {
-    getPrinter().print("[");
     for (int i = 0; i < node.sizeExpressions(); i++) {
       if (i != 0) {
         getPrinter().print(", ");

@@ -24,28 +24,45 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   private static final String PROLOG_VAR_DROPPEDCONSTRAINTS = "DroppedConstraints";
   private static final String PROLOG_VAR_DEPENDENCIES = "Dependencies";
   
-  private String plFacts, plQuery, plDeviceDescription, plOCLQuery;
-  private File fileFacts, fileQuery, fileDeviceDescription, fileOCLQuery, workingDir;
-  
+  private String plFacts, plQuery;
+
+  private Map<String, String> plOCLQueries, plDeviceDescriptions;
+  private File fileFacts, fileQuery, workingDir;
+
+  private Map<String, File>  filesDeviceDescriptions, filesOCLQueries;
+
   /**
    * @param plFacts facts as Prolog-source
    * @param plQuery query as Prolog-source
    * @param workingDir The (temporary) working directory.
    */
   public DefaultDistributionCalculator(String plFacts, String plQuery, File workingDir) {
+    this(plFacts, plQuery, new HashMap<>(), new HashMap<>(), workingDir);
+  }
+  
+  /**
+   * @param plFacts facts as Prolog-source
+   * @param plQuery query as Prolog-source
+   * @param plOCLQueries map of ocl queries as Prolog-sources
+   * @param plDeviceDescriptions map of device descriptions as Prolog-sources
+   * @param workingDir The (temporary) working directory.
+   */
+  public DefaultDistributionCalculator(String plFacts, String plQuery, Map<String, String> plOCLQueries, Map<String, String> plDeviceDescriptions, File workingDir) {
     this.plFacts = plFacts;
     this.plQuery = plQuery;
+    this.plOCLQueries = plOCLQueries;
+    this.plDeviceDescriptions = plDeviceDescriptions;
     this.workingDir = workingDir.getAbsoluteFile();
     this.fileFacts = new File(this.workingDir, "facts.pl");
     this.fileQuery = new File(this.workingDir, "query.pl");
-  }
-
-  public DefaultDistributionCalculator(String devicedesciption, String plOCLQuery, File workingDir, boolean ocl) {
-    this.plDeviceDescription = devicedesciption;
-    this.plOCLQuery = plOCLQuery;
-    this.workingDir = workingDir.getAbsoluteFile();
-    this.fileDeviceDescription = new File(this.workingDir, "devicedescription.pl");
-    this.fileOCLQuery = new File(this.workingDir, "oclquery.pl");
+    filesOCLQueries = new HashMap<>();
+    for (String compName : plOCLQueries.keySet()) {
+      this.filesOCLQueries.put(compName, new File(this.workingDir, "oclquery" + compName + ".pl"));
+    }
+    filesDeviceDescriptions = new HashMap<>();
+    for (String deviceName : plDeviceDescriptions.keySet()) {
+      this.filesDeviceDescriptions.put(deviceName, new File(this.workingDir, "devicedescription" + deviceName + ".pl"));
+    }
   }
   
   private Distribution computeDistributionSync(DistributionCalcRequest param) throws DistributionException {
@@ -224,17 +241,6 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       throw new DistributionException(e);
     }
   }
-
-  public boolean compatibilityCheck() throws IOException {
-    prepareOCLWorkspace();
-    // change working directory
-    new Query(new Compound("working_directory", wrap(new Variable(), new Atom(workingDir.getAbsolutePath())))).oneSolution();
-    // load Prolog files
-    new Query(new Compound("consult", wrap(new Atom("devicedescription.pl")))).oneSolution();
-    Term t = Term.textToTerm(plOCLQuery);
-    Query q = new Query(t);
-    return !q.oneSolution().isEmpty();
-  }
   
   private Term constructQueryTerm(List<String> components, DistributionQueryType type) {
     return this.constructQueryTerm(components, type, true, null);
@@ -301,7 +307,14 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     
     Files.write(plFacts, fileFacts, StandardCharsets.UTF_8);
     Files.write(plQuery, fileQuery, StandardCharsets.UTF_8);
-    
+
+    for (String compName : filesOCLQueries.keySet()) {
+      Files.write(plOCLQueries.get(compName), filesOCLQueries.get(compName), StandardCharsets.UTF_8);
+    }
+    for (String deviceName : filesDeviceDescriptions.keySet()) {
+      Files.write(plDeviceDescriptions.get(deviceName), filesDeviceDescriptions.get(deviceName), StandardCharsets.UTF_8);
+    }
+
     // Write helpers.pl prolog file.
     File fileHelpers = new File(workingDir, "helpers.pl");
     try (InputStream inputHelpers = getClass().getResourceAsStream("/scripts/helpers.pl")) {
@@ -310,26 +323,6 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
       }
     }
     
-    // Retract facts from previous queries.
-    new Query(new Compound("retract", wrap(new Atom("property")))).oneSolution();
-    new Query(new Compound("retract", wrap(new Atom("distribution")))).oneSolution();
-  }
-
-  private void prepareOCLWorkspace() throws IOException {
-    // Ensure the working directory exists.
-    this.workingDir.mkdirs();
-
-    Files.write(plDeviceDescription, fileDeviceDescription, StandardCharsets.UTF_8);
-    Files.write(plOCLQuery, fileOCLQuery, StandardCharsets.UTF_8);
-
-    // Write helpers.pl prolog file.
-    File fileHelpers = new File(workingDir, "helpers.pl");
-    try (InputStream inputHelpers = getClass().getResourceAsStream("/scripts/helpers.pl")) {
-      try (OutputStream outputHelpers = new FileOutputStream(fileHelpers)) {
-        ByteStreams.copy(inputHelpers, outputHelpers);
-      }
-    }
-
     // Retract facts from previous queries.
     new Query(new Compound("retract", wrap(new Atom("property")))).oneSolution();
     new Query(new Compound("retract", wrap(new Atom("distribution")))).oneSolution();

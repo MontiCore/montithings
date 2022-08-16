@@ -7,6 +7,11 @@ import de.monticore.prettyprint.IndentPrinter;
 public class SetExpressionsToPrologPrettyPrinter extends SetExpressionsPrettyPrinter {
 
   private int index;
+
+  public String getOperations() {
+    return operations;
+  }
+
   private String operations;
 
   public SetExpressionsToPrologPrettyPrinter(IndentPrinter printer) {
@@ -34,7 +39,7 @@ public class SetExpressionsToPrologPrettyPrinter extends SetExpressionsPrettyPri
     getPrinter().print(", ");
     node.getRight().accept(getTraverser());
     getPrinter().print(", _Union_" + index + ")");
-    operations += getPrinter().getContent();
+    operations += ", " + getPrinter().getContent();
     getPrinter().clearBuffer();
     getPrinter().print(temp);
     index++;
@@ -50,7 +55,7 @@ public class SetExpressionsToPrologPrettyPrinter extends SetExpressionsPrettyPri
     getPrinter().print(", ");
     node.getRight().accept(getTraverser());
     getPrinter().print(", _Intersection_" + index + ")");
-    operations += getPrinter().getContent();
+    operations += ", " + getPrinter().getContent();
     getPrinter().clearBuffer();
     getPrinter().print(temp);
     index++;
@@ -58,7 +63,6 @@ public class SetExpressionsToPrologPrettyPrinter extends SetExpressionsPrettyPri
 
   @Override
   public void handle(ASTSetEnumeration node) {
-    getPrinter().print("[");
     for (int i = 0; i < node.sizeSetCollectionItems(); i++) {
       if (i != 0) {
         getPrinter().print(", ");
@@ -75,5 +79,21 @@ public class SetExpressionsToPrologPrettyPrinter extends SetExpressionsPrettyPri
       }
       node.getExpression(i).accept(getTraverser());
     }
+  }
+
+  @Override
+  public void handle(ASTSetValueRange node) {
+    getPrinter().print("_Range_" + index);
+    String temp = getPrinter().getContent();
+    getPrinter().clearBuffer();
+    getPrinter().print("numlist(");
+    node.getLowerBound().accept(getTraverser());
+    getPrinter().print(",");
+    node.getUpperBound().accept(getTraverser());
+    getPrinter().print(",_Range_" + index + ")");
+    operations += ", " + getPrinter().getContent();
+    getPrinter().clearBuffer();
+    getPrinter().print(temp);
+    index++;
   }
 }

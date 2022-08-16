@@ -1,4 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+<#assign Utils = tc.instantiate("montithings.services.prolog_generator.Utils")>
 :- include('facts').
 :- include('helpers').
 
@@ -7,6 +8,10 @@
 <#-- -------------------------------- -->
 
 <#list ast.distributions as distribution>
+<#if distribution.hasOCLConstraint()>
+:- include('oclquery${distribution.name}').
+</#if>
+
 get_distribution_${distribution.name}(${distribution.name}) :-
     get_available_devices(AllAvailableDevices),
 
@@ -58,12 +63,20 @@ get_distribution_${distribution.name}(${distribution.name}) :-
     % then constrains greater than equal: >=
     <#list distribution.gteConstraints as constraint>
     check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
+        <#assign count++>
     </#list>
 
     % then constrains that check all equal
     <#list distribution.checkAllConstraints as constraint>
     check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
     </#list>
+
+    <#if distribution.hasOCLConstraint()>
+    % then check that hardware requirements are met
+    <#assign compName = Utils.toFirstLower(distribution.name)>
+    include(${compName}HardwareRequired,AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        <#assign count++>
+    </#if>
 
     % bind result to target variable
     AllAvailableDevicesFiltered${count} = ${distribution.name}.

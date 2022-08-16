@@ -59,7 +59,11 @@ public class DeploymentInfo {
         JsonObject jInstance = jeInstance.getAsJsonObject();
         String componentType = jInstance.get("componentType").getAsString();
         String instanceName = jInstance.get("instanceName").getAsString();
-        
+        String hardwareRequirement = "";
+        if (jInstance.has("hardwareRequirements")) {
+          hardwareRequirement = jInstance.get("hardwareRequirements").getAsString();
+        }
+
         List<String> requirements = new LinkedList<String>();
         JsonElement jeReqs = jInstance.get("requirements");
         // collect requirements
@@ -70,7 +74,7 @@ public class DeploymentInfo {
           }
         }
         
-        instances.add(new InstanceInfo(componentType, instanceName, requirements.toArray(new String[requirements.size()])));
+        instances.add(new InstanceInfo(componentType, instanceName, hardwareRequirement, requirements.toArray(new String[requirements.size()])));
       }
       
       return new DeploymentInfo(instances.toArray(new InstanceInfo[instances.size()]));
@@ -78,5 +82,5 @@ public class DeploymentInfo {
       throw new DeploymentException(e);
     }
   }
-  
+
 }

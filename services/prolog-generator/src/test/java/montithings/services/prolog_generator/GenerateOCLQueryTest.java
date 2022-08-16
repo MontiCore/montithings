@@ -28,14 +28,14 @@ public class GenerateOCLQueryTest {
 
   @Test
   public void testGenerateOCLQuery() throws IOException {
-    Path model = Paths.get("src/test/resources/iot-config/requiredDistanceSensor.ocl");
+    Path model = Paths.get("src/test/resources/iot-config/oclexpression.ocl");
     OCLParser parser = new OCLParser();
 
     Optional<ASTExpression> ocl = parser.parseExpression(model.toString());
     assertFalse(parser.hasErrors());
     assertTrue(ocl.isPresent());
 
-    String query = OCLToPrologConverter.generateOCLQuery(ocl.get());
+    String query = OCLToPrologConverter.generateOCLQuery(ocl.get(), "TEST");
     Log.info(query, "OUTPUT");
   }
 }

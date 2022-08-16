@@ -9,16 +9,14 @@ import montithings.services.iot_manager.server.distribution.*;
 import montithings.services.iot_manager.server.distribution.config.DeployConfigBuilder;
 import montithings.services.iot_manager.server.distribution.config.DockerComposeConfig;
 import montithings.services.iot_manager.server.distribution.config.DockerComposeService;
+import montithings.services.iot_manager.server.exception.DeploymentException;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import static org.junit.Assert.*;
@@ -171,12 +169,30 @@ public class TestDistribution {
         return null;
       }).get();
       assertNotNull(plQuery);
+
+      //generate OCL queries in prolog
+      Map<String, String> hardwareRequirements = new HashMap<>();
+      hardwareRequirements.put("HierarchyExample", "exists DistanceSensor sensor:\n" +
+        "  let max = sensor.range.max; min = sensor.range.min in\n" +
+        "    max > min implies max - min > 1000\n" +
+        "  &&\n" +
+        "  sensor.accuracy.percent < 10\n");
+      Map<String, String> plOCLQueries = new HashMap<>();
+      /*for (String instanceName : hardwareRequirements.keySet()) {
+        String plOCLQuery = gen.generateOCLQuery(instanceName + ":" + hardwareRequirements.get(instanceName)).exceptionally((t) -> {
+          return null;
+        }).get();
+        if (plOCLQuery == null) {
+          throw new DeploymentException("Could not generate Prolog OCL query");
+        }
+        plOCLQueries.put(instanceName, plOCLQuery);
+      }*/
       
       // Compute distribution.
       List<String> instanceNames = deployment.getInstanceNames();
       DistributionCalcRequest req = new DistributionCalcRequest(clients, instanceNames);
       
-      IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
+      IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, plOCLQueries, new HashMap<>(), workingDir);
       dist1 = calc.computeDistribution(req).exceptionally((t) -> {
         t.printStackTrace();
         fail();

@@ -4,6 +4,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.literals.prettyprint.MCCommonLiteralsPrettyPrinter;
+import de.monticore.ocl.oclexpressions._ast.ASTExistsExpression;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.prettyprint.MCBasicsPrettyPrinter;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
@@ -11,6 +12,7 @@ import de.monticore.siunittypes4computing.prettyprint.SIUnitTypes4ComputingPrett
 import de.monticore.types.prettyprint.MCBasicTypesPrettyPrinter;
 import montithings._visitor.MontiThingsTraverser;
 import montithings._visitor.MontiThingsTraverserImplementation;
+import montithings.services.prolog_generator.Utils;
 import montithings.services.prolog_generator.oclquery.visitor.FindNameExpressionsVisitor;
 
 import java.util.Set;
@@ -73,7 +75,7 @@ public class OCLToPrologConverter {
   public String printOCLQuery(ASTExpression node) {
     printer.clearBuffer();
     node.accept(traverser);
-    return printer.getContent();
+    return printer.getContent() + setExpressionsToPrologPrettyPrinter.getOperations();
   }
 
   public Set<String> getNameExpressions(ASTExpression node) {
@@ -82,17 +84,26 @@ public class OCLToPrologConverter {
     return nameExpressionsVisitor.getNames();
   }
 
+  public String getVariableForDevice(ASTExpression node) {
+    if ((node instanceof ASTExistsExpression)) {
+      return Utils.capitalize(((ASTExistsExpression) node).getInDeclaration(0).
+        getInDeclarationVariable(0).getName());
+    }
+    return "";
+  }
+
   /**
    * Generates a Prolog query from an OCL expression
    * @param e An AST of an OCL expression
+   * @param compName The name of the component for which the expression should be generated
    */
-  public static String generateOCLQuery(ASTExpression e) {
+  public static String generateOCLQuery(ASTExpression e, String compName) {
     GeneratorSetup setup = new GeneratorSetup();
     // Prolog Comment
     setup.setCommentStart("%");
     setup.setCommentEnd("");
 
     GeneratorEngine engine = new GeneratorEngine(setup);
-    return engine.generate("templates/oclquery.ftl", e).toString();
+    return engine.generate("templates/oclquery.ftl", e, compName).toString();
   }
 }

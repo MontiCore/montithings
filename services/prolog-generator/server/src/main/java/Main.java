@@ -63,16 +63,22 @@ public class Main {
 
         post("/ocl-query", ((request, response) -> {
             try {
-                String ocl = request.body();
-                if (ocl == null || ocl.equals("")) {
+                String body = request.body();
+                if (body == null || body.equals("")) {
                     throw new Exception("Empty body");
                 }
+                if (body.split(":").length < 2) {
+                    throw new Exception("Body in wrong format");
+                }
                 MontiThingsParser parser = new MontiThingsParser();
+                String compName = body.split(":")[0];
+                //ocl expression is everything except component name and ":"
+                String ocl = body.substring(compName.length()+1);
                 Optional<ASTExpression> e = parser.parse_StringExpression(ocl);
                 if (!e.isPresent()) {
                     throw new Exception("Non-parsable OCL expression.");
                 }
-                return OCLToPrologConverter.generateOCLQuery(e.get());
+                return OCLToPrologConverter.generateOCLQuery(e.get(), compName);
             } catch (Exception e) {
                 response.status(500);
                 return e.getMessage();

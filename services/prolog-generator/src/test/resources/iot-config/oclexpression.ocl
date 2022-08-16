@@ -1,1 +1,3 @@
-(accuracy > 50 implies accuracy > 100) && let x = test.count in x < 200 && if test.count > 100 then versionNo < 6 else versionNo == 10
+exists Camera cam:
+       cam.resolution.megapix >= 4 && 
+       cam.fieldOfView.horizontal isin { 60 .. 100 }

@@ -1,11 +1,19 @@
-objectdiagram testObjectDiagram {
-  ws : WeightSensor {
-    manufacturer = "ABC";
-    int partNo = 123;
-    int versionNo = 10;
-    int accuracy = 10;
-    t = :Test {
-      int count = 1;
+objectdiagram raspiCam {
+  raspiCam : Camera {
+    manufacturer = "RaspberryPi";
+    int versionNo = "2";
+    int partNo = "CameraModuleV2";
+    resolution = :Resolution {
+      int megapix = 8;
+	  int width = 3280;
+	  int height = 2464;
+    };
+    fieldOfView = :FieldOfView {
+      int horizontal = 62.2;
+	  int vertical = 48.8;
+    };
+    focalRatio = :FocalRatio {
+      double f = 2.0;
     };
   };
 }
