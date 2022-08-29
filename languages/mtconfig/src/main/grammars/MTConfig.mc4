@@ -74,7 +74,7 @@ grammar MTConfig extends MontiThings  {
    * a component has. E.g Sensors/Actuators etc.
    */
   scope RequirementStatement implements MTCFGTag =
-    "requires" (propertiess:Property | "{" propertiess:Property+ "}" | (Expression ";"));
+    "requires" (propertiess:Property | "{" propertiess:Property+ "}" | ("ocl:" Expression ";"));
 
 
   /**
