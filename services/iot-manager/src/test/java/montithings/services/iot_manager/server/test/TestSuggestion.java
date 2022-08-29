@@ -65,7 +65,7 @@ public class TestSuggestion {
     
     // example data
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
+    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
     clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
     
     JsonObject jsonDeploy = null;

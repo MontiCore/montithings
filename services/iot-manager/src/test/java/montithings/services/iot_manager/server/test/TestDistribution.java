@@ -26,7 +26,7 @@ public class TestDistribution {
   @Test(timeout = 10_000L)
   public void testRestPrologGenerator() throws Exception {
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), 0, "sensor_temperature"));
+    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "sensor_temperature"));
     clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0, "heat_controller"));
     
     String jsonConfig = new String(Utils.readAllBytes(getClass().getResourceAsStream("/scripts/ex1_config.json")), StandardCharsets.UTF_8);
@@ -75,7 +75,7 @@ public class TestDistribution {
     
     // example data
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
+    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
     clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
     
     JsonObject jsonDeploy = null;
@@ -108,6 +108,24 @@ public class TestDistribution {
       return null;
     }).get();
     assertNotNull(plQuery);
+
+    //generate OCL queries in prolog
+    Map<String, String> hardwareRequirements = new HashMap<>();
+    hardwareRequirements.put("HierarchyExampleC", "exists DistanceSensor sensor:\n" +
+      "  let max = sensor.range.max; min = sensor.range.min in\n" +
+      "    max > min implies max - min > 1000\n" +
+      "  &&\n" +
+      "  sensor.accuracy.percent < 10\n");
+    Map<String, String> plOCLQueries = new HashMap<>();
+    for (String instanceName : hardwareRequirements.keySet()) {
+      String plOCLQuery = gen.generateOCLQuery(instanceName + ":" + hardwareRequirements.get(instanceName)).exceptionally((t) -> {
+        return null;
+      }).get();
+      if (plOCLQuery == null) {
+        throw new DeploymentException("Could not generate Prolog OCL query");
+      }
+      plOCLQueries.put(instanceName, plOCLQuery);
+    }
     
     // Compute distribution.
     
@@ -150,7 +168,7 @@ public class TestDistribution {
     
     { // first calculation
       LinkedList<DeployClient> clients = new LinkedList<>();
-      clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
+      clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
       clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
       
       // Generate Prolog files.
@@ -172,13 +190,13 @@ public class TestDistribution {
 
       //generate OCL queries in prolog
       Map<String, String> hardwareRequirements = new HashMap<>();
-      hardwareRequirements.put("HierarchyExample", "exists DistanceSensor sensor:\n" +
+      hardwareRequirements.put("HierarchyExampleC", "exists DistanceSensor sensor:\n" +
         "  let max = sensor.range.max; min = sensor.range.min in\n" +
         "    max > min implies max - min > 1000\n" +
         "  &&\n" +
         "  sensor.accuracy.percent < 10\n");
       Map<String, String> plOCLQueries = new HashMap<>();
-      /*for (String instanceName : hardwareRequirements.keySet()) {
+      for (String instanceName : hardwareRequirements.keySet()) {
         String plOCLQuery = gen.generateOCLQuery(instanceName + ":" + hardwareRequirements.get(instanceName)).exceptionally((t) -> {
           return null;
         }).get();
@@ -186,7 +204,7 @@ public class TestDistribution {
           throw new DeploymentException("Could not generate Prolog OCL query");
         }
         plOCLQueries.put(instanceName, plOCLQuery);
-      }*/
+      }
       
       // Compute distribution.
       List<String> instanceNames = deployment.getInstanceNames();
@@ -203,7 +221,7 @@ public class TestDistribution {
     { // second calculation
       LinkedList<DeployClient> clients = new LinkedList<>();
       clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
-      clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
+      clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
       
       // Generate Prolog files.
       
@@ -221,6 +239,24 @@ public class TestDistribution {
         return null;
       }).get();
       assertNotNull(plQuery);
+
+      //generate OCL queries in prolog
+      Map<String, String> hardwareRequirements = new HashMap<>();
+      hardwareRequirements.put("HierarchyExampleC", "exists DistanceSensor sensor:\n" +
+        "  let max = sensor.range.max; min = sensor.range.min in\n" +
+        "    max > min implies max - min > 1000\n" +
+        "  &&\n" +
+        "  sensor.accuracy.percent < 10\n");
+      Map<String, String> plOCLQueries = new HashMap<>();
+      for (String instanceName : hardwareRequirements.keySet()) {
+        String plOCLQuery = gen.generateOCLQuery(instanceName + ":" + hardwareRequirements.get(instanceName)).exceptionally((t) -> {
+          return null;
+        }).get();
+        if (plOCLQuery == null) {
+          throw new DeploymentException("Could not generate Prolog OCL query");
+        }
+        plOCLQueries.put(instanceName, plOCLQuery);
+      }
       
       // Compute distribution.
       List<String> instanceNames = deployment.getInstanceNames();

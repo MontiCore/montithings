@@ -2,6 +2,8 @@
 <#assign Utils = tc.instantiate("montithings.services.prolog_generator.Utils")>
 :- include('facts').
 :- include('helpers').
+:- include('devicedescription').
+
 
 <#-- -------------------------------- -->
 <#-- DISTRIBUTION WITHOUT CONSTRAINTS -->
