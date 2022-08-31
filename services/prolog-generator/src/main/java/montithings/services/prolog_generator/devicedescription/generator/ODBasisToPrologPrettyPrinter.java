@@ -68,7 +68,7 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
       name = currentObjectName + "__";
     }
     name += node.getName();
-    getPrinter().print(name + "(" + hardwareName + ", ");
+    getPrinter().print(name + "(\"" + hardwareName + "\", ");
     node.getODValue().accept(getTraverser());
     getPrinter().println(").");
   }
@@ -97,7 +97,7 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
       }
       name = Utils.toFirstLower(name);
       //print type
-      getPrinter().println("deviceType(" + name + ", \"" + hardwareName + "\").");
+      getPrinter().println("deviceType(\"" + name + "\", \"" + hardwareName + "\").");
       hardwareName = name;
     }
     else {

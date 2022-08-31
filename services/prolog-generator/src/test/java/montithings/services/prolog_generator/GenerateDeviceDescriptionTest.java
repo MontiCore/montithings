@@ -2,7 +2,6 @@ package montithings.services.prolog_generator;
 
 import de.se_rwth.commons.logging.Log;
 import montithings.services.prolog_generator.devicedescription._parser.DeviceDescriptionParser;
-import montithings.services.prolog_generator.devicedescription.generator.ODBasisToPrologPrettyPrinter;
 import montithings.services.prolog_generator.devicedescription._ast.ASTDevice;
 import montithings.services.prolog_generator.devicedescription.generator.ObjectDiagramToPrologConverter;
 import org.junit.Test;
