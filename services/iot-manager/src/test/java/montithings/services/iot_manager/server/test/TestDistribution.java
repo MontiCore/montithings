@@ -126,10 +126,24 @@ public class TestDistribution {
       }
       plOCLQueries.put(instanceName, plOCLQuery);
     }
-    
+
+    //generate devicedescriptions in prolog
+    Map<String, String> deviceDescriptions = new HashMap<>();
+    String objectDiagram = new String(Utils.readAllBytes(getClass().getResourceAsStream("/ocl/VL53L0X.od")), StandardCharsets.UTF_8);
+    deviceDescriptions.put("VL53L0X", objectDiagram);
+    Map<String, String> plDeviceDescriptions = new HashMap<>();
+    for (String name : deviceDescriptions.keySet()) {
+      String plDeviceDescription = gen.generateDeviceDescription(deviceDescriptions.get(name)).exceptionally((t) -> {
+        return null;
+      }).get();
+      if (plDeviceDescription == null) {
+        throw new DeploymentException("Could not generate Prolog Device Description");
+      }
+      plDeviceDescriptions.put(name, plDeviceDescription);
+    }
+
     // Compute distribution.
-    
-    IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
+    IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, plOCLQueries, plDeviceDescriptions, workingDir);
     List<String> instanceNames = deployment.getInstanceNames();
     Distribution dist = calc.computeDistribution(new DistributionCalcRequest(clients, instanceNames)).exceptionally((t) -> {
       t.printStackTrace();
@@ -205,12 +219,26 @@ public class TestDistribution {
         }
         plOCLQueries.put(instanceName, plOCLQuery);
       }
+
+      //generate devicedescriptions in prolog
+      Map<String, String> deviceDescriptions = new HashMap<>();
+      String objectDiagram = new String(Utils.readAllBytes(getClass().getResourceAsStream("/ocl/VL53L0X.od")), StandardCharsets.UTF_8);
+      deviceDescriptions.put("VL53L0X", objectDiagram);
+      Map<String, String> plDeviceDescriptions = new HashMap<>();
+      for (String name : deviceDescriptions.keySet()) {
+        String plDeviceDescription = gen.generateDeviceDescription(deviceDescriptions.get(name)).exceptionally((t) -> {
+          return null;
+        }).get();
+        if (plDeviceDescription == null) {
+          throw new DeploymentException("Could not generate Prolog Device Description");
+        }
+        plDeviceDescriptions.put(name, plDeviceDescription);
+      }
       
       // Compute distribution.
       List<String> instanceNames = deployment.getInstanceNames();
       DistributionCalcRequest req = new DistributionCalcRequest(clients, instanceNames);
-      
-      IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, plOCLQueries, new HashMap<>(), workingDir);
+      IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, plOCLQueries, plDeviceDescriptions, workingDir);
       dist1 = calc.computeDistribution(req).exceptionally((t) -> {
         t.printStackTrace();
         fail();
@@ -257,13 +285,28 @@ public class TestDistribution {
         }
         plOCLQueries.put(instanceName, plOCLQuery);
       }
+
+      //generate devicedescriptions in prolog
+      Map<String, String> deviceDescriptions = new HashMap<>();
+      String objectDiagram = new String(Utils.readAllBytes(getClass().getResourceAsStream("/ocl/VL53L0X.od")), StandardCharsets.UTF_8);
+      deviceDescriptions.put("VL53L0X", objectDiagram);
+      Map<String, String> plDeviceDescriptions = new HashMap<>();
+      for (String name : deviceDescriptions.keySet()) {
+        String plDeviceDescription = gen.generateDeviceDescription(deviceDescriptions.get(name)).exceptionally((t) -> {
+          return null;
+        }).get();
+        if (plDeviceDescription == null) {
+          throw new DeploymentException("Could not generate Prolog Device Description");
+        }
+        plDeviceDescriptions.put(name, plDeviceDescription);
+      }
       
       // Compute distribution.
       List<String> instanceNames = deployment.getInstanceNames();
       DistributionCalcRequest req = new DistributionCalcRequest(clients, instanceNames);
       req.setReferenceDistribution(dist1);
       
-      IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
+      IDistributionCalculator calc = new DefaultDistributionCalculator(plFacts, plQuery, plOCLQueries, plDeviceDescriptions, workingDir);
       dist2 = calc.computeDistribution(req).exceptionally((t) -> {
         t.printStackTrace();
         fail();

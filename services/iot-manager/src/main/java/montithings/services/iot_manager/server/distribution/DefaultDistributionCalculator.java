@@ -10,6 +10,7 @@ import montithings.services.iot_manager.server.distribution.suggestion.Suggestio
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.exception.DistributionException;
 import montithings.services.iot_manager.server.util.InstanceNameResolver;
+import org.apache.commons.io.FileUtils;
 import org.jpl7.*;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   private String plFacts, plQuery;
 
   private Map<String, String> plOCLQueries, plDeviceDescriptions;
-  private File fileFacts, fileQuery, workingDir;
+  private File fileFacts, fileQuery, fileDeviceDescription, workingDir;
 
   private Map<String, File>  filesDeviceDescriptions, filesOCLQueries;
 
@@ -36,7 +37,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
    * @param plQuery query as Prolog-source
    * @param workingDir The (temporary) working directory.
    */
-  public DefaultDistributionCalculator(String plFacts, String plQuery, File workingDir) {
+  public DefaultDistributionCalculator(String plFacts, String plQuery, File workingDir) throws IOException {
     this(plFacts, plQuery, new HashMap<>(), new HashMap<>(), workingDir);
   }
   
@@ -47,7 +48,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
    * @param plDeviceDescriptions map of device descriptions as Prolog-sources
    * @param workingDir The (temporary) working directory.
    */
-  public DefaultDistributionCalculator(String plFacts, String plQuery, Map<String, String> plOCLQueries, Map<String, String> plDeviceDescriptions, File workingDir) {
+  public DefaultDistributionCalculator(String plFacts, String plQuery, Map<String, String> plOCLQueries, Map<String, String> plDeviceDescriptions, File workingDir) throws IOException {
     this.plFacts = plFacts;
     this.plQuery = plQuery;
     this.plOCLQueries = plOCLQueries;
@@ -59,9 +60,12 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     for (String compName : plOCLQueries.keySet()) {
       this.filesOCLQueries.put(compName, new File(this.workingDir, "oclquery" + compName + ".pl"));
     }
-    filesDeviceDescriptions = new HashMap<>();
+    this.filesDeviceDescriptions = new HashMap<>();
+    this.fileDeviceDescription = new File(this.workingDir, "devicedescription.pl");
+    Files.write("", fileDeviceDescription, StandardCharsets.UTF_8);
     for (String deviceName : plDeviceDescriptions.keySet()) {
       this.filesDeviceDescriptions.put(deviceName, new File(this.workingDir, "devicedescription" + deviceName + ".pl"));
+      FileUtils.write(fileDeviceDescription, ":- include('devicedescription" + deviceName + "'). \n", StandardCharsets.UTF_8, true);
     }
   }
   
