@@ -144,7 +144,6 @@ Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nano
 Expand-Archive -DestinationPath "$PWD" nng.zip
 rm .\nng.zip
 cd .\nng-1.3.0\
-#todo wip
 mkdir build
 cd .\build\
 cmake -G Ninja ..
