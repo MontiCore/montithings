@@ -64,6 +64,24 @@ function Get-IsInstalled {
     }
 }
 
+<#
+ # adds a path to the PATH environment variable
+ # @param $PathToAdd path to be added to PATH
+ #>
+function AddToPath {
+    param(
+        [Parameter(Mandatory)][string]$PathToAdd
+    )
+
+    # modify PATH
+    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
+    $newpath="$oldpath;$PathToAdd"
+    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+
+    # Reload PATH
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+}
+
 ##########################################
 # Install WinGet CLI
 ##########################################
@@ -93,6 +111,7 @@ if(-not (Get-IsInstalled winget)){
     # Reload Path Environment Variable
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
+
 ##########################################
 # Install software available via WinGet
 ##########################################
@@ -111,10 +130,8 @@ if(-not (Get-IsInstalled docker)){
 if(-not (Get-IsInstalled mosquitto)){
     winget install -e EclipseFoundation.Mosquitto
 
-    # Add Mosquitto to PATH
-    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-    $newpath="$oldpath;C:\Program Files\Mosquitto\;C:\Program Files\CMake\bin"
-    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+    AddToPath("C:\Program Files\Mosquitto")
+    AddToPath("C:\Program Files\CMake\bin")
 }
 # Reload Path Environment Variable
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
@@ -142,11 +159,6 @@ if(-not (Get-IsInstalled mvn)){
     # Download
     choco install maven
 
-    # Add Maven to PATH
-    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-    $newpath="$oldpath;C:\Program Files\apache-maven-3.8.4\bin\"
-    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
-
     # Reload Path Environment Variable
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
@@ -160,13 +172,7 @@ if(-not (Get-IsInstalled ninja)){
     Expand-Archive -DestinationPath 'C:\Program Files\Ninja' Ninja.zip
     rm .\Ninja.zip
 
-    # Add Ninja to PATH
-    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-    $newpath="$oldpath;C:\Program Files\Ninja\"
-    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    AddToPath("C:\Program Files\Ninja\")
 }
 ##########################################
 # Install MinGW
@@ -182,7 +188,6 @@ Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nano
 Expand-Archive -DestinationPath "$PWD" nng.zip
 rm .\nng.zip
 cd .\nng-1.3.0\
-#todo wip
 mkdir build
 cd .\build\
 cmake -G Ninja ..
