@@ -139,12 +139,6 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 # Start Mosquitto MQTT Broker
 Start-Service -Name Mosquitto
 
-if(-not (Get-IsInstalled conan)){
-    winget install -e JFrog.Conan
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-}
 ##########################################
 # Install Chocolatery Package Manager
 ##########################################
@@ -196,6 +190,31 @@ ninja test
 ninja install
 cd ..
 cd ..
+
+##########################################
+# Install Python
+##########################################
+
+if(-not (Get-IsInstalled python))
+{
+    choco install python
+
+    # Reload Path Environment Variable
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+    python -m pip install -U pip
+}
+
+##########################################
+# Install Conan
+##########################################
+
+if(-not (Get-IsInstalled conan)){
+    pip install conan
+
+    # Reload Path Environment Variable
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+}
 
 ##########################################
 # Install MontiThings
