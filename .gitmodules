@@ -1,4 +1,0 @@
-[submodule "generators/cd2proto"]
-	path = generators/cd2proto
-	url = ../cd2proto.git
-	branch = main
