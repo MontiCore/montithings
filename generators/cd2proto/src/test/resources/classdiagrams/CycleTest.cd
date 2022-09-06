@@ -1,0 +1,19 @@
+classdiagram Corporation {
+    abstract class Person {
+        String firstname;
+        String lastname;
+    }
+
+    class Employee extends Person {
+        int employeeId;
+        long salary;
+    }
+
+    class Intern extends Person {
+        boolean getsPaid;
+    }
+
+    association [1] Employee <- Person [1];
+    association [1] Person <- Intern [1];
+    association [1] Intern <- Employee [1];
+}
