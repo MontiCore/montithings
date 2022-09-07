@@ -84,6 +84,15 @@ function AddToPath {
     Reload-Path
 }
 
+<#
+ # checks whether the current java version is 11
+ #>
+function Get-JavaVersionIs11 {
+    $result = $false
+    $result = (java -version 2>&1 | Out-String).Contains('11.0.16.1')
+    return $result
+}
+
 ##########################################
 # Install WinGet CLI
 ##########################################
@@ -132,9 +141,12 @@ if(-not (Get-IsInstalled winget)){
 if(-not (Get-IsInstalled git)){
     winget install -e Git.Git
 }
-if(-not (Get-IsInstalled java) -or (-not ([string](java --version)).Contains("11"))){
+if(-not (Get-IsInstalled java) -or -not (Get-JavaVersionIs11)){
     winget install -e Microsoft.OpenJDK.11
     Reload-Path
+    if(-not (Get-JavaVersionIs11)){
+        Write-Output "WARNING: Java 11 was installed but is not your default java version. Please make sure to use java 11 with montithings"
+    }
 }
 if(-not (Get-IsInstalled cmake)){
     winget install -e Kitware.CMake
