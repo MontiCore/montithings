@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("componentName", "protobufModule", "inPorts", "outPorts")}
 
 <#assign NameHelper = tc.instantiate("montithings.generator.codegen.template.util.pythonComponent.NameHelper")>

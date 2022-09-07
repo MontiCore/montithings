@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.distribution.suggestion;
 
 import com.google.gson.JsonObject;

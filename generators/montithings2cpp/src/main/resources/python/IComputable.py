@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 import string
 from uuid import UUID, uuid4
 

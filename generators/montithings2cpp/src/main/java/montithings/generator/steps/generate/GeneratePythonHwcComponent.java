@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.ComponentTypeSymbol;

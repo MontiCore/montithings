@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Native installation
 
 ### Is this the right installation type for you?

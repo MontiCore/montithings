@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings._lsp.features.completion;
 
 import de.mclsg.lsp.document_management.DocumentInformation;

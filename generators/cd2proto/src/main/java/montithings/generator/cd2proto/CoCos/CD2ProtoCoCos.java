@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2proto.CoCos;
 
 import de.monticore.cdbasis._cocos.CDBasisCoCoChecker;

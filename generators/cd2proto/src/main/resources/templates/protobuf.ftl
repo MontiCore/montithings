@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 <#-- @ftlvariable name="types" type="java.util.List<de.monticore.cdbasis._symboltable.CDTypeSymbol>" -->
 <#-- @ftlvariable name="TypeHelper" type="montithings.generator.cd2proto.helper.TypeHelper" -->
 <#-- @ftlvariable name="tc" type="de.monticore.generating.templateengine.TemplateController" -->

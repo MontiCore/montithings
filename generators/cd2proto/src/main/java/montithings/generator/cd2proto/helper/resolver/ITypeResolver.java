@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2proto.helper.resolver;
 
 import de.monticore.types.check.SymTypeExpression;

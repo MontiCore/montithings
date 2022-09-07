@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Note
 
 The content of this package is copy-pasted from montithings.
