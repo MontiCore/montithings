@@ -38,6 +38,13 @@ Set-Location "$workingDirOverride"
 
 
 <#
+ # reloads the PATH environment Variable
+ #>
+function Reload-Path {
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+}
+
+<#
  # checks using "Get-Command" if a specific program is installed on the system
  #
  # @param $ProgramName name of the program that should be checked
@@ -47,9 +54,7 @@ function Get-IsInstalled {
     param(
         [Parameter(Mandatory)][string]$ProgramName
     )
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Reload-Path
 
     try{
         $ErrorActionPreference = "Stop"
@@ -71,14 +76,12 @@ function AddToPath {
     param(
         [Parameter(Mandatory)][string]$PathToAdd
     )
-
     # modify PATH
     $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
     $newpath="$oldpath;$PathToAdd"
     Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
 
-    # Reload PATH
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Reload-Path
 }
 
 ##########################################
@@ -107,8 +110,7 @@ if(-not (Get-IsInstalled winget)){
     Add-AppPackage -path ".\WinGet.msixbundle"
     rm ".\WinGet.msixbundle"
 
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Reload-Path
 }
 
 ##########################################
@@ -119,6 +121,7 @@ if(-not (Get-IsInstalled git)){
 }
 if(-not (Get-IsInstalled java) -or (-not ([string](java --version)).Contains("11"))){
     winget install -e Microsoft.OpenJDK.11
+    Reload-Path
 }
 if(-not (Get-IsInstalled cmake)){
     winget install -e Kitware.CMake
@@ -132,9 +135,7 @@ if(-not (Get-IsInstalled mosquitto)){
     AddToPath("C:\Program Files\Mosquitto")
     AddToPath("C:\Program Files\CMake\bin")
 }
-# Reload Path Environment Variable
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
+Reload-Path
 # Start Mosquitto MQTT Broker
 Start-Service -Name Mosquitto
 
@@ -149,11 +150,8 @@ if(-not (Get-IsInstalled choco)){
 # Install Maven
 ##########################################
 if(-not (Get-IsInstalled mvn)){
-    # Download
     choco install maven
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Reload-Path
 }
 
 ##########################################
@@ -167,6 +165,7 @@ if(-not (Get-IsInstalled ninja)){
 
     AddToPath("C:\Program Files\Ninja\")
 }
+
 ##########################################
 # Install MinGW
 ##########################################
@@ -198,10 +197,7 @@ if(-not (Get-IsInstalled python))
 {
     choco install python
 
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
-    python -m pip install -U pip
+    Reload-Path
 }
 
 ##########################################
@@ -210,9 +206,7 @@ if(-not (Get-IsInstalled python))
 
 if(-not (Get-IsInstalled conan)){
     pip install conan
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Reload-Path
 }
 
 ##########################################
