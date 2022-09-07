@@ -220,10 +220,10 @@ if(-not((Test-Path -Path 'C:\nng-1.3.0') -or (Test-Path -Path 'C:\Program Files 
 # Install Python
 ##########################################
 
-if(-not (Get-IsInstalled python))
-{
-    choco install python
-
+# since winget adds an app-execution alias to the ms store for python our
+# Get-IsInstalled function would see python as installed. To fix this we must check for pip here instead
+if(-not (Get-IsInstalled pip)) {
+    winget install python
     Reload-Path
 }
 
