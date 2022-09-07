@@ -93,6 +93,19 @@ if(-not (Get-IsInstalled winget)){
     Add-AppxPackage -Path "$PWD\VCLibs.appx"
     rm "$PWD\VCLibs.appx"
 
+    # Get architecture
+    $arch = "x64" # default value
+    Switch ($env:PROCESSOR_ARCHITECTURE) {
+        "AMD64" {$arch = "x64"}
+        "ARM64" {$arch = "arm64"}
+        "X86"   {$arch = "x86"}
+    }
+
+    # Install Windows UI Library (workaround for this issue: https://github.com/microsoft/winget-cli/issues/1861)
+    Invoke-Webrequest -UseBasicParsing -OutFile microsoft.ui.xaml.2.7.zip https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0
+    Expand-Archive -DestinationPath .\microsoft.ui.xaml.2.7 .\microsoft.ui.xaml.2.7.zip
+    Add-AppxPackage -path ".\microsoft.ui.xaml.2.7\tools\AppX\${arch}\Release\Microsoft.UI.Xaml.2.7.appx"
+
     # Find current release
     $data = Invoke-Webrequest -UseBasicParsing https://api.github.com/repos/microsoft/winget-cli/releases/latest
     $data = $data.Content | ConvertFrom-Json
@@ -105,11 +118,11 @@ if(-not (Get-IsInstalled winget)){
         $wingetUrl=$asset.browser_download_url
       }
     }
-    # Download and install
-    Invoke-Webrequest -UseBasicParsing -OutFile WinGet.msixbundle -Uri $wingetUrl
-    Add-AppPackage -path ".\WinGet.msixbundle"
-    rm ".\WinGet.msixbundle"
 
+    # Download and install winget
+    Invoke-Webrequest -UseBasicParsing -OutFile WinGet.msixbundle -Uri $wingetUrl
+    Add-AppxPackage -path ".\WinGet.msixbundle"
+    rm ".\WinGet.msixbundle"
     Reload-Path
 }
 
