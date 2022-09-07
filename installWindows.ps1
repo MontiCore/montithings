@@ -201,18 +201,20 @@ if(-not (Get-IsInstalled gcc)){
 ##########################################
 # Install NNG 1.3.0
 ##########################################
-Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nanomsg/nng/archive/v1.3.0.zip
-Expand-Archive -DestinationPath "$PWD" nng.zip
-rm .\nng.zip
-cd .\nng-1.3.0\
-mkdir build
-cd .\build\
-cmake -G Ninja ..
-ninja
-ninja test
-ninja install
-cd ..
-cd ..
+if(-not((Test-Path -Path 'C:\nng-1.3.0') -or (Test-Path -Path 'C:\Program Files (x86)\nng'))){
+    Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nanomsg/nng/archive/v1.3.0.zip
+    Expand-Archive -DestinationPath "$PWD" nng.zip
+    rm .\nng.zip
+    cd .\nng-1.3.0\
+    mkdir build
+    cd .\build\
+    cmake -G Ninja ..
+    ninja
+    ninja test
+    ninja install
+    cd ..
+    cd ..
+}
 
 ##########################################
 # Install Python
