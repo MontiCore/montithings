@@ -121,6 +121,7 @@ public class ProtoGenerator {
     parse();
 
     GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
     setup.setOutputDirectory(this.outputDir.toFile());
     GeneratorEngine engine = new GeneratorEngine(setup);
     String outFilename = modelName.replace('.', File.separatorChar) + ".proto";
