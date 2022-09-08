@@ -2,6 +2,7 @@
 // (c) https://github.com/MontiCore/monticore
 
 #pragma once
+#include <list>
 
 namespace montithings {
     namespace collections {
