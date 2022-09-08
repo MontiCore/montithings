@@ -4,11 +4,11 @@ from FaceIDImplTOP import FaceIDImplTOP
 class FaceIDImpl(FaceIDImplTOP):
 
     personDB = {
-        0: "Tim",
-        1: "Sebastian",
-        2: "Andre",
-        3: "Danyls",
-        4: "Merlin",
+        0: "Alice",
+        1: "Bob",
+        2: "Charlie",
+        3: "Dave",
+        4: "Erin",
     }
 
     def __init__(self):
