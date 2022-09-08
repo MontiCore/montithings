@@ -290,9 +290,3 @@ To add support for a new type extend the implementation of the corresponding typ
 also extend the implementation of `TypeHelper` by creating a new `ITypeResolver` class that handles the new types and adding it to the `typeMap`
 in the constructor.
 
-## Authors and acknowledgment
-
-* André Fugmann
-* Merlin Freiherr von Rössing
-* Sebastian Grabowski
-* Tim Nebel
