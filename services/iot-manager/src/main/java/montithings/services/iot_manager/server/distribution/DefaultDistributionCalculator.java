@@ -62,6 +62,7 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     }
     this.filesDeviceDescriptions = new HashMap<>();
     this.fileDeviceDescription = new File(this.workingDir, "devicedescription.pl");
+    this.fileDeviceDescription.getParentFile().mkdirs();
     Files.write("", fileDeviceDescription, StandardCharsets.UTF_8);
     for (String deviceName : plDeviceDescriptions.keySet()) {
       this.filesDeviceDescriptions.put(deviceName, new File(this.workingDir, "devicedescription" + deviceName + ".pl"));

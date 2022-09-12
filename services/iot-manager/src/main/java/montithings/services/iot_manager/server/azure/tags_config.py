@@ -15,5 +15,6 @@ NEW_TAGS = {
         'floor': '2',
         'room': '002'
     },
-    'hardware': ["sensor1", "led1", "motor1"]
+    'hardware': ["sensor1", "led1", "motor1"],
+    "hardwareOD": ""
 }

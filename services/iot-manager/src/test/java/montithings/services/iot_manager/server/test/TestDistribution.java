@@ -26,8 +26,8 @@ public class TestDistribution {
   @Test(timeout = 10_000L)
   public void testRestPrologGenerator() throws Exception {
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "sensor_temperature"));
-    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0, "heat_controller"));
+    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "", "sensor_temperature"));
+    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0, "", "heat_controller"));
     
     String jsonConfig = new String(Utils.readAllBytes(getClass().getResourceAsStream("/scripts/ex1_config.json")), StandardCharsets.UTF_8);
     
@@ -75,8 +75,8 @@ public class TestDistribution {
     
     // example data
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
-    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
+    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "", "HighPerformanceAdditionComputeUnit"));
+    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0, ""));
     
     JsonObject jsonDeploy = null;
     try (Reader reader = new InputStreamReader(getClass().getResourceAsStream("/json/deployment-info.json"))) {
@@ -182,8 +182,8 @@ public class TestDistribution {
     
     { // first calculation
       LinkedList<DeployClient> clients = new LinkedList<>();
-      clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
-      clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
+      clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "", "HighPerformanceAdditionComputeUnit"));
+      clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0, ""));
       
       // Generate Prolog files.
       
@@ -248,8 +248,8 @@ public class TestDistribution {
     
     { // second calculation
       LinkedList<DeployClient> clients = new LinkedList<>();
-      clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
-      clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
+      clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0, ""));
+      clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "", "HighPerformanceAdditionComputeUnit"));
       
       // Generate Prolog files.
       
