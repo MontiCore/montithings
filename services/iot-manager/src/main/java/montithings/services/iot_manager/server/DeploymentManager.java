@@ -157,8 +157,16 @@ public class DeploymentManager implements IDeployStatusListener {
         plOCLQueries.put(instanceName, plOCLQuery);
       }
 
-      //TODO: fill with object diagrams
       Map<String, String> plDeviceDescriptions = new HashMap<>();
+      for (DeployClient dc : targetProvider.getClients()) {
+        String plDeviceDescription = gen.generateDeviceDescription(dc.getHardwareOD()).exceptionally((t) -> {
+          return null;
+        }).get();
+        if (plDeviceDescription == null) {
+          throw new DeploymentException("Could not generate Prolog from object diagram of client '" + dc.getClientID() +  "'");
+        }
+        plDeviceDescriptions.put(dc.getClientID(), plDeviceDescription);
+      }
 
       return new DefaultDistributionCalculator(plFacts, plQuery, hardwareRequirements, plDeviceDescriptions, workingDir);
     } catch(DeploymentException e) {
