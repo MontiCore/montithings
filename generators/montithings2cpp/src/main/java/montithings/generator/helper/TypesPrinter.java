@@ -113,6 +113,10 @@ public class TypesPrinter {
       typeName = typeName + "." + typeName;
     }
 
+    if (typeName.equals("String")) {
+      return "std::string";
+    }
+
     if (!typeName.contains(".")) {
       String diagramName = typeSymbol.getEnclosingScope().getLocalDiagramSymbols().get(0)
         .getName();
