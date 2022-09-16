@@ -3,8 +3,10 @@ package montithings.generator.steps.check;
 
 import com.google.common.base.Preconditions;
 import de.se_rwth.commons.logging.Log;
+import montithings.MontiThingsMill;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
+import mtconfig.MTConfigMill;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
@@ -27,8 +29,10 @@ public class CheckMTConfig extends GeneratorStep {
 
       // parse + resolve model
       Log.info("Parsing model: " + model, "MontiThingsGeneratorTool");
+      MTConfigMill.init();
       state.getConfig().setMtConfigScope(
         state.getMtConfigTool().createSymboltable(ast, state.getMtConfigGlobalScope()));
+      MontiThingsMill.init();
 
       // check cocos
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
