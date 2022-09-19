@@ -10,6 +10,7 @@ import montithings.services.iot_manager.server.data.constraint.Constraint;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,7 +110,13 @@ public class DeployConfigBuilder {
     Map<String, String> hardwareRequirementsMap = new HashMap<>();
     for (InstanceInfo instanceInfo : config.getDeploymentInfo().getInstances()) {
       if (instanceInfo.getHardwareRequirement() != "") {
-        hardwareRequirementsMap.put(instanceInfo.getInstanceName(), instanceInfo.getHardwareRequirement());
+        String [] partsOfInstanceName = instanceInfo.getInstanceName().split("\\.");
+        String instanceName = "";
+        for (int i = 0; i < partsOfInstanceName.length; i++) {
+          instanceName += partsOfInstanceName[i].substring(0,1).toUpperCase()
+                  + partsOfInstanceName[i].substring(1).toLowerCase();
+        }
+        hardwareRequirementsMap.put(instanceName, instanceInfo.getHardwareRequirement());
       }
     }
     return hardwareRequirementsMap;
