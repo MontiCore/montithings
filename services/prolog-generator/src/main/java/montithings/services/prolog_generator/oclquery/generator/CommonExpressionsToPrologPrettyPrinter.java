@@ -88,4 +88,11 @@ public class CommonExpressionsToPrologPrettyPrinter extends CommonExpressionsPre
     node.getExpression().accept(this.getTraverser());
     this.getPrinter().print("__" + node.getName());
   }
+
+  @Override
+  public void handle(ASTLessEqualExpression node) {
+    node.getLeft().accept(this.getTraverser());
+    this.getPrinter().print(" =< ");
+    node.getRight().accept(this.getTraverser());
+  }
 }
