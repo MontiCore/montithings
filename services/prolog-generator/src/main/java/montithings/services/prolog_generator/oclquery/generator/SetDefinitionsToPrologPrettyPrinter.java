@@ -16,11 +16,9 @@ public class SetDefinitionsToPrologPrettyPrinter extends SetDefinitionsPrettyPri
 
   @Override
   public void handle(ASTSetValueRange node) {
-    getPrinter().print("betweeen(");
     node.getLowerBound().accept(getTraverser());
     getPrinter().print(",");
     node.getUpperBound().accept(getTraverser());
-    getPrinter().print(")");
     if (node.isPresentStepsize()) {
       Log.error("Step size in SetValueRanges is not currently supported by the prolog generator");
     }

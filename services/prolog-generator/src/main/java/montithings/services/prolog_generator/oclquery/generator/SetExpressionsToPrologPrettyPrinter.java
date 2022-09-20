@@ -3,6 +3,7 @@ package montithings.services.prolog_generator.oclquery.generator;
 import de.monticore.ocl.setexpressions._ast.*;
 import de.monticore.ocl.setexpressions.prettyprint.SetExpressionsPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.se_rwth.commons.logging.Log;
 
 public class SetExpressionsToPrologPrettyPrinter extends SetExpressionsPrettyPrinter {
 
@@ -22,11 +23,17 @@ public class SetExpressionsToPrologPrettyPrinter extends SetExpressionsPrettyPri
 
   @Override
   public void handle(ASTSetInExpression node) {
-    getPrinter().print("member(");
-    node.getElem().accept(getTraverser());
-    getPrinter().print(", ");
-    node.getSet().accept(getTraverser());
-    getPrinter().print(")");
+    if (node.getSet() instanceof ASTSetEnumeration) {
+      getPrinter().print("between(");
+      node.getSet().accept(getTraverser());
+      getPrinter().print(", ");
+      node.getElem().accept(getTraverser());
+      getPrinter().print(")");
+    }
+    else {
+      Log.error("SetExpressions other than SetEnumeration are currently not supported" +
+              "in SetInExpressions by the prolog generator");
+    }
   }
 
   @Override
