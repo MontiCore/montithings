@@ -163,6 +163,13 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
     </#list>
 
+    <#if distribution.hasOCLConstraint()>
+    % then check that hardware requirements are met
+    <#assign compName = Utils.toFirstLower(distribution.name)>
+    include(${compName}HardwareRequired,AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    <#assign count++>
+    </#if>
+
     AllAvailableDevicesFilteredResult = AllAvailableDevicesFiltered${count},
 
     true) ; (
@@ -232,6 +239,13 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     check_lte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
     </#list>
 
+
+    <#if distribution.hasOCLConstraint()>
+        % then check that hardware requirements are met
+        <#assign compName = Utils.toFirstLower(distribution.name)>
+        include(${compName}HardwareRequired,AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        <#assign count++>
+    </#if>
 
     AllAvailableDevicesFilteredResult = AllAvailableDevicesFiltered${count},
     true)), 
