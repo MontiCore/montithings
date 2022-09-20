@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 
 def parse_cmd_args():
     import argparse

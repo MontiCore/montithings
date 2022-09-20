@@ -12,7 +12,7 @@ json state = json::parse (content);
 ${tc.includeArgs("template.util.statechart.hooks.Deserialize", [comp, config])}
 // set state
 <#list ComponentHelper.getFields(comp) as variable>
-    ${variable.getName()} = jsonToData${"<"}${TypesPrinter.printCPPTypeName(variable.getType())}${">"}(state["${variable.getName()}"]);
+    ${variable.getName()} = jsonToData${"<"}${TypesPrinter.printCPPTypeName(variable.getType(), comp, config)}${">"}(state["${variable.getName()}"]);
 </#list>
 this->restoredState = true;
 return true;

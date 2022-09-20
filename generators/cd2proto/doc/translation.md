@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Translation of Class Diagrams to Protocol Buffer Descriptions
 
 A goal of cd2proto is to have wide support for most features of the cd4analysis class diagram

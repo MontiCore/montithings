@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Serialization with Google Protocol Buffers
 
 MontiThings is able to use Google Protocol Buffers as de-/serialization format for the communication

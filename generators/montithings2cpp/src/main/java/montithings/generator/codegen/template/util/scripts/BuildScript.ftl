@@ -8,6 +8,8 @@ ${tc.signature("comp","hwcPythonScripts","config", "existsHWC")}
 # Or call "USE_CONAN=1 ./build.sh componentName"
 #
 
+set -e # Stop on first error
+
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 <#if config.getSplittingMode().toString() == "OFF">
   COMPNAME=${comp.getPackageName()}

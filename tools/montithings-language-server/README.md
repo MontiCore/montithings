@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Running the server
 ## Intellij
 Two Intellij run configurations are provided:

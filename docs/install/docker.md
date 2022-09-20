@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Installation (using Docker)
 
 ### Is this the right installation type for you?

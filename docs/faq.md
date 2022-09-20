@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Frequently Asked Questions
 
 **Q:** "CMake cant find my compiler. Whats wrong?"<br>

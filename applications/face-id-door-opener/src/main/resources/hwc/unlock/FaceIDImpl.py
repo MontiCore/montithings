@@ -1,13 +1,14 @@
+# (c) https://github.com/MontiCore/monticore
 from FaceIDImplTOP import FaceIDImplTOP
 
 class FaceIDImpl(FaceIDImplTOP):
 
     personDB = {
-        0: "Tim",
-        1: "Sebastian",
-        2: "Andre",
-        3: "Danyls",
-        4: "Merlin",
+        0: "Alice",
+        1: "Bob",
+        2: "Charlie",
+        3: "Dave",
+        4: "Erin",
     }
 
     def __init__(self):
@@ -26,7 +27,7 @@ class FaceIDImpl(FaceIDImplTOP):
         # manipulate the visitor field
         self._result.ports["visitor"].visitor_id = self._input.ports["image"].person_id
         self._result.ports["visitor"].name = self.personDB[self._result.ports["visitor"].visitor_id]
-        self._result.ports["visitor"].allowed = self._result.ports["visitor"].name in [ "Sebastian", "Andre", "Tim"]
+        self._result.ports["visitor"].allowed = self._result.ports["visitor"].name in [ "Alice", "Bob", "Erin"]
 
         print("[FaceID-Python] visitor", self._result.ports["visitor"].name, "authorized" if self._result.ports["visitor"].allowed else "not authorized")
         # send the current state of visitor on /ports/unlock/FaceUnlock/faceid/visitor

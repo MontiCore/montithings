@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2proto;
 
 import com.google.common.collect.LinkedListMultimap;
@@ -120,6 +121,7 @@ public class ProtoGenerator {
     parse();
 
     GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
     setup.setOutputDirectory(this.outputDir.toFile());
     GeneratorEngine engine = new GeneratorEngine(setup);
     String outFilename = modelName.replace('.', File.separatorChar) + ".proto";

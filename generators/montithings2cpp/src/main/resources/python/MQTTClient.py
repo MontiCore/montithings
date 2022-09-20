@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 from paho.mqtt.client import MQTTMessage, Client as MQTTClient
 import json
 import uuid

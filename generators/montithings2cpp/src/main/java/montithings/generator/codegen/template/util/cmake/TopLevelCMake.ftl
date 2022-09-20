@@ -159,7 +159,7 @@ include_directories("hwc" ${r"${dir_list}"})
 
 <#if needsProtobuf>
   if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
-    find_package(protobuf)
+    find_package(Protobuf)
   else()
     find_package(Protobuf 3 REQUIRED)
   endif()

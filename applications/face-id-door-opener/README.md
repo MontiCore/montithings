@@ -436,10 +436,3 @@ knows:
 ```
 > The base64-encoding has to happen, because the C++-Implementation for JSON crashes
   for null-Bytes in protobuf (not compatible with UTF-8)
-
-## Authors and acknowledgment
-
-* André Fugmann
-* Merlin Freiherr von Rössing
-* Sebastian Grabowski
-* Tim Nebel

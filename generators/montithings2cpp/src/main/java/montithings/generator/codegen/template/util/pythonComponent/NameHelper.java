@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.codegen.template.util.pythonComponent;
 
 import java.util.regex.Pattern;

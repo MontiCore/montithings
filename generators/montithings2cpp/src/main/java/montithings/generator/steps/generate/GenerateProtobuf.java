@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.steps.generate;
 
 import de.monticore.cd4analysis._symboltable.CD4AnalysisGlobalScope;
@@ -31,7 +32,7 @@ public class GenerateProtobuf extends GeneratorStep {
         state.setProtoFiles(protoFiles);
       } catch (IOException | ParseException e) {
         e.printStackTrace();
-        Log.error("0xMT1337 Could not generate Protocol Buffer description file for \"" + model + "\":", e);
+        Log.error("0xMT789 Could not generate Protocol Buffer description file for \"" + model + "\":", e);
       }
     }
   }

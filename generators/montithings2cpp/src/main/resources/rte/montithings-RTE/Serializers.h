@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #ifndef MONTITHINGS_RTE_SERIALIZERS_H
 #define MONTITHINGS_RTE_SERIALIZERS_H
 

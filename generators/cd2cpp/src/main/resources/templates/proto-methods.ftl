@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("AssociationHelper", "type", "typeName", "super", "associations")}
 
 using ProtocolBuffer = ${type.getEnclosingScope().getEnclosingScope().getName()}::protobuf::${typeName};

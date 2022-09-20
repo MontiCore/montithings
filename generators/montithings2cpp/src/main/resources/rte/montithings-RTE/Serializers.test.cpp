@@ -1,6 +1,4 @@
-//
-// Created by sebastian on 01.07.22.
-//
+// (c) https://github.com/MontiCore/monticore
 
 #include "Serializers.h"
 

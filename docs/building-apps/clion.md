@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Building and Running an Application using CLion
 
 It's also possible to option generated MontiThings Projects in IDEs.

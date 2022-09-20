@@ -141,6 +141,7 @@ public class CppGenerator {
 
   public void generate(Optional<String> targetPackage) {
     GeneratorSetup generatorSetup = new GeneratorSetup();
+    generatorSetup.setTracing(false);
     generatorSetup.setOutputDirectory(this.outputDir.toFile());
     generatorSetup.getGlex().defineGlobalVar(
         "generateProtobufInterface", generateProtobufInterface);
