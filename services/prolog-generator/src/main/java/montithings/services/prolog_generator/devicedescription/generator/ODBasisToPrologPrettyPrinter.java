@@ -15,10 +15,13 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
 
   private String currentObjectName;
 
+  private String anonymousObjectAttributeName;
+
   public ODBasisToPrologPrettyPrinter(IndentPrinter printer) {
     super(printer);
     hardwareName = "";
     currentObjectName= "";
+    anonymousObjectAttributeName = "";
   }
 
   @Override
@@ -44,7 +47,8 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
   @Override
   public void handle(ASTODAnonymousObject node) {
     //check to see if current object is outermost object
-    outerObjectCheck(node.getMCObjectType(), "");
+    outerObjectCheck(node.getMCObjectType(), anonymousObjectAttributeName);
+    anonymousObjectAttributeName = "";
     for (ASTODAttribute attribute : node.getODAttributeList()) {
       attribute.accept(getTraverser());
     }
@@ -58,6 +62,12 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
 
     //skip if attribute is assigned to object
     if (node.getODValue() instanceof ASTODObject){
+      if (node.getODValue() instanceof ASTODNamedObject) {
+        ((ASTODNamedObject) node.getODValue()).setName(node.getName());
+      }
+      else if (node.getODValue() instanceof ASTODAnonymousObject){
+        anonymousObjectAttributeName = node.getName();
+      }
       node.getODValue().accept(getTraverser());
       return;
     }
@@ -101,7 +111,12 @@ public class ODBasisToPrologPrettyPrinter extends ODBasisPrettyPrinter {
       hardwareName = name;
     }
     else {
-      currentObjectName = mcObjectType.printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));
+      if (name != null && name != "") {
+        currentObjectName = name;
+      }
+      else {
+        currentObjectName = mcObjectType.printType(new MCFullGenericTypesFullPrettyPrinter(new IndentPrinter()));
+      }
       currentObjectName = Utils.toFirstLower(currentObjectName);
     }
   }
