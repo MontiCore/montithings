@@ -17,7 +17,6 @@ stages:
   - mirror
 
 variables:
-  GIT_SUBMODULE_STRATEGY: recursive
   # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
   MAVEN_OPTS: "-Xmx4096m -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
@@ -26,12 +25,6 @@ variables:
   DOCKER_DRIVER: overlay2
   SAST_DISABLED: "true"
   SAST_EXCLUDED_PATHS: "test, services, cereal, json, nngpp, message-types, cpp-httplib, easyloggingpp, sole, curl, rigtorp"
-  CI_REGISTRY_IMAGE: registry.git.rwth-aachen.de/sebastian.grabowski/registry
-  CI_SKIP_UNIT_TESTS:
-    value: ""
-    description: >-
-      Skips jobs in the test stage if set to non-empty string. Helps to get quickly to the
-      generator-test stage.
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -62,7 +55,7 @@ Docker Alpine:
     CHANGES_PATH: 'docker/mtcmake/**/*'
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
-    - cd docker/mtcmake 
+    - cd docker/mtcmake
 
     - export DOCKER_CLI_EXPERIMENTAL=enabled
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
@@ -90,7 +83,7 @@ Docker DDS:
     - docker buildx inspect --bootstrap
 
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
-    
+
     # Running this a second time will just use the cached layers
     - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t montithings/mtcmakedds:latest --push .
 
@@ -136,7 +129,7 @@ Docker Log Tracing:
 Docker Prolog Generator:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'services/recorder/**/*' 
+    CHANGES_PATH: 'services/recorder/**/*'
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build . --file services/prolog-generator/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/prolog-generator
@@ -185,7 +178,7 @@ Validate Maven:
       - languages/montithings/target/
       - applications
     expire_in: 1 week
-    
+
 Validate Gradle:
   image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
   stage: build
@@ -205,12 +198,12 @@ Validate Gradle:
     - gradle clean assemble
     - cd applications
     - gradle clean assemble
-    
+
 Unit Test Gradle:
   image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
   stage: test
   allow_failure: true
-  dependencies: 
+  dependencies:
     - Validate Gradle #download artifacts from build
   needs: ["Validate Gradle"]
   script:
@@ -221,20 +214,16 @@ Unit Test Gradle:
   stage: test
   coverage: '/\d+.\d+ \% covered/'
   script:
-    - |
-      if [[ -z "${CI_SKIP_UNIT_TESTS}" ]]
-      then
-        mvn $MAVEN_CLI_OPTS test package -Dexec.skip
-        awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
-      fi
-  dependencies: 
+    - mvn $MAVEN_CLI_OPTS test package -Dexec.skip
+    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' ./languages/montithings/target/site/jacoco/jacoco.csv
+  dependencies:
     - Validate Maven #download artifacts from build
   needs: ["Validate Maven"]
   artifacts:
     reports:
       junit:
-      - ./generators/montithings2cpp/target/surefire-reports/TEST-*.xml
-      - ./languages/montithings/target/surefire-reports/TEST-*.xml
+        - ./generators/montithings2cpp/target/surefire-reports/TEST-*.xml
+        - ./languages/montithings/target/surefire-reports/TEST-*.xml
     paths:
       - generators/montithings2cpp/target/
       - "applications/**/target/generated-sources"
@@ -243,11 +232,11 @@ Unit Test Gradle:
 Unit Test JDK 8:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
   <<: *unit_test_definition
-      
+
 Unit Test JDK 11:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-11
   # We do not require JDK 11 support yet. We appreciate it though.
-  allow_failure: true 
+  allow_failure: true
   <<: *unit_test_definition
 
 Unit Test JDK 14:
@@ -259,12 +248,12 @@ Unit Test JDK 14:
 Unit Test Amazon Corretto JDK 8:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-amazoncorretto-8
   # We do not require Amazon Corretto JDK support. We appreciate it though.
-  allow_failure: true 
+  allow_failure: true
   <<: *unit_test_definition
 
 .generator_test_definition: &generator_test_definition
   stage: generator-test
-  dependencies: 
+  dependencies:
     - Unit Test JDK 11 #download generated-test-sources
   needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   script:
@@ -378,7 +367,7 @@ Deploy Nexus:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
   stage: post-test
   script:
-    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip -Dmaven.test.skip=true 
+    - mvn -U $MAVEN_CLI_OPTS clean deploy -Dexec.skip -Dmaven.test.skip=true
   only:
     - develop
 
@@ -396,24 +385,24 @@ Code Quality:
   script:
     - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
     # Update Codeclimate and SonarJava Plugin
-    - docker run  --rm 
-      --env CODECLIMATE_CODE="$PWD" 
-      --env CONTAINER_TIMEOUT_SECONDS=150000 
+    - docker run  --rm
+      --env CODECLIMATE_CODE="$PWD"
+      --env CONTAINER_TIMEOUT_SECONDS=150000
       --env ENGINE_MEMORY_LIMIT_BYTES=100000000000
-      --volume "$PWD":/code 
-      --volume /var/run/docker.sock:/var/run/docker.sock 
-      --volume /tmp/cc:/tmp/cc 
+      --volume "$PWD":/code
+      --volume /var/run/docker.sock:/var/run/docker.sock
+      --volume /tmp/cc:/tmp/cc
       codeclimate/codeclimate engines:install
     # Check Code Quality
-    - docker run --rm 
-       --env CODECLIMATE_CODE="$PWD" 
-       --env CONTAINER_TIMEOUT_SECONDS=150000
-       --env ENGINE_MEMORY_LIMIT_BYTES=100000000000 
-       --volume "$PWD":/code 
-       --volume /var/run/docker.sock:/var/run/docker.sock 
-       --volume /tmp/cc:/tmp/cc 
-       codeclimate/codeclimate analyze -f json > codeclimate.json
-        #"registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
+    - docker run --rm
+      --env CODECLIMATE_CODE="$PWD"
+      --env CONTAINER_TIMEOUT_SECONDS=150000
+      --env ENGINE_MEMORY_LIMIT_BYTES=100000000000
+      --volume "$PWD":/code
+      --volume /var/run/docker.sock:/var/run/docker.sock
+      --volume /tmp/cc:/tmp/cc
+      codeclimate/codeclimate analyze -f json > codeclimate.json
+    #"registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
   artifacts:
     reports:
       codequality: codeclimate.json
@@ -444,7 +433,7 @@ GitHub Mirror:
   stage: mirror
   cache: {}
   allow_failure: true
-#  needs: []
+  #  needs: []
   variables:
     GIT_STRATEGY: clone
   dependencies:
@@ -468,12 +457,12 @@ GitHub Mirror:
     - git fetch --all
     - git switch -c github/"$CI_COMMIT_BRANCH" --track github/"$CI_COMMIT_BRANCH"
     - git merge --no-edit -s recursive -X theirs origin/"$CI_COMMIT_BRANCH"
-#    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
-#    - "curl \"https://raw.githubusercontent.com/MontiCore/monticore/dev/pre/mirror.sh\" --output mirror.sh"
-#    - sh mirror.sh
-#    - rm MDLinkChangerCLI.jar mirror.sh
-#    - git add --all
-#    - "(git commit -m 'Replace private README links.') || true"
+    #    - "curl --location --header \"PRIVATE-TOKEN: $secibuildtoken\" \"https://git.rwth-aachen.de/api/v4/projects/monticore%2Fauxiliary-development-tools%2Fmdlinkchecker/jobs/artifacts/master/raw/target/libs/MDLinkChangerCLI.jar?job=build\" --output MDLinkChangerCLI.jar"
+    #    - "curl \"https://raw.githubusercontent.com/MontiCore/monticore/dev/pre/mirror.sh\" --output mirror.sh"
+    #    - sh mirror.sh
+    #    - rm MDLinkChangerCLI.jar mirror.sh
+    #    - git add --all
+    #    - "(git commit -m 'Replace private README links.') || true"
     - git push github HEAD:"$CI_COMMIT_BRANCH"
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
@@ -487,8 +476,8 @@ GitHub Mirror:
 ##########################################
 
 include:
-- template: Security/Secret-Detection.gitlab-ci.yml
-- template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
 
 # Check there are no secrets in the projects
 secret_detection:
@@ -496,7 +485,7 @@ secret_detection:
   needs: [] # can run immediately 
 
 # Check RTE for security flaws
-flawfinder-sast: 
+flawfinder-sast:
   stage: security
   needs: [] # can run immediately 
   rules:
