@@ -39,7 +39,7 @@ public class CppGenerator {
 
   private TypeHelper typeHelper;
 
-  public boolean isGenerateProtobufInterface() {
+  public boolean getGenerateProtobufInterface() {
     return generateProtobufInterface;
   }
 
@@ -121,6 +121,16 @@ public class CppGenerator {
       .stream()
       .map(LinkedListMultimap::values)
       .forEach(l -> cdSymbols.addAll(l));
+  }
+
+  public CppGenerator(
+          Path outputDir,
+          Path modelPath,
+          Path hwcPath,
+          String modelName,
+          boolean generateProtobufInterface) {
+    this(outputDir,modelPath,hwcPath,modelName);
+    setGenerateProtobufInterface(generateProtobufInterface);
   }
 
 
