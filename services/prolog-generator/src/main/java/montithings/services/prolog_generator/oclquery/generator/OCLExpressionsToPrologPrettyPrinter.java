@@ -114,6 +114,13 @@ public class OCLExpressionsToPrologPrettyPrinter extends OCLExpressionsPrettyPri
         getPrinter().print(", \"");
         node.getMCType().accept(getTraverser());
         getPrinter().print("\")");
+
+        //make sure device type is installed as hardware
+        getPrinter().print(", property(\"has_hardware\", ");
+        node.getInDeclarationVariable(i).accept(getTraverser());
+        getPrinter().print(", ");
+        node.getInDeclarationVariable(i).accept(getTraverser());
+        getPrinter().print("__2)");
       }
       if (i != node.sizeInDeclarationVariables() - 1) {
         getPrinter().print(", ");
