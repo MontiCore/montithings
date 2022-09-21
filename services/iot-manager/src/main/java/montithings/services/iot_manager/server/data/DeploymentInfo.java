@@ -60,7 +60,7 @@ public class DeploymentInfo {
         String componentType = jInstance.get("componentType").getAsString();
         String instanceName = jInstance.get("instanceName").getAsString();
         String hardwareRequirement = "";
-        if (jInstance.has("hardwareRequirements")) {
+        if (jInstance.has("hardwareRequirements") && !jInstance.get("hardwareRequirements").getAsString().isEmpty()) {
           hardwareRequirement = jInstance.get("hardwareRequirements").getAsString();
         }
 
