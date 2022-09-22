@@ -65,7 +65,6 @@ get_distribution_${distribution.name}(${distribution.name}) :-
     % then constrains greater than equal: >=
     <#list distribution.gteConstraints as constraint>
     check_gte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
-        <#assign count++>
     </#list>
 
     % then constrains that check all equal
