@@ -1237,7 +1237,7 @@ public class ComponentHelper {
           if (((ASTRequirementStatement) tag).isPresentExpression()) {
             //in this case, an ocl expression is provided as a requirement
             MontiThingsFullPrettyPrinter pp = new MontiThingsFullPrettyPrinter();
-            requirements.add("OCL: " + pp.prettyprint(((ASTRequirementStatement) tag).getExpression()));
+            requirements.add("ocl: " + pp.prettyprint(((ASTRequirementStatement) tag).getExpression()));
           }
           else {
             ASTRequirementStatement rtag = (ASTRequirementStatement) tag;

@@ -168,7 +168,7 @@ public class DeploymentManager implements IDeployStatusListener {
         plDeviceDescriptions.put(dc.getClientID(), plDeviceDescription);
       }
 
-      return new DefaultDistributionCalculator(plFacts, plQuery, hardwareRequirements, plDeviceDescriptions, workingDir);
+      return new DefaultDistributionCalculator(plFacts, plQuery, plOCLQueries, plDeviceDescriptions, workingDir);
     } catch(DeploymentException e) {
       throw e;
     } catch(Exception e) {

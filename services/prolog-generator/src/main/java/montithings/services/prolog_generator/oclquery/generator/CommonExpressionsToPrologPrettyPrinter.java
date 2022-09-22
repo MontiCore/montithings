@@ -86,6 +86,13 @@ public class CommonExpressionsToPrologPrettyPrinter extends CommonExpressionsPre
   @Override
   public void handle(ASTFieldAccessExpression node) {
     node.getExpression().accept(this.getTraverser());
-    this.getPrinter().print("__" + node.getName());
+    this.getPrinter().print("__" + node.getName().toLowerCase());
+  }
+
+  @Override
+  public void handle(ASTLessEqualExpression node) {
+    node.getLeft().accept(this.getTraverser());
+    this.getPrinter().print(" =< ");
+    node.getRight().accept(this.getTraverser());
   }
 }
