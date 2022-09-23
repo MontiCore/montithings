@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
 	mosquitto \
 	mosquitto-dev \
 	cpio \
+    protobuf-compiler libprotobuf-dev python3-protobuf \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
@@ -45,7 +46,7 @@ RUN cd /usr/src/app/opendds \
 && git fetch && git fetch --tags \
 && git checkout DDS-3.15 \
 && ./configure --static \
-&& make \
+&& make -j$(nproc) \
 && ldconfig \
 && . /usr/src/app/opendds/setenv.sh
 

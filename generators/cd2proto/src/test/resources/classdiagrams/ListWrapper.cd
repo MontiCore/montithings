@@ -1,0 +1,19 @@
+/* This CD contains Lists of Lists to test the capabilities of the GenericTypeResolver / NestedListHelper */
+classdiagram ListWrapper {
+
+    class ClassWithDirectList {
+        List<String> directList;
+    }
+
+    class ClassWithNestedList {
+        List<List<String>> nestedList;
+    }
+
+    class ClassWithDoubleNestedList {
+        List<List<List<String>>> doubleNestedList;
+    }
+
+    class ClassWithTripleNestedList {
+        List<List<List<List<String>>>> tripleNestedList;
+    }
+}

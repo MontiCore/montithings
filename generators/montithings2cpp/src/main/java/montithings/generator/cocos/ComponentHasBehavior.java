@@ -32,7 +32,8 @@ public class ComponentHasBehavior implements MontiThingsASTMTComponentTypeCoCo {
     boolean hasBehavior = ComponentHelper.hasBehavior(compSymbol)
       ||  ComponentHelper.hasStatechart(compSymbol)
       || !ComponentHelper.getPortSpecificBehaviors(compSymbol).isEmpty()
-      || ComponentHelper.hasInitBehavior(compSymbol);
+      || ComponentHelper.hasInitBehavior(compSymbol)
+      || ComponentHelper.hasHandwrittenPythonBehaviour(hwcPath, compSymbol);
     boolean hasEveryBlock = !ComponentHelper.getEveryBlocks(compSymbol).isEmpty();
     boolean isComposed = compSymbol.isDecomposed();
     boolean isInterfaceComp = node.getMTComponentModifier().isInterface();

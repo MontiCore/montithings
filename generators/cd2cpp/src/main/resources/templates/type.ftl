@@ -51,6 +51,10 @@ ${tc.signature("namespaceCount", "package", "kind", "type", "super", "typeHelper
 #include "${import}"
 </#list>
 
+<#if generateProtobufInterface>
+${tc.includeArgs("templates.proto-header", [type])}
+</#if>
+
 namespace ${package}
 {
 
@@ -250,8 +254,12 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     <#if mandatoryFields?size != 0 || fieldsFromInterface?size != 0>
     public: ${typeName}() {
     }
-    </#if>   
-    
+    </#if>
+
+    <#if generateProtobufInterface>
+      ${tc.includeArgs("templates.proto-methods", [AssociationHelper, type, typeName, super, associations])}
+    </#if>
+
   </#if><#-- /class -->
 };
 

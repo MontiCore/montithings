@@ -1,0 +1,7 @@
+classdiagram Associations {
+    class SomeClass {}
+    class OtherClass {}
+    association SomeClass -> (mult) OtherClass [*];
+    association SomeClass -> (opt) OtherClass [0..1];
+    association SomeClass -> (single) OtherClass [1];
+}

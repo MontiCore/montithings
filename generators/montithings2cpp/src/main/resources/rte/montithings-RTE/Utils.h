@@ -13,6 +13,7 @@
 #include "cereal/types/map.hpp"
 #include "cereal/types/unordered_map.hpp"
 #include "sole/sole.hpp"
+#include "Message.h"
 
 template <class T> class Message;
 
@@ -53,6 +54,7 @@ jsonToData (char *json)
 {
   return jsonToData<T>((std::string(json)));
 }
+
 
 template<typename T>
 std::string

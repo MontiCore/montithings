@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Building and Running an Application using the Command Line
 
 *Note: If you're using Windows, please use PowerShell, not the default command line*

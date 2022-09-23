@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package montithings._visitor;
 
 import prepostcondition._ast.ASTPostcondition;

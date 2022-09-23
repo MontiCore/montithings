@@ -1,0 +1,16 @@
+package unlock;
+
+classdiagram FaceUnlock {
+    package Person {
+        class Person {
+            public String name;
+            public boolean allowed;
+            public int visitor_id;
+        }
+    }
+    package Image {
+        class Image {
+            int person_id;
+        }
+    }
+}

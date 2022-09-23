@@ -74,7 +74,7 @@
 
   <build>
     <plugins>
-      <!-- use java 1.8 beacuse default is 1.5 -->
+      <!-- use java 1.8 because default is 1.5 -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler.plugin}</version>

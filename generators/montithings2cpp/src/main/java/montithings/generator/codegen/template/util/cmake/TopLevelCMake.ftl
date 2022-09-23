@@ -35,9 +35,11 @@ add_compile_options(-Wno-psabi)
   )
 </#if>
 
+if(${r"${CMAKE_HOST_SYSTEM_NAME}"} STREQUAL Darwin)
 # Enable (more comfortable) debugging
 set(CMAKE_CXX_FLAGS_DEBUG "${r"${CMAKE_CXX_FLAGS_DEBUG}"} -gdwarf-3")
 set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
+endif()
 
 # Find all subdirectories with .h files
 # Adapted from https://stackoverflow.com/a/31004567
@@ -155,9 +157,21 @@ include_directories("hwc" ${r"${dir_list}"})
   add_subdirectory(montithings-RTE)
 </#if>
 
+<#if needsProtobuf>
+  if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
+    find_package(Protobuf)
+  else()
+    find_package(Protobuf 3 REQUIRED)
+  endif()
+  file(GLOB_RECURSE PROTOBUF_SOURCES ${r"${CMAKE_SOURCE_DIR}"}/*.proto)
+  protobuf_generate_cpp(PROTOBUF_CPP_SOURCES PROTOBUF_CPP_HEADERS ${r"${PROTOBUF_SOURCES}"})
+  # Include directory with generated .pb.h files
+  include_directories(${r"${CMAKE_CURRENT_BINARY_DIR}"})
+</#if>
+
 file(GLOB SOURCES "*.cpp")
 list(FILTER SOURCES EXCLUDE REGEX "${Utils.getDeployFile(comp)}")
-add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${HWC_SOURCES}"}
+add_library(${comp.getFullName()?replace(".","_")}Lib ${r"${SOURCES}"} ${r"${PROTOBUF_CPP_SOURCES}"} ${r"${HWC_SOURCES}"}
 <#list subPackagesPath as subdir >
 ${r"${"}${subdir.getName()?upper_case}_SOURCES}
 </#list>)
@@ -166,6 +180,9 @@ target_link_libraries(${comp.getFullName()?replace(".","_")}Lib MontiThingsRTE)
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   target_link_libraries(${comp.getFullName()?replace(".","_")}Lib nng::nng)
   endif()
+</#if>
+<#if needsProtobuf>
+  target_link_libraries(${comp.getFullName()?replace(".","_")}Lib protobuf::libprotobuf)
 </#if>
 if (EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
 target_link_libraries(${comp.getFullName()?replace(".","_")}Lib ${r"${CONAN_LIBS}"})
