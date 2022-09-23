@@ -110,16 +110,21 @@ public class DeployConfigBuilder {
     Map<String, String> hardwareRequirementsMap = new HashMap<>();
     for (InstanceInfo instanceInfo : config.getDeploymentInfo().getInstances()) {
       if (instanceInfo.getHardwareRequirement() != "") {
-        String [] partsOfInstanceName = instanceInfo.getInstanceName().split("\\.");
-        String instanceName = "";
-        for (int i = 0; i < partsOfInstanceName.length; i++) {
-          instanceName += partsOfInstanceName[i].substring(0,1).toUpperCase()
-                  + partsOfInstanceName[i].substring(1).toLowerCase();
-        }
+        String instanceName = makeInstanceNamePrologCompatible(instanceInfo.getInstanceName());
         hardwareRequirementsMap.put(instanceName, instanceInfo.getHardwareRequirement());
       }
     }
     return hardwareRequirementsMap;
+  }
+
+  public static String makeInstanceNamePrologCompatible(String instanceName) {
+    String [] partsOfInstanceName = instanceName.split("\\.");
+    String result = "";
+    for (int i = 0; i < partsOfInstanceName.length; i++) {
+      result += partsOfInstanceName[i].substring(0, 1).toUpperCase()
+        + partsOfInstanceName[i].substring(1).toLowerCase();
+    }
+    return result;
   }
   
   public JsonObject build() {
