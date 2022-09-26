@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 FROM gradle:6.9.1-jdk11 as build
 
 COPY . /src/main/app
