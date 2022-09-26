@@ -72,12 +72,20 @@ rm -rf dependencies
 
 if [ -z "${SKIP_MVN}" ] || [ "${SKIP_MVN}" != "1" ]
 then
-# Install MontiThings
-mvn clean install -Dexec.skip
-else
-  echo "###################################"
-  echo "MontiThings installed successfully!"
-  echo "###################################"
+  # Install MontiThings
+  mvn clean install -Dexec.skip
 fi
+
+echo "Installed successfully!"
+echo '
+
+  _____  ___                __  _   ___________    _
+ /__   |/  /  ___________  / /_(_) / ___  __/ /_  (_)___  ____   __
+   / /|_/ / / __ \__/ __ \/ __/ / (_)  / / / __ \/ / __ \/ __ `//_ \
+  / /  / /_/ /_/ / / / / / /_/ /_   __/ / / / / / / / / / /_/ /___) )_
+ /_/  /____\____/ /_/ /_/\__/___/  /___/ /_/ /_/_/_/ /_/\__, /(______/
+                                                       /____/
+
+'
 
 
