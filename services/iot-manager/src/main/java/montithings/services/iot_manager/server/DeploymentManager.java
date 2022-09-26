@@ -25,19 +25,19 @@ import java.util.Map.Entry;
 public class DeploymentManager implements IDeployStatusListener {
   
   // static configuration
-  private final File workingDir;
-  private final NetworkInfo network;
+  protected final File workingDir;
+  protected final NetworkInfo network;
   
   // dynamic configuration
-  private IDeployTargetProvider targetProvider = new NullDeployTargetProvider();
+  protected IDeployTargetProvider targetProvider = new NullDeployTargetProvider();
   
   // current state
-  private DeploymentInfo currentDeploymentInfo = null;
-  private DeploymentConfiguration currentDeploymentConfig = null;
-  private Distribution currentDistribution = null;
+  protected DeploymentInfo currentDeploymentInfo = null;
+  protected DeploymentConfiguration currentDeploymentConfig = null;
+  protected Distribution currentDistribution = null;
   
   // event handling
-  private IDeployStatusListener listener = new VoidDeployStatusListener();
+  protected IDeployStatusListener listener = new VoidDeployStatusListener();
   
   public DeploymentManager(File workingDir, NetworkInfo network) {
     this.workingDir = workingDir;
@@ -143,8 +143,35 @@ public class DeploymentManager implements IDeployStatusListener {
       if (plQuery == null) {
         throw new DeploymentException("Could not generate Prolog query");
       }
-      
-      return new DefaultDistributionCalculator(plFacts, plQuery, workingDir);
+
+      //generate OCL queries in prolog
+      Map<String, String> hardwareRequirements = new DeployConfigBuilder(config).hardwareRequirements();
+      Map<String, String> plOCLQueries = new HashMap<>();
+      for (String instanceName : hardwareRequirements.keySet()) {
+        String plOCLQuery = gen.generateOCLQuery(instanceName + ":" + hardwareRequirements.get(instanceName)).exceptionally((t) -> {
+          return null;
+        }).get();
+        if (plOCLQuery == null) {
+          throw new DeploymentException("Could not generate Prolog OCL query");
+        }
+        plOCLQueries.put(instanceName, plOCLQuery);
+      }
+
+      Map<String, String> plDeviceDescriptions = new HashMap<>();
+      for (DeployClient dc : targetProvider.getClients()) {
+        if (!dc.getHardwareOD().isEmpty()) {
+          String plDeviceDescription = gen.generateDeviceDescription(dc.getHardwareOD()).exceptionally((t) -> {
+              return null;
+            }).get();
+          if (plDeviceDescription == null) {
+            throw new DeploymentException(
+              "Could not generate Prolog from object diagram of client '" + dc.getClientID() + "'");
+          }
+          plDeviceDescriptions.put(dc.getClientID(), plDeviceDescription);
+        }
+      }
+
+      return new DefaultDistributionCalculator(plFacts, plQuery, plOCLQueries, plDeviceDescriptions, workingDir);
     } catch(DeploymentException e) {
       throw e;
     } catch(Exception e) {
@@ -210,7 +237,7 @@ public class DeploymentManager implements IDeployStatusListener {
     }
   }
   
-  private void deploy(Distribution distribution, DeploymentInfo deploymentInfo) throws DeploymentException {
+  protected void deploy(Distribution distribution, DeploymentInfo deploymentInfo) throws DeploymentException {
     targetProvider.deploy(distribution, deploymentInfo, network);
   }
   

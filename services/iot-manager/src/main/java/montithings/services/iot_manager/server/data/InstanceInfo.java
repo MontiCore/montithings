@@ -5,10 +5,13 @@ public class InstanceInfo {
   
   private String componentType, instanceName;
   private String[] requirements;
+
+  private String hardwareRequirement;
   
-  public InstanceInfo(String componentType, String instanceName, String... requirements) {
+  public InstanceInfo(String componentType, String instanceName, String hardwareRequirement, String... requirements) {
     this.componentType = componentType;
     this.instanceName = instanceName;
+    this.hardwareRequirement = hardwareRequirement;
     this.requirements = requirements;
   }
   
@@ -23,11 +26,19 @@ public class InstanceInfo {
   public String getInstanceName() {
     return instanceName;
   }
-  
+
   public void setInstanceName(String instanceName) {
     this.instanceName = instanceName;
   }
-  
+
+  public String getHardwareRequirement() {
+    return hardwareRequirement;
+  }
+
+  public void setHardwareRequirement(String hardwareRequirement) {
+    this.hardwareRequirement = hardwareRequirement;
+  }
+
   public String[] getRequirements() {
     return requirements;
   }

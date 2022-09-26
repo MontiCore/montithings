@@ -2,7 +2,7 @@
 
 from azure.iot.hub import IoTHubRegistryManager
 from azure.iot.hub.models import Twin, TwinProperties
-import config
+import tags_config as config
 
 
 # script to update the tags of a device in an azure-iot-hub

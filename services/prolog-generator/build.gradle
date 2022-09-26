@@ -40,13 +40,32 @@ dependencies {
         exclude group:'de.monticore', module:'monticore-generator'
     }
 
+    grammar("de.monticore.lang:od:$monticore_version:$grammars_classifier"){
+        exclude group:'de.monticore', module:'monticore-grammar'
+    }
+
+    implementation("de.monticore.lang:od:$monticore_version"){
+        // od defines an invalid version for commons-lang3
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+    }
+
     implementation("de.monticore.lang:JSON:$monticore_version"){
         exclude group:'de.monticore', module:'monticore-generator'
     }
 
+    implementation("de.monticore.lang:ocl:$monticore_version")
 
+    grammar files(project(":languages:montithings").projectDir.toPath().resolve("src/main/grammars"))
+
+    implementation project(":languages:montithings")
+    implementation project(":languages:monticore-extensions")
+    implementation project(":languages:montiarc-extensions")
+    implementation project(":languages:error-handling")
+    implementation project(":languages:iot-behavior")
     implementation "de.monticore:monticore-runtime:$monticore_version"
     implementation "de.monticore:monticore-grammar:$monticore_version"
+    implementation "montiarc.languages:montiarc-fe:$montiarc_version"
+    implementation "de.monticore:siunits:$monticore_version"
     implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
     implementation "de.se_rwth.commons:se-commons-utilities:$se_commons_version"
     implementation "com.google.guava:guava:$guava_version"
@@ -76,8 +95,19 @@ task  generateConfig (type: MCTask) {
     def uptoDate = incCheck(outputDir.toString() +"/montithings/services/prolog_generator/config/IncGenGradleCheck.txt")
     outputs.upToDateWhen { uptoDate }
 }
+
+task  generateDeviceDescription (type: MCTask) {
+    grammar = file("$projectDir/$grammarDir/montithings/services/prolog_generator/DeviceDescription.mc4")
+    outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
+    handcodedPath += ["$projectDir/src/main/java"]
+    modelPath += ["$projectDir/json/$grammarDir"]
+    def uptoDate = incCheck(outputDir.toString() +"/montithings/services/prolog_generator/config/IncGenGradleCheck.txt")
+    outputs.upToDateWhen { uptoDate }
+}
+
 compileJava.dependsOn(generateFacts)
 compileJava.dependsOn(generateConfig)
+compileJava.dependsOn(generateDeviceDescription)
 
 
 tasks.withType(JavaCompile) {

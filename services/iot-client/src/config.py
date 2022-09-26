@@ -22,7 +22,8 @@ CLIENT_CONFIG = {
     "hardware": [
         "HighPerformanceAdditionComputeUnit",
 	    "actuatorTemperature"
-    ]
+    ],
+    "hardwareOD": ""
 }
 
 # host name / IP address of the MQTT broker

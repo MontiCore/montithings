@@ -8,9 +8,7 @@ import montithings.generator.helper.ComponentHelper;
 import montithings.generator.steps.GeneratorStep;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import java.io.File;
 
 public class GenerateDeployInfo extends GeneratorStep {
@@ -32,7 +30,14 @@ public class GenerateDeployInfo extends GeneratorStep {
 
       // Also add the requirements of the component.
       JsonArrayBuilder jreqs = Json.createArrayBuilder();
-      ComponentHelper.getRequirements(comp, state.getConfig()).forEach(jreqs::add);
+      for (String req : ComponentHelper.getRequirements(comp, state.getConfig())) {
+        if (req.startsWith("ocl:")) {
+          jsonInstance.add("hardwareRequirements", req.substring(4));
+        }
+        else {
+          jreqs.add(req);
+        }
+      }
       jsonInstance.add("requirements", jreqs.build());
 
       jsonInstances.add(jsonInstance);

@@ -1,0 +1,12 @@
+// (c) https://github.com/MontiCore/monticore
+/**
+    This grammar is used to create a new type of parser etc for Facts files
+*/
+package montithings.services.prolog_generator;
+
+grammar DeviceDescription extends de.monticore.ODAttribute {
+
+    Device = ObjectDiagram;
+
+
+}

@@ -51,7 +51,7 @@ check_dependency(MatchPredicate,[A|As],Bs,N,Dependencies,NameA,NameB) :-
   % For performance reasons, we'll block backtracking here.
   % We will not find all possible dependency assignments, however
   % we do not need to, since this search is not distinct.
-  !, 
+  !,
   findall(dependsOn(bound(A,NameA),bound(B,NameB)), member(B,BsFilteredSub), OwnDeps),
   check_dependency(MatchPredicate,As,Bs,N,RemDeps,NameA,NameB),
   append(RemDeps,OwnDeps,Dependencies).
@@ -110,7 +110,7 @@ include_lte(property(Key, Value), N, InputList, OutputList) :-
 check_lte(property(Key, Value), N, InputList) :-
   findall(X,property(Key, Value,X),ListDevicesThatMatchProperty),
   intersection(InputList, ListDevicesThatMatchProperty, InputListIntersection),
-  length(InputListIntersection) <= N.
+  length(InputListIntersection, Len), Len =< N.
 
 check_gte(property(Key, Value), N, InputList) :-
   findall(X,property(Key, Value,X),ListDevicesThatMatchProperty),
@@ -167,3 +167,7 @@ find_prop_match(MatchPredicate,A,[B|Bs],Ms) :-
     Ms=Msr
   ),
   find_prop_match(MatchPredicate,A,Bs,Msr).
+
+:- use_module(library(lists)).
+
+instanceOf(Device, Type).

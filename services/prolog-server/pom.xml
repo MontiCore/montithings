@@ -5,13 +5,13 @@
     <groupId>montithings.services</groupId>
     <artifactId>services</artifactId>
     <version>7.0.0-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
+    <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <!-- == PROJECT COORDINATES ============================================= -->
 
-  <artifactId>server</artifactId>
+  <artifactId>prolog-server</artifactId>
 
   <properties>
     <release.plugin>2.5.1</release.plugin>
