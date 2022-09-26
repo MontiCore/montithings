@@ -1,22 +1,29 @@
 package montithings.generator.cd2proto;
 
+import de.monticore.generating.templateengine.freemarker.MontiCoreFreeMarkerException;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.cd2proto.helper.ProtobufRunner;
 import org.junit.*;
 
 import static junit.framework.TestCase.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+
+
 
 public class TypeTests {
     private static ProtobufRunner runner;
     private static final Path outDir = Paths.get("target/out/typetests/");
     private static final Path modelDir = Paths.get("src/test/resources/classdiagrams");
 
-
+    private static final Class<UnsupportedOperationException> UNSUPPORTED_OPERATION_EXCEPTION_CLASS
+      = UnsupportedOperationException.class;
+    private static final Class<MontiCoreFreeMarkerException> MONTICORE_FREE_MARKER_EXCEPTION_CLASS
+      = MontiCoreFreeMarkerException.class;
 
     //<editor-fold desc="Class setup and utils">
     @BeforeClass
@@ -91,13 +98,11 @@ public class TypeTests {
     }
 
     @Test
-    public void WHEN_MapIsRepeated_THEN_ExceptionIsThrown(){
-        try {
-            generateProto("IllegalMap");
-            fail("expected exception was not thrown");
-        } catch (IOException | ParseException e) {
-            // expected exception was thrown, so the test should succeed
-        }
+    public void WHEN_MapIsRepeated_THEN_ExceptionIsThrown() throws IOException, ParseException {
+        assertThatExceptionOfType(MONTICORE_FREE_MARKER_EXCEPTION_CLASS)
+          .isThrownBy(() -> generateProto("IllegalMap"))
+          .withMessageContaining("Protobuf does not support repeating the map type and no wrapper is currently implemented")
+        ;
     }
 
     @Test
