@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y \
 	mosquitto \
 	mosquitto-dev \
 	cpio \
-    protobuf-compiler libprotobuf-dev python3-protobuf \
+    protobuf-compiler \
+	libprotobuf-dev \
+	python3-protobuf \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
@@ -24,31 +26,33 @@ WORKDIR /usr/src/app
 
 # Build NNG
 RUN git clone https://github.com/nanomsg/nng.git
-RUN cd /usr/src/app/nng \
-&& git fetch && git fetch --tags \
-&& git checkout v1.3.0 \
-&& mkdir nngbuild \
-&& cd nngbuild \
-&& export CMAKE_BUILD_WITH_INSTALL_RPATH=1 \
-&& cmake -G Ninja .. \
-&& ninja \
-&& ninja install package dist \
-&& mv nng-v1.3.0.sh /usr/src/app/nng.sh \
-&& cd /usr/src/app \
-&& rm -rf /usr/src/app/nng
+WORKDIR /usr/src/app/nng 
+RUN git fetch 
+RUN git fetch --tags 
+RUN git checkout v1.3.0 
+RUN mkdir nngbuild 
+WORKDIR /usr/src/app/nng/nngbuild 
+RUN export CMAKE_BUILD_WITH_INSTALL_RPATH=1 
+RUN cmake -G Ninja .. 
+RUN ninja 
+RUN ninja install package dist 
+RUN mv nng-v1.3.0.sh /usr/src/app/nng.sh 
 
 # Switch into our working directory for building opendds
 WORKDIR /usr/src/app
 
+# Remove NNG sources
+RUN rm -rf /usr/src/app/nng
+
 # build opendds
 RUN git clone https://github.com/objectcomputing/OpenDDS.git opendds
-RUN cd /usr/src/app/opendds \
-&& git fetch && git fetch --tags \
-&& git checkout DDS-3.15 \
-&& ./configure --static \
-&& make -j$(nproc) \
-&& ldconfig \
-&& . /usr/src/app/opendds/setenv.sh
+WORKDIR /usr/src/app/opendds 
+RUN git fetch && git fetch --tags 
+RUN git checkout DDS-3.15 
+RUN ./configure --static 
+RUN make -j$(nproc) 
+RUN ldconfig 
+RUN . /usr/src/app/opendds/setenv.sh
 
 ENV ACE_ROOT=/usr/src/app/opendds/ACE_wrappers \
     TAO_ROOT=/usr/src/app/opendds/ACE_wrappers/TAO \
