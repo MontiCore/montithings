@@ -12,6 +12,8 @@ public class Distribution {
     final private ArrayList<Constraint> gteConstraints = new ArrayList<>();
     final private ArrayList<Constraint> checkAllConstraints = new ArrayList<>();
 
+    private boolean hasOCLConstraint = false;
+
     public static class Constraint {
         private String key;
         private String value;
@@ -114,5 +116,13 @@ public class Distribution {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean hasOCLConstraint() {
+        return hasOCLConstraint;
+    }
+
+    public void setHasOCLConstraint(boolean hasOCLConstraint) {
+        this.hasOCLConstraint = hasOCLConstraint;
     }
 }

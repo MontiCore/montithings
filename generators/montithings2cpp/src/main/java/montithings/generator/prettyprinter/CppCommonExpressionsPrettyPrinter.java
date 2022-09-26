@@ -1,18 +1,23 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.prettyprinter;
 
+import arcbasis._symboltable.PortSymbol;
 import behavior._ast.ASTAgoQualification;
 import de.monticore.expressions.commonexpressions._ast.*;
 import de.monticore.expressions.expressionsbasis._ast.ASTNameExpression;
 import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;
 import de.monticore.prettyprint.CommentPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
+import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
+import de.monticore.symbols.oosymbols._symboltable.OOTypeSymbol;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
 import de.monticore.types.check.TypeCheck;
+import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.helper.ASTNoData;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.measure.converter.UnitConverter;
 import java.util.Optional;
@@ -160,9 +165,35 @@ public class CppCommonExpressionsPrettyPrinter extends CommonExpressionsPrettyPr
       String cppFullyQualifiedName = fullName.replace(".", "::");
       getPrinter().print("montithings::" + cppFullyQualifiedName);
     }
+    else if (fieldAccessReferencesCDType(node)) {
+      CommentPrettyPrinter.printPreComments(node, getPrinter());
+      node.getExpression().accept(getTraverser());
+      getPrinter().print(".get");
+      getPrinter().print(StringUtils.capitalize(node.getName()));
+      getPrinter().print("()");
+      CommentPrettyPrinter.printPostComments(node, getPrinter());
+    }
     else {
       super.handle(node);
     }
+  }
+
+  protected boolean fieldAccessReferencesCDType(ASTFieldAccessExpression node) {
+    if (node.getExpression() instanceof ASTFieldAccessExpression) {
+      if (!fieldAccessReferencesCDType((ASTFieldAccessExpression)node.getExpression())) {
+        return false;
+      }
+    }
+    boolean isInName = node.getExpression() instanceof ASTNameExpression;
+    Optional<PortSymbol> port = ((IMontiThingsScope)node.getEnclosingScope())
+      .resolvePort(((ASTNameExpression)node.getExpression()).getName());
+    Optional<VariableSymbol> variable = ((IMontiThingsScope)node.getEnclosingScope())
+      .resolveVariable(((ASTNameExpression)node.getExpression()).getName());
+    boolean portReferencesCDSubType = isInName && port.isPresent() &&
+      port.get().getTypeInfo() instanceof OOTypeSymbol;
+    boolean variableReferencesCDSubType = isInName && variable.isPresent() &&
+      variable.get().getType().getTypeInfo() instanceof OOTypeSymbol;
+    return portReferencesCDSubType || variableReferencesCDSubType;
   }
 
   @Override

@@ -74,7 +74,7 @@ compileJava {
 // all in one deployment jar
 shadowJar {
   manifest {
-    attributes "Main-Class": "tagging.TaggingToolServer"
+    attributes "Main-Class": "montithings.services.fdtaggingtool.TaggingToolServer"
   }
   archiveFileName = "TaggingToolServer.${archiveExtension.get()}"
   archiveClassifier = "tagging-tool"

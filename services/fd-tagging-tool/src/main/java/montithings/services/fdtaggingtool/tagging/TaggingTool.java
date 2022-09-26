@@ -61,7 +61,7 @@ public class TaggingTool {
 
   protected MTConfigTool mtConfigTool = new MTConfigTool();
 
-  protected String iotManagerURL = "http://localhost:4210/";
+  protected String iotManagerURL = "http://iotmngr:4210/";
 
   protected ModelPath getModelPathFromModel(String modelFile) {
     Path directory = Paths.get(modelFile).getParent();

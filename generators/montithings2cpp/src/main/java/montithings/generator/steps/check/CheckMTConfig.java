@@ -2,9 +2,12 @@
 package montithings.generator.steps.check;
 
 import com.google.common.base.Preconditions;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Log;
+import montithings.MontiThingsMill;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
+import mtconfig.MTConfigMill;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
@@ -14,10 +17,11 @@ import java.io.IOException;
 public class CheckMTConfig extends GeneratorStep {
 
   @Override public void action(GeneratorToolState state) {
+    MTConfigMill.init();
     for (String model : state.getModels().getMTConfig()) {
       ASTMTConfigUnit ast = null;
       try {
-        ast = new MTConfigParser().parseMTConfigUnit(model)
+        ast = MTConfigMill.parser().parseMTConfigUnit(model)
           .orElseThrow(() -> new NullPointerException("0xMT1111 Failed to parse: " + model));
       }
       catch (IOException e) {
@@ -34,6 +38,8 @@ public class CheckMTConfig extends GeneratorStep {
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
       MTConfigCoCos.createChecker().checkAll(ast);
     }
+    MTConfigMill.reset();
+    BasicSymbolsMill.initializePrimitives();
   }
 
 }

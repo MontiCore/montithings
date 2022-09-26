@@ -132,6 +132,32 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>de.monticore.lang</groupId>
+      <artifactId>od</artifactId>
+      <version>7.0.0</version>
+      <classifier>grammars</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>de.monticore.lang</groupId>
+      <artifactId>od</artifactId>
+      <version>7.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.monticore.lang</groupId>
+      <artifactId>ocl</artifactId>
+      <version>${ocl.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>montithings.languages</groupId>
+      <artifactId>montithings</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- .. Test Libraries ............................................... -->
     <dependency>
       <groupId>junit</groupId>

@@ -122,9 +122,10 @@ public class DeploymentConfiguration {
   
   @Override
   public DeploymentConfiguration clone() throws CloneNotSupportedException {
-    DeploymentConfiguration cloned = (DeploymentConfiguration) super.clone();
+    DeploymentConfiguration cloned = new DeploymentConfiguration();
     cloned.setConstraints(new ArrayList<>(this.constraints));
     cloned.setDeploymentInfo(this.deploymentInfo);
+    cloned.setHardwareSuggestions(new ArrayList<>(this.hardwareSuggestions));
     return cloned;
   }
   

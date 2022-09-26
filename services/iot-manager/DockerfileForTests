@@ -1,0 +1,11 @@
+# (c) https://github.com/MontiCore/monticore
+
+# This Dockerfile can be used to run the Java test cases without actually installing JPL
+# Also execute: docker run -d --rm --name "prolog" -p 5004:5004 montithings/prolog-generator
+FROM openjdk:11
+
+# Install SWI Prolog
+RUN apt-get update -y
+RUN apt-get install -y swi-prolog-java
+
+RUN ln -s "/usr/lib/swi-prolog/lib/$(dpkg --print-architecture | sed -e 's/arm64/aarch64/g')-linux/libjpl.so" /usr/lib/libjpl.so

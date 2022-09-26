@@ -1,12 +1,19 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
+<#assign Utils = tc.instantiate("montithings.services.prolog_generator.Utils")>
 :- include('facts').
 :- include('helpers').
+:- include('devicedescription').
+
 
 <#-- -------------------------------- -->
 <#-- DISTRIBUTION WITHOUT CONSTRAINTS -->
 <#-- -------------------------------- -->
 
 <#list ast.distributions as distribution>
+<#if distribution.hasOCLConstraint()>
+:- include('oclquery${distribution.name}').
+</#if>
+
 get_distribution_${distribution.name}(${distribution.name}) :-
     get_available_devices(AllAvailableDevices),
 
@@ -64,6 +71,13 @@ get_distribution_${distribution.name}(${distribution.name}) :-
     <#list distribution.checkAllConstraints as constraint>
     check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
     </#list>
+
+    <#if distribution.hasOCLConstraint()>
+    % then check that hardware requirements are met
+    <#assign compName = Utils.toFirstLower(distribution.name)>
+    include(${compName}HardwareRequired,AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        <#assign count++>
+    </#if>
 
     % bind result to target variable
     AllAvailableDevicesFiltered${count} = ${distribution.name}.
@@ -148,6 +162,13 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     check_include_all(property("${constraint.key}", "${constraint.value}"), AllAvailableDevicesFiltered, AllAvailableDevicesFiltered${count}),
     </#list>
 
+    <#if distribution.hasOCLConstraint()>
+    % then check that hardware requirements are met
+    <#assign compName = Utils.toFirstLower(distribution.name)>
+    include(${compName}HardwareRequired,AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+    <#assign count++>
+    </#if>
+
     AllAvailableDevicesFilteredResult = AllAvailableDevicesFiltered${count},
 
     true) ; (
@@ -217,6 +238,13 @@ get_distribution_allow_drop_${distribution.name}(${distribution.name}<#if total_
     check_lte(property("${constraint.key}", "${constraint.value}"), ${constraint.number}, AllAvailableDevicesFiltered${count}),
     </#list>
 
+
+    <#if distribution.hasOCLConstraint()>
+        % then check that hardware requirements are met
+        <#assign compName = Utils.toFirstLower(distribution.name)>
+        include(${compName}HardwareRequired,AllAvailableDevicesFiltered${count},AllAvailableDevicesFiltered${count+1}),
+        <#assign count++>
+    </#if>
 
     AllAvailableDevicesFilteredResult = AllAvailableDevicesFiltered${count},
     true)), 
