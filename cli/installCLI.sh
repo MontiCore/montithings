@@ -4,7 +4,7 @@
 
 # config
 JAR_NAME="cli-7.0.0-SNAPSHOT-cli.jar"
-JAR_DOWNLOAD_URL="https://nexus.se.rwth-aachen.de/repository/montiarc-snapshots/montithings/cli/7.0.0-SNAPSHOT/cli-7.0.0-20220711.234119-712-cli.jar"
+JAR_DOWNLOAD_URL="https://nexus.se.rwth-aachen.de/service/rest/v1/search/assets/download?sort=version&repository=public&maven.groupId=montithings&maven.artifactId=cli&maven.extension=jar&maven.classifier=cli"
 MT_CLI_SH_DOWNLOAD_URL="https://raw.githubusercontent.com/MontiCore/montithings/develop/cli/montithings"
 MT_FULL_INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/MontiCore/montithings/develop/installLinux.sh"
 
