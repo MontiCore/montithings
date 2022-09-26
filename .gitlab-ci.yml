@@ -129,10 +129,10 @@ Docker Log Tracing:
 Docker Prolog Generator:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'services/recorder/**/*' 
+    CHANGES_PATH: 'services/prolog*/**/*' 
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build . --file services/prolog-generator/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/prolog-generator
+    - docker build . --file services/prolog-server/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/prolog-generator
     - docker tag $CI_REGISTRY_IMAGE/prolog-generator montithings/prolog-generator
     - docker push montithings/prolog-generator
     - docker push $CI_REGISTRY_IMAGE/prolog-generator
