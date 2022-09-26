@@ -2,7 +2,6 @@ package montithings.generator.cd2proto;
 
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.cd2proto.helper.ProtobufRunner;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -12,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assume.assumeTrue;
 
 public class TestProtoGenerator {
@@ -42,9 +42,26 @@ public class TestProtoGenerator {
     Path outDir = Paths.get("target/out/Domain");
     Path modelPath = Paths.get("src/test/resources/models");
     ProtoGenerator generator = new ProtoGenerator(outDir, modelPath, "nomodel");
-    Assert.assertThrows(NoSuchFileException.class, generator::generate);
+
+    try {
+      generator.generate();
+      fail("expected exception was not thrown");
+    } catch (NoSuchFileException e) {
+      // expected exception was thrown, so the test should succeed
+    } catch (IOException | ParseException e) {
+      // unexpected exception was thrown, so the test should fail
+      fail("unexpected exception was thrown:\n" + e);
+    }
 
     generator = new ProtoGenerator(outDir, modelPath, "domain.BrokenModel");
-    Assert.assertThrows(ParseException.class, generator::generate);
+    try {
+      generator.generate();
+      fail("expected exception was not thrown");
+    } catch (ParseException e) {
+      // expected exception was thrown, so the test should succeed
+    } catch (IOException e) {
+      // unexpected exception was thrown, so the test should fail
+      fail("unexpected exception was thrown:\n" + e);
+    }
   }
 }

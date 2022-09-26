@@ -1,9 +1,10 @@
 package montithings.generator.cd2proto;
 
-import de.monticore.generating.templateengine.freemarker.MontiCoreFreeMarkerException;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.cd2proto.helper.ProtobufRunner;
 import org.junit.*;
+
+import static junit.framework.TestCase.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class TypeTests {
         runner.start();
     }
 
-    private void generateProto(String name) throws Exception {
+    private void generateProto(String name) throws IOException, ParseException {
         ProtoGenerator generator = new ProtoGenerator(outDir, modelDir, name);
         generator.generate();
     }
@@ -76,14 +77,14 @@ public class TypeTests {
 
 
     @Test
-    public void WHEN_NestedListPresent_THEN_WrapperIsGenerated() throws Exception {
+    public void WHEN_NestedListPresent_THEN_WrapperIsGenerated() throws IOException, ParseException {
         generateProto("ListWrapper");
         assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
     }
 
     @Test
-    public void WHEN_MapPresent_THEN_MapIsTranslated() throws Exception {
+    public void WHEN_MapPresent_THEN_MapIsTranslated() throws IOException, ParseException {
         generateProto("Map");
         assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
@@ -91,27 +92,30 @@ public class TypeTests {
 
     @Test
     public void WHEN_MapIsRepeated_THEN_ExceptionIsThrown(){
-        Assert.assertThrows(MontiCoreFreeMarkerException.class, () -> {
+        try {
             generateProto("IllegalMap");
-        });
+            fail("expected exception was not thrown");
+        } catch (IOException | ParseException e) {
+            // expected exception was thrown, so the test should succeed
+        }
     }
 
     @Test
-    public void WHEN_PrimitivePresent_THEN_PrimitiveIsTranslated() throws Exception {
+    public void WHEN_PrimitivePresent_THEN_PrimitiveIsTranslated() throws IOException, ParseException {
         generateProto("PrimitiveTypes");
         assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
     }
 
     @Test
-    public void WHEN_EnumPresent_THEN_EnumIsTranslated() throws Exception {
+    public void WHEN_EnumPresent_THEN_EnumIsTranslated() throws IOException, ParseException {
         generateProto("Enums");
         assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
     }
 
     @Test
-    public void WHEN_SimpleGenericPresent_THEN_SimpleGenericIsTranslated() throws Exception {
+    public void WHEN_SimpleGenericPresent_THEN_SimpleGenericIsTranslated() throws IOException, ParseException {
         generateProto("ArraysAndCollections");
         assumeTrue(ProtobufRunner.isProtocInPATH());
         runProtobuf();
