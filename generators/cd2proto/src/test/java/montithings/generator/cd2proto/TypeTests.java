@@ -52,7 +52,7 @@ public class TypeTests {
     }
     @Before
     public void resetErrorCount() {
-        Log.clearFindings();
+        Log.getFindings().clear();
     }
     @Before
     public void clearInputFiles() {

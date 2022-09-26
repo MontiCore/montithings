@@ -52,7 +52,7 @@ public class AssociationTests {
 
     @Before
     public void resetErrorCount() {
-        Log.clearFindings();
+        Log.getFindings().clear();
     }
 
     @Before
