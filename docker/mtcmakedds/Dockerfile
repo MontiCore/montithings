@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y \
 	mosquitto \
 	mosquitto-dev \
 	cpio \
-    protobuf-compiler libprotobuf-dev python3-protobuf \
+    protobuf-compiler \
+	libprotobuf-dev \
+	python3-protobuf \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
@@ -32,8 +34,7 @@ RUN cd /usr/src/app/nng \
 && export CMAKE_BUILD_WITH_INSTALL_RPATH=1 \
 && cmake -G Ninja .. \
 && ninja \
-&& ninja install package dist \
-&& mv nng-v1.3.0.sh /usr/src/app/nng.sh \
+&& ninja install \
 && cd /usr/src/app \
 && rm -rf /usr/src/app/nng
 
