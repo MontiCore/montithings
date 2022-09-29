@@ -11,7 +11,9 @@ cmake_minimum_required(VERSION 3.8.2)
 project("${comp.getFullName()}")
 set(CMAKE_CXX_STANDARD 11)
 
+if(NOT MSVC)
 add_compile_options(-Wno-psabi)
+endif()
 
 <#if splittingModeDisabled>
   <#list sensorActuatorPorts as sensorActuatorPort >

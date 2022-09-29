@@ -110,6 +110,7 @@ if (EXCLUDE_COMM_MANAGER)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.cpp")
 endif ()
 
+list(FILTER RTE_SOURCES EXCLUDE REGEX ".*test.cpp")
 add_library(MontiThingsRTE ${RTE_SOURCES})
 
 if (NOT EXCLUDE_MQTT)
