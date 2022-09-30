@@ -157,6 +157,7 @@
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${assembly.plugin}</version>
                 <dependencies>
                     <dependency>
                         <groupId>de.monticore</groupId>
