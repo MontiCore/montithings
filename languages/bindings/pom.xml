@@ -154,7 +154,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.9</version>
         </dependency>
 
         <!-- .. Test Libraries ............................................... -->
@@ -238,6 +237,7 @@
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${assembly.plugin}</version>
                 <dependencies>
                     <dependency>
                         <groupId>de.monticore</groupId>
