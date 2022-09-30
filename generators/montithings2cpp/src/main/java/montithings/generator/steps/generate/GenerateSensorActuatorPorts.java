@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static montithings.generator.MontiThingsGeneratorTool.TOOL_NAME;
 import static montithings.generator.helper.FileHelper.*;
 
@@ -68,7 +69,7 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
 
         // Copy to Target-generated sources to "package + . + Sensorname"
         try {
-          Files.copy(Paths.get(pckg.toString(), port), Paths.get(directory.toPath().toString(), port.substring(1)));
+          Files.copy(Paths.get(pckg.toString(), port), Paths.get(directory.toPath().toString(), port.substring(1)), REPLACE_EXISTING);
         }
         catch (IOException e) {
           e.printStackTrace();
