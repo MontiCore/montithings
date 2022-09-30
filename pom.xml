@@ -61,7 +61,7 @@
 		<se-groovy.maven.version>1.2.4-SNAPSHOT</se-groovy.maven.version>
 		<source.plugin>3.2.1</source.plugin>
 		<shade.plugin>2.4.3</shade.plugin>
-		<jacoco.plugin>0.8.5</jacoco.plugin>
+		<jacoco.plugin>0.8.8</jacoco.plugin>
 		<jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
 		<surefire.plugin>3.0.0-M4</surefire.plugin>
 		<failsafe.plugin>3.0.0-M4</failsafe.plugin>
