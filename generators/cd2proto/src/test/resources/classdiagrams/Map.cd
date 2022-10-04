@@ -1,0 +1,5 @@
+classdiagram Map {
+    class ClassWithMap {
+        Map<String, Integer> stringToIntMap;
+    }
+}

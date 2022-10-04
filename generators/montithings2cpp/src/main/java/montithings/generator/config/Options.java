@@ -17,6 +17,7 @@ public enum Options {
   OUT_SHORT("o"),
   PLATFORM("platform"),
   SPLITTING("splitting"),
+  SERIALIZATION("serialization"),
   LOGTRACING("logtracing"),
   RECORDING("recording"),
   PORTNAME("portsToMain"),

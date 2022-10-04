@@ -7,6 +7,7 @@ buildProject() {
   cd -
 }
 
+buildProject "face-id-door-opener" "unlock.FaceUnlock"
 buildProject "basic-input-output" "hierarchy"
 buildProject "dynamics" "hierarchy.Example"
 buildProject "hierarchy" "hierarchy"

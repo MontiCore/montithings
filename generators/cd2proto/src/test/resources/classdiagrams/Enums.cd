@@ -1,0 +1,6 @@
+classdiagram Enums {
+    enum BestEnumEver {
+        THIS_VALUE_IS_TREMENDOUS,
+        SOMEGREATCONSTANT;
+    }
+}

@@ -60,6 +60,8 @@ import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
@@ -840,6 +842,37 @@ public class ComponentHelper {
   public static boolean hasStatechart(ComponentTypeSymbol component) {
     return elementsOf(component).filter(ASTArcStatechart.class::isInstance)
       .map(ASTArcStatechart.class::cast).findAny().isPresent();
+  }
+
+  /**
+   * Resolves to the relative file path where a Python behaviour file is
+   * expected to be found.
+   */
+  public static Path getPythonBehaviourFile(ComponentTypeSymbol comp) {
+    return Paths.get(comp.getFullName().replace('.', File.separatorChar) + "Impl.py");
+  }
+
+  public static String getPythonMainScriptName(ComponentTypeSymbol comp) {
+    return getPythonBehaviourFile(comp).getFileName().toString().replace("Impl", "");
+  }
+
+  /**
+   * Returns true iff the component has a python behaviour implementation file
+   * below hwcRoot.
+   */
+  public static boolean hasHandwrittenPythonBehaviour(Path hwcRoot, ComponentTypeSymbol component) {
+    Path expectedPythonBehaviourFile = getPythonBehaviourFile(component);
+    Path fullBehaviourFilePath = hwcRoot.resolve(expectedPythonBehaviourFile);
+    return Files.isRegularFile(fullBehaviourFilePath);
+  }
+
+  /**
+   * Convenience overload.
+   *
+   * @see #hasHandwrittenPythonBehaviour(Path, ComponentTypeSymbol)
+   */
+  public static boolean hasHandwrittenPythonBehaviour(File hwcDirectory, ComponentTypeSymbol component) {
+    return hasHandwrittenPythonBehaviour(hwcDirectory.toPath(), component);
   }
 
   public static Set<PortSymbol> getPublishedPortsForBehavior(ComponentTypeSymbol component) {

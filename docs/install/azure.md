@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Installation (using Microsoft Azure)
 
 ### Is this the right installation type for you?

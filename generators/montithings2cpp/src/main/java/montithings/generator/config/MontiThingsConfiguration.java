@@ -54,6 +54,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setHwcPath(getHWCPath());
     configParams.setProjectVersion(getVersion());
     configParams.setMainComponent(getMainComponent());
+    configParams.setSerializationMode(getSerializationMode());
   }
 
   /**
@@ -287,6 +288,15 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "off"
     return SplittingMode.OFF;
+  }
+
+  public SerializationMode getSerializationMode() {
+    Optional<String> serializationMode = getAsString(Options.SERIALIZATION);
+    if (serializationMode.isPresent()) {
+      return SerializationMode.fromString(serializationMode.get());
+    }
+    // fallback default is "JSON"
+    return SerializationMode.JSON;
   }
 
   public LogTracing getLogTracing() {

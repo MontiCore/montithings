@@ -8,7 +8,9 @@ RUN apk add --update-cache \
 	cmake \
 	make \
 	mosquitto \
-	mosquitto-dev
+	mosquitto-dev \
+	protobuf-dev \
+	py3-protobuf
 
 # Switch into our working directory for building NNG
 WORKDIR /usr/src/app
@@ -23,8 +25,7 @@ RUN cd /usr/src/app/nng \
 && export CMAKE_BUILD_WITH_INSTALL_RPATH=1 \
 && cmake -G Ninja .. \
 && ninja \
-&& ninja install package dist \
-&& mv nng-v1.3.0.sh /usr/src/app/nng.sh \
+&& ninja install \
 && cd /usr/src/app \
 && rm -rf /usr/src/app/nng
 

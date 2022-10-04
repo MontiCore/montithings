@@ -1,4 +1,5 @@
 #!/bin/bash
+# (c) https://github.com/MontiCore/monticore
 sudo yum update -y
 sudo yum install python37
 

@@ -1,0 +1,12 @@
+classdiagram PrimitiveTypes {
+    class WithPrimitives {
+        boolean primitive0;
+        byte primitive1;
+        short primitive2;
+        int primitive3;
+        long primitive4;
+        char primitive5;
+        float primitive6;
+        double primitive7;
+    }
+}

@@ -7,6 +7,7 @@
 #include "MqttUser.h"
 #include "Port.h"
 #include "Utils.h"
+#include "Serializers.h"
 #include <iostream>
 #include <mosquitto.h>
 #include <string>
@@ -42,8 +43,13 @@ protected:
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
 
+  /**
+   * The used serializer.
+   */
+  const std::unique_ptr<Serializer<T>> serializer;
+
 public:
-  explicit MqttPort (std::string name, bool shouldSubscribe = true,
+  explicit MqttPort (std::string name, std::unique_ptr<Serializer<T>> serializer, bool shouldSubscribe = true,
                      MqttClient *client = MqttClient::instance (), MqttClient *localClient = MqttClient::localInstance ());
   ~MqttPort () = default;
 
@@ -95,8 +101,9 @@ public:
 };
 
 template <typename T>
-MqttPort<T>::MqttPort (std::string name, bool shouldSubscribe, MqttClient *client, MqttClient *localClient)
-    : fullyQualifiedName (std::move (name))
+MqttPort<T>::MqttPort (std::string name, std::unique_ptr<Serializer<T>> serializer, bool shouldSubscribe, MqttClient *client, MqttClient *localClient)
+    : fullyQualifiedName (std::move (name)),
+    serializer{std::move(serializer)}
 {
   mqttClientInstance = client;
   mqttClientInstance->addUser (this);
@@ -187,7 +194,7 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
             {
               try
                 {
-                  T result = jsonToData<T> (payload);
+                  T result = serializer->deserialize (payload);
                   this->setNextValue (result);
                 }
               catch (...)
@@ -226,7 +233,7 @@ MqttPort<T>::sendToExternal (tl::optional<T> nextVal)
 {
   if (nextVal)
     {
-      std::string payload = dataToJson (nextVal);
+      std::string payload = serializer->serialize (nextVal.value());
       std::string topic = "/ports/" + replaceDotsBySlashes (fullyQualifiedName);
       if (isSensorActuator)
         {

@@ -23,9 +23,11 @@ set(CMAKE_CXX_STANDARD 11)
   )
 </#if>
 
+if(${r"${CMAKE_HOST_SYSTEM_NAME}"} STREQUAL Darwin)
 # Enable (more comfortable) debugging
 set(CMAKE_CXX_FLAGS_DEBUG "${r"${CMAKE_CXX_FLAGS_DEBUG}"} -gdwarf-3")
 set(CMAKE_C_FLAGS_DEBUG "${r"${CMAKE_C_FLAGS_DEBUG}"} -gdwarf-3")
+endif()
 
 <#if targetPlatformIsDsa>
   ${tc.includeArgs("template.util.cmake.platform.dsa.Parameters", [config])}
