@@ -82,10 +82,10 @@ Docker DDS:
     - docker buildx create --name builder --driver docker-container --use
     - docker buildx inspect --bootstrap
 
-    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
+    - docker buildx build --platform linux/amd64,linux/arm64/v8,linux/arm/v7 --output type=image,name=mtcmakedds -t $CI_REGISTRY_IMAGE/mtcmakedds:latest --push .
 
     # Running this a second time will just use the cached layers
-    - docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --output type=image,name=mtcmakedds -t montithings/mtcmakedds:latest --push .
+    - docker buildx build --platform linux/amd64,linux/arm64/v8,linux/arm/v7 --output type=image,name=mtcmakedds -t montithings/mtcmakedds:latest --push .
 
 Docker OpenDDSDCPSInfoRepo:
   <<: *docker_build_definition
