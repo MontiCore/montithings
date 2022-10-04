@@ -62,4 +62,3 @@ ENV ACE_ROOT=/usr/src/app/opendds/ACE_wrappers \
 WORKDIR /usr/src/app
 
 CMD [ "/bin/sh" ]
-
