@@ -35,8 +35,7 @@ ${tc.signature("modules", "deploymentInfo", "networkInfo")}
         "systemModules": {
           "edgeAgent": {
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-agent:1.1",
-              "createOptions": ""
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.4",
             },
             "type": "docker"
           },
@@ -45,7 +44,7 @@ ${tc.signature("modules", "deploymentInfo", "networkInfo")}
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
               "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}],\"443/tcp\":[{\"HostPort\":\"443\"}],\"1883/tcp\":[{\"HostPort\":\"1883\"}]}}}"
             },
             "env": {
