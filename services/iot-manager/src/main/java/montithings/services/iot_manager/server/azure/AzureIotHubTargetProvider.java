@@ -207,7 +207,11 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
     try {
       JsonElement hardwareJson = deviceTwinJSON.getAsJsonObject("tags").get("hardwareOD");
       Gson gson = new Gson();
-      return gson.fromJson(hardwareJson, String.class);
+      String result = gson.fromJson(hardwareJson, String.class);
+      if(result == null) {
+        result = "";
+      }
+      return result;
     }
     catch (NullPointerException e) {
       return "";
