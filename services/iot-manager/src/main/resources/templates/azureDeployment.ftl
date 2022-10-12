@@ -9,7 +9,7 @@ ${tc.signature("modules", "deploymentInfo", "networkInfo")}
             "${moduleName?replace(".", "-")}": {
               "settings": {
                 "image": "${networkInfo.getDockerRepositoryPrefix()}${deploymentInfo.getInstanceInfo(moduleName).getComponentType()?lower_case}:latest",
-                "createOptions": "{\"Entrypoint\":[\"sh\",\"entrypoint.sh\",\"-n\", \"${moduleName}\", \"--brokerHostname\", \"${networkInfo.getMqttHost()}\", \"--brokerPort\", \"${networkInfo.getMqttPort()?c}\", \"--localBrokerPort\", \"4230\"],\"NetworkingConfig\": {\"EndpointsConfig\": {\"host\": {}}},\"HostConfig\": {\"NetworkMode\": \"host\"},\"Mounts\": [{\"Target\": \"/.montithings",\"Source\": \"$HOME/.montithings\",\"Type\": \"bind\",\"ReadOnly\": true}]}"
+                "createOptions": "{\"Entrypoint\":[\"sh\",\"entrypoint.sh\",\"-n\", \"${moduleName}\", \"--brokerHostname\", \"${networkInfo.getMqttHost()}\", \"--brokerPort\", \"${networkInfo.getMqttPort()?c}\", \"--localBrokerPort\", \"4230\"],\"NetworkingConfig\": {\"EndpointsConfig\": {\"host\": {}}},\"HostConfig\": {\"NetworkMode\": \"host\",\"Mounts\": [{\"Target\": \"/.montithings",\"Source\": \"$HOME/.montithings\",\"Type\": \"bind\",\"ReadOnly\": true}]}}"
               },
               "type": "docker",
               "status": "running",
