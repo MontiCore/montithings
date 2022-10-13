@@ -35,7 +35,7 @@ ${tc.signature("modules", "deploymentInfo", "networkInfo")}
         "systemModules": {
           "edgeAgent": {
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-agent:1.4",
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.4"
             },
             "type": "docker"
           },
