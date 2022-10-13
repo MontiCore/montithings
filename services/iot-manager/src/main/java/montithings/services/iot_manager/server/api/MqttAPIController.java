@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 /**
  * Hosts an API for controlling a {@link DeploymentManager}.
  * */
-public class MqttAPIController implements IDeployStatusListener {
+public class MqttAPIController implements IDeployStatusListener, IMqttSettingsListener {
   
   private static final String MQTT_PREFIX = "deploymngr";
   
@@ -42,13 +42,18 @@ public class MqttAPIController implements IDeployStatusListener {
     this.manager.setStatusListener(this);
   }
   
-  public boolean start() {
+  public boolean start(NetworkInfo net) {
     // Prepare MQTT
     try {
-      NetworkInfo net = manager.getNetworkInfo();
       this.mqtt = new MqttClient(net.getMqttURI(), "MqttAPIController");
       MqttConnectOptions opts = new MqttConnectOptions();
       opts.setAutomaticReconnect(true);
+      if (!net.getMqttUsername().isEmpty()) {
+        opts.setUserName(net.getMqttUsername());
+      }
+      if (!net.getMqttPassword().isEmpty()) {
+        opts.setPassword(net.getMqttPassword().toCharArray());
+      }
       while(true) {
         try {
           this.mqtt.connect(opts);
@@ -175,5 +180,27 @@ public class MqttAPIController implements IDeployStatusListener {
       e.printStackTrace();
     }
   }
-  
+
+  @Override public void onMqttSettingsChanged(NetworkInfo networkInfo) {
+    // Connect from current MQTT connection
+    if (this.mqtt.isConnected()) {
+      try {
+        this.mqtt.disconnect(5);
+      }
+      catch (MqttException e) {
+        e.printStackTrace();
+        try {
+          System.out.println("Could not disconnect from MQTT, disconnecting forcibly");
+          this.mqtt.disconnectForcibly();
+        }
+        catch (MqttException ex) {
+          System.out.println("Could not forcibly disconnect from MQTT!");
+          throw new RuntimeException(ex);
+        }
+      }
+    }
+
+    // Connect with updated MQTT settings
+    this.start(networkInfo);
+  }
 }

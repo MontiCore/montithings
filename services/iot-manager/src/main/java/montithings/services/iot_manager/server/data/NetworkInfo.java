@@ -5,6 +5,9 @@ public class NetworkInfo {
   
   private String mqttHost = "127.0.0.1";
   private int mqttPort = 1883;
+  private String mqttUsername = "";
+  private String mqttPassword = "";
+
   private String dockerRepositoryPrefix = ""; //"localhost:5000/";
   private String dockerRepositoryUsername = "";
   private String dockerRepositoryPassword = "";
@@ -24,7 +27,23 @@ public class NetworkInfo {
   public void setMqttPort(int mqttPort) {
     this.mqttPort = mqttPort;
   }
-  
+
+  public String getMqttUsername() {
+    return mqttUsername;
+  }
+
+  public void setMqttUsername(String mqttUsername) {
+    this.mqttUsername = mqttUsername;
+  }
+
+  public String getMqttPassword() {
+    return mqttPassword;
+  }
+
+  public void setMqttPassword(String mqttPassword) {
+    this.mqttPassword = mqttPassword;
+  }
+
   public String getDockerRepositoryPrefix() {
     return dockerRepositoryPrefix;
   }
