@@ -55,7 +55,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
   /**
    * Applies a deployment to a set of devices of the iot-hub
    *
-   * @param dist     defines, which devices receive which deployment(s)
+   * @param dist     defines which devices receive which deployment(s)
    * @param deplInfo defines the deployments
    * @param netInfo  provides connectivity information for the deployments
    */
@@ -74,6 +74,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
         distributionMap.get(deviceID), deplInfo, netInfo);
       try {
         String deviceName = AzureIotUtils.getDeviceName(deviceID, iotHubConnectionString);
+        System.out.println("DEBUG: Deploying to device " + deviceName +"\n" + deployment.toString()); //todo remove
         applyConfigurationContentOnDevice(deviceName, deployment.toString(),
           iotHubConnectionString);
       }
