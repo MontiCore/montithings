@@ -19,6 +19,13 @@ allow_anonymous true
 \" > /etc/mosquitto/mosquitto.conf"
 sudo service mosquitto restart
 
+# download python scripts
+sudo apt-get -y install subversion
+svn checkout https://github.com/MontiCore/montithings/trunk/generators/montithings2cpp/src/main/resources/python
+mv ./python ./python-scripts
+export PYTHON_SCRIPTS_PATH=$(pwd)"/python-scripts"
+
+
 sudo bash -c "echo \"{
   \\\"log-driver\\\": \\\"local\\\",
   \\\"dns\\\": [\\\"1.1.1.1\\\"],
