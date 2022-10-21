@@ -25,7 +25,12 @@ svn checkout https://github.com/MontiCore/montithings/trunk/generators/montithin
 mv ./python ./python-scripts
 export PYTHON_SCRIPTS_PATH=$(pwd)"/python-scripts"
 
+#install required python packages
+sudo apt-get -y install python3-pip
+pip install -r python-scripts/requirements.txt #todo hier gibts evtl probleme mit der paho version
+pip install -r https://raw.githubusercontent.com/MontiCore/montithings/develop/services/iot-client/requirements.txt
 
+# configure docker
 sudo bash -c "echo \"{
   \\\"log-driver\\\": \\\"local\\\",
   \\\"dns\\\": [\\\"1.1.1.1\\\"],
