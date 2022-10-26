@@ -1,10 +1,26 @@
+# (c) https://github.com/MontiCore/monticore
 # configure your install here
 CONNECTION_STRING='PASTE_DEVICE_CONNECTION_STRING_HERE'
 BROKER_PORT='4230'
+IS_RASPBIAN=false # please note: only ARM32v7 is supported by azure iot edge as of now. see https://learn.microsoft.com/en-us/azure/iot-edge/support?view=iotedge-1.4#operating-systems
 
-wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-sudo dpkg -i packages-microsoft-prod.deb
-rm packages-microsoft-prod.deb
+if [ $IS_RASPBIAN ]
+then
+  # make sure date is correctly set
+  sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+
+  sudo apt-get update
+  sudo apt-get -y install python3-pip
+
+  curl https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb > ./packages-microsoft-prod.deb
+  sudo apt install ./packages-microsoft-prod.deb
+  rm packages-microsoft-prod.deb
+else
+  wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+  sudo dpkg -i packages-microsoft-prod.deb
+  rm packages-microsoft-prod.deb
+fi
+
 sudo apt-get update
 sudo apt-get -y install moby-engine
 
@@ -20,15 +36,17 @@ allow_anonymous true
 sudo service mosquitto restart
 
 # download python scripts
-sudo apt-get -y install subversion
-svn checkout https://github.com/MontiCore/montithings/trunk/generators/montithings2cpp/src/main/resources/python
-mv ./python ./python-scripts
+git clone --depth 1 --filter=blob:none --no-checkout https://github.com/MontiCore/montithings.git
+cd montithings
+git checkout develop -- generators/montithings2cpp/src/main/resources/python
+cd ..
+mv ./montithings/generators/montithings2cpp/src/main/resources/python ./python-scripts
+rm -rf ./montithings
 export PYTHON_SCRIPTS_PATH=$(pwd)"/python-scripts"
 
 #install required python packages
 sudo apt-get -y install python3-pip
-pip install -r python-scripts/requirements.txt #todo hier gibts evtl probleme mit der paho version
-pip install -r https://raw.githubusercontent.com/MontiCore/montithings/develop/services/iot-client/requirements.txt
+sudo pip install -r python-scripts/requirements.txt
 
 # configure docker
 sudo bash -c "echo \"{
@@ -42,13 +60,16 @@ sudo bash -c "echo \"{
 
 
 # set up sensoractuatormanager.py as a service
+sudo mkdir /var/log/sensoractuatormanager/
 sudo bash -c "echo \"[Unit]
 Description=sensor actuator manager for montiThings
 After=mosquitto.service
 StartLimitIntervalSec=0
 [Service]
-ExecStart=/usr/bin/python3 $PYTHON_SCRIPTS_PATH/sensoractuatormanager.py --brokerPort $BROKER_PORT
+ExecStart=/usr/bin/python3 -u $PYTHON_SCRIPTS_PATH/sensoractuatormanager.py --brokerPort $BROKER_PORT
 Type=simple
+StandardOutput=file:/var/log/sensoractuatormanager/standard.log
+StandardError=file:/var/log/sensoractuatormanager/error.log
 Restart=always
 RestartSec=1
 [Install]
