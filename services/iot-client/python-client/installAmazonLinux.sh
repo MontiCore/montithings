@@ -16,6 +16,6 @@ chmod +x /usr/local/bin/docker-compose
 sudo yum install -y git
 git clone --depth 1 --filter=blob:none --sparse https://github.com/monticore/montithings
 cd montithings
-git sparse-checkout set services/iot-client
-cd services/iot-client/
+git sparse-checkout set services/iot-client/python-client
+cd services/iot-client/python-client
 pip3 install -r requirements.txt
