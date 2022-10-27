@@ -42,7 +42,7 @@ git checkout develop -- generators/montithings2cpp/src/main/resources/python
 cd ..
 mv ./montithings/generators/montithings2cpp/src/main/resources/python ./python-scripts
 rm -rf ./montithings
-export PYTHON_SCRIPTS_PATH=$(pwd)"/python-scripts"
+PYTHON_SCRIPTS_PATH=$(pwd)"/python-scripts"
 
 #install required python packages
 sudo apt-get -y install python3-pip
