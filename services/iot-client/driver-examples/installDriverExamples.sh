@@ -12,8 +12,6 @@ mv ./montithings/services/iot-client/driver-examples/*.py ./python-scripts/
 rm -rf ./montithings
 export DRIVER_EXAMPLES_PATH=$(pwd)"/python-scripts"
 
-# todo path
-
 # set up sensor_example.py as a service
 sudo mkdir /var/log/driver_examples/
 sudo bash -c "echo \"[Unit]
