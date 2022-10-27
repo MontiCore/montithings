@@ -1,10 +1,10 @@
 # (c) https://github.com/MontiCore/monticore
 
-###################### configuration ##########################
-DRIVER_NAME="<name>" # this is what the service that runs your driver will be called
-PATH_TO_PYTHON_SCRIPT="<enter path>" # put the path to the python script you want to be run by the service
-LOG_DIRECTORY="<enter path>"
-###############################################################
+############ configuration ###########
+DRIVER_NAME="<name>"                 # name of the service that runs your driver
+PATH_TO_PYTHON_SCRIPT="<enter path>" # the path to the python script to be run by the service
+LOG_DIRECTORY="<enter path>"         # path where the logs of the service will be stored
+######################################
 
 if [[ $DRIVER_NAME == *" "* ]]; then
   echo "ERROR: Invalid driver name \"§DRIVER_NAME\""
