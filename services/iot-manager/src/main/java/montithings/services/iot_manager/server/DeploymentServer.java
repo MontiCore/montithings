@@ -32,13 +32,13 @@ public class DeploymentServer {
     
     DeploymentManager manager = new DeploymentManager(workingDir, network);
     
-    System.out.println("Starting HTTP API controller...");
-    HttpAPIController controllerHttp = new HttpAPIController(manager);
-    controllerHttp.start();
-    
     System.out.println("Starting MQTT API controller...");
     MqttAPIController controller = new MqttAPIController(manager);
-    controller.start();
+    controller.start(network);
+
+    System.out.println("Starting HTTP API controller...");
+    HttpAPIController controllerHttp = new HttpAPIController(manager, controller);
+    controllerHttp.start();
     
     // Shut down deployment after termination request.
     // Note: IDEs often just kill the process, so this might not be called in

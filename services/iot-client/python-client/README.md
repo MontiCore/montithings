@@ -4,6 +4,10 @@ The IoT client communicates via MQTT with a deployment server or a "basic deploy
 
 This server manages the IoT clients and sends them commands.
 
+## Dependencies
+- Docker Engine & CLI
+- Python 3
+
 ## Client ID
 Each IoT client has a unique ID.
 This can be set manually if desired;
