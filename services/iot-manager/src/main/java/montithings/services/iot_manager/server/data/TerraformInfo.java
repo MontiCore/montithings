@@ -1,24 +1,31 @@
-package montithings.services.iot_manager.server.azurecloud;
+package montithings.services.iot_manager.server.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class TerraformFileInfo {
-  private String filename;
-  private String filecontent;
+public class TerraformInfo {
+  private String filename, filecontent;
 
-  public TerraformFileInfo(String filename, String filecontent) {
+  public TerraformInfo(String filename, String filecontent) {
     this.filename = filename;
     this.filecontent = filecontent;
   }
 
   public String getFilename() {
-    return this.filename;
+    return filename;
   }
 
   public String getFilecontent() {
-    return this.filecontent;
+    return filecontent;
+  }
+
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
+
+  public void setFilecontent(String filecontent) {
+    this.filecontent = filecontent;
   }
 
   public String toJson() throws JsonProcessingException {
