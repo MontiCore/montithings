@@ -2,14 +2,13 @@ package montithings.services.iot_manager.server.azurecloud;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpClient.Redirect;
-import java.net.http.HttpClient.Version;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Duration;
 import java.util.Collection;
 
@@ -30,10 +29,6 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   // TODO: Eventually read token as env var
   private final String token = "03c11e6e-41fc-4862-a37a-6dbc46a834b9";
   private final Duration timeout = Duration.ofMinutes(15);
-  private final HttpClient httpClient = HttpClient.newBuilder()
-      .version(Version.HTTP_2)
-      .followRedirects(Redirect.NORMAL)
-      .build();
   private List<DeployClient> clients = new ArrayList<>();
 
   public AzureCloudTargetProvider(long providerID, String terraformDeployerUrl, AzureCredentials credentials) {
@@ -45,33 +40,63 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   @Override
   public void deploy(Distribution distribution, DeploymentInfo deploymentInfo, NetworkInfo net)
       throws DeploymentException {
-    try {
-      ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, deploymentInfo.getTerraformInfos());
-      HttpResponse<String> response = this.applyTerraform(body);
+    ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, deploymentInfo.getTerraformInfos());
+    this.applyTerraform(body);
+  }
 
-      if (response.statusCode() != 201) {
-        String errorMessage = "Terraform apply failed with status code " + response.statusCode()
-            + " and error message: " + response.body();
+  private void applyTerraform(ApplyTerraformDTO body) throws DeploymentException {
+    HttpURLConnection connection = null;
+
+    try {
+      // 1. Open connection
+      URL url = new URL(this.terraformDeployerUrl + "/apply");
+      connection = (HttpURLConnection) url.openConnection();
+
+      // 2. Prepare request
+      byte[] postData = body.toJson().getBytes();
+      connection.setRequestMethod("POST");
+      connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+      connection.setRequestProperty("Accept", "application/json");
+      connection.setRequestProperty("X-Token", token);
+      connection.setFixedLengthStreamingMode(postData.length);
+      connection.setReadTimeout((int) timeout.toMillis());
+      connection.setConnectTimeout((int) timeout.toMillis());
+      connection.setUseCaches(false);
+      connection.setDoOutput(true);
+
+      // 3. Send request
+      DataOutputStream wr = new DataOutputStream(
+          connection.getOutputStream());
+      wr.write(postData);
+      wr.close();
+
+      // 4. Parse response
+      if (connection.getResponseCode() != 201) {
+        String errorMessage = "Terraform apply failed with status code " + connection.getResponseCode()
+            + " and error message: " + getResponseStr(connection);
         throw new DeploymentException(errorMessage);
       }
-    } catch (IOException | InterruptedException e) {
+    } catch (IOException e) {
       e.printStackTrace();
+      throw new DeploymentException(e.getMessage());
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
     }
   }
 
-  private HttpResponse<String> applyTerraform(ApplyTerraformDTO body) throws IOException, InterruptedException {
-    HttpRequest request = HttpRequest
-        .newBuilder()
-        .uri(URI.create(this.terraformDeployerUrl + "/apply"))
-        .POST(HttpRequest.BodyPublishers.ofString(body.toJson()))
-        .header("Accept", "application/json")
-        .header("X-Token", token)
-        .timeout(timeout)
-        .build();
-
-    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-    return response;
+  private String getResponseStr(HttpURLConnection connection) throws IOException {
+    InputStream is = connection.getInputStream();
+    try (BufferedReader rd = new BufferedReader(new InputStreamReader(is))) {
+      StringBuffer response = new StringBuffer();
+      String line;
+      while ((line = rd.readLine()) != null) {
+        response.append(line);
+        response.append('\r');
+      }
+      return response.toString();
+    }
   }
 
   @Override
