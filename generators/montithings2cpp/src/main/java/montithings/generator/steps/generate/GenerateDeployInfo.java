@@ -14,8 +14,9 @@ import javax.json.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
-import java.util.List;
+import java.util.Set;
 
 import static montithings.generator.MontiThingsGeneratorTool.TOOL_NAME;
 
@@ -49,7 +50,7 @@ public class GenerateDeployInfo extends GeneratorStep {
       }
       jsonInstance.add("requirements", jreqs.build());
 
-      JsonArrayBuilder terraformInfo = generateTerraformInfo(state);
+      JsonArrayBuilder terraformInfo = generateTerraformInfo(state, comp.getFullName());
       jsonInstance.add("terraformInfo", terraformInfo);
 
       jsonInstances.add(jsonInstance);
@@ -62,36 +63,58 @@ public class GenerateDeployInfo extends GeneratorStep {
     FileReaderWriter.storeInFile(jsonFile.getAbsoluteFile().toPath(), jsonString);
   }
 
-  private JsonArrayBuilder generateTerraformInfo(GeneratorToolState state) {
-    List<String> foundModels = Modelfinder.getModelsInModelPath(state.getModelPath(), TF_EXTENSION);
+  private JsonArrayBuilder generateTerraformInfo(GeneratorToolState state, String componentType) {
+    Set<File> foundModels = Modelfinder.getModelFiles(TF_EXTENSION, state.getModelPath());
 
     Log.info("Generating Terraform Base64 String for " + foundModels.size() + " models...", TOOL_NAME);
 
     JsonArrayBuilder terraformInfos = Json.createArrayBuilder();
 
-    for (String model : foundModels) {
-      Log.info("Generate TF Info: " + model, TOOL_NAME);
+    for (File model : foundModels) {
+      String fqnModelName = getDotSeperatedFQNModelName(state.getModelPath().getPath(), model.getPath(), TF_EXTENSION);
 
-      try {
-        JsonObjectBuilder terraformInfo = Json.createObjectBuilder();
-        String modelName = model + "." + TF_EXTENSION;
-        String modelPath = state.getModelPath().getAbsolutePath() + "/" + modelName;
-        String encodedTf = fileToBase64Str(modelPath);
-        terraformInfo.add("filename", modelName);
-        terraformInfo.add("filecontent", encodedTf);
-        terraformInfos.add(terraformInfo);
-      } catch (IOException e) {
-        e.printStackTrace();
+      // Tf file is matched to component, if tf filename starts with componentType
+      // E.g. Example.mt <- matched -> Example.tf
+      // E.g. Example.mt <- matched -> ExampleAnotherSuffix.tf
+      // E.g. Example.mt <- not-matched -> PrefixExample.tf
+      // Maintaining it as such allows multiple TF files per component
+      if (fqnModelName.startsWith(componentType)) {
+        Log.info("Generate TF Info: " + model.toPath(), TOOL_NAME);
+
+        try {
+          JsonObjectBuilder terraformInfo = Json.createObjectBuilder();
+          String encodedTf = fileToBase64Str(model.toPath());
+          terraformInfo.add("filename", fqnModelName);
+          terraformInfo.add("filecontent", encodedTf);
+          terraformInfos.add(terraformInfo);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
 
     return terraformInfos;
   }
 
-  private String fileToBase64Str(String fileName) throws IOException {
-    File file = new File(fileName);
-    byte[] fileContent = Files.readAllBytes(file.toPath());
+  private String fileToBase64Str(Path path) throws IOException {
+    byte[] fileContent = Files.readAllBytes(path);
     return Base64.getEncoder().encodeToString(fileContent);
+  }
+
+  // Copy from MontiCore.Modelfinder
+  private static String getDotSeperatedFQNModelName(String FQNModelPath, String FQNFilePath, String fileExtension) {
+    if (FQNFilePath.contains(FQNModelPath)) {
+      String fqnModelName = FQNFilePath.substring(FQNModelPath.length() + 1);
+      fqnModelName = fqnModelName.replace("." + fileExtension, "");
+      if (fqnModelName.contains("\\")) {
+        fqnModelName = fqnModelName.replaceAll("\\\\", ".");
+      } else if (fqnModelName.contains("/")) {
+        fqnModelName = fqnModelName.replaceAll("/", ".");
+      }
+
+      return fqnModelName;
+    }
+    return FQNFilePath;
   }
 
 }

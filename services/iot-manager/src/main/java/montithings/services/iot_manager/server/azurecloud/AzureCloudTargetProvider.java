@@ -18,6 +18,7 @@ import montithings.services.iot_manager.server.data.DeploymentInfo;
 import montithings.services.iot_manager.server.data.Distribution;
 import montithings.services.iot_manager.server.data.LocationSpecifier;
 import montithings.services.iot_manager.server.data.NetworkInfo;
+import montithings.services.iot_manager.server.data.TerraformInfo;
 import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
 import montithings.services.iot_manager.server.dto.ApplyTerraformDTO;
 import montithings.services.iot_manager.server.exception.DeploymentException;
@@ -26,10 +27,12 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   private final long providerID;
   private final String terraformDeployerUrl;
   private final AzureCredentials credentials;
-  // TODO: Eventually read token as env var
+  // TODO: Read token as env var
   private final String token = "03c11e6e-41fc-4862-a37a-6dbc46a834b9";
   private final Duration timeout = Duration.ofMinutes(15);
   private List<DeployClient> clients = new ArrayList<>();
+  // Base64 encoded string of base.tf
+  private final String baseTf = "dGVycmFmb3JtIHsNCiAgcmVxdWlyZWRfcHJvdmlkZXJzIHsNCiAgICBhenVyZXJtID0gew0KICAgICAgc291cmNlID0gImhhc2hpY29ycC9henVyZXJtIg0KICAgIH0NCiAgICBhemFwaSA9IHsNCiAgICAgIHNvdXJjZSA9ICJBenVyZS9hemFwaSINCiAgICB9DQogIH0NCn0NCg0KcHJvdmlkZXIgImF6dXJlcm0iIHsNCiAgZmVhdHVyZXMge30NCn0NCg0KcHJvdmlkZXIgImF6YXBpIiB7fQ0KDQp2YXJpYWJsZSAibG9jYXRpb24iIHsNCiAgdHlwZSAgICAgICAgPSBzdHJpbmcNCiAgZGVmYXVsdCAgICAgPSAiZ2VybWFueXdlc3RjZW50cmFsIg0KICBkZXNjcmlwdGlvbiA9ICJEZXNpcmVkIEF6dXJlIFJlZ2lvbiINCn0NCg0KdmFyaWFibGUgInJlZ2lzdHJ5UHdkIiB7DQogIHR5cGUgICAgICAgID0gc3RyaW5nDQogIGRlZmF1bHQgICAgID0gIjJtZi9QaldXQlZkazYwSWxldEhMOVhXaVl0UFRxMUJxIg0KICBkZXNjcmlwdGlvbiA9ICJQYXNzd29yZCB0byBjb25uZWN0IHdpdGggQXp1cmUgcmVnaXN0cnkgYW5kIHB1bGwgZGF0YSBmcm9tIg0KfQ0KDQpyZXNvdXJjZSAiYXp1cmVybV9yZXNvdXJjZV9ncm91cCIgInJnIiB7DQogIG5hbWUgICAgID0gInJnLXRlcnJhZm9ybSINCiAgbG9jYXRpb24gPSB2YXIubG9jYXRpb24NCn0NCg0KcmVzb3VyY2UgImF6dXJlcm1fbG9nX2FuYWx5dGljc193b3Jrc3BhY2UiICJsYXciIHsNCiAgbmFtZSAgICAgICAgICAgICAgICA9ICJsYXctdGVycmFmb3JtIg0KICByZXNvdXJjZV9ncm91cF9uYW1lID0gYXp1cmVybV9yZXNvdXJjZV9ncm91cC5yZy5uYW1lDQogIGxvY2F0aW9uICAgICAgICAgICAgPSBhenVyZXJtX3Jlc291cmNlX2dyb3VwLnJnLmxvY2F0aW9uDQogIHNrdSAgICAgICAgICAgICAgICAgPSAiUGVyR0IyMDE4Ig0KICByZXRlbnRpb25faW5fZGF5cyAgID0gOTANCn0NCg0KcmVzb3VyY2UgImF6YXBpX3Jlc291cmNlIiAibWVudiIgew0KICB0eXBlICAgICAgPSAiTWljcm9zb2Z0LkFwcC9tYW5hZ2VkRW52aXJvbm1lbnRzQDIwMjItMDMtMDEiDQogIHBhcmVudF9pZCA9IGF6dXJlcm1fcmVzb3VyY2VfZ3JvdXAucmcuaWQNCiAgbG9jYXRpb24gID0gYXp1cmVybV9yZXNvdXJjZV9ncm91cC5yZy5sb2NhdGlvbg0KICBuYW1lICAgICAgPSAibWVudi10ZXJyYWZvcm0iDQoNCiAgYm9keSA9IGpzb25lbmNvZGUoew0KICAgIHByb3BlcnRpZXMgPSB7DQogICAgICBhcHBMb2dzQ29uZmlndXJhdGlvbiA9IHsNCiAgICAgICAgZGVzdGluYXRpb24gPSAibG9nLWFuYWx5dGljcyINCiAgICAgICAgbG9nQW5hbHl0aWNzQ29uZmlndXJhdGlvbiA9IHsNCiAgICAgICAgICBjdXN0b21lcklkID0gYXp1cmVybV9sb2dfYW5hbHl0aWNzX3dvcmtzcGFjZS5sYXcud29ya3NwYWNlX2lkDQogICAgICAgICAgc2hhcmVkS2V5ICA9IGF6dXJlcm1fbG9nX2FuYWx5dGljc193b3Jrc3BhY2UubGF3LnByaW1hcnlfc2hhcmVkX2tleQ0KICAgICAgICB9DQogICAgICB9DQogICAgICB6b25lUmVkdW5kYW50ID0gZmFsc2UNCiAgICB9DQogIH0pDQp9DQo=";
 
   public AzureCloudTargetProvider(long providerID, String terraformDeployerUrl, AzureCredentials credentials) {
     this.providerID = providerID;
@@ -111,10 +114,22 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
 
   @Override
   public void initialize() throws DeploymentException {
+    this.setupAzureClient();
+    this.applyBaseTf();
+  }
+
+  private void setupAzureClient() {
     LocationSpecifier location = new LocationSpecifier("unspecified", "unspecified", "unspecified");
     DeployClient azureCloud = DeployClient.create("ec259dea-3a13-4815-bea7-68d2faac631f", true, location, providerID,
         "");
     this.clients.add(azureCloud);
+  }
+
+  private void applyBaseTf() throws DeploymentException {
+    TerraformInfo[] files = new TerraformInfo[1];
+    files[0] = new TerraformInfo("base.tf", baseTf);
+    ApplyTerraformDTO dto = new ApplyTerraformDTO(credentials, files);
+    this.applyTerraform(dto);
   }
 
   @Override
