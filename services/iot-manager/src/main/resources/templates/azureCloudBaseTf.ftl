@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 terraform {
   required_providers {
     azurerm = {
@@ -19,12 +20,6 @@ variable "location" {
   type        = string
   default     = "germanywestcentral"
   description = "Desired Azure Region"
-}
-
-variable "registryPwd" {
-  type        = string
-  default     = "2mf/PjWWBVdk60IletHL9XWiYtPTq1Bq"
-  description = "Password to connect with Azure registry and pull data from"
 }
 
 resource "azurerm_resource_group" "rg" {

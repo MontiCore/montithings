@@ -1,7 +1,15 @@
 package montithings.services.iot_manager.server.azurecloud;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.output.StringBuilderWriter;
+
+import de.monticore.generating.GeneratorEngine;
+import de.monticore.generating.GeneratorSetup;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,12 +35,9 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   private final long providerID;
   private final String terraformDeployerUrl;
   private final AzureCredentials credentials;
-  // TODO: Read token as env var
   private final String token = "03c11e6e-41fc-4862-a37a-6dbc46a834b9";
   private final Duration timeout = Duration.ofMinutes(15);
   private List<DeployClient> clients = new ArrayList<>();
-  // Base64 encoded string of base.tf
-  private final String baseTf = "dGVycmFmb3JtIHsNCiAgcmVxdWlyZWRfcHJvdmlkZXJzIHsNCiAgICBhenVyZXJtID0gew0KICAgICAgc291cmNlID0gImhhc2hpY29ycC9henVyZXJtIg0KICAgIH0NCiAgICBhemFwaSA9IHsNCiAgICAgIHNvdXJjZSA9ICJBenVyZS9hemFwaSINCiAgICB9DQogIH0NCn0NCg0KcHJvdmlkZXIgImF6dXJlcm0iIHsNCiAgZmVhdHVyZXMge30NCn0NCg0KcHJvdmlkZXIgImF6YXBpIiB7fQ0KDQp2YXJpYWJsZSAibG9jYXRpb24iIHsNCiAgdHlwZSAgICAgICAgPSBzdHJpbmcNCiAgZGVmYXVsdCAgICAgPSAiZ2VybWFueXdlc3RjZW50cmFsIg0KICBkZXNjcmlwdGlvbiA9ICJEZXNpcmVkIEF6dXJlIFJlZ2lvbiINCn0NCg0KdmFyaWFibGUgInJlZ2lzdHJ5UHdkIiB7DQogIHR5cGUgICAgICAgID0gc3RyaW5nDQogIGRlZmF1bHQgICAgID0gIjJtZi9QaldXQlZkazYwSWxldEhMOVhXaVl0UFRxMUJxIg0KICBkZXNjcmlwdGlvbiA9ICJQYXNzd29yZCB0byBjb25uZWN0IHdpdGggQXp1cmUgcmVnaXN0cnkgYW5kIHB1bGwgZGF0YSBmcm9tIg0KfQ0KDQpyZXNvdXJjZSAiYXp1cmVybV9yZXNvdXJjZV9ncm91cCIgInJnIiB7DQogIG5hbWUgICAgID0gInJnLXRlcnJhZm9ybSINCiAgbG9jYXRpb24gPSB2YXIubG9jYXRpb24NCn0NCg0KcmVzb3VyY2UgImF6dXJlcm1fbG9nX2FuYWx5dGljc193b3Jrc3BhY2UiICJsYXciIHsNCiAgbmFtZSAgICAgICAgICAgICAgICA9ICJsYXctdGVycmFmb3JtIg0KICByZXNvdXJjZV9ncm91cF9uYW1lID0gYXp1cmVybV9yZXNvdXJjZV9ncm91cC5yZy5uYW1lDQogIGxvY2F0aW9uICAgICAgICAgICAgPSBhenVyZXJtX3Jlc291cmNlX2dyb3VwLnJnLmxvY2F0aW9uDQogIHNrdSAgICAgICAgICAgICAgICAgPSAiUGVyR0IyMDE4Ig0KICByZXRlbnRpb25faW5fZGF5cyAgID0gOTANCn0NCg0KcmVzb3VyY2UgImF6YXBpX3Jlc291cmNlIiAibWVudiIgew0KICB0eXBlICAgICAgPSAiTWljcm9zb2Z0LkFwcC9tYW5hZ2VkRW52aXJvbm1lbnRzQDIwMjItMDMtMDEiDQogIHBhcmVudF9pZCA9IGF6dXJlcm1fcmVzb3VyY2VfZ3JvdXAucmcuaWQNCiAgbG9jYXRpb24gID0gYXp1cmVybV9yZXNvdXJjZV9ncm91cC5yZy5sb2NhdGlvbg0KICBuYW1lICAgICAgPSAibWVudi10ZXJyYWZvcm0iDQoNCiAgYm9keSA9IGpzb25lbmNvZGUoew0KICAgIHByb3BlcnRpZXMgPSB7DQogICAgICBhcHBMb2dzQ29uZmlndXJhdGlvbiA9IHsNCiAgICAgICAgZGVzdGluYXRpb24gPSAibG9nLWFuYWx5dGljcyINCiAgICAgICAgbG9nQW5hbHl0aWNzQ29uZmlndXJhdGlvbiA9IHsNCiAgICAgICAgICBjdXN0b21lcklkID0gYXp1cmVybV9sb2dfYW5hbHl0aWNzX3dvcmtzcGFjZS5sYXcud29ya3NwYWNlX2lkDQogICAgICAgICAgc2hhcmVkS2V5ICA9IGF6dXJlcm1fbG9nX2FuYWx5dGljc193b3Jrc3BhY2UubGF3LnByaW1hcnlfc2hhcmVkX2tleQ0KICAgICAgICB9DQogICAgICB9DQogICAgICB6b25lUmVkdW5kYW50ID0gZmFsc2UNCiAgICB9DQogIH0pDQp9DQo=";
 
   public AzureCloudTargetProvider(long providerID, String terraformDeployerUrl, AzureCredentials credentials) {
     this.providerID = providerID;
@@ -43,8 +48,32 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   @Override
   public void deploy(Distribution distribution, DeploymentInfo deploymentInfo, NetworkInfo net)
       throws DeploymentException {
-    ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, deploymentInfo.getTerraformInfos());
+    List<TerraformInfo> tfInfos = new ArrayList<TerraformInfo>();
+
+    // 1. Add component specific resources
+    for (TerraformInfo tfInfo : deploymentInfo.getTerraformInfos()) {
+      tfInfos.add(tfInfo);
+    }
+
+    // 2. Generate tf for containerapp executable
+    Map<String, String[]> distributionMap = distribution.getDistributionMap();
+    for (String deviceID : distributionMap.keySet()) {
+      String filecontent = getContainerappTf(distributionMap.get(deviceID), deploymentInfo, net);
+      tfInfos.add(new TerraformInfo(deviceID, filecontent));
+    }
+
+    // 3. Deploy all terraform files
+    ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, tfInfos);
     this.applyTerraform(body);
+  }
+
+  private String getContainerappTf(String[] modules, DeploymentInfo deplInfo, NetworkInfo netInfo) {
+    GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
+    GeneratorEngine engine = new GeneratorEngine(setup);
+    StringBuilderWriter containerappTf = new StringBuilderWriter();
+    engine.generateNoA("templates/azureDeployment.ftl", containerappTf, modules, deplInfo, netInfo);
+    return Base64.getEncoder().encodeToString(containerappTf.toString().getBytes());
   }
 
   private void applyTerraform(ApplyTerraformDTO body) throws DeploymentException {
@@ -52,10 +81,12 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
 
     try {
       // 1. Open connection
+      System.out.println("Apply terraform. Url: " + this.terraformDeployerUrl + "/apply");
       URL url = new URL(this.terraformDeployerUrl + "/apply");
       connection = (HttpURLConnection) url.openConnection();
 
       // 2. Prepare request
+      System.out.println("Apply terraform. Prepare request. Body: " + body.toJson());
       byte[] postData = body.toJson().getBytes();
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -68,12 +99,14 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
       connection.setDoOutput(true);
 
       // 3. Send request
+      System.out.println("Apply terraform. Send request");
       DataOutputStream wr = new DataOutputStream(
           connection.getOutputStream());
       wr.write(postData);
       wr.close();
 
       // 4. Parse response
+      System.out.println("Apply terraform. Parse response");
       if (connection.getResponseCode() != 201) {
         String errorMessage = "Terraform apply failed with status code " + connection.getResponseCode()
             + " and error message: " + getResponseStr(connection);
@@ -126,8 +159,20 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   }
 
   private void applyBaseTf() throws DeploymentException {
-    TerraformInfo[] files = new TerraformInfo[1];
-    files[0] = new TerraformInfo("base.tf", baseTf);
+    // 1. Get base.tf from ftl
+    GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
+    GeneratorEngine engine = new GeneratorEngine(setup);
+    StringBuilderWriter baseTf = new StringBuilderWriter();
+    List<TerraformInfo> files = new ArrayList<TerraformInfo>();
+    engine.generateNoA("templates/azureDeployment.ftl", baseTf);
+
+    // 2. Get filecontent as base64 encoded string
+    String filecontent = Base64.getEncoder().encodeToString(baseTf.toString().getBytes());
+    TerraformInfo tfInfo = new TerraformInfo("base.tf", filecontent);
+    files.add(tfInfo);
+
+    // 3. Provision tf resources
     ApplyTerraformDTO dto = new ApplyTerraformDTO(credentials, files);
     this.applyTerraform(dto);
   }
