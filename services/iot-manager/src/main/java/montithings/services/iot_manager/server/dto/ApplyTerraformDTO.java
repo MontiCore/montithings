@@ -12,10 +12,12 @@ import montithings.services.iot_manager.server.data.TerraformInfo;
 public class ApplyTerraformDTO {
   private List<TerraformInfo> files;
   private AzureCredentials credentials;
+  private String storageAccountName;
 
-  public ApplyTerraformDTO(AzureCredentials credentials, List<TerraformInfo> files) {
+  public ApplyTerraformDTO(AzureCredentials credentials, List<TerraformInfo> files, String storageAccountName) {
     this.files = files;
     this.credentials = credentials;
+    this.storageAccountName = storageAccountName;
   }
 
   public List<TerraformInfo> getFiles() {
@@ -24,6 +26,10 @@ public class ApplyTerraformDTO {
 
   public AzureCredentials getCredentials() {
     return credentials;
+  }
+
+  public String getStorageAccountName() {
+    return storageAccountName;
   }
 
   public String toJson() throws JsonProcessingException {

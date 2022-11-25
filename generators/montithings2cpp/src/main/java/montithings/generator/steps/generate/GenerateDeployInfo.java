@@ -31,29 +31,31 @@ public class GenerateDeployInfo extends GeneratorStep {
     JsonArrayBuilder jsonInstances = Json.createArrayBuilder();
 
     for (Pair<ComponentTypeSymbol, String> instance : state.getInstances()) {
-      // Each executable instance will be added to the "instances" array.
-      ComponentTypeSymbol comp = instance.getKey();
-      JsonObjectBuilder jsonInstance = Json.createObjectBuilder();
+      if (ComponentHelper.isApplication(instance.getKey(), state.getConfig())) {
+        // Each executable instance will be added to the "instances" array.
+        ComponentTypeSymbol comp = instance.getKey();
+        JsonObjectBuilder jsonInstance = Json.createObjectBuilder();
 
-      jsonInstance.add("componentType", comp.getFullName());
-      jsonInstance.add("instanceName", instance.getValue());
-      jsonInstance.add("dockerImage", comp.getFullName().toLowerCase() + ":latest");
+        jsonInstance.add("componentType", comp.getFullName());
+        jsonInstance.add("instanceName", instance.getValue());
+        jsonInstance.add("dockerImage", comp.getFullName().toLowerCase() + ":latest");
 
-      // Also add the requirements of the component.
-      JsonArrayBuilder jreqs = Json.createArrayBuilder();
-      for (String req : ComponentHelper.getRequirements(comp, state.getConfig())) {
-        if (req.startsWith("ocl:")) {
-          jsonInstance.add("hardwareRequirements", req.substring(4));
-        } else {
-          jreqs.add(req);
+        // Also add the requirements of the component.
+        JsonArrayBuilder jreqs = Json.createArrayBuilder();
+        for (String req : ComponentHelper.getRequirements(comp, state.getConfig())) {
+          if (req.startsWith("ocl:")) {
+            jsonInstance.add("hardwareRequirements", req.substring(4));
+          } else {
+            jreqs.add(req);
+          }
         }
+        jsonInstance.add("requirements", jreqs.build());
+
+        JsonArrayBuilder terraformInfo = generateTerraformInfo(state, comp.getFullName());
+        jsonInstance.add("terraformInfo", terraformInfo);
+
+        jsonInstances.add(jsonInstance);
       }
-      jsonInstance.add("requirements", jreqs.build());
-
-      JsonArrayBuilder terraformInfo = generateTerraformInfo(state, comp.getFullName());
-      jsonInstance.add("terraformInfo", terraformInfo);
-
-      jsonInstances.add(jsonInstance);
     }
     jsonBase.add("instances", jsonInstances.build());
 

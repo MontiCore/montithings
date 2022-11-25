@@ -32,6 +32,10 @@ import montithings.services.iot_manager.server.dto.ApplyTerraformDTO;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 
 public class AzureCloudTargetProvider implements IDeployTargetProvider {
+  private final String deviceId = "azurecloud";
+  private final String baseTfFtl = "templates/azureCloudBaseTf.ftl";
+  private final String containerAppTfFtl = "templates/azureCloudContainerappsTf.ftl";
+  private final String storageAccountName = "montithings2"; // Must be unique within Azure
   private final long providerID;
   private final String terraformDeployerUrl;
   private final AzureCredentials credentials;
@@ -50,20 +54,23 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
       throws DeploymentException {
     List<TerraformInfo> tfInfos = new ArrayList<TerraformInfo>();
 
-    // 1. Add component specific resources
+    // 1. Get base tf
+    tfInfos.add(new TerraformInfo("base.tf", getBaseTf()));
+
+    // 2. Add component specific resources
     for (TerraformInfo tfInfo : deploymentInfo.getTerraformInfos()) {
       tfInfos.add(tfInfo);
     }
 
-    // 2. Generate tf for containerapp executable
+    // 3. Generate tf for containerapp executable
+    // Map from device to executables on device. For this targetProvider we have
+    // only one device. Thus no for loop required
     Map<String, String[]> distributionMap = distribution.getDistributionMap();
-    for (String deviceID : distributionMap.keySet()) {
-      String filecontent = getContainerappTf(distributionMap.get(deviceID), deploymentInfo, net);
-      tfInfos.add(new TerraformInfo(deviceID, filecontent));
-    }
+    String filecontent = getContainerappTf(distributionMap.get(deviceId), deploymentInfo, net);
+    tfInfos.add(new TerraformInfo(deviceId, filecontent));
 
-    // 3. Deploy all terraform files
-    ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, tfInfos);
+    // 4. Deploy all terraform files
+    ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, tfInfos, storageAccountName);
     this.applyTerraform(body);
   }
 
@@ -72,8 +79,17 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
     setup.setTracing(false);
     GeneratorEngine engine = new GeneratorEngine(setup);
     StringBuilderWriter containerappTf = new StringBuilderWriter();
-    engine.generateNoA("templates/azureDeployment.ftl", containerappTf, modules, deplInfo, netInfo);
+    engine.generateNoA(this.containerAppTfFtl, containerappTf, modules, deplInfo, netInfo);
     return Base64.getEncoder().encodeToString(containerappTf.toString().getBytes());
+  }
+
+  private String getBaseTf() {
+    GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
+    GeneratorEngine engine = new GeneratorEngine(setup);
+    StringBuilderWriter baseTf = new StringBuilderWriter();
+    engine.generateNoA(this.baseTfFtl, baseTf, storageAccountName);
+    return Base64.getEncoder().encodeToString(baseTf.toString().getBytes());
   }
 
   private void applyTerraform(ApplyTerraformDTO body) throws DeploymentException {
@@ -148,33 +164,14 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   @Override
   public void initialize() throws DeploymentException {
     this.setupAzureClient();
-    this.applyBaseTf();
   }
 
   private void setupAzureClient() {
     LocationSpecifier location = new LocationSpecifier("unspecified", "unspecified", "unspecified");
-    DeployClient azureCloud = DeployClient.create("ec259dea-3a13-4815-bea7-68d2faac631f", true, location, providerID,
+    DeployClient azureCloud = DeployClient.create(
+        deviceId, true, location, providerID,
         "");
     this.clients.add(azureCloud);
-  }
-
-  private void applyBaseTf() throws DeploymentException {
-    // 1. Get base.tf from ftl
-    GeneratorSetup setup = new GeneratorSetup();
-    setup.setTracing(false);
-    GeneratorEngine engine = new GeneratorEngine(setup);
-    StringBuilderWriter baseTf = new StringBuilderWriter();
-    List<TerraformInfo> files = new ArrayList<TerraformInfo>();
-    engine.generateNoA("templates/azureDeployment.ftl", baseTf);
-
-    // 2. Get filecontent as base64 encoded string
-    String filecontent = Base64.getEncoder().encodeToString(baseTf.toString().getBytes());
-    TerraformInfo tfInfo = new TerraformInfo("base.tf", filecontent);
-    files.add(tfInfo);
-
-    // 3. Provision tf resources
-    ApplyTerraformDTO dto = new ApplyTerraformDTO(credentials, files);
-    this.applyTerraform(dto);
   }
 
   @Override

@@ -50,7 +50,7 @@ RUN ./build.sh ${comp.getFullName()}
 
     WORKDIR /usr/src/app/build/bin
 
-    RUN echo './${comp.getFullName()} "$@"' > entrypoint.sh
+    RUN echo './${comp.getFullName()} --name ${comp.getFullName()?lower_case} "$@"' > entrypoint.sh
 
     # Run our binary on container startup
     ENTRYPOINT [ "sh", "entrypoint.sh" ]

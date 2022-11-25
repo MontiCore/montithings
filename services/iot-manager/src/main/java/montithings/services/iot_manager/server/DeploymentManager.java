@@ -243,14 +243,13 @@ public class DeploymentManager implements IDeployStatusListener {
     targetProvider.deploy(distribution, deploymentInfo, network);
   }
 
-  public void setTargetProvider(IDeployTargetProvider provider) {
+  public void setTargetProvider(IDeployTargetProvider provider) throws DeploymentException {
     // Close old target provider
     try {
       this.terminate();
       this.targetProvider.close();
     } catch (DeploymentException e) {
       e.printStackTrace();
-      return;
     }
 
     // Replace with new one
@@ -262,7 +261,7 @@ public class DeploymentManager implements IDeployStatusListener {
       provider.initialize();
     } catch (DeploymentException e) {
       System.err.println("Failed to initialize deployment provider.");
-      return;
+      throw e;
     }
 
     // send device update to listener
