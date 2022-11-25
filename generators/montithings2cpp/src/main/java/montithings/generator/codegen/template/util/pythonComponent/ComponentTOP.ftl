@@ -63,7 +63,7 @@ class ${componentName}ImplTOP(IComputable, MQTTConnector):
         self.client_id = client_id # call the constructor of this ImplTOP in your __init__ and set the client_id
         for port in self.COMPONENT_PORTS_IN.keys():
             self.ports_in.add(".".join([client_id, port]))
-        super().__init__(client_id=client_id, **kwargs)
+        super().__init__(client_id=client_id + "_protobuf", **kwargs)
 
     def on_message(self, client, userdata, message) -> None:
         decoded_msg = message.payload.decode("utf-8")

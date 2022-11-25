@@ -11,9 +11,9 @@ class FaceIDImpl(FaceIDImplTOP):
         4: "Erin",
     }
 
-    def __init__(self):
+    def __init__(self, name):
         super().__init__(
-            client_id="unlock.FaceUnlock.faceid", # client ID has to match the fully qualified name in FaceUnlock.mt
+            client_id=name, # client ID has to match the fully qualified name in FaceUnlock.mt
             reconnect_on_failure=True
         )
 
