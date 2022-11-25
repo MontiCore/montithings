@@ -191,7 +191,7 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
 
   for (std::string subscription : subscriptions)
     {
-      // only process message messages from ports we are subscribed to
+      // only process messages from ports we are subscribed to
       if (topic.find (subscription) != std::string::npos)
         {
           // check if this message informs us about new data

@@ -14,7 +14,7 @@ class ${componentName}Input(GenericInput):
     # reference: https://developers.google.com/protocol-buffers/docs/pythontutorial - last visited 12.8.22
     # if unclear, use help(xInput.ports[port_name]) or dir(xInput.ports[port_name])
     # note that because the mapping for ports is dynamic (MQTT instructions), a mapping at runtime is much harder in
-    # static languages. Therefore the mapping is done with a dict and the port-name
+    # static languages. Therefore, the mapping is done with a dict and the port-name
     def __init__(self):
         self.uuid = uuid.uuid4() # initial UUID, can't be used to trace any messages
         self.ports = {}
