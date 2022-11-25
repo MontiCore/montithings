@@ -44,4 +44,6 @@ ${tc.signature("comp","config","isMonitor","behavior")}
   </#if>
   </#list>
 </#if>
-
+<#if needsProtobuf>
+  input__cache = ${Identifier.getInputName()};
+</#if>

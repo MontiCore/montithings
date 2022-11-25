@@ -30,4 +30,11 @@ std::string modelInstanceNameOut = getModelInstanceName(this->getInstanceName())
     ,true,mqttClientInstance, mqttClientLocalInstance));
   </#if>
   this->interface.addOutPort${p.getName()?cap_first} (${p.getName()});
+  <#if needsProtobuf>
+    <#assign protoname = p.getName() + "_protobuf">
+    // incoming protobuf port ${protoname}
+    ${protoname} = new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}",
+    std::unique_ptr<${serializerName}<Message<${type}>>>{new ${serializerName}<Message<${type}>>{}}
+    ,true , mqttClientInstance, mqttClientLocalInstance, "/protobuf/");
+  </#if>
 </#list>

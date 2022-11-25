@@ -27,7 +27,6 @@ echo "Starting components..."
 </#list>
 
 <#list instances as pair >
-  <#if !ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
     <#if brokerIsMQTT>
     ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
     <#elseif brokerIsDDS>
@@ -38,7 +37,6 @@ echo "Starting components..."
       </#if>
     <#else>
   ./${pair.getKey().fullName} --name ${pair.getValue()} --managementPort ${config.getComponentPortMap().getManagementPort(pair.getValue())} --dataPort ${config.getComponentPortMap().getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
-  </#if>
   </#if>
 </#list>
 <#if brokerIsMQTT>

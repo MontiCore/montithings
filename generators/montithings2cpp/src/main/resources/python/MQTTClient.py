@@ -36,11 +36,11 @@ class MQTTConnector(MQTTClient):
         raise NotImplementedError()
 
     def publish(self, port_out, payload, **kwargs) -> MQTTMessage:
-        """Takes a fully qualified port, turns it into a "/ports/[port]"-topic and
+        """Takes a fully qualified port, turns it into a "/protobuf/[port]"-topic and
         publishes the payload under this topic"""
         msg_payload = JSONDump(self.serialize(payload), uuid.uuid4())
         return super().publish(
-            f"/ports/{port_out}".replace(".", "/"),
+            f"/protobuf/{port_out}".replace(".", "/"),
             msg_payload,
             **kwargs
         )
@@ -55,8 +55,4 @@ class MQTTConnector(MQTTClient):
 
     def connect(self, host='localhost', port=1883, keepalive=60):
         super().connect(host, port, keepalive)
-        for montithings_port in self.ports_in:
-            topic = f"/connectors/{montithings_port}".replace(".", "/")
-            print(topic, "awaiting connection...")
-            self.subscribe(topic, qos=0)
         self.loop_forever()
