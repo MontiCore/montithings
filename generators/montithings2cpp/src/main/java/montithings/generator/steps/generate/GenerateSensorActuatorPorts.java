@@ -111,8 +111,6 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
           Stream.of(".txt").collect(Collectors.toSet()));
       for (String txtFilename : cppRequirementsFiles) {
         if (txtFilename.equals("cppRequirements")) {
-          System.out.println("###" + state.getHwcPath() + File.separator + pckg.getName() + File.separator + txtFilename
-              + ".txt");
           List<String> fileContent = readTxtLineByLine(new File(
               state.getHwcPath() + File.separator + pckg.getName() + File.separator + txtFilename + ".txt"));
           cppRequirements.addAll(fileContent);

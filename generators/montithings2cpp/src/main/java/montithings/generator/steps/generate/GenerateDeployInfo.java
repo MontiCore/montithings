@@ -66,14 +66,14 @@ public class GenerateDeployInfo extends GeneratorStep {
   }
 
   private JsonArrayBuilder generateTerraformInfo(GeneratorToolState state, String componentType) {
-    Set<File> foundModels = Modelfinder.getModelFiles(TF_EXTENSION, state.getModelPath());
+    Set<File> foundTerraformFiles = Modelfinder.getModelFiles(TF_EXTENSION, state.getHwcPath());
 
-    Log.info("Generating Terraform Base64 String for " + foundModels.size() + " models...", TOOL_NAME);
+    Log.info("Found " + foundTerraformFiles.size() + " tf files", TOOL_NAME);
 
     JsonArrayBuilder terraformInfos = Json.createArrayBuilder();
 
-    for (File model : foundModels) {
-      String fqnModelName = getDotSeperatedFQNModelName(state.getModelPath().getPath(), model.getPath(), TF_EXTENSION);
+    for (File tf : foundTerraformFiles) {
+      String fqnModelName = getDotSeperatedFQNModelName(state.getHwcPath().getPath(), tf.getPath(), TF_EXTENSION);
 
       // Tf file is matched to component, if tf filename starts with componentType
       // E.g. Example.mt <- matched -> Example.tf
@@ -81,11 +81,11 @@ public class GenerateDeployInfo extends GeneratorStep {
       // E.g. Example.mt <- not-matched -> PrefixExample.tf
       // Maintaining it as such allows multiple TF files per component
       if (fqnModelName.startsWith(componentType)) {
-        Log.info("Generate TF Info: " + model.toPath(), TOOL_NAME);
+        Log.info("Generate TF Info: " + tf.toPath(), TOOL_NAME);
 
         try {
           JsonObjectBuilder terraformInfo = Json.createObjectBuilder();
-          String encodedTf = fileToBase64Str(model.toPath());
+          String encodedTf = fileToBase64Str(tf.toPath());
           terraformInfo.add("filename", fqnModelName);
           terraformInfo.add("filecontent", encodedTf);
           terraformInfos.add(terraformInfo);
