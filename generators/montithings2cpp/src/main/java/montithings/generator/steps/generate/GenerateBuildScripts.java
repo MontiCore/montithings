@@ -8,13 +8,15 @@ import montithings.generator.steps.GeneratorStep;
 
 public class GenerateBuildScripts extends GeneratorStep {
 
-  @Override public void action(GeneratorToolState state) {
+  @Override
+  public void action(GeneratorToolState state) {
     for (String model : state.getModels().getMontithings()) {
       ComponentTypeSymbol comp = state.getTool().modelToSymbol(model, state.getSymTab());
       if (ComponentHelper.isApplication(comp, state.getConfig())) {
-        state.getMtg().generateBuildScript(state.getTarget(), comp, state.getHwcPythonScripts());
+        state.getMtg().generateBuildScript(state.getTarget(), comp, state.getHwcPythonScripts(),
+            state.getCppRequirements());
         state.getMtg().generateDockerfileScript(state.getTarget(), comp,
-          state.getExecutableSensorActuatorPorts(), state.getHwcPythonScripts());
+            state.getExecutableSensorActuatorPorts(), state.getHwcPythonScripts());
         state.getMtg().generateCrosscompileScript(state.getTarget(), comp);
       }
     }
