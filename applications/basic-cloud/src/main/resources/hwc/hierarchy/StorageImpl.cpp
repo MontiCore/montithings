@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 #include "StorageImpl.h"
 #include <iostream>
-#include <was/storage_account.h>
+#include <was/storage_account.h> 
 #include <was/blob.h>
 
 namespace montithings {
@@ -16,12 +16,10 @@ StorageImpl::getInitialValues ()
 StorageResult
 StorageImpl::compute (StorageInput input)
 {
-    static const char* storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=montithings;AccountKey=gPt9YsGjMO7DR1nl2XDpd209ErKs9eQSn195ww6rw6JVayz0AiWHrWLfu1qI12tWFlMSinHNaaJPhIO6DXVDiQ==;EndpointSuffix=core.windows.net";
-
     using namespace azure::storage;
 
     // Initialize storage account
-    cloud_storage_account storage_account = cloud_storage_account::parse(storage_connection_string);
+    cloud_storage_account storage_account = cloud_storage_account::parse(_XPLATSTR("DefaultEndpointsProtocol=https;AccountName=montithings;AccountKey=gPt9YsGjMO7DR1nl2XDpd209ErKs9eQSn195ww6rw6JVayz0AiWHrWLfu1qI12tWFlMSinHNaaJPhIO6DXVDiQ==;EndpointSuffix=core.windows.net"));
 
     // Create a blob container
     cloud_blob_client blob_client = storage_account.create_cloud_blob_client();

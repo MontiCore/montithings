@@ -7,13 +7,11 @@ import montithings.generator.config.SplittingMode;
 import montithings.generator.config.TargetPlatform;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -117,6 +115,8 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
         }
       }
     }
+
+    Log.info("Found " + cppRequirements.size() + " cppRequirements", TOOL_NAME);
 
     state.setExecutableSensorActuatorPorts(executableSensorActuatorPorts);
     state.setHwcPythonScripts(hwcPythonScripts);
