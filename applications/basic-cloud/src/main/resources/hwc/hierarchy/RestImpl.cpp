@@ -15,15 +15,14 @@ namespace montithings {
     RestResult
     RestImpl::compute (RestInput input)
     {
-        httplib::Client cli("https://jsonplaceholder.typicode.com");
+        httplib::Client cli("jsonplaceholder.typicode.com");
+
+        auto res = cli.Get("/posts");
         
-        if (auto res = cli.Get("/posts")) {
-            if (res->status == 200) {
+        if (res && res->status == 200) {
             std::cout << res->body << std::endl;
-            }
         } else {
-            auto err = res.error();
-            std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+            std::cout << "HTTP ERROR" << std::endl;
         }
 
         return {};
