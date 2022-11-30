@@ -45,4 +45,5 @@
 
 <#if comp?? && config??>
     <#assign needsRunMethod = (ComponentHelper.isTimesync(comp) && !ComponentHelper.isApplication(comp, config))>
+    <#assign hasNonCppHwc = ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, comp)>
 </#if>

@@ -27,7 +27,8 @@ std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
     ,false, mqttClientInstance, mqttClientLocalInstance));
   </#if>
   <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
-  <#if needsProtobuf>
+
+  <#if needsProtobuf && hasNonCppHwc>
     <#assign protoname = p.getName() + "_protobuf">
     // outgoing protobuf port ${protoname}
     ${protoname} = new MqttPort<Message<${type}>>(modelInstanceNameIn + "/${p.getName()}",

@@ -9,7 +9,7 @@ if (timeMode == EVENTBASED)
 {
 this->compute();
 }
-<#if needsProtobuf>
+<#if needsProtobuf && hasNonCppHwc>
   <#list comp.getOutgoingPorts() as p>
     if(${p.getName()}_protobuf->hasValue(this->uuid)){
       result__cache.set${p.getName()?cap_first} (${p.getName()}_protobuf->getCurrentValue(this->uuid)->getPayload());

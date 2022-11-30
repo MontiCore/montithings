@@ -45,7 +45,7 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
   <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
     <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
     MqttPort<Message<${type}>> *${p.getName()};
-    <#if needsProtobuf>
+    <#if needsProtobuf && hasNonCppHwc>
       MqttPort<Message<${type}>> *${p.getName()}_protobuf;
     </#if>
     <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>

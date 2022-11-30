@@ -24,7 +24,7 @@ std::lock_guard${"<std::mutex>"} guard(compute${computeName}Mutex);
 
 ${compname}Result${Utils.printFormalTypeParameters(comp)} ${Identifier.getResultName()};
 
-<#if needsProtobuf>
+<#if needsProtobuf && hasNonCppHwc>
   result__cache = ${Identifier.getResultName()};
 </#if>
 
@@ -87,7 +87,7 @@ ${tc.includeArgs("template.logtracing.hooks.CheckOutput", [comp, config])}
     ${Identifier.getStateName()}__at__pre = ${Identifier.getStateName()};
     ${Identifier.getResultName()} = ${Identifier.getBehaviorImplName()}.compute${computeName}(${Identifier.getInputName()});
     ${tc.includeArgs("template.logtracing.hooks.CheckInput", [comp, config])}
-    <#if needsProtobuf>
+    <#if needsProtobuf && hasNonCppHwc>
         <#list comp.getIncomingPorts() as p>
             <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
           if(input.get${p.getName()?cap_first}().has_value()){

@@ -13,7 +13,7 @@ ${tc.signature("comp", "config", "existsHWC")}
   void removeOutPort${name?cap_first}(Port<${type}>* ${name});
   void setPort${name?cap_first}ConversionFactor(double ${name}ConversionFactor);
   double getPort${name?cap_first}ConversionFactor();
-  <#if needsProtobuf>
+  <#if needsProtobuf && hasNonCppHwc>
     InOutPort<${type}>* getPort${name?cap_first}_protobuf();
     void addInPort${name?cap_first}_protobuf(Port<${type}>* ${name}_protobuf);
     void removeInPort${name?cap_first}_protobuf(Port<${type}>* ${name}_protobuf);
