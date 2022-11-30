@@ -37,5 +37,6 @@ std::string modelInstanceNameOut = getModelInstanceName(this->getInstanceName())
     ${protoname} = new MqttPort<Message<${type}>>(modelInstanceNameOut + "/${p.getName()}",
     std::unique_ptr<${serializerName}<Message<${type}>>>{new ${serializerName}<Message<${type}>>{}}
     ,true , mqttClientInstance, mqttClientLocalInstance, "/protobuf/");
+    ${protoname}->subscribe(modelInstanceNameOut + "/${p.getName()}");
   </#if>
 </#list>
