@@ -3,7 +3,7 @@ package hierarchy;
 
 component Example {
   Source source;
-  Storage storage;
+  Rest rest;
 
-  source.value -> storage.value;
+  source.value -> rest.value;
 }
