@@ -33,8 +33,8 @@ import montithings.services.iot_manager.server.exception.DeploymentException;
 
 public class AzureCloudTargetProvider implements IDeployTargetProvider {
   private final String deviceId = "azurecloud";
-  private final String baseTfFtl = "templates/azureCloudBaseTf.ftl";
-  private final String containerAppTfFtl = "templates/azureCloudContainerappsTf.ftl";
+  private final String baseFtl = "templates/azureCloudBaseTf.ftl";
+  private final String containerInstancesTf = "templates/azureCloudContainerInstancesTf.ftl";
   private final String storageAccountName = "montithings2"; // Must be unique within Azure
   private final long providerID;
   private final String terraformDeployerUrl;
@@ -62,11 +62,11 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
       tfInfos.add(tfInfo);
     }
 
-    // 3. Generate tf for containerapp executable
+    // 3. Generate tf for container instance executable
     // Map from device to executables on device. For this targetProvider we have
     // only one device. Thus no for loop required
     Map<String, String[]> distributionMap = distribution.getDistributionMap();
-    String filecontent = getContainerappTf(distributionMap.get(deviceId), deploymentInfo, net);
+    String filecontent = getContainerInstanceTf(distributionMap.get(deviceId), deploymentInfo, net);
     tfInfos.add(new TerraformInfo(deviceId, filecontent));
 
     // 4. Deploy all terraform files
@@ -74,13 +74,13 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
     this.applyTerraform(body);
   }
 
-  private String getContainerappTf(String[] modules, DeploymentInfo deplInfo, NetworkInfo netInfo) {
+  private String getContainerInstanceTf(String[] modules, DeploymentInfo deplInfo, NetworkInfo netInfo) {
     GeneratorSetup setup = new GeneratorSetup();
     setup.setTracing(false);
     GeneratorEngine engine = new GeneratorEngine(setup);
-    StringBuilderWriter containerappTf = new StringBuilderWriter();
-    engine.generateNoA(this.containerAppTfFtl, containerappTf, modules, deplInfo, netInfo);
-    return Base64.getEncoder().encodeToString(containerappTf.toString().getBytes());
+    StringBuilderWriter containerinstanceTf = new StringBuilderWriter();
+    engine.generateNoA(this.containerInstancesTf, containerinstanceTf, modules, deplInfo, netInfo);
+    return Base64.getEncoder().encodeToString(containerinstanceTf.toString().getBytes());
   }
 
   private String getBaseTf() {
@@ -88,7 +88,7 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
     setup.setTracing(false);
     GeneratorEngine engine = new GeneratorEngine(setup);
     StringBuilderWriter baseTf = new StringBuilderWriter();
-    engine.generateNoA(this.baseTfFtl, baseTf, storageAccountName);
+    engine.generateNoA(this.baseFtl, baseTf, storageAccountName);
     return Base64.getEncoder().encodeToString(baseTf.toString().getBytes());
   }
 
