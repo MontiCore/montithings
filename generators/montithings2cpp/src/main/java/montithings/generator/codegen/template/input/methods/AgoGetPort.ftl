@@ -13,8 +13,8 @@ for (auto it = dequeOf__${port.getName()?cap_first}.crbegin(); it != dequeOf__${
 {
 if (it->first < now - ago_time)
 {
-return tl::make_optional(it->second);
+return it->second.getPayload();
 }
 }
-return tl::make_optional(dequeOf__${port.getName()?cap_first}.front().second);
+return dequeOf__${port.getName()?cap_first}.front().second.getPayload();
 }
