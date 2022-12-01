@@ -1,9 +1,0 @@
-package hierarchy;
-
-classdiagram Example {
-    package SampleData {
-        class SampleData {
-            String value;
-        }
-    }
-}
