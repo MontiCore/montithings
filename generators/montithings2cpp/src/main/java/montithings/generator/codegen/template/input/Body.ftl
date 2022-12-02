@@ -3,6 +3,8 @@ ${tc.signature("comp", "config", "className")}
 <#include "/template/input/helper/GeneralPreamble.ftl">
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 
+${tc.includeArgs("template.input.declarations.InitStaticVariables", [comp, config])}
+
 <#if !isBatch>
   <#if ComponentHelper.componentHasIncomingPorts(comp)>
     ${tc.includeArgs("template.input.methods.Constructor", [comp, config, existsHWC])}
