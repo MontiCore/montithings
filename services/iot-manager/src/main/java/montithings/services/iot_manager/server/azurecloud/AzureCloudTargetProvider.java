@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.output.StringBuilderWriter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
@@ -29,6 +32,7 @@ import montithings.services.iot_manager.server.data.NetworkInfo;
 import montithings.services.iot_manager.server.data.TerraformInfo;
 import montithings.services.iot_manager.server.distribution.listener.IDeployStatusListener;
 import montithings.services.iot_manager.server.dto.ApplyTerraformDTO;
+import montithings.services.iot_manager.server.dto.ApplyTerraformResDTO;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 
 public class AzureCloudTargetProvider implements IDeployTargetProvider {
@@ -62,24 +66,31 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
       tfInfos.add(tfInfo);
     }
 
-    // 3. Generate tf for container instance executable
+    // 3. Deploy base.tf + container specific resources to get tf outputs needed for
+    // executables
+    ApplyTerraformDTO bodyReq1 = new ApplyTerraformDTO(credentials, tfInfos, storageAccountName, null);
+    ApplyTerraformResDTO res = this.applyTerraform(bodyReq1);
+
+    // 4. Generate tf for container instance executable
     // Map from device to executables on device. For this targetProvider we have
     // only one device. Thus no for loop required
     Map<String, String[]> distributionMap = distribution.getDistributionMap();
-    String filecontent = getContainerInstanceTf(distributionMap.get(deviceId), deploymentInfo, net);
+    String filecontent = getContainerInstanceTf(distributionMap.get(deviceId), deploymentInfo, net, res.getEnvvars());
     tfInfos.add(new TerraformInfo(deviceId, filecontent));
 
-    // 4. Deploy all terraform files
-    ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, tfInfos, storageAccountName);
-    this.applyTerraform(body);
+    // 5. Deploy all terraform files
+    ApplyTerraformDTO bodyReq2 = new ApplyTerraformDTO(credentials, tfInfos, storageAccountName,
+        Optional.of(res.getTfstate()));
+    this.applyTerraform(bodyReq2);
   }
 
-  private String getContainerInstanceTf(String[] modules, DeploymentInfo deplInfo, NetworkInfo netInfo) {
+  private String getContainerInstanceTf(String[] modules, DeploymentInfo deplInfo, NetworkInfo netInfo,
+      Map<String, String> envvars) {
     GeneratorSetup setup = new GeneratorSetup();
     setup.setTracing(false);
     GeneratorEngine engine = new GeneratorEngine(setup);
     StringBuilderWriter containerinstanceTf = new StringBuilderWriter();
-    engine.generateNoA(this.containerInstancesTf, containerinstanceTf, modules, deplInfo, netInfo);
+    engine.generateNoA(this.containerInstancesTf, containerinstanceTf, modules, deplInfo, netInfo, envvars);
     return Base64.getEncoder().encodeToString(containerinstanceTf.toString().getBytes());
   }
 
@@ -92,7 +103,7 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
     return Base64.getEncoder().encodeToString(baseTf.toString().getBytes());
   }
 
-  private void applyTerraform(ApplyTerraformDTO body) throws DeploymentException {
+  private ApplyTerraformResDTO applyTerraform(ApplyTerraformDTO body) throws DeploymentException {
     HttpURLConnection connection = null;
 
     try {
@@ -122,12 +133,15 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
       wr.close();
 
       // 4. Parse response
-      System.out.println("Apply terraform. Parse response");
       if (connection.getResponseCode() != 201) {
         String errorMessage = "Terraform apply failed with status code " + connection.getResponseCode()
             + " and error message: " + getResponseStr(connection);
         throw new DeploymentException(errorMessage);
       }
+
+      // 5. Parse response
+      System.out.println("Parse response");
+      return getResponse(connection);
     } catch (IOException e) {
       e.printStackTrace();
       throw new DeploymentException(e.getMessage());
@@ -136,6 +150,11 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
         connection.disconnect();
       }
     }
+  }
+
+  private ApplyTerraformResDTO getResponse(HttpURLConnection connection) throws IOException {
+    String jsonString = getResponseStr(connection);
+    return new ObjectMapper().readValue(jsonString, ApplyTerraformResDTO.class);
   }
 
   private String getResponseStr(HttpURLConnection connection) throws IOException {

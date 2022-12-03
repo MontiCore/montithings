@@ -1,6 +1,7 @@
 package montithings.services.iot_manager.server.dto;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,11 +14,14 @@ public class ApplyTerraformDTO {
   private List<TerraformInfo> files;
   private AzureCredentials credentials;
   private String storageAccountName;
+  private Optional<String> tfstate;
 
-  public ApplyTerraformDTO(AzureCredentials credentials, List<TerraformInfo> files, String storageAccountName) {
+  public ApplyTerraformDTO(AzureCredentials credentials, List<TerraformInfo> files, String storageAccountName,
+      Optional<String> tfstate) {
     this.files = files;
     this.credentials = credentials;
     this.storageAccountName = storageAccountName;
+    this.tfstate = tfstate;
   }
 
   public List<TerraformInfo> getFiles() {
@@ -30,6 +34,10 @@ public class ApplyTerraformDTO {
 
   public String getStorageAccountName() {
     return storageAccountName;
+  }
+
+  public Optional<String> getTfstate() {
+    return tfstate;
   }
 
   public String toJson() throws JsonProcessingException {

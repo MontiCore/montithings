@@ -19,7 +19,7 @@ namespace montithings {
         httplib::Client2 cli("https://api.cognitive.microsofttranslator.com");
 
         httplib::Headers headers = {
-            { "Ocp-Apim-Subscription-Key", "1dfcb98ff33b41f9bf375d25d574bc47" },
+            { "Ocp-Apim-Subscription-Key", std::getenv("primarykey") },
             { "Ocp-Apim-Subscription-Region", "germanywestcentral" }
         };
 
