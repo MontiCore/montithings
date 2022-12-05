@@ -6,6 +6,10 @@ ${tc.signature("comp", "config", "existsHWC")}
 #include "${className}.h"
 #include "${compname}.h"
 
+<#if ComponentHelper.isDSLComponent(comp)>
+  //DSL Recognized!!!
+</#if>
+
 ${Utils.printNamespaceStart(comp)}
 <#if !Utils.hasTypeParameter(comp)>
   ${tc.includeArgs("template.impl.Body", [comp, config, existsHWC])}

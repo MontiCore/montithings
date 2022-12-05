@@ -249,6 +249,17 @@ public class ComponentHelper {
   }
 
   /**
+   * Returns True iff the given component is an interface component
+   */
+  public static boolean isDSLComponent(ComponentTypeSymbol comp) { 
+    if (comp.getAstNode() instanceof ASTMTComponentType) {
+      ASTMTComponentType astmtComponentType = (ASTMTComponentType) comp.getAstNode();
+      return astmtComponentType.getMTComponentModifier().isDsl();
+    }
+    return false;
+  }
+
+  /**
    * Get the names of all types generated for the interfaces implemented by the given component
    */
   public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component,

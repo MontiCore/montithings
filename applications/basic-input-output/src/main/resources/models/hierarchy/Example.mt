@@ -1,7 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package hierarchy;
 
-component Example {
+dsl component Example {
   Source source;
   Sink sink;
 
