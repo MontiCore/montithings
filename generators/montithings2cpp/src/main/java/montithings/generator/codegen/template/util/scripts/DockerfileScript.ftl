@@ -76,7 +76,7 @@ RUN ./build.sh ${comp.getFullName()}
             <#if brokerIsMQTT>
             ADD deployment-config.json /.montithings/deployment-config.json
 
-            RUN apk add --update-cache mosquitto-libs++
+            RUN apk add --update-cache mosquitto-libs++ libressl-dev
             </#if>
 
             COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
