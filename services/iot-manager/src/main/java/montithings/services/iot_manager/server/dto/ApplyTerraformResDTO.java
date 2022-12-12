@@ -6,6 +6,11 @@ public class ApplyTerraformResDTO {
   Map<String, String> envvars;
   String tfstate;
 
+  // Default constructor required for Jackson desirialization
+  public ApplyTerraformResDTO() {
+    super();
+  }
+
   public ApplyTerraformResDTO(Map<String, String> envvars, String tfstate) {
     this.envvars = envvars;
     this.tfstate = tfstate;

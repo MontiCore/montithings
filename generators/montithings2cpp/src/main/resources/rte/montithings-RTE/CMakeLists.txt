@@ -140,7 +140,7 @@ if (NOT EXCLUDE_COMM_MANAGER)
 endif ()
 
 add_subdirectory(cpp-base64)
-target_link_libraries(MontiThingsRTE cpp-base64)
+target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto)
 
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)

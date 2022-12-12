@@ -21,11 +21,11 @@ resource "azurerm_container_group" "montithingsci" {
     image    = "${networkInfo.getDockerRepositoryPrefix()}${deploymentInfo.getInstanceInfo(moduleName).getComponentType()?lower_case}:latest"
     cpu      = "0.5"
     memory   = "1.5"
-    commands = [\"sh\",\"entrypoint.sh\",\"-n\", \"${moduleName}\", \"--brokerHostname\", \"${networkInfo.getMqttHost()}\", \"--brokerPort\", \"${networkInfo.getMqttPort()?c}\", \"--localBrokerPort\", \"4230\"]
+    commands = ["sh","entrypoint.sh","-n", "${moduleName}", "--brokerHostname", "${networkInfo.getMqttHost()}", "--brokerPort", "${networkInfo.getMqttPort()?c}", "--localHostname", "${networkInfo.getMqttHost()}", "--localBrokerPort", "${networkInfo.getMqttPort()?c}"]
     
     environment_variables = {
       <#list envvars?keys as prop>
-        "${prop}" = "${envvars.get(prop)}"
+        "${prop}" = "${envvars[prop]}"
       </#list>
     }
 
@@ -33,6 +33,8 @@ resource "azurerm_container_group" "montithingsci" {
       port     = 8${moduleName?index}
       protocol = "TCP"
     }
-  }<#sep>
+  }
+  <#sep>
   </#list>
+
 }

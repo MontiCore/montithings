@@ -40,7 +40,7 @@ public class HttpAPIController {
       Spark.put("/providers", this::handlePutProviders);
 
       return true;
-    } catch(Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -52,7 +52,7 @@ public class HttpAPIController {
       String strJson = request.body();
       int suggestionIndex = 0;
       String suggestionIndexStr = request.queryParams("index");
-      if(suggestionIndexStr != null) {
+      if (suggestionIndexStr != null) {
         suggestionIndex = Integer.parseInt(suggestionIndexStr);
       }
 
@@ -60,7 +60,7 @@ public class HttpAPIController {
       DeploymentConfiguration newConfig = manager.computeSuggestion(config, suggestionIndex);
 
       return newConfig.getConstraintsAsJson();
-    } catch(JsonParseException | DeploymentException | NumberFormatException e) {
+    } catch (JsonParseException | DeploymentException | NumberFormatException e) {
       /// e.printStackTrace();
       return RESPONSE_JSON_FAILED;
     }
@@ -74,8 +74,7 @@ public class HttpAPIController {
       String strJson = request.body();
       DeploymentConfiguration config = DeploymentConfiguration.fromJson(strJson);
       success = manager.validate(config);
-    }
-    catch(Throwable e) {
+    } catch (Throwable e) {
       e.printStackTrace();
       success = false;
     }
@@ -95,8 +94,7 @@ public class HttpAPIController {
           manager.updateDeployment();
           return RESPONSE_JSON_SUCCESS;
         }
-      }
-      catch (JsonParseException | DeploymentException e) {
+      } catch (JsonParseException | DeploymentException e) {
         e.printStackTrace();
       }
     }
@@ -119,7 +117,7 @@ public class HttpAPIController {
       manager.setTargetProvider(provider);
 
       return RESPONSE_JSON_SUCCESS;
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       resp.status(400);
       return RESPONSE_JSON_FAILED;
@@ -131,16 +129,20 @@ public class HttpAPIController {
       String bodyStr = req.body();
       JsonElement json = JsonParser.parseString(bodyStr);
       manager.getNetworkInfo().setMqttHost(json.getAsJsonObject().get("hostname").getAsString());
-      System.out.println("Set MQTT Hostname: "+manager.getNetworkInfo().getMqttHost());
+      System.out.println("Set MQTT Hostname: " + manager.getNetworkInfo().getMqttHost());
       manager.getNetworkInfo().setMqttPort(Integer.parseInt(json.getAsJsonObject().get("port").getAsString()));
-      System.out.println("Set MQTT Port: "+manager.getNetworkInfo().getMqttPort());
+      System.out.println("Set MQTT Port: " + manager.getNetworkInfo().getMqttPort());
       manager.getNetworkInfo().setMqttUsername(json.getAsJsonObject().get("username").getAsString());
-      System.out.println("Set MQTT username: "+manager.getNetworkInfo().getMqttUsername());
+      System.out.println("Set MQTT username: " + manager.getNetworkInfo().getMqttUsername());
       manager.getNetworkInfo().setMqttPassword(json.getAsJsonObject().get("password").getAsString());
-      System.out.println("Set MQTT password: "+manager.getNetworkInfo().getMqttPassword());
+      System.out.println("Set MQTT password: " + manager.getNetworkInfo().getMqttPassword());
+      if (json.getAsJsonObject().has("secure")) {
+        manager.getNetworkInfo().setMqttSecure(json.getAsJsonObject().get("secure").getAsBoolean());
+        System.out.println("Set MQTT secure: " + manager.getNetworkInfo().getMqttSecure());
+      }
 
       mqttSettingsListener.onMqttSettingsChanged(manager.getNetworkInfo());
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       resp.status(400);
       return RESPONSE_JSON_FAILED;
@@ -153,12 +155,12 @@ public class HttpAPIController {
       String bodyStr = req.body();
       JsonElement json = JsonParser.parseString(bodyStr);
       manager.getNetworkInfo().setDockerRepositoryPrefix(json.getAsJsonObject().get("hostname").getAsString());
-      System.out.println("Set docker registry: "+manager.getNetworkInfo().getDockerRepositoryPrefix());
+      System.out.println("Set docker registry: " + manager.getNetworkInfo().getDockerRepositoryPrefix());
       manager.getNetworkInfo().setDockerRepositoryUsername(json.getAsJsonObject().get("username").getAsString());
-      System.out.println("Set docker registry username: "+manager.getNetworkInfo().getDockerRepositoryUsername());
+      System.out.println("Set docker registry username: " + manager.getNetworkInfo().getDockerRepositoryUsername());
       manager.getNetworkInfo().setDockerRepositoryPassword(json.getAsJsonObject().get("password").getAsString());
-      System.out.println("Set docker registry password: "+manager.getNetworkInfo().getDockerRepositoryPassword());
-    } catch(Exception e) {
+      System.out.println("Set docker registry password: " + manager.getNetworkInfo().getDockerRepositoryPassword());
+    } catch (Exception e) {
       e.printStackTrace();
       resp.status(400);
       return RESPONSE_JSON_FAILED;

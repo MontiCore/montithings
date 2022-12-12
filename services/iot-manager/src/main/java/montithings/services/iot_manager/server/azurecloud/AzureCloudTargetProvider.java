@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.io.output.StringBuilderWriter;
 
@@ -39,7 +38,7 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
   private final String deviceId = "azurecloud";
   private final String baseFtl = "templates/azureCloudBaseTf.ftl";
   private final String containerInstancesTf = "templates/azureCloudContainerInstancesTf.ftl";
-  private final String storageAccountName = "montithings2"; // Must be unique within Azure
+  private final String storageAccountName = "montithings3"; // Must be unique within Azure
   private final long providerID;
   private final String terraformDeployerUrl;
   private final AzureCredentials credentials;
@@ -79,8 +78,7 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
     tfInfos.add(new TerraformInfo(deviceId, filecontent));
 
     // 5. Deploy all terraform files
-    ApplyTerraformDTO bodyReq2 = new ApplyTerraformDTO(credentials, tfInfos, storageAccountName,
-        Optional.of(res.getTfstate()));
+    ApplyTerraformDTO bodyReq2 = new ApplyTerraformDTO(credentials, tfInfos, storageAccountName, res.getTfstate());
     this.applyTerraform(bodyReq2);
   }
 
