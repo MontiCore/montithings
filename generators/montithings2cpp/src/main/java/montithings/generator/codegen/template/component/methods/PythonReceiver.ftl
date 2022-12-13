@@ -5,7 +5,7 @@ ${tc.signature("comp","config","className")}
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
-    uint16_t port = 8081
+    uint16_t port = 8081;
     int server_fd, new_socket, pid; 
     long valread;
     struct sockaddr_in address;
@@ -13,8 +13,8 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-      perror("In sockets");
-      exit(EXIT_FAILURE);
+    perror("In sockets");
+    exit(EXIT_FAILURE);
     }
 
     address.sin_family = AF_INET;
@@ -56,12 +56,12 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
         strcpy(buffer_copy,buffer);
 
         if(buffer_copy[0] == 'P' && buffer_copy[1] == 'Y' && buffer_copy[2] == ' '){
-          buffer_copy = buffer_copy + 3;
-          printf("PY message: %s", buffer_copy);
-          std::fstream pyFile;
-          pyFile.open("code.py",std::ios_base::out);
-          pyFile << buffer_copy;
-          pyFile.close();
+        buffer_copy = buffer_copy + 3;
+        printf("PY message: %s", buffer_copy);
+        std::fstream pyFile;
+        pyFile.open("code.py",std::ios_base::out);
+        pyFile << buffer_copy;
+        pyFile.close();
         }
         else{
             printf("Not a Py File: %s", buffer_copy);
@@ -76,15 +76,4 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
     
     }
     close(server_fd);
-    }
-
-
-
-
-
-
-    void Sink::stop()
-    {
-    this->stopSignalReceived = true;
-    this->threadJoin ();
 }
