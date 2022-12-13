@@ -1,0 +1,6 @@
+package hierarchy;
+
+testdiagram ExampleTest for Example {
+  delay 500 ms;
+  source.value -> sink.value : 1;
+}

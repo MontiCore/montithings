@@ -12,4 +12,8 @@ threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(com
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::run${ComponentHelper.getEveryBlockName(comp, everyBlock)}, this});
 </#list>
+
+<#if ComponentHelper.isDSLComponent(comp)>
+  threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::python_receiver, this});
+</#if>
 }

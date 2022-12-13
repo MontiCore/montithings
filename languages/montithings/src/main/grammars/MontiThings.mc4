@@ -44,7 +44,7 @@ grammar MontiThings extends MontiArc,
      * behavior.
      * See [Wor16 Sec. 4.1.1]
      */
-    MTComponentModifier =  ["interface"]? ["dsl"]? "component";
+    MTComponentModifier =  ["interface"]? "component";
 
     /**
      * An additional keyword for components, which marks a component as

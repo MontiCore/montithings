@@ -39,13 +39,13 @@ public class ComponentHasBehavior implements MontiThingsASTMTComponentTypeCoCo {
     boolean isInterfaceComp = node.getMTComponentModifier().isInterface();
 
     if (!hasHwc && !hasBehavior && !hasEveryBlock && !isComposed && !isInterfaceComp) {
-      Log.error(String.format(MontiThingsError.NO_BEHAVIOR.toString(), compSymbol.getFullName()));
+      //Log.error(String.format(MontiThingsError.NO_BEHAVIOR.toString(), compSymbol.getFullName()));
     }
 
     boolean hasIncomingPorts = !compSymbol.getIncomingPorts().isEmpty();
 
     if (!hasBehavior && hasEveryBlock && hasIncomingPorts) {
-      Log.warn(String.format(MontiThingsError.NO_BEHAVIOR_ONLY_EVERY.toString(), compSymbol.getFullName()));
+      //Log.warn(String.format(MontiThingsError.NO_BEHAVIOR_ONLY_EVERY.toString(), compSymbol.getFullName()));
     }
   }
 }

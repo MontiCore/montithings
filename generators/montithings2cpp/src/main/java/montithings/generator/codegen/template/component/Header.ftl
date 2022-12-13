@@ -71,6 +71,11 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   </#list>
 </#if>
 
+<#if ComponentHelper.isDSLComponent(comp)>
+  void python_receiver();
+</#if>
+
+
 // if set to true, loop-threads will stop after their current iteration
 bool stopSignalReceived = false;
 
@@ -95,6 +100,8 @@ ${TypesPrinter.printConstructorArguments(comp)});
   // sensor actuator ports require cmd args in order to set up their DDS clients
   void setDDSCmdArgs (int argc, char *argv[]);
 </#if>
+
+
 
 <#if comp.isDecomposed()>
   <#if !(splittingModeDisabled) && brokerDisabled>
