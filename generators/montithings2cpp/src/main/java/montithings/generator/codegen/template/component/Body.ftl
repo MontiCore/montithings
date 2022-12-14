@@ -17,6 +17,7 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
   <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
+    ${tc.includeArgs("template.component.methods.SendConnectionString", [comp, config, className])}
   </#if>
 
   <#if splittingModeDisabled>

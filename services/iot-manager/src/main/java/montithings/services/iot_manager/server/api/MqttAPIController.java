@@ -18,11 +18,11 @@ import java.util.Map.Entry;
 
 /**
  * Hosts an API for controlling a {@link DeploymentManager}.
- * */
+ */
 public class MqttAPIController implements IDeployStatusListener, IMqttSettingsListener {
-  
+
   private static final String MQTT_PREFIX = "deploymngr";
-  
+
   private static final String TOPIC_SETCONFIG_REQUEST = MQTT_PREFIX + "/setConfig/request";
   private static final String TOPIC_SETCONFIG_RESPONSE = MQTT_PREFIX + "/setConfig/response";
   private static final String TOPIC_SETINFO_REQUEST = MQTT_PREFIX + "/setInfo/request";
@@ -32,16 +32,18 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
   private static final String TOPIC_UPDATEDDEPLOYMENT = MQTT_PREFIX + "/updatedDeployment";
   private static final String TOPIC_UPDATE_DEVICES = MQTT_PREFIX + "/updateDevice";
   private static final String TOPIC_UPDATE_STATE = MQTT_PREFIX + "/updateState";
-  
+  private static final String TOPIC_DYNAMICS = MQTT_PREFIX + "/dynamics";
+  private static final String TOPIC_PORTS_INJECT = MQTT_PREFIX + "/portsInject";
+
   private final DeploymentManager manager;
-  
+
   private MqttClient mqtt;
-  
+
   public MqttAPIController(DeploymentManager manager) {
     this.manager = manager;
     this.manager.setStatusListener(this);
   }
-  
+
   public boolean start(NetworkInfo net) {
     // Prepare MQTT
     try {
@@ -54,51 +56,52 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
       if (!net.getMqttPassword().isEmpty()) {
         opts.setPassword(net.getMqttPassword().toCharArray());
       }
-      while(true) {
+      while (true) {
         try {
           this.mqtt.connect(opts);
           break;
-        } catch(MqttException e) {
-          System.err.println("Failed to connect to MQTT broker \""+net.getMqttURI()+"\". Trying again in 3 seconds...");
+        } catch (MqttException e) {
+          System.err
+              .println("Failed to connect to MQTT broker \"" + net.getMqttURI() + "\". Trying again in 3 seconds...");
           try {
             Thread.sleep(3_000);
+          } catch (InterruptedException e1) {
+            e1.printStackTrace();
           }
-          catch (InterruptedException e1) { e1.printStackTrace(); }
         }
       }
-      
+
       this.mqtt.subscribe(TOPIC_SETCONFIG_REQUEST, this::handleSetDeployConfig);
       this.mqtt.subscribe(TOPIC_SETINFO_REQUEST, this::handleSetDeployInfo);
       this.mqtt.subscribe(TOPIC_UPDATEDEPLOYMENT_REQUEST, this::handleUpdateDeployment);
-      
+      this.mqtt.subscribe(TOPIC_DYNAMICS, this::handleReceiveConnectionString);
+
       // notify others that we're online
       this.mqtt.publish(TOPIC_UPDATE_STATE, new MqttMessage());
-      
+
       // update devices
-      for(DeployClient c : manager.getTargetProvider().getClients()) {
+      for (DeployClient c : manager.getTargetProvider().getClients()) {
         sendDeviceUpdate(c);
       }
-    }
-    catch (MqttException e) {
+    } catch (MqttException e) {
       e.printStackTrace();
       return false;
     }
-    
+
     return true;
   }
-  
+
   private void publishSuccess(String topic, boolean success) {
     try {
-      this.mqtt.publish(topic, new MqttMessage(("{\"success\":"+success+"}").getBytes(StandardCharsets.UTF_8)));
-    }
-    catch (MqttException e) {
+      this.mqtt.publish(topic, new MqttMessage(("{\"success\":" + success + "}").getBytes(StandardCharsets.UTF_8)));
+    } catch (MqttException e) {
       e.printStackTrace();
     }
   }
-  
+
   private void handleSetDeployConfig(String topic, MqttMessage message) {
     byte[] data = message.getPayload();
-    if(data != null) {
+    if (data != null) {
       String strJson = new String(data, StandardCharsets.UTF_8);
       try {
         DeploymentConfiguration config = DeploymentConfiguration.fromJson(strJson);
@@ -107,15 +110,17 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
         manager.setDeploymentConfig(config);
         publishSuccess(TOPIC_SETCONFIG_RESPONSE, true);
         return;
-      } catch(JsonParseException | DeploymentException e) { e.printStackTrace(); }
+      } catch (JsonParseException | DeploymentException e) {
+        e.printStackTrace();
+      }
     }
     // This is only executed when the above does not succeed in any way.
     publishSuccess(TOPIC_SETCONFIG_RESPONSE, false);
   }
-  
+
   private void handleSetDeployInfo(String topic, MqttMessage message) {
     byte[] data = message.getPayload();
-    if(data != null) {
+    if (data != null) {
       String strJson = new String(data, StandardCharsets.UTF_8);
       try {
         JsonObject jo = JsonParser.parseString(strJson).getAsJsonObject();
@@ -123,32 +128,45 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
         manager.setDeploymentInfo(deployInfo);
         publishSuccess(TOPIC_SETINFO_RESPONSE, true);
         return;
-      } catch(JsonParseException | ClassCastException | DeploymentException e) {
+      } catch (JsonParseException | ClassCastException | DeploymentException e) {
         e.printStackTrace();
       }
     }
     // This is only executed when the above does not succeed in any way.
     publishSuccess(TOPIC_SETINFO_RESPONSE, false);
   }
-  
+
   private void handleUpdateDeployment(String topic, MqttMessage message) {
     try {
       manager.updateDeployment();
       publishSuccess(TOPIC_UPDATEDEPLOYMENT_RESPONSE, true);
-    }
-    catch (DeploymentException e) {
+    } catch (DeploymentException e) {
       publishSuccess(TOPIC_UPDATEDEPLOYMENT_RESPONSE, false);
     }
   }
-  
+
+  private void handleReceiveConnectionString(String topic, MqttMessage message) {
+    sendPortsInject(message.getPayload(), "hierarchy", "Example", true);
+  }
+
   private void sendDeviceUpdate(DeployClient client) {
     String jsonDevice = new GsonBuilder().create().toJson(client);
     try {
       MqttMessage msg = new MqttMessage(jsonDevice.getBytes(StandardCharsets.UTF_8));
       msg.setRetained(true);
       this.mqtt.publish(TOPIC_UPDATE_DEVICES, msg);
+    } catch (MqttException e) {
+      e.printStackTrace();
     }
-    catch (MqttException e) {
+  }
+
+  private void sendPortsInject(byte[] connString, String packageName, String componentName, boolean connect) {
+    try {
+      MqttMessage msg = new MqttMessage(connString);
+      String topic = String.join("/", TOPIC_PORTS_INJECT, packageName, componentName,
+          connect ? "connect" : "disconnect");
+      this.mqtt.publish(topic, msg);
+    } catch (MqttException e) {
       e.printStackTrace();
     }
   }
@@ -168,32 +186,30 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
     // Send array of deployment assignments representing the new distribution.
     JsonArray jarr = new JsonArray();
     Gson gson = new Gson();
-    for(Entry<String,String[]> e : dist.getDistributionMap().entrySet()) {
+    for (Entry<String, String[]> e : dist.getDistributionMap().entrySet()) {
       jarr.add(gson.toJsonTree(new DeploymentAssignmentDTO(e.getKey(), e.getValue())));
     }
     try {
       MqttMessage msg = new MqttMessage(jarr.toString().getBytes(StandardCharsets.UTF_8));
       msg.setRetained(true);
       this.mqtt.publish(TOPIC_UPDATEDDEPLOYMENT, msg);
-    }
-    catch (MqttException e) {
+    } catch (MqttException e) {
       e.printStackTrace();
     }
   }
 
-  @Override public void onMqttSettingsChanged(NetworkInfo networkInfo) {
+  @Override
+  public void onMqttSettingsChanged(NetworkInfo networkInfo) {
     // Connect from current MQTT connection
     if (this.mqtt.isConnected()) {
       try {
         this.mqtt.disconnect(5);
-      }
-      catch (MqttException e) {
+      } catch (MqttException e) {
         e.printStackTrace();
         try {
           System.out.println("Could not disconnect from MQTT, disconnecting forcibly");
           this.mqtt.disconnectForcibly();
-        }
-        catch (MqttException ex) {
+        } catch (MqttException ex) {
           System.out.println("Could not forcibly disconnect from MQTT!");
           throw new RuntimeException(ex);
         }

@@ -33,6 +33,10 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
       LOG(INFO) << "Co${comp.getName()} Connection String: " << str;
     }
     }
+    if (sendConnectionStr.getValue ())
+    {
+      cmp.sendConnectionString ("/dynamics", cmp.getConnectionString${TypesHelper.getComponentTypePrefix() + comp.getName()}())
+    }
     <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
       if (printConnectionStr${interface}.getValue ())
       {
@@ -44,6 +48,10 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
       ${tc.includeArgs("template.deploy.helper.GetConnectString", [comp, config, interface, false])}
       LOG(INFO) << "${interface} Connection String: " << str;
       }
+      }
+      if (sendConnectionStr${interface}.getValue ())
+      {
+        cmp.sendConnectionString ("/dynamics", cmp.getConnectionString${interface}())
       }
     </#list>
   </#if>
