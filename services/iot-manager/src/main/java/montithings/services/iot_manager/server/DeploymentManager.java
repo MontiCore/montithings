@@ -1,6 +1,8 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
+import montithings.services.iot_manager.TfResourceManager;
+import montithings.services.iot_manager.server.azurecloud.AzureCloudTargetProvider;
 import montithings.services.iot_manager.server.data.*;
 import montithings.services.iot_manager.server.data.constraint.processor.ConstraintContext;
 import montithings.services.iot_manager.server.data.constraint.processor.ConstraintPipeline;
@@ -40,6 +42,9 @@ public class DeploymentManager implements IDeployStatusListener {
   // event handling
   protected IDeployStatusListener listener = new VoidDeployStatusListener();
 
+  // cloud resources
+  protected TfResourceManager tfResourceManager;
+
   public DeploymentManager(File workingDir, NetworkInfo network) {
     this.workingDir = workingDir;
     this.network = network;
@@ -47,6 +52,9 @@ public class DeploymentManager implements IDeployStatusListener {
 
   public void setDeploymentInfo(DeploymentInfo info) {
     this.currentDeploymentInfo = info;
+    if (this.tfResourceManager != null) {
+      this.tfResourceManager.setComponentResources(info);
+    }
   }
 
   public void setDeploymentConfig(DeploymentConfiguration config) {
@@ -59,6 +67,13 @@ public class DeploymentManager implements IDeployStatusListener {
 
   public void setStatusListener(IDeployStatusListener listener) {
     this.listener = listener;
+  }
+
+  public void setTfResourceManager(TfResourceManager tfResourceManager) {
+    this.tfResourceManager = tfResourceManager;
+    if (this.targetProvider instanceof AzureCloudTargetProvider) {
+      ((AzureCloudTargetProvider) this.targetProvider).setTfResourceManager(tfResourceManager);
+    }
   }
 
   /**
@@ -76,6 +91,9 @@ public class DeploymentManager implements IDeployStatusListener {
         dmap.put(client.getClientID(), new String[0]);
       }
       this.onDeploymentUpdated(new Distribution(dmap));
+      if (tfResourceManager != null) {
+        tfResourceManager.destroyAll();
+      }
       targetProvider.deploy(new Distribution(dmap), new DeploymentInfo(), network);
       this.currentDeploymentConfig = null;
       this.currentDeploymentInfo = null;
@@ -240,6 +258,9 @@ public class DeploymentManager implements IDeployStatusListener {
   }
 
   protected void deploy(Distribution distribution, DeploymentInfo deploymentInfo) throws DeploymentException {
+    if (tfResourceManager != null) {
+      tfResourceManager.apply(distribution);
+    }
     targetProvider.deploy(distribution, deploymentInfo, network);
   }
 
@@ -247,6 +268,9 @@ public class DeploymentManager implements IDeployStatusListener {
     // Close old target provider
     try {
       this.terminate();
+      if (tfResourceManager != null) {
+        tfResourceManager.destroyComponentResources();
+      }
       this.targetProvider.close();
     } catch (DeploymentException e) {
       e.printStackTrace();
