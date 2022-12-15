@@ -12,8 +12,8 @@ import de.monticore.generating.GeneratorSetup;
 
 import java.util.Collection;
 
-import montithings.services.iot_manager.TfResourceManager;
 import montithings.services.iot_manager.server.IDeployTargetProvider;
+import montithings.services.iot_manager.server.TfResourceManager;
 import montithings.services.iot_manager.server.data.DeployClient;
 import montithings.services.iot_manager.server.data.DeploymentInfo;
 import montithings.services.iot_manager.server.data.Distribution;

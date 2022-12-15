@@ -1,7 +1,6 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
-import montithings.services.iot_manager.TfResourceManager;
 import montithings.services.iot_manager.server.azurecloud.AzureCloudTargetProvider;
 import montithings.services.iot_manager.server.data.*;
 import montithings.services.iot_manager.server.data.constraint.processor.ConstraintContext;

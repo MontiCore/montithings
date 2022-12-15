@@ -1,4 +1,4 @@
-package montithings.services.iot_manager;
+package montithings.services.iot_manager.server;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.output.StringBuilderWriter;
 
@@ -34,6 +35,7 @@ import montithings.services.iot_manager.server.exception.DeploymentException;
  * terraform-deployer service
  */
 public class TfResourceManager {
+  // Ensure singleton instance for state management
   private static final TfResourceManager tfResourceManager = new TfResourceManager();
 
   // Token to authenticate against terraform-deployer service
@@ -42,14 +44,14 @@ public class TfResourceManager {
   private final Duration timeout = Duration.ofMinutes(15);
   // Path to base.tf freemarker template
   private final String baseFtl = "templates/azureCloudBaseTf.ftl";
-  // Storage account name where terraform-deployer uploads tfState
-  // Must be unique within Azure
-  private final String storageAccountName = "montithings3";
 
   // Url to terraform-deployer service
   private String terraformDeployerUrl;
   // Credentials to authenticate against Azure cloud
   private AzureCredentials credentials;
+  // Storage account name where terraform-deployer uploads tfState
+  // Must be unique within Azure
+  private String storageAccountName;
   // List of all component resources from DeploymentInfo
   private Set<TerraformInfo> componentResources = new HashSet<TerraformInfo>();
   // List of resources that were applied
@@ -74,6 +76,10 @@ public class TfResourceManager {
     this.terraformDeployerUrl = terraformDeployerUrl;
   }
 
+  public void setStorageAccountName(String storageAccountName) {
+    this.storageAccountName = storageAccountName;
+  }
+
   public Map<String, String> getEnvvars() {
     return envvars;
   }
@@ -84,6 +90,8 @@ public class TfResourceManager {
    * @param deploymentInfo
    */
   public void setComponentResources(DeploymentInfo deploymentInfo) {
+    this.componentResources.clear();
+
     for (TerraformInfo tfInfo : deploymentInfo.getTerraformInfos()) {
       this.componentResources.add(tfInfo);
     }
@@ -215,19 +223,57 @@ public class TfResourceManager {
    * @throws DeploymentException
    */
   private void apply() throws DeploymentException {
-    // 1. Apply only, if resources changed
+    // 1. Ensure all required fields are set via UI
+    preCheckApply();
+
+    // 2. Apply only, if resources changed
     if (appliedResources.equals(toApplyResources)) {
       return;
     }
 
-    // 2. Construct POST body from toApplyResources
+    // 3. Construct POST body from toApplyResources
     ApplyTerraformDTO body = new ApplyTerraformDTO(credentials, new ArrayList<>(toApplyResources), storageAccountName);
 
-    // 3. Apply terraform via "terraform-deployer" service
-    execApplyTerraform(body);
+    // 4. Apply terraform via "terraform-deployer" service
+    ApplyTerraformResDTO res = execApplyTerraform(body);
 
-    // 4. Update applied resources
+    // 5. Update applied resources
     appliedResources.addAll(toApplyResources);
+
+    // 6. Upsert environment variables
+    upsertEnvVars(res.getEnvvars());
+  }
+
+  /**
+   * Check that terraform-deployer service target url as well as credentials are
+   * set
+   * 
+   * @throws DeploymentException
+   */
+  private void preCheckApply() throws DeploymentException {
+    if (terraformDeployerUrl == null) {
+      throw new DeploymentException("Terraform Deployer URL not set");
+    }
+
+    if (credentials == null) {
+      throw new DeploymentException("Azure credentials not set");
+    }
+
+    if (storageAccountName == null) {
+      throw new DeploymentException("Storage account name not set");
+    }
+  }
+
+  /**
+   * Adds new env vars to this.envvars. If an env var with key already exists, it
+   * overrides with new value
+   * 
+   * @param newEnvVars
+   */
+  private void upsertEnvVars(Map<String, String> newEnvVars) {
+    for (Entry<String, String> e : newEnvVars.entrySet()) {
+      this.envvars.put(e.getKey(), e.getValue());
+    }
   }
 
   /**
@@ -276,9 +322,6 @@ public class TfResourceManager {
    * @throws DeploymentException
    */
   private ApplyTerraformResDTO execApplyTerraform(ApplyTerraformDTO body) throws DeploymentException {
-    // Checks preceonditions
-    preCheckApply();
-
     HttpURLConnection connection = null;
 
     try {
@@ -324,22 +367,6 @@ public class TfResourceManager {
       if (connection != null) {
         connection.disconnect();
       }
-    }
-  }
-
-  /**
-   * Check that terraform-deployer service target url as well as credentials are
-   * set
-   * 
-   * @throws DeploymentException
-   */
-  private void preCheckApply() throws DeploymentException {
-    if (terraformDeployerUrl == null) {
-      throw new DeploymentException("Terraform Deployer URL not set");
-    }
-
-    if (credentials == null) {
-      throw new DeploymentException("Azure credentials not set");
     }
   }
 

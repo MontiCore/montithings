@@ -5,10 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
-import montithings.services.iot_manager.TfResourceManager;
 import montithings.services.iot_manager.server.DeployTargetProviderParser;
 import montithings.services.iot_manager.server.DeploymentManager;
 import montithings.services.iot_manager.server.IDeployTargetProvider;
+import montithings.services.iot_manager.server.TfResourceManager;
 import montithings.services.iot_manager.server.azurecloud.AzureCredentials;
 import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 import montithings.services.iot_manager.server.exception.DeploymentException;
@@ -176,6 +176,7 @@ public class HttpAPIController {
       String bodyStr = req.body();
       JsonElement json = JsonParser.parseString(bodyStr);
       String terraformDeployerUrl = json.getAsJsonObject().get("terraformDeployerUrl").getAsString();
+      String storageAccountName = json.getAsJsonObject().get("storageAccountName").getAsString();
       String clientId = json.getAsJsonObject().get("clientId").getAsString();
       String clientSecret = json.getAsJsonObject().get("clientSecret").getAsString();
       String subscriptionId = json.getAsJsonObject().get("subscriptionId").getAsString();
@@ -183,6 +184,7 @@ public class HttpAPIController {
       AzureCredentials credentials = new AzureCredentials(clientId, clientSecret, subscriptionId, tenantId);
       TfResourceManager tfResourceManager = TfResourceManager.getInstance();
       tfResourceManager.setTerraformDeployerUrl(terraformDeployerUrl);
+      tfResourceManager.setStorageAccountName(storageAccountName);
       tfResourceManager.setCredentials(credentials);
       manager.setTfResourceManager(tfResourceManager);
     } catch (Exception e) {

@@ -59,14 +59,18 @@ def download_blob(
         storage_account_url, credential=default_credential
     )
 
-    container_client = blob_service_client.get_container_client(
-        container=container_name
-    )
+    try:
+        container_client = blob_service_client.get_container_client(
+            container=container_name
+        )
 
-    print("Downloading blob to:" + filepath)
+        print("Downloading blob to:" + filepath)
 
-    with open(file=filepath, mode="wb") as download_file:
-        download_file.write(container_client.download_blob(filename).readall())
+        with open(file=filepath, mode="wb") as download_file:
+            download_file.write(container_client.download_blob(filename).readall())
+    except Exception:
+        # It's okay to fail here, if tfstate does not exist
+        pass
 
 
 def _get_storage_account_url(storage_account_name: str):
