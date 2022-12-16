@@ -64,7 +64,7 @@ public class AzureCloudTargetProvider implements IDeployTargetProvider {
         tfResourceManager.getEnvvars());
 
     // Deploy all terraform files
-    tfResourceManager.apply(distribution, this.appliedContainerInstanceTf);
+    tfResourceManager.apply(distribution, deploymentInfo, this.appliedContainerInstanceTf);
   }
 
   /**

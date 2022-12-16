@@ -9,7 +9,12 @@ from app.blobstorage import download_blob, upload_blob
 
 from .library.terraform import IsFlagged, Terraform
 from .models import TerraformBody, TerraformFileInfo, TerraformCredentials
-from .utils import create_empty_file, rm_files_with_extension, read_file_to_base64
+from .utils import (
+    create_empty_file,
+    get_file_size,
+    rm_files_with_extension,
+    read_file_to_base64,
+)
 
 _base_dir = "app/terraform"
 _tfstate_filename = "terraform.tfstate"
@@ -43,19 +48,29 @@ def apply_tf(body: TerraformBody):
     3. Upload tfstate to blob storage
     """
     try:
+        if len(body.files) <= 0:
+            print("Nothing to apply. Return immediately")
+            return {"envvars": {}, "tfstate": ""}
+
         # Remove tf directory
         rm_files_with_extension(_base_dir, ["tf", "tfstate", "tfstate.backup"])
 
+        tf_state = os.path.join(_base_dir, _tfstate_filename)
+
         # Create empty tfstate file
-        create_empty_file(os.path.join(_base_dir, _tfstate_filename))
+        create_empty_file(tf_state)
 
         # Download tfstate from storage account
         download_blob(
-            filepath=os.path.join(_base_dir, _tfstate_filename),
+            filepath=tf_state,
             filename=_tfstate_filename,
             storage_account_name=body.storageAccountName,
             container_name=_containername,
         )
+
+        # Remove empty tfstate
+        if get_file_size(tf_state) == 0:
+            rm_files_with_extension(_base_dir, ["tfstate"])
 
         # Write files to terraform directory
         for file in body.files:
@@ -64,16 +79,17 @@ def apply_tf(body: TerraformBody):
         # Apply tf to provision resources
         out = _exec_tf_apply()
 
-        # Upload tfstate to storage account
-        upload_blob(
-            filepath=os.path.join(_base_dir, _tfstate_filename),
-            filename=_tfstate_filename,
-            storage_account_name=body.storageAccountName,
-            container_name=_containername,
-        )
+        # Upload tfstate to storage account, if base.tf and thus storage account exist
+        if _has_base_tf(body):
+            upload_blob(
+                filepath=tf_state,
+                filename=_tfstate_filename,
+                storage_account_name=body.storageAccountName,
+                container_name=_containername,
+            )
 
         envvars = _get_env_vars(out)
-        tfstate = read_file_to_base64(os.path.join(_base_dir, _tfstate_filename))
+        tfstate = read_file_to_base64(tf_state)
 
         return {"envvars": envvars, "tfstate": tfstate}
 
@@ -102,6 +118,16 @@ def _get_env_vars(tfout: str | Dict[str, str] | Dict[str, Dict[str, str]] | None
             env_dict[key] = val["value"]
 
     return env_dict
+
+
+def _has_base_tf(body: TerraformBody):
+    """
+    Returns, if file with filename 'base.tf' is in body
+    """
+    for fileinfo in body.files:
+        if fileinfo.filename == "base.tf":
+            return True
+    return False
 
 
 def _write_tf(fileinfo: TerraformFileInfo):

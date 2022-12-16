@@ -42,6 +42,8 @@ public class TfResourceManager {
   private final String token = "03c11e6e-41fc-4862-a37a-6dbc46a834b9";
   // Duration after which HTTP request timeout
   private final Duration timeout = Duration.ofMinutes(15);
+  // Path to provider.tf freemarker template
+  private final String providerFtl = "templates/azureCloudProviderTf.ftl";
   // Path to base.tf freemarker template
   private final String baseFtl = "templates/azureCloudBaseTf.ftl";
 
@@ -104,8 +106,9 @@ public class TfResourceManager {
    * @param customResources
    * @throws DeploymentException
    */
-  public void apply(Distribution distribution, TerraformInfo... customResources) throws DeploymentException {
-    prepareApply(distribution, customResources);
+  public void apply(Distribution distribution,
+      DeploymentInfo deploymentInfo, TerraformInfo... customResources) throws DeploymentException {
+    prepareApply(distribution, deploymentInfo, customResources);
     apply();
   }
 
@@ -146,9 +149,13 @@ public class TfResourceManager {
    * @param distribution
    * @param customResources
    */
-  private void prepareApply(Distribution distribution, TerraformInfo... customResources) {
+  private void prepareApply(Distribution distribution, DeploymentInfo deploymentInfo,
+      TerraformInfo... customResources) {
     // Clean toApplyResources
     toApplyResources.clear();
+
+    // Provider.tf always applied
+    toApplyResources.add(getProviderTf());
 
     // Base.tf always applied
     toApplyResources.add(getBaseTf());
@@ -157,7 +164,7 @@ public class TfResourceManager {
     toApplyResources.addAll(appliedResources);
 
     // Add component resources for distribution
-    toApplyResources.addAll(getToApplyComponentResources(distribution));
+    toApplyResources.addAll(getToApplyComponentResources(distribution, deploymentInfo));
 
     // Add custom resources
     for (TerraformInfo tfInfo : customResources) {
@@ -171,6 +178,13 @@ public class TfResourceManager {
   private void prepareDestroyAll() {
     // Clean toApplyResources
     toApplyResources.clear();
+
+    // Destroy all without provider declaration fails with "At least 1 'features'
+    // blocks are required."
+    TerraformInfo providerTf = getProviderTf();
+    if (appliedResources.contains(providerTf)) {
+      toApplyResources.add(providerTf);
+    }
   }
 
   /**
@@ -183,8 +197,17 @@ public class TfResourceManager {
     // Clean toApplyResources
     toApplyResources.clear();
 
+    // Provider.tf always applied
+    TerraformInfo providerTf = getProviderTf();
+    if (appliedResources.contains(providerTf)) {
+      toApplyResources.add(providerTf);
+    }
+
     // Base.tf always applied
-    toApplyResources.add(getBaseTf());
+    TerraformInfo baseTf = getBaseTf();
+    if (appliedResources.contains(baseTf)) {
+      toApplyResources.add(baseTf);
+    }
 
     // Always add appliedResources
     toApplyResources.addAll(appliedResources);
@@ -203,8 +226,17 @@ public class TfResourceManager {
     // Clean toApplyResources
     toApplyResources.clear();
 
+    // Provider.tf always applied
+    TerraformInfo providerTf = getProviderTf();
+    if (appliedResources.contains(providerTf)) {
+      toApplyResources.add(providerTf);
+    }
+
     // Base.tf always applied
-    toApplyResources.add(getBaseTf());
+    TerraformInfo baseTf = getBaseTf();
+    if (appliedResources.contains(baseTf)) {
+      toApplyResources.add(baseTf);
+    }
 
     // Always add appliedResources
     toApplyResources.addAll(appliedResources);
@@ -282,13 +314,14 @@ public class TfResourceManager {
    * @param distribution
    * @return
    */
-  private Set<TerraformInfo> getToApplyComponentResources(Distribution distribution) {
+  private Set<TerraformInfo> getToApplyComponentResources(Distribution distribution, DeploymentInfo deploymentInfo) {
     Set<TerraformInfo> toApplyComponentResources = new HashSet<TerraformInfo>();
 
     for (String[] componentNames : distribution.getDistributionMap().values()) {
       for (String componentName : componentNames) {
         for (TerraformInfo tfInfo : componentResources) {
-          if (tfInfo.getFilename().equals(componentName)) {
+          String componentType = deploymentInfo.getInstanceInfo(componentName).getComponentType();
+          if (tfInfo.getFilename().equals(componentType)) {
             toApplyComponentResources.add(tfInfo);
           }
         }
@@ -299,6 +332,24 @@ public class TfResourceManager {
   }
 
   /**
+   * Returns provider.tf with all providers. This file is required for apply and
+   * destroy
+   * 
+   * @return
+   */
+  private TerraformInfo getProviderTf() {
+    GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
+    GeneratorEngine engine = new GeneratorEngine(setup);
+    StringBuilderWriter providerTf = new StringBuilderWriter();
+    engine.generateNoA(this.providerFtl, providerTf);
+    String filecontent = Base64.getEncoder().encodeToString(providerTf.toString().getBytes());
+    return new TerraformInfo("provider.tf", filecontent);
+  }
+
+  /**
+   * 
+   * /**
    * Returns base.tf with all base cloud resources such as resource group or
    * storage account
    * 

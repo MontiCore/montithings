@@ -15,17 +15,3 @@ def is_auth(x_token: str):
         raise HTTPException(status_code=400, detail="Invalid X-Token header")
 
     print("Request successfully authenticated")
-
-
-def has_base_tf(body: TerraformBody):
-    """
-    Checks that request has file with filename 'base.tf'
-    """
-    for file in body.files:
-        if file.filename == "base.tf":
-            print("Request contains 'base.tf'. Continue")
-            return True
-
-    raise HTTPException(
-        status_code=400, detail="No file with filename equal to 'base.tf'"
-    )

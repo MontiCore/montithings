@@ -258,7 +258,7 @@ public class DeploymentManager implements IDeployStatusListener {
 
   protected void deploy(Distribution distribution, DeploymentInfo deploymentInfo) throws DeploymentException {
     if (tfResourceManager != null) {
-      tfResourceManager.apply(distribution);
+      tfResourceManager.apply(distribution, deploymentInfo);
     }
     targetProvider.deploy(distribution, deploymentInfo, network);
   }
