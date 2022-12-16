@@ -75,3 +75,10 @@ def create_empty_file(filepath: str):
     Creates empty file without content
     """
     open(filepath, "a").close()
+
+
+def get_file_size(filepath: str):
+    """
+    Returns size of file
+    """
+    return os.stat(filepath).st_size

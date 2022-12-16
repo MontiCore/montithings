@@ -20,4 +20,3 @@ class TerraformBody(BaseModel):
     files: List[TerraformFileInfo]
     credentials: TerraformCredentials
     storageAccountName: str
-    tfstate: Union[str, None] = None  # optional base64 encoded state file

@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import montithings.services.iot_manager.server.azure.AzureIotHubTargetProvider;
 import montithings.services.iot_manager.server.azurecloud.AzureCloudTargetProvider;
-import montithings.services.iot_manager.server.azurecloud.AzureCredentials;
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.genesis.GenesisDeployTargetProvider;
 import montithings.services.iot_manager.server.k8s.K8sDeployTargetProvider;
@@ -111,15 +110,9 @@ public class DeployTargetProviderParser {
 
   public static AzureCloudTargetProvider parseAzureCloudProvider(JsonObject json) throws DeploymentException {
     try {
-      String terraformDeployerUrl = json.get("terraformDeployerUrl").getAsString();
       long providerID = json.get("id").getAsLong();
-      String clientId = json.get("clientId").getAsString();
-      String clientSecret = json.get("clientSecret").getAsString();
-      String subscriptionId = json.get("subscriptionId").getAsString();
-      String tenantId = json.get("tenantId").getAsString();
       System.out.println("Created Azure Cloud Provider");
-      return new AzureCloudTargetProvider(providerID, terraformDeployerUrl,
-          new AzureCredentials(clientId, clientSecret, subscriptionId, tenantId));
+      return new AzureCloudTargetProvider(providerID);
     } catch (Exception e) {
       throw new DeploymentException(e);
     }

@@ -9,7 +9,12 @@ from app.blobstorage import download_blob, upload_blob
 
 from .library.terraform import IsFlagged, Terraform
 from .models import TerraformBody, TerraformFileInfo, TerraformCredentials
-from .utils import create_empty_file, rm_files_with_extension, read_file_to_base64
+from .utils import (
+    create_empty_file,
+    get_file_size,
+    rm_files_with_extension,
+    read_file_to_base64,
+)
 
 _base_dir = "app/terraform"
 _tfstate_filename = "terraform.tfstate"
@@ -38,68 +43,55 @@ def set_env(credentials: TerraformCredentials):
 
 def apply_tf(body: TerraformBody):
     """
-    1. Terraform apply requested cloud resources
-    2. Upload tfstate to blob storage
+    1. Download tfstate from blob storage (if exists)
+    2. Terraform apply requested cloud resources
+    3. Upload tfstate to blob storage
     """
     try:
+        if len(body.files) <= 0:
+            print("Nothing to apply. Return immediately")
+            return {"envvars": {}, "tfstate": ""}
+
         # Remove tf directory
         rm_files_with_extension(_base_dir, ["tf", "tfstate", "tfstate.backup"])
+
+        tf_state = os.path.join(_base_dir, _tfstate_filename)
+
+        # Create empty tfstate file
+        create_empty_file(tf_state)
+
+        # Download tfstate from storage account
+        download_blob(
+            filepath=tf_state,
+            filename=_tfstate_filename,
+            storage_account_name=body.storageAccountName,
+            container_name=_containername,
+        )
+
+        # Remove empty tfstate
+        if get_file_size(tf_state) == 0:
+            rm_files_with_extension(_base_dir, ["tfstate"])
 
         # Write files to terraform directory
         for file in body.files:
             _write_tf(file)
-
-        # Optionally write state file if provided
-        if body.tfstate is not None:
-            _write_tfstate(body.tfstate)
 
         # Apply tf to provision resources
         out = _exec_tf_apply()
 
-        # Upload tfstate to storage account
-        upload_blob(
-            filepath=os.path.join(_base_dir, _tfstate_filename),
-            filename=_tfstate_filename,
-            storage_account_name=body.storageAccountName,
-            container_name=_containername,
-        )
+        # Upload tfstate to storage account, if base.tf and thus storage account exist
+        if _has_base_tf(body):
+            upload_blob(
+                filepath=tf_state,
+                filename=_tfstate_filename,
+                storage_account_name=body.storageAccountName,
+                container_name=_containername,
+            )
 
         envvars = _get_env_vars(out)
-        tfstate = read_file_to_base64(os.path.join(_base_dir, _tfstate_filename))
+        tfstate = read_file_to_base64(tf_state)
 
         return {"envvars": envvars, "tfstate": tfstate}
-
-    except Exception as e:
-        print(str(e))
-        raise HTTPException(status_code=500)
-
-
-def destroy_tf(body: TerraformBody):
-    """
-    1. Download tfstate from blob storage
-    2. Terraform destroy
-    """
-    try:
-        # Remove tf directory
-        rm_files_with_extension(_base_dir, ["tf", "tfstate", "tfstate.backup"])
-
-        # Create empty tfstate file
-        create_empty_file(os.path.join(_base_dir, _tfstate_filename))
-
-        # Download tfstate from storage account
-        download_blob(
-            filepath=os.path.join(_base_dir, _tfstate_filename),
-            filename=_tfstate_filename,
-            storage_account_name=body.storageAccountName,
-            container_name=_containername,
-        )
-
-        # Write files to terraform directory
-        for file in body.files:
-            _write_tf(file)
-
-        # Apply tf destroy to de-provision resources
-        _exec_tf_destroy()
 
     except Exception as e:
         print(str(e))
@@ -128,6 +120,16 @@ def _get_env_vars(tfout: str | Dict[str, str] | Dict[str, Dict[str, str]] | None
     return env_dict
 
 
+def _has_base_tf(body: TerraformBody):
+    """
+    Returns, if file with filename 'base.tf' is in body
+    """
+    for fileinfo in body.files:
+        if fileinfo.filename == "base.tf":
+            return True
+    return False
+
+
 def _write_tf(fileinfo: TerraformFileInfo):
     """
     Write terraform file to terraform directory
@@ -135,15 +137,6 @@ def _write_tf(fileinfo: TerraformFileInfo):
     print(f"Write tf file {fileinfo.filename}")
     content = b64decode(fileinfo.filecontent)
     Path(_base_dir, fileinfo.filename + ".tf").write_bytes(content)
-
-
-def _write_tfstate(tfstate: str):
-    """
-    Write tfstate file to terraform directory
-    """
-    print(f"Write tfstate")
-    content = b64decode(tfstate)
-    Path(_base_dir, _tfstate_filename).write_bytes(content)
 
 
 def _exec_tf_apply():
@@ -159,18 +152,3 @@ def _exec_tf_apply():
     out = tf.output()
     print("Successfully applied all tf files")
     return out
-
-
-def _exec_tf_destroy():
-    """
-    Runs 'terraform destroy' to destroy cloud resources
-    """
-    print("Destroy tf")
-    tf = Terraform(working_dir=_base_dir, is_env_vars_included=True)
-    tf.init()
-    return_code, _stdout, _stderr = tf.apply(
-        destroy=IsFlagged, skip_plan=True, capture_output=True
-    )
-    if return_code is not None and return_code > 0:
-        raise Exception('Error when running "terraform apply -destroy"')
-    print("Successfully destroyed all resources from tf files")

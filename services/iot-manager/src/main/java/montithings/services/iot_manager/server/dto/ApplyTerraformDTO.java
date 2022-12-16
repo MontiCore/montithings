@@ -13,14 +13,11 @@ public class ApplyTerraformDTO {
   private List<TerraformInfo> files;
   private AzureCredentials credentials;
   private String storageAccountName;
-  private String tfstate;
 
-  public ApplyTerraformDTO(AzureCredentials credentials, List<TerraformInfo> files, String storageAccountName,
-      String tfstate) {
+  public ApplyTerraformDTO(AzureCredentials credentials, List<TerraformInfo> files, String storageAccountName) {
     this.files = files;
     this.credentials = credentials;
     this.storageAccountName = storageAccountName;
-    this.tfstate = tfstate;
   }
 
   public List<TerraformInfo> getFiles() {
@@ -33,10 +30,6 @@ public class ApplyTerraformDTO {
 
   public String getStorageAccountName() {
     return storageAccountName;
-  }
-
-  public String getTfstate() {
-    return tfstate;
   }
 
   public String toJson() throws JsonProcessingException {

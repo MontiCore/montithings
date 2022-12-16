@@ -1,24 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("storageAccountName")}
-
-terraform {
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "location" {
-  type        = string
-  default     = "germanywestcentral"
-  description = "Desired Azure Region"
-}
-
 resource "azurerm_resource_group" "rg" {
   name     = "rg-terraform"
   location = var.location
