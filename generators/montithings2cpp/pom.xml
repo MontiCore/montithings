@@ -249,6 +249,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
+							<skip>true</skip>
 							<executable>docker</executable>
 							<arguments>
 								<argument>run</argument>

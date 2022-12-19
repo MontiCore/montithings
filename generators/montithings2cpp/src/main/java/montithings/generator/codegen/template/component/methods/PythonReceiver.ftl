@@ -35,7 +35,6 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
     }
     while(1)
     {
-        printf("\n+++++++ Sink Waiting for new connection ++++++++\n\n");
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
         {
             perror("In accept");
@@ -48,20 +47,20 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
         }
         
         if(pid == 0){
-        char buffer[30000] = {0};
-        valread = read( new_socket , buffer, 30000);
+            char buffer[30000] = {0};
+            valread = read( new_socket , buffer, 30000);
 
-        printf("\n buffer message: %s \n ", buffer);
-        char *buffer_copy = (char *)malloc(strlen(buffer) + 1);
-        strcpy(buffer_copy,buffer);
+            printf("\n buffer message: %s \n ", buffer);
+            char *buffer_copy = (char *)malloc(strlen(buffer) + 1);
+            strcpy(buffer_copy,buffer);
 
-        if(buffer_copy[0] == 'P' && buffer_copy[1] == 'Y' && buffer_copy[2] == ' '){
-        buffer_copy = buffer_copy + 3;
-        printf("PY message: %s", buffer_copy);
-        std::fstream pyFile;
-        pyFile.open("code.py",std::ios_base::out);
-        pyFile << buffer_copy;
-        pyFile.close();
+            if(buffer_copy[0] == 'P' && buffer_copy[1] == 'Y' && buffer_copy[2] == ' '){
+            buffer_copy = buffer_copy + 3;
+            printf("PY message: %s", buffer_copy);
+            std::fstream pyFile;
+            pyFile.open("code.py",std::ios_base::out);
+            pyFile << buffer_copy;
+            pyFile.close();
         }
         else{
             printf("Not a Py File: %s", buffer_copy);

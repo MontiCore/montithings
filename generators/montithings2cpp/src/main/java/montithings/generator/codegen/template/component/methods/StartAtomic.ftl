@@ -16,4 +16,8 @@ threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(com
 <#if ComponentHelper.isDSLComponent(comp)>
   threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::python_receiver, this});
 </#if>
+
+<#if ComponentHelper.isWebComponent(comp)>
+  threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::website_hoster, this});
+</#if>
 }

@@ -74,6 +74,12 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 <#if ComponentHelper.isDSLComponent(comp)>
   void python_receiver();
 </#if>
+<#if ComponentHelper.isWebComponent(comp)>
+  void website_hoster();
+  
+  std::string get_web_substring(char* buffer, int segment);
+  void send_message(int fd, char path[], char head[]);
+</#if>
 
 
 // if set to true, loop-threads will stop after their current iteration

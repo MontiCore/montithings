@@ -269,6 +269,16 @@ public class ComponentHelper {
     return false;
   }
 
+    /**
+   * Returns True iff the given component is a Web component
+   */
+  public static boolean isWebComponent(ComponentTypeSymbol comp) {
+    if (comp.getName().equals("Source")) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Get the names of all types generated for the interfaces implemented by the given component
    */
