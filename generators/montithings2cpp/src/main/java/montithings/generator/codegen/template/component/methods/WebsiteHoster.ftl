@@ -106,9 +106,11 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
       }
 
       close(new_socket);
-      free(copy_head); 
+      free(copy_head);
+      exit(1);
     }
     else{
+      signal(SIGCHLD,SIG_IGN);
       LOG(DEBUG) << ">>>>>>>>>>Parent create child with pid: " << pid << "<<<<<<<<<";
       close(new_socket);
     }

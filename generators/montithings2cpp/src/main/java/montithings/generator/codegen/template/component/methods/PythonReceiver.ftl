@@ -33,6 +33,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
         perror("In listen");
         exit(EXIT_FAILURE);
     }
+    int lastpid = -1;
     while(1)
     {
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
@@ -55,23 +56,33 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
             strcpy(buffer_copy,buffer);
 
             if(buffer_copy[0] == 'P' && buffer_copy[1] == 'Y' && buffer_copy[2] == ' '){
-            buffer_copy = buffer_copy + 3;
-            LOG(DEBUG) << "PY message: " << buffer_copy;
-            std::fstream pyFile;
-            pyFile.open("python/${className}Impl.py",std::ios_base::out);
-            pyFile << buffer_copy;
-            pyFile.close();
-            free(buffer_copy - 3);
-        }
-        else{
-            LOG(DEBUG) << "Not a Py File: " << buffer_copy;
-            free(buffer_copy);
-        }
+                buffer_copy = buffer_copy + 3;
+                LOG(DEBUG) << "PY message: " << buffer_copy;
+                std::fstream pyFile;
+                pyFile.open("python/${className}Impl.py",std::ios_base::out);
+                pyFile << buffer_copy;
+                pyFile.close();
+                free(buffer_copy - 3);
 
-        close(new_socket);
+                if(lastpid != -1){
+                kill(lastpid,SIGKILL);
+                }
+                char *intrepreter="python3"; 
+                char *pythonPath="python/${className}.py"; 
+                char *pythonArgs[]={intrepreter,pythonPath,NULL};
+                execvp(intrepreter,pythonArgs);
+            }
+            else{
+                LOG(DEBUG) << "Not a Py File: " << buffer_copy;
+                free(buffer_copy);
+            }
+
+            close(new_socket);
         }
         else{
-        close(new_socket);
+            signal(SIGCHLD,SIG_IGN);
+            lastpid = pid;
+            close(new_socket);
         }
     
     }
