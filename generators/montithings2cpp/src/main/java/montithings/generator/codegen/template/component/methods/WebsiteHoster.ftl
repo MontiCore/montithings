@@ -54,7 +54,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
       char buffer[30000] = {0};
       valread = read( new_socket , buffer, 30000);
 
-      printf("\n buffer message: %s \n ", buffer);
+      LOG(DEBUG) << "\n buffer message: " << buffer;
 
       std::string parse_string_method = get_web_substring(buffer,0); 
 
@@ -100,7 +100,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
             exit(EXIT_FAILURE);
           }
           send(sockfd, hello, strlen(hello), 0);
-          printf("\n -reached");
+          LOG(DEBUG) << "\n -send";
           close(client_fd);
         }
       }
@@ -109,7 +109,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
       free(copy_head); 
     }
     else{
-      printf(">>>>>>>>>>Parent create child with pid: %d <<<<<<<<<", pid);
+      LOG(DEBUG) << ">>>>>>>>>>Parent create child with pid: " << pid << "<<<<<<<<<";
       close(new_socket);
     }
   

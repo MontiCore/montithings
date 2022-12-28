@@ -1,0 +1,16 @@
+package hierarchy;
+
+classdiagram Example {
+    package InPort {
+        class InPort {
+            public String text;
+            public boolean val;
+            public int num;
+        }
+    }
+    package OutPort {
+        class OutPort {
+            int num;
+        }
+    }
+}

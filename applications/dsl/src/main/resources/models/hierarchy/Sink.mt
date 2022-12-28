@@ -2,5 +2,6 @@
 package hierarchy;
 
 component Sink {
-  port in int value;
+  port in InPort.InPort value;
+  port out OutPort.OutPort ret;
 }

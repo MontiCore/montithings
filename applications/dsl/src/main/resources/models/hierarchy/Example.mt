@@ -6,4 +6,5 @@ component Example {
   Sink sink;
 
   source.value -> sink.value;
+  sink.ret -> source.ret;
 }

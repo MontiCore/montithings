@@ -56,17 +56,18 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
 
             if(buffer_copy[0] == 'P' && buffer_copy[1] == 'Y' && buffer_copy[2] == ' '){
             buffer_copy = buffer_copy + 3;
-            printf("PY message: %s", buffer_copy);
+            LOG(DEBUG) << "PY message: " << buffer_copy;
             std::fstream pyFile;
-            pyFile.open("code.py",std::ios_base::out);
+            pyFile.open("python/${className}Impl.py",std::ios_base::out);
             pyFile << buffer_copy;
             pyFile.close();
+            free(buffer_copy - 3);
         }
         else{
-            printf("Not a Py File: %s", buffer_copy);
+            LOG(DEBUG) << "Not a Py File: " << buffer_copy;
+            free(buffer_copy);
         }
 
-        free(buffer_copy - 3);
         close(new_socket);
         }
         else{

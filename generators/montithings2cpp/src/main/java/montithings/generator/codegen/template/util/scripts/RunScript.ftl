@@ -15,7 +15,7 @@ echo "Starting components..."
 </#if>
 
 <#list instances as pair >
-  <#if brokerIsMQTT && ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
+  <#if brokerIsMQTT && ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key) && !ComponentHelper.isDSLComponent(pair.key)>
     <#assign hwcPythonFile = ComponentHelper.getPythonMainScriptName(pair.key)>
     OLD_PYTHONPATH="${r"${PYTHONPATH}"}"
     export PYTHONPATH="$PYTHONPATH:python"
@@ -27,7 +27,7 @@ echo "Starting components..."
 </#list>
 
 <#list instances as pair >
-  <#if !ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
+  <#if !ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key) || ComponentHelper.isDSLComponent(pair.key)>
     <#if brokerIsMQTT>
     ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
     <#elseif brokerIsDDS>
