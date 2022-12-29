@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # IoT Client
 There are multiple ways how you can set up your IoT clients with MontiThings.
 

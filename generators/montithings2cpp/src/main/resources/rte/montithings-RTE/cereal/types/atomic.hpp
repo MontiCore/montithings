@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file atomic.hpp
     \brief Support for types found in \<atomic\>
     \ingroup STLSupport */

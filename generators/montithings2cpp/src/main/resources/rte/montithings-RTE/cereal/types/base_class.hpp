@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file base_class.hpp
     \brief Support for base classes (virtual and non-virtual)
     \ingroup OtherTypes */

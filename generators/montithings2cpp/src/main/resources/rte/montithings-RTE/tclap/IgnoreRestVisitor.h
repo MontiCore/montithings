@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 // -*- Mode: c++; c-basic-offset: 4; tab-width: 4; -*-
 
 /******************************************************************************

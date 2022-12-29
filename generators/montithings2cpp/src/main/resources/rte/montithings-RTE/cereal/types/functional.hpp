@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file functional.hpp
     \brief Support for types found in \<functional\>
     \ingroup STLSupport */

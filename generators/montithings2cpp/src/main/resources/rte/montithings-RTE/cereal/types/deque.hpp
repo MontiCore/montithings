@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file deque.hpp
     \brief Support for types found in \<deque\>
     \ingroup STLSupport */

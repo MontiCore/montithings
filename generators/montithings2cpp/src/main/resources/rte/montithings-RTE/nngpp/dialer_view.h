@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_DIALER_VIEW_H
 #define NNGPP_DIALER_VIEW_H
 #include "option.h"

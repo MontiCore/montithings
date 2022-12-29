@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package montithings.services.prolog_generator.oclquery.generator;
 
 import de.monticore.ocl.setexpressions._ast.ASTSetEnumeration;

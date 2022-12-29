@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 exists DistanceSensor sensor:
   let max = sensor.range.max; min = sensor.range.min in
     max > min implies max - min > 1000

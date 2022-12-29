@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file queue.hpp
     \brief Support for types found in \<queue\>
     \ingroup STLSupport */

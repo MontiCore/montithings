@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file set.hpp
     \brief Support for types found in \<set\>
     \ingroup STLSupport */

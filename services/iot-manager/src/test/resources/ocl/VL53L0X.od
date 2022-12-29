@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 objectdiagram VL53L0X {
   VL53L0X : DistanceSensor {
     manufacturer = "ST";

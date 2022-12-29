@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 classdiagram Map {
     class ClassWithMap {
         List<Map<String, int>> listOfStringToIntMap;

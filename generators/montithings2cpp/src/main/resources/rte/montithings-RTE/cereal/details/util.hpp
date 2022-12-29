@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file util.hpp
     \brief Internal misc utilities
     \ingroup Internal */

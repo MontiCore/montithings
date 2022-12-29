@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file valarray.hpp
 \brief Support for types found in \<valarray\>
 \ingroup STLSupport */

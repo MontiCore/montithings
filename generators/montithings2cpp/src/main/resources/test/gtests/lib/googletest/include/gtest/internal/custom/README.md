@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Customization Points
 
 The custom directory is an injection point for custom user configurations.

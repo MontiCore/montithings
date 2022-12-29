@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file static_object.hpp
     \brief Internal polymorphism static object support
     \ingroup Internal */

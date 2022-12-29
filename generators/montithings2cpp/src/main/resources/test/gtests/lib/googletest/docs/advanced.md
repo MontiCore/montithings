@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Advanced googletest Topics
 
 <!-- GOOGLETEST_CM0016 DO NOT DELETE -->

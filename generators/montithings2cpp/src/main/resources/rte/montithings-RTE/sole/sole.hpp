@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /* Sole is a lightweight C++11 library to generate universally unique identificators.
  * Sole provides interface for UUID versions 0, 1 and 4.
 

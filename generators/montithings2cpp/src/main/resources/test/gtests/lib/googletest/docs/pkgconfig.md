@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Using GoogleTest from various build systems
 
 <!-- GOOGLETEST_CM0035 DO NOT DELETE -->

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file polymorphic_impl_fwd.hpp
     \brief Internal polymorphism support forward declarations
     \ingroup Internal */

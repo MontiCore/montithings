@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_CTX_H
 #define NNGPP_CTX_H
 #include "ctx_view.h"

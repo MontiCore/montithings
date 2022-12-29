@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Community-Created Documentation
 
 go/gunit-community-created-docs

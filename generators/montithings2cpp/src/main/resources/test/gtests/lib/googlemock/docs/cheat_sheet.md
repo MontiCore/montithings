@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # gMock Cheat Sheet
 
 <!-- GOOGLETEST_CM0019 DO NOT DELETE -->

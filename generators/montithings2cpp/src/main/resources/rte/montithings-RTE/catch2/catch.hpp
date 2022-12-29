@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*
  *  Catch v2.13.9
  *  Generated: 2022-04-12 22:37:23.260201

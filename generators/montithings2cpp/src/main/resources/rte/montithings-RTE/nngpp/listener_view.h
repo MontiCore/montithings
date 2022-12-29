@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_LISTENER_VIEW_H
 #define NNGPP_LISTENER_VIEW_H
 #include "option.h"

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_TRANSPORT_WS_H
 #define NNGPP_TRANSPORT_WS_H
 #include <nngpp/listener_view.h>

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file array.hpp
     \brief Support for types found in \<array\>
     \ingroup STLSupport */

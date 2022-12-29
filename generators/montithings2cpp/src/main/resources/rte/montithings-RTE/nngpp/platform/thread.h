@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_THREAD_H
 #define NNGPP_THREAD_H
 #include "thread_view.h"

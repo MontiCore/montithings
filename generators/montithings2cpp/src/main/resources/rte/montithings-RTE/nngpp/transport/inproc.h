@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_TRANSPORT_INPROC_H
 #define NNGPP_TRANSPORT_INPROC_H
 #include <nngpp/error.h>

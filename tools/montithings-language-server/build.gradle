@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 plugins {
     id 'java'
     id 'de.monticore.language-server' version '7.0.0.13-SNAPSHOT'

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_URL_H
 #define NNGPP_URL_H
 #include "url_view.h"

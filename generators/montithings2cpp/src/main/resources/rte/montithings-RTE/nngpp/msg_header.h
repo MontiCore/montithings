@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_MSG_HEADER_H
 #define NNGPP_MSG_HEADER_H
 #include "view.h"

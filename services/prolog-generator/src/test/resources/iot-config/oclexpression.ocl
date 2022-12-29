@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 exists Camera cam:
        cam.resolution.megapix >= 4 && 
        cam.fieldOfView.horizontal isin { 60 .. 100 }

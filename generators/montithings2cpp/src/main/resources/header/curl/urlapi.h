@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef __CURL_URLAPI_H
 #define __CURL_URLAPI_H
 /***************************************************************************

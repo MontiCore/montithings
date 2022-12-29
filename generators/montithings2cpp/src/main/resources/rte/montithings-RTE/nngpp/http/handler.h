@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_HTTP_HANDLER_H
 #define NNGPP_HTTP_HANDLER_H
 #include "handler_view.h"

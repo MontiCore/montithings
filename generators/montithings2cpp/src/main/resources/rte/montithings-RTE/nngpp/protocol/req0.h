@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_REQ0_H
 #define NNGPP_REQ0_H
 #include <nngpp/ctx.h>

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_CTX_VIEW_H
 #define NNGPP_CTX_VIEW_H
 #include "aio_view.h"

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_STAT_VIEW_H
 #define NNGPP_STAT_VIEW_H
 #include <nng/nng.h>

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# (c) https://github.com/MontiCore/monticore  
 # Copyright 2017 Google Inc.
 # All Rights Reserved.
 #

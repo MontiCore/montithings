@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_CV_VIEW_H
 #define NNGPP_CV_VIEW_H
 #include <nngpp/error.h>

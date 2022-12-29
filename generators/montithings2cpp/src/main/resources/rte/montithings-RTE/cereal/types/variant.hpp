@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file variant.hpp
     \brief Support for std::variant
     \ingroup STLSupport */

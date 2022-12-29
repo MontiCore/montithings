@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_CORE_H
 #define NNGPP_CORE_H
 #include <nng/nng.h>

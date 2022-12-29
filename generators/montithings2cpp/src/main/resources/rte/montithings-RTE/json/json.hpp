@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*
     __ _____ _____ _____
  __|  |   __|     |   | |  JSON for Modern C++

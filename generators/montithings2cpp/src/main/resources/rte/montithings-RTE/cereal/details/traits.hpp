@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 /*! \file traits.hpp
     \brief Internal type trait support
     \ingroup Internal */

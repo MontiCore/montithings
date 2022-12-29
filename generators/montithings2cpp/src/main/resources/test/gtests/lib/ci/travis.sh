@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# (c) https://github.com/MontiCore/monticore  
 set -evx
 
 . ci/get-nprocessors.sh

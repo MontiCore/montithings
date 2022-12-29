@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_VIEW_H
 #define NNGPP_VIEW_H
 #include <cstring>
