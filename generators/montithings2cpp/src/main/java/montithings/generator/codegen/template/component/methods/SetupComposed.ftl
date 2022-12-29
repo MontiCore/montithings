@@ -50,5 +50,4 @@ ${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, classNam
   mqttClientInstance->subscribe ("/prepareComponent");
   mqttClientInstance->subscribe ("/components");
 </#if>
-
 }

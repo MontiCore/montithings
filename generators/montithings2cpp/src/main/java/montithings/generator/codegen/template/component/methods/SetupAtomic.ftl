@@ -20,14 +20,17 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
 </#if>
 
+
 <#if ComponentHelper.retainState(comp)>
   this->restoreState ();
 </#if>
+
 
 <#if brokerIsMQTT>
   mqttClientInstance->publish (replaceDotsBySlashes ("/components"),
   replaceDotsBySlashes (instanceName));
 </#if>
+
 
 ${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, className])}
 }

@@ -36,55 +36,59 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(){
     int lastpid = -1;
     while(1)
     {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
-        {
-            perror("In accept");
-            exit(EXIT_FAILURE);
-        }
+      if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+      {
+          perror("In accept");
+          exit(EXIT_FAILURE);
+      }
+
+      char buffer[30000] = {0};
+      valread = read( new_socket , buffer, 30000);
+
+      printf("\n buffer message: %s \n ", buffer);
+      char *buffer_copy = (char *)malloc(strlen(buffer) + 1);
+      strcpy(buffer_copy,buffer);
+
+      if(buffer_copy[0] == 'P' && buffer_copy[1] == 'Y' && buffer_copy[2] == ' ')
+      {
         pid = fork();
         if(pid < 0){
-            perror("Error on fork");
-            exit(EXIT_FAILURE);
+          perror("Error on fork");
+          exit(EXIT_FAILURE);
         }
         
-        if(pid == 0){
-            char buffer[30000] = {0};
-            valread = read( new_socket , buffer, 30000);
+        if(pid == 0)
+        {
+        
+          buffer_copy = buffer_copy + 3;
+          LOG(DEBUG) << "PY message: " << buffer_copy;
+          std::fstream pyFile;
+          //pyFile.open("python/SinkImpl.py",std::ios_base::out);
+          //pyFile << buffer_copy;
+          //pyFile.close();
+          free(buffer_copy - 3);
 
-            printf("\n buffer message: %s \n ", buffer);
-            char *buffer_copy = (char *)malloc(strlen(buffer) + 1);
-            strcpy(buffer_copy,buffer);
-
-            if(buffer_copy[0] == 'P' && buffer_copy[1] == 'Y' && buffer_copy[2] == ' '){
-                buffer_copy = buffer_copy + 3;
-                LOG(DEBUG) << "PY message: " << buffer_copy;
-                std::fstream pyFile;
-                pyFile.open("python/${className}Impl.py",std::ios_base::out);
-                pyFile << buffer_copy;
-                pyFile.close();
-                free(buffer_copy - 3);
-
-                if(lastpid != -1){
-                kill(lastpid,SIGKILL);
-                }
-                char *intrepreter="python3"; 
-                char *pythonPath="python/${className}.py"; 
-                char *pythonArgs[]={intrepreter,pythonPath,NULL};
-                execvp(intrepreter,pythonArgs);
-            }
-            else{
-                LOG(DEBUG) << "Not a Py File: " << buffer_copy;
-                free(buffer_copy);
-            }
-
-            close(new_socket);
+          if(lastpid != -1){
+            kill(lastpid,SIGKILL);
+          }
+          char *intrepreter="python3"; 
+          char *pythonPath="python/${className}.py"; 
+          char *pythonArgs[]={intrepreter,pythonPath,NULL};
+          execvp(intrepreter,pythonArgs);
+        }else
+        {
+          signal(SIGCHLD,SIG_IGN);
+          lastpid = pid;
+          std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+          mqttClientInstance->publish (replaceDotsBySlashes ("/components"), replaceDotsBySlashes (instanceName));
         }
-        else{
-            signal(SIGCHLD,SIG_IGN);
-            lastpid = pid;
-            close(new_socket);
-        }
-    
+      }else{
+        LOG(DEBUG) << "Not a Py File: " << buffer_copy;
+        free(buffer_copy);
+      }
+
+      close(new_socket);
     }
     close(server_fd);
-}
+        
+  }

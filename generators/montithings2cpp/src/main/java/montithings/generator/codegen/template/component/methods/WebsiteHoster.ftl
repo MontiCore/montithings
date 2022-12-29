@@ -18,6 +18,13 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
       perror("In sockets");
       exit(EXIT_FAILURE);
   }
+  const int enable = 1;
+  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+    perror("setsockopt(SO_REUSEADDR) failed");
+  }
+  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0){
+    perror("setsockopt(SO_REUSEPORT) failed");
+  }
   
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
