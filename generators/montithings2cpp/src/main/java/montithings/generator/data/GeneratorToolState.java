@@ -36,6 +36,10 @@ public class GeneratorToolState {
   protected File modelPath;
 
   /**
+   * Directory path to languages 
+   */
+  protected File languagePath;
+  /**
    * Model path in MontiCore's format
    */
   protected ModelPath mcModelPath;
@@ -109,13 +113,14 @@ public class GeneratorToolState {
   /* ============================================================ */
 
   public GeneratorToolState(MontiThingsGeneratorTool tool, File modelPath, File target,
-    File hwcPath, File testPath, ConfigParams config) {
+    File hwcPath, File testPath, ConfigParams config, File languagePath) {
     this.tool = tool;
     this.modelPath = modelPath;
     this.target = target;
     this.hwcPath = hwcPath;
     this.testPath = testPath;
     this.config = config;
+    this.languagePath = languagePath;
   }
 
   public MontiThingsGeneratorTool getTool() {
@@ -140,6 +145,14 @@ public class GeneratorToolState {
 
   public void setModelPath(File modelPath) {
     this.modelPath = modelPath;
+  }
+
+  public File getLanguagePath() {
+    return languagePath;
+  }
+
+  public void setMLanguagePath(File languagePath) {
+    this.languagePath = languagePath;
   }
 
   public ModelPath getMcModelPath() {

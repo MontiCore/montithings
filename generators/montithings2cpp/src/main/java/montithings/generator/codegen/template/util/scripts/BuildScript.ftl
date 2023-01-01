@@ -61,6 +61,8 @@ cd ..
 find hwc -name "*.py" | cpio -pdm build/bin/ > /dev/null 2>&1
 cd build/bin
 cp ../../"$COMPNAME"/*.sh .
+
+cp -r ../../html . 
 <#if brokerIsDDS>
 cp ../../"$COMPNAME"/*.ini .
 </#if>

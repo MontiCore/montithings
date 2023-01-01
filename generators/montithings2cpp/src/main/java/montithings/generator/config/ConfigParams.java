@@ -66,6 +66,9 @@ public class ConfigParams {
   /** Directory that contains handwritten code for components.*/
   protected File hwcPath;
 
+   /** Directory that contains handwritten code for components.*/
+  protected File languagePath;
+
   /** All type arguments which which a component type is ever instantiated */
   Multimap<ComponentTypeSymbol, String> typeArguments;
 
@@ -195,6 +198,14 @@ public class ConfigParams {
 
   public void setHwcPath(File hwcPath) {
     this.hwcPath = hwcPath;
+  }
+
+  public File getLanguagePath() {
+    return languagePath;
+  }
+
+  public void setLanguagePath(File languagePath) {
+    this.languagePath = languagePath;
   }
 
   public Path getHwcTemplatePath() {

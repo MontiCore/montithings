@@ -1,0 +1,136 @@
+// (c) https://github.com/MontiCore/monticore
+
+/* ============================================================ */
+/* ========================= Plugins ========================== */
+/* ============================================================ */
+
+plugins {
+    id 'java'
+    id "monticore" version "$monticore_version"
+    id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "4.0.4"
+    id "de.set.ecj" version "1.4.1" // Eclipse compiler as it's faster than javac
+}
+
+/* ============================================================ */
+/* ========================= Project ========================== */
+/* ============================================================ */
+
+group = 'de.monticore.lang'
+version = '1.0-SNAPSHOT'
+description = 'NetworkLanguage'
+sourceCompatibility = '1.8'
+
+/* ============================================================ */
+/* ======================= Configuration ====================== */
+/* ============================================================ */
+
+// configure non-standard source sets
+sourceSets {
+    main.java.srcDirs += [ "$projectDir/target/generated-sources/monticore/sourcecode"]
+}
+buildDir = file("$projectDir/target")
+
+configurations {grammar}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+/* ============================================================ */
+/* ======================= Dependencies ======================= */
+/* ============================================================ */
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        credentials.username mavenUser
+        credentials.password System.getenv("cibuild")
+        url = repo
+    }
+}
+
+dependencies {
+    grammar "de.monticore:monticore-grammar:$monticore_version:$grammar_classifier"
+    implementation "org.antlr:antlr4-runtime:4.7.1"
+    implementation "de.monticore:monticore-runtime:$monticore_version"
+    implementation "de.monticore:monticore-grammar:$monticore_version"
+    implementation "org.assertj:assertj-core:3.7.0"
+    testImplementation "org.assertj:assertj-core:3.7.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+    testImplementation "de.monticore:monticore-runtime:$monticore_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_version"
+    compileOnly "de.monticore:monticore-grammar:$monticore_version"
+}
+
+/* ============================================================ */
+/* ========================== Tasks =========================== */
+/* ============================================================ */
+
+task generate(type: MCTask) {
+    grammar = file "$projectDir/$grammarDir/Network.mc4"
+    outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
+    handcodedPath "$projectDir/src/main/java"
+    def uptoDate = incCheck(outputDir.toString() + "/de/monticore/lang/json/IncGenGradleCheck.txt")
+    outputs.upToDateWhen { uptoDate }
+}
+
+compileJava.dependsOn(generate)
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.deprecation = false
+    options.warnings = false
+    options.headerOutputDirectory.convention(null)
+}
+
+// build sources jar in addition
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+
+// build javadoc jar in addition
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = "javadoc"
+}
+
+// generated java doc contains errors, disable for now
+javadoc.failOnError(false)
+
+// build grammar jar as well
+task grammarJar(type: Jar) {
+    from("$projectDir/src/main/grammars/") { include "**/*.mc4" }
+    archiveClassifier = "grammars"
+}
+
+/* ============================================================ */
+/* ======================= Publishing ========================= */
+/* ============================================================ */
+
+publishing {
+    // configure what artifacts to publish
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = "$project.name"
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            artifact shadowJar
+            artifact grammarJar
+        }
+    }
+    repositories.maven {
+        credentials.username mavenUser
+        credentials.password System.getenv("cibuild")
+        def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-releases/"
+        def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-snapshots/"
+        url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+    }
+}

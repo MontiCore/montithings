@@ -1,0 +1,9 @@
+// (c) https://github.com/MontiCore/monticore
+
+grammar Network extends de.monticore.MCBasics {
+  Net = (Knoten | Connection | Linebreak)*;
+  token Linebreak = NEWLINE;
+
+  symbol Knoten = "." knotenName:Name ";";
+  Connection = knoten1:Name@Knoten "-" knoten2:Name@Knoten ";" ;
+}

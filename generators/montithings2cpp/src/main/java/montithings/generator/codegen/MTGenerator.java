@@ -266,6 +266,25 @@ public class MTGenerator {
       generateMakeFilesForTestCode(Paths.get(testCodePath.toString(), subDir).toFile());
     }
   }
+
+  /**
+   * generates chtml files for DSLs
+   *
+   * @param languagePath location of the directory where the test code is located
+   */
+  public void generateHTMLFilesForDSLs(File languagePath, ConfigParams config, String name){
+    String type = "";
+    if(name.equals("Index")){
+      type="Index";
+    }else{
+      type="Comp";
+    }
+
+    FileGenerator fg = new FileGenerator(languagePath, hwcDir);
+    fg.generate(languagePath, "html" + File.separatorChar +  name, ".html", "template/util/html/" + type + ".ftl", config, name);
+  }
+
+
   
   /**
    * gets the names of all subdirectories of a directory as String for further processing in a ftl

@@ -13,6 +13,7 @@ import montithings.generator.steps.generate.*;
 import montithings.generator.steps.hwc.CopyDeploymentConfigToTarget;
 import montithings.generator.steps.hwc.CopyHwcToTarget;
 import montithings.generator.steps.hwc.FindCodeTemplates;
+import montithings.generator.steps.languages.CopyLanguagesToTarget;
 import montithings.generator.steps.symbolTable.*;
 import montithings.generator.steps.trafos.SetupPortNamesTrafo;
 import montithings.generator.steps.trafos.SetupReplayerTrafos;
@@ -26,15 +27,14 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected boolean stopAfterCoCoCheck = false;
 
-  public void generate(File modelPath, File target, File hwcPath, File testPath,
-    ConfigParams config) {
+  public void generate(File modelPath, File target, File hwcPath, File testPath, ConfigParams config, File languagePath) {
 
-    GeneratorToolState state = new GeneratorToolState(this, modelPath, target, hwcPath, testPath,
-      config);
+    GeneratorToolState state = new GeneratorToolState(this, modelPath, target, hwcPath, testPath, config, languagePath);
 
     GeneratorStep firstStep = new FindModels();
     firstStep.setNextStep(new SetupGenerator())
       .setNextStep(new CopyHwcToTarget())
+      //.setNextStep(new CopyLanguagesToTarget())
       .setNextStep(new CopyDeploymentConfigToTarget())
       .setNextStep(new SetupModelPath())
       .setNextStep(new LogStep("Initializing symboltable", TOOL_NAME))
@@ -65,6 +65,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .setNextStep(new FindModelPacks())
       .setNextStep(new GenerateCMakeLists())
       .setNextStep(new GenerateComponent())
+      .setNextStep(new GenerateHTML())
       .setNextStep(new GeneratePackageFiles())
       .setNextStep(new GenerateCDEAdapter())
       .setNextStep(new GenerateCD())

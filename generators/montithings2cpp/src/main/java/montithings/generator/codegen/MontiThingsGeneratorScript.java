@@ -43,6 +43,7 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
     // after adding everything we override a couple of known variable
     // bindings to have them properly typed in the script
     builder.addVariable(Options.MODELPATH.toString(), config.getModelPath());
+    builder.addVariable(Options.LANGUAGEPATH.toString(), config.getLanguagePath());
     builder.addVariable(Options.TESTPATH.toString(), config.getTestPath());
     builder.addVariable(Options.OUT.toString(), config.getOut());
     builder.addVariable(Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
@@ -63,9 +64,9 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
    * Gets called by Groovy Script. Generates component artifacts for each
    * component in {@code modelPath} to {@code targetFilepath}
    */
-  public void generate(File modelPath, File targetFilepath, File hwcPath, File testPath, ConfigParams configParams) {
+  public void generate(File modelPath, File targetFilepath, File hwcPath, File testPath, ConfigParams configParams, File languagePath) {
     MontiThingsMill.init();
-    new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath, testPath, configParams);
+    new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath, testPath, configParams, languagePath);
   }
 
   // #######################

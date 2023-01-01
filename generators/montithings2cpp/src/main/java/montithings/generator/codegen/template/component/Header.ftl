@@ -71,7 +71,7 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   </#list>
 </#if>
 
-<#if ComponentHelper.isDSLComponent(comp)>
+<#if ComponentHelper.isDSLComponent(comp,config)>
   void python_receiver();
 </#if>
 <#if ComponentHelper.isWebComponent(comp)>

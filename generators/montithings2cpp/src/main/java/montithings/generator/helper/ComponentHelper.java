@@ -251,23 +251,38 @@ public class ComponentHelper {
   /**
    * Returns True iff the given component is a dsl component
    */
-  public static boolean isDSLComponent(ComponentTypeSymbol comp) {
+  public static boolean isDSLComponent(ComponentTypeSymbol comp, ConfigParams config) {
     if (comp.getAstNode() instanceof ASTMTComponentType) {
-      //boolean hasHwc = FileHelper.existsHWCClass(hwcPath, comp.getFullName());
-      boolean hasBehavior = ComponentHelper.hasBehavior(comp)
-        ||  ComponentHelper.hasStatechart(comp)
-        || !ComponentHelper.getPortSpecificBehaviors(comp).isEmpty()
-        || ComponentHelper.hasInitBehavior(comp);
-      //  || ComponentHelper.hasHandwrittenPythonBehaviour(hwcPath, comp);
-      boolean hasEveryBlock = !ComponentHelper.getEveryBlocks(comp).isEmpty();
-      boolean isComposed = comp.isDecomposed();
-      //boolean isInterfaceComp = node.getMTComponentModifier().isInterface();
-      if (/*!hasHwc && */!hasBehavior && !hasEveryBlock && !isComposed /*&& !isInterfaceComp*/){
+      Path pathToLanguageFile = getFullLanguagePath(comp, config);
+      File languageFile = new File(pathToLanguageFile.toString());
+      if(languageFile.exists())
+      {
+        if(languageFile.isDirectory())
+        {
           return true;
+        }
       }
     }
     return false;
   }
+
+    
+    //if (comp.getAstNode() instanceof ASTMTComponentType) {
+    //  //boolean hasHwc = FileHelper.existsHWCClass(hwcPath, comp.getFullName());
+    //  boolean hasBehavior = ComponentHelper.hasBehavior(comp)
+    //    ||  ComponentHelper.hasStatechart(comp)
+    //    || !ComponentHelper.getPortSpecificBehaviors(comp).isEmpty()
+    //    || ComponentHelper.hasInitBehavior(comp);
+     // //  || ComponentHelper.hasHandwrittenPythonBehaviour(hwcPath, comp);
+    //  boolean hasEveryBlock = !ComponentHelper.getEveryBlocks(comp).isEmpty();
+    //  boolean isComposed = comp.isDecomposed();
+    //  //boolean isInterfaceComp = node.getMTComponentModifier().isInterface();
+     // if (/*!hasHwc && */!hasBehavior && !hasEveryBlock && !isComposed /*&& !isInterfaceComp*/){
+    //      return true;
+    //  }
+    //}
+    //return false;
+    
 
     /**
    * Returns True iff the given component is a Web component
@@ -294,6 +309,44 @@ public class ComponentHelper {
 
   public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component) {
     return getInterfaceClassNames(component, true);
+  }
+
+  /**
+   * Get the full path ro the components specific language folder of DSL components
+   */
+  public static Path getFullLanguagePath(ComponentTypeSymbol comp, ConfigParams config) {
+    File languagesFolder = config.getLanguagePath();
+    Path pathToLanguageFile = Paths.get( languagesFolder.getPath() + File.separatorChar + comp.getFullName().replace('.', File.separatorChar));
+    return pathToLanguageFile;
+  }
+
+  /**
+   * Get the full path of all Languages in the Langauge folder
+   */
+  public static ArrayList<String> getAllLanguageDirectories(ConfigParams config) {
+    File languagesFolder = config.getLanguagePath();
+    if(languagesFolder.isDirectory()){
+      ArrayList<String> languageDirectories = recursiveSearchLanguageFiles(languagesFolder,"");
+      return languageDirectories;
+    }
+    return new ArrayList<String>();
+  }
+
+  static ArrayList<String> recursiveSearchLanguageFiles(File rootFile, String path){
+    ArrayList<String> retVal = new ArrayList<String>();
+    File[] subDirs = rootFile.listFiles();
+    for(File file : subDirs){
+      if(file.isDirectory() && file.getName().equals("src")){
+        retVal.add(path);
+        return retVal;
+      }
+    }
+    for(File file : subDirs){
+      if(file.isDirectory()){
+        retVal.addAll(recursiveSearchLanguageFiles(file,path + "/" + file.getName()));
+      }
+    }
+    return retVal;
   }
 
   /**

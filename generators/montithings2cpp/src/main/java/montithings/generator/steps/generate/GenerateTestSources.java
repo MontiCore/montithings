@@ -29,7 +29,7 @@ public class GenerateTestSources extends GeneratorStep {
         testTool.generate(state.getModelPath(), Paths
           .get(Paths.get(state.getTarget().getAbsolutePath()).getParent().toString(),
             "generated-test-sources")
-          .toFile(), state.getHwcPath(), state.getTestPath(), state.getConfig());
+          .toFile(), state.getHwcPath(), state.getTestPath(), state.getConfig(),state.getLanguagePath());
       }
       else {
         for (String model : state.getModels().getMontithings()) {

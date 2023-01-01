@@ -3,7 +3,7 @@ ${tc.signature("comp", "config")}
 <#include "/template/Preamble.ftl">
 
 <#if brokerIsMQTT>
-  <#if ComponentHelper.isDSLComponent(comp)>
+  <#if ComponentHelper.isDSLComponent(comp,config)>
     MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue (), (instanceNameArg.getValue() + "_CPP").c_str());
   <#else>
     MqttClient* mqttClientInstance = MqttClient::instance(brokerHostnameArg.getValue (), brokerPortArg.getValue (), (instanceNameArg.getValue()).c_str());
