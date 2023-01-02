@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*
 Copyright (c) 2018 Erik Rigtorp <erik@rigtorp.se>
 

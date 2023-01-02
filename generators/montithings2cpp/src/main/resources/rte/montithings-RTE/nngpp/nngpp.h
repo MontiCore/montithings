@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_NNGPP_H
 #define NNGPP_NNGPP_H
 #include "socket.h"

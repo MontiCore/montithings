@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 package montithings.util.library;
 
 import de.monticore.symbols.basicsymbols._symboltable.FunctionSymbol;

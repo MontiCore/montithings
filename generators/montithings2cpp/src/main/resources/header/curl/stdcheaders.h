@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef __STDC_HEADERS_H
 #define __STDC_HEADERS_H
 /***************************************************************************

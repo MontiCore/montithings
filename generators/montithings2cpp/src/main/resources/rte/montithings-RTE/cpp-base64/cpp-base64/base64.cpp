@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*
    base64.cpp and base64.h
 

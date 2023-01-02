@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file specialize.hpp
     \brief Serialization disambiguation */
 /*

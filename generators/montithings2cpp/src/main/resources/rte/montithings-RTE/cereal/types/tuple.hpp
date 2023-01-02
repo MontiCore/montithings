@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file tuple.hpp
     \brief Support for types found in \<tuple\>
     \ingroup STLSupport */

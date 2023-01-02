@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 package montithings.generator.cd2proto;
 
 import montithings.generator.cd2proto.helper.ProtobufRunner;

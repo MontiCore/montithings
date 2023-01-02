@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #pragma once
 // settings for crow
 // TODO - replace with runtime config. libucl?

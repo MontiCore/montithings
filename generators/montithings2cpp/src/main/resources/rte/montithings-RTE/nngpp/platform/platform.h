@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_PLATFORM_H
 #define NNGPP_PLATFORM_H
 #include "cv.h"

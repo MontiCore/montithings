@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 //
 //  base64 encoding and decoding with C++.
 //  Version: 2.rc.08 (release candidate)

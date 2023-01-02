@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 package montithings.services.prolog_generator.oclquery.generator;
 
 import de.monticore.expressions.commonexpressions._ast.*;

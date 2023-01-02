@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 package montithings.services.iot_manager.server.test;
 
 import de.se_rwth.commons.logging.Log;

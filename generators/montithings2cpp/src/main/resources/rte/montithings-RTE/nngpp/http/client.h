@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_HTTP_CLIENT_H
 #define NNGPP_HTTP_CLIENT_H
 #include "client_view.h"

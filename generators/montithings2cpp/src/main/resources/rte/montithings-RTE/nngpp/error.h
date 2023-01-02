@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_ERROR_H
 #define NNGPP_ERROR_H
 #include <nng/nng.h>

@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 package montithings.services.prolog_generator;
 
 import de.se_rwth.commons.logging.Log;

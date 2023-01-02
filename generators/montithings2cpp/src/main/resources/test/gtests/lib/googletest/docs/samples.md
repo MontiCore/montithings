@@ -1,4 +1,3 @@
-<!-- (c) https://github.com/MontiCore/monticore -->
 # Googletest Samples {#samples}
 
 If you're like us, you'd like to look at

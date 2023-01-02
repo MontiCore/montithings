@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 objectdiagram raspiCam {
   raspiCam : Camera {
     manufacturer = "RaspberryPi";

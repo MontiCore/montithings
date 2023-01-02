@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_SURVEY0_H
 #define NNGPP_SURVEY0_H
 #include <nngpp/ctx.h>

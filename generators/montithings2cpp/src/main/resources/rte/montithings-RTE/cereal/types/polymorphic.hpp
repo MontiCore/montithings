@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file polymorphic.hpp
     \brief Support for pointers to polymorphic base classes
     \ingroup OtherTypes */

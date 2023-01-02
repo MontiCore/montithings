@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #ifndef NNGPP_BUS0_H
 #define NNGPP_BUS0_H
 #include <nngpp/socket.h>

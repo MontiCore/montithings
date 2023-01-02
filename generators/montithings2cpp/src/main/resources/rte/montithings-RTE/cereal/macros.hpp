@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file macros.hpp
     \brief Preprocessor macros that can customise the cereal library
 

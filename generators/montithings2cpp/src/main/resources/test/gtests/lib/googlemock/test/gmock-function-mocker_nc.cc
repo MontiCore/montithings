@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 #include "gmock/gmock.h"
 
 #include <memory>

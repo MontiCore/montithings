@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 package montithings.generator.cd2proto;
 
 import de.se_rwth.commons.logging.Log;

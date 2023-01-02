@@ -1,4 +1,3 @@
-/* (c) https://github.com/MontiCore/monticore */
 /*! \file boost_variant.hpp
     \brief Support for boost::variant
     \ingroup OtherTypes */
