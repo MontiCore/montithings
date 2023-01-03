@@ -5,15 +5,21 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.google.gson.*;
+
 public class ConnectionString {
   byte[] rawMsgPayload;
   String connectionString;
   String instanceName;
+  String componentInterface;
 
-  public ConnectionString(byte[] rawMsgPayload, String connectionString, String instanceName) {
+  public ConnectionString(byte[] rawMsgPayload) {
     this.rawMsgPayload = rawMsgPayload;
-    this.connectionString = connectionString;
-    this.instanceName = instanceName;
+    String strJson = new String(rawMsgPayload, StandardCharsets.UTF_8);
+    JsonObject json = JsonParser.parseString(strJson).getAsJsonObject();
+    this.connectionString = json.get("connectionString").getAsString();
+    this.instanceName = json.get("instanceName").getAsString();
+    this.componentInterface = json.get("interface").getAsString();
   }
 
   public byte[] getRawMsgPayload() {
@@ -30,6 +36,10 @@ public class ConnectionString {
 
   public byte[] getConnectionStringAsByte() {
     return connectionString.getBytes(StandardCharsets.UTF_8);
+  }
+
+  public String getComponentInterface() {
+    return componentInterface;
   }
 
   @Override

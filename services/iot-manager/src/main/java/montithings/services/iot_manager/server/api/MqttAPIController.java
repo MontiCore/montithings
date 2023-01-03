@@ -155,14 +155,10 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
     byte[] data = message.getPayload();
 
     if (data != null) {
-      String strJson = new String(data, StandardCharsets.UTF_8);
-      JsonObject json = JsonParser.parseString(strJson).getAsJsonObject();
-      String connectionString = json.get("connectionString").getAsString();
-      String instanceName = json.get("instanceName").getAsString();
-      ConnectionString co = new ConnectionString(data, connectionString, instanceName);
-      connectionStrings.add(co);
+      ConnectionString connectionString = new ConnectionString(data);
+      connectionStrings.add(connectionString);
       String outermostComponent = manager.getDeploymentInfo().getOutermostComponent();
-      sendPortsInject(co.getConnectionStringAsByte(), outermostComponent, true);
+      sendPortsInject(connectionString, outermostComponent, true);
     }
   }
 
@@ -177,13 +173,14 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
     }
   }
 
-  private void sendPortsInject(byte[] connString, String outermostComponent, boolean connect) {
+  private void sendPortsInject(ConnectionString connectionString, String outermostComponent, boolean connect) {
     try {
-      MqttMessage msg = new MqttMessage(connString);
+      MqttMessage msg = new MqttMessage(connectionString.getConnectionStringAsByte());
       String outermostComponentTopic = String.join("/", outermostComponent.split("."));
+      String portNamePrefix = connect ? "connect" : "disconnect";
+      String portName = portNamePrefix + connectionString.getComponentInterface();
       String topic = String.join("/", TOPIC_PORTS_INJECT,
-          outermostComponentTopic,
-          connect ? "connect" : "disconnect");
+          outermostComponentTopic, portName);
       this.mqtt.publish(topic, msg);
     } catch (MqttException e) {
       e.printStackTrace();
@@ -225,7 +222,7 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
           // If there is an instance that equals connection string instance name
           // send connection string to portsInject topic and remove connection string
           if (Arrays.asList(instances).contains(connectionString.getInstanceName())) {
-            sendPortsInject(connectionString.getConnectionStringAsByte(), outermostComponent, false);
+            sendPortsInject(connectionString, outermostComponent, false);
             i.remove();
           }
         }
