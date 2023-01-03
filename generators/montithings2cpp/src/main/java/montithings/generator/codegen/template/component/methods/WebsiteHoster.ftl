@@ -4,134 +4,46 @@ ${tc.signature("comp","config","className")}
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
+  
+  httplib::Server svr;
 
-
-  uint16_t port = 8080;
-  int server_fd, new_socket, pid;
-  long valread;
-  struct sockaddr_in address;
-  int addrlen = sizeof(address);
-  std::string listOfHTMLPaths[] = {"/"
+  svr.Get("/", [](const httplib::Request &, httplib::Response &res) {
+    std::ifstream t("html/Index.html");
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    std::string cont = buffer.str();
+    res.set_content(cont, "text/html");
+  });
   <#list ComponentHelper.getAllLanguageDirectories(config) as file>
-  ,"${file}"
+    svr.Get("${file}", [](const httplib::Request &, httplib::Response &res) {
+    std::ifstream t("html${file}.html");
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    std::string cont = buffer.str();
+    res.set_content(cont, "text/html");
+  });
+  svr.Post("${file}", [&](const httplib::Request &req, httplib::Response &res) {
+    //store model
+    const auto& file = req.get_file_value("fileUpload");
+    std::fstream modelFile;
+    modelFile.open("models${file}/model.mc",std::fstream::out);
+    modelFile << file.content;
+    modelFile.close();
+    res.set_content("","text/html");
+
+    //generate py
+
+    //send py
+    httplib::Client cli("127.0.0.1:8081");
+    std::ifstream pyFile("models${file}/code.py");
+    std::stringstream buffer;
+    buffer << pyFile.rdbuf();
+    std::string cont = buffer.str();
+    httplib::Params params;
+    params.emplace("fileUpload", cont);
+    cli.Post("/Py", params);
+  });
   </#list>
-  };
-  
-  // Creating socket file descriptor
-  if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-  {
-      perror("In sockets");
-      exit(EXIT_FAILURE);
-  }
-  const int enable = 1;
-  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
-    perror("setsockopt(SO_REUSEADDR) failed");
-  }
-  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0){
-    perror("setsockopt(SO_REUSEPORT) failed");
-  }
-  
-  address.sin_family = AF_INET;
-  address.sin_addr.s_addr = INADDR_ANY;
-  address.sin_port = htons( port );
-  
-  memset(address.sin_zero, '\0', sizeof address.sin_zero);
-  
-  if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0)
-  {
-      perror("In bind");
-      close(server_fd);
-      exit(EXIT_FAILURE);
-  }
-  if (listen(server_fd, 10) < 0)
-  {
-      perror("In listen");
-      exit(EXIT_FAILURE);
-  }
-  
-  while(1)
-  {
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
-    {
-        perror("In accept");
-        exit(EXIT_FAILURE);
-    }
-    pid = fork();
-    if(pid < 0){
-        perror("Error on fork");
-        exit(EXIT_FAILURE);
-    }
-    
-    if(pid == 0){
-      char buffer[30000] = {0};
-      valread = read( new_socket , buffer, 30000);
 
-      LOG(DEBUG) << "\n buffer message: " << buffer;
-
-      std::string parse_string_method = get_web_substring(buffer,0); 
-
-      std::cout << "Client method: " << parse_string_method << std::endl;
-
-      char httpHeader1[800021] = "HTTP/1.1 200 OK\r\n\n";
-
-      std::string parse_string = get_web_substring(buffer,1);  
-      std::cout << "Client path: " << parse_string << std::endl;
-
-      char *copy_head = (char *)malloc(strlen(httpHeader1));
-      strcpy(copy_head, httpHeader1);
-
-      if(parse_string_method[0] == 'G' && parse_string_method[1] == 'E' && parse_string_method[2] == 'T'){
-        for(std::string str : listOfHTMLPaths){
-          if(str == parse_string){
-            char path_head[500] = "";
-            strcat(path_head, "html");
-            strcat(path_head, parse_string.c_str());
-            if(parse_string == "/"){
-              strcat(path_head, "Index");
-            }
-            strcat(path_head, ".html");
-            send_message(new_socket, path_head, copy_head);
-
-
-            int sockfd = 0;
-            int client_fd;
-            struct sockaddr_in serv_addr;
-            char* hello = "PY Hello from client";
-            char buffer[1024] = { 0 };
-            if((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0)
-            {
-              perror("In Client sockets");
-              exit(EXIT_FAILURE);
-            }
-
-            serv_addr.sin_family = AF_INET;
-            serv_addr.sin_port = htons(8081);
-            if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0)
-            {
-              perror("In Address convertion");
-              exit(EXIT_FAILURE);
-            }
-            if ((client_fd = connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)))< 0) {
-              perror("In Connection");
-              exit(EXIT_FAILURE);
-            }
-            send(sockfd, hello, strlen(hello), 0);
-            LOG(DEBUG) << "\n -send";
-            close(client_fd);
-          }
-        }
-      }
-
-      close(new_socket);
-      free(copy_head);
-      exit(1);
-    }
-    else{
-      signal(SIGCHLD,SIG_IGN);
-      LOG(DEBUG) << ">>>>>>>>>>Parent create child with pid: " << pid << "<<<<<<<<<";
-      close(new_socket);
-    }
-  
-  }
-  close(server_fd);
+  svr.listen("0.0.0.0", 8080);
 }

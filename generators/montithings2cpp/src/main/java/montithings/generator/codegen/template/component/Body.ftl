@@ -45,11 +45,7 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.PythonReceiver",[comp, config, className])}
 </#if>
 <#if ComponentHelper.isWebComponent(comp)>
-  
-  ${tc.includeArgs("template.component.methods.GetWebSubstring",[comp, config, className])}  
-  ${tc.includeArgs("template.component.methods.SendMessage",[comp, config, className])}
   ${tc.includeArgs("template.component.methods.WebsiteHoster",[comp, config, className])}
-  
 </#if>
 
 <#if ComponentHelper.componentHasPorts(comp)>

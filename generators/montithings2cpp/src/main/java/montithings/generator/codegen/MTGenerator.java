@@ -56,6 +56,11 @@ public class MTGenerator {
     boolean useWsPorts = (config.getSplittingMode() != SplittingMode.OFF
       && generateDeploy);
 
+    if(ComponentHelper.isDSLComponent(comp,config) || ComponentHelper.isWebComponent(comp)){
+      fg.generate(targetPath,"httplib", ".h","template/util/html/Httplib.ftl");
+    }
+    
+
     fg.generate(targetPath, compname + "Input", ".h",
       "template/input/Header.ftl", comp, config);
     if (!comp.getIncomingPorts().isEmpty()) {

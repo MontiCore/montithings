@@ -265,23 +265,6 @@ public class ComponentHelper {
     }
     return false;
   }
-
-    
-    //if (comp.getAstNode() instanceof ASTMTComponentType) {
-    //  //boolean hasHwc = FileHelper.existsHWCClass(hwcPath, comp.getFullName());
-    //  boolean hasBehavior = ComponentHelper.hasBehavior(comp)
-    //    ||  ComponentHelper.hasStatechart(comp)
-    //    || !ComponentHelper.getPortSpecificBehaviors(comp).isEmpty()
-    //    || ComponentHelper.hasInitBehavior(comp);
-     // //  || ComponentHelper.hasHandwrittenPythonBehaviour(hwcPath, comp);
-    //  boolean hasEveryBlock = !ComponentHelper.getEveryBlocks(comp).isEmpty();
-    //  boolean isComposed = comp.isDecomposed();
-    //  //boolean isInterfaceComp = node.getMTComponentModifier().isInterface();
-     // if (/*!hasHwc && */!hasBehavior && !hasEveryBlock && !isComposed /*&& !isInterfaceComp*/){
-    //      return true;
-    //  }
-    //}
-    //return false;
     
 
     /**
