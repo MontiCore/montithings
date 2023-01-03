@@ -14,6 +14,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Map.Entry;
 
 /**
@@ -38,6 +42,8 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
   private final DeploymentManager manager;
 
   private MqttClient mqtt;
+
+  private Set<ConnectionString> connectionStrings = new HashSet<ConnectionString>();
 
   public MqttAPIController(DeploymentManager manager) {
     this.manager = manager;
@@ -146,7 +152,18 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
   }
 
   private void handleReceiveConnectionString(String topic, MqttMessage message) {
-    sendPortsInject(message.getPayload(), "hierarchy", "Example", true);
+    byte[] data = message.getPayload();
+
+    if (data != null) {
+      String strJson = new String(data, StandardCharsets.UTF_8);
+      JsonObject json = JsonParser.parseString(strJson).getAsJsonObject();
+      String connectionString = json.get("connectionString").getAsString();
+      String instanceName = json.get("instanceName").getAsString();
+      ConnectionString co = new ConnectionString(data, connectionString, instanceName);
+      connectionStrings.add(co);
+      String outermostComponent = manager.getDeploymentInfo().getOutermostComponent();
+      sendPortsInject(co.getConnectionStringAsByte(), outermostComponent, true);
+    }
   }
 
   private void sendDeviceUpdate(DeployClient client) {
@@ -160,10 +177,12 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
     }
   }
 
-  private void sendPortsInject(byte[] connString, String packageName, String componentName, boolean connect) {
+  private void sendPortsInject(byte[] connString, String outermostComponent, boolean connect) {
     try {
       MqttMessage msg = new MqttMessage(connString);
-      String topic = String.join("/", TOPIC_PORTS_INJECT, packageName, componentName,
+      String outermostComponentTopic = String.join("/", outermostComponent.split("."));
+      String topic = String.join("/", TOPIC_PORTS_INJECT,
+          outermostComponentTopic,
           connect ? "connect" : "disconnect");
       this.mqtt.publish(topic, msg);
     } catch (MqttException e) {
@@ -179,6 +198,39 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
   @Override
   public void onClientOffline(DeployClient client) {
     this.sendDeviceUpdate(client);
+    this.sendPortsInjectDisconnect(client);
+  }
+
+  /**
+   * Send disconnect to outermost component for all components of offline client
+   * 
+   * @param client
+   */
+  private void sendPortsInjectDisconnect(DeployClient client) {
+    // Current distribution contains mapping of clients to components
+    for (Entry<String, String[]> e : manager.getCurrentDistribution().getDistributionMap().entrySet()) {
+      String clientID = e.getKey();
+
+      // Find components of offline clinet
+      if (clientID.equals(client.getClientID())) {
+        // Get outermost component name
+        String outermostComponent = manager.getDeploymentInfo().getOutermostComponent();
+        // Get instance names
+        String[] instances = e.getValue();
+
+        // Compare received connection strings with instances of offline client
+        for (Iterator<ConnectionString> i = connectionStrings.iterator(); i.hasNext();) {
+          ConnectionString connectionString = i.next();
+
+          // If there is an instance that equals connection string instance name
+          // send connection string to portsInject topic and remove connection string
+          if (Arrays.asList(instances).contains(connectionString.getInstanceName())) {
+            sendPortsInject(connectionString.getConnectionStringAsByte(), outermostComponent, false);
+            i.remove();
+          }
+        }
+      }
+    }
   }
 
   @Override

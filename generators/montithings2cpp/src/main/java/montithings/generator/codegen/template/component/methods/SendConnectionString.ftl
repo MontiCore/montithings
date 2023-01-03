@@ -4,9 +4,15 @@ ${tc.signature("comp","config","className")}
 
 
 ${Utils.printTemplateArguments(comp)}
-void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendConnectionString(std::string connectionStringTopic, std::string connectionString){
-  LOG (DEBUG) << "Sending connection string " << connectionString << " to topic "
-              << connectionStringTopic;
+void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendConnectionString(std::string connectionStringTopic, std::string connectionString)
+{
+  LOG (DEBUG) << "Sending connection string " << connectionString
+              << " of instance ${comp.getFullName()} to topic " << connectionStringTopic;
+  
+  json j;
+  j["instanceName"] = "${comp.getFullName()}";
+  j["connectionString"] = connectionString;
+  std::string message = j.dump ();
 
   mqttClientLocalInstance->publishRetainedMessage (connectionStringTopic, connectionString);
 }

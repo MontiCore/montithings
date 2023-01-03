@@ -47,6 +47,22 @@ public class DeploymentInfo {
     return res;
   }
 
+  public String getOutermostComponent() {
+    String instanceName = "";
+    int shortestLength = Integer.MAX_VALUE;
+
+    for (InstanceInfo instance : instances) {
+      int curLength = instance.getInstanceName().split(".").length;
+
+      if (curLength < shortestLength) {
+        instanceName = instance.getInstanceName();
+        shortestLength = curLength;
+      }
+    }
+
+    return instanceName;
+  }
+
   public TerraformInfo[] getTerraformInfos() {
     List<TerraformInfo> res = new LinkedList<>();
 
