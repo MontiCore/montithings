@@ -35,7 +35,7 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
     }
     if (sendConnectionStr.getValue ())
     {
-      cmp.sendConnectionString ("/dynamics", cmp.getConnectionString${TypesHelper.getComponentTypePrefix() + comp.getName()}());
+      cmp.sendConnectionString ("deploymngr/dynamics", cmp.getConnectionString${TypesHelper.getComponentTypePrefix() + comp.getName()}());
     }
     <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
       if (printConnectionStr${interface}.getValue ())
@@ -51,7 +51,7 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
       }
       if (sendConnectionStr${interface}.getValue ())
       {
-        cmp.sendConnectionString ("/dynamics", cmp.getConnectionString${interface}());
+        cmp.sendConnectionString ("deploymngr/dynamics", cmp.getConnectionString${interface}());
       }
     </#list>
   </#if>

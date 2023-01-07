@@ -9,6 +9,7 @@ import montithings.services.iot_manager.server.azurecloud.AzureCloudTargetProvid
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.genesis.GenesisDeployTargetProvider;
 import montithings.services.iot_manager.server.k8s.K8sDeployTargetProvider;
+import montithings.services.iot_manager.server.localProvider.LocalTargetProvider;
 import montithings.services.iot_manager.server.util.ThrowingFunction;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 
@@ -32,6 +33,7 @@ public class DeployTargetProviderParser {
         constructors.put("GENESIS", DeployTargetProviderParser::parseGenesisProvider);
         constructors.put("AZURE", DeployTargetProviderParser::parseAzureProvider);
         constructors.put("AZURECLOUD", DeployTargetProviderParser::parseAzureCloudProvider);
+        constructors.put("LOCALTEST", DeployTargetProviderParser::parseLocalTestProvider);
 
         JsonObject jo = json.getAsJsonObject();
         String type = jo.get("type").getAsString();
@@ -113,6 +115,16 @@ public class DeployTargetProviderParser {
       long providerID = json.get("id").getAsLong();
       System.out.println("Created Azure Cloud Provider");
       return new AzureCloudTargetProvider(providerID);
+    } catch (Exception e) {
+      throw new DeploymentException(e);
+    }
+  }
+
+  public static LocalTargetProvider parseLocalTestProvider(JsonObject json) throws DeploymentException {
+    try {
+      long providerID = json.get("id").getAsLong();
+      System.out.println("Created LocalTargetProvider");
+      return new LocalTargetProvider(providerID);
     } catch (Exception e) {
       throw new DeploymentException(e);
     }

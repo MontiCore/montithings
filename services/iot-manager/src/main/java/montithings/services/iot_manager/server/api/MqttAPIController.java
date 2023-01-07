@@ -37,7 +37,7 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
   private static final String TOPIC_UPDATE_DEVICES = MQTT_PREFIX + "/updateDevice";
   private static final String TOPIC_UPDATE_STATE = MQTT_PREFIX + "/updateState";
   private static final String TOPIC_DYNAMICS = MQTT_PREFIX + "/dynamics";
-  private static final String TOPIC_PORTS_INJECT = MQTT_PREFIX + "/portsInject";
+  private static final String TOPIC_PORTS_INJECT = "/portsInject";
 
   private final DeploymentManager manager;
 
@@ -80,6 +80,7 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
       this.mqtt.subscribe(TOPIC_SETCONFIG_REQUEST, this::handleSetDeployConfig);
       this.mqtt.subscribe(TOPIC_SETINFO_REQUEST, this::handleSetDeployInfo);
       this.mqtt.subscribe(TOPIC_UPDATEDEPLOYMENT_REQUEST, this::handleUpdateDeployment);
+      System.out.println("Listen to topic " + TOPIC_DYNAMICS);
       this.mqtt.subscribe(TOPIC_DYNAMICS, this::handleReceiveConnectionString);
 
       // notify others that we're online
@@ -152,13 +153,27 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
   }
 
   private void handleReceiveConnectionString(String topic, MqttMessage message) {
+    System.out.println("Received connection string");
+
+    DeploymentInfo deployInfo = manager.getDeploymentInfo();
+
+    if (deployInfo == null) {
+      System.out.println(
+          "No deployment info set. Don't know where to send connection string to. Please set deployment info first.");
+      return;
+    }
+
     byte[] data = message.getPayload();
 
     if (data != null) {
-      ConnectionString connectionString = new ConnectionString(data);
-      connectionStrings.add(connectionString);
-      String outermostComponent = manager.getDeploymentInfo().getOutermostComponent();
-      sendPortsInject(connectionString, outermostComponent, true);
+      try {
+        ConnectionString connectionString = new ConnectionString(data);
+        connectionStrings.add(connectionString);
+        String outermostComponent = deployInfo.getOutermostComponent();
+        sendPortsInject(connectionString, outermostComponent, true);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -176,11 +191,12 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
   private void sendPortsInject(ConnectionString connectionString, String outermostComponent, boolean connect) {
     try {
       MqttMessage msg = new MqttMessage(connectionString.getConnectionStringAsByte());
-      String outermostComponentTopic = String.join("/", outermostComponent.split("."));
+      String outermostComponentTopic = String.join("/", outermostComponent.split("\\."));
       String portNamePrefix = connect ? "connect" : "disconnect";
       String portName = portNamePrefix + connectionString.getComponentInterface();
       String topic = String.join("/", TOPIC_PORTS_INJECT,
           outermostComponentTopic, portName);
+      System.out.println("Send to portsInject. Topic: " + topic + ". Message: " + msg);
       this.mqtt.publish(topic, msg);
     } catch (MqttException e) {
       e.printStackTrace();
@@ -204,6 +220,14 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
    * @param client
    */
   private void sendPortsInjectDisconnect(DeployClient client) {
+    DeploymentInfo deployInfo = manager.getDeploymentInfo();
+
+    if (deployInfo == null) {
+      System.out.println(
+          "No deployment info set. Don't know where to send connection string to. Please set deployment info first.");
+      return;
+    }
+
     // Current distribution contains mapping of clients to components
     for (Entry<String, String[]> e : manager.getCurrentDistribution().getDistributionMap().entrySet()) {
       String clientID = e.getKey();
@@ -211,7 +235,7 @@ public class MqttAPIController implements IDeployStatusListener, IMqttSettingsLi
       // Find components of offline clinet
       if (clientID.equals(client.getClientID())) {
         // Get outermost component name
-        String outermostComponent = manager.getDeploymentInfo().getOutermostComponent();
+        String outermostComponent = deployInfo.getOutermostComponent();
         // Get instance names
         String[] instances = e.getValue();
 
