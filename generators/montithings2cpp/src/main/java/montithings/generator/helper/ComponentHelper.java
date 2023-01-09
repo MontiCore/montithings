@@ -249,6 +249,20 @@ public class ComponentHelper {
   }
 
   /**
+   * Returns the Component matching the given name
+   * @param name component name
+   * @return component 
+   */
+  public static ComponentTypeSymbol getCompByName(String name, ComponentTypeSymbol someComp){
+    System.out.println("!!! Name: " + name + " !!!");
+    ComponentTypeSymbol comp = GenericBindingUtil.getComponentFromString(GenericBindingUtil.getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) someComp.getEnclosingScope()), name);
+    if(comp == null){
+      System.out.println("!!! Empty !!!");
+    }
+    return comp;
+  }
+
+  /**
    * Returns True iff the given component is a dsl component
    */
   public static boolean isDSLComponent(ComponentTypeSymbol comp, ConfigParams config) {
@@ -295,7 +309,7 @@ public class ComponentHelper {
   }
 
   /**
-   * Get the full path ro the components specific language folder of DSL components
+   * Get the full path to the components specific language folder of DSL components
    */
   public static Path getFullLanguagePath(ComponentTypeSymbol comp, ConfigParams config) {
     File languagesFolder = config.getLanguagePath();
@@ -315,6 +329,9 @@ public class ComponentHelper {
     return new ArrayList<String>();
   }
 
+  /**
+   * recursive helper function for getAllLanguageDirectories
+   */
   static ArrayList<String> recursiveSearchLanguageFiles(File rootFile, String path){
     ArrayList<String> retVal = new ArrayList<String>();
     File[] subDirs = rootFile.listFiles();
@@ -330,6 +347,14 @@ public class ComponentHelper {
       }
     }
     return retVal;
+  }
+
+  /**
+   * Get className from languagePath
+   */
+  public static String getClassNameFromLanguagePath(String path) {
+    LinkedList<String> items = new LinkedList<String>(Arrays.asList(path.split(String.valueOf(File.separatorChar))));
+    return items.getLast();
   }
 
   /**

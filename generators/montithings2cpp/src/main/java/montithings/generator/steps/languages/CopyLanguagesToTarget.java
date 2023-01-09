@@ -24,7 +24,7 @@ public class CopyLanguagesToTarget extends GeneratorStep {
           Paths.get(state.getTarget().getAbsolutePath()).toFile());
       }
       else {
-        FileUtils.copyDirectory(new File(state.getLanguagePath().toString() + "/hierarchy/Sink/target"),
+        FileUtils.copyDirectory(new File(state.getLanguagePath().toString() + "/hierarchy/Sink"),
           Paths.get(state.getTarget().getAbsolutePath(), "languages").toFile());
       }
     }

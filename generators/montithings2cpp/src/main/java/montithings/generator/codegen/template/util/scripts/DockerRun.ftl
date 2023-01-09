@@ -46,11 +46,13 @@ esac
     <#list sensorActuatorPorts as port >
         ${tc.includeArgs("template.util.scripts.DockerRunCommandSensorActuatorPorts", [port, port?lower_case, config])}
     </#list>
-    <#list hwcPythonScripts as script >
-        ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [script?lower_case, config])}
-    </#list>
-    <#if sensorActuatorPorts?size gt 0 || hwcPythonScripts?size gt 0>
-      ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [sensoractuatormanagerimage, config])}
+    <#if ComponentHelper.getAllLanguageDirectories(config)?size gt 0>
+      <#list hwcPythonScripts as script >
+          ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [script?lower_case, config])}
+      </#list>
+      <#if sensorActuatorPorts?size gt 0 || hwcPythonScripts?size gt 0>
+        ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [sensoractuatormanagerimage, config])}
+      </#if>
     </#if>
 </#if>
 

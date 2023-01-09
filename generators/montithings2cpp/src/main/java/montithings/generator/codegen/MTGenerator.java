@@ -273,7 +273,7 @@ public class MTGenerator {
   }
 
   /**
-   * generates chtml files for DSLs
+   * generates html files for DSLs
    *
    * @param languagePath location of the directory where the test code is located
    */

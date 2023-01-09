@@ -62,7 +62,7 @@ RUN ./build.sh ${comp.getFullName()}
     <#list instances as pair >
         <#if ! processedInstances?seq_contains(pair.getKey().fullName)>
             <#assign processedInstances = processedInstances + [pair.getKey().fullName] />
-
+            <#assign processedComp = ComponentHelper.getCompByName(pair.getKey().name, comp) />
             # COMPONENT: ${pair.getKey().fullName}
             <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
             <#if brokerIsDDS>
@@ -73,11 +73,32 @@ RUN ./build.sh ${comp.getFullName()}
             RUN apk add --update-cache libgcc libstdc++
             </#if>
 
+            <#if ComponentHelper.isDSLComponent(processedComp,config)>
+
+            RUN apk add protoc
+
+            RUN apk add --update-cache python3 py3-pip py3-protobuf
+
+            RUN pip install paho-mqtt==1.5.1
+
+            COPY --from=build /usr/src/app/build/bin/python /usr/src/app/build/bin/python
+            </#if>
+            <#if ComponentHelper.isWebComponent(processedComp)>
+
+            RUN apk add protoc
+
+            COPY --from=build /usr/src/app/build/bin/html /usr/src/app/build/bin/html
+
+            COPY --from=build /usr/src/app/build/bin/models /usr/src/app/build/bin/models
+            </#if>
+
             <#if brokerIsMQTT>
+
             ADD deployment-config.json /.montithings/deployment-config.json
 
             RUN apk add --update-cache mosquitto-libs++
             </#if>
+
 
             COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
 

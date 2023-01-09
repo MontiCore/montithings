@@ -30,13 +30,12 @@
         </dependency>
 
 
-        <!--
         <dependency>
             <groupId>montithings.languages</groupId>
             <artifactId>bindings</artifactId>
             <version>${project.version}</version>
         </dependency>
-        -->
+        
 
         <dependency>
             <groupId>de.se_rwth.commons</groupId>
@@ -47,11 +46,13 @@
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-runtime</artifactId>
+            <version>${monticore.version}</version>
         </dependency>
 
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-grammar</artifactId>
+            <version>${monticore.version}</version>
         </dependency>
 
 
@@ -78,6 +79,7 @@
         <dependency>
             <groupId>de.monticore</groupId>
             <artifactId>monticore-runtime</artifactId>
+            <version>${monticore.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -282,7 +284,7 @@
                                 <!--<platform>DSA</platform>-->
                                 <main>hierarchy.Example</main>
                                 <version>${project.version}</version>
-                                <splitting>LOCAL</splitting>
+                                <splitting>DISTRIBUTED</splitting>
                                 <messageBroker>MQTT</messageBroker>
                                 <serialization>PROTOBUF</serialization>
                             </arguments>

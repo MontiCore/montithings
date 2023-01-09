@@ -35,7 +35,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
 
     //send py
     httplib::Client cli("127.0.0.1:8081");
-    std::ifstream pyFile("models${file}/code.py");
+    std::ifstream pyFile("models${file}/${ComponentHelper.getClassNameFromLanguagePath(file)}Impl.py");
     std::stringstream buffer;
     buffer << pyFile.rdbuf();
     std::string cont = buffer.str();
