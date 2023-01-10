@@ -33,7 +33,7 @@ before_script:
   stage: build
   variables:
     DOCKER_DRIVER: overlay2
-  cache: { }
+  cache: {}
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
       changes:
@@ -52,7 +52,7 @@ before_script:
 Docker Alpine:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'docker/mtcmake/**/*'
+    CHANGES_PATH: "docker/mtcmake/**/*"
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmake
@@ -71,7 +71,7 @@ Docker Alpine:
 Docker DDS:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'docker/mtcmakedds/**/*'
+    CHANGES_PATH: "docker/mtcmakedds/**/*"
   script:
     - docker login -u sebot -p $sebot $CI_REGISTRY
     - cd docker/mtcmakedds
@@ -90,18 +90,17 @@ Docker DDS:
 Docker OpenDDSDCPSInfoRepo:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'docker/openddsdcpsinforepo/**/*'
+    CHANGES_PATH: "docker/openddsdcpsinforepo/**/*"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd docker/openddsdcpsinforepo
     - docker build -t $CI_REGISTRY_IMAGE/openddsdcpsinforepo .
     - docker push $CI_REGISTRY_IMAGE/openddsdcpsinforepo
 
-
 Docker Recorder:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'services/recorder/**/*'
+    CHANGES_PATH: "services/recorder/**/*"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/recorder -f services/recorder/Dockerfile .
@@ -109,11 +108,10 @@ Docker Recorder:
     - docker push montithings/recorder
     - docker push $CI_REGISTRY_IMAGE/recorder
 
-
 Docker Log Tracing:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'services/log-tracing/**/*'
+    CHANGES_PATH: "services/log-tracing/**/*"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/logtracer-middleware -f services/log-tracing/Dockerfile .
@@ -129,7 +127,7 @@ Docker Log Tracing:
 Docker Prolog Generator:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'services/prolog*/**/*' 
+    CHANGES_PATH: "services/prolog*/**/*"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build . --file services/prolog-server/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/prolog-generator
@@ -140,7 +138,7 @@ Docker Prolog Generator:
 Docker IoT Manager:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'services/iot-manager/**/*'
+    CHANGES_PATH: "services/iot-manager/**/*"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd services/iot-manager/
@@ -153,7 +151,7 @@ Docker IoT Manager:
 Docker FD Tagging Tool:
   <<: *docker_build_definition
   variables:
-    CHANGES_PATH: 'services/fd-tagging-tool/**/*'
+    CHANGES_PATH: "services/fd-tagging-tool/**/*"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - cd services/fd-tagging-tool/
@@ -163,6 +161,16 @@ Docker FD Tagging Tool:
     - docker push montithings/fd-tagging-tool
     - docker push $CI_REGISTRY_IMAGE/fd-tagging-tool
 
+Docker Terraform Deployer:
+  <<: *docker_build_definition
+  variables:
+    CHANGES_PATH: "services/terraform-deployer*/**/*"
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build . --file services/terraform-deployer/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/terraform-deployer
+    - docker tag $CI_REGISTRY_IMAGE/terraform-deployer montithings/terraform-deployer
+    - docker push montithings/terraform-deployer
+    - docker push $CI_REGISTRY_IMAGE/terraform-deployer
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -273,7 +281,7 @@ Compile Applications:
   stage: generator-test
   dependencies:
     - Unit Test JDK 11 #download generated-test-sources
-  needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
+  needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   script:
     - cd applications
     - ./compile.sh
@@ -282,7 +290,7 @@ Compile Applications:
   image: $CI_REGISTRY_IMAGE/mtcmake
   dependencies:
     - Unit Test JDK 11 #download generated-test-sources
-  needs: [ "Unit Test JDK 11" ] # can run immediately after Unit Test JDK 11
+  needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   stage: generator-test
   retry: 2
   script:
@@ -321,7 +329,6 @@ language-features/initialization:
     APPLICATION_NAME: language-features/initialization
   <<: *test-application-definition
   timeout: 10 minutes
-
 
 #language-features/interface-components:
 #  variables:
@@ -377,7 +384,7 @@ Code Quality:
     DOCKER_DRIVER: overlay2
   allow_failure: true
   cache: {}
-  needs: [] # can run immediately 
+  needs: [] # can run immediately
   retry: 2
   tags:
     - shell
@@ -409,7 +416,7 @@ Code Quality:
 
 #Docker Applications:
 #  stage: build-applications
-#  dependencies: 
+#  dependencies:
 #    - Validate Maven #download artifacts from build
 #  variables:
 #    DOCKER_DRIVER: overlay2
@@ -439,7 +446,7 @@ GitHub Mirror:
   dependencies:
     - Deploy Nexus
   before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$SE_CIBUILD_SSH_PRIV_KEY")
     - echo "$SE_CIBUILD_SSH_PRIV_KEY" | tr -d '\r' | ssh-add -
@@ -470,7 +477,6 @@ GitHub Mirror:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
 
-
 ##########################################
 # Security Jobs
 ##########################################
@@ -482,17 +488,17 @@ include:
 # Check there are no secrets in the projects
 secret_detection:
   stage: security
-  needs: [] # can run immediately 
+  needs: [] # can run immediately
 
 # Check RTE for security flaws
 flawfinder-sast:
   stage: security
-  needs: [] # can run immediately 
+  needs: [] # can run immediately
   rules:
     - if: $CI_COMMIT_BRANCH
       exists:
-        - '**/*.c'
-        - '**/*.cpp'
+        - "**/*.c"
+        - "**/*.cpp"
 
 ##########################################
 # Trigger other projects' pipelines
