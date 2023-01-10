@@ -64,6 +64,14 @@ public class DeploymentManager implements IDeployStatusListener {
     return network;
   }
 
+  public DeploymentInfo getDeploymentInfo() {
+    return currentDeploymentInfo;
+  }
+
+  public Distribution getCurrentDistribution() {
+    return currentDistribution;
+  }
+
   public void setStatusListener(IDeployStatusListener listener) {
     this.listener = listener;
   }

@@ -17,6 +17,7 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.InitComposed", [comp, config, className])}
   <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
+    ${tc.includeArgs("template.component.methods.SendConnectionString", [comp, config, className])}
   </#if>
 
   <#if splittingModeDisabled>
@@ -37,6 +38,7 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.InitAtomic", [comp, config, className])}
   <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
+    ${tc.includeArgs("template.component.methods.SendConnectionString", [comp, config, className])}
   </#if>  ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}

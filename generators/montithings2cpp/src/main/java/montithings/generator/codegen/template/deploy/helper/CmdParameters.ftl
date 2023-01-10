@@ -22,10 +22,22 @@ cmd.add (monochrome);
   false);
   cmd.add (printConnectionStr);
 
+  <#if brokerIsMQTT>
+  TCLAP::SwitchArg sendConnectionStr ("", "sendConnectStr", "Sends the JSON connection string of this component to deployment manager",
+  false);
+  cmd.add (sendConnectionStr);
+  </#if>
+
   <#list ComponentHelper.getInterfaceClassNames(comp) as interface>
     TCLAP::SwitchArg printConnectionStr${interface} ("", "printConnectStr${interface}", "Prints out the JSON connection string of this component interpreted as a '${interface}', i.e. a message containing the component's interface that can be passed to other components to enable them to connect to this component, before starting the component",
     false);
     cmd.add (printConnectionStr${interface});
+    
+    <#if brokerIsMQTT>
+    TCLAP::SwitchArg sendConnectionStr${interface} ("", "sendConnectStr${interface}", "Sends out the JSON connection string of this component interpreted as a '${interface}', i.e. a message containing the component's interface that can be passed to other components to enable them to connect to this component, before starting the component",
+    false);
+    cmd.add (sendConnectionStr${interface});
+    </#if>
   </#list>
 </#if>
 

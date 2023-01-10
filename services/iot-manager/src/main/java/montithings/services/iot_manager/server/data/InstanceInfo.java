@@ -58,4 +58,8 @@ public class InstanceInfo {
     this.terraformInfo = terraformInfo;
   }
 
+  public String getFqdn() {
+    return String.join("/", this.instanceName.split("."));
+  }
+
 }

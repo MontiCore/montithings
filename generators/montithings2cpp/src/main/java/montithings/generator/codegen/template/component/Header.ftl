@@ -88,6 +88,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void publishConnectors();
   void publishConfigForSubcomponent (std::string instanceName);
   void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::string typeName, std::future<void> keepAliveFuture);
+  void sendConnectionString (std::string connectionStringTopic, std::string connectionString);
   MqttClient *getMqttClientInstance () const;
 </#if>
 
