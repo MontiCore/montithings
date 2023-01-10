@@ -10,9 +10,13 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendConnection
   
   json j;
   j["instanceName"] = "${comp.getFullName()}";
-  <#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>
-  j["interface"] = "${interface}";
-  </#list>
+  <#if ComponentHelper.getInterfaceClassNames(comp)?size <= 0>
+    j["interface"] = "Co${comp.getName()}";
+  <#else>
+    <#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>
+    j["interface"] = "${interface}";
+    </#list>
+  </#if>
   j["connectionString"] = connectionString;
   std::string message = j.dump ();
 
