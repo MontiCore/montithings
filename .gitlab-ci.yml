@@ -167,7 +167,8 @@ Docker Terraform Deployer:
     CHANGES_PATH: "services/terraform-deployer*/**/*"
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build . --file services/terraform-deployer/Dockerfile --network host --tag $CI_REGISTRY_IMAGE/terraform-deployer
+    - cd services/terraform-deployer/
+    - docker build -t $CI_REGISTRY_IMAGE/terraform-deployer .
     - docker tag $CI_REGISTRY_IMAGE/terraform-deployer montithings/terraform-deployer
     - docker push montithings/terraform-deployer
     - docker push $CI_REGISTRY_IMAGE/terraform-deployer
