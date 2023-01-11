@@ -56,7 +56,8 @@ public class GeneratorToolState {
   protected File testPath;
 
   /**
-   * Configuration parameters set by the user (e.g. splitting mode or message broker)
+   * Configuration parameters set by the user (e.g. splitting mode or message
+   * broker)
    */
   protected ConfigParams config;
 
@@ -92,8 +93,10 @@ public class GeneratorToolState {
   protected List<String> executableSensorActuatorPorts;
 
   /**
-   * Determines which components (value) code is needed to execute a component (key)
-   * For example, if a component instantiates another component and separate is off,
+   * Determines which components (value) code is needed to execute a component
+   * (key)
+   * For example, if a component instantiates another component and separate is
+   * off,
    * then it needs this component's code.
    */
   protected Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks;
@@ -104,12 +107,14 @@ public class GeneratorToolState {
 
   protected List<Path> protoFiles = new ArrayList<>();
 
+  protected List<String> cppRequirements;
+
   /* ============================================================ */
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
 
   public GeneratorToolState(MontiThingsGeneratorTool tool, File modelPath, File target,
-    File hwcPath, File testPath, ConfigParams config) {
+      File hwcPath, File testPath, ConfigParams config) {
     this.tool = tool;
     this.modelPath = modelPath;
     this.target = target;
@@ -267,7 +272,7 @@ public class GeneratorToolState {
   }
 
   public void setExecutableSensorActuatorPorts(
-    List<String> executableSensorActuatorPorts) {
+      List<String> executableSensorActuatorPorts) {
     this.executableSensorActuatorPorts = executableSensorActuatorPorts;
   }
 
@@ -276,7 +281,7 @@ public class GeneratorToolState {
   }
 
   public void setModelPacks(
-    Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks) {
+      Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks) {
     this.modelPacks = modelPacks;
   }
 
@@ -288,12 +293,20 @@ public class GeneratorToolState {
     this.hwcPythonScripts = hwcPythonScripts;
   }
 
+  public List<String> getCppRequirements() {
+    return cppRequirements;
+  }
+
+  public void setCppRequirements(List<String> cppRequirements) {
+    this.cppRequirements = cppRequirements;
+  }
+
   public List<Pair<ComponentTypeSymbol, String>> getInstances() {
     return instances;
   }
 
   public void setInstances(
-    List<Pair<ComponentTypeSymbol, String>> instances) {
+      List<Pair<ComponentTypeSymbol, String>> instances) {
     this.instances = instances;
   }
 
