@@ -44,11 +44,15 @@ function Reload-Path {
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
 
+#
+# Set "$env:SKIP_MVN = 1" to skip the maven build at the end of this script
+#
+
 <#
  # checks using "Get-Command" if a specific program is installed on the system
  #
  # @param $ProgramName name of the program that should be checked
- # @return $true if $ProgramName is already installed on the System, $false otherwise
+ # @return $true if $ProgramName is already installed on the system, $false otherwise
  #>
 function Get-IsInstalled {
     param(
@@ -239,4 +243,17 @@ if(-not (Get-IsInstalled conan)){
 ##########################################
 # Install MontiThings
 ##########################################
-mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
+if ( $null -eq $env:SKIP_MVN -or $env:SKIP_MVN -ne 1) {
+  mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
+}
+"
+Installed successfully!
+
+  _____  ___                __  _   ___________    _
+ /__   |/  /  ___________  / /_(_) / ___  __/ /_  (_)___  ____   __
+   / /|_/ / / __ \__/ __ \/ __/ / (_)  / / / __ \/ / __ \/ __ `//_ \
+  / /  / /_/ /_/ / / / / / /_/ /_   __/ / / / / / / / / / /_/ /___) )_
+ /_/  /____\____/ /_/ /_/\__/___/  /___/ /_/ /_/_/_/ /_/\__, /(______/
+                                                       /____/
+
+"
