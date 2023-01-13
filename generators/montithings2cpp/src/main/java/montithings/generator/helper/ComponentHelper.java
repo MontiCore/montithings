@@ -857,7 +857,7 @@ public class ComponentHelper {
   }
 
   /**
-   * Returns true iff the component has a python behaviour implementation file
+   * Returns true if the component has a python behaviour implementation file
    * below hwcRoot.
    */
   public static boolean hasHandwrittenPythonBehaviour(Path hwcRoot, ComponentTypeSymbol component) {

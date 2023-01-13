@@ -20,14 +20,13 @@ echo "Starting components..."
     OLD_PYTHONPATH="${r"${PYTHONPATH}"}"
     export PYTHONPATH="$PYTHONPATH:python"
     # start hwc-component ${hwcPythonFile}
-    python3 -u "python/${hwcPythonFile}" > "python/${hwcPythonFile}.log" 2>&1 &
+    python3 -u "python/${hwcPythonFile}" --name ${pair.getValue()} > "python/${hwcPythonFile}.log" 2>&1 &
     export PYTHONPATH="$OLD_PYTHONPATH"
     sleep 1 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
   </#if>
 </#list>
 
 <#list instances as pair >
-  <#if !ComponentHelper.hasHandwrittenPythonBehaviour(config.hwcPath, pair.key)>
     <#if brokerIsMQTT>
     ./${pair.getKey().fullName} --name ${pair.getValue()} --brokerHostname localhost --brokerPort 1883  --localHostname localhost > ${pair.getValue()}.log 2>&1 &
     <#elseif brokerIsDDS>
@@ -38,7 +37,6 @@ echo "Starting components..."
       </#if>
     <#else>
   ./${pair.getKey().fullName} --name ${pair.getValue()} --managementPort ${config.getComponentPortMap().getManagementPort(pair.getValue())} --dataPort ${config.getComponentPortMap().getCommunicationPort(pair.getValue())} > ${pair.getValue()}.log 2>&1 &
-  </#if>
   </#if>
 </#list>
 <#if brokerIsMQTT>

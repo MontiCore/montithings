@@ -37,9 +37,17 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
   MqttClient *  mqttClientLocalInstance;
   json sensorActuatorTypes;
 
+  <#if needsProtobuf>
+      ${compname}Input${generics} input__cache;
+      ${compname}Result${generics} result__cache;
+  </#if>
+
   <#list comp.getOutgoingPorts() + comp.getIncomingPorts() as p>
     <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
     MqttPort<Message<${type}>> *${p.getName()};
+    <#if needsProtobuf && hasNonCppHwc>
+      MqttPort<Message<${type}>> *${p.getName()}_protobuf;
+    </#if>
     <#if GeneratorHelper.getMqttSensorActuatorName(p, config).isPresent()>
       std::thread th${p.getName()?cap_first};
       std::promise<void> exitSignal${p.getName()?cap_first};
