@@ -110,6 +110,7 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
       JsonObject jsonPayload = JsonParser.parseString(new String(message.getPayload(), StandardCharsets.UTF_8)).getAsJsonObject();
       JsonObject jLocation = jsonPayload.get("location").getAsJsonObject();
       JsonArray jHardware = jsonPayload.get("hardware").getAsJsonArray();
+      String jHardwareOD = jsonPayload.get("hardwareOD").getAsString();
       
       String building = jLocation.get("building").getAsString();
       String floor = jLocation.get("floor").getAsString();
@@ -127,7 +128,7 @@ public class DefaultDeployTargetProvider implements IDeployTargetProvider {
         location.setBuilding(building);
         location.setFloor(floor);
         location.setRoom(room);
-        client = DeployClient.create(clientID, false, location, providerID, hardware);
+        client = DeployClient.create(clientID, false, location, providerID, jHardwareOD, hardware);
         clients.put(clientID, client);
       }
       else {

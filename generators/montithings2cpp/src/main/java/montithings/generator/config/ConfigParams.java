@@ -44,6 +44,8 @@ public class ConfigParams {
 
   protected SplittingMode splittingMode = SplittingMode.OFF;
 
+  protected SerializationMode serializationMode = SerializationMode.JSON;
+
   protected String projectVersion;
 
   /** Rules that bind a interface component/componentInstance to another non interface component */
@@ -249,6 +251,14 @@ public class ConfigParams {
 
   public void setSplittingMode(SplittingMode splittingMode) {
     this.splittingMode = splittingMode;
+  }
+
+  public SerializationMode getSerializationMode() {
+    return serializationMode;
+  }
+
+  public void setSerializationMode(SerializationMode serializationMode) {
+    this.serializationMode = serializationMode;
   }
 
   public LogTracing getLogTracing() {

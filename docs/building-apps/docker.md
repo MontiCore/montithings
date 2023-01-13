@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 ## Building and Running an Application using Docker
 
 In order to run an application using Docker, make sure that Docker is installed and running first.

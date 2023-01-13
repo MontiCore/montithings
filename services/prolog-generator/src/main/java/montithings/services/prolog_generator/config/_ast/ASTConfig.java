@@ -144,6 +144,9 @@ public class ASTConfig extends ASTConfigTOP {
 
                             });
                         }
+                        else if (prop2.getKey().equals("hardwareRequirements")) {
+                            distribution.setHasOCLConstraint(true);
+                        }
                     });
                     result.add(distribution);
                 }

@@ -19,5 +19,16 @@ public interface IPrologGenerator {
    * @return Future for Prolog source code as {@link String}
    * */
   public CompletableFuture<String> generateQuery(String jsonConfig);
-  
+
+  /**
+   * Generates the devicedescription.pl as Prolog source.
+   * @return Future for Prolog source code as {@link String}
+   * */
+  public CompletableFuture<String> generateDeviceDescription(String objectDiagram);
+
+  /**
+   * Generates the oclquery.pl as Prolog source.
+   * @return Future for Prolog source code as {@link String}
+   * */
+  public CompletableFuture<String> generateOCLQuery(String ocl);
 }

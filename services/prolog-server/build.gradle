@@ -1,0 +1,33 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow'
+}
+
+group 'montithings.services.prolog-generator'
+
+dependencies {
+    implementation project(":services:prolog-generator")
+    implementation project(":languages:montithings")
+
+    implementation("de.monticore.lang:od:$monticore_version"){
+        // od defines an invalid version for commons-lang3
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+    }
+    implementation "de.monticore:monticore-grammar:$monticore_version"
+
+    implementation "com.sparkjava:spark-core:2.8.0"
+
+    testImplementation "junit:junit:$junit_version"
+}
+
+shadowJar {
+    manifest {
+        attributes "Main-Class": "Main"
+    }
+    archiveFileName = "PrologGeneratorServer.${archiveExtension.get()}" // alternative: "server-${project.version}.${archiveExtension.get()}"
+    archiveClassifier = "server"
+}
+
+jar.dependsOn shadowJar

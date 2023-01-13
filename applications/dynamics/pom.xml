@@ -251,9 +251,9 @@
                                 <modelPath>${basedir}/src/main/resources/models</modelPath>
                                 <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                                 <main>hierarchy.Example</main>
-                                <splitting>LOCAL</splitting>
-                                <!--<platform>DSA</platform>-->
                                 <version>${project.version}</version>
+                                <!--<messageBroker>MQTT</messageBroker>-->
+                                <splitting>LOCAL</splitting>
                             </arguments>
                             <script>montithings/generator/mtgenerator.groovy</script>
                         </configuration>

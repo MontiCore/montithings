@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings._lsp.language_access;
 
 import de.monticore.io.paths.ModelPath;

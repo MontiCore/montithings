@@ -42,8 +42,8 @@ public class TestSuggestion {
       for (int floor = 1; floor <= 3; floor++) {
         for (int room = 301; room <= 303; room++) {
           LocationSpecifier loc = LocationSpecifier.create(String.valueOf(building), String.valueOf(floor), String.valueOf(room));
-          targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_temp_"+(room-300), true, loc, 0));
-          targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_controller_"+(room-300), true, loc, 0));
+          targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_temp_"+(room-300), true, loc, 0, ""));
+          targets.add(DeployClient.create("raspy_b"+building+"_f"+floor+"_controller_"+(room-300), true, loc, 0, ""));
         }
       }
     }
@@ -65,8 +65,8 @@ public class TestSuggestion {
     
     // example data
     LinkedList<DeployClient> clients = new LinkedList<>();
-    clients.add(DeployClient.create("2fa84e32", true, LocationSpecifier.create("1", "1", "101"), 0, "HighPerformanceAdditionComputeUnit"));
-    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0));
+    clients.add(DeployClient.create("vL53L0X", true, LocationSpecifier.create("1", "1", "101"), 0, "", "HighPerformanceAdditionComputeUnit"));
+    clients.add(DeployClient.create("713fa127", true, LocationSpecifier.create("1", "1", "101"), 0, ""));
     
     JsonObject jsonDeploy = null;
     try (Reader reader = new InputStreamReader(getClass().getResourceAsStream("/json/deployment-info.json"))) {

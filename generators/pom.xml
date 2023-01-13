@@ -17,6 +17,7 @@
   <modules>
     <module>montithings2cpp</module>
     <module>cd2cpp</module>
+    <module>cd2proto</module>
   </modules>
 
 </project>

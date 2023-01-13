@@ -28,8 +28,14 @@
     <#assign targetPlatformIsDsaLab = config.getTargetPlatform().toString() == "DSA_LAB">
     <#assign targetPlatformIsDsa = (targetPlatformIsDsaVcg || targetPlatformIsDsaLab)>
 
+    <#assign serializerName = "JsonSerializer">
+    <#if config.getSerializationMode().toString() == "PROTOBUF">
+        <#assign serializerName = "ProtobufSerializer">
+    </#if>
+
     <#assign needsDDS = (!(targetPlatformIsDsa) && !(splittingModeDisabled) && brokerIsDDS)>
     <#assign needsNng = (!(targetPlatformIsDsa) && !(splittingModeDisabled) && brokerDisabled)>
+    <#assign needsProtobuf = config.getSerializationMode().toString() == "PROTOBUF">
 </#if>
 
 <#if comp??>

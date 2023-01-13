@@ -8,6 +8,12 @@ import montithings.services.iot_manager.server.data.DeploymentConfiguration;
 import montithings.services.iot_manager.server.data.InstanceInfo;
 import montithings.services.iot_manager.server.data.constraint.Constraint;
 
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 public class DeployConfigBuilder {
   
   private final DeploymentConfiguration config;
@@ -43,7 +49,11 @@ public class DeployConfigBuilder {
       for (String req : instance.getRequirements()) {
         jsonSelection.add(createHasHardware(req));
       }
-      
+
+      if (instance.getHardwareRequirement() != "") {
+        jsonComp.addProperty("hardwareRequirements", true);
+      }
+
       jsonComp.add("distribution_selection", jsonSelection);
       jsonComp.add("distribution_constraints", new JsonArray());
       jsonDistribution.add(instance.getInstanceName(), jsonComp);
@@ -94,6 +104,27 @@ public class DeployConfigBuilder {
   
   public JsonArray incompatibilities() {
     return this.jsonIncompatibilities;
+  }
+
+  public Map<String, String> hardwareRequirements() {
+    Map<String, String> hardwareRequirementsMap = new HashMap<>();
+    for (InstanceInfo instanceInfo : config.getDeploymentInfo().getInstances()) {
+      if (instanceInfo.getHardwareRequirement() != "") {
+        String instanceName = makeInstanceNamePrologCompatible(instanceInfo.getInstanceName());
+        hardwareRequirementsMap.put(instanceName, instanceInfo.getHardwareRequirement());
+      }
+    }
+    return hardwareRequirementsMap;
+  }
+
+  public static String makeInstanceNamePrologCompatible(String instanceName) {
+    String [] partsOfInstanceName = instanceName.split("\\.");
+    String result = "";
+    for (int i = 0; i < partsOfInstanceName.length; i++) {
+      result += partsOfInstanceName[i].substring(0, 1).toUpperCase()
+        + partsOfInstanceName[i].substring(1).toLowerCase();
+    }
+    return result;
   }
   
   public JsonObject build() {

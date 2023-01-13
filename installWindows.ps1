@@ -1,7 +1,48 @@
 # (c) https://github.com/MontiCore/monticore
 
-# Stop on first error
-$ErrorActionPreference = "Stop"
+# first, make sure powershell is running with admin priviliges
+
+#### START ELEVATE TO ADMIN #####
+param(
+    [Parameter(Mandatory=$false)]
+    [switch]$shouldAssumeToBeElevated,
+
+    [Parameter(Mandatory=$false)]
+    [String]$workingDirOverride
+)
+
+# If parameter is not set, we are propably in non-admin execution. We set it to the current working directory so that
+# the working directory of the elevated execution of this script is the current working directory
+if(-not($PSBoundParameters.ContainsKey('workingDirOverride'))) {
+    $workingDirOverride = (Get-Location).Path
+}
+
+function Test-Admin {
+    $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
+    $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+}
+
+if ((Test-Admin) -eq $false)  {
+    if ($shouldAssumeToBeElevated) {
+        Write-Output "Elevating did not work :("
+    } else {
+        Start-Process powershell.exe -Verb RunAs -ArgumentList ('-noprofile -noexit -file "{0}" -shouldAssumeToBeElevated -workingDirOverride "{1}"' -f ($myinvocation.MyCommand.Definition, "$workingDirOverride"))
+    }
+    exit
+}
+
+Set-Location "$workingDirOverride"
+##### END ELEVATE TO ADMIN #####
+
+# the shell now runs in admin mode
+
+
+<#
+ # reloads the PATH environment Variable
+ #>
+function Reload-Path {
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+}
 
 #
 # Set "$env:SKIP_MVN = 1" to skip the maven build at the end of this script
@@ -9,7 +50,6 @@ $ErrorActionPreference = "Stop"
 
 <#
  # checks using "Get-Command" if a specific program is installed on the system
- # the try-catch Block requires $ErrorActionPreference = "Stop"
  #
  # @param $ProgramName name of the program that should be checked
  # @return $true if $ProgramName is already installed on the system, $false otherwise
@@ -18,18 +58,43 @@ function Get-IsInstalled {
     param(
         [Parameter(Mandatory)][string]$ProgramName
     )
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Reload-Path
 
     try{
+        $ErrorActionPreference = "Stop"
         $CheckCommand = Get-Command $ProgramName
-        Write-Output "$ProgramName is already installed"
+        $ErrorActionPreference = "Continue"
         return $true
     }
     catch {
+        $ErrorActionPreference = "Continue"
         return $false
     }
+}
+
+<#
+ # adds a path to the PATH environment variable
+ # @param $PathToAdd path to be added to PATH
+ #>
+function AddToPath {
+    param(
+        [Parameter(Mandatory)][string]$PathToAdd
+    )
+    # modify PATH
+    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
+    $newpath="$oldpath;$PathToAdd"
+    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+
+    Reload-Path
+}
+
+<#
+ # checks whether the current java version is 11
+ #>
+function Get-JavaVersionIs11 {
+    $result = $false
+    $result = (java -version 2>&1 | Out-String).Contains('11.0.16.1')
+    return $result
 }
 
 ##########################################
@@ -40,6 +105,19 @@ if(-not (Get-IsInstalled winget)){
     Invoke-Webrequest -UseBasicParsing -OutFile VCLibs.appx https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
     Add-AppxPackage -Path "$PWD\VCLibs.appx"
     rm "$PWD\VCLibs.appx"
+
+    # Get architecture
+    $arch = "x64" # default value
+    Switch ($env:PROCESSOR_ARCHITECTURE) {
+        "AMD64" {$arch = "x64"}
+        "ARM64" {$arch = "arm64"}
+        "X86"   {$arch = "x86"}
+    }
+
+    # Install Windows UI Library (workaround for this issue: https://github.com/microsoft/winget-cli/issues/1861)
+    Invoke-Webrequest -UseBasicParsing -OutFile microsoft.ui.xaml.2.7.zip https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0
+    Expand-Archive -DestinationPath .\microsoft.ui.xaml.2.7 .\microsoft.ui.xaml.2.7.zip
+    Add-AppxPackage -path ".\microsoft.ui.xaml.2.7\tools\AppX\${arch}\Release\Microsoft.UI.Xaml.2.7.appx"
 
     # Find current release
     $data = Invoke-Webrequest -UseBasicParsing https://api.github.com/repos/microsoft/winget-cli/releases/latest
@@ -53,22 +131,26 @@ if(-not (Get-IsInstalled winget)){
         $wingetUrl=$asset.browser_download_url
       }
     }
-    # Download and install
-    Invoke-Webrequest -UseBasicParsing -OutFile WinGet.msixbundle -Uri $wingetUrl
-    Add-AppPackage -path ".\WinGet.msixbundle"
-    rm ".\WinGet.msixbundle"
 
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    # Download and install winget
+    Invoke-Webrequest -UseBasicParsing -OutFile WinGet.msixbundle -Uri $wingetUrl
+    Add-AppxPackage -path ".\WinGet.msixbundle"
+    rm ".\WinGet.msixbundle"
+    Reload-Path
 }
+
 ##########################################
 # Install software available via WinGet
 ##########################################
 if(-not (Get-IsInstalled git)){
     winget install -e Git.Git
 }
-if(-not (Get-IsInstalled java) -or (-not ([string](java --version)).Contains("11"))){
+if(-not (Get-IsInstalled java) -or -not (Get-JavaVersionIs11)){
     winget install -e Microsoft.OpenJDK.11
+    Reload-Path
+    if(-not (Get-JavaVersionIs11)){
+        Write-Output "WARNING: Java 11 was installed but is not your default java version. Please make sure to use java 11 with montithings"
+    }
 }
 if(-not (Get-IsInstalled cmake)){
     winget install -e Kitware.CMake
@@ -79,23 +161,13 @@ if(-not (Get-IsInstalled docker)){
 if(-not (Get-IsInstalled mosquitto)){
     winget install -e EclipseFoundation.Mosquitto
 
-    # Add Mosquitto to PATH
-    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-    $newpath="$oldpath;C:\Program Files\Mosquitto\;C:\Program Files\CMake\bin"
-    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
+    AddToPath("C:\Program Files\Mosquitto")
+    AddToPath("C:\Program Files\CMake\bin")
 }
-# Reload Path Environment Variable
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
+Reload-Path
 # Start Mosquitto MQTT Broker
 Start-Service -Name Mosquitto
 
-if(-not (Get-IsInstalled conan)){
-    winget install -e JFrog.Conan
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-}
 ##########################################
 # Install Chocolatery Package Manager
 ##########################################
@@ -107,16 +179,8 @@ if(-not (Get-IsInstalled choco)){
 # Install Maven
 ##########################################
 if(-not (Get-IsInstalled mvn)){
-    # Download
     choco install maven
-
-    # Add Maven to PATH
-    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-    $newpath="$oldpath;C:\Program Files\apache-maven-3.8.4\bin\"
-    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Reload-Path
 }
 
 ##########################################
@@ -128,14 +192,9 @@ if(-not (Get-IsInstalled ninja)){
     Expand-Archive -DestinationPath 'C:\Program Files\Ninja' Ninja.zip
     rm .\Ninja.zip
 
-    # Add Ninja to PATH
-    $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-    $newpath="$oldpath;C:\Program Files\Ninja\"
-    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath
-
-    # Reload Path Environment Variable
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    AddToPath("C:\Program Files\Ninja\")
 }
+
 ##########################################
 # Install MinGW
 ##########################################
@@ -146,18 +205,40 @@ if(-not (Get-IsInstalled gcc)){
 ##########################################
 # Install NNG 1.3.0
 ##########################################
-Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nanomsg/nng/archive/v1.3.0.zip
-Expand-Archive -DestinationPath "$PWD" nng.zip
-rm .\nng.zip
-cd .\nng-1.3.0\
-mkdir build
-cd .\build\
-cmake -G Ninja ..
-ninja
-ninja test
-ninja install
-cd ..
-cd ..
+if(-not((Test-Path -Path 'C:\nng-1.3.0') -or (Test-Path -Path 'C:\Program Files (x86)\nng'))){
+    Invoke-Webrequest -UseBasicParsing -OutFile nng.zip -Uri https://github.com/nanomsg/nng/archive/v1.3.0.zip
+    Expand-Archive -DestinationPath "$PWD" nng.zip
+    rm .\nng.zip
+    cd .\nng-1.3.0\
+    mkdir build
+    cd .\build\
+    cmake -G Ninja ..
+    ninja
+    ninja test
+    ninja install
+    cd ..
+    cd ..
+}
+
+##########################################
+# Install Python
+##########################################
+
+# since winget adds an app-execution alias to the ms store for python our
+# Get-IsInstalled function would see python as installed. To fix this we must check for pip here instead
+if(-not (Get-IsInstalled pip)) {
+    winget install python
+    Reload-Path
+}
+
+##########################################
+# Install Conan
+##########################################
+
+if(-not (Get-IsInstalled conan)){
+    pip install conan
+    Reload-Path
+}
 
 ##########################################
 # Install MontiThings

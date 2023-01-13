@@ -8,7 +8,7 @@ ${tc.signature("comp", "config")}
   if((brokerHostnameArg.getValue() == localHostnameArg.getValue())){
     mqttClientLocalInstance = mqttClientInstance;
   } else {
-    mqttClientLocalInstance = MqttClient::localInstance(localHostnameArg.getValue (), brokerPortArg.getValue ());
+    mqttClientLocalInstance = MqttClient::localInstance(localHostnameArg.getValue (), localBrokerPortArg.getValue ());
   }
 
 

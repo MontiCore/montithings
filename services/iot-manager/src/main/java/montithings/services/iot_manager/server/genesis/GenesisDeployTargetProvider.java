@@ -156,6 +156,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
     // IF this host is properly setup, its device_type is a JSON-formatted
     // string containing information about its location and hardware.
     List<String> hardware = new LinkedList<String>();
+    String hardwareOD = "";
     String deviceType = model.getDeviceTypeOfHost(model.extractHost(hostPort));
     try {
       JsonObject jDeviceType = JsonParser.parseString(deviceType).getAsJsonObject();
@@ -168,6 +169,10 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
         for (JsonElement jhw : jHardware.getAsJsonArray()) {
           hardware.add(jhw.getAsString());
         }
+      }
+      JsonElement jHardwareOD = jDeviceType.get("hardwareOD");
+      if (jHardwareOD != null) {
+        hardwareOD = jHardwareOD.getAsString();
       }
     }
     catch (JsonParseException | IllegalStateException | NullPointerException e) {
@@ -182,7 +187,7 @@ public class GenesisDeployTargetProvider implements IDeployTargetProvider {
     }
     
     LocationSpecifier loc = LocationSpecifier.create(building, floor, room);
-    DeployClient client = DeployClient.create(hostPort, true, loc, providerID, hardware.toArray(new String[hardware.size()]));
+    DeployClient client = DeployClient.create(hostPort, true, loc, providerID, hardwareOD, hardware.toArray(new String[hardware.size()]));
     
     return client;
   }

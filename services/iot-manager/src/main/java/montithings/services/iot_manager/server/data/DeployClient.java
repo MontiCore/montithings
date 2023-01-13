@@ -11,6 +11,10 @@ public class DeployClient {
   private boolean online;
   private LocationSpecifier location = new LocationSpecifier();
   private String[] hardware = new String[0];
+
+  // String representation of the object diagram specifying the device's hardware
+  private String hardwareOD = "";
+
   private long lastSeen;
   private long targetProviderID;
   
@@ -45,7 +49,15 @@ public class DeployClient {
   public void setHardware(String[] hardware) {
     this.hardware = hardware;
   }
-  
+
+  public String getHardwareOD() {
+    return hardwareOD;
+  }
+
+  public void setHardwareOD(String hardwareOD) {
+    this.hardwareOD = hardwareOD;
+  }
+
   /**
    * @return The time-stamp of the last time this client was seen (e.g. heart beat).  
    * */
@@ -57,12 +69,13 @@ public class DeployClient {
     this.lastSeen = lastSeen;
   }
   
-  public static DeployClient create(String clientID, boolean online, LocationSpecifier location, long targetProviderID, String... hardware) {
+  public static DeployClient create(String clientID, boolean online, LocationSpecifier location, long targetProviderID, String hardwareOD, String... hardware) {
     DeployClient client = new DeployClient();
     client.setClientID(clientID);
     client.setOnline(online);
     client.setLocation(location);
     client.setHardware(hardware);
+    client.setHardwareOD(hardwareOD);
     client.setTargetProviderID(targetProviderID);
     return client;
   }

@@ -87,13 +87,13 @@ if (EXCLUDE_DDS)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "logtracing/interface/dds/message-types/*")
 endif ()
 
-# Keep hwc interceptor. 
+# Keep hwc interceptor.
 # This makes sure that the nd() method is still present even if record and replay is not enabled.
 set(RTE_SOURCES
     ${RTE_SOURCES}
     "record-and-replay/recorder/HWCInterceptor.h"
     "record-and-replay/recorder/HWCInterceptor.cpp"
-) 
+)
 
 
 # exclude MQTT related part of the RTE to not require Mosquitto for compiling
@@ -110,6 +110,7 @@ if (EXCLUDE_COMM_MANAGER)
     list(FILTER RTE_SOURCES EXCLUDE REGEX "ManagementCommunication.cpp")
 endif ()
 
+list(FILTER RTE_SOURCES EXCLUDE REGEX ".*test.cpp")
 add_library(MontiThingsRTE ${RTE_SOURCES})
 
 if (NOT EXCLUDE_MQTT)
@@ -137,5 +138,12 @@ endif ()
 if (NOT EXCLUDE_COMM_MANAGER)
   target_link_libraries(MontiThingsRTE nng::nng)
 endif ()
+
+add_subdirectory(cpp-base64)
+target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto)
+
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+
+add_executable(Serializers.test EXCLUDE_FROM_ALL Serializers.test.cpp)
+target_link_libraries(Serializers.test PRIVATE cpp-base64)

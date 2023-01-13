@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 
 package montithings.services.iot_manager.server.azure;
 
@@ -55,7 +55,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
   /**
    * Applies a deployment to a set of devices of the iot-hub
    *
-   * @param dist     defines, which devices receive which deployment(s)
+   * @param dist     defines which devices receive which deployment(s)
    * @param deplInfo defines the deployments
    * @param netInfo  provides connectivity information for the deployments
    */
@@ -74,6 +74,7 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
         distributionMap.get(deviceID), deplInfo, netInfo);
       try {
         String deviceName = AzureIotUtils.getDeviceName(deviceID, iotHubConnectionString);
+        System.out.println("DEBUG: Deploying to device " + deviceName +"\n" + deployment.toString()); //todo remove
         applyConfigurationContentOnDevice(deviceName, deployment.toString(),
           iotHubConnectionString);
       }
@@ -173,9 +174,10 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
     boolean online = deviceTwinJSON.get("connectionState").getAsString().equals("Connected");
     long targetProviderID = providerID;
     String[] hardware = getHardwareFromDeviceTwin(deviceTwinJSON);
+    String hardwareOD = getHardwareODFromDeviceTwin(deviceTwinJSON);
     LocationSpecifier location = getLocationFromDeviceTwin(deviceTwinJSON);
 
-    return DeployClient.create(deviceID, online, location, targetProviderID, hardware);
+    return DeployClient.create(deviceID, online, location, targetProviderID, hardwareOD, hardware);
   }
 
   /**
@@ -192,6 +194,28 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
     }
     catch (NullPointerException e) {
       return new String[] {};
+    }
+  }
+
+
+  /**
+   * gets the object diagram specifying the hardware components of a deviceTwinJSON
+   *
+   * @param deviceTwinJSON the JSON of a deviceTwinJSON received from an azure-iot-hub query
+   * @return the hardware object diagram listed under "tags" in deviceTwinJSON
+   */
+  public String getHardwareODFromDeviceTwin(JsonObject deviceTwinJSON) {
+    try {
+      JsonElement hardwareJson = deviceTwinJSON.getAsJsonObject("tags").get("hardwareOD");
+      Gson gson = new Gson();
+      String result = gson.fromJson(hardwareJson, String.class);
+      if(result == null) {
+        result = "";
+      }
+      return result;
+    }
+    catch (NullPointerException e) {
+      return "";
     }
   }
 

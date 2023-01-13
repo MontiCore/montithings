@@ -1,4 +1,4 @@
-/* (c) https://github.com/MontiCore/monticore */
+// (c) https://github.com/MontiCore/monticore
 package clockcontrol._visitor;
 
 import clockcontrol._ast.ASTCalculationInterval;

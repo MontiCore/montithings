@@ -10,6 +10,7 @@ import montithings.services.iot_manager.server.distribution.suggestion.Suggestio
 import montithings.services.iot_manager.server.exception.DeploymentException;
 import montithings.services.iot_manager.server.exception.DistributionException;
 import montithings.services.iot_manager.server.util.InstanceNameResolver;
+import org.apache.commons.io.FileUtils;
 import org.jpl7.*;
 
 import javax.annotation.Nullable;
@@ -25,19 +26,48 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
   private static final String PROLOG_VAR_DEPENDENCIES = "Dependencies";
   
   private String plFacts, plQuery;
-  private File fileFacts, fileQuery, workingDir;
-  
+
+  private Map<String, String> plOCLQueries, plDeviceDescriptions;
+  private File fileFacts, fileQuery, fileDeviceDescription, workingDir;
+
+  private Map<String, File>  filesDeviceDescriptions, filesOCLQueries;
+
   /**
    * @param plFacts facts as Prolog-source
    * @param plQuery query as Prolog-source
    * @param workingDir The (temporary) working directory.
    */
-  public DefaultDistributionCalculator(String plFacts, String plQuery, File workingDir) {
+  public DefaultDistributionCalculator(String plFacts, String plQuery, File workingDir) throws IOException {
+    this(plFacts, plQuery, new HashMap<>(), new HashMap<>(), workingDir);
+  }
+  
+  /**
+   * @param plFacts facts as Prolog-source
+   * @param plQuery query as Prolog-source
+   * @param plOCLQueries map of ocl queries as Prolog-sources
+   * @param plDeviceDescriptions map of device descriptions as Prolog-sources
+   * @param workingDir The (temporary) working directory.
+   */
+  public DefaultDistributionCalculator(String plFacts, String plQuery, Map<String, String> plOCLQueries, Map<String, String> plDeviceDescriptions, File workingDir) throws IOException {
     this.plFacts = plFacts;
     this.plQuery = plQuery;
+    this.plOCLQueries = plOCLQueries;
+    this.plDeviceDescriptions = plDeviceDescriptions;
     this.workingDir = workingDir.getAbsoluteFile();
     this.fileFacts = new File(this.workingDir, "facts.pl");
     this.fileQuery = new File(this.workingDir, "query.pl");
+    filesOCLQueries = new HashMap<>();
+    for (String compName : plOCLQueries.keySet()) {
+      this.filesOCLQueries.put(compName, new File(this.workingDir, "oclquery" + compName + ".pl"));
+    }
+    this.filesDeviceDescriptions = new HashMap<>();
+    this.fileDeviceDescription = new File(this.workingDir, "devicedescription.pl");
+    this.fileDeviceDescription.getParentFile().mkdirs();
+    Files.write("", fileDeviceDescription, StandardCharsets.UTF_8);
+    for (String deviceName : plDeviceDescriptions.keySet()) {
+      this.filesDeviceDescriptions.put(deviceName, new File(this.workingDir, "devicedescription" + deviceName + ".pl"));
+      FileUtils.write(fileDeviceDescription, ":- include('devicedescription" + deviceName + "'). \n", StandardCharsets.UTF_8, true);
+    }
   }
   
   private Distribution computeDistributionSync(DistributionCalcRequest param) throws DistributionException {
@@ -282,7 +312,14 @@ public class DefaultDistributionCalculator implements IDistributionCalculator {
     
     Files.write(plFacts, fileFacts, StandardCharsets.UTF_8);
     Files.write(plQuery, fileQuery, StandardCharsets.UTF_8);
-    
+
+    for (String compName : filesOCLQueries.keySet()) {
+      Files.write(plOCLQueries.get(compName), filesOCLQueries.get(compName), StandardCharsets.UTF_8);
+    }
+    for (String deviceName : filesDeviceDescriptions.keySet()) {
+      Files.write(plDeviceDescriptions.get(deviceName), filesDeviceDescriptions.get(deviceName), StandardCharsets.UTF_8);
+    }
+
     // Write helpers.pl prolog file.
     File fileHelpers = new File(workingDir, "helpers.pl");
     try (InputStream inputHelpers = getClass().getResourceAsStream("/scripts/helpers.pl")) {

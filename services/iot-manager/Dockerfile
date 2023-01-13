@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 FROM openjdk:8
 
 # Install SWI Prolog

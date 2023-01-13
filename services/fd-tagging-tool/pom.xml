@@ -49,6 +49,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${assembly.plugin}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

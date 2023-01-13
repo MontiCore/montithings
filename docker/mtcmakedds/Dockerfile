@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y \
 	mosquitto \
 	mosquitto-dev \
 	cpio \
+    protobuf-compiler \
+	libprotobuf-dev \
+	python3-protobuf \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
@@ -31,8 +34,7 @@ RUN cd /usr/src/app/nng \
 && export CMAKE_BUILD_WITH_INSTALL_RPATH=1 \
 && cmake -G Ninja .. \
 && ninja \
-&& ninja install package dist \
-&& mv nng-v1.3.0.sh /usr/src/app/nng.sh \
+&& ninja install \
 && cd /usr/src/app \
 && rm -rf /usr/src/app/nng
 
@@ -45,7 +47,7 @@ RUN cd /usr/src/app/opendds \
 && git fetch && git fetch --tags \
 && git checkout DDS-3.15 \
 && ./configure --static \
-&& make \
+&& make -j$(nproc) \
 && ldconfig \
 && . /usr/src/app/opendds/setenv.sh
 
@@ -60,4 +62,3 @@ ENV ACE_ROOT=/usr/src/app/opendds/ACE_wrappers \
 WORKDIR /usr/src/app
 
 CMD [ "/bin/sh" ]
-

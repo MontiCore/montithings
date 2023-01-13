@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+pytest
+requests
+azure-storage-blob
+azure-identity
