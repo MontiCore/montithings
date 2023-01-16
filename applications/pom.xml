@@ -27,6 +27,7 @@
     <module>sensor-actuator-access</module>
     <module>log-filtering</module>
     <module>record-transform-replay</module>
+      <module>patterns</module>
   </modules>
 
 </project>

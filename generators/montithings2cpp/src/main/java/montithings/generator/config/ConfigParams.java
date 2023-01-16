@@ -26,291 +26,343 @@ import java.util.Set;
  */
 public class ConfigParams {
 
-  /** property for message brokers */
-  protected MessageBroker messageBroker = MessageBroker.OFF;
+    /**
+     * property for message brokers
+     */
+    protected MessageBroker messageBroker = MessageBroker.OFF;
 
-  /** property for log tracing */
-  protected LogTracing logTracing = LogTracing.OFF;
+    /**
+     * property for log tracing
+     */
+    protected LogTracing logTracing = LogTracing.OFF;
 
-  /** property for replay mode */
-  protected ReplayMode replayMode = ReplayMode.OFF;
+    /**
+     * property for replay mode
+     */
+    protected ReplayMode replayMode = ReplayMode.OFF;
 
-  protected RecordingMode recordingMode = RecordingMode.OFF;
+    protected ApplyPatterns applyPatterns = ApplyPatterns.OFF;
 
-  protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
+    protected RecordingMode recordingMode = RecordingMode.OFF;
 
-  /** property for target platform */
-  protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
+    protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
 
-  protected SplittingMode splittingMode = SplittingMode.OFF;
+    /**
+     * property for target platform
+     */
+    protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 
-  protected SerializationMode serializationMode = SerializationMode.JSON;
+    protected SplittingMode splittingMode = SplittingMode.OFF;
 
-  protected String projectVersion;
+    protected SerializationMode serializationMode = SerializationMode.JSON;
 
-  /** Rules that bind a interface component/componentInstance to another non interface component */
-  protected Set<ASTBindingRule> componentBindings = new HashSet<>();
+    protected String projectVersion;
 
-  /** Unconnected ports that have hand-written templates available.*/
-  protected Set<PortSymbol> templatedPorts = new HashSet<>();
+    /**
+     * Rules that bind a interface component/componentInstance to another non interface component
+     */
+    protected Set<ASTBindingRule> componentBindings = new HashSet<>();
 
-  /** Scope of the cdLangExtension language*/
-  protected ICDLangExtensionScope cdLangExtensionScope;
+    /**
+     * Unconnected ports that have hand-written templates available.
+     */
+    protected Set<PortSymbol> templatedPorts = new HashSet<>();
 
-  /** Scope of the MTConfig language*/
-  protected IMTConfigGlobalScope mtConfigScope;
+    /**
+     * Scope of the cdLangExtension language
+     */
+    protected ICDLangExtensionScope cdLangExtensionScope;
 
-  /** Maps MontiThings components to network ports for local web socket communication */
-  protected final PortMap componentPortMap = new PortMap();
+    /**
+     * Scope of the MTConfig language
+     */
+    protected IMTConfigGlobalScope mtConfigScope;
 
-  /** Directory that contains handwritten code for components.*/
-  protected File hwcPath;
+    /**
+     * Maps MontiThings components to network ports for local web socket communication
+     */
+    protected final PortMap componentPortMap = new PortMap();
 
-  /** All type arguments which which a component type is ever instantiated */
-  Multimap<ComponentTypeSymbol, String> typeArguments;
+    /**
+     * Directory that contains handwritten code for components.
+     */
+    protected File hwcPath;
 
-  /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
-  protected Path hwcTemplatePath;
+    /**
+     * All type arguments which which a component type is ever instantiated
+     */
+    Multimap<ComponentTypeSymbol, String> typeArguments;
 
-  /** fully qualified name of the component that acts as the main (outermost) component */
-  protected String mainComponent;
+    /**
+     * Absolute path to the directory that contains handwritten templates in subdirectories according to their package.
+     */
+    protected Path hwcTemplatePath;
 
-  /** path of file containing recordings */
-  protected File replayDataFile;
+    /**
+     * fully qualified name of the component that acts as the main (outermost) component
+     */
+    protected String mainComponent;
 
-  /**
-   * Gets the implementing component of given interface component, if the component is bound by componentBindings.
-   * @param componentType interface component
-   * @return implementing component if present
-   */
-  public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(!binding.isInstance() && binding.getInterfaceComponentSymbol()==componentType){
-        return Optional.of(binding.getImplementationComponentSymbol());
-      }
+    /**
+     * path of file containing recordings
+     */
+    protected File replayDataFile;
+
+    /**
+     * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+     *
+     * @param componentType interface component
+     * @return implementing component if present
+     */
+    public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType) {
+        for (ASTBindingRule binding : componentBindings) {
+            if (!binding.isInstance() && binding.getInterfaceComponentSymbol() == componentType) {
+                return Optional.of(binding.getImplementationComponentSymbol());
+            }
+        }
+        return Optional.empty();
     }
-    return Optional.empty();
-  }
 
-  /**
-   * Gets the implementing component of given interface component, if the component is bound by componentBindings.
-   * @param componentType interface component
-   * @return implementing component if present
-   */
-  public Optional<ASTComponentType> getBinding(ASTComponentType componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(!binding.isInstance()&&binding.getInterfaceComponentSymbol().getAstNode()==componentType){
-        return Optional.of(binding.getInterfaceComponentSymbol().getAstNode());
-      }
+    /**
+     * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+     *
+     * @param componentType interface component
+     * @return implementing component if present
+     */
+    public Optional<ASTComponentType> getBinding(ASTComponentType componentType) {
+        for (ASTBindingRule binding : componentBindings) {
+            if (!binding.isInstance() && binding.getInterfaceComponentSymbol().getAstNode() == componentType) {
+                return Optional.of(binding.getInterfaceComponentSymbol().getAstNode());
+            }
+        }
+        return Optional.empty();
     }
-    return Optional.empty();
-  }
 
-  /**
-   * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
-   * @param componentInstance interface component instance
-   * @return implementing component if present
-   */
-  public Optional<ComponentTypeSymbol> getBinding(ComponentInstanceSymbol componentInstance){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.isInstance()&&binding.getInterfaceInstanceSymbol()==componentInstance){
-        return Optional.of(binding.getImplementationComponentSymbol());
-      }
+    /**
+     * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+     *
+     * @param componentInstance interface component instance
+     * @return implementing component if present
+     */
+    public Optional<ComponentTypeSymbol> getBinding(ComponentInstanceSymbol componentInstance) {
+        for (ASTBindingRule binding : componentBindings) {
+            if (binding.isInstance() && binding.getInterfaceInstanceSymbol() == componentInstance) {
+                return Optional.of(binding.getImplementationComponentSymbol());
+            }
+        }
+        return Optional.empty();
     }
-    return Optional.empty();
-  }
 
-  /**
-   * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
-   * @param componentInstance interface component instance
-   * @return implementing component if present
-   */
-  public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.isInstance()&&binding.getInterfaceInstanceSymbol().getAstNode()==componentInstance){
-        return Optional.of(binding.getImplementationComponentSymbol().getAstNode());
-      }
+    /**
+     * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+     *
+     * @param componentInstance interface component instance
+     * @return implementing component if present
+     */
+    public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance) {
+        for (ASTBindingRule binding : componentBindings) {
+            if (binding.isInstance() && binding.getInterfaceInstanceSymbol().getAstNode() == componentInstance) {
+                return Optional.of(binding.getImplementationComponentSymbol().getAstNode());
+            }
+        }
+        return Optional.empty();
     }
-    return Optional.empty();
-  }
 
-  /**
-   * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
-   * @param componentType implementing component
-   * @return If the component implements according to componentBindings.
-   */
-  public boolean isImplementation(ASTComponentType componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentSymbol().getAstNode()==componentType){
-        return true;
-      }
+    /**
+     * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+     *
+     * @param componentType implementing component
+     * @return If the component implements according to componentBindings.
+     */
+    public boolean isImplementation(ASTComponentType componentType) {
+        for (ASTBindingRule binding : componentBindings) {
+            if (binding.getImplementationComponentSymbol().getAstNode() == componentType) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-  }
 
-  /**
-   * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
-   * @param componentType implementing component
-   * @return If the component implements according to componentBindings.
-   */
-  public boolean isImplementation(ComponentTypeSymbol componentType) {
-    for (ASTBindingRule binding : componentBindings) {
-      if (binding.getImplementationComponentSymbol() == componentType) {
-        return true;
-      }
+    /**
+     * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+     *
+     * @param componentType implementing component
+     * @return If the component implements according to componentBindings.
+     */
+    public boolean isImplementation(ComponentTypeSymbol componentType) {
+        for (ASTBindingRule binding : componentBindings) {
+            if (binding.getImplementationComponentSymbol() == componentType) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-  }
 
-  /**
-   * Wrapper for typeArguments.get(). Only necessary to avoid Freemarker problems
-   */
-  public Collection<String> getTypeArguments(ComponentTypeSymbol componentType) {
-    return typeArguments.get(componentType);
-  }
+    /**
+     * Wrapper for typeArguments.get(). Only necessary to avoid Freemarker problems
+     */
+    public Collection<String> getTypeArguments(ComponentTypeSymbol componentType) {
+        return typeArguments.get(componentType);
+    }
 
-  /* ============================================================ */
-  /* ======================= GENERATED CODE ===================== */
-  /* ============================================================ */
+    /* ============================================================ */
+    /* ======================= GENERATED CODE ===================== */
+    /* ============================================================ */
 
-  public MessageBroker getMessageBroker() {
-    return messageBroker;
-  }
+    public MessageBroker getMessageBroker() {
+        return messageBroker;
+    }
 
-  public void setMessageBroker(MessageBroker messageBroker) {
-    this.messageBroker = messageBroker;
-  }
+    public void setMessageBroker(MessageBroker messageBroker) {
+        this.messageBroker = messageBroker;
+    }
 
-  public ReplayMode getReplayMode() {
-    return replayMode;
-  }
+    public ReplayMode getReplayMode() {
+        return replayMode;
+    }
 
-  public void setReplayMode(ReplayMode replayMode) {
-    this.replayMode = replayMode;
-  }
+    public void setReplayMode(ReplayMode replayMode) {
+        this.replayMode = replayMode;
+    }
 
-  public File getHwcPath() {
-    return hwcPath;
-  }
+    public ApplyPatterns getApplyPatterns() {
+        return applyPatterns;
+    }
 
-  public void setHwcPath(File hwcPath) {
-    this.hwcPath = hwcPath;
-  }
+    public void setApplyPatterns(ApplyPatterns applyPatterns) {
+        this.applyPatterns = applyPatterns;
+    }
 
-  public Path getHwcTemplatePath() {
-    return hwcTemplatePath;
-  }
+    public File getHwcPath() {
+        return hwcPath;
+    }
 
-  public void setHwcTemplatePath(Path hwcTemplatePath) {
-    this.hwcTemplatePath = hwcTemplatePath;
-  }
+    public void setHwcPath(File hwcPath) {
+        this.hwcPath = hwcPath;
+    }
 
-  public PortMap getComponentPortMap() {
-    return componentPortMap;
-  }
+    public Path getHwcTemplatePath() {
+        return hwcTemplatePath;
+    }
 
-  public TargetPlatform getTargetPlatform() {
-    return targetPlatform;
-  }
+    public void setHwcTemplatePath(Path hwcTemplatePath) {
+        this.hwcTemplatePath = hwcTemplatePath;
+    }
 
-  public void setTargetPlatform(TargetPlatform targetPlatform) {
-    this.targetPlatform = targetPlatform;
-  }
+    public PortMap getComponentPortMap() {
+        return componentPortMap;
+    }
 
-  public Set<ASTBindingRule> getComponentBindings() {
-    return componentBindings;
-  }
+    public TargetPlatform getTargetPlatform() {
+        return targetPlatform;
+    }
 
-  public void setComponentBindings(Set<ASTBindingRule> componentBindings) {
-    this.componentBindings = componentBindings;
-  }
+    public void setTargetPlatform(TargetPlatform targetPlatform) {
+        this.targetPlatform = targetPlatform;
+    }
 
-  public Set<PortSymbol> getTemplatedPorts() {return templatedPorts;}
+    public Set<ASTBindingRule> getComponentBindings() {
+        return componentBindings;
+    }
 
-  public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {this.templatedPorts = templatedPorts;}
+    public void setComponentBindings(Set<ASTBindingRule> componentBindings) {
+        this.componentBindings = componentBindings;
+    }
 
-  public ICDLangExtensionScope getCdLangExtensionScope() {
-    return cdLangExtensionScope;
-  }
+    public Set<PortSymbol> getTemplatedPorts() {
+        return templatedPorts;
+    }
 
-  public void setCdLangExtensionScope(ICDLangExtensionScope cdLangExtensionScope) {
-    this.cdLangExtensionScope = cdLangExtensionScope;
-  }
+    public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {
+        this.templatedPorts = templatedPorts;
+    }
 
-  public IMTConfigGlobalScope getMtConfigScope() {
-    return mtConfigScope;
-  }
+    public ICDLangExtensionScope getCdLangExtensionScope() {
+        return cdLangExtensionScope;
+    }
 
-  public void setMtConfigScope(IMTConfigGlobalScope mtConfigScope) {
-    this.mtConfigScope = mtConfigScope;
-  }
+    public void setCdLangExtensionScope(ICDLangExtensionScope cdLangExtensionScope) {
+        this.cdLangExtensionScope = cdLangExtensionScope;
+    }
 
-  public SplittingMode getSplittingMode() {
-    return splittingMode;
-  }
+    public IMTConfigGlobalScope getMtConfigScope() {
+        return mtConfigScope;
+    }
 
-  public void setSplittingMode(SplittingMode splittingMode) {
-    this.splittingMode = splittingMode;
-  }
+    public void setMtConfigScope(IMTConfigGlobalScope mtConfigScope) {
+        this.mtConfigScope = mtConfigScope;
+    }
 
-  public SerializationMode getSerializationMode() {
-    return serializationMode;
-  }
+    public SplittingMode getSplittingMode() {
+        return splittingMode;
+    }
 
-  public void setSerializationMode(SerializationMode serializationMode) {
-    this.serializationMode = serializationMode;
-  }
+    public void setSplittingMode(SplittingMode splittingMode) {
+        this.splittingMode = splittingMode;
+    }
 
-  public LogTracing getLogTracing() {
-    return logTracing;
-  }
+    public SerializationMode getSerializationMode() {
+        return serializationMode;
+    }
 
-  public void setLogTracing(LogTracing logTracing) {
-    this.logTracing = logTracing;
-  }
+    public void setSerializationMode(SerializationMode serializationMode) {
+        this.serializationMode = serializationMode;
+    }
 
-  public RecordingMode getRecordingMode() {
-    return recordingMode;
-  }
+    public LogTracing getLogTracing() {
+        return logTracing;
+    }
 
-  public void setRecordingMode(RecordingMode recordingMode) {
-    this.recordingMode = recordingMode;
-  }
+    public void setLogTracing(LogTracing logTracing) {
+        this.logTracing = logTracing;
+    }
 
-  public PortNameTrafo getPortNameTrafo() {
-    return portNameTrafo;
-  }
+    public RecordingMode getRecordingMode() {
+        return recordingMode;
+    }
 
-  public void setPortNameTrafo(PortNameTrafo portNameTrafo) {
-    this.portNameTrafo = portNameTrafo;
-  }
+    public void setRecordingMode(RecordingMode recordingMode) {
+        this.recordingMode = recordingMode;
+    }
 
-  public Multimap<ComponentTypeSymbol, String> getTypeArguments() {
-    return typeArguments;
-  }
+    public PortNameTrafo getPortNameTrafo() {
+        return portNameTrafo;
+    }
 
-  public void setTypeArguments(
-    Multimap<ComponentTypeSymbol, String> typeArguments) {
-    this.typeArguments = typeArguments;
-  }
+    public void setPortNameTrafo(PortNameTrafo portNameTrafo) {
+        this.portNameTrafo = portNameTrafo;
+    }
 
-  public String getProjectVersion() {
-    return projectVersion;
-  }
+    public Multimap<ComponentTypeSymbol, String> getTypeArguments() {
+        return typeArguments;
+    }
 
-  public void setProjectVersion(String projectVersion) {
-    this.projectVersion = projectVersion;
-  }
+    public void setTypeArguments(
+            Multimap<ComponentTypeSymbol, String> typeArguments) {
+        this.typeArguments = typeArguments;
+    }
 
-  public String getMainComponent() {
-    return mainComponent;
-  }
+    public String getProjectVersion() {
+        return projectVersion;
+    }
 
-  public void setMainComponent(String mainComponent) {
-    this.mainComponent = mainComponent;
-  }
+    public void setProjectVersion(String projectVersion) {
+        this.projectVersion = projectVersion;
+    }
 
-  public File getReplayDataFile() { return replayDataFile; }
+    public String getMainComponent() {
+        return mainComponent;
+    }
 
-  public void setReplayDataFile(File replayDataFile) { this.replayDataFile = replayDataFile; }
+    public void setMainComponent(String mainComponent) {
+        this.mainComponent = mainComponent;
+    }
+
+    public File getReplayDataFile() {
+        return replayDataFile;
+    }
+
+    public void setReplayDataFile(File replayDataFile) {
+        this.replayDataFile = replayDataFile;
+    }
 }
