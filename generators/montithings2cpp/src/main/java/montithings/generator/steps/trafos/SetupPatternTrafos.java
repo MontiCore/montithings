@@ -7,6 +7,8 @@ import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import montithings.trafos.patterns.AnomalyDetectionPatternTrafo;
 
+import java.nio.file.Paths;
+
 public class SetupPatternTrafos extends GeneratorStep {
 
     @Override
@@ -18,7 +20,8 @@ public class SetupPatternTrafos extends GeneratorStep {
         double tolerance = 5;
 
         if (config.getApplyPatterns() == ApplyPatterns.ON) {
-            tool.addTrafo(new AnomalyDetectionPatternTrafo(state.getModelPath(), windowSize, tolerance));
+            tool.addTrafo(new AnomalyDetectionPatternTrafo(state.getModelPath(), windowSize, tolerance,
+                    Paths.get(state.getTarget().getAbsolutePath(), "hwc").toFile()));
         }
     }
 }

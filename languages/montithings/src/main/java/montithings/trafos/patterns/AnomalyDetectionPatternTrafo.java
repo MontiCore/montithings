@@ -18,11 +18,13 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
     private final int windowSize;
     private final double tolerance;
     private final File modelPath;
+    private final File hwcPath;
 
-    public AnomalyDetectionPatternTrafo(File modelPath, int windowSize, double tolerance) {
+    public AnomalyDetectionPatternTrafo(File modelPath, int windowSize, double tolerance, File hwcPath) {
         this.windowSize = windowSize;
         this.tolerance = tolerance;
         this.modelPath = modelPath;
+        this.hwcPath = hwcPath;
     }
 
     public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
@@ -143,14 +145,16 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         sourceToPortType.put(source, portType);
 
 
+        List<Map<ASTPortAccess, ASTMCType>> sourcesToPortTypes;
+
         if (targetToSourcePortType.containsKey(target)) {
-            List<Map<ASTPortAccess, ASTMCType>> sourcesToPortTypes = targetToSourcePortType.get(target);
+            sourcesToPortTypes = targetToSourcePortType.get(target);
             sourcesToPortTypes.add(sourceToPortType);
-            targetToSourcePortType.put(target, sourcesToPortTypes);
         } else {
-            List<Map<ASTPortAccess, ASTMCType>> sourcesToPortTypes = Collections.singletonList(sourceToPortType);
-            targetToSourcePortType.put(target, sourcesToPortTypes);
+            sourcesToPortTypes = Collections.singletonList(sourceToPortType);
         }
+        
+        targetToSourcePortType.put(target, sourcesToPortTypes);
     }
 
     /**
