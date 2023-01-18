@@ -1,4 +1,4 @@
-package montithings.trafos.patterns;
+package montithings.generator.steps.trafos.patterns;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,7 +52,7 @@ public abstract class LinearRegression {
         Iterator<Double> itX = xValues.iterator();
         Iterator<Double> itY = yValues.iterator();
 
-        while(itX.hasNext() && itY.hasNext()) {
+        while (itX.hasNext() && itY.hasNext()) {
             double x = itX.next();
             double y = itY.next();
             nominator += (x - meanX) * (y - meanY);

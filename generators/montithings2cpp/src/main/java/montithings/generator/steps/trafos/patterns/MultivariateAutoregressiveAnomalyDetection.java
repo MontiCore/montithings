@@ -1,4 +1,4 @@
-package montithings.trafos.patterns;
+package montithings.generator.steps.trafos.patterns;
 
 import java.util.ArrayList;
 import java.util.List;

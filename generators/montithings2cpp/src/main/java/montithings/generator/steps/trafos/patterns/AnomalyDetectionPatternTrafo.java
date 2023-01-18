@@ -1,32 +1,25 @@
-package montithings.trafos.patterns;
+package montithings.generator.steps.trafos.patterns;
 
 import arcbasis._ast.ASTPortAccess;
-import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._visitor.FindConnectionsVisitor;
-import montithings.trafos.BasicTransformations;
 import montithings.trafos.MontiThingsTrafo;
 import montithings.util.TrafoUtil;
 
 import java.io.File;
 import java.util.*;
 
-public class AnomalyDetectionPatternTrafo extends BasicTransformations implements MontiThingsTrafo {
+public class AnomalyDetectionPatternTrafo extends PatternHelper implements MontiThingsTrafo {
     private static final String TOOL_NAME = "AnomalyDetectionPatternTrafo";
-    private final int windowSize;
-    private final double tolerance;
     private final File modelPath;
-    private final File hwcPath;
 
-    public AnomalyDetectionPatternTrafo(File modelPath, int windowSize, double tolerance, File hwcPath) {
-        this.windowSize = windowSize;
-        this.tolerance = tolerance;
+    public AnomalyDetectionPatternTrafo(File modelPath) {
         this.modelPath = modelPath;
-        this.hwcPath = hwcPath;
     }
 
+    @Override
     public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
                                                       Collection<ASTMACompilationUnit> addedModels,
                                                       ASTMACompilationUnit targetComp) throws Exception {
@@ -35,9 +28,11 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
 
         List<ASTMACompilationUnit> allModels = this.getAllModels(originalModels, addedModels);
 
-        Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
-
         Map<ASTPortAccess, List<Map<ASTPortAccess, ASTMCType>>> targetsToSourcePortType = this.getTargetsToSourcePortType(targetComp, allModels);
+
+        ASTMACompilationUnit outermostComponent = this.getOutermostComponent(allModels);
+        ASTMACompilationUnit univariateComp = this.getUnivariateComponent(allModels, modelPath);
+        ASTMACompilationUnit multivariateComp = this.getMultivariateComponent(allModels, modelPath);
 
         // For each target check count of sources with same port type
         // If == 1, insert UnivariateAnomalyDetection component
@@ -64,9 +59,7 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
 
                     System.out.println(logMessage);
 
-                    List<ASTMACompilationUnit> interceptComponents = this.getInterceptComponents(sources, target, targetComp, allModels, portType);
-
-                    additionalTrafoModels.addAll(interceptComponents);
+                    this.replaceConnection(sources, target, targetComp, portType, multivariateComp, outermostComponent);
                 }
 
                 if (count == 1) {
@@ -77,14 +70,12 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
                     System.out.println("Connection " + source.getQName() + " -> " + target.getQName() +
                             " is univariate numeric port. Intercept a new Autoregressive Anomaly Detection component.");
 
-                    List<ASTMACompilationUnit> interceptComponents = this.getInterceptComponents(sources, target, targetComp, allModels, portType);
-
-                    additionalTrafoModels.addAll(interceptComponents);
+                    this.replaceConnection(sources, target, targetComp, portType, univariateComp, outermostComponent);
                 }
             }
         }
 
-        return additionalTrafoModels;
+        return originalModels;
     }
 
     private List<ASTPortAccess> getSourcesOfPortType(ASTMCType portType, List<Map<ASTPortAccess, ASTMCType>> sourcesToPortTypes) {
@@ -153,7 +144,7 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         } else {
             sourcesToPortTypes = Collections.singletonList(sourceToPortType);
         }
-        
+
         targetToSourcePortType.put(target, sourcesToPortTypes);
     }
 
@@ -170,14 +161,6 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
     private boolean isNumericPort(ASTMCType portType) {
         List<String> numericPortTypes = Arrays.asList("int", "double", "float");
         return numericPortTypes.contains(portType.toString());
-    }
-
-    private List<ASTMACompilationUnit> getAllModels(Collection<ASTMACompilationUnit> originalModels,
-                                                    Collection<ASTMACompilationUnit> addedModels) {
-        List<ASTMACompilationUnit> allModels = new ArrayList<>();
-        allModels.addAll(originalModels);
-        allModels.addAll(addedModels);
-        return allModels;
     }
 
     private ASTMCType getPortType(ASTPortAccess port, ASTMACompilationUnit comp, List<ASTMACompilationUnit> models, File modelPath) throws Exception {
@@ -214,24 +197,10 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         return portType;
     }
 
-    private List<ASTMACompilationUnit> getInterceptComponents(List<ASTPortAccess> sources, ASTPortAccess target, ASTMACompilationUnit comp,
-                                                              List<ASTMACompilationUnit> models, ASTMCType portType) {
-        List<ASTMACompilationUnit> interceptorComponents = new ArrayList<>();
+    private void replaceConnection(List<ASTPortAccess> sources, ASTPortAccess target, ASTMACompilationUnit comp,
+                                   ASTMCType portType, ASTMACompilationUnit interceptorComponent, ASTMACompilationUnit outermostComponent) {
+        String interceptorComponentName = this.getInterceptorFullyQName(UNIVARIATE_NAME, outermostComponent.getPackage().getQName()).getQName();
 
-        String interceptorComponentName = this.getInterceptorComponentName(sources, target, comp, models);
-
-        ASTMCQualifiedName fullyQName = this.getInterceptorFullyQName(interceptorComponentName, comp);
-
-        addSubComponentInstantiation(comp, fullyQName, interceptorComponentName.toLowerCase(), createEmptyArguments());
-
-        ASTMACompilationUnit interceptorComponent = createCompilationUnit(comp.getPackage(), interceptorComponentName);
-
-
-        // Behaviour via HWC Cpp class
-
-        flagAsGenerated(interceptorComponent);
-
-        // Replace the old connections
         for (ASTPortAccess source : sources) {
             String inPortName = "in" + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
             String outPortName = "out" + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
@@ -244,44 +213,5 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
             addConnection(comp, source.getQName(), interceptorComponentName.toLowerCase() + "." + inPortName);
             addConnection(comp, interceptorComponentName.toLowerCase() + "." + outPortName, target.getQName());
         }
-
-        interceptorComponents.add(interceptorComponent);
-
-        return interceptorComponents;
-    }
-
-    private String getInterceptorComponentName(List<ASTPortAccess> sources, ASTPortAccess target, ASTMACompilationUnit comp, List<ASTMACompilationUnit> models) {
-        String newNameEnding = "AutoregressiveAnomalyDetection";
-        String newName = newNameEnding;
-
-        List<String> qCompSourceNames = new ArrayList<>();
-        List<String> qCompTargetNames = new ArrayList<>();
-
-        for (ASTPortAccess source : sources) {
-            if (source.isPresentComponent()) {
-                qCompSourceNames.addAll(TrafoUtil.getFullyQInstanceName(models, comp, source.getComponent()));
-            }
-
-            if (target.isPresentComponent()) {
-                qCompTargetNames.addAll(TrafoUtil.getFullyQInstanceName(models, comp, target.getComponent()));
-            }
-        }
-
-        for (String qCompSourceName : qCompSourceNames) {
-            for (String qCompTargetName : qCompTargetNames) {
-                newName = TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(qCompSourceName) +
-                        TrafoUtil.replaceDotsWithCamelCase(qCompTargetName) +
-                        newNameEnding);
-            }
-        }
-
-        return newName;
-    }
-
-    private ASTMCQualifiedName getInterceptorFullyQName(String interceptorComponentName, ASTMACompilationUnit comp) {
-        ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(comp.getPackage());
-        fullyQName.addParts(interceptorComponentName);
-
-        return fullyQName;
     }
 }

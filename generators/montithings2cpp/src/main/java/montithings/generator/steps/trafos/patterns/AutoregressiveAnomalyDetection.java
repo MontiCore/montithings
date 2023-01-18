@@ -1,13 +1,15 @@
-package montithings.trafos.patterns;
+package montithings.generator.steps.trafos.patterns;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * One of the most basic stochastical models for univariate time-series is the Autoregressive model (AR). AR is a
  * linear model where current value Xt of the stochastic process (dependent variable) is based one a finite set of
  * previous values (independent variables) of length p and an error value e:
  */
-public class AutoregressiveAnomalyDetection extends LinearRegression implements UnivariateAnomalyDetection{
+public class AutoregressiveAnomalyDetection extends LinearRegression implements UnivariateAnomalyDetection {
 
     private final int windowSize;
     private final double tolerance;

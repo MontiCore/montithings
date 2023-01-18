@@ -1,4 +1,4 @@
-package montithings.trafos.patterns;
+package montithings.generator.steps.trafos.patterns;
 
 /**
  * Implement UnivariateAnomalyDetection interface for different implementations of
