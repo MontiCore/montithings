@@ -46,7 +46,7 @@ export PATH=$PATH:/opt/homebrew/bin
 fi
 
 # Install Dependencies
-brew install cmake ninja mosquitto terraform azure-cli conan python
+brew install cmake ninja mosquitto terraform azure-cli conan python openssl
 brew services start mosquitto
 if ! command_exists docker
 then
