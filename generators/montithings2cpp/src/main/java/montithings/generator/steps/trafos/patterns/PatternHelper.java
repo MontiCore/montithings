@@ -1,6 +1,7 @@
 package montithings.generator.steps.trafos.patterns;
 
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
+import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
 import montithings.trafos.BasicTransformations;
@@ -8,12 +9,14 @@ import montithings.util.TrafoUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 public class PatternHelper extends BasicTransformations {
     protected static final String UNIVARIATE_NAME = "UniAutoregressiveAnomalyDetection";
     protected static final String MULTIVARIATE_NAME = "MultiAutoregressiveAnomalyDetection";
+    protected static final List<String> NUMERIC_PORTS = Arrays.asList("int", "double", "float");
 
     protected ASTMACompilationUnit getUnivariateComponent(Collection<ASTMACompilationUnit> models, File modelPath) throws Exception {
         ASTMACompilationUnit outermostComponent = this.getOutermostComponent(models);
@@ -73,5 +76,9 @@ public class PatternHelper extends BasicTransformations {
                 .addParts(outermostPackage)
                 .addParts(interceptorComponentName)
                 .build();
+    }
+
+    protected boolean isNumericPort(ASTMCType portType) {
+        return NUMERIC_PORTS.contains(portType.toString());
     }
 }

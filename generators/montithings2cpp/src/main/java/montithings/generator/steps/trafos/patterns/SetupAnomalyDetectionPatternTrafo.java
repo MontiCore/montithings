@@ -1,8 +1,10 @@
 package montithings.generator.steps.trafos.patterns;
 
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
+import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
+import montithings.MontiThingsMill;
 import montithings.generator.codegen.FileGenerator;
 import montithings.trafos.MontiThingsTrafo;
 
@@ -13,6 +15,12 @@ import java.util.List;
 
 public class SetupAnomalyDetectionPatternTrafo extends PatternHelper implements MontiThingsTrafo {
     private static final String TOOL_NAME = "SetupAnomalyDetectionPatternTrafo";
+    private static final String UNIVARIATE_IMPL = "hwc/ftl/AutoregressiveAnomalyDetectionImplCpp";
+    private static final String UNIVARIATE_HEADER = "hwc/ftl/AutoregressiveAnomalyDetectionImplHeader";
+    private static final String MULTIVARIATE_IMPL = "hwc/ftl/MultivariateAutoregressiveAnomalyDetectionImplCpp";
+    private static final String MULTIVARIATE_HEADER = "hwc/ftl/MultivariateAutoregressiveAnomalyDetectionImplHeader";
+    private static final String INPUT_PORT = "in";
+    private static final String OUTPUT_PORT = "out";
     private final int windowSize;
     private final double tolerance;
     private final File modelPath;
@@ -53,26 +61,48 @@ public class SetupAnomalyDetectionPatternTrafo extends PatternHelper implements 
         }
 
         if (this.hasUnivariateAnomalyDetection && this.getUnivariateComponent(allModels, modelPath) == null) {
-            ASTMACompilationUnit univariateComp = this.getInterceptComponent(UNIVARIATE_NAME, targetComp);
+            ASTMACompilationUnit univariateComp =
+                    this.getInterceptComponent(UNIVARIATE_NAME, targetComp, UNIVARIATE_IMPL, UNIVARIATE_HEADER);
             additionalTrafoModels.add(univariateComp);
         }
 
         if (this.hasMultivariateAnomalyDetection && this.getMultivariateComponent(allModels, modelPath) == null) {
-            ASTMACompilationUnit multivariateComp = this.getInterceptComponent(MULTIVARIATE_NAME, targetComp);
+            ASTMACompilationUnit multivariateComp =
+                    this.getInterceptComponent(MULTIVARIATE_NAME, targetComp, MULTIVARIATE_IMPL, MULTIVARIATE_HEADER);
             additionalTrafoModels.add(multivariateComp);
         }
 
         return additionalTrafoModels;
     }
 
-    private ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent) {
+    private ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent,
+                                                       String cppImplName, String headerImplName) {
         ASTMCQualifiedName fullyQName = this.getInterceptorFullyQName(interceptorComponentName, outermostComponent.getPackage().getQName());
 
         addSubComponentInstantiation(outermostComponent, fullyQName, interceptorComponentName.toLowerCase(), createEmptyArguments());
 
         ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
 
-        // Behaviour via HWC Cpp class
+        for (String portTypeName : NUMERIC_PORTS) {
+            ASTMCQualifiedName qualifiedName = MontiThingsMill
+                    .mCQualifiedNameBuilder()
+                    .addParts("in")
+                    .addParts(portTypeName)
+                    .build();
+
+            ASTMCType portType = MontiThingsMill
+                    .mCQualifiedTypeBuilder()
+                    .setMCQualifiedName(qualifiedName)
+                    .build();
+
+            addPort(interceptorComponent, INPUT_PORT + portTypeName, false, portType);
+
+            addPort(interceptorComponent, OUTPUT_PORT + portTypeName, true, portType);
+        }
+
+        fg.generate(hwcPath, interceptorComponentName, ".cpp", cppImplName, interceptorComponentName, INPUT_PORT);
+
+        fg.generate(hwcPath, interceptorComponentName, ".h", headerImplName, interceptorComponentName, tolerance, windowSize);
 
         flagAsGenerated(interceptorComponent);
 

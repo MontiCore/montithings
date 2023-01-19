@@ -158,11 +158,6 @@ public class AnomalyDetectionPatternTrafo extends PatternHelper implements Monti
         return visitor.getConnections();
     }
 
-    private boolean isNumericPort(ASTMCType portType) {
-        List<String> numericPortTypes = Arrays.asList("int", "double", "float");
-        return numericPortTypes.contains(portType.toString());
-    }
-
     private ASTMCType getPortType(ASTPortAccess port, ASTMACompilationUnit comp, List<ASTMACompilationUnit> models, File modelPath) throws Exception {
         String sourceTypeName = TrafoUtil.getPortOwningComponentType(comp, port);
 
