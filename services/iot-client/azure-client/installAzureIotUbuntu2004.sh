@@ -4,7 +4,7 @@ CONNECTION_STRING='PASTE_DEVICE_CONNECTION_STRING_HERE'
 BROKER_PORT='4230'
 IS_RASPBIAN=false # please note: only ARM32v7 is supported by azure iot edge as of now. see https://learn.microsoft.com/en-us/azure/iot-edge/support?view=iotedge-1.4#operating-systems
 
-if [ $IS_RASPBIAN ]
+if $IS_RASPBIAN
 then
   # make sure date is correctly set
   sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
