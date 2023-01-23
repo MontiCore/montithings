@@ -66,6 +66,9 @@ public class AzureIotHubTargetProvider implements IDeployTargetProvider {
     }
     Map<String, String[]> distributionMap = dist.getDistributionMap();
     for (String deviceID : distributionMap.keySet()) {
+      if(clients.stream().noneMatch(dc -> dc.getClientID().equals(deviceID))) {
+        continue;
+      }
       GeneratorSetup setup = new GeneratorSetup();
       setup.setTracing(false);
       GeneratorEngine engine = new GeneratorEngine(setup);
