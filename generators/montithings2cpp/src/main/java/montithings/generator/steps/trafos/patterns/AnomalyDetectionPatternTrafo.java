@@ -57,7 +57,8 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
 
         List<ASTMACompilationUnit> allModels = this.getAllModels(originalModels, addedModels);
 
-        Map<ASTPortAccess, List<Map<ASTPortAccess, ASTMCType>>> targetsToSourcePortType = this.getTargetsToSourcePortType(targetComp, allModels);
+        Map<ASTPortAccess, Map<ASTMCType, List<ASTPortAccess>>> targetsToPortTypesToSources =
+                this.getTargetsToPortTypesToSources(targetComp, allModels);
 
         List<String> univariateInPortNames = new ArrayList<>();
         List<String> univariateOutPortNames = new ArrayList<>();
@@ -67,19 +68,16 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         // For each target check count of sources with same port type
         // If == 1, insert UnivariateAnomalyDetection component
         // If > 1, insert MultivariateAnomalyDetection component
-        for (Map.Entry<ASTPortAccess, List<Map<ASTPortAccess, ASTMCType>>> targetToSourcePortType : targetsToSourcePortType.entrySet()) {
-            ASTPortAccess target = targetToSourcePortType.getKey();
+        for (Map.Entry<ASTPortAccess, Map<ASTMCType, List<ASTPortAccess>>> targetToPortTypesToSources : targetsToPortTypesToSources.entrySet()) {
+            ASTPortAccess target = targetToPortTypesToSources.getKey();
+            Map<ASTMCType, List<ASTPortAccess>> portTypesToSources = targetToPortTypesToSources.getValue();
 
-            List<Map<ASTPortAccess, ASTMCType>> sourcesToPortTypes = targetToSourcePortType.getValue();
-            Map<ASTMCType, Integer> portTypeToCount = this.getPortTypeCount(sourcesToPortTypes);
-
-            for (Map.Entry<ASTMCType, Integer> portTypeCount : portTypeToCount.entrySet()) {
-                ASTMCType portType = portTypeCount.getKey();
-                int count = portTypeCount.getValue();
+            for (Map.Entry<ASTMCType, List<ASTPortAccess>> portTypeToSources : portTypesToSources.entrySet()) {
+                ASTMCType portType = portTypeToSources.getKey();
+                List<ASTPortAccess> sources = portTypeToSources.getValue();
+                int count = portTypeToSources.getValue().size();
 
                 if (count > 1) {
-                    List<ASTPortAccess> sources = getSourcesOfPortType(portType, sourcesToPortTypes);
-
                     StringBuilder logMessage = new StringBuilder("Connection ");
 
                     for (ASTPortAccess source : sources) {
@@ -97,15 +95,13 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
                     }
 
                     Map<String, List<String>> portNames =
-                            this.replaceConnection(sources, target, targetComp, portType, multivariateComp, MULTIVARIATE_NAME);
+                            this.replaceConnection(sources, targetComp, portType, multivariateComp, MULTIVARIATE_NAME);
 
                     multivariateInPortNames.add(portNames.get(INPORT_NAME_KEY));
                     multivariateOutPortNames.add(portNames.get(OUTPORT_NAME_KEY));
                 }
 
                 if (count == 1) {
-                    List<ASTPortAccess> sources = getSourcesOfPortType(portType, sourcesToPortTypes);
-
                     ASTPortAccess source = sources.get(0);
 
                     Log.info("Connection " + source.getQName() + " -> " + target.getQName() +
@@ -118,7 +114,7 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
                     }
 
                     Map<String, List<String>> portNames =
-                            this.replaceConnection(sources, target, targetComp, portType, univariateComp, UNIVARIATE_NAME);
+                            this.replaceConnection(sources, targetComp, portType, univariateComp, UNIVARIATE_NAME);
 
                     univariateInPortNames.add(portNames.get(INPORT_NAME_KEY).get(0));
                     univariateOutPortNames.add(portNames.get(OUTPORT_NAME_KEY).get(0));
@@ -131,60 +127,15 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         }
 
         if (multivariateInPortNames.size() > 0 && multivariateInPortNames.size() == multivariateOutPortNames.size()) {
-            multivariateInPortNames.forEach(System.out::println);
-            System.out.println("###");
-            multivariateOutPortNames.forEach(System.out::println);
             this.generateMultivariateAnomalyDetectionBehavior(targetComp, multivariateInPortNames, multivariateOutPortNames);
         }
 
         return additionalTrafoModels;
     }
 
-    private List<ASTPortAccess> getSourcesOfPortType(ASTMCType portType, List<Map<ASTPortAccess, ASTMCType>> sourcesToPortTypes) {
-        List<ASTPortAccess> sources = new ArrayList<>();
-
-        for (Map<ASTPortAccess, ASTMCType> sourceToPortType : sourcesToPortTypes) {
-            for (Map.Entry<ASTPortAccess, ASTMCType> entry : sourceToPortType.entrySet()) {
-                ASTMCType sourcePortType = entry.getValue();
-
-                if (portType.equals(sourcePortType)) {
-                    sources.add(entry.getKey());
-                }
-            }
-        }
-
-        return sources;
-    }
-
-    private Map<ASTMCType, Integer> getPortTypeCount(List<Map<ASTPortAccess, ASTMCType>> sourcesToPortTypes) {
-        Map<ASTMCType, Integer> portTypeToCount = new HashMap<>();
-
-        for (Map<ASTPortAccess, ASTMCType> sourceToPortType : sourcesToPortTypes) {
-            for (Map.Entry<ASTPortAccess, ASTMCType> entry : sourceToPortType.entrySet()) {
-                ASTMCType portType = entry.getValue();
-
-                if (portTypeToCount.entrySet().size() == 0) {
-                    portTypeToCount.put(portType, 1);
-                    continue;
-                }
-
-                for (Map.Entry<ASTMCType, Integer> count : portTypeToCount.entrySet()) {
-                    if (count.getKey().equals(portType)) {
-                        int curCount = count.getValue();
-                        portTypeToCount.put(portType, curCount + 1);
-                    } else {
-                        portTypeToCount.put(portType, 1);
-                    }
-                }
-            }
-        }
-
-        return portTypeToCount;
-    }
-
-    private Map<ASTPortAccess, List<Map<ASTPortAccess, ASTMCType>>> getTargetsToSourcePortType(ASTMACompilationUnit comp,
-                                                                                               List<ASTMACompilationUnit> models) throws Exception {
-        Map<ASTPortAccess, List<Map<ASTPortAccess, ASTMCType>>> targetsToSourcePortType = new HashMap<>();
+    private Map<ASTPortAccess, Map<ASTMCType, List<ASTPortAccess>>> getTargetsToPortTypesToSources(ASTMACompilationUnit comp,
+                                                                                                   List<ASTMACompilationUnit> models) throws Exception {
+        Map<ASTPortAccess, Map<ASTMCType, List<ASTPortAccess>>> targetsToPortTypesToSources = new HashMap<>();
 
         List<FindConnectionsVisitor.Connection> connections = this.getConnections(comp);
 
@@ -192,33 +143,47 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
             ASTMCType portType = this.getPortType(conn.source, comp, models, this.modelPath);
 
             if (isNumericPort(portType)) {
-                Map<ASTPortAccess, ASTMCType> sourceToPortType = new HashMap<>();
-                sourceToPortType.put(conn.source, portType);
-
-                if (targetsToSourcePortType.entrySet().size() == 0) {
-                    targetsToSourcePortType.put(conn.target, Collections.singletonList(sourceToPortType));
+                if (targetsToPortTypesToSources.entrySet().size() == 0) {
+                    Map<ASTMCType, List<ASTPortAccess>> portTypeToSources = new HashMap<>();
+                    portTypeToSources.put(portType, Collections.singletonList(conn.source));
+                    targetsToPortTypesToSources.put(conn.target, portTypeToSources);
+                    Log.info("Init empty for target " + conn.target.getComponent(), TOOL_NAME);
                     continue;
                 }
 
                 ASTPortAccess foundKey = null;
 
-                for (Map.Entry<ASTPortAccess, List<Map<ASTPortAccess, ASTMCType>>> entry : targetsToSourcePortType.entrySet()) {
-                    if (entry.getKey().getQName().equals(conn.target.getQName())) {
+                for (Map.Entry<ASTPortAccess, Map<ASTMCType, List<ASTPortAccess>>> entry : targetsToPortTypesToSources.entrySet()) {
+                    if (entry.getKey().getComponent().equals(conn.target.getComponent())) {
+                        Log.info("Found key " + entry.getKey().getComponent(), TOOL_NAME);
                         foundKey = entry.getKey();
                     }
                 }
 
+                Map<ASTMCType, List<ASTPortAccess>> portTypeToSources = new HashMap<>();
+
                 if (foundKey != null) {
-                    List<Map<ASTPortAccess, ASTMCType>> sourcesToPortType = new ArrayList<>(Collections.singletonList(sourceToPortType));
-                    sourcesToPortType.addAll(targetsToSourcePortType.get(foundKey));
-                    targetsToSourcePortType.put(foundKey, sourcesToPortType);
+                    Log.info("Put " + foundKey.getComponent() + " with list len " + targetsToPortTypesToSources.get(foundKey).entrySet().size(), TOOL_NAME);
+                    for (Map.Entry<ASTMCType, List<ASTPortAccess>> entry : targetsToPortTypesToSources.get(foundKey).entrySet()) {
+                        if (entry.getKey().toString().equals(portType.toString())) {
+                            List<ASTPortAccess> oldSources = new ArrayList<>(entry.getValue());
+                            oldSources.add(conn.source);
+                            portTypeToSources.put(entry.getKey(), oldSources);
+                        } else {
+                            portTypeToSources.put(entry.getKey(), entry.getValue());
+                        }
+                    }
+
+                    targetsToPortTypesToSources.put(foundKey, portTypeToSources);
                 } else {
-                    targetsToSourcePortType.put(conn.target, Collections.singletonList(sourceToPortType));
+                    Log.info("Target " + conn.target.getComponent() + " not found. Add empty", TOOL_NAME);
+                    portTypeToSources.put(portType, Collections.singletonList(conn.source));
+                    targetsToPortTypesToSources.put(conn.target, portTypeToSources);
                 }
             }
         }
 
-        return targetsToSourcePortType;
+        return targetsToPortTypesToSources;
     }
 
     /**
@@ -265,8 +230,8 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         return portType;
     }
 
-    private Map<String, List<String>> replaceConnection(List<ASTPortAccess> sources, ASTPortAccess target, ASTMACompilationUnit comp,
-                                                        ASTMCType portType, ASTMACompilationUnit interceptorComponent, String interceptorComponentName) {
+    private Map<String, List<String>> replaceConnection(List<ASTPortAccess> sources, ASTMACompilationUnit comp, ASTMCType portType,
+                                                        ASTMACompilationUnit interceptorComponent, String interceptorComponentName) {
         Log.info("Replace connection", TOOL_NAME);
 
         List<String> inPortNames = new ArrayList<>();
@@ -274,6 +239,12 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
 
         for (int i = 0; i < sources.size(); i++) {
             ASTPortAccess source = sources.get(i);
+            ASTPortAccess target = this.getTargetOfSource(comp, source);
+
+            if (target == null) {
+                Log.info("No target for source " + source.getQName() + " found", TOOL_NAME);
+                continue;
+            }
 
             String inPortName = INPUT_PORT + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
             String outPortName = OUTPUT_PORT + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(target.getQName() + i));
@@ -281,13 +252,24 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
             inPortNames.add(inPortName);
             outPortNames.add(outPortName);
 
+            Log.info("Add new in-port " + inPortName + " of type " + portType + " to component " + interceptorComponentName, TOOL_NAME);
             addPort(interceptorComponent, inPortName, false, portType);
+
+            Log.info("Add new out-port " + outPortName + " of type " + portType + " to component " + interceptorComponentName, TOOL_NAME);
             addPort(interceptorComponent, outPortName, true, portType);
 
+            Log.info("Add new connection " + source.getQName() + " -> " + interceptorComponentName.toLowerCase() + "." + inPortName +
+                    " to component " + comp.getComponentType(), TOOL_NAME);
             addConnection(comp, source.getQName(), interceptorComponentName.toLowerCase() + "." + inPortName);
+
+            Log.info("Add new connection " + interceptorComponentName.toLowerCase() + "." + outPortName + " -> " + target.getQName() +
+                    " to component " + comp.getComponentType(), TOOL_NAME);
             addConnection(comp, interceptorComponentName.toLowerCase() + "." + outPortName, target.getQName());
 
+            Log.info("Remove existing connection " + source.getQName() + " -> " + target.getQName() +
+                    " from component " + comp.getComponentType(), TOOL_NAME);
             removeConnection(comp, source, target);
+
             // TODO: Add local state var
         }
 
@@ -296,6 +278,18 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         portNames.put(OUTPORT_NAME_KEY, outPortNames);
 
         return portNames;
+    }
+
+    private ASTPortAccess getTargetOfSource(ASTMACompilationUnit comp, ASTPortAccess source) {
+        List<FindConnectionsVisitor.Connection> connections = this.getConnections(comp);
+
+        for (FindConnectionsVisitor.Connection conn : connections) {
+            if (conn.source.getQName().equals(source.getQName())) {
+                return conn.target;
+            }
+        }
+
+        return null;
     }
 
     private ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent) {
