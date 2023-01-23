@@ -6,7 +6,6 @@ import montithings.generator.config.ConfigParams;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import montithings.generator.steps.trafos.patterns.AnomalyDetectionPatternTrafo;
-import montithings.generator.steps.trafos.patterns.SetupAnomalyDetectionPatternTrafo;
 
 public class SetupPatternTrafos extends GeneratorStep {
     private static final int WINDOW_SIZE = 25;
@@ -18,11 +17,7 @@ public class SetupPatternTrafos extends GeneratorStep {
         MontiThingsGeneratorTool tool = state.getTool();
 
         if (config.getApplyPatterns() == ApplyPatterns.ON) {
-            if (state.shouldCreateUnivariateAnomalyDetection() || state.shouldCreateMultivariateAnomalyDetection()) {
-                tool.addTrafo(new SetupAnomalyDetectionPatternTrafo(state, WINDOW_SIZE, TOLERANCE));
-            }
-
-            tool.addTrafo(new AnomalyDetectionPatternTrafo(state));
+            tool.addTrafo(new AnomalyDetectionPatternTrafo(state, WINDOW_SIZE, TOLERANCE));
         }
     }
 }

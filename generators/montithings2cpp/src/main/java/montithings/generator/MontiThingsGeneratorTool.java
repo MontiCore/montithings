@@ -40,7 +40,6 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
                 .setNextStep(new SetupModelPath())
                 .setNextStep(new LogStep("Initializing symboltable", TOOL_NAME))
                 .setNextStep(new SerializeCDs())
-                .setNextStep(new FindPatterns())
                 .setNextStep(new SetupPatternTrafos())
                 .setNextStep(new SetupReplayerTrafos())
                 .setNextStep(new SetupStatechartTrafos())

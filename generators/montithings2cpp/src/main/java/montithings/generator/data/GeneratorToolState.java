@@ -109,14 +109,6 @@ public class GeneratorToolState {
 
     protected List<String> cppRequirements;
 
-    private Map<String, Integer> portTypeToCount = new HashMap<>();
-
-    private Map<String, List<Integer>> portTypeToFreeIndices = new HashMap<>();
-
-    protected boolean createUnivariateAnomalyDetection;
-
-    protected boolean createMultivariateAnomalyDetection;
-
     /* ============================================================ */
     /* ======================= GENERATED CODE ===================== */
     /* ============================================================ */
@@ -137,62 +129,6 @@ public class GeneratorToolState {
 
     public void setTool(MontiThingsGeneratorTool tool) {
         this.tool = tool;
-    }
-
-    public Map<String, Integer> getPortTypeToCount() {
-        return portTypeToCount;
-    }
-
-    public void setPortTypeToCount(Map<String, Integer> map) {
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            if (this.portTypeToCount.containsKey(entry.getKey())) {
-                // Increase count
-                this.portTypeToCount.put(entry.getKey(), entry.getValue() + this.portTypeToCount.get(entry.getKey()));
-            } else {
-                // Set count
-                this.portTypeToCount.put(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    public Map<String, List<Integer>> getPortTypeToFreeIndices() {
-        return portTypeToFreeIndices;
-    }
-
-    public void dropFreeIndex(String portType, int idx) {
-        List<Integer> freeIndices = this.portTypeToFreeIndices.get(portType);
-        freeIndices.remove(idx);
-    }
-
-    public void setPortTypeToFreeIndicesFromPortTypeCount() {
-        // Reset
-        this.portTypeToFreeIndices = new HashMap<>();
-
-        for (Map.Entry<String, Integer> entry : this.portTypeToCount.entrySet()) {
-            List<Integer> freeIndices = new ArrayList<>();
-
-            for (int i = 0; i < entry.getValue(); i++) {
-                freeIndices.add(i);
-            }
-
-            this.portTypeToFreeIndices.put(entry.getKey(), freeIndices);
-        }
-    }
-
-    public boolean shouldCreateUnivariateAnomalyDetection() {
-        return this.createUnivariateAnomalyDetection;
-    }
-
-    public void setCreateUnivariateAnomalyDetection(boolean createUnivariateAnomalyDetection) {
-        this.createUnivariateAnomalyDetection = createUnivariateAnomalyDetection;
-    }
-
-    public boolean shouldCreateMultivariateAnomalyDetection() {
-        return this.createMultivariateAnomalyDetection;
-    }
-
-    public void setCreateMultivariateAnomalyDetection(boolean createMultivariateAnomalyDetection) {
-        this.createMultivariateAnomalyDetection = createMultivariateAnomalyDetection;
     }
 
     public MTGenerator getMtg() {
