@@ -131,6 +131,9 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         }
 
         if (multivariateInPortNames.size() > 0 && multivariateInPortNames.size() == multivariateOutPortNames.size()) {
+            multivariateInPortNames.forEach(System.out::println);
+            System.out.println("###");
+            multivariateOutPortNames.forEach(System.out::println);
             this.generateMultivariateAnomalyDetectionBehavior(targetComp, multivariateInPortNames, multivariateOutPortNames);
         }
 
@@ -269,9 +272,11 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         List<String> inPortNames = new ArrayList<>();
         List<String> outPortNames = new ArrayList<>();
 
-        for (ASTPortAccess source : sources) {
+        for (int i = 0; i < sources.size(); i++) {
+            ASTPortAccess source = sources.get(i);
+
             String inPortName = INPUT_PORT + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
-            String outPortName = OUTPUT_PORT + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(target.getQName()));
+            String outPortName = OUTPUT_PORT + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(target.getQName() + i));
 
             inPortNames.add(inPortName);
             outPortNames.add(outPortName);
@@ -310,30 +315,30 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
     private void generateUnivariateAnomalyDetectionBehavior(ASTMACompilationUnit outermostComponent,
                                                             List<String> inputPortNames,
                                                             List<String> outputPortNames) {
-        Log.info("Generate univariate behavior with " + inputPortNames.size() + "input ports and " +
-                outputPortNames.size() + "output ports.", TOOL_NAME);
+        Log.info("Generate univariate behavior with " + inputPortNames.size() + " input ports and " +
+                outputPortNames.size() + " output ports.", TOOL_NAME);
 
         File targetPath = Paths.get(hwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
 
-        fg.generate(targetPath, UNIVARIATE_NAME, ".cpp", UNIVARIATE_IMPL,
+        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".cpp", UNIVARIATE_IMPL,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames, outputPortNames);
 
-        fg.generate(targetPath, UNIVARIATE_NAME, ".h", UNIVARIATE_HEADER,
+        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_HEADER,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, tolerance, windowSize);
     }
 
     private void generateMultivariateAnomalyDetectionBehavior(ASTMACompilationUnit outermostComponent,
                                                               List<List<String>> inputPortNames,
                                                               List<List<String>> outputPortNames) {
-        Log.info("Generate multivariate behavior with " + inputPortNames.size() + "input port batches and " +
-                outputPortNames.size() + "output port batches.", TOOL_NAME);
+        Log.info("Generate multivariate behavior with " + inputPortNames.size() + " input port batches and " +
+                outputPortNames.size() + " output port batches.", TOOL_NAME);
 
         File targetPath = Paths.get(hwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
 
-        fg.generate(targetPath, MULTIVARIATE_NAME, ".cpp", MULTIVARIATE_IMPL,
+        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".cpp", MULTIVARIATE_IMPL,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames, outputPortNames);
 
-        fg.generate(targetPath, MULTIVARIATE_NAME, ".h", MULTIVARIATE_HEADER,
+        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_HEADER,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, tolerance, windowSize);
     }
 

@@ -27,9 +27,9 @@ namespace montithings {
           inputs_${i}.push_back(${nameOfInputPort});
           </#list>
 
-          bool is_anomaly_${batchesOfNamesOfInputPorts[i]} = this->ad->is_anomaly(inputs_${i});
+          bool is_anomaly_${i} = this->ad->is_anomaly(inputs_${i});
 
-          if (!is_anomaly_${batchesOfNamesOfInputPorts[i]})
+          if (!is_anomaly_${i})
           {
             <#list 0..batchesOfNamesOfOutputPorts[i]?size-1 as j>
             result.set${batchesOfNamesOfOutputPorts[i][j]}(input.get${batchesOfNamesOfInputPorts[i][j]}().value());

@@ -7,7 +7,7 @@ component Example {
   Middleman middleman;
   Sink sink;
 
-  source.value -> middleman.input;
-  source2.value -> middleman.input;
+  source.value -> middleman.input1;
+  source2.value -> middleman.input2;
   middleman.output -> sink.value;
 }
