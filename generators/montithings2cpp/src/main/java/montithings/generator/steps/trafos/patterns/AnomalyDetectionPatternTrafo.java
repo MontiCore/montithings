@@ -5,6 +5,7 @@ import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings._visitor.FindConnectionsVisitor;
+import montithings.generator.data.GeneratorToolState;
 import montithings.trafos.MontiThingsTrafo;
 import montithings.util.TrafoUtil;
 
@@ -14,9 +15,11 @@ import java.util.*;
 public class AnomalyDetectionPatternTrafo extends PatternHelper implements MontiThingsTrafo {
     private static final String TOOL_NAME = "AnomalyDetectionPatternTrafo";
     private final File modelPath;
+    private final GeneratorToolState state;
 
-    public AnomalyDetectionPatternTrafo(File modelPath) {
-        this.modelPath = modelPath;
+    public AnomalyDetectionPatternTrafo(GeneratorToolState state) {
+        this.modelPath = state.getModelPath();
+        this.state = state;
     }
 
     @Override
@@ -197,8 +200,8 @@ public class AnomalyDetectionPatternTrafo extends PatternHelper implements Monti
         String interceptorComponentName = this.getInterceptorFullyQName(UNIVARIATE_NAME, outermostComponent.getPackage().getQName()).getQName();
 
         for (ASTPortAccess source : sources) {
-            String inPortName = "in" + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
-            String outPortName = "out" + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
+            String inPortName = INPUT_PORT + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
+            String outPortName = OUTPUT_PORT + TrafoUtil.capitalize(TrafoUtil.replaceDotsWithCamelCase(source.getQName()));
 
             addPort(interceptorComponent, inPortName, false, portType);
             addPort(interceptorComponent, outPortName, true, portType);
@@ -208,5 +211,10 @@ public class AnomalyDetectionPatternTrafo extends PatternHelper implements Monti
             addConnection(comp, source.getQName(), interceptorComponentName.toLowerCase() + "." + inPortName);
             addConnection(comp, interceptorComponentName.toLowerCase() + "." + outPortName, target.getQName());
         }
+    }
+
+    private Integer getNextFreeIndex(String portType) {
+        List<Integer> freeIndices = this.state.getPortTypeToFreeIndices().get(portType);
+        return freeIndices.get(0);
     }
 }

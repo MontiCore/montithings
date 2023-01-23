@@ -17,6 +17,8 @@ public class PatternHelper extends BasicTransformations {
     protected static final String UNIVARIATE_NAME = "UniAutoregressiveAnomalyDetection";
     protected static final String MULTIVARIATE_NAME = "MultiAutoregressiveAnomalyDetection";
     protected static final List<String> NUMERIC_PORTS = Arrays.asList("int", "double", "float");
+    protected static final String INPUT_PORT = "in";
+    protected static final String OUTPUT_PORT = "out";
 
     protected ASTMACompilationUnit getUnivariateComponent(Collection<ASTMACompilationUnit> models, File modelPath) throws Exception {
         ASTMACompilationUnit outermostComponent = this.getOutermostComponent(models);

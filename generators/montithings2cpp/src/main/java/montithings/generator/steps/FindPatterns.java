@@ -23,6 +23,8 @@ public class FindPatterns extends GeneratorStep {
             ComponentTypeSymbol comp = state.getSymTab().resolveComponentType(qualifiedModelName).get();
             comp.getAstNode().accept(visitor);
 
+            state.setPortTypeToCount(visitor.getPortTypeToCount());
+            state.setPortTypeToFreeIndicesFromPortTypeCount();
             state.setCreateUnivariateAnomalyDetection(visitor.createUnivariateAnomalyDetection());
             state.setCreateMultivariateAnomalyDetection(visitor.createMultivariateAnomalyDetection());
         }

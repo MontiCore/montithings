@@ -6,12 +6,15 @@ import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
 import montithings.generator.codegen.FileGenerator;
+import montithings.generator.data.GeneratorToolState;
 import montithings.trafos.MontiThingsTrafo;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class SetupAnomalyDetectionPatternTrafo extends PatternHelper implements MontiThingsTrafo {
     private static final String TOOL_NAME = "SetupAnomalyDetectionPatternTrafo";
@@ -19,30 +22,20 @@ public class SetupAnomalyDetectionPatternTrafo extends PatternHelper implements 
     private static final String UNIVARIATE_HEADER = "hwc/ftl/AutoregressiveAnomalyDetectionImplHeader";
     private static final String MULTIVARIATE_IMPL = "hwc/ftl/MultivariateAutoregressiveAnomalyDetectionImplCpp";
     private static final String MULTIVARIATE_HEADER = "hwc/ftl/MultivariateAutoregressiveAnomalyDetectionImplHeader";
-    private static final String INPUT_PORT = "in";
-    private static final String OUTPUT_PORT = "out";
     private final int windowSize;
     private final double tolerance;
     private final File modelPath;
     private final File hwcPath;
     private final FileGenerator fg;
-    private final boolean hasUnivariateAnomalyDetection;
-    private final boolean hasMultivariateAnomalyDetection;
+    private final Map<String, Integer> portTypesToCount;
 
-    public SetupAnomalyDetectionPatternTrafo(File modelPath,
-                                             int windowSize,
-                                             double tolerance,
-                                             File hwcPath,
-                                             File genSrcDir,
-                                             boolean hasUnivariateAnomalyDetection,
-                                             boolean hasMultivariateAnomalyDetection) {
+    public SetupAnomalyDetectionPatternTrafo(GeneratorToolState state, int windowSize, double tolerance) {
         this.windowSize = windowSize;
         this.tolerance = tolerance;
-        this.modelPath = modelPath;
-        this.hwcPath = hwcPath;
-        this.hasUnivariateAnomalyDetection = hasUnivariateAnomalyDetection;
-        this.hasMultivariateAnomalyDetection = hasMultivariateAnomalyDetection;
-        this.fg = new FileGenerator(genSrcDir, hwcPath);
+        this.modelPath = state.getModelPath();
+        this.hwcPath = Paths.get(state.getTarget().getAbsolutePath(), "hwc").toFile();
+        this.portTypesToCount = state.getPortTypeToCount();
+        this.fg = new FileGenerator(state.getTarget(), this.hwcPath);
     }
 
     @Override
@@ -60,19 +53,41 @@ public class SetupAnomalyDetectionPatternTrafo extends PatternHelper implements 
             return additionalTrafoModels;
         }
 
-        if (this.hasUnivariateAnomalyDetection && this.getUnivariateComponent(allModels, modelPath) == null) {
+        // Generate univariate anomaly detection component, if visitor detected that we need one (this.hasUnivariateAnomalyDetection())
+        // && We didn't generate one already (this.getUnivariateComponent(allModels, modelPath) == null)
+        if (this.hasUnivariateAnomalyDetection() && this.getUnivariateComponent(allModels, modelPath) == null) {
             ASTMACompilationUnit univariateComp =
                     this.getInterceptComponent(UNIVARIATE_NAME, targetComp, UNIVARIATE_IMPL, UNIVARIATE_HEADER);
             additionalTrafoModels.add(univariateComp);
         }
 
-        if (this.hasMultivariateAnomalyDetection && this.getMultivariateComponent(allModels, modelPath) == null) {
+        if (this.hasMultivariateAnomalyDetection() && this.getMultivariateComponent(allModels, modelPath) == null) {
             ASTMACompilationUnit multivariateComp =
                     this.getInterceptComponent(MULTIVARIATE_NAME, targetComp, MULTIVARIATE_IMPL, MULTIVARIATE_HEADER);
             additionalTrafoModels.add(multivariateComp);
         }
 
         return additionalTrafoModels;
+    }
+
+    private boolean hasUnivariateAnomalyDetection() {
+        for (int count : portTypesToCount.values()) {
+            if (count == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasMultivariateAnomalyDetection() {
+        for (int count : portTypesToCount.values()) {
+            if (count > 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent,
@@ -83,21 +98,35 @@ public class SetupAnomalyDetectionPatternTrafo extends PatternHelper implements 
 
         ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
 
-        for (String portTypeName : NUMERIC_PORTS) {
-            ASTMCQualifiedName qualifiedName = MontiThingsMill
-                    .mCQualifiedNameBuilder()
-                    .addParts("in")
-                    .addParts(portTypeName)
-                    .build();
+        for (Map.Entry<String, Integer> portTypeToCount : portTypesToCount.entrySet()) {
+            String portTypeName = portTypeToCount.getKey();
 
-            ASTMCType portType = MontiThingsMill
-                    .mCQualifiedTypeBuilder()
-                    .setMCQualifiedName(qualifiedName)
-                    .build();
+            // Generate in/out ports for each port type <count> times
+            for (int i = 0; i < portTypeToCount.getValue(); i++) {
+                ASTMCType inPortType = MontiThingsMill
+                        .mCQualifiedTypeBuilder()
+                        .setMCQualifiedName(MontiThingsMill
+                                .mCQualifiedNameBuilder()
+                                .addParts(INPUT_PORT)
+                                .addParts(portTypeName)
+                                .addParts(Integer.valueOf(i).toString())
+                                .build())
+                        .build();
 
-            addPort(interceptorComponent, INPUT_PORT + portTypeName, false, portType);
+                ASTMCType outPortType = MontiThingsMill
+                        .mCQualifiedTypeBuilder()
+                        .setMCQualifiedName(MontiThingsMill
+                                .mCQualifiedNameBuilder()
+                                .addParts(OUTPUT_PORT)
+                                .addParts(portTypeName)
+                                .addParts(Integer.valueOf(i).toString())
+                                .build())
+                        .build();
 
-            addPort(interceptorComponent, OUTPUT_PORT + portTypeName, true, portType);
+                addPort(interceptorComponent, INPUT_PORT + portTypeName + Integer.valueOf(i).toString(), false, inPortType);
+
+                addPort(interceptorComponent, OUTPUT_PORT + portTypeName + Integer.valueOf(i).toString(), true, outPortType);
+            }
         }
 
         fg.generate(hwcPath, interceptorComponentName, ".cpp", cppImplName, interceptorComponentName, INPUT_PORT);

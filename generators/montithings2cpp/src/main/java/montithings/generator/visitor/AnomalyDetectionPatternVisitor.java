@@ -12,8 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 public class AnomalyDetectionPatternVisitor implements MontiThingsTraverser {
+    private Map<String, Integer> portTypeToCount = new HashMap<>();
     private boolean hasUnivariatePorts = false;
     private boolean hasMultivariatePorts = false;
+
+    public Map<String, Integer> getPortTypeToCount() {
+        return portTypeToCount;
+    }
 
     public boolean createUnivariateAnomalyDetection() {
         return hasUnivariatePorts;
@@ -29,9 +34,9 @@ public class AnomalyDetectionPatternVisitor implements MontiThingsTraverser {
         Preconditions.checkArgument(node.isPresentSymbol(), "ASTComponent node '%s' has no symbol. " + "Did you forget to run the SymbolTableCreator?", node.getName());
         ComponentTypeSymbol compSymbol = node.getSymbol();
 
-        Map<String, Integer> portTypeToCount = this.getPortTypeCount(compSymbol);
+        this.portTypeToCount = this.getPortTypeCount(compSymbol);
 
-        for (int count : portTypeToCount.values()) {
+        for (int count : this.portTypeToCount.values()) {
             if (count == 1) {
                 this.hasUnivariatePorts = true;
             } else if (count > 1) {
