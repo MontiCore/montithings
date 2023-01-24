@@ -3,6 +3,7 @@ package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.logging.Log;
+import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.config.SplittingMode;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.helper.ComponentHelper;
