@@ -12,12 +12,4 @@ threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(com
 <#list ComponentHelper.getEveryBlocks(comp) as everyBlock>
   threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::run${ComponentHelper.getEveryBlockName(comp, everyBlock)}, this});
 </#list>
-
-<#if ComponentHelper.isDSLComponent(comp,config)>
-  threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::python_receiver, this});
-</#if>
-
-<#if ComponentHelper.isWebComponent(comp)>
-  threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::website_hoster, this});
-</#if>
 }

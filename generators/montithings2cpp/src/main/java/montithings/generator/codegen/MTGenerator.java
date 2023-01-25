@@ -10,6 +10,7 @@ import de.monticore.utils.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.codegen.util.Identifier;
 import montithings.generator.config.*;
+import montithings.generator.data.GeneratorToolState;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.helper.FileHelper;
 import mtconfig._ast.ASTEveryTag;
@@ -18,6 +19,7 @@ import mtconfig._symboltable.PortTemplateTagSymbol;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.commons.nullanalysis.NotNull;
 import prepostcondition._ast.ASTPrePostConditionNode;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -275,20 +277,43 @@ public class MTGenerator {
   /**
    * generates html files for DSLs
    *
-   * @param languagePath location of the directory where the test code is located
+   * @param languagePath 
    */
   public void generateHTMLFilesForDSLs(File languagePath, ConfigParams config, String name){
-    String type = "";
-    if(name.equals("Index")){
-      type="Index";
-    }else{
-      type="Comp";
-    }
+    name = name.replace(".","/");
 
     FileGenerator fg = new FileGenerator(languagePath, hwcDir);
-    fg.generate(languagePath, "html" + File.separatorChar +  name, ".html", "template/util/html/" + type + ".ftl", config, name);
+    fg.generate(languagePath, "generator-server" + File.separatorChar +"html" + File.separatorChar +  name, ".html", "template/util/html/Comp.ftl", config, name);
   }
 
+   /**
+   * generates html file for Index
+   *
+   * @param languagePath 
+   */
+  public void generateHTMLIndexFile(File languagePath, ConfigParams config, ArrayList<String> instanceNames){
+    FileGenerator fg = new FileGenerator(languagePath, hwcDir);
+    fg.generate(languagePath, "generator-server" + File.separatorChar +"html" + File.separatorChar +  "Index" ,".html", "template/util/html/Index.ftl", config, instanceNames);
+  }
+
+
+  /**
+   * generates the java server, that generates python files for end user development
+   *
+   * @param languagePath 
+   */
+  public void generateGeneratorServer(File targetPath, ConfigParams config, ArrayList<String> languagePaths, GeneratorToolState state){
+    String port = "8080";
+    FileGenerator fg = new FileGenerator(targetPath, hwcDir);
+    fg.generate(targetPath, "generator-server" + File.separatorChar +  "Dockerfile", "", "template/util/generatorServer/Dockerfile.ftl", languagePaths);
+    fg.generate(targetPath, "generator-server" + File.separatorChar +  "start", ".sh", "template/util/generatorServer/start.ftl", port);
+    makeExecutable(new File(targetPath.getPath() + File.separatorChar + "generator-server"), "start", ".sh");
+    fg.generate(targetPath, "generator-server" + File.separatorChar +  "dockerBuild", ".sh", "template/util/generatorServer/dockerBuild.ftl");
+    makeExecutable(new File(targetPath.getPath() + File.separatorChar + "generator-server"), "dockerBuild", ".sh");
+    fg.generate(targetPath, "generator-server" + File.separatorChar +  "build", ".gradle", "template/util/generatorServer/build.ftl", languagePaths);
+
+    fg.generate(targetPath, "generator-server" + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "java" + File.separatorChar + "Main", ".javaFile", "template/util/generatorServer/Main.ftl", languagePaths, port, config, state);
+  }
 
   
   /**

@@ -1,9 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 
-grammar Network extends de.monticore.MCBasics {
-  Net = (Knoten | Connection | Linebreak)*;
+grammar Network extends de.monticore.MCBasics, de.monticore.literals.MCJavaLiterals {
+  Net = (Computation | Linebreak)*;
   token Linebreak = NEWLINE;
 
-  symbol Knoten = "." knotenName:Name ";";
-  Connection = knoten1:Name@Knoten "-" knoten2:Name@Knoten ";" ;
+  Computation = (Add | Mult);
+  Add = "+"value:Num_Int";";
+  Mult = "*"value:Num_Int";";
 }

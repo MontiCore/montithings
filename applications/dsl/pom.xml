@@ -356,7 +356,7 @@
                     </goals>
                     <configuration>
                         <excludes>
-                            <exclude> target/generated-sources/languages/**/*</exclude>
+                            <exclude> **/*.java</exclude>
                         </excludes>
                     </configuration>
                     </execution>

@@ -1,4 +1,4 @@
-${tc.signature("config","name","what")}
+${tc.signature("config","instanceNames","what")}
 <#include "/template/Preamble.ftl">
 
 
@@ -8,8 +8,8 @@ ${tc.signature("config","name","what")}
     <title> Montithings-DSL-Index </title>
 </head>
 <body>
-    <#list ComponentHelper.getAllLanguageDirectories(config) as dirs>
-        <p><a href="${dirs}">Sink</a></p>
+    <#list instanceNames as instance>
+        <p><a href="/${instance}">${instance}</a></p>
     </#list>
     
 </body>

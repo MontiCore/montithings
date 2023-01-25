@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import static montithings.generator.MontiThingsGeneratorTool.TOOL_NAME;
 import static montithings.generator.helper.ComponentHelper.getDynamicallyConnectedSubcomps;
@@ -34,10 +37,15 @@ public class GenerateHTML extends GeneratorStep {
   @Override public void action(GeneratorToolState state) {
 
     ArrayList<String> languagePaths = getAllLanguageDirectories(state.getConfig());
-    state.getMtg().generateHTMLFilesForDSLs(new File (state.getTarget().getAbsolutePath()),state.getConfig(),"Index");
-    for(String path : languagePaths){
-        state.getMtg().generateHTMLFilesForDSLs(new File (state.getTarget().getAbsolutePath()),state.getConfig(), path);
+    ArrayList<String> instanceNames = new ArrayList<>();
+    for(Pair<ComponentTypeSymbol,String> pair : state.getInstances()){
+      if(ComponentHelper.isDSLComponent(pair.getKey(), state.getConfig())){
+        instanceNames.add(pair.getValue().replace(".","/"));
+        state.getMtg().generateHTMLFilesForDSLs(new File (state.getTarget().getAbsolutePath()),state.getConfig(), pair.getValue());
+      }
     }
+    state.getMtg().generateHTMLIndexFile(new File (state.getTarget().getAbsolutePath()),state.getConfig(),instanceNames);
+
   }
   
    /**

@@ -254,12 +254,21 @@ public class ComponentHelper {
    * @return component 
    */
   public static ComponentTypeSymbol getCompByName(String name, ComponentTypeSymbol someComp){
-    System.out.println("!!! Name: " + name + " !!!");
     ComponentTypeSymbol comp = GenericBindingUtil.getComponentFromString(GenericBindingUtil.getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) someComp.getEnclosingScope()), name);
     if(comp == null){
       System.out.println("!!! Empty !!!");
     }
     return comp;
+  }
+
+  /**
+   * Returns the Component matching the given languagePath
+   * @param name component name
+   * @return component 
+   */
+  public static ComponentTypeSymbol getCompByLanguagePath(String path, ComponentTypeSymbol someComp){
+
+    return getCompByName(path.substring(path.lastIndexOf("/") + 1), someComp);
   }
 
   /**

@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
+
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.utils.Names;
 import montithings.generator.config.ConfigParams;
@@ -78,4 +79,31 @@ public class GeneratorHelper {
 
     return Optional.empty();
   }
+  /**
+   * Searches for the name of a language and retruns it
+   * @param path
+   * @return name of language
+   */
+  public static String getLanguageNameFromLanguagePath(String path, ConfigParams config){
+    File specificLanguageFolder = new File(config.getLanguagePath().getPath() + path + "/target/classes/java/main");
+    File[] subFiles = specificLanguageFolder.listFiles();
+    String name = "";
+    for(File f : subFiles){
+      if(f.isDirectory()){
+        name = f.getName();
+        break;
+      }
+    }
+    return name;
+  }
+
+  /**
+   * replaces all occurences of "." with "/"
+   * @param str
+   * @return replaced string
+   */
+  public static String replaceDotsBySlashes(String str){
+    return str.replace('.', '/');
+  }
+
 }

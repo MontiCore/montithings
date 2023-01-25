@@ -72,10 +72,11 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 </#if>
 
 <#if ComponentHelper.isDSLComponent(comp,config)>
-  void python_receiver();
+void python_receiver(std::string payload);
+int lastPyPID = -1;
 </#if>
 <#if ComponentHelper.isWebComponent(comp)>
-  void website_hoster();
+void website_hoster();
 </#if>
 
 

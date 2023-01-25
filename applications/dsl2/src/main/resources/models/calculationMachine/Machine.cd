@@ -1,0 +1,17 @@
+package calculationMachine;
+
+classdiagram Machine {
+    package CalculatorMessages {
+        class Variable {
+            public int val;
+        }
+        class Result {
+            public int val;
+            public int var;
+            String calc;
+        }
+        class PrintText {
+            String text;
+        }
+    }
+}

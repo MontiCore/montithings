@@ -62,7 +62,6 @@ find hwc -name "*.py" | cpio -pdm build/bin/ > /dev/null 2>&1
 cd build/bin
 cp ../../"$COMPNAME"/*.sh .
 
-cp -r ../../html .
 <#list ComponentHelper.getAllLanguageDirectories(config) as file>
   mkdir -p models${file}
 </#list>

@@ -25,23 +25,19 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::website_hoster(){
   svr.Post("${file}", [&](const httplib::Request &req, httplib::Response &res) {
     //store model
     const auto& file = req.get_file_value("fileUpload");
-    std::fstream modelFile;
-    modelFile.open("models${file}/model.mc",std::fstream::out);
-    modelFile << file.content;
-    modelFile.close();
     res.set_content("","text/html");
 
     //generate py
+    httplib::Client cliGen("127.0.0.1:5004");
+    httplib::Params paramsGen;
+    paramsGen.emplace("fileUpload", file.content);
+    httplib::Result response = cliGen.Post("${file}", paramsGen);
 
     //send py
     httplib::Client cli("127.0.0.1:8081");
-    std::ifstream pyFile("models${file}/${ComponentHelper.getClassNameFromLanguagePath(file)}Impl.py");
-    std::stringstream buffer;
-    buffer << pyFile.rdbuf();
-    std::string cont = buffer.str();
-    httplib::Params params;
-    params.emplace("fileUpload", cont);
-    cli.Post("/Py", params);
+    httplib::Params paramsPy;
+    paramsPy.emplace("fileUpload", response.value().body);
+    cli.Post("/Py", paramsPy);
   });
   </#list>
 

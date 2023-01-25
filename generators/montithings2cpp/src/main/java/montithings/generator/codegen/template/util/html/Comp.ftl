@@ -8,7 +8,7 @@ ${tc.signature("config","name","what")}
     <title> Montithings-DSL-Upload(${name}) </title>
 </head>
 <body>
-    <form action="${name}" method="POST" enctype="multipart/form-data"  target="frame">
+    <form action="/${name}" method="POST" enctype="multipart/form-data"  target="frame">
         <div><label>Model:</label>
         <input type="file" name="fileUpload"></div>
         <div><input type="submit" /></div>
