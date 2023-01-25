@@ -17,17 +17,19 @@ namespace montithings {
           ${compname}Result result;
 
           <#list 0..batchesOfNamesOfInputPorts?size-1 as i>
-          <#list batchesOfNamesOfInputPorts[i] as nameOfInputPort>
-          float ${nameOfInputPort} = (float)input.get${nameOfInputPort}().value();
-          </#list>
-
           std::vector<float> inputs_${i}(${batchesOfNamesOfInputPorts[i]?size});
 
           <#list batchesOfNamesOfInputPorts[i] as nameOfInputPort>
+          if ((float)input.get${nameOfInputPort}())
+          {
+          float ${nameOfInputPort} = (float)input.get${nameOfInputPort}().value();
           inputs_${i}.push_back(${nameOfInputPort});
+          }
           </#list>
 
-          bool is_anomaly_${i} = this->ad->is_anomaly(inputs_${i});
+          this->state->add_past_value_${i}(inputs_${i});
+
+          bool is_anomaly_${i} = this->ad->is_anomaly(inputs_${i}, this->state->get_past_values_${i}(inputs_${i}));
 
           if (!is_anomaly_${i})
           {

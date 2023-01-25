@@ -8,8 +8,7 @@ private:
   LinearRegression *lr;
   int window_size;
   float tolerance;
-  std::vector<float> past_values;
-  std::vector<float> get_regression_values();
+  std::vector<float> get_regression_values(std::vector<float> past_values);
 
 public:
   AutoregressiveAnomalyDetection(int window_size, float tolerance)
@@ -18,5 +17,5 @@ public:
     this->tolerance = tolerance;
     this->lr = new LinearRegression();
   }
-  bool is_anomaly(float input);
+  bool is_anomaly(float input, std::vector<float> past_values);
 };

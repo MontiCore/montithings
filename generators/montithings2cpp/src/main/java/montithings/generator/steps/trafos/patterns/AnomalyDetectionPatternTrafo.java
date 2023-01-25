@@ -19,15 +19,18 @@ import java.util.*;
 
 public class AnomalyDetectionPatternTrafo extends BasicTransformations implements MontiThingsTrafo {
     private static final String TOOL_NAME = "AnomalyDetectionPatternTrafo";
-    private static final String UNIVARIATE_IMPL = "template/patterns/AutoregressiveAnomalyDetectionImplCpp.ftl";
-    private static final String UNIVARIATE_HEADER = "template/patterns/AutoregressiveAnomalyDetectionImplHeader.ftl";
-    private static final String MULTIVARIATE_IMPL = "template/patterns/MultivariateAutoregressiveAnomalyDetectionImplCpp.ftl";
-    private static final String MULTIVARIATE_HEADER = "template/patterns/MultivariateAutoregressiveAnomalyDetectionImplHeader.ftl";
+    private static final String UNIVARIATE_IMPL_CPP = "template/patterns/AutoregressiveAnomalyDetectionImplCpp.ftl";
+    private static final String UNIVARIATE_IMPL_HEADER = "template/patterns/AutoregressiveAnomalyDetectionImplHeader.ftl";
+    private static final String UNIVARIATE_STATE_CPP = "template/patterns/AutoregressiveAnomalyDetectionStateCpp.ftl";
+    private static final String UNIVARIATE_STATE_HEADER = "template/patterns/AutoregressiveAnomalyDetectionStateHeader.ftl";
+    private static final String MULTIVARIATE_IMPL_CPP = "template/patterns/MultivariateAutoregressiveAnomalyDetectionImplCpp.ftl";
+    private static final String MULTIVARIATE_IMPL_HEADER = "template/patterns/MultivariateAutoregressiveAnomalyDetectionImplHeader.ftl";
+    private static final String MULTIVARIATE_STATE_CPP = "template/patterns/MultivariateAutoregressiveAnomalyDetectionStateCpp.ftl";
+    private static final String MULTIVARIATE_STATE_HEADER = "template/patterns/MultivariateAutoregressiveAnomalyDetectionStateHeader.ftl";
     private static final String UNIVARIATE_NAME = "UniAutoregressiveAnomalyDetection";
     private static final String MULTIVARIATE_NAME = "MultiAutoregressiveAnomalyDetection";
     private static final String INPUT_PORT = "in";
     private static final String OUTPUT_PORT = "out";
-    private static final String LOCAL_STATE_VAR = "values";
     private static final String INPORT_NAME_KEY = "inPortNames";
     private static final String OUTPORT_NAME_KEY = "outPortNames";
     private static final List<String> NUMERIC_PORTS = Arrays.asList("int", "double", "float");
@@ -316,11 +319,17 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
 
         File targetPath = Paths.get(hwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
 
-        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".cpp", UNIVARIATE_IMPL,
+        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".cpp", UNIVARIATE_IMPL_CPP,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames, outputPortNames);
 
-        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_HEADER,
+        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_IMPL_HEADER,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, tolerance, windowSize);
+
+        fg.generate(targetPath, UNIVARIATE_NAME + "State", ".cpp", UNIVARIATE_STATE_CPP,
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames);
+
+        fg.generate(targetPath, UNIVARIATE_NAME + "State", ".h", UNIVARIATE_STATE_HEADER,
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames);
     }
 
     private void generateMultivariateAnomalyDetectionBehavior(ASTMACompilationUnit outermostComponent,
@@ -331,11 +340,17 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
 
         File targetPath = Paths.get(hwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
 
-        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".cpp", MULTIVARIATE_IMPL,
+        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".cpp", MULTIVARIATE_IMPL_CPP,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames, outputPortNames);
 
-        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_HEADER,
+        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_IMPL_HEADER,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, tolerance, windowSize);
+
+        fg.generate(targetPath, MULTIVARIATE_NAME + "State", ".cpp", MULTIVARIATE_STATE_CPP,
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames);
+
+        fg.generate(targetPath, MULTIVARIATE_NAME + "State", ".h", MULTIVARIATE_STATE_HEADER,
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames);
     }
 
     private List<ASTMACompilationUnit> getAllModels(Collection<ASTMACompilationUnit> originalModels,

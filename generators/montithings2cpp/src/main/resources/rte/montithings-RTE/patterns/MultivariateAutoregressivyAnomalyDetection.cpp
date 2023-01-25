@@ -1,12 +1,10 @@
 #include "MultivariateAutoregressivyAnomalyDetection.h"
 
-std::vector<bool> MultivariateAutoregressivyAnomalyDetection::is_anomaly(std::vector<float> inputs)
+std::vector<bool> MultivariateAutoregressivyAnomalyDetection::is_anomaly(std::vector<float> inputs, std::vector<std::vector<float>> past_values)
 {
   std::vector<bool> res(inputs.size());
 
-  std::vector<float> regression_values = this->get_regression_values();
-
-  this->past_values.push_back(inputs);
+  std::vector<float> regression_values = this->get_regression_values(past_values);
 
   for (int i = 0; i < inputs.size(); i++)
   {
@@ -18,24 +16,24 @@ std::vector<bool> MultivariateAutoregressivyAnomalyDetection::is_anomaly(std::ve
   }
 }
 
-std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_values()
+std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_values(std::vector<std::vector<float>> past_values)
 {
-  int dimension = static_cast<int>(this->past_values.size());
+  int dimension = static_cast<int>(past_values.size());
 
   int past_values_len = 0;
 
-  if (this->past_values.size() > 0)
+  if (past_values.size() > 0)
   {
-    past_values_len = static_cast<int>(this->past_values[0].size());
+    past_values_len = static_cast<int>(past_values[0].size());
   }
 
   int values_len = std::min({this->window_size * dimension, past_values_len});
 
   std::vector<float> values(values_len);
 
-  for (int i = 0; i < this->past_values.size(); i++)
+  for (int i = 0; i < past_values.size(); i++)
   {
-    std::vector<float> values_of_dimension = this->get_regression_values(i);
+    std::vector<float> values_of_dimension = this->get_regression_values(i, past_values);
 
     for (int j = 0; j < values_of_dimension.size(); j++)
     {
@@ -46,15 +44,15 @@ std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_va
   return values;
 }
 
-std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_values(int idx)
+std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_values(int idx, std::vector<std::vector<float>> past_values)
 {
-  int values_len = std::min({this->window_size, static_cast<int>(this->past_values[idx].size())});
+  int values_len = std::min({this->window_size, static_cast<int>(past_values[idx].size())});
 
   std::vector<float> values(values_len);
 
   for (int i = 0; i < values_len; i++)
   {
-    values.push_back(this->past_values[idx][i]);
+    values.push_back(past_values[idx][i]);
   }
 
   return values;
