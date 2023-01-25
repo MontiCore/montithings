@@ -26,4 +26,13 @@ std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
     std::unique_ptr<${serializerName}<Message<${type}>>>{new ${serializerName}<Message<${type}>>{}}
     ,false, mqttClientInstance, mqttClientLocalInstance));
   </#if>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
+
+  <#if needsProtobuf && hasNonCppHwc>
+    <#assign protoname = p.getName() + "_protobuf">
+    // outgoing protobuf port ${protoname}
+    ${protoname} = new MqttPort<Message<${type}>>(modelInstanceNameIn + "/${p.getName()}",
+    std::unique_ptr<${serializerName}<Message<${type}>>>{new ${serializerName}<Message<${type}>>{}}
+    ,false, mqttClientInstance, mqttClientLocalInstance, "/protobuf/");
+  </#if>
 </#list>

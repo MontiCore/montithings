@@ -116,8 +116,16 @@ add_library(MontiThingsRTE ${RTE_SOURCES})
 if (NOT EXCLUDE_MQTT)
   # Include Mosquitto Library
   if(APPLE)
-    find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto /opt/homebrew/Cellar/mosquitto)
-    include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/ /opt/homebrew/Cellar/mosquitto/2.0.14/include/)
+    execute_process (
+      COMMAND bash -c "brew --prefix mosquitto"
+      OUTPUT_VARIABLE MOSQUITTO_PREFIX
+    )
+    find_library(MOSQUITTO_LIB mosquitto HINTS ${MOSQUITTO_PREFIX})
+    execute_process (
+      COMMAND bash -c "echo $(brew --prefix mosquitto)/include"
+      OUTPUT_VARIABLE MOSQUITTO_INCLUDE
+    )
+    include_directories("${MOSQUITTO_INCLUDE}")
   elseif(WIN32)
     include_directories(C:\\Program\ Files\\Mosquitto\\devel)
     link_directories(C:\\Program\ Files\\Mosquitto\\devel)
@@ -140,7 +148,12 @@ if (NOT EXCLUDE_COMM_MANAGER)
 endif ()
 
 add_subdirectory(cpp-base64)
-target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto)
+if (APPLE)
+  find_package(OpenSSL REQUIRED)
+  target_link_libraries(MontiThingsRTE cpp-base64 OpenSSL::SSL OpenSSL::Crypto)
+else()
+  target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto)
+endif()
 
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)

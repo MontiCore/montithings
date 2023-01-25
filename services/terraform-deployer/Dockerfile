@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 FROM python:3.10
 
 # Install terraform

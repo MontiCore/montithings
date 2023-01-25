@@ -3,6 +3,8 @@ ${tc.signature("comp", "config", "className")}
 <#include "/template/input/helper/GeneralPreamble.ftl">
 <#assign isBatch = ComponentHelper.usesBatchMode(comp)>
 
+${tc.includeArgs("template.input.declarations.InitStaticVariables", [comp, config])}
+
 <#if !isBatch>
   <#if ComponentHelper.componentHasIncomingPorts(comp)>
     ${tc.includeArgs("template.input.methods.Constructor", [comp, config, existsHWC])}
@@ -28,7 +30,6 @@ ${tc.signature("comp", "config", "className")}
     </#if>
 
     <#if ComponentHelper.hasAgoQualification(comp, port)>
-      std::deque<std::pair<std::chrono::time_point<std::chrono::system_clock>, ${TypesPrinter.getRealPortCppTypeString(comp, port, config)}>> ${className}${Utils.printFormalTypeParameters(comp, false)}::dequeOf__${port.getName()?cap_first};
       ${tc.includeArgs("template.input.methods.AgoGetPort", [port, comp, config, existsHWC])}
       ${tc.includeArgs("template.input.methods.CleanDequeOfPort", [port, comp, config, existsHWC])}
     </#if>

@@ -131,8 +131,16 @@ include_directories("hwc" ${r"${dir_list}"})
   if (NOT EXISTS ${r"${PATH_CONAN_BUILD_INFO}"})
   # Include Mosquitto Library
   if(APPLE)
-    find_library(MOSQUITTO_LIB mosquitto HINTS /usr/local/Cellar/mosquitto /opt/homebrew/Cellar/mosquitto)
-  include_directories(/opt/homebrew/Cellar/mosquitto/2.0.10_1/include/ /opt/homebrew/Cellar/mosquitto/2.0.14/include/)
+    execute_process (
+      COMMAND bash -c "brew --prefix mosquitto"
+      OUTPUT_VARIABLE MOSQUITTO_PREFIX
+    )
+    find_library(MOSQUITTO_LIB mosquitto HINTS ${r"${MOSQUITTO_PREFIX}"})
+    execute_process (
+      COMMAND bash -c "echo $(brew --prefix mosquitto)/include"
+      OUTPUT_VARIABLE MOSQUITTO_INCLUDE
+    )
+    include_directories("${r"${MOSQUITTO_INCLUDE}"}")
   elseif(WIN32)
     find_library(MOSQUITTO_LIB mosquitto HINTS C:\\Program\ Files\\Mosquitto\\devel)
     include_directories(C:\\Program\ Files\\Mosquitto\\devel)

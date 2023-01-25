@@ -1,6 +1,6 @@
 # (c) https://github.com/MontiCore/monticore
 
-FROM node
+FROM node:16
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
