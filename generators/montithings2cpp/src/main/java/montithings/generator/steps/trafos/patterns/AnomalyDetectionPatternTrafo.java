@@ -130,6 +130,7 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
             this.generateMultivariateAnomalyDetectionBehavior(targetComp, multivariateInPortNames, multivariateOutPortNames);
         }
 
+        Log.info("Return " + additionalTrafoModels.size() + " additional trafo models", TOOL_NAME);
         return additionalTrafoModels;
     }
 
@@ -271,6 +272,7 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
             removeConnection(comp, source, target);
 
             // TODO: Add local state var
+
         }
 
         Map<String, List<String>> portNames = new HashMap<>();
