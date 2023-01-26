@@ -20,9 +20,9 @@ namespace montithings {
           std::vector<float> inputs_${i}(${batchesOfNamesOfInputPorts[i]?size});
 
           <#list batchesOfNamesOfInputPorts[i] as nameOfInputPort>
-          if ((float)input.get${nameOfInputPort}())
+          if ((float)input.get${nameOfInputPort?cap_first}())
           {
-          float ${nameOfInputPort} = (float)input.get${nameOfInputPort}().value();
+          float ${nameOfInputPort} = (float)input.get${nameOfInputPort?cap_first}().value();
           inputs_${i}.push_back(${nameOfInputPort});
           }
           </#list>
@@ -34,7 +34,7 @@ namespace montithings {
           if (!is_anomaly_${i})
           {
             <#list 0..batchesOfNamesOfOutputPorts[i]?size-1 as j>
-            result.set${batchesOfNamesOfOutputPorts[i][j]}(input.get${batchesOfNamesOfInputPorts[i][j]}().value());
+            result.set${batchesOfNamesOfOutputPorts[i][j]?cap_first}(input.get${batchesOfNamesOfInputPorts[i][j]?cap_first}().value());
             </#list>
           }
           else

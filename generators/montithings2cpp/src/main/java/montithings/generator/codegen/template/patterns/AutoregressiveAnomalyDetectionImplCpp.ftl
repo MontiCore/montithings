@@ -16,9 +16,9 @@ namespace montithings {
           ${compname}Result result;
 
           <#list 0..namesOfInputPorts?size-1 as i>
-          if ((float)input.get${namesOfInputPorts[i]}())
+          if ((float)input.get${namesOfInputPorts[i]?cap_first}())
           {
-              float ${namesOfInputPorts[i]} = (float)input.get${namesOfInputPorts[i]}().value();
+              float ${namesOfInputPorts[i]} = (float)input.get${namesOfInputPorts[i]?cap_first}().value();
 
               this->state->add_past_value_${namesOfInputPorts[i]}(${namesOfInputPorts[i]});
 
@@ -26,7 +26,7 @@ namespace montithings {
 
               if (!is_anomaly_${namesOfInputPorts[i]})
               {
-                result.set${namesOfOutputPorts[i]}(input.get${namesOfInputPorts[i]}().value());
+                result.set${namesOfOutputPorts[i]}(input.get${namesOfInputPorts[i]?cap_first}().value());
               }
               else
               {
