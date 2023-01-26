@@ -1,7 +1,5 @@
 {
-	"name": "Existing Dockerfile",
-	"build": {
-		"context": "..",
-		"dockerfile": "../.gitpod.Dockerfile"
-	}
+	"name": "MontiThings GitHub Codespace",
+	"build": { "dockerfile": "Dockerfile" },
+	"workspaceFolder": "/montithings"
 }
