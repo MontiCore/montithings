@@ -44,9 +44,6 @@ ${tc.signature("comp","config","className")}
 <#if ComponentHelper.isDSLComponent(comp,config)>
   ${tc.includeArgs("template.component.methods.PythonReceiver",[comp, config, className])}
 </#if>
-<#if ComponentHelper.isWebComponent(comp)>
-  ${tc.includeArgs("template.component.methods.WebsiteHoster",[comp, config, className])}
-</#if>
 
 <#if ComponentHelper.componentHasPorts(comp)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}

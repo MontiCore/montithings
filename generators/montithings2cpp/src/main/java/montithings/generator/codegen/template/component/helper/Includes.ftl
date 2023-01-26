@@ -27,10 +27,7 @@ ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
 #include ${"<iostream>"}
 #include <fstream>
 <#if ComponentHelper.isDSLComponent(comp,config)>
-  #include "httplib.h"
-</#if>
-<#if ComponentHelper.isWebComponent(comp)>
-  #include "httplib.h"
+  #include<unistd.h>
 </#if>
 <#if brokerIsMQTT>
   #include "MqttClient.h"

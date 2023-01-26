@@ -75,9 +75,6 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 void python_receiver(std::string payload);
 int lastPyPID = -1;
 </#if>
-<#if ComponentHelper.isWebComponent(comp)>
-void website_hoster();
-</#if>
 
 
 // if set to true, loop-threads will stop after their current iteration

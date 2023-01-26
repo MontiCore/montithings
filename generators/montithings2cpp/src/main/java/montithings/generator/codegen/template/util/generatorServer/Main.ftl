@@ -33,8 +33,6 @@ public class Main {
             <#list state.getInstances() as pair>
             <#assign fullName = pair.getKey().getFullName()>
             <#assign instanceName = pair.getValue()>
-            // ${fullName};
-            // ${instanceName};
             <#if ComponentHelper.isDSLComponent(pair.getKey(),config)>
             
             post("/${GeneratorHelper.replaceDotsBySlashes(instanceName)}", ((request, response) -> {
