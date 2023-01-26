@@ -36,8 +36,9 @@ For the purpose of this tutorial, you can choose between the following options:
 3. using MontiThings' Docker containers to avoid an installation [(*install instructions*)](./docs/install/docker.md)
 4. using one of our supported online IDEs (you will need to sign in with your GitHub account):
 
-   | [![Open in GitHub Codespace](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=develop&repo=590503568) | [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)  |
+   | [![Open in GitHub Codespace](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=develop&repo=403976771) | [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)  |
       |---|---|
+
 
 # Building and Running Your First Application
 
