@@ -34,9 +34,10 @@ For the purpose of this tutorial, you can choose between the following options:
 1. a native installation on your machine [(*install instructions*)](./docs/install/native.md)
 2. an installation in a virtual machine of the Microsoft Azure Cloud [(*install instructions*)](./docs/install/azure.md)
 3. using MontiThings' Docker containers to avoid an installation [(*install instructions*)](./docs/install/docker.md)
-4. using an online IDE by clicking this button (you will need to sign in with your GitHub account to Gitpod): \
-   [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)
+4. using one of our supported online IDEs (you will need to sign in with your GitHub account):
 
+   | [![Open in GitHub Codespace](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=develop&repo=590503568) | [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)  |
+      |---|---|
 
 # Building and Running Your First Application
 
