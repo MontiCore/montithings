@@ -15,5 +15,7 @@ class PrinterImpl(PrinterImplTOP):
     def compute(self, port) -> None:
         print(f"New value on port {port}: {self._input.ports['result'].var}, {self._input.ports['result'].val}, {self._input.ports['result'].calc}")
         
-        print(f"The Result of x{{self._input.ports['result'].calculation}} where x is {self._input.ports['result'].var} is {self._input.ports['result'].val}!")
-        self._result.ports["text"].text = f"The Result of x{{self._input.ports['result'].calculation}} where x is {self._input.ports['result'].var} is {self._input.ports['result'].val}!"
+        print(f"The Result of x{self._input.ports['result'].calc} where x is {self._input.ports['result'].var} is {self._input.ports['result'].val}!")
+        self._result.ports["text"].text = f"The Result of x{self._input.ports['result'].calc} where x is {self._input.ports['result'].var} is {self._input.ports['result'].val}!"
+
+        self.send_port_text()

@@ -73,6 +73,7 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
 
 <#if ComponentHelper.isDSLComponent(comp,config)>
 void python_receiver(std::string payload);
+void python_start();
 int lastPyPID = -1;
 </#if>
 

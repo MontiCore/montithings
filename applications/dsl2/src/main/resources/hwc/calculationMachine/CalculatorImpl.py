@@ -12,13 +12,13 @@ class CalculatorImpl(CalculatorImplTOP):
 
     def getInitialValues(self) -> None:
         self._result.ports["result"].val = 0
-        self._result.ports["result"].calculation = []
+        self._result.ports["result"].calc = ""
 
     def compute(self, port) -> None:
         print(f"New value on port {port}: {self._input.ports['value'].val}")
         
         workingVal = self._input.ports["value"].val
-        calculation = []
+        calculation = ""
 
         self._result.ports["result"].val = workingVal
         self._result.ports["result"].calc = calculation
