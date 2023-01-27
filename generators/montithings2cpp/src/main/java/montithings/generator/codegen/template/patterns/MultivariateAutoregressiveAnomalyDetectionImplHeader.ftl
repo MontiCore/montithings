@@ -1,7 +1,7 @@
 ${tc.signature("packageName", "compname", "windowSize", "tolerance", "existsHwc")}
 #pragma once
 #include "${compname}ImplTOP.h"
-#include "MultivariateAutoregressivyAnomalyDetection.h"
+#include "MultivariateAutoregressiveAnomalyDetection.h"
 
 namespace montithings {
     namespace ${packageName} {
@@ -9,7 +9,7 @@ namespace montithings {
         {
 
         private:
-          MultivariateAutoregressivyAnomalyDetection *ad = new MultivariateAutoregressivyAnomalyDetection(${windowSize}, (float)${tolerance});
+          MultivariateAutoregressiveAnomalyDetection *ad = new MultivariateAutoregressiveAnomalyDetection(${windowSize}, (float)${tolerance});
 
         public:
           using ${compname}ImplTOP::${compname}ImplTOP;

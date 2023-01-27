@@ -1,5 +1,4 @@
 ${tc.signature("packageName", "compname", "batchesOfNamesOfInputPorts", "batchesOfNamesOfOutputPorts", "existsHwc")}
-#include "MultivariateAutoregressiveAnomalyDetectionImpl.h"
 #include "${compname}Impl.h"
 #include <iostream>
 
