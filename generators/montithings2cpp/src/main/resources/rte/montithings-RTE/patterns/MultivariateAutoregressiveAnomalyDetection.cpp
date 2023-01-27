@@ -1,6 +1,6 @@
-#include "MultivariateAutoregressivyAnomalyDetection.h"
+#include "MultivariateAutoregressiveAnomalyDetection.h"
 
-std::vector<bool> MultivariateAutoregressivyAnomalyDetection::is_anomaly(std::vector<float> inputs, std::vector<std::vector<float>> past_values)
+std::vector<bool> MultivariateAutoregressiveAnomalyDetection::is_anomaly(std::vector<float> inputs, std::vector<std::vector<float>> past_values)
 {
   std::vector<bool> res(inputs.size());
 
@@ -16,7 +16,7 @@ std::vector<bool> MultivariateAutoregressivyAnomalyDetection::is_anomaly(std::ve
   }
 }
 
-std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_values(std::vector<std::vector<float>> past_values)
+std::vector<float> MultivariateAutoregressiveAnomalyDetection::get_regression_values(std::vector<std::vector<float>> past_values)
 {
   int dimension = static_cast<int>(past_values.size());
 
@@ -44,7 +44,7 @@ std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_va
   return values;
 }
 
-std::vector<float> MultivariateAutoregressivyAnomalyDetection::get_regression_values(int idx, std::vector<std::vector<float>> past_values)
+std::vector<float> MultivariateAutoregressiveAnomalyDetection::get_regression_values(int idx, std::vector<std::vector<float>> past_values)
 {
   int values_len = std::min({this->window_size, static_cast<int>(past_values[idx].size())});
 

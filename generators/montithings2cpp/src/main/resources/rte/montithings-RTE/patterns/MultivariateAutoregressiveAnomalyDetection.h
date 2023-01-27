@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "LinearRegression.h"
 
-class MultivariateAutoregressivyAnomalyDetection
+class MultivariateAutoregressiveAnomalyDetection
 {
 private:
   LinearRegression *lr;
@@ -12,7 +12,7 @@ private:
   std::vector<float> get_regression_values(int idx, std::vector<std::vector<float>> past_values);
 
 public:
-  MultivariateAutoregressivyAnomalyDetection(int window_size, float tolerance)
+  MultivariateAutoregressiveAnomalyDetection(int window_size, float tolerance)
   {
     this->window_size = window_size;
     this->tolerance = tolerance;
