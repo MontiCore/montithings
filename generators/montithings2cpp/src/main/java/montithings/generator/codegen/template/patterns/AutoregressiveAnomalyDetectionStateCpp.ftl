@@ -1,4 +1,4 @@
-${tc.signature("packageName", "compname", "namesOfInputPorts", "existsHwc")}
+${tc.signature("packageName", "compname", "namesOfInputPorts")}
 #include "${compname}State.h"
 #include <iostream>
 

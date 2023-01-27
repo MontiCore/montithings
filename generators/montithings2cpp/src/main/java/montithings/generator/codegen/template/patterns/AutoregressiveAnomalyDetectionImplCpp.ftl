@@ -1,4 +1,4 @@
-${tc.signature("packageName", "compname", "namesOfInputPorts", "namesOfOutputPorts", "existsHwc")}
+${tc.signature("packageName", "compname", "namesOfInputPorts", "namesOfOutputPorts")}
 #include "${compname}Impl.h"
 #include <iostream>
 

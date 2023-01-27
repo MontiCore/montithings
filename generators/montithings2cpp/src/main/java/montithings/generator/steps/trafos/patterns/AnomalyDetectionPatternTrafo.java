@@ -1,19 +1,21 @@
 package montithings.generator.steps.trafos.patterns;
 
 import arcbasis._ast.ASTPortAccess;
+import de.monticore.generating.GeneratorEngine;
+import de.monticore.generating.GeneratorSetup;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
 import montithings._visitor.FindConnectionsVisitor;
-import montithings.generator.codegen.FileGenerator;
 import montithings.generator.data.GeneratorToolState;
 import montithings.trafos.BasicTransformations;
 import montithings.trafos.MontiThingsTrafo;
 import montithings.util.TrafoUtil;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -37,8 +39,8 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
     private final File modelPath;
     private final int windowSize;
     private final double tolerance;
-    private final File hwcPath;
-    private final FileGenerator fg;
+    private final File targetHwcPath;
+    private final File srcHwcPath;
     private ASTMACompilationUnit multivariateComp;
     private ASTMACompilationUnit univariateComp;
 
@@ -46,8 +48,8 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         this.windowSize = windowSize;
         this.tolerance = tolerance;
         this.modelPath = state.getModelPath();
-        this.hwcPath = state.getHwcPath();
-        this.fg = new FileGenerator(state.getHwcPath(), state.getHwcPath());
+        this.srcHwcPath = state.getHwcPath();
+        this.targetHwcPath = Paths.get(state.getTarget().getAbsolutePath(), "hwc").toFile();
     }
 
     @Override
@@ -273,9 +275,6 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
             Log.info("Remove existing connection " + source.getQName() + " -> " + target.getQName() +
                     " from component " + comp.getComponentType(), TOOL_NAME);
             removeConnection(comp, source, target);
-
-            // TODO: Add local state var
-
         }
 
         Map<String, List<String>> portNames = new HashMap<>();
@@ -317,18 +316,31 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         Log.info("Generate univariate behavior with " + inputPortNames.size() + " input ports and " +
                 outputPortNames.size() + " output ports.", TOOL_NAME);
 
-        File targetPath = Paths.get(hwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
+        File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
+        File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
 
-        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".cpp", UNIVARIATE_IMPL_CPP,
+        this.generate(tHwcPath, UNIVARIATE_NAME + "Impl", ".cpp", UNIVARIATE_IMPL_CPP,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames, outputPortNames);
 
-        fg.generate(targetPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_IMPL_HEADER,
+        this.generate(sHwcPath, UNIVARIATE_NAME + "Impl", ".cpp", UNIVARIATE_IMPL_CPP,
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames, outputPortNames);
+
+        this.generate(tHwcPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_IMPL_HEADER,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, tolerance, windowSize);
 
-        fg.generate(targetPath, UNIVARIATE_NAME + "State", ".cpp", UNIVARIATE_STATE_CPP,
+        this.generate(sHwcPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_IMPL_HEADER,
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, tolerance, windowSize);
+
+        this.generate(tHwcPath, UNIVARIATE_NAME + "State", ".cpp", UNIVARIATE_STATE_CPP,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames);
 
-        fg.generate(targetPath, UNIVARIATE_NAME + "State", ".h", UNIVARIATE_STATE_HEADER,
+        this.generate(sHwcPath, UNIVARIATE_NAME + "State", ".cpp", UNIVARIATE_STATE_CPP,
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames);
+
+        this.generate(tHwcPath, UNIVARIATE_NAME + "State", ".h", UNIVARIATE_STATE_HEADER,
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames);
+
+        this.generate(sHwcPath, UNIVARIATE_NAME + "State", ".h", UNIVARIATE_STATE_HEADER,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames);
     }
 
@@ -338,19 +350,42 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         Log.info("Generate multivariate behavior with " + inputPortNames.size() + " input port batches and " +
                 outputPortNames.size() + " output port batches.", TOOL_NAME);
 
-        File targetPath = Paths.get(hwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
+        File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
+        File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), outermostComponent.getPackage().getQName()).toFile();
 
-        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".cpp", MULTIVARIATE_IMPL_CPP,
+        this.generate(tHwcPath, MULTIVARIATE_NAME + "Impl", ".cpp", MULTIVARIATE_IMPL_CPP,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames, outputPortNames);
 
-        fg.generate(targetPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_IMPL_HEADER,
+        this.generate(sHwcPath, MULTIVARIATE_NAME + "Impl", ".cpp", MULTIVARIATE_IMPL_CPP,
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames, outputPortNames);
+
+        this.generate(tHwcPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_IMPL_HEADER,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, tolerance, windowSize);
 
-        fg.generate(targetPath, MULTIVARIATE_NAME + "State", ".cpp", MULTIVARIATE_STATE_CPP,
+        this.generate(sHwcPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_IMPL_HEADER,
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, tolerance, windowSize);
+
+        this.generate(tHwcPath, MULTIVARIATE_NAME + "State", ".cpp", MULTIVARIATE_STATE_CPP,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames);
 
-        fg.generate(targetPath, MULTIVARIATE_NAME + "State", ".h", MULTIVARIATE_STATE_HEADER,
+        this.generate(sHwcPath, MULTIVARIATE_NAME + "State", ".cpp", MULTIVARIATE_STATE_CPP,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames);
+
+        this.generate(tHwcPath, MULTIVARIATE_NAME + "State", ".h", MULTIVARIATE_STATE_HEADER,
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames);
+
+        this.generate(sHwcPath, MULTIVARIATE_NAME + "State", ".h", MULTIVARIATE_STATE_HEADER,
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames);
+    }
+
+    private void generate(File target, String name, String fileExtension, String template, Object... templateArguments) {
+        Path path = Paths.get(target.getAbsolutePath() + File.separator + name + fileExtension);
+        Log.debug("Writing to file " + path, "FileGenerator");
+
+        GeneratorSetup setup = new GeneratorSetup();
+        setup.setTracing(false);
+        GeneratorEngine engine = new GeneratorEngine(setup);
+        engine.generateNoA(template, path, templateArguments);
     }
 
     private List<ASTMACompilationUnit> getAllModels(Collection<ASTMACompilationUnit> originalModels,

@@ -1,4 +1,4 @@
-${tc.signature("packageName", "compname", "windowSize", "tolerance", "existsHwc")}
+${tc.signature("packageName", "compname", "windowSize", "tolerance")}
 #pragma once
 #include "${compname}ImplTOP.h"
 #include "MultivariateAutoregressiveAnomalyDetection.h"

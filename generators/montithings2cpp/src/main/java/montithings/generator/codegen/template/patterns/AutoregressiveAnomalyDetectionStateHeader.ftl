@@ -1,4 +1,4 @@
-${tc.signature("packageName", "compname", "namesOfInputPorts", "existsHwc")}
+${tc.signature("packageName", "compname", "namesOfInputPorts")}
 #pragma once
 #include "${compname}StateTOP.h"
 
