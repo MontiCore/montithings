@@ -28,7 +28,14 @@ float LinearRegression::mean(std::vector<float> values)
 {
   auto const count = static_cast<float>(values.size());
 
-  return std::reduce(values.begin(), values.end()) / count;
+  float subtotal = 0;
+
+  for (int i = 0; i < values.size(); i++)
+  {
+    subtotal += values[i];
+  }
+
+  return subtotal / count;
 }
 
 float LinearRegression::std(std::vector<float> values, float mean)
