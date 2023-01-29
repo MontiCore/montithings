@@ -1,3 +1,6 @@
+#ifndef MT_LINEAR_REGRESSION_HEADER
+#define MT_LINEAR_REGRESSION_HEADER
+
 #include <vector>
 #include <numeric>
 #include <stdexcept>
@@ -16,3 +19,5 @@ protected:
 public:
   float predict_value(float input, std::vector<float> values);
 };
+
+#endif

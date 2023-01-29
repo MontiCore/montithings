@@ -1,3 +1,6 @@
+#ifndef AUTOREGRESSIVE_ANOMALY_DETECTION_HEADER
+#define AUTOREGRESSIVE_ANOMALY_DETECTION_HEADER
+
 #include <vector>
 #include <algorithm>
 #include "MTLinearRegression.h"
@@ -19,3 +22,5 @@ public:
   }
   bool is_anomaly(float input, std::vector<float> past_values);
 };
+
+#endif

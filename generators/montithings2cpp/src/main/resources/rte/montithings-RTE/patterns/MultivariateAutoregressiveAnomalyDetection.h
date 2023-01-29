@@ -1,3 +1,6 @@
+#ifndef MULTIREGRESSIVE_ANOMALY_DETECTION_HEADER
+#define MULTIREGRESSIVE_ANOMALY_DETECTION_HEADER
+
 #include <vector>
 #include <algorithm>
 #include "MTLinearRegression.h"
@@ -20,3 +23,5 @@ public:
   }
   std::vector<bool> is_anomaly(std::vector<float> inputs, std::vector<std::vector<float>> past_values);
 };
+
+#endif
