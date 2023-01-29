@@ -1,6 +1,7 @@
 #include <vector>
 #include <numeric>
 #include <stdexcept>
+#include <cmath>
 
 class LinearRegression
 {

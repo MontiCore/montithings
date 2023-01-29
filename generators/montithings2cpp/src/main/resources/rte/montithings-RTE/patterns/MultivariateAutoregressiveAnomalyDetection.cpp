@@ -14,6 +14,8 @@ std::vector<bool> MultivariateAutoregressiveAnomalyDetection::is_anomaly(std::ve
 
     res.push_back(err > this->tolerance);
   }
+
+  return res;
 }
 
 std::vector<float> MultivariateAutoregressiveAnomalyDetection::get_regression_values(std::vector<std::vector<float>> past_values)
