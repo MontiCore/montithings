@@ -275,11 +275,10 @@ public class MTGenerator {
    *
    * @param languagePath 
    */
-  public void generateHTMLFilesForDSLs(File languagePath, ConfigParams config, String name){
+  public void generateHTMLFilesForDSLs(File languagePath, ConfigParams config, String name, String explain){
     name = name.replace(".","/");
-
     FileGenerator fg = new FileGenerator(languagePath, hwcDir);
-    fg.generate(languagePath, "generator-server" + File.separatorChar +"html" + File.separatorChar +  name, ".html", "template/util/html/Comp.ftl", config, name);
+    fg.generate(languagePath, "generator-server" + File.separatorChar +"html" + File.separatorChar +  name, ".html", "template/util/html/Comp.ftl", config, name, explain);
   }
 
    /**
@@ -287,9 +286,9 @@ public class MTGenerator {
    *
    * @param languagePath 
    */
-  public void generateHTMLIndexFile(File languagePath, ConfigParams config, ArrayList<String> instanceNames){
+  public void generateHTMLIndexFile(File languagePath, ConfigParams config, ArrayList<String> instanceNames, String explain){
     FileGenerator fg = new FileGenerator(languagePath, hwcDir);
-    fg.generate(languagePath, "generator-server" + File.separatorChar +"html" + File.separatorChar +  "Index" ,".html", "template/util/html/Index.ftl", config, instanceNames);
+    fg.generate(languagePath, "generator-server" + File.separatorChar +"html" + File.separatorChar +  "Index" ,".html", "template/util/html/Index.ftl", config, instanceNames, explain);
   }
 
 

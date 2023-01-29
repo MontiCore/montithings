@@ -1,0 +1,4 @@
+<pre>This project is a simple example for the end user development feature for MontiThings.
+
+    It consist of two languages, one that lets a user create a simple calculation and another one that defines how this output is printed.
+</pre>

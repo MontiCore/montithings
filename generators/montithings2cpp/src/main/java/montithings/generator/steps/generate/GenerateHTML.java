@@ -18,6 +18,7 @@ import montithings.generator.steps.GeneratorStep;
 import montithings.generator.steps.helper.GenerateCDEAdapter;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.io.FileUtils;
 
 import static montithings.generator.MontiThingsGeneratorTool.TOOL_NAME;
 import static montithings.generator.helper.ComponentHelper.getDynamicallyConnectedSubcomps;
@@ -40,11 +42,33 @@ public class GenerateHTML extends GeneratorStep {
     ArrayList<String> instanceNames = new ArrayList<>();
     for(Pair<ComponentTypeSymbol,String> pair : state.getInstances()){
       if(ComponentHelper.isDSLComponent(pair.getKey(), state.getConfig())){
+        
+        String explain = "No explaination for this language available.";
+        try{
+          File explaination = new File(state.getConfig().getLanguagePath().getPath() + "/" + pair.getKey().getFullName().replace(".","/") + "/" + "EXPLAIN.txt");
+          explain = FileUtils.readFileToString(explaination,"UTF-8");
+          explain = explain.replace("\"","&quot;");
+        }
+        catch(IOException e){
+          System.out.println("GenerateHTML couldn't find explaination file. Following IOException has been thrown:" + e.getMessage());
+        }
+
+
+
         instanceNames.add(pair.getValue().replace(".","/"));
-        state.getMtg().generateHTMLFilesForDSLs(new File (state.getTarget().getAbsolutePath()),state.getConfig(), pair.getValue());
+        state.getMtg().generateHTMLFilesForDSLs(new File (state.getTarget().getAbsolutePath()),state.getConfig(), pair.getValue(), explain);
       }
     }
-    state.getMtg().generateHTMLIndexFile(new File (state.getTarget().getAbsolutePath()),state.getConfig(),instanceNames);
+    String explainProj = "No project description available!";
+    try{
+      File explainationProj = new File(state.getConfig().getLanguagePath().getPath() + "/" + "EXPLAIN.txt");
+      explainProj = FileUtils.readFileToString(explainationProj,"UTF-8");
+      explainProj = explain.replace("\"","&quot;");
+    }
+    catch(IOException e){
+      System.out.println("GenerateHTML couldn't find explaination file for the project. Following IOException has been thrown:" + e.getMessage());
+    }
+    state.getMtg().generateHTMLIndexFile(new File (state.getTarget().getAbsolutePath()),state.getConfig(),instanceNames, explainProj);
 
   }
   

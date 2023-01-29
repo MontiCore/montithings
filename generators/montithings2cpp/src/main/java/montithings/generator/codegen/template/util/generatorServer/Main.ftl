@@ -10,9 +10,14 @@ import static spark.Spark.get;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.nio.charset.StandardCharsets;
+import java.lang.SecurityManager;
+import java.lang.SecurityException;
+import java.security.Permission;
 
 import javax.servlet.MultipartConfigElement;
 import org.apache.commons.io.FileUtils;
@@ -22,6 +27,8 @@ import org.eclipse.paho.client.mqttv3.*;
 
 public class Main {
     public static void main(String[] args) {
+        MySecurityManager secManager = new MySecurityManager();
+        System.setSecurityManager(secManager);
         MqttClient mqttClient;
         try{
             String brokerURI = "tcp://127.0.0.1:1883";
@@ -36,28 +43,39 @@ public class Main {
             <#if ComponentHelper.isDSLComponent(pair.getKey(),config)>
             
             post("/${GeneratorHelper.replaceDotsBySlashes(instanceName)}", ((request, response) -> {
+                
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(os);
+                PrintStream old = System.err;
+                System.setErr(ps);
+                
                 try {
                     MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
                     request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
                     String model = new String(request.raw().getPart("fileUpload").getInputStream().readAllBytes(), StandardCharsets.UTF_8);
                     System.out.println("Input (/${GeneratorHelper.replaceDotsBySlashes(fullName)}): " + model);
-                    if (model == null || model.equals("")) {
-                        throw new Exception("Empty body");
-                    }
+
                     ${GeneratorHelper.getLanguageNameFromLanguagePath("/" + GeneratorHelper.replaceDotsBySlashes(fullName),config)}.generator.Generator sg = new ${GeneratorHelper.getLanguageNameFromLanguagePath("/" + GeneratorHelper.replaceDotsBySlashes(fullName),config)}.generator.Generator();
                     String generatedPy = sg.generate(model);
-
+                    
+                    System.err.flush();
+                    System.setErr(old);
+                    String prints = os.toString("UTF-8");
+                    System.out.println(prints);
 
                     //Send Py to DSL component
                     MqttMessage mqttPy = new MqttMessage(generatedPy.getBytes());
                     mqttClient.publish("/hwc/${GeneratorHelper.replaceDotsBySlashes(instanceName)}",mqttPy);
                     
                     
-                    return "";
-                } catch (Exception e) {
-                    System.out.println(e);
+                    return "<div style=\"white-space: pre-wrap; color: whitesmoke;\">Task succesfull! Component should be updated.</div>";
+                } catch (SecurityException e) {
+                    System.err.flush();
+                    System.setErr(old);
+                    String errorMessage = "<div style=\"white-space: pre-wrap; color: whitesmoke;\">Task failed and the component has not been updated.\n Reason for failed task:\n " + os.toString("UTF-8") + "</div>";
+                    System.out.println(errorMessage);
                     response.status(500);
-                    return e.getMessage();
+                    return errorMessage;
                 }
             }));
 
@@ -97,4 +115,14 @@ public class Main {
         }
         
     }
+}
+
+class MySecurityManager extends SecurityManager {
+  @Override public void checkExit(int status) {
+    throw new SecurityException();
+  }
+
+  @Override public void checkPermission(Permission perm) {
+      // Allow other activities by default
+  }
 }
