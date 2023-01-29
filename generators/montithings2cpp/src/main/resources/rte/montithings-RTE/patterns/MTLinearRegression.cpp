@@ -1,6 +1,6 @@
-#include "LinearRegression.h"
+#include "MTLinearRegression.h"
 
-float LinearRegression::predict_value(float input, std::vector<float> values)
+float MTLinearRegression::predict_value(float input, std::vector<float> values)
 {
   if (values.empty())
   {
@@ -24,7 +24,7 @@ float LinearRegression::predict_value(float input, std::vector<float> values)
   return slope * input - y_intercept;
 }
 
-float LinearRegression::mean(std::vector<float> values)
+float MTLinearRegression::mean(std::vector<float> values)
 {
   auto const count = static_cast<float>(values.size());
 
@@ -38,7 +38,7 @@ float LinearRegression::mean(std::vector<float> values)
   return subtotal / count;
 }
 
-float LinearRegression::std(std::vector<float> values, float mean)
+float MTLinearRegression::std(std::vector<float> values, float mean)
 {
   float subtotal = 0;
   for (int i = 0; i < values.size(); i++)
@@ -49,7 +49,7 @@ float LinearRegression::std(std::vector<float> values, float mean)
   return sqrt(1 / values.size() * subtotal);
 }
 
-float LinearRegression::correlation(std::vector<float> x_values, std::vector<float> y_values, float mean_x, float mean_y, float std_x, float std_y)
+float MTLinearRegression::correlation(std::vector<float> x_values, std::vector<float> y_values, float mean_x, float mean_y, float std_x, float std_y)
 {
   if (x_values.size() != y_values.size())
   {
@@ -66,17 +66,17 @@ float LinearRegression::correlation(std::vector<float> x_values, std::vector<flo
   return subtotal / std_x * std_y;
 }
 
-float LinearRegression::slope(float correlation, float std_x, float std_y)
+float MTLinearRegression::slope(float correlation, float std_x, float std_y)
 {
   return correlation * (std_y / std_x);
 }
 
-float LinearRegression::y_intercept(float slope, float mean_x, float mean_y)
+float MTLinearRegression::y_intercept(float slope, float mean_x, float mean_y)
 {
   return mean_y - slope * mean_x;
 }
 
-std::vector<float> LinearRegression::x_values(std::vector<float> values)
+std::vector<float> MTLinearRegression::x_values(std::vector<float> values)
 {
   std::vector<float> x_values(values.size());
 

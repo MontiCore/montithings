@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <cmath>
 
-class LinearRegression
+class MTLinearRegression
 {
 protected:
   float mean(std::vector<float> values);

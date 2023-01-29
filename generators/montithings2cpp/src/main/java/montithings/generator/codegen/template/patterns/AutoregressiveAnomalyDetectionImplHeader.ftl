@@ -1,7 +1,7 @@
 ${tc.signature("packageName", "compname", "windowSize", "tolerance")}
 #pragma once
 #include "${compname}ImplTOP.h"
-#include "AutoregressiveAnomalyDetection.h"
+#include "patterns/AutoregressiveAnomalyDetection.h"
 
 namespace montithings {
     namespace ${packageName} {

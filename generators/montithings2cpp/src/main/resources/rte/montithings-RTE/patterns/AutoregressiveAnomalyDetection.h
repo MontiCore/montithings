@@ -1,11 +1,11 @@
 #include <vector>
 #include <algorithm>
-#include "LinearRegression.h"
+#include "MTLinearRegression.h"
 
 class AutoregressiveAnomalyDetection
 {
 private:
-  LinearRegression *lr;
+  MTLinearRegression *lr;
   int window_size;
   float tolerance;
   std::vector<float> get_regression_values(std::vector<float> past_values);
@@ -15,7 +15,7 @@ public:
   {
     this->window_size = window_size;
     this->tolerance = tolerance;
-    this->lr = new LinearRegression();
+    this->lr = new MTLinearRegression();
   }
   bool is_anomaly(float input, std::vector<float> past_values);
 };
