@@ -25,3 +25,7 @@ buildProject "ocl" "hierarchy"
 buildProject "pre-postconditions" "hierarchy"
 buildProject "si-units" "hierarchy"
 buildProject "statecharts" "hierarchy"
+
+cd ../patterns
+
+buildProject "anomaly-detection" "hierarchy"
