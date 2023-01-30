@@ -203,6 +203,13 @@ if(-not (Get-IsInstalled gcc)){
 }
 
 ##########################################
+# Install OpenSSL
+##########################################
+if(-not (Get-IsInstalled gcc)){
+    choco install -y openssl
+}
+
+##########################################
 # Install NNG 1.3.0
 ##########################################
 if(-not((Test-Path -Path 'C:\nng-1.3.0') -or (Test-Path -Path 'C:\Program Files (x86)\nng'))){

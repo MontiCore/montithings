@@ -148,7 +148,7 @@ if (NOT EXCLUDE_COMM_MANAGER)
 endif ()
 
 add_subdirectory(cpp-base64)
-if (APPLE)
+if (APPLE OR WIN32)
   find_package(OpenSSL REQUIRED)
   target_link_libraries(MontiThingsRTE cpp-base64 OpenSSL::SSL OpenSSL::Crypto)
 else()
