@@ -83,15 +83,6 @@ RUN ./build.sh ${comp.getFullName()}
 
             COPY --from=build /usr/src/app/build/bin/python /usr/src/app/build/bin/python
             </#if>
-            <#if ComponentHelper.isWebComponent(processedComp)>
-
-            RUN apk add protoc
-
-            COPY --from=build /usr/src/app/build/bin/html /usr/src/app/build/bin/html
-
-            COPY --from=build /usr/src/app/build/bin/models /usr/src/app/build/bin/models
-            </#if>
-
             <#if brokerIsMQTT>
 
             ADD deployment-config.json /.montithings/deployment-config.json

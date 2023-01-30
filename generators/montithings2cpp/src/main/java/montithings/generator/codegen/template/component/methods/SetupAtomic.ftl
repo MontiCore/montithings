@@ -30,6 +30,9 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   replaceDotsBySlashes (instanceName));
 </#if>
 
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  mqttClientInstance->subscribe("/hwc/" + replaceDotsBySlashes(instanceName));
+</#if>
 
 
 

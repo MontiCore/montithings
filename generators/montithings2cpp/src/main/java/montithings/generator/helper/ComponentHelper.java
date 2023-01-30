@@ -275,30 +275,34 @@ public class ComponentHelper {
    * Returns True iff the given component is a dsl component
    */
   public static boolean isDSLComponent(ComponentTypeSymbol comp, ConfigParams config) {
-    if (comp.getAstNode() instanceof ASTMTComponentType) {
-      Path pathToLanguageFile = getFullLanguagePath(comp, config);
-      File languageFile = new File(pathToLanguageFile.toString());
-      if(languageFile.exists())
-      {
-        if(languageFile.isDirectory())
+    if(isDSLProject(config)){
+      if (comp.getAstNode() instanceof ASTMTComponentType) {
+        Path pathToLanguageFile = getFullLanguagePath(comp, config);
+        File languageFile = new File(pathToLanguageFile.toString());
+        if(languageFile.exists())
         {
-          return true;
+          if(languageFile.isDirectory())
+          {
+            return true;
+          }
         }
       }
     }
     return false;
   }
-    
 
-    /**
-   * Returns True iff the given component is a Web component
+  /**
+   * Retruns iff the entrie project is a project that uses endu user development features
+   * @param config
+   * @return boolean
    */
-  public static boolean isWebComponent(ComponentTypeSymbol comp) {
-    if (comp.getName().equals("Source")) {
+  public static boolean isDSLProject(ConfigParams config) {
+    if (config.getLanguagePath() != null) {
       return true;
     }
     return false;
   }
+
 
   /**
    * Get the names of all types generated for the interfaces implemented by the given component

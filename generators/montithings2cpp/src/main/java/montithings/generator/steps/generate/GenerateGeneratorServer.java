@@ -32,9 +32,10 @@ import static montithings.generator.helper.FileHelper.getSubPackagesPath;
 public class GenerateGeneratorServer extends GeneratorStep {
 
   @Override public void action(GeneratorToolState state) {
-
-    ArrayList<String> languagePaths = getAllLanguageDirectories(state.getConfig());
-    state.getMtg().generateGeneratorServer(new File (state.getTarget().getAbsolutePath()),state.getConfig(),languagePaths,state);
+    if(state.getConfig().getLanguagePath() != null){
+      ArrayList<String> languagePaths = getAllLanguageDirectories(state.getConfig());
+      state.getMtg().generateGeneratorServer(new File (state.getTarget().getAbsolutePath()),state.getConfig(),languagePaths,state);
+    }
   }
   
    /**

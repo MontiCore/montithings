@@ -43,7 +43,12 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
     // after adding everything we override a couple of known variable
     // bindings to have them properly typed in the script
     builder.addVariable(Options.MODELPATH.toString(), config.getModelPath());
-    builder.addVariable(Options.LANGUAGEPATH.toString(), config.getLanguagePath());
+    
+    if(config.hasProperty("languagePath")){
+      builder.addVariable(Options.LANGUAGEPATH.toString(), config.getLanguagePath());
+    }else{
+      builder.addVariable(Options.LANGUAGEPATH.toString(), new File(""));
+    }
     builder.addVariable(Options.TESTPATH.toString(), config.getTestPath());
     builder.addVariable(Options.OUT.toString(), config.getOut());
     builder.addVariable(Options.HANDWRITTENCODEPATH.toString(), config.getHWCPath());
@@ -68,6 +73,7 @@ public class MontiThingsGeneratorScript extends Script implements GroovyRunner {
     MontiThingsMill.init();
     new MontiThingsGeneratorTool().generate(modelPath, targetFilepath, hwcPath, testPath, configParams, languagePath);
   }
+
 
   // #######################
   // log functions
