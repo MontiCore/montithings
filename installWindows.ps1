@@ -205,7 +205,7 @@ if(-not (Get-IsInstalled gcc)){
 ##########################################
 # Install OpenSSL
 ##########################################
-if(-not (Get-IsInstalled gcc)){
+if(-not (Get-IsInstalled openssl)){
     choco install -y openssl
 }
 
