@@ -24,6 +24,7 @@ public class CLIOptions {
     options.addOption(input());
     options.addOption(modelPath());
     options.addOption(hwc());
+    options.addOption(languagePath());
     options.addOption(target());
     options.addOption(testPath());
 
@@ -111,6 +112,17 @@ public class CLIOptions {
       .numberOfArgs(1)
       .desc("Sets the path containing the handwritten code. "
         + "Defaults to the current folder + '" + DEFAULT_HWC_PATH + "'.")
+      .build();
+  }
+
+  public static Option languagePath() {
+    return Option.builder("lp")
+      .longOpt("languagepath")
+      .argName("directory")
+      .optionalArg(true)
+      .numberOfArgs(1)
+      .desc("Sets the lamguage path for the project. "
+        + "Defaults to the current folder + '" + DEFAULT_LANGUAGE_PATH + "'.")
       .build();
   }
 

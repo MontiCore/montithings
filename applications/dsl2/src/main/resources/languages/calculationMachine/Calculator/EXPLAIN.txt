@@ -1,18 +1,18 @@
 <html><body>
 <h1> CalculatorLang</h1>
 <pre>
-Mit dieser Sprache lassen sich simple Rechungen darstellen.
-Als Beispiel:
-    * 100;
-    + 10;
+This language can represent simple calculations on an incoming variable.
+For Example:
+    + 100;
+    * 10;
 
-Diese Rechnung rechtet eine Zahl, die als Eingabe gegeben wird erst mal 100 und danach +10.
+If the incoming variable is 5 this would calculate (5 + 100) * 10 and return the result.
 
-Regeln:
+Rules:
 </pre>
 <ul>
-  <li>Jede Rechung Endet mit einem ";"</li>
-  <li>Es sind nur die Zeichen "*" und "+" erlaubt</li>
-  <li>Als Werte sind nur ganze Zahlen erlaubt.</li>
+  <li>Every line has to end with a ";"</li>
+  <li>Only allowed charcters are "*" and "+"</li>
+  <li>Only numbers in &#8484 are allowed</li>
 </ul> 
 </body></html>

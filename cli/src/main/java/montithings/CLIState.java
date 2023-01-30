@@ -27,6 +27,8 @@ public class CLIState {
 
   File hwcPath;
 
+  File languagePath;
+
   File targetDirectory;
 
   MontiThingsConfiguration mtcfg;
@@ -81,6 +83,14 @@ public class CLIState {
 
   public void setHwcPath(File hwcPath) {
     this.hwcPath = hwcPath;
+  }
+
+  public File getLanguagePath() {
+    return languagePath;
+  }
+
+  public void setLanguagePath(File languagePath) {
+    this.languagePath = languagePath;
   }
 
   public File getTargetDirectory() {

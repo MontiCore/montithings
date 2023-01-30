@@ -1,4 +1,13 @@
-<pre>This project is a simple example for the end user development feature for MontiThings.
+<html><body>
+    <p>
+        This project is a simple example for the end user development feature for MontiThings.
 
-    It consist of two languages, one that lets a user create a simple calculation and another one that defines how this output is printed.
-</pre>
+        It consists of 4 Components:
+        <ul>
+            <li>"Machine", which is the parent component.</li>
+            <li>"numGen", which outputs a number that constantly counts up. This component also receives the final result and logs it.</li>
+            <li>"calc", which is a component that can receive an end-user model and does some math on the incoming variable, based on this uploaded model.</li>
+            <li>"print", which is a component that can receive an end-user model and creates different strings dependent on the in the model specified parameters.</li>
+        </ul> 
+    </p>
+</body></html>

@@ -24,14 +24,12 @@ class PrinterImpl(PrinterImplTOP):
         variable = "${ast.getVariable().getVariableName()}"
         style = "${ast.getStyle().getChoice()}"
 
-        if(style == "Seperated"):
-            text = variable
-            text = f"({text} {self._input.ports['result'].calc})"
-            text = f"{text} = {self._input.ports['result'].val} if {variable} is {self._input.ports['result'].var}"
+        if(style == "Full"):
+            text = f"\n{variable}\n"
+            text = f"{text} {self._input.ports['result'].calc}"
+            text = f"{text}\n = {self._input.ports['result'].val} if {variable} = {self._input.ports['result'].var}"
         else:
-            text = variable
-            text = f"({text} {self._input.ports['result'].calc})\n"
-            text = f"{text} For {variable} = {self._input.ports['result'].var} this results in {self._input.ports['result'].val}."
+            text = f"f({variable})={self._input.ports['result'].val} if {variable} = {self._input.ports['result'].var}"
         
         print(text)
         self._result.ports["text"].text = text

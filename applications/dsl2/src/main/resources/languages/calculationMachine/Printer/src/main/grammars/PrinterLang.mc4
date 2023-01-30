@@ -5,5 +5,5 @@ grammar PrinterLang extends de.monticore.MCBasics{
   
   token Linebreak = NEWLINE;
   Variable = "var:" variableName:Name Linebreak;
-  Style = "style:" (choice:"Seperated"|choice:"Filled") Linebreak;
+  Style = "style:" (choice:"Full"|choice:"Result") Linebreak;
 }

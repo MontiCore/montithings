@@ -16,6 +16,6 @@ class PrinterImpl(PrinterImplTOP):
         print(f"New value on port {port}: {self._input.ports['result'].var}, {self._input.ports['result'].val}, {self._input.ports['result'].calc}")
         
         print(f"The Result of x{self._input.ports['result'].calc} where x is {self._input.ports['result'].var} is {self._input.ports['result'].val}!")
-        self._result.ports["text"].text = f"The Result of x{self._input.ports['result'].calc} where x is {self._input.ports['result'].var} is {self._input.ports['result'].val}!"
+        self._result.ports["text"].text = f"f(X) = {self._input.ports['result'].val} if X = {self._input.ports['result'].var}"
 
         self.send_port_text()
