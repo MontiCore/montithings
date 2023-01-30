@@ -1,6 +1,8 @@
 #include "MultivariateAutoregressiveAnomalyDetection.h"
 
-std::vector<bool> MultivariateAutoregressiveAnomalyDetection::is_anomaly(std::vector<float> inputs, std::vector<std::vector<float>> past_values)
+std::vector<bool>
+MultivariateAutoregressiveAnomalyDetection::is_anomaly(std::vector<float> inputs,
+                                                       std::vector<std::vector<float>> past_values)
 {
   std::vector<bool> res(inputs.size());
 
@@ -12,13 +14,19 @@ std::vector<bool> MultivariateAutoregressiveAnomalyDetection::is_anomaly(std::ve
 
     float err = std::abs(predicted_value - inputs[i]);
 
-    res.push_back(err > this->tolerance);
+    res[i] = err > this->tolerance;
+
+    std::cout << "[MAD] Input " << i << " is anomaly: " << res[i]
+              << " (0==false, 1==true) because " << err << " > " << this->tolerance
+              << " == " << res[i] << std::endl;
   }
 
   return res;
 }
 
-std::vector<float> MultivariateAutoregressiveAnomalyDetection::get_regression_values(std::vector<std::vector<float>> past_values)
+std::vector<float>
+MultivariateAutoregressiveAnomalyDetection::get_regression_values(
+    std::vector<std::vector<float>> past_values)
 {
   int dimension = static_cast<int>(past_values.size());
 
@@ -39,14 +47,16 @@ std::vector<float> MultivariateAutoregressiveAnomalyDetection::get_regression_va
 
     for (int j = 0; j < values_of_dimension.size(); j++)
     {
-      values.push_back(values_of_dimension[j]);
+      values[i] = values_of_dimension[j];
     }
   }
 
   return values;
 }
 
-std::vector<float> MultivariateAutoregressiveAnomalyDetection::get_regression_values(int idx, std::vector<std::vector<float>> past_values)
+std::vector<float>
+MultivariateAutoregressiveAnomalyDetection::get_regression_values(
+    int idx, std::vector<std::vector<float>> past_values)
 {
   int values_len = std::min({this->window_size, static_cast<int>(past_values[idx].size())});
 
@@ -54,7 +64,7 @@ std::vector<float> MultivariateAutoregressiveAnomalyDetection::get_regression_va
 
   for (int i = 0; i < values_len; i++)
   {
-    values.push_back(past_values[idx][i]);
+    values[i] = past_values[idx][i];
   }
 
   return values;

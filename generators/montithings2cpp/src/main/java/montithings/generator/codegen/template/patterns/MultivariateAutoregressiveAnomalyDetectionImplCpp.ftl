@@ -31,11 +31,11 @@ namespace montithings {
           std::vector<bool> is_anomaly_${i} = this->ad->is_anomaly(inputs_${i}, state.get_past_values_${i}());
 
           <#list 0..batchesOfNamesOfOutputPorts[i]?size-1 as j>
-          if (!is_anomaly_${i}[${j}])
+          if (input.get${batchesOfNamesOfInputPorts[i][j]?cap_first}() && !is_anomaly_${i}[${j}])
           {
             result.set${batchesOfNamesOfOutputPorts[i][j]?cap_first}(input.get${batchesOfNamesOfInputPorts[i][j]?cap_first}().value());
           }
-          else
+          else if (input.get${batchesOfNamesOfInputPorts[i][j]?cap_first}())
           {
             std::cout << "${compname}: Input is anomaly. Block sending." << std::endl;
           }

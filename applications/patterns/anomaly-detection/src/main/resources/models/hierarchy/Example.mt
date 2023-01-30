@@ -3,7 +3,7 @@ package hierarchy;
 
 component Example {
   Source source;
-  Source source2;
+  Source2 source2;
   Middleman middleman;
   Sink sink;
 
