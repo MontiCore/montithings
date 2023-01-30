@@ -149,7 +149,7 @@ if(-not (Get-IsInstalled java) -or -not (Get-JavaVersionIs11)){
     winget install -e Microsoft.OpenJDK.11
     Reload-Path
     if(-not (Get-JavaVersionIs11)){
-        Write-Output "WARNING: Java 11 was installed but is not your default java version. Please make sure to use java 11 with montithings"
+        Write-Output "WARNING: Java 11 was installed but is not your default Java version. Please make sure to use Java 11 with montithings"
     }
 }
 if(-not (Get-IsInstalled cmake)){
