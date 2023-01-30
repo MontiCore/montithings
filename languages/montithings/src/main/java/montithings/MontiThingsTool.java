@@ -219,8 +219,8 @@ public class MontiThingsTool implements IMontiThingsTool {
     this.loadAll(scope).forEach(scope::addSubScope);
     if (models.isEmpty()) {
       models = new HashSet<>(this.parseAll(scope));
+      models = applyTrafos(models);
     }
-    models = applyTrafos(models);
     return models.stream().map(symTab::createFromAST).collect(Collectors.toSet());
   }
 
@@ -432,6 +432,7 @@ public class MontiThingsTool implements IMontiThingsTool {
     Preconditions.checkArgument(scope != null);
     if (models.isEmpty()) {
       models = new HashSet<>(this.parseAll(scope));
+      models = applyTrafos(models);
     }
 
     addPortSymbolsToCD4CGlobalScope();
