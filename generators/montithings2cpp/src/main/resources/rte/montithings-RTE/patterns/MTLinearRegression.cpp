@@ -87,11 +87,11 @@ float MTLinearRegression::y_intercept(float slope, float mean_x, float mean_y)
 std::vector<float>
 MTLinearRegression::x_values(std::vector<float> values)
 {
-  std::vector<float> x_values(values.size());
+  std::vector<float> x_values;
 
   for (int i = 0; i < values.size(); i++)
   {
-    x_values[i] = i;
+    x_values.push_back(i);
   }
 
   return x_values;

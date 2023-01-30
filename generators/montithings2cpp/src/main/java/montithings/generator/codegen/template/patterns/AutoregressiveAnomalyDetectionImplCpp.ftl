@@ -27,6 +27,7 @@ namespace montithings {
               if (!is_anomaly_${namesOfInputPorts[i]})
               {
                 result.set${namesOfOutputPorts[i]?cap_first}(input.get${namesOfInputPorts[i]?cap_first}().value());
+                interface.getPort${namesOfOutputPorts[i]?cap_first}()->setNextValue (result.get${namesOfOutputPorts[i]?cap_first}Message());
               }
               else
               {

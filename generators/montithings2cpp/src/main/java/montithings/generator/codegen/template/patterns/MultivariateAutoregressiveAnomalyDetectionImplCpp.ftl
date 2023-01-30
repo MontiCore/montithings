@@ -16,7 +16,7 @@ namespace montithings {
           ${compname}Result result;
 
           <#list 0..batchesOfNamesOfInputPorts?size-1 as i>
-          std::vector<float> inputs_${i}(${batchesOfNamesOfInputPorts[i]?size});
+          std::vector<float> inputs_${i};
 
           <#list batchesOfNamesOfInputPorts[i] as nameOfInputPort>
           if (input.get${nameOfInputPort?cap_first}())
@@ -34,6 +34,7 @@ namespace montithings {
           if (input.get${batchesOfNamesOfInputPorts[i][j]?cap_first}() && !is_anomaly_${i}[${j}])
           {
             result.set${batchesOfNamesOfOutputPorts[i][j]?cap_first}(input.get${batchesOfNamesOfInputPorts[i][j]?cap_first}().value());
+            interface.getPort${batchesOfNamesOfOutputPorts[i][j]?cap_first}()->setNextValue (result.get${batchesOfNamesOfOutputPorts[i][j]?cap_first}Message());
           }
           else if (input.get${batchesOfNamesOfInputPorts[i][j]?cap_first}())
           {

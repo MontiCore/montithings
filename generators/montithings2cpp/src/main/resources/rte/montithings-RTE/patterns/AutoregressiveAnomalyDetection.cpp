@@ -8,8 +8,6 @@ bool AutoregressiveAnomalyDetection::is_anomaly(float input, std::vector<float> 
 
   float err = std::abs(predicted_value - input);
 
-  std::cout << "[UAD] Is anomaly: " << (err > this->tolerance) << " (0==false, 1==true) because " << err << " > " << this->tolerance << " == " << (err > this->tolerance) << std::endl;
-
   return err > this->tolerance;
 }
 
@@ -17,11 +15,16 @@ std::vector<float> AutoregressiveAnomalyDetection::get_regression_values(std::ve
 {
   int values_len = std::min({this->window_size, static_cast<int>(past_values.size())});
 
-  std::vector<float> values(values_len);
+  std::vector<float> values;
 
-  for (int i = 0; i < values_len; i++)
+  int i = past_values.size();
+  int count = 0;
+
+  while (count < values_len)
   {
-    values[i] = past_values[i];
+    count++;
+    i--;
+    values.push_back(past_values[i]);
   }
 
   return values;
