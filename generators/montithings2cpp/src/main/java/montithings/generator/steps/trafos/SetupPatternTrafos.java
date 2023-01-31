@@ -8,7 +8,7 @@ import montithings.generator.steps.GeneratorStep;
 import montithings.generator.steps.trafos.patterns.AnomalyDetectionPatternTrafo;
 
 public class SetupPatternTrafos extends GeneratorStep {
-    private static final int WINDOW_SIZE = 25;
+    private static final int WINDOW_SIZE = 5;
     private static final double TOLERANCE = 5.0;
 
     @Override

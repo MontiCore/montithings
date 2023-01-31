@@ -326,10 +326,10 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames, outputPortNames);
 
         this.generate(tHwcPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_IMPL_HEADER,
-                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, tolerance, windowSize);
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, windowSize, tolerance);
 
         this.generate(sHwcPath, UNIVARIATE_NAME + "Impl", ".h", UNIVARIATE_IMPL_HEADER,
-                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, tolerance, windowSize);
+                outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, windowSize, tolerance);
 
         this.generate(tHwcPath, UNIVARIATE_NAME + "State", ".cpp", UNIVARIATE_STATE_CPP,
                 outermostComponent.getPackage().getQName(), UNIVARIATE_NAME, inputPortNames);
@@ -360,10 +360,10 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames, outputPortNames);
 
         this.generate(tHwcPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_IMPL_HEADER,
-                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, tolerance, windowSize);
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, windowSize, tolerance);
 
         this.generate(sHwcPath, MULTIVARIATE_NAME + "Impl", ".h", MULTIVARIATE_IMPL_HEADER,
-                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, tolerance, windowSize);
+                outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, windowSize, tolerance);
 
         this.generate(tHwcPath, MULTIVARIATE_NAME + "State", ".cpp", MULTIVARIATE_STATE_CPP,
                 outermostComponent.getPackage().getQName(), MULTIVARIATE_NAME, inputPortNames);
