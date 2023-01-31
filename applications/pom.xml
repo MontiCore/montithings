@@ -15,19 +15,20 @@
   <packaging>pom</packaging>
 
   <modules>
-    <!--<module>basic-input-output</module>-->
+    <module>basic-input-output</module>
     <module>dsl</module>
-    <!--<module>fireAlarm</module>-->
-    <!--<module>dynamics</module>
+    <module>dsl2</module>
+    <module>fireAlarm</module>
+    <module>dynamics</module>
     <module>hierarchy</module>
-    <module>language-features</module>-->
-    <!--<module>mqtt-ports</module>
+    <module>language-features</module>
+    <module>mqtt-ports</module>
     <module>face-id-door-opener</module>
     <module>dds-ports</module>
     <module>retain-state</module>
     <module>sensor-actuator-access</module>
     <module>log-filtering</module>
-    <module>record-transform-replay</module>-->
+    <module>record-transform-replay</module>
   </modules>
 
 </project>
