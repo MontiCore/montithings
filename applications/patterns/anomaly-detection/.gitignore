@@ -2,3 +2,5 @@ src/main/resources/hwc/**/*.cpp
 src/main/resources/hwc/**/*.h
 !src/main/resources/hwc/hierarchy/MiddlemanImpl.cpp
 !src/main/resources/hwc/hierarchy/MiddlemanImpl.h
+!src/main/resources/hwc/hierarchy/MiddlemanState.cpp
+!src/main/resources/hwc/hierarchy/MiddlemanState.h
