@@ -69,7 +69,7 @@ public abstract class BasicTransformations {
    * @param target AST of target port
    */
   protected void removeConnection(ASTMACompilationUnit comp, ASTPortAccess source,
-    ASTPortAccess target) {
+                                  ASTPortAccess target) {
     Optional<ASTConnector> match =
       comp.getComponentType().getConnectors().stream()
         .filter(conn -> conn.getTargetList().contains(target))
@@ -88,7 +88,7 @@ public abstract class BasicTransformations {
    * @param type       Defines the type of the port
    */
   protected void addPort(ASTMACompilationUnit comp, String name, Boolean isOutgoing,
-    ASTMCType type) {
+                         ASTMCType type) {
     ASTPortDeclarationBuilder portDeclarationBuilder = ComfortableArcMillForMontiThings
       .portDeclarationBuilder();
     portDeclarationBuilder
@@ -113,20 +113,20 @@ public abstract class BasicTransformations {
    * @param type       Defines the type of the port, given as SymTypeExpression
    */
   protected void addPort(ASTMTComponentType comp, String name, Boolean isOutgoing,
-      SymTypeExpression type) {
+                         SymTypeExpression type) {
     ASTMCQualifiedName qualifiedName =
-        MontiThingsMill.mCQualifiedNameBuilder().addParts(type.print()).build();
+      MontiThingsMill.mCQualifiedNameBuilder().addParts(type.print()).build();
     ASTMCType mcType =
-        MontiThingsMill.mCQualifiedTypeBuilder().setMCQualifiedName(qualifiedName).build();
+      MontiThingsMill.mCQualifiedTypeBuilder().setMCQualifiedName(qualifiedName).build();
     ASTPortDeclarationBuilder portDeclarationBuilder = ComfortableArcMillForMontiThings
-        .portDeclarationBuilder();
+      .portDeclarationBuilder();
     portDeclarationBuilder
-        .setIncoming(!isOutgoing)
-        .addPort(name)
-        .setMCType(mcType);
+      .setIncoming(!isOutgoing)
+      .addPort(name)
+      .setMCType(mcType);
 
     ASTComponentInterfaceBuilder astComponentInstanceBuilder = ComfortableArcMillForMontiThings
-        .componentInterfaceBuilder();
+      .componentInterfaceBuilder();
 
     astComponentInstanceBuilder.addPortDeclaration(portDeclarationBuilder.build());
     ASTComponentInterface build = astComponentInstanceBuilder.build();
@@ -141,7 +141,7 @@ public abstract class BasicTransformations {
    * @return ASTMACompilationUnit of the newly created component
    */
   protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId,
-    String typeName) {
+                                                       String typeName) {
     ASTMACompilationUnitBuilder compBuilder = MontiThingsMill.mACompilationUnitBuilder();
     compBuilder.setPackage(packageId);
 
@@ -197,7 +197,7 @@ public abstract class BasicTransformations {
    * @return component instantiation
    */
   protected ASTComponentInstantiation addSubComponentInstantiation(ASTMACompilationUnit comp,
-    ASTMCQualifiedName qName, String instanceName, ASTArguments args) {
+                                                                   ASTMCQualifiedName qName, String instanceName, ASTArguments args) {
     ASTComponentInstantiationBuilder instantiationBuilder =
       ComfortableArcMillForMontiThings.componentInstantiationBuilder();
 
@@ -250,7 +250,7 @@ public abstract class BasicTransformations {
    * @param newType   The new type
    */
   protected void replaceComponentInstantiationType(ASTMACompilationUnit comp, File modelPath,
-    String type, String newType) throws Exception {
+                                                   String type, String newType) throws Exception {
     for (ASTComponentInstantiation subComponentInstantiation : comp.getComponentType()
       .getSubComponentInstantiations()) {
       String typeSubComp = printSimpleType(subComponentInstantiation.getMCType());
@@ -274,7 +274,7 @@ public abstract class BasicTransformations {
    * @return List<ASTComponentInstantiation> with the given type
    */
   protected List<ASTComponentInstantiation> getInstantiationsByType(ASTMACompilationUnit comp,
-    String type) {
+                                                                    String type) {
     return comp.getComponentType().getSubComponentInstantiations().stream()
       .filter(i -> printSimpleType(i.getMCType()).equals(type))
       .collect(Collectors.toList());

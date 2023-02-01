@@ -24,6 +24,7 @@ public enum Options {
   MESSAGEBROKER("messageBroker"),
   MESSAGEBROKER_SHORT("broker"),
   REPLAYMODE("replayMode"),
+  APPLYPATTERNS("applyPatterns"),
   REPLAYDATAFILE("replayDataPath"),
   MAINCOMP("mainComponent"),
   MAINCOMP_SHORT("main"),

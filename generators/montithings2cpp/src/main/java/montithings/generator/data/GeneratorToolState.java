@@ -114,7 +114,7 @@ public class GeneratorToolState {
   /* ============================================================ */
 
   public GeneratorToolState(MontiThingsGeneratorTool tool, File modelPath, File target,
-      File hwcPath, File testPath, ConfigParams config) {
+                            File hwcPath, File testPath, ConfigParams config) {
     this.tool = tool;
     this.modelPath = modelPath;
     this.target = target;
@@ -272,7 +272,7 @@ public class GeneratorToolState {
   }
 
   public void setExecutableSensorActuatorPorts(
-      List<String> executableSensorActuatorPorts) {
+    List<String> executableSensorActuatorPorts) {
     this.executableSensorActuatorPorts = executableSensorActuatorPorts;
   }
 
@@ -281,7 +281,7 @@ public class GeneratorToolState {
   }
 
   public void setModelPacks(
-      Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks) {
+    Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks) {
     this.modelPacks = modelPacks;
   }
 
@@ -306,7 +306,7 @@ public class GeneratorToolState {
   }
 
   public void setInstances(
-      List<Pair<ComponentTypeSymbol, String>> instances) {
+    List<Pair<ComponentTypeSymbol, String>> instances) {
     this.instances = instances;
   }
 

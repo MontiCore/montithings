@@ -3,14 +3,16 @@ package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.monticore.io.FileReaderWriter;
+import de.se_rwth.commons.logging.Log;
+import montiarc.util.Modelfinder;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.helper.ComponentHelper;
 import montithings.generator.steps.GeneratorStep;
 import org.apache.commons.lang3.tuple.Pair;
-import montiarc.util.Modelfinder;
-import de.se_rwth.commons.logging.Log;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,8 +67,6 @@ public class GenerateDeployInfo extends GeneratorStep {
 
   private JsonArrayBuilder generateTerraformInfo(GeneratorToolState state, String componentType) {
     Set<File> foundTerraformFiles = Modelfinder.getModelFiles(TF_EXTENSION, state.getHwcPath());
-
-    Log.info("Found " + foundTerraformFiles.size() + " tf files", TOOL_NAME);
 
     JsonArrayBuilder terraformInfos = Json.createArrayBuilder();
 

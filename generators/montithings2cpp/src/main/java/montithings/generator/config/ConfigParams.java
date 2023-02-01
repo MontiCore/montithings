@@ -26,20 +26,30 @@ import java.util.Set;
  */
 public class ConfigParams {
 
-  /** property for message brokers */
+  /**
+   * property for message brokers
+   */
   protected MessageBroker messageBroker = MessageBroker.OFF;
 
-  /** property for log tracing */
+  /**
+   * property for log tracing
+   */
   protected LogTracing logTracing = LogTracing.OFF;
 
-  /** property for replay mode */
+  /**
+   * property for replay mode
+   */
   protected ReplayMode replayMode = ReplayMode.OFF;
+
+  protected ApplyPatterns applyPatterns = ApplyPatterns.OFF;
 
   protected RecordingMode recordingMode = RecordingMode.OFF;
 
   protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
 
-  /** property for target platform */
+  /**
+   * property for target platform
+   */
   protected TargetPlatform targetPlatform = TargetPlatform.GENERIC;
 
   protected SplittingMode splittingMode = SplittingMode.OFF;
@@ -48,44 +58,65 @@ public class ConfigParams {
 
   protected String projectVersion;
 
-  /** Rules that bind a interface component/componentInstance to another non interface component */
+  /**
+   * Rules that bind a interface component/componentInstance to another non interface component
+   */
   protected Set<ASTBindingRule> componentBindings = new HashSet<>();
 
-  /** Unconnected ports that have hand-written templates available.*/
+  /**
+   * Unconnected ports that have hand-written templates available.
+   */
   protected Set<PortSymbol> templatedPorts = new HashSet<>();
 
-  /** Scope of the cdLangExtension language*/
+  /**
+   * Scope of the cdLangExtension language
+   */
   protected ICDLangExtensionScope cdLangExtensionScope;
 
-  /** Scope of the MTConfig language*/
+  /**
+   * Scope of the MTConfig language
+   */
   protected IMTConfigGlobalScope mtConfigScope;
 
-  /** Maps MontiThings components to network ports for local web socket communication */
+  /**
+   * Maps MontiThings components to network ports for local web socket communication
+   */
   protected final PortMap componentPortMap = new PortMap();
 
-  /** Directory that contains handwritten code for components.*/
+  /**
+   * Directory that contains handwritten code for components.
+   */
   protected File hwcPath;
 
-  /** All type arguments which which a component type is ever instantiated */
+  /**
+   * All type arguments which which a component type is ever instantiated
+   */
   Multimap<ComponentTypeSymbol, String> typeArguments;
 
-  /** Absolute path to the directory that contains handwritten templates in subdirectories according to their package.*/
+  /**
+   * Absolute path to the directory that contains handwritten templates in subdirectories according to their package.
+   */
   protected Path hwcTemplatePath;
 
-  /** fully qualified name of the component that acts as the main (outermost) component */
+  /**
+   * fully qualified name of the component that acts as the main (outermost) component
+   */
   protected String mainComponent;
 
-  /** path of file containing recordings */
+  /**
+   * path of file containing recordings
+   */
   protected File replayDataFile;
 
   /**
    * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+   *
    * @param componentType interface component
    * @return implementing component if present
    */
-  public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(!binding.isInstance() && binding.getInterfaceComponentSymbol()==componentType){
+  public Optional<ComponentTypeSymbol> getBinding(ComponentTypeSymbol componentType) {
+    for (ASTBindingRule binding : componentBindings) {
+      if (!binding.isInstance() && binding.getInterfaceComponentSymbol() == componentType) {
         return Optional.of(binding.getImplementationComponentSymbol());
       }
     }
@@ -94,12 +125,13 @@ public class ConfigParams {
 
   /**
    * Gets the implementing component of given interface component, if the component is bound by componentBindings.
+   *
    * @param componentType interface component
    * @return implementing component if present
    */
-  public Optional<ASTComponentType> getBinding(ASTComponentType componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(!binding.isInstance()&&binding.getInterfaceComponentSymbol().getAstNode()==componentType){
+  public Optional<ASTComponentType> getBinding(ASTComponentType componentType) {
+    for (ASTBindingRule binding : componentBindings) {
+      if (!binding.isInstance() && binding.getInterfaceComponentSymbol().getAstNode() == componentType) {
         return Optional.of(binding.getInterfaceComponentSymbol().getAstNode());
       }
     }
@@ -108,12 +140,13 @@ public class ConfigParams {
 
   /**
    * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+   *
    * @param componentInstance interface component instance
    * @return implementing component if present
    */
-  public Optional<ComponentTypeSymbol> getBinding(ComponentInstanceSymbol componentInstance){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.isInstance()&&binding.getInterfaceInstanceSymbol()==componentInstance){
+  public Optional<ComponentTypeSymbol> getBinding(ComponentInstanceSymbol componentInstance) {
+    for (ASTBindingRule binding : componentBindings) {
+      if (binding.isInstance() && binding.getInterfaceInstanceSymbol() == componentInstance) {
         return Optional.of(binding.getImplementationComponentSymbol());
       }
     }
@@ -122,12 +155,13 @@ public class ConfigParams {
 
   /**
    * Gets the implementing component of given interface component instance, if the component instance is bound by componentBindings.
+   *
    * @param componentInstance interface component instance
    * @return implementing component if present
    */
-  public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.isInstance()&&binding.getInterfaceInstanceSymbol().getAstNode()==componentInstance){
+  public Optional<ASTComponentType> getBinding(ASTComponentInstance componentInstance) {
+    for (ASTBindingRule binding : componentBindings) {
+      if (binding.isInstance() && binding.getInterfaceInstanceSymbol().getAstNode() == componentInstance) {
         return Optional.of(binding.getImplementationComponentSymbol().getAstNode());
       }
     }
@@ -136,12 +170,13 @@ public class ConfigParams {
 
   /**
    * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+   *
    * @param componentType implementing component
    * @return If the component implements according to componentBindings.
    */
-  public boolean isImplementation(ASTComponentType componentType){
-    for(ASTBindingRule binding : componentBindings){
-      if(binding.getImplementationComponentSymbol().getAstNode()==componentType){
+  public boolean isImplementation(ASTComponentType componentType) {
+    for (ASTBindingRule binding : componentBindings) {
+      if (binding.getImplementationComponentSymbol().getAstNode() == componentType) {
         return true;
       }
     }
@@ -150,6 +185,7 @@ public class ConfigParams {
 
   /**
    * Checks if the given component implements any interface component or interface ComponentInstance by componentBindings.
+   *
    * @param componentType implementing component
    * @return If the component implements according to componentBindings.
    */
@@ -189,6 +225,14 @@ public class ConfigParams {
     this.replayMode = replayMode;
   }
 
+  public ApplyPatterns getApplyPatterns() {
+    return applyPatterns;
+  }
+
+  public void setApplyPatterns(ApplyPatterns applyPatterns) {
+    this.applyPatterns = applyPatterns;
+  }
+
   public File getHwcPath() {
     return hwcPath;
   }
@@ -225,9 +269,13 @@ public class ConfigParams {
     this.componentBindings = componentBindings;
   }
 
-  public Set<PortSymbol> getTemplatedPorts() {return templatedPorts;}
+  public Set<PortSymbol> getTemplatedPorts() {
+    return templatedPorts;
+  }
 
-  public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {this.templatedPorts = templatedPorts;}
+  public void setTemplatedPorts(Set<PortSymbol> templatedPorts) {
+    this.templatedPorts = templatedPorts;
+  }
 
   public ICDLangExtensionScope getCdLangExtensionScope() {
     return cdLangExtensionScope;
@@ -310,7 +358,11 @@ public class ConfigParams {
     this.mainComponent = mainComponent;
   }
 
-  public File getReplayDataFile() { return replayDataFile; }
+  public File getReplayDataFile() {
+    return replayDataFile;
+  }
 
-  public void setReplayDataFile(File replayDataFile) { this.replayDataFile = replayDataFile; }
+  public void setReplayDataFile(File replayDataFile) {
+    this.replayDataFile = replayDataFile;
+  }
 }
