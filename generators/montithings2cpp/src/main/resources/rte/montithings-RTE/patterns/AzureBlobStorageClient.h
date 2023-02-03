@@ -21,6 +21,7 @@ public:
                                         std::string blobServiceSasUrl);
   std::string getDownloadUrl(std::string filename, std::string containername,
                              std::string blobServiceSasUrl);
+  std::vector<std::string> getDownloadUrlParts(std::string url);
   std::vector<std::string> split(std::string str, std::string delim);
   std::string getUtcTime();
   std::string getAuthorization(std::string accessKey, std::string utcDateStr,

@@ -32,7 +32,7 @@ AzureBlobStorageClient::upload(std::string json, std::string filename, std::stri
   std::vector<std::string> uploadUrlParts = this->getUploadUrl(filename, containername, blobServiceSasUrl);
   std::string hostUrl = uploadUrlParts[0];
 
-  std::cout << "Urls: " << uploadUrlParts[0] << " " << uploadUrlParts[1] << std::endl;
+  std::cout << "Upload url: " << uploadUrlParts[0] << uploadUrlParts[1] << std::endl;
 
   httplib::Client2 cli(hostUrl.c_str());
 
@@ -52,6 +52,8 @@ AzureBlobStorageClient::upload(std::string json, std::string filename, std::stri
   {
     std::cout << "Status: " << res->status << std::endl;
     std::cout << "Body: " << res->body << std::endl;
+  } else {
+    std::cout << "Res is not defined" << std::endl;
   }
 
   throw std::invalid_argument(
@@ -65,7 +67,12 @@ AzureBlobStorageClient::upload(std::string json, std::string filename, std::stri
 std::string
 AzureBlobStorageClient::download(std::string downloadUrl, std::string accessKey)
 {
-  httplib::Client2 cli(downloadUrl.c_str());
+  std::vector<std::string> downloadUrlParts = this->getDownloadUrlParts(downloadUrl);
+  std::string hostUrl = downloadUrlParts[0];
+
+  std::cout << "Upload url: " << downloadUrlParts[0] << downloadUrlParts[1] << std::endl;
+
+  httplib::Client2 cli(hostUrl.c_str());
 
   std::string utcDateStr = this->getUtcTime();
   std::string containername = this->getContainerName(downloadUrl);
@@ -79,11 +86,18 @@ AzureBlobStorageClient::download(std::string downloadUrl, std::string accessKey)
 
   auto res = cli.Get("", headers);
 
-  if (res && (res->status >= 200 || res->status <= 299))
+  if (res && (res->status >= 200 && res->status <= 299))
   {
     // Todo: Build the return url by ourself
     // https://pattern2netmin.blob.core.windows.net/fileuploads/test.txt
     return res->body;
+  }
+  else if (res)
+  {
+    std::cout << "Status: " << res->status << std::endl;
+    std::cout << "Body: " << res->body << std::endl;
+  } else {
+    std::cout << "Res is not defined" << std::endl;
   }
 
   throw std::invalid_argument(
@@ -108,6 +122,18 @@ AzureBlobStorageClient::getDownloadUrl(std::string filename, std::string contain
   std::string delim = "/?";
   std::vector<std::string> parts = this->split(blobServiceSasUrl, delim);
   return parts[0] + "/" + containername + "/" + filename;
+}
+
+std::vector<std::string>
+AzureBlobStorageClient::getDownloadUrlParts(std::string url)
+{
+  std::string delim = "/";
+  std::vector<std::string> parts = this->split(url, delim);
+  std::string path = parts[parts.size() - 2] + "/" + parts[parts.size() - 1];
+  std::string host = this->split(url, path)[0];
+  std::string urlParts[2] = {host, path};
+  std::vector<std::string> v(&urlParts[0], &urlParts[0] + 2);
+  return v;
 }
 
 std::string
