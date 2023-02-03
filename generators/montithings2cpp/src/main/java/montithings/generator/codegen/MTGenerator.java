@@ -298,16 +298,15 @@ public class MTGenerator {
    * @param languagePath 
    */
   public void generateGeneratorServer(File targetPath, ConfigParams config, ArrayList<String> languagePaths, GeneratorToolState state){
-    String port = "8080";
     FileGenerator fg = new FileGenerator(targetPath, hwcDir);
     fg.generate(targetPath, "generator-server" + File.separatorChar +  "Dockerfile", "", "template/util/generatorServer/Dockerfile.ftl", languagePaths);
-    fg.generate(targetPath, "generator-server" + File.separatorChar +  "start", ".sh", "template/util/generatorServer/start.ftl", port);
-    makeExecutable(new File(targetPath.getPath() + File.separatorChar + "generator-server"), "start", ".sh");
-    fg.generate(targetPath, "generator-server" + File.separatorChar +  "dockerBuild", ".sh", "template/util/generatorServer/dockerBuild.ftl");
+    fg.generate(targetPath, "generator-server" + File.separatorChar +  "dockerRun", ".sh", "template/util/generatorServer/dockerRun.ftl", config);
+    makeExecutable(new File(targetPath.getPath() + File.separatorChar + "generator-server"), "dockerRun", ".sh");
+    fg.generate(targetPath, "generator-server" + File.separatorChar +  "dockerBuild", ".sh", "template/util/generatorServer/dockerBuild.ftl", config);
     makeExecutable(new File(targetPath.getPath() + File.separatorChar + "generator-server"), "dockerBuild", ".sh");
     fg.generate(targetPath, "generator-server" + File.separatorChar +  "build", ".gradle", "template/util/generatorServer/build.ftl", languagePaths);
 
-    fg.generate(targetPath, "generator-server" + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "java" + File.separatorChar + "Main", ".javaFile", "template/util/generatorServer/Main.ftl", languagePaths, port, config, state);
+    fg.generate(targetPath, "generator-server" + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "java" + File.separatorChar + "Main", ".javaFile", "template/util/generatorServer/Main.ftl", languagePaths, config, state);
   }
 
   

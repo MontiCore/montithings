@@ -73,9 +73,8 @@ RUN ./build.sh ${comp.getFullName()}
             RUN apk add --update-cache libgcc libstdc++
             </#if>
 
-            <#if ComponentHelper.isDSLComponent(processedComp,config)>
-
             RUN apk add protoc
+            <#if ComponentHelper.isDSLComponent(processedComp,config)>
 
             RUN apk add --update-cache python3 py3-pip py3-protobuf
 

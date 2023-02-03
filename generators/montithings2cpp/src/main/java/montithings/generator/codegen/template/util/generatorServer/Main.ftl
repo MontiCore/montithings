@@ -1,4 +1,4 @@
-${tc.signature("languagePaths", "port", "config", "state" "what")}
+${tc.signature("languagePaths", "config", "state" "what")}
 <#include "/template/Preamble.ftl">
 // (c) https://github.com/MontiCore/monticore
 
@@ -31,12 +31,17 @@ public class Main {
         System.setSecurityManager(secManager);
         MqttClient mqttClient;
         try{
-            String brokerURI = "tcp://127.0.0.1:1883";
+            String brokerURI;
+            if(args.length >= 2){
+                brokerURI = "tcp://" + args[0] + ":" + args[1];
+            }else{
+                brokerURI = "tcp://127.0.0.1:1883";
+            }
             mqttClient = new MqttClient(brokerURI, "calculationMachine.generatorServer");
             mqttClient.connect();
 
 
-            port(${port});
+            port(8080);
             <#list state.getInstances() as pair>
             <#assign fullName = pair.getKey().getFullName()>
             <#assign instanceName = pair.getValue()>

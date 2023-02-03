@@ -46,7 +46,7 @@ public class GenerateHTML extends GeneratorStep {
           
           String explain = "No explaination for this language available.";
           try{
-            File explaination = new File(state.getConfig().getLanguagePath().getPath() + "/" + pair.getKey().getFullName().replace(".","/") + "/" + "EXPLAIN.txt");
+            File explaination = new File(state.getConfig().getLanguagePath().getPath() + "/" + pair.getKey().getFullName().replace(".","/") + "/" + "EXPLAIN.html");
             explain = FileUtils.readFileToString(explaination,"UTF-8");
             explain = explain.replace("\"","&quot;");
           }
@@ -62,7 +62,7 @@ public class GenerateHTML extends GeneratorStep {
       }
       String explainProj = "No project description available!";
       try{
-        File explainationProj = new File(state.getConfig().getLanguagePath().getPath() + "/" + "EXPLAIN.txt");
+        File explainationProj = new File(state.getConfig().getLanguagePath().getPath() + "/" + "EXPLAIN.html");
         explainProj = FileUtils.readFileToString(explainationProj,"UTF-8");
         explainProj = explainProj.replace("\"","&quot;");
       }

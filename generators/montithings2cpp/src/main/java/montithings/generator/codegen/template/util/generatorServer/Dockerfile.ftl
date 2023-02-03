@@ -25,4 +25,5 @@ COPY --from=build /src/main/app/templates /src/main/app/templates
 COPY --from=build /src/main/app/html /src/main/app/html
 
 WORKDIR /src/main/app
-ENTRYPOINT [ "java", "-cp", "GeneratorServer.jar", "-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog", "Main" ]
+RUN echo 'java -cp GeneratorServer.jar -Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog Main "$@"' > entrypoint.sh
+ENTRYPOINT [ "sh", "entrypoint.sh"]
