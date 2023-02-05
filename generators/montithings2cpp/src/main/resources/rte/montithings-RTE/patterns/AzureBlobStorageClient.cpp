@@ -29,7 +29,7 @@ std::string
 AzureBlobStorageClient::upload(std::string json, std::string filename, std::string containername,
                                std::string blobServiceSasUrl)
 {
-  std::vector<std::string> uploadUrlParts = this->getUploadUrl(filename, containername, blobServiceSasUrl);
+  std::vector<std::string> uploadUrlParts = this->getUploadUrlPart(filename, containername, blobServiceSasUrl);
   std::string hostUrl = uploadUrlParts[0];
 
   std::cout << "Upload url: " << uploadUrlParts[0] << uploadUrlParts[1] << std::endl;
@@ -70,26 +70,17 @@ AzureBlobStorageClient::download(std::string downloadUrl, std::string accessKey)
   std::vector<std::string> downloadUrlParts = this->getDownloadUrlParts(downloadUrl);
   std::string hostUrl = downloadUrlParts[0];
 
-  std::cout << "Upload url: " << downloadUrlParts[0] << downloadUrlParts[1] << std::endl;
+  std::cout << "Download url: " << downloadUrlParts[0] << downloadUrlParts[1] << std::endl;
 
   httplib::Client2 cli(hostUrl.c_str());
 
-  std::string utcDateStr = this->getUtcTime();
-  std::string containername = this->getContainerName(downloadUrl);
-  std::string filename = this->getFilename(downloadUrl);
-  std::string authorization = this->getAuthorization(accessKey, utcDateStr, containername, filename);
-
   httplib::Headers headers = {
-      {"x-ms-date", utcDateStr},
-      {"Authorization", authorization},
   };
 
-  auto res = cli.Get("", headers);
+  auto res = cli.Get(downloadUrlParts[1].c_str(), headers);
 
   if (res && (res->status >= 200 && res->status <= 299))
   {
-    // Todo: Build the return url by ourself
-    // https://pattern2netmin.blob.core.windows.net/fileuploads/test.txt
     return res->body;
   }
   else if (res)
@@ -105,12 +96,12 @@ AzureBlobStorageClient::download(std::string downloadUrl, std::string accessKey)
 }
 
 std::vector<std::string>
-AzureBlobStorageClient::getUploadUrl(std::string filename, std::string containername,
+AzureBlobStorageClient::getUploadUrlPart(std::string filename, std::string containername,
                                      std::string blobServiceSasUrl)
 {
   std::string delim = "/?";
   std::vector<std::string> parts = this->split(blobServiceSasUrl, delim);
-  std::string urlParts[2] = {parts[0], "/" + containername + "/" + filename + delim + parts[1]};
+  std::string urlParts[2] = {parts[0], "/" + containername + "/" + filename + "?" + parts[1]};
   std::vector<std::string> v(&urlParts[0], &urlParts[0] + 2);
   return v;
 }
@@ -129,27 +120,11 @@ AzureBlobStorageClient::getDownloadUrlParts(std::string url)
 {
   std::string delim = "/";
   std::vector<std::string> parts = this->split(url, delim);
-  std::string path = parts[parts.size() - 2] + "/" + parts[parts.size() - 1];
+  std::string path = "/" + parts[parts.size() - 2] + "/" + parts[parts.size() - 1];
   std::string host = this->split(url, path)[0];
   std::string urlParts[2] = {host, path};
   std::vector<std::string> v(&urlParts[0], &urlParts[0] + 2);
   return v;
-}
-
-std::string
-AzureBlobStorageClient::getContainerName(std::string downloadUrl)
-{
-  std::string delim = "/";
-  std::vector<std::string> parts = this->split(downloadUrl, delim);
-  return parts[parts.size() - 2];
-}
-
-std::string
-AzureBlobStorageClient::getFilename(std::string downloadUrl)
-{
-  std::string delim = "/";
-  std::vector<std::string> parts = this->split(downloadUrl, delim);
-  return parts[parts.size() - 1];
 }
 
 std::vector<std::string>
@@ -168,45 +143,4 @@ AzureBlobStorageClient::split(std::string str, std::string delim)
   seglist.push_back(str.substr(last));
 
   return seglist;
-}
-
-std::string
-AzureBlobStorageClient::getUtcTime()
-{
-  time_t now;
-  time(&now);
-  char buf[sizeof "2011-10-08T07:07:09Z"];
-  strftime(buf, sizeof buf, "%FT%TZ", gmtime(&now));
-  return buf;
-}
-
-std::string
-AzureBlobStorageClient::getAuthorization(std::string accessKey, std::string utcDateStr,
-                                         std::string containername, std::string filename)
-{
-  std::string strToSign = "GET\n\n\n\nx-ms-date:" + utcDateStr + "\n/storage_account_name/" + containername + "/" + filename;
-
-  std::string secret = base64_encode(accessKey);
-
-  std::string hash = this->hmac(secret, strToSign);
-
-  std::string base64EncodedHash = base64_encode(hash);
-
-  return "SharedKey storage_account_name:" + base64EncodedHash;
-}
-
-std::string
-AzureBlobStorageClient::hmac(std::string key, std::string data)
-{
-  std::stringstream ss_result;
-  std::vector<uint8_t> out(32);
-
-  hmac_sha256(key.data(), key.size(), data.data(), data.size(), out.data(), out.size());
-
-  for (uint8_t x : out)
-  {
-    ss_result << std::hex << std::setfill('0') << std::setw(2) << (int)x;
-  }
-
-  return ss_result.str();
 }
