@@ -1,0 +1,26 @@
+// (c) https://github.com/MontiCore/monticore
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * This grammar is intended for modelling semantic requirements which a MontiThings
+ * application has for components it connects with at run-time. This is done by modeling
+ * inputs on incoming ports and the expected outgoing values.
+ */
+grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monticore.SIUnitLiterals // TODO AKL change to component grammar
+{
+  start SDArtifact;
+
+  interface SD4MTElement extends SDElement;
+
+  AfterStatement implements SD4MTElement =
+    "after" TimeSpan;
+
+  interface TimeSpan;
+
+  ConcreteTimeSpan implements TimeSpan =
+    SIUnitLiteral;
+
+  TimeSpanSet implements TimeSpan =
+    "[" from:SIUnitLiteral? "," to:SIUnitLiteral? "]";
+}

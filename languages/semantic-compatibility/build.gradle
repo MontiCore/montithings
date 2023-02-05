@@ -1,0 +1,96 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+  id "monticore"
+  //id "jacoco"
+  id "de.set.ecj" 
+}
+
+group = "montithings.languages"
+
+def grammarDir = "$projectDir/src/main/grammars"
+def reportsDir = "$buildDir/generated-sources/monticore/sourcecode/reports"
+
+sourceSets {
+  main {
+    java.srcDirs += ["$buildDir/generated-sources/monticore/sourcecode"]
+  }
+  test {
+    java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+  }
+  grammars {
+    resources {
+      srcDirs(grammarDir, reportsDir)
+      include("**/*.mc4", "**/*.cd")
+    }
+  }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.deprecation = false
+    options.warnings = false
+    options.headerOutputDirectory.convention(null)
+}
+
+
+configurations { grammar }
+
+dependencies {
+  grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+  grammar("de.monticore:siunits:$siunits_version:$grammars_classifier"){
+    exclude group:'de.monticore', module:'monticore-grammar'
+  }
+  grammar("de.monticore.lang:sd-language:7.0.0:$grammars_classifier"){
+    exclude group:'de.monticore', module:'monticore-grammar'
+  }
+  grammar("de.monticore.lang:ocl:$ocl_version:$grammars_classifier"){
+    exclude group:'de.monticore', module:'monticore-grammar'
+  }
+
+  implementation "de.monticore:siunits:$siunits_version"
+  implementation 'de.monticore.lang:sd-language:7.0.0'
+  implementation "de.monticore.lang:ocl:$ocl_version"
+  implementation "montiarc.languages:arc-fe:$montiarc_version"
+  implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+  implementation "com.google.guava:guava:$guava_version"
+  implementation "org.antlr:antlr4-runtime:$antlr_version"
+  implementation "de.monticore:monticore-runtime:$monticore_version"
+  implementation "de.monticore:monticore-grammar:$monticore_version"
+  implementation "org.apache.commons:commons-lang3:3.9"
+  implementation "org.assertj:assertj-core:$assertj_version"
+  implementation "org.codehaus.janino:janino:$janino_version"
+  implementation "org.jscience:jscience:$jscience_version"
+}
+
+task generateGrammarSetDefinitions(type: MCTask) {
+  grammar = file "$grammarDir/SDForMTTest.mc4"
+  outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
+  handcodedPath = [file("$projectDir/src/main/java")]
+  def upToDate = incCheck("SDForMTTest.mc4")
+  outputs.upToDateWhen { upToDate }
+}
+
+compileJava {
+  dependsOn project.collect { it.tasks.findAll { task -> task.name.startsWith("generateGrammar") } }
+}
+
+java {
+  //withJavadocJar()
+  withSourcesJar()
+  registerFeature("grammars") {
+    usingSourceSet(sourceSets.grammars)
+  }
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) { from components.java }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+  }
+}
