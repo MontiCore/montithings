@@ -336,12 +336,15 @@ public class ComponentHelper {
    * Get the full path of all Languages in the Langauge folder
    */
   public static ArrayList<String> getAllLanguageDirectories(ConfigParams config) {
-    File languagesFolder = config.getLanguagePath();
-    if(languagesFolder.isDirectory()){
-      ArrayList<String> languageDirectories = recursiveSearchLanguageFiles(languagesFolder,"");
-      return languageDirectories;
+    if(isDSLProject(config)){
+      File languagesFolder = config.getLanguagePath();
+      if(languagesFolder.isDirectory()){
+        ArrayList<String> languageDirectories = recursiveSearchLanguageFiles(languagesFolder,"");
+        return languageDirectories;
+      }
     }
     return new ArrayList<String>();
+    
   }
 
   /**
