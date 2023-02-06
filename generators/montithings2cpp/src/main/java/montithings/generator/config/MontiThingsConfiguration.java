@@ -50,7 +50,8 @@ public class MontiThingsConfiguration implements Configuration {
         configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
         configParams.setMessageBroker(getMessageBroker(getSplittingMode()));
         configParams.setReplayMode(getReplayMode());
-        configParams.setApplyPatterns(getApplyPatterns());
+        configParams.setApplyAnomalyDetectionPattern(getApplyAnomalyDetectionPattern());
+        configParams.setApplyNetworkMinimizationPattern(getApplyNetworkMinimizationPattern());
         configParams.setReplayDataFile(getReplayDataFile());
         configParams.setHwcPath(getHWCPath());
         configParams.setProjectVersion(getVersion());
@@ -335,8 +336,17 @@ public class MontiThingsConfiguration implements Configuration {
         return ReplayMode.OFF;
     }
 
-    public ApplyPatterns getApplyPatterns() {
-        Optional<String> applyPatterns = getAsString(Options.APPLYPATTERNS);
+    public ApplyPatterns getApplyAnomalyDetectionPattern() {
+        Optional<String> applyPatterns = getAsString(Options.APPLYANOMALYDETECTIONPATTERN);
+        if (applyPatterns.isPresent()) {
+            return ApplyPatterns.fromString(applyPatterns.get());
+        }
+        // fallback default is "off"
+        return ApplyPatterns.OFF;
+    }
+
+    public ApplyPatterns getApplyNetworkMinimizationPattern() {
+        Optional<String> applyPatterns = getAsString(Options.APPLYNETWORKMINIMIZATIONPATTERN);
         if (applyPatterns.isPresent()) {
             return ApplyPatterns.fromString(applyPatterns.get());
         }
