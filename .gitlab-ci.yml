@@ -266,7 +266,7 @@ Unit Test Amazon Corretto JDK 8:
     - ./runTests.sh
 
 Generator Test Alpine:
-  image: $CI_REGISTRY_IMAGE/mtcmake
+  image: $CI_REGISTRY_IMAGE/docker/mtcmake
   <<: *generator_test_definition
 
 Generator Test DDS:
