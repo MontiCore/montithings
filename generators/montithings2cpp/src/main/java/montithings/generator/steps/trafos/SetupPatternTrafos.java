@@ -22,7 +22,7 @@ public class SetupPatternTrafos extends GeneratorStep {
         }
 
         if (config.getApplyNetworkMinimizationPattern() == ApplyPatterns.ON) {
-            tool.addTrafo(new NetworkMinimizationPatternTrafo());
+            tool.addTrafo(new NetworkMinimizationPatternTrafo(state));
         }
     }
 }

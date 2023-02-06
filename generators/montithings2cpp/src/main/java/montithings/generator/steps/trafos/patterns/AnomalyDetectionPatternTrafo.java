@@ -3,11 +3,9 @@ package montithings.generator.steps.trafos.patterns;
 import arcbasis._ast.ASTPortAccess;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
-import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTMACompilationUnit;
-import montithings.MontiThingsMill;
 import montithings._visitor.FindConnectionsVisitor;
 import montithings.generator.data.GeneratorToolState;
 import montithings.trafos.BasicTransformations;
@@ -192,50 +190,6 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         return targetsToPortTypesToSources;
     }
 
-    /**
-     * Returns all connections inside this component i.e. in basic-input-output only the example component
-     * has subcomponents which are connected and thus one connection would be returned
-     */
-    private List<FindConnectionsVisitor.Connection> getConnections(ASTMACompilationUnit comp) {
-        FindConnectionsVisitor visitor = new FindConnectionsVisitor();
-        comp.accept(visitor.createTraverser());
-        return visitor.getConnections();
-    }
-
-    private ASTMCType getPortType(ASTPortAccess port, ASTMACompilationUnit comp, List<ASTMACompilationUnit> models, File modelPath) throws Exception {
-        String sourceTypeName = TrafoUtil.getPortOwningComponentType(comp, port);
-
-        ASTMCType portType = null;
-
-        try {
-            String qName = TrafoUtil.getFullyQNameFromImports(modelPath, comp, sourceTypeName).getQName();
-            ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, qName);
-            portType = TrafoUtil.getPortTypeByName(compSource, port.getPort());
-        } catch (ClassNotFoundException e) {
-            // portType will be null which is caught later on
-        } catch (NoSuchElementException e) {
-            // model was not found. it is probably a generic type. in this case search for the port within the interfaces
-            if (TrafoUtil.isGeneric(comp, sourceTypeName)) {
-                for (String iface : TrafoUtil.getInterfaces(comp, sourceTypeName)) {
-                    ASTMACompilationUnit ifaceComp = TrafoUtil
-                            .getComponentByName(models, comp.getPackage() + "." + iface);
-                    try {
-                        portType = TrafoUtil.getPortTypeByName(ifaceComp, port.getPort());
-                    } catch (Exception e1) {
-                        //ignore, check next iface
-                    }
-                }
-            }
-        }
-
-        if (portType == null) {
-            throw new NoSuchElementException(
-                    "No such port instance found which is named " + port.getPort());
-        }
-
-        return portType;
-    }
-
     private Map<String, List<String>> replaceConnection(List<ASTPortAccess> sources, ASTMACompilationUnit comp, ASTMCType portType,
                                                         ASTMACompilationUnit interceptorComponent, String interceptorComponentName) {
         Log.info("Replace connection", TOOL_NAME);
@@ -294,20 +248,6 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         }
 
         return null;
-    }
-
-    private ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent) {
-        Log.info("Generate intercept anomaly detection component: " + interceptorComponentName, TOOL_NAME);
-
-        ASTMCQualifiedName fullyQName = this.getInterceptorFullyQName(interceptorComponentName, outermostComponent.getPackage().getQName());
-
-        addSubComponentInstantiation(outermostComponent, fullyQName, interceptorComponentName.toLowerCase(), createEmptyArguments());
-
-        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
-
-        flagAsGenerated(interceptorComponent);
-
-        return interceptorComponent;
     }
 
     private void generateUnivariateAnomalyDetectionBehavior(ASTMACompilationUnit outermostComponent,
@@ -386,22 +326,6 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         setup.setTracing(false);
         GeneratorEngine engine = new GeneratorEngine(setup);
         engine.generateNoA(template, path, templateArguments);
-    }
-
-    private List<ASTMACompilationUnit> getAllModels(Collection<ASTMACompilationUnit> originalModels,
-                                                    Collection<ASTMACompilationUnit> addedModels) {
-        List<ASTMACompilationUnit> allModels = new ArrayList<>();
-        allModels.addAll(originalModels);
-        allModels.addAll(addedModels);
-        return allModels;
-    }
-
-    private ASTMCQualifiedName getInterceptorFullyQName(String interceptorComponentName, String outermostPackage) {
-        return MontiThingsMill
-                .mCQualifiedNameBuilder()
-                .addParts(outermostPackage)
-                .addParts(interceptorComponentName)
-                .build();
     }
 
     private boolean isNumericPort(ASTMCType portType) {

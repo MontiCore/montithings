@@ -28,12 +28,11 @@ import montiarc._ast.ASTMACompilationUnitBuilder;
 import montithings.MontiThingsMill;
 import montithings._ast.*;
 import montithings._auxiliary.ComfortableArcMillForMontiThings;
+import montithings._visitor.FindConnectionsVisitor;
 import montithings.util.TrafoUtil;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static montithings.util.GenericBindingUtil.printSimpleType;
@@ -58,6 +57,79 @@ public abstract class BasicTransformations {
         connectorBuilder.setSource(source);
         connectorBuilder.addTarget(target);
         comp.getBody().addArcElement(connectorBuilder.build());
+    }
+
+    /**
+     * Returns all connections inside this component i.e. in basic-input-output only the example component
+     * has subcomponents which are connected and thus one connection would be returned
+     */
+    protected List<FindConnectionsVisitor.Connection> getConnections(ASTMACompilationUnit comp) {
+        FindConnectionsVisitor visitor = new FindConnectionsVisitor();
+        comp.accept(visitor.createTraverser());
+        return visitor.getConnections();
+    }
+
+    protected List<ASTMACompilationUnit> getAllModels(Collection<ASTMACompilationUnit> originalModels,
+                                                      Collection<ASTMACompilationUnit> addedModels) {
+        List<ASTMACompilationUnit> allModels = new ArrayList<>();
+        allModels.addAll(originalModels);
+        allModels.addAll(addedModels);
+        return allModels;
+    }
+
+
+    protected ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent) {
+        ASTMCQualifiedName fullyQName = this.getInterceptorFullyQName(interceptorComponentName, outermostComponent.getPackage().getQName());
+
+        addSubComponentInstantiation(outermostComponent, fullyQName, interceptorComponentName.toLowerCase(), createEmptyArguments());
+
+        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
+
+        flagAsGenerated(interceptorComponent);
+
+        return interceptorComponent;
+    }
+
+    protected ASTMCQualifiedName getInterceptorFullyQName(String interceptorComponentName, String outermostPackage) {
+        return MontiThingsMill
+                .mCQualifiedNameBuilder()
+                .addParts(outermostPackage)
+                .addParts(interceptorComponentName)
+                .build();
+    }
+
+    protected ASTMCType getPortType(ASTPortAccess port, ASTMACompilationUnit comp, List<ASTMACompilationUnit> models, File modelPath) throws Exception {
+        String sourceTypeName = TrafoUtil.getPortOwningComponentType(comp, port);
+
+        ASTMCType portType = null;
+
+        try {
+            String qName = TrafoUtil.getFullyQNameFromImports(modelPath, comp, sourceTypeName).getQName();
+            ASTMACompilationUnit compSource = TrafoUtil.getComponentByName(models, qName);
+            portType = TrafoUtil.getPortTypeByName(compSource, port.getPort());
+        } catch (ClassNotFoundException e) {
+            // portType will be null which is caught later on
+        } catch (NoSuchElementException e) {
+            // model was not found. it is probably a generic type. in this case search for the port within the interfaces
+            if (TrafoUtil.isGeneric(comp, sourceTypeName)) {
+                for (String iface : TrafoUtil.getInterfaces(comp, sourceTypeName)) {
+                    ASTMACompilationUnit ifaceComp = TrafoUtil
+                            .getComponentByName(models, comp.getPackage() + "." + iface);
+                    try {
+                        portType = TrafoUtil.getPortTypeByName(ifaceComp, port.getPort());
+                    } catch (Exception e1) {
+                        //ignore, check next iface
+                    }
+                }
+            }
+        }
+
+        if (portType == null) {
+            throw new NoSuchElementException(
+                    "No such port instance found which is named " + port.getPort());
+        }
+
+        return portType;
     }
 
     /**
