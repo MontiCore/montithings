@@ -34,12 +34,17 @@ This not a component in the classical MontiThings way, but it is an important pa
 
 ## **Execution**
 ### **Step 1**
+Build all of the languages (Calculator and Printer) in the folder `src/main/resources/languages/calculationMachine` with following command:
+```bash
+./gradle build
+```
+### **Step 2**
 Generate the code for this project.
 ```bash
 mvn clean install
 ```
 
-### **Step 2**
+### **Step 3**
 Building all the docker images.
 ```bash
 cd target/generated-sources
@@ -48,7 +53,7 @@ cd target/generated-sources/generator-server
 ./dockerBuild.sh
 ```
 
-### **Step 3**
+### **Step 4**
 Run the example.
 ```bash
 mosquitto
@@ -58,7 +63,7 @@ cd target/generated-sources/generator-server
 ./dockerRun.sh
 ```
 
-### **Step 3**
+### **Step 5**
 Now listen to the logs of the docker container `calculationMachine.Machine.numLog`.
 ```bash
 docker logs -f calculationMachine.Machine.numLog
