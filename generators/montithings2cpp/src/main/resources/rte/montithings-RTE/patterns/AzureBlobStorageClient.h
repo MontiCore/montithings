@@ -16,7 +16,7 @@ public:
   bool shouldUpload(std::string json, float maxPortSize);
   std::string upload(std::string json, std::string filename, std::string containername,
                      std::string containerUrl);
-  std::string download(std::string downloadUrl, std::string accessKey);
+  std::string download(std::string downloadUrl);
   std::vector<std::string> getUploadUrlPart(std::string filename, std::string containername,
                                             std::string blobServiceSasUrl);
   std::string getDownloadUrl(std::string filename, std::string containername,

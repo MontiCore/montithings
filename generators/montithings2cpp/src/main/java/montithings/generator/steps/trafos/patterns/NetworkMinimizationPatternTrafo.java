@@ -2,6 +2,8 @@ package montithings.generator.steps.trafos.patterns;
 
 import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._ast.ASTPortAccess;
+import de.monticore.generating.GeneratorEngine;
+import de.monticore.generating.GeneratorSetup;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import montithings.MontiThingsMill;
@@ -14,21 +16,33 @@ import de.se_rwth.commons.logging.Log;
 import montithings.util.TrafoUtil;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class NetworkMinimizationPatternTrafo extends BasicTransformations implements MontiThingsTrafo {
   private static final String TOOL_NAME = "NetworkMinimizationPatternTrafo";
   private static final String UPLOAD_MAYBE_NAME = "UploadMaybe";
   private static final String DOWNLOAD_MAYBE_NAME = "DownloadMaybe";
+  private static final String UPLOAD_MAYBE_IMPL_CPP = "template/patterns/UploadMaybeImplCpp.ftl";
+  private static final String UPLOAD_MAYBE_IMPL_HEADER = "template/patterns/UploadMaybeImplHeader.ftl";
+  private static final String DOWNLOAD_MAYBE_IMPL_CPP = "template/patterns/DownloadMaybeImplCpp.ftl";
+  private static final String DOWNLOAD_MAYBE_IMPL_HEADER = "template/patterns/DownloadMaybeImplHeader.ftl";
   private static final String INPORT_NAME = "in";
   private static final String OUTPORT_NAME = "out";
   private static final String PORT_URL_NAME = "url";
   private static final String PORT_URL_TYPE = "String";
   private static final String PORT_DATA_NAME = "orig";
+  private static final int MAX_PORT_SIZE = 4000; // bytes
+  private static final String CONTAINERNAME = "pfileuploads";
   private final File modelPath;
+  private final File targetHwcPath;
+  private final File srcHwcPath;
 
   public NetworkMinimizationPatternTrafo(GeneratorToolState state) {
     this.modelPath = state.getModelPath();
+    this.srcHwcPath = state.getHwcPath();
+    this.targetHwcPath = Paths.get(state.getTarget().getAbsolutePath(), "hwc").toFile();
   }
 
   @Override
@@ -73,8 +87,8 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
                     uploadMaybeComp, downloadMaybeComp);
 
             // Generate behavior for up- and download
-            this.generateUploadBehavior();
-            this.generateDownloadBehavior();
+            this.generateUploadBehavior(uploadMaybeComp);
+            this.generateDownloadBehavior(downloadMaybeComp);
 
             // Generate mtcfg to prevent splitting
             this.generateMtcfg();
@@ -157,19 +171,53 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     return MontiThingsMill.mCQualifiedTypeBuilder().setMCQualifiedName(qualifiedName).build();
   }
 
-  private void generateUploadBehavior() {
-    // Todo:
-    //   Create ftl and generate here
+  private void generateUploadBehavior(ASTMACompilationUnit comp) {
+    File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+    File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+
+    this.generate(tHwcPath, UPLOAD_MAYBE_NAME + "Impl", ".cpp", UPLOAD_MAYBE_IMPL_CPP,
+            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME, MAX_PORT_SIZE, CONTAINERNAME, PORT_URL_NAME, PORT_DATA_NAME, INPORT_NAME);
+
+    this.generate(sHwcPath, UPLOAD_MAYBE_NAME + "Impl", ".cpp", UPLOAD_MAYBE_IMPL_CPP,
+            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME, MAX_PORT_SIZE, CONTAINERNAME, PORT_URL_NAME, PORT_DATA_NAME, INPORT_NAME);
+
+    this.generate(tHwcPath, UPLOAD_MAYBE_NAME + "Impl", ".h", UPLOAD_MAYBE_IMPL_HEADER,
+            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME);
+
+    this.generate(sHwcPath, UPLOAD_MAYBE_NAME + "Impl", ".h", UPLOAD_MAYBE_IMPL_HEADER,
+            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME);
   }
 
-  private void generateDownloadBehavior() {
-    // Todo:
-    //   Create ftl and generate here
+  private void generateDownloadBehavior(ASTMACompilationUnit comp) {
+    File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+    File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+
+    this.generate(tHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".cpp", DOWNLOAD_MAYBE_IMPL_CPP,
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME);
+
+    this.generate(sHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".cpp", DOWNLOAD_MAYBE_IMPL_CPP,
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME);
+
+    this.generate(tHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".h", DOWNLOAD_MAYBE_IMPL_HEADER,
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME);
+
+    this.generate(sHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".h", DOWNLOAD_MAYBE_IMPL_HEADER,
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME);
   }
 
   private void generateMtcfg() {
     // Todo:
     //  Create ftl and generate here
     //  Set to AST in CheckMtConfig
+  }
+
+  private void generate(File target, String name, String fileExtension, String template, Object... templateArguments) {
+    Path path = Paths.get(target.getAbsolutePath() + File.separator + name + fileExtension);
+    Log.debug("Writing to file " + path, "FileGenerator");
+
+    GeneratorSetup setup = new GeneratorSetup();
+    setup.setTracing(false);
+    GeneratorEngine engine = new GeneratorEngine(setup);
+    engine.generateNoA(template, path, templateArguments);
   }
 }

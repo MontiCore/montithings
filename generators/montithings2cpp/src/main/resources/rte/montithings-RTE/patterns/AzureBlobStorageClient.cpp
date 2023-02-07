@@ -65,7 +65,7 @@ AzureBlobStorageClient::upload(std::string json, std::string filename, std::stri
  * json
  */
 std::string
-AzureBlobStorageClient::download(std::string downloadUrl, std::string accessKey)
+AzureBlobStorageClient::download(std::string downloadUrl)
 {
   std::vector<std::string> downloadUrlParts = this->getDownloadUrlParts(downloadUrl);
   std::string hostUrl = downloadUrlParts[0];
