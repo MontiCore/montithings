@@ -21,10 +21,12 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_start(){
     if(lastPyPID != -1){
       kill(lastPyPID,SIGKILL);
     }
-    char *intrepreter="python3"; 
-    char *pythonPath="python/${className}.py"; 
-    char *pythonArgs[]={intrepreter,pythonPath,NULL};
-    execvp(intrepreter,pythonArgs);
+    std::string interpreter="python3";
+    std::string pythonPath="python/${className}.py";
+    std::string hostArg = "--host=" + brokerHostName;
+    std::string portArg = "--port=" + std::to_string(brokerPort);
+    char *pythonArgs[]={strdup(interpreter.data()),strdup(pythonPath.data()),strdup(hostArg.data()),strdup(portArg.data()),NULL};
+    execvp(strdup(interpreter.data()),pythonArgs);
   }
   else{
     signal(SIGCHLD,SIG_IGN);

@@ -32,6 +32,11 @@ ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, con
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
 ${tc.includeArgs("template.component.declarations.DDS", [config])}
 
+
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  std::string brokerHostName;
+  int brokerPort;
+</#if>
 <#if brokerIsMQTT>
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
@@ -86,6 +91,10 @@ ${className}(std::string instanceName
 <#if brokerIsMQTT>
   , MqttClient* passedMqttClientInstance
   , MqttClient* passedMqttClientLocalInstance
+</#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  , std::string brokerHostNameArg
+  , int brokerPortArg
 </#if>
 <#if comp.getParameters()?has_content>,</#if>
 ${TypesPrinter.printConstructorArguments(comp)});
