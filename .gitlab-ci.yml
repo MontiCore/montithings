@@ -164,25 +164,6 @@ Docker FD Tagging Tool:
     - docker push $CI_REGISTRY_IMAGE/fd-tagging-tool
 
 
-
-
-# This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
-# Because some enforcer rules might check dependency convergence and class duplications
-# we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
-Validate Maven:
-  image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
-  stage: build
-  dependencies:
-    - Validate Gradle
-  script:
-    - mvn -U $MAVEN_CLI_OPTS compile package -Dmaven.test.skip=true
-  artifacts:
-    paths:
-      - generators/montithings2cpp/target/
-      - languages/montithings/target/
-      - applications
-    expire_in: 1 week
-  
 Validate Gradle:
   image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
   stage: build
@@ -205,6 +186,23 @@ Validate Gradle:
     - gradle clean assemble
     - cd applications
     - gradle clean assemble
+
+# This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
+# Because some enforcer rules might check dependency convergence and class duplications
+# we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
+Validate Maven:
+  image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
+  stage: build
+  dependencies:
+    - Validate Gradle
+  script:
+    - mvn -U $MAVEN_CLI_OPTS compile package -Dmaven.test.skip=true
+  artifacts:
+    paths:
+      - generators/montithings2cpp/target/
+      - languages/montithings/target/
+      - applications
+    expire_in: 1 week
 
 Unit Test Gradle:
   image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.7-jdk8
