@@ -41,11 +41,12 @@ ${tc.signature("config","name","explain","what")}
                 background-color: whitesmoke; 
                 grid-column: 1 / 3;
                 grid-row: 2 / 3;
-                padding: 2vh;;
+                padding-left: 2vh;
+                padding-right: 2vh;
             }
 
             .form-cont {
-                height: 100%;
+                padding-top: 2vh;
                 width: 100%;
             }
 
@@ -160,7 +161,14 @@ ${tc.signature("config","name","explain","what")}
                         <label for="formFileSm" class="form-label">Upload your language file and click submit to update your components behavior.</label>
                         <input class="form-control form-control-sm" id="formFileSm" type="file" name="fileUpload">
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Submit File</button>
+                </form>
+                <form class="form-cont" action="/${name}" method="POST" enctype="multipart/form-data"  target="output" id="textForm">
+                    <div class="mb-3">
+                        <label for="formFileSm" class="form-label">Enter a language model and click submit to update your components behavior.</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" form="textForm" name="fileUpload"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Text</button>
                 </form>
             </div>
         </div> 
