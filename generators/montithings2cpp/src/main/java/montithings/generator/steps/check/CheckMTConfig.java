@@ -4,14 +4,12 @@ package montithings.generator.steps.check;
 import com.google.common.base.Preconditions;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Log;
-import montithings.MontiThingsMill;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import mtconfig.MTConfigMill;
 import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
-import mtconfig._parser.MTConfigParser;
 import montiarc._ast.ASTMACompilationUnit;
 
 import java.io.IOException;
@@ -46,7 +44,7 @@ public class CheckMTConfig extends GeneratorStep {
       ASTCompConfig cfg = MTConfigMill
         .compConfigBuilder()
         .setComponentType(
-          c.getComponentType()
+          c.getComponentType().getName()
         )
         .addMTCFGTag(
           MTConfigMill.separationHintBuilder().build()
