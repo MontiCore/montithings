@@ -42,11 +42,13 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
   private final File modelPath;
   private final File targetHwcPath;
   private final File srcHwcPath;
+  private final GeneratorToolState state;
 
   public NetworkMinimizationPatternTrafo(GeneratorToolState state) {
     this.modelPath = state.getModelPath();
     this.srcHwcPath = state.getHwcPath();
     this.targetHwcPath = Paths.get(state.getTarget().getAbsolutePath(), "hwc").toFile();
+    this.state = state;
   }
 
   @Override
@@ -82,6 +84,8 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             ASTMACompilationUnit downloadMaybeWrapperComp = this.getInterceptComponent(DOWNLOAD_MAYBE_WRAPPER_NAME, targetComp);
             additionalTrafoModels.add(uploadMaybeWrapperComp);
             additionalTrafoModels.add(downloadMaybeWrapperComp);
+            this.state.addNotSplittedComponent(uploadMaybeWrapperComp);
+            this.state.addNotSplittedComponent(downloadMaybeWrapperComp);
 
             // Generate interceptor components for up- and download
             ASTMACompilationUnit uploadMaybeComp = this.getInterceptComponent(UPLOAD_MAYBE_NAME, targetComp);

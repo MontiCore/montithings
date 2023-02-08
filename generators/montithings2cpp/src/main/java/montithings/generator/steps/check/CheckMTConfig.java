@@ -8,9 +8,11 @@ import montithings.MontiThingsMill;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import mtconfig.MTConfigMill;
+import mtconfig._ast.ASTCompConfig;
 import mtconfig._ast.ASTMTConfigUnit;
 import mtconfig._cocos.MTConfigCoCos;
 import mtconfig._parser.MTConfigParser;
+import montiarc._ast.ASTMACompilationUnit;
 
 import java.io.IOException;
 
@@ -18,6 +20,7 @@ public class CheckMTConfig extends GeneratorStep {
 
   @Override public void action(GeneratorToolState state) {
     MTConfigMill.init();
+
     for (String model : state.getModels().getMTConfig()) {
       ASTMTConfigUnit ast = null;
       try {
@@ -39,19 +42,21 @@ public class CheckMTConfig extends GeneratorStep {
       MTConfigCoCos.createChecker().checkAll(ast);
     }
 
-    for (var c : todoComponentShouldNotBeSplitted) {
+    for (ASTMACompilationUnit c : state.getNotSplittedComponents()) {
       ASTCompConfig cfg = MTConfigMill
         .compConfigBuilder()
-        .setComponentType()
+        .setComponentType(
+          c.getComponentType()
+        )
         .addMTCFGTag(
           MTConfigMill.separationHintBuilder().build()
         )
         .build();
 
       ASTMTConfigUnit cu = MTConfigMill
-        .mtConfigUnitBuilder()
+        .mTConfigUnitBuilder()
         .setPackage(
-          MTConfigMill.mcQualifiedNameBuilder().addParts(todoPackageName).build()
+          MTConfigMill.mCQualifiedNameBuilder().addParts(c.getPackage().getQName()).build()
         )
         .addElement(cfg)
         .build();

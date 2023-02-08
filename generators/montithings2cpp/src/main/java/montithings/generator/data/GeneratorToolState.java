@@ -13,6 +13,7 @@ import montithings.generator.config.ConfigParams;
 import mtconfig.MTConfigTool;
 import mtconfig._symboltable.IMTConfigGlobalScope;
 import org.apache.commons.lang3.tuple.Pair;
+import montiarc._ast.ASTMACompilationUnit;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -108,6 +109,8 @@ public class GeneratorToolState {
     protected List<Path> protoFiles = new ArrayList<>();
 
     protected List<String> cppRequirements;
+
+    protected List<ASTMACompilationUnit> notSplittedComponents;
 
     /* ============================================================ */
     /* ======================= GENERATED CODE ===================== */
@@ -316,5 +319,17 @@ public class GeneratorToolState {
 
     public void setProtoFiles(Collection<Path> protoFiles) {
         this.protoFiles = new ArrayList<>(protoFiles);
+    }
+
+    public List<ASTMACompilationUnit> getNotSplittedComponents() {
+        return notSplittedComponents;
+    }
+
+    public void addNotSplittedComponents(List<ASTMACompilationUnit> notSplittedComponents) {
+        this.notSplittedComponents.addAll(notSplittedComponents);
+    }
+
+    public void addNotSplittedComponent(ASTMACompilationUnit notSplittedComponent) {
+        this.notSplittedComponents.add(notSplittedComponent);
     }
 }
