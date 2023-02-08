@@ -23,7 +23,9 @@ import java.util.*;
 public class NetworkMinimizationPatternTrafo extends BasicTransformations implements MontiThingsTrafo {
   private static final String TOOL_NAME = "NetworkMinimizationPatternTrafo";
   private static final String UPLOAD_MAYBE_NAME = "UploadMaybe";
+  private static final String UPLOAD_MAYBE_WRAPPER_NAME = "UploadMaybeWrapper";
   private static final String DOWNLOAD_MAYBE_NAME = "DownloadMaybe";
+  private static final String DOWNLOAD_MAYBE_WRAPPER_NAME = "DownloadMaybeWrapper";
   private static final String UPLOAD_MAYBE_IMPL_CPP = "template/patterns/UploadMaybeImplCpp.ftl";
   private static final String UPLOAD_MAYBE_IMPL_HEADER = "template/patterns/UploadMaybeImplHeader.ftl";
   private static final String DOWNLOAD_MAYBE_IMPL_CPP = "template/patterns/DownloadMaybeImplCpp.ftl";
@@ -75,6 +77,12 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
       for (String qCompSourceName : qCompSourceNames) {
         for (String qCompTargetName : qCompTargetNames) {
           if (!alreadyTransformed.contains(qCompSourceName + "," + qCompTargetName)) {
+            // Generate interceptor components for up- and download wrapper
+            ASTMACompilationUnit uploadMaybeWrapperComp = this.getInterceptComponent(UPLOAD_MAYBE_WRAPPER_NAME, targetComp);
+            ASTMACompilationUnit downloadMaybeWrapperComp = this.getInterceptComponent(DOWNLOAD_MAYBE_WRAPPER_NAME, targetComp);
+            additionalTrafoModels.add(uploadMaybeWrapperComp);
+            additionalTrafoModels.add(downloadMaybeWrapperComp);
+
             // Generate interceptor components for up- and download
             ASTMACompilationUnit uploadMaybeComp = this.getInterceptComponent(UPLOAD_MAYBE_NAME, targetComp);
             ASTMACompilationUnit downloadMaybeComp = this.getInterceptComponent(DOWNLOAD_MAYBE_NAME, targetComp);
@@ -82,9 +90,8 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             additionalTrafoModels.add(downloadMaybeComp);
 
             // Replace connections acc. to trafo
-            this.replaceConnection(targetComp, connection.source, connection.target,
-                    this.getPortType(connection.source, targetComp, allModels, this.modelPath),
-                    uploadMaybeComp, downloadMaybeComp);
+            this.replaceConnection(targetComp, connection.source, connection.target, uploadMaybeComp, downloadMaybeComp,
+                                   uploadMaybeWrapperComp, downloadMaybeWrapperComp, allModels);
 
             // Generate behavior for up- and download
             this.generateUploadBehavior(uploadMaybeComp);
@@ -122,9 +129,81 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     return qCompInstanceNames;
   }
 
-  private void replaceConnection(ASTMACompilationUnit comp, ASTPortAccess portSource, ASTPortAccess portTarget, ASTMCType portType,
-                                 ASTMACompilationUnit uploadMaybeComponent, ASTMACompilationUnit downloadMaybeComponent) {
+  private List<FindConnectionsVisitor.Connection> getInConnections(ASTPortAccess portSource, List<FindConnectionsVisitor.Connection> connections) {
+    List<FindConnectionsVisitor.Connection> inConnections = new ArrayList<>();
+
+    for (FindConnectionsVisitor.Connection connection : connections) {
+      if (connection.target.isPresentComponent() && connection.target.getQName().equals(portSource.getQName())) {
+        inConnections.add(connection);
+      }
+    }
+
+    return inConnections;
+  }
+
+  private List<FindConnectionsVisitor.Connection> getOutConnections(ASTPortAccess portTarget, List<FindConnectionsVisitor.Connection> connections) {
+    List<FindConnectionsVisitor.Connection> outConnections = new ArrayList<>();
+
+    for (FindConnectionsVisitor.Connection connection : connections) {
+      if (connection.source.isPresentComponent() && connection.source.getQName().equals(portTarget.getQName())) {
+        outConnections.add(connection);
+      }
+    }
+
+    return outConnections;
+  }
+
+  private void replaceConnection(ASTMACompilationUnit comp, ASTPortAccess portSource, ASTPortAccess portTarget,
+                                 ASTMACompilationUnit uploadMaybeComponent, ASTMACompilationUnit downloadMaybeComponent,
+                                 ASTMACompilationUnit uploadMaybeWrapperComponent, ASTMACompilationUnit downloadMaybeWrapperComponent,
+                                 List<ASTMACompilationUnit> allModels) {
+    // Add ports and connections to UploadMaybeWrapper
+    List<FindConnectionsVisitor.Connection> inConnections = this.getInConnections(portSource, this.getConnections(targetComp));
+
+    for (FindConnectionsVisitor.Connection connection : inConnections) {
+      if (connection.source.isPresentComponent()) {
+        ASTMCType portType = this.getPortType(connection.source, comp, allModels, this.modelPath);
+
+        Log.info("Add new in-port " + INPORT_NAME + " of type " + portType + " to component " + UPLOAD_MAYBE_WRAPPER_NAME, TOOL_NAME);
+        addPort(uploadMaybeWrapperComponent, INPORT_NAME, false, portType);
+
+        // Source -> Wrapper
+        Log.info("Add new connection " + connection.source.getQName() + "." + INPORT_NAME + " -> " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() +
+                " to component " + comp.getComponentType(), TOOL_NAME);
+        addConnection(comp, connection.source.getQName() + "." + INPORT_NAME, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase());
+
+        // Wrapper -> A
+        Log.info("Add new connection " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + INPORT_NAME + " -> " + portSource.getQName() +
+                " to component " + comp.getComponentType(), TOOL_NAME);
+        addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + INPORT_NAME, portSource.getQName());
+      }
+    }
+
+    // Add ports and connections to DonwloadMaybeWrapper
+    List<FindConnectionsVisitor.Connection> outConnections = this.getOutConnections(portTarget, this.getConnections(targetComp));
+
+    for (FindConnectionsVisitor.Connection connection : outConnections) {
+      if (connection.target.isPresentComponent()) {
+        ASTMCType portType = this.getPortType(portTarget, comp, allModels, this.modelPath);
+
+        Log.info("Add new out-port " + OUTPORT_NAME + " of type " + portType + " to component " + DOWNLOAD_MAYBE_WRAPPER_NAME, TOOL_NAME);
+        addPort(downloadMaybeWrapperComponent, OUTPORT_NAME, true, portType);
+
+        // B -> Wrapper
+        Log.info("Add new connection " + portTarget.getQName() + "." + OUTPORT_NAME + " -> " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() +
+                " to component " + comp.getComponentType(), TOOL_NAME);
+        addConnection(comp, portTarget.getQName() + "." + OUTPORT_NAME, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase());
+
+        // Wrapper -> Target
+        Log.info("Add new connection " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + OUTPORT_NAME + " -> " + connection.target.getQName() +
+                " to component " + comp.getComponentType(), TOOL_NAME);
+        addConnection(comp, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + OUTPORT_NAME, connection.target.getQName());
+      }
+    }
+
     // Add ports for UploadMaybe, DownloadMaybe
+    ASTMCType portType = this.getPortType(portSource, comp, allModels, this.modelPath);
+
     Log.info("Add new in-port " + INPORT_NAME + " of type " + portType + " to component " + UPLOAD_MAYBE_NAME, TOOL_NAME);
     addPort(uploadMaybeComponent, INPORT_NAME, false, portType);
 
