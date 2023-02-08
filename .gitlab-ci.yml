@@ -9,7 +9,6 @@ cache:
 
 stages:
   - build
-  - build-maven
   - test
   - generator-test
   - post-test
@@ -198,7 +197,7 @@ Validate Gradle:
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
 Validate Maven:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
-  stage: build-maven
+  stage: build
   dependencies:
     - Validate Gradle
   script:
