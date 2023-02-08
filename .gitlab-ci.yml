@@ -169,6 +169,7 @@ Validate Gradle:
   stage: build
   allow_failure: true
   artifacts:
+    untracked: true
     paths:
       - generators/cd2cpp/target/
       - generators/montithings2cpp/target/
