@@ -30,6 +30,8 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
   private static final String UPLOAD_MAYBE_IMPL_HEADER = "template/patterns/UploadMaybeImplHeader.ftl";
   private static final String DOWNLOAD_MAYBE_IMPL_CPP = "template/patterns/DownloadMaybeImplCpp.ftl";
   private static final String DOWNLOAD_MAYBE_IMPL_HEADER = "template/patterns/DownloadMaybeImplHeader.ftl";
+  private static final String UPLOAD_MAYBE_WRAPPER_MTCFG = "template/patterns/UploadMaybeWrapperMtcfg.ftl";
+  private static final String DOWNLOAD_MAYBE_WRAPPER_MTCFG = "template/patterns/DownloadMaybeWrapperMtcfg.ftl";
   private static final String INPORT_NAME = "in";
   private static final String OUTPORT_NAME = "out";
   private static final String PORT_URL_NAME = "url";
@@ -56,8 +58,6 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
 
     List<ASTMACompilationUnit> allModels = this.getAllModels(originalModels, addedModels);
-
-    Log.info("Return " + additionalTrafoModels.size() + " additional trafo models", TOOL_NAME);
 
     List<String> qCompInstanceNames = this.getQCompInstanceNames(targetComp, allModels);
     List<String> alreadyTransformed = new ArrayList<>();
@@ -98,7 +98,7 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             this.generateDownloadBehavior(downloadMaybeComp);
 
             // Generate mtcfg to prevent splitting
-            this.generateMtcfg();
+            this.generateMtcfg(targetComp);
 
             // Set connection as transformed
             alreadyTransformed.add(qCompSourceName + "," + qCompTargetName);
@@ -108,6 +108,8 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
       }
     }
 
+    Log.info("Return " + additionalTrafoModels.size() + " additional trafo models", TOOL_NAME);
+    
     return additionalTrafoModels;
   }
 
@@ -156,9 +158,9 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
   private void replaceConnection(ASTMACompilationUnit comp, ASTPortAccess portSource, ASTPortAccess portTarget,
                                  ASTMACompilationUnit uploadMaybeComponent, ASTMACompilationUnit downloadMaybeComponent,
                                  ASTMACompilationUnit uploadMaybeWrapperComponent, ASTMACompilationUnit downloadMaybeWrapperComponent,
-                                 List<ASTMACompilationUnit> allModels) {
+                                 List<ASTMACompilationUnit> allModels) throws Exception {
     // Add ports and connections to UploadMaybeWrapper
-    List<FindConnectionsVisitor.Connection> inConnections = this.getInConnections(portSource, this.getConnections(targetComp));
+    List<FindConnectionsVisitor.Connection> inConnections = this.getInConnections(portSource, this.getConnections(comp));
 
     for (FindConnectionsVisitor.Connection connection : inConnections) {
       if (connection.source.isPresentComponent()) {
@@ -180,7 +182,7 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     }
 
     // Add ports and connections to DonwloadMaybeWrapper
-    List<FindConnectionsVisitor.Connection> outConnections = this.getOutConnections(portTarget, this.getConnections(targetComp));
+    List<FindConnectionsVisitor.Connection> outConnections = this.getOutConnections(portTarget, this.getConnections(comp));
 
     for (FindConnectionsVisitor.Connection connection : outConnections) {
       if (connection.target.isPresentComponent()) {
@@ -284,10 +286,21 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME);
   }
 
-  private void generateMtcfg() {
-    // Todo:
-    //  Create ftl and generate here
-    //  Set to AST in CheckMtConfig
+  private void generateMtcfg(ASTMACompilationUnit comp) {
+    File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+    File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+
+    this.generate(tHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, "mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
+            comp.getPackage().getQName(), UPLOAD_MAYBE_WRAPPER_NAME);
+
+    this.generate(sHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, "mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
+            comp.getPackage().getQName(), UPLOAD_MAYBE_WRAPPER_NAME);
+
+    this.generate(tHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, "mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_WRAPPER_NAME);
+
+    this.generate(sHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, "mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_WRAPPER_NAME);
   }
 
   private void generate(File target, String name, String fileExtension, String template, Object... templateArguments) {

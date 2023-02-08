@@ -38,6 +38,29 @@ public class CheckMTConfig extends GeneratorStep {
       Log.info("Check model: " + model, "MontiThingsGeneratorTool");
       MTConfigCoCos.createChecker().checkAll(ast);
     }
+
+    for (var c : todoComponentShouldNotBeSplitted) {
+      ASTCompConfig cfg = MTConfigMill
+        .compConfigBuilder()
+        .setComponentType()
+        .addMTCFGTag(
+          MTConfigMill.separationHintBuilder().build()
+        )
+        .build();
+
+      ASTMTConfigUnit cu = MTConfigMill
+        .mtConfigUnitBuilder()
+        .setPackage(
+          MTConfigMill.mcQualifiedNameBuilder().addParts(todoPackageName).build()
+        )
+        .addElement(cfg)
+        .build();
+
+      state.getConfig().setMtConfigScope(
+        state.getMtConfigTool().createSymboltable(cu, state.getMtConfigGlobalScope())
+      );
+    }
+
     MTConfigMill.reset();
     BasicSymbolsMill.initializePrimitives();
   }
