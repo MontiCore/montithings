@@ -26,8 +26,8 @@ class PrinterImpl(PrinterImplTOP):
 
         if(style == "Full"):
             text = f"\n{variable}\n"
-            text = f"{text} {self._input.ports['result'].calc}"
-            text = f"{text}\n = {self._input.ports['result'].val} if {variable} = {self._input.ports['result'].var}"
+            text = f"{text}{self._input.ports['result'].calc}"
+            text = f"{text}= {self._input.ports['result'].val} if {variable} = {self._input.ports['result'].var}"
         else:
             text = f"f({variable})={self._input.ports['result'].val} if {variable} = {self._input.ports['result'].var}"
         

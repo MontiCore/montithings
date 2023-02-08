@@ -73,7 +73,7 @@ public class Main {
                     mqttClient.publish("/hwc/${GeneratorHelper.replaceDotsBySlashes(instanceName)}",mqttPy);
                     
                     
-                    return "<div style=\"white-space: pre-wrap; color: whitesmoke;\">Task succesfull! Component should be updated.</div>";
+                    return "<div style=\"white-space: pre-wrap; color: whitesmoke;\">Task successful! Component should be updated.</div>";
                 } catch (SecurityException e) {
                     System.err.flush();
                     System.setErr(old);

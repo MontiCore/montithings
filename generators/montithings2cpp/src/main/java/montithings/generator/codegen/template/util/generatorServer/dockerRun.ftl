@@ -20,10 +20,24 @@ os="${r"$(uname -s)"}"
 case "${r"${os}"}" in
     Linux*)
             mqttip=127.0.0.1
-            localmqttip=127.0.0.1;;
+            localmqttip=127.0.0.1
+
+            CONTAINER=$(docker run -d --rm \
+                --net=host \
+                --cap-add=NET_ADMIN \
+                --name ${config.getMainComponent()?lower_case}.generator-server -h ${config.getMainComponent()?lower_case}.generator-server ${config.getMainComponent()?lower_case}.generator-server:latest ${r"${mqttip}"} 1883 ${r"${localmqttip}"})
+                echo docker stop $CONTAINER >> dockerStop.sh
+                echo docker kill $CONTAINER >> dockerKill.sh;;
     Darwin*)
             mqttip=host.docker.internal
-            localmqttip=host.docker.internal;;
+            localmqttip=host.docker.internal
+
+            CONTAINER=$(docker run -d --rm \
+                -p 8080:8080 \
+                --cap-add=NET_ADMIN \
+                --name ${config.getMainComponent()?lower_case}.generator-server -h ${config.getMainComponent()?lower_case}.generator-server ${config.getMainComponent()?lower_case}.generator-server:latest ${r"${mqttip}"} 1883 ${r"${localmqttip}"})
+                echo docker stop $CONTAINER >> dockerStop.sh
+                echo docker kill $CONTAINER >> dockerKill.sh;;
     *)          echo "unknown os!" && exit 1
 esac
 
@@ -34,12 +48,7 @@ esac
 
 
 
-CONTAINER=$(docker run  -d --rm \
---net=host \
---cap-add=NET_ADMIN \
---name ${config.getMainComponent()?lower_case}.generator-server -h ${config.getMainComponent()?lower_case}.generator-server ${config.getMainComponent()?lower_case}.generator-server:latest ${r"${mqttip}"} 1883 ${r"${localmqttip}"})
-echo docker stop $CONTAINER >> dockerStop.sh
-echo docker kill $CONTAINER >> dockerKill.sh
+
 
 
 chmod +x dockerStop.sh

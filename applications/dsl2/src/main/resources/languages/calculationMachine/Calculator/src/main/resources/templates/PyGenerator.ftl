@@ -27,11 +27,11 @@ class CalculatorImpl(CalculatorImplTOP):
         <#list ast.getComputationList() as computes>
             <#if computes.isPresentAdd()>
         workingVal = workingVal + ${computes.getAdd().getValue()}
-        calculation = f"{calculation} + {${computes.getAdd().getValue()}} \n"
+        calculation = f"{calculation}+ {${computes.getAdd().getValue()}} \n"
             </#if>
             <#if computes.isPresentMult()>
         workingVal = workingVal * ${computes.getMult().getValue()}
-        calculation = f"{calculation} * {${computes.getMult().getValue()}} \n"
+        calculation = f"{calculation}* {${computes.getMult().getValue()}} \n"
             </#if>
         </#list>
 

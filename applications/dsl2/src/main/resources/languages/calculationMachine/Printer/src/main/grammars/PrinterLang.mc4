@@ -1,9 +1,9 @@
 // (c) https://github.com/MontiCore/monticore
 
 grammar PrinterLang extends de.monticore.MCBasics{
-  Text = Variable Style;
+  Text = Variable Style (Linebreak)*;
   
   token Linebreak = NEWLINE;
   Variable = "var:" variableName:Name Linebreak;
-  Style = "style:" (choice:"Full"|choice:"Result") Linebreak;
+  Style = "style:" (choice:"Full"|choice:"Result");
 }
