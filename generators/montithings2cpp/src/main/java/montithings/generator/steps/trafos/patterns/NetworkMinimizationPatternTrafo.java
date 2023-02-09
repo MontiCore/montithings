@@ -289,6 +289,11 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     Log.info("Add new connection " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME +
             " to component " + comp.getComponentType().getName(), TOOL_NAME);
     addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME);
+
+    Log.info("Remove existing connection " + portSource.getQName() + " -> " + portTarget.getQName() +
+            " from component " + comp.getComponentType(), TOOL_NAME);
+    removeConnection(comp, portSource, portTarget);
+
   }
 
   private ASTMCType getUrlPortType() {
