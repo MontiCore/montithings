@@ -5,6 +5,7 @@ import arcbasis._ast.ASTPortAccess;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedNameBuilder;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import montithings.MontiThingsMill;
 import montithings._visitor.FindConnectionsVisitor;
@@ -37,7 +38,7 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
   private static final String PORT_URL_NAME = "url";
   private static final String PORT_URL_TYPE = "String";
   private static final String PORT_DATA_NAME = "orig";
-  private static final int MAX_PORT_SIZE = 4000; // bytes
+  private static final String MAX_PORT_SIZE = "4000"; // bytes
   private static final String CONTAINERNAME = "pfileuploads";
   private final File modelPath;
   private final File targetHwcPath;
@@ -88,10 +89,14 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             this.state.addNotSplittedComponent(downloadMaybeWrapperComp);
 
             // Generate interceptor components for up- and download
-            ASTMACompilationUnit uploadMaybeComp = this.getInterceptComponent(UPLOAD_MAYBE_NAME, targetComp);
-            ASTMACompilationUnit downloadMaybeComp = this.getInterceptComponent(DOWNLOAD_MAYBE_NAME, targetComp);
+            ASTMACompilationUnit uploadMaybeComp = this.getInterceptComponent(UPLOAD_MAYBE_NAME, uploadMaybeWrapperComp);
+            ASTMACompilationUnit downloadMaybeComp = this.getInterceptComponent(DOWNLOAD_MAYBE_NAME, downloadMaybeWrapperComp);
             additionalTrafoModels.add(uploadMaybeComp);
             additionalTrafoModels.add(downloadMaybeComp);
+
+            // Assign source, target to wrapper component
+            addSubComponentInstantiation(uploadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.source), qCompSourceName, createEmptyArguments());
+            addSubComponentInstantiation(uploadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.target), qCompTargetName, createEmptyArguments());
 
             // Replace connections acc. to trafo
             this.replaceConnection(targetComp, connection.source, connection.target, uploadMaybeComp, downloadMaybeComp,
@@ -110,6 +115,10 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
         }
 
       }
+
+      // Remove source, target from wrapper component
+      removeSubcomponentInstantiation(targetComp, qCompSourceNames);
+      removeSubcomponentInstantiation(targetComp, qCompTargetNames);
     }
 
     Log.info("Return " + additionalTrafoModels.size() + " additional trafo models", TOOL_NAME);

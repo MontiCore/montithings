@@ -155,6 +155,15 @@ public abstract class BasicTransformations {
                 .ifPresent(astConnector -> comp.getComponentType().getBody().removeArcElement(astConnector));
     }
 
+    protected void removeSubcomponentInstantiation(ASTMACompilationUnit comp, List<String> instanceNames) {
+        Optional<ASTComponentInstantiation> match =
+                comp.getComponentType().getSubComponentInstantiations().stream()
+                        .filter(c -> c.getInstancesNames().containsAll(instanceNames))
+                        .findFirst();
+        match
+                .ifPresent(astConnector -> comp.getComponentType().getBody().removeArcElement(astConnector));
+    }
+
     /**
      * Add a port to the given component.
      *
