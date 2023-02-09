@@ -5,7 +5,6 @@ import arcbasis._ast.ASTPortAccess;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
-import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedNameBuilder;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import montithings.MontiThingsMill;
 import montithings._visitor.FindConnectionsVisitor;
@@ -95,8 +94,10 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             additionalTrafoModels.add(downloadMaybeComp);
 
             // Assign source, target to wrapper component
-            addSubComponentInstantiation(uploadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.source), qCompSourceName, createEmptyArguments());
-            addSubComponentInstantiation(uploadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.target), qCompTargetName, createEmptyArguments());
+            String sName = qCompSourceName.split("\\.")[qCompSourceName.split("\\.").length - 1];
+            addSubComponentInstantiation(uploadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.source), sName, createEmptyArguments());
+            String tName = qCompTargetName.split("\\.")[qCompTargetName.split("\\.").length - 1];
+            addSubComponentInstantiation(downloadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.target), tName, createEmptyArguments());
 
             // Replace connections acc. to trafo
             this.replaceConnection(targetComp, connection.source, connection.target, uploadMaybeComp, downloadMaybeComp,
@@ -109,16 +110,16 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             // Generate mtcfg to prevent splitting
             this.generateMtcfg(targetComp);
 
+            // Remove source, target from target component
+            removeSubcomponentInstantiation(targetComp, Collections.singletonList(sName));
+            removeSubcomponentInstantiation(targetComp, Collections.singletonList(tName));
+
             // Set connection as transformed
             alreadyTransformed.add(qCompSourceName + "," + qCompTargetName);
           }
         }
 
       }
-
-      // Remove source, target from wrapper component
-      removeSubcomponentInstantiation(targetComp, qCompSourceNames);
-      removeSubcomponentInstantiation(targetComp, qCompTargetNames);
     }
 
     Log.info("Return " + additionalTrafoModels.size() + " additional trafo models", TOOL_NAME);
@@ -184,17 +185,17 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
 
         // Source -> Wrapper
         Log.info("Add new connection " + connection.source.getQName() + "." + INPORT_NAME + " -> " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() +
-                " to component " + comp.getComponentType(), TOOL_NAME);
+                " to component " + comp.getComponentType().getName(), TOOL_NAME);
         addConnection(comp, connection.source.getQName() + "." + INPORT_NAME, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase());
 
         // Wrapper -> A
         Log.info("Add new connection " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + INPORT_NAME + " -> " + portSource.getQName() +
-                " to component " + comp.getComponentType(), TOOL_NAME);
-        addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + INPORT_NAME, portSource.getQName());
+                " to component " + uploadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+        addConnection(uploadMaybeWrapperComponent, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + INPORT_NAME, portSource.getQName());
       }
     }
 
-    // Add ports and connections to DonwloadMaybeWrapper
+    // Add ports and connections to DownloadMaybeWrapper
     List<FindConnectionsVisitor.Connection> outConnections = this.getOutConnections(portTarget, this.getConnections(comp));
 
     for (FindConnectionsVisitor.Connection connection : outConnections) {
@@ -206,58 +207,88 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
 
         // B -> Wrapper
         Log.info("Add new connection " + portTarget.getQName() + "." + OUTPORT_NAME + " -> " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() +
-                " to component " + comp.getComponentType(), TOOL_NAME);
+                " to component " + comp.getComponentType().getName(), TOOL_NAME);
         addConnection(comp, portTarget.getQName() + "." + OUTPORT_NAME, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase());
 
         // Wrapper -> Target
         Log.info("Add new connection " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + OUTPORT_NAME + " -> " + connection.target.getQName() +
-                " to component " + comp.getComponentType(), TOOL_NAME);
-        addConnection(comp, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + OUTPORT_NAME, connection.target.getQName());
+                " to component " + downloadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+        addConnection(downloadMaybeWrapperComponent, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + OUTPORT_NAME, connection.target.getQName());
       }
     }
 
-    // Add ports for UploadMaybe, DownloadMaybe
+    // Add ports for UploadMaybe, DownloadMaybe, UploadMaybeWrapper, DownloadMaybeWrapper
     ASTMCType portType = this.getPortType(portSource, comp, allModels, this.modelPath);
 
     Log.info("Add new in-port " + INPORT_NAME + " of type " + portType + " to component " + UPLOAD_MAYBE_NAME, TOOL_NAME);
     addPort(uploadMaybeComponent, INPORT_NAME, false, portType);
 
     Log.info("Add new out-port " + PORT_URL_NAME + " of type " + this.getUrlPortType() + " to component " + UPLOAD_MAYBE_NAME, TOOL_NAME);
-    addPort(uploadMaybeComponent, PORT_URL_NAME, true, portType);
+    addPort(uploadMaybeComponent, PORT_URL_NAME, true, this.getUrlPortType());
 
     Log.info("Add new out-port " + PORT_DATA_NAME + " of type " + portType + " to component " + UPLOAD_MAYBE_NAME, TOOL_NAME);
     addPort(uploadMaybeComponent, PORT_DATA_NAME, true, portType);
 
+    Log.info("Add new out-port " + PORT_URL_NAME + " of type " + this.getUrlPortType() + " to component " + UPLOAD_MAYBE_WRAPPER_NAME, TOOL_NAME);
+    addPort(uploadMaybeWrapperComponent, PORT_URL_NAME, true, this.getUrlPortType());
+
+    Log.info("Add new out-port " + PORT_DATA_NAME + " of type " + portType + " to component " + UPLOAD_MAYBE_WRAPPER_NAME, TOOL_NAME);
+    addPort(uploadMaybeWrapperComponent, PORT_DATA_NAME, true, portType);
+
     Log.info("Add new in-port " + PORT_URL_NAME + " of type " + this.getUrlPortType() + " to component " + DOWNLOAD_MAYBE_NAME, TOOL_NAME);
-    addPort(downloadMaybeComponent, PORT_URL_NAME, false, portType);
+    addPort(downloadMaybeComponent, PORT_URL_NAME, false, this.getUrlPortType());
 
     Log.info("Add new in-port " + PORT_DATA_NAME + " of type " + portType + " to component " + DOWNLOAD_MAYBE_NAME, TOOL_NAME);
     addPort(downloadMaybeComponent, PORT_DATA_NAME, false, portType);
 
+    Log.info("Add new in-port " + PORT_URL_NAME + " of type " + this.getUrlPortType() + " to component " + DOWNLOAD_MAYBE_WRAPPER_NAME, TOOL_NAME);
+    addPort(downloadMaybeWrapperComponent, PORT_URL_NAME, false, this.getUrlPortType());
+
+    Log.info("Add new in-port " + PORT_DATA_NAME + " of type " + portType + " to component " + DOWNLOAD_MAYBE_WRAPPER_NAME, TOOL_NAME);
+    addPort(downloadMaybeWrapperComponent, PORT_DATA_NAME, false, portType);
+
     Log.info("Add new out-port " + OUTPORT_NAME + " of type " + portType + " to component " + DOWNLOAD_MAYBE_NAME, TOOL_NAME);
     addPort(downloadMaybeComponent, OUTPORT_NAME, true, portType);
 
-    // Add connections from A -> UploadMaybe, UploadMaybe -> DownloadMaybe, DownloadMaybe -> B
+    // A -> UploadMaybe
     Log.info("Add new connection " + portSource.getQName() + " -> " + UPLOAD_MAYBE_NAME.toLowerCase() + "." + INPORT_NAME +
-            " to component " + comp.getComponentType(), TOOL_NAME);
-    addConnection(comp, portSource.getQName(), UPLOAD_MAYBE_NAME.toLowerCase() + "." + INPORT_NAME);
+            " to component " + uploadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+    addConnection(uploadMaybeWrapperComponent, portSource.getQName(), UPLOAD_MAYBE_NAME.toLowerCase() + "." + INPORT_NAME);
 
+    // DownloadMaybe -> B
     Log.info("Add new connection " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + OUTPORT_NAME + " -> " + portTarget.getQName() +
-            " to component " + comp.getComponentType(), TOOL_NAME);
-    addConnection(comp, DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + OUTPORT_NAME, portTarget.getQName());
+            " to component " + downloadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+    addConnection(downloadMaybeWrapperComponent, DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + OUTPORT_NAME, portTarget.getQName());
 
-    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME +
-            " to component " + comp.getComponentType(), TOOL_NAME);
-    addConnection(comp, UPLOAD_MAYBE_NAME.toLowerCase(), DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME);
+    // UploadMaybe -> UploadMaybeWrapper
+    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME  + " -> " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME +
+            " to component " + uploadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+    addConnection(uploadMaybeWrapperComponent, UPLOAD_MAYBE_NAME.toLowerCase(), UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME);
 
-    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME +
-            " to component " + comp.getComponentType(), TOOL_NAME);
-    addConnection(comp, UPLOAD_MAYBE_NAME.toLowerCase(), DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME);
+    // UploadMaybe -> UploadMaybeWrapper
+    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME +
+            " to component " + uploadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+    addConnection(uploadMaybeWrapperComponent, UPLOAD_MAYBE_NAME.toLowerCase(), UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME);
 
-    // Remove connection from A -> B
-    Log.info("Remove existing connection " + portSource.getQName() + " -> " + portTarget.getQName() +
-            " from component " + comp.getComponentType(), TOOL_NAME);
-    removeConnection(comp, portSource, portTarget);
+    // DownloadMaybeWrapper -> DownloadMaybe
+    Log.info("Add new connection " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME  + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME +
+            " to component " + downloadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+    addConnection(downloadMaybeWrapperComponent, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME);
+
+    // DownloadMaybeWrapper -> DownloadMaybe
+    Log.info("Add new connection " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME +
+            " to component " + downloadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
+    addConnection(downloadMaybeWrapperComponent, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME);
+
+    // UploadMaybeWrapper -> DownloadMaybeWrapper
+    Log.info("Add new connection " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME + " -> " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME +
+            " to component " + comp.getComponentType().getName(), TOOL_NAME);
+    addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME);
+
+    // UploadMaybeWrapper -> DownloadMaybeWrapper
+    Log.info("Add new connection " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME +
+            " to component " + comp.getComponentType().getName(), TOOL_NAME);
+    addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME);
   }
 
   private ASTMCType getUrlPortType() {

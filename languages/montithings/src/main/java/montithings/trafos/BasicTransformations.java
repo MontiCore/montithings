@@ -160,8 +160,7 @@ public abstract class BasicTransformations {
                 comp.getComponentType().getSubComponentInstantiations().stream()
                         .filter(c -> c.getInstancesNames().containsAll(instanceNames))
                         .findFirst();
-        match
-                .ifPresent(astConnector -> comp.getComponentType().getBody().removeArcElement(astConnector));
+        match.ifPresent(astConnector -> comp.getComponentType().getBody().removeArcElement(astConnector));
     }
 
     /**
