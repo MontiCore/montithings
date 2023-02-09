@@ -271,8 +271,8 @@
                                 <version>${project.version}</version>
                                 <!--<messageBroker>MQTT</messageBroker>-->
                                 <!--<splitting>LOCAL</splitting>-->
-                                <!--<applyPatterns>OFF</applyPatterns>-->
-                                <applyPatterns>ON</applyPatterns>
+                                <!--<applyAnomalyDetectionPattern>OFF</applyAnomalyDetectionPattern>-->
+                                <applyAnomalyDetectionPattern>ON</applyAnomalyDetectionPattern>
                             </arguments>
                             <script>montithings/generator/mtgenerator.groovy</script>
                         </configuration>

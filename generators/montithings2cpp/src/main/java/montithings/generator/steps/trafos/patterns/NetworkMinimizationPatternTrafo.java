@@ -294,16 +294,16 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
     File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
 
-    this.generate(tHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, "mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
+    this.generate(tHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
             comp.getPackage().getQName(), UPLOAD_MAYBE_WRAPPER_NAME);
 
-    this.generate(sHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, "mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
+    this.generate(sHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
             comp.getPackage().getQName(), UPLOAD_MAYBE_WRAPPER_NAME);
 
-    this.generate(tHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, "mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
+    this.generate(tHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
             comp.getPackage().getQName(), DOWNLOAD_MAYBE_WRAPPER_NAME);
 
-    this.generate(sHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, "mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
+    this.generate(sHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
             comp.getPackage().getQName(), DOWNLOAD_MAYBE_WRAPPER_NAME);
   }
 

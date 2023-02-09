@@ -271,8 +271,8 @@
                                 <version>${project.version}</version>
                                 <!--<messageBroker>MQTT</messageBroker>-->
                                 <!--<splitting>LOCAL</splitting>-->
-                                <!--<applyPatterns>OFF</applyPatterns>-->
-                                <applyPatterns>ON</applyPatterns>
+                                <!--<applyNetworkMinimizationPattern>OFF</applyNetworkMinimizationPattern>-->
+                                <applyNetworkMinimizationPattern>ON</applyNetworkMinimizationPattern>
                             </arguments>
                             <script>montithings/generator/mtgenerator.groovy</script>
                         </configuration>

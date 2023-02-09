@@ -1,4 +1,4 @@
-${tc.signature("packageName", "nameOfUrlInputPort", "nameOfDataInputPort", "nameOfOutputPort")}
+${tc.signature("packageName", "compname", "nameOfUrlInputPort", "nameOfDataInputPort", "nameOfOutputPort")}
 #include "${compname}Impl.h"
 
 namespace montithings {

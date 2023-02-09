@@ -110,7 +110,7 @@ public class GeneratorToolState {
 
     protected List<String> cppRequirements;
 
-    protected List<ASTMACompilationUnit> notSplittedComponents;
+    protected List<ASTMACompilationUnit> notSplittedComponents = new ArrayList<>();
 
     /* ============================================================ */
     /* ======================= GENERATED CODE ===================== */
