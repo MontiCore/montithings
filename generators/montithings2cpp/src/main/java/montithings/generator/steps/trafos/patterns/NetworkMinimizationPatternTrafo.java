@@ -95,9 +95,9 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
 
             // Assign source, target to wrapper component
             String sName = qCompSourceName.split("\\.")[qCompSourceName.split("\\.").length - 1];
-            addSubComponentInstantiation(uploadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.source), sName, createEmptyArguments());
+            addSubComponentInstantiation(uploadMaybeWrapperComp, getPortFullyQName(connection.source, targetComp, modelPath), sName);
             String tName = qCompTargetName.split("\\.")[qCompTargetName.split("\\.").length - 1];
-            addSubComponentInstantiation(downloadMaybeWrapperComp, TrafoUtil.getFullyQInstanceName(connection.target), tName, createEmptyArguments());
+            addSubComponentInstantiation(downloadMaybeWrapperComp, getPortFullyQName(connection.target, targetComp, modelPath), tName);
 
             // Replace connections acc. to trafo
             this.replaceConnection(targetComp, connection.source, connection.target, uploadMaybeComp, downloadMaybeComp,
@@ -261,34 +261,34 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     addConnection(downloadMaybeWrapperComponent, DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + OUTPORT_NAME, portTarget.getQName());
 
     // UploadMaybe -> UploadMaybeWrapper
-    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME  + " -> " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME +
+    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME  + " -> " + PORT_URL_NAME +
             " to component " + uploadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
-    addConnection(uploadMaybeWrapperComponent, UPLOAD_MAYBE_NAME.toLowerCase(), UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME);
+    addConnection(uploadMaybeWrapperComponent, UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME, PORT_URL_NAME);
 
     // UploadMaybe -> UploadMaybeWrapper
-    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME +
+    Log.info("Add new connection " + UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + PORT_DATA_NAME +
             " to component " + uploadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
-    addConnection(uploadMaybeWrapperComponent, UPLOAD_MAYBE_NAME.toLowerCase(), UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME);
+    addConnection(uploadMaybeWrapperComponent, UPLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME, PORT_DATA_NAME);
 
     // DownloadMaybeWrapper -> DownloadMaybe
-    Log.info("Add new connection " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME  + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME +
+    Log.info("Add new connection " + PORT_URL_NAME  + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME +
             " to component " + downloadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
-    addConnection(downloadMaybeWrapperComponent, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME);
+    addConnection(downloadMaybeWrapperComponent, PORT_URL_NAME, DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_URL_NAME);
 
     // DownloadMaybeWrapper -> DownloadMaybe
-    Log.info("Add new connection " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME +
+    Log.info("Add new connection " + PORT_DATA_NAME + " -> " + DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME +
             " to component " + downloadMaybeWrapperComponent.getComponentType().getName(), TOOL_NAME);
-    addConnection(downloadMaybeWrapperComponent, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME);
+    addConnection(downloadMaybeWrapperComponent, PORT_DATA_NAME, DOWNLOAD_MAYBE_NAME.toLowerCase() + "." + PORT_DATA_NAME);
 
     // UploadMaybeWrapper -> DownloadMaybeWrapper
     Log.info("Add new connection " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME + " -> " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME +
             " to component " + comp.getComponentType().getName(), TOOL_NAME);
-    addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME);
+    addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_URL_NAME);
 
     // UploadMaybeWrapper -> DownloadMaybeWrapper
     Log.info("Add new connection " + UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME + " -> " + DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME +
             " to component " + comp.getComponentType().getName(), TOOL_NAME);
-    addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase(), DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME);
+    addConnection(comp, UPLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME, DOWNLOAD_MAYBE_WRAPPER_NAME.toLowerCase() + "." + PORT_DATA_NAME);
 
     Log.info("Remove existing connection " + portSource.getQName() + " -> " + portTarget.getQName() +
             " from component " + comp.getComponentType(), TOOL_NAME);

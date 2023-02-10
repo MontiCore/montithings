@@ -85,7 +85,7 @@ public abstract class BasicTransformations {
     protected ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent) {
         ASTMCQualifiedName fullyQName = this.getInterceptorFullyQName(interceptorComponentName, outermostComponent.getPackage().getQName());
 
-        addSubComponentInstantiation(outermostComponent, fullyQName, interceptorComponentName.toLowerCase(), createEmptyArguments());
+        addSubComponentInstantiation(outermostComponent, fullyQName, interceptorComponentName.toLowerCase());
 
         ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
 
@@ -295,6 +295,35 @@ public abstract class BasicTransformations {
         addImportStatement(qName, comp);
 
         return instantiation;
+    }
+
+    protected ASTComponentInstantiation addSubComponentInstantiation(ASTMACompilationUnit comp, ASTMCQualifiedName qName, String instanceName) {
+        ASTComponentInstantiationBuilder instantiationBuilder =
+                ComfortableArcMillForMontiThings.componentInstantiationBuilder();
+
+        instantiationBuilder.addInstance(instanceName);
+        instantiationBuilder.setMCType(createCompilationUnitType(qName.getBaseName()));
+
+        ASTComponentInstantiation instantiation = instantiationBuilder.build();
+        comp.getComponentType().getBody().addArcElement(instantiation);
+
+        addImportStatement(qName, comp);
+
+        return instantiation;
+    }
+
+    protected ASTMCQualifiedName getPortFullyQName(ASTPortAccess port, ASTMACompilationUnit comp,
+                                                   File modelPath) throws Exception {
+        String sourceTypeName = TrafoUtil.getPortOwningComponentType(comp, port);
+        String qName =  TrafoUtil.getFullyQNameFromImports(modelPath, comp, sourceTypeName).getQName();
+
+        ASTMCQualifiedNameBuilder qualifiedNameBuilder = MontiThingsMill.mCQualifiedNameBuilder();
+
+        for (String s : qName.split("\\.")) {
+            qualifiedNameBuilder.addParts(s);
+        }
+
+        return qualifiedNameBuilder.build();
     }
 
     protected void addLongFieldDeclaration(ASTMACompilationUnit comp, String name, long value) {

@@ -269,8 +269,8 @@
                                 <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                                 <main>hierarchy.Example</main>
                                 <version>${project.version}</version>
-                                <!--<messageBroker>MQTT</messageBroker>-->
-                                <!--<splitting>LOCAL</splitting>-->
+                                <messageBroker>MQTT</messageBroker>
+                                <splitting>LOCAL</splitting>
                                 <!--<applyNetworkMinimizationPattern>OFF</applyNetworkMinimizationPattern>-->
                                 <applyNetworkMinimizationPattern>ON</applyNetworkMinimizationPattern>
                             </arguments>

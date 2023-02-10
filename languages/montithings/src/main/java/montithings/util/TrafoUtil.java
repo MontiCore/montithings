@@ -229,16 +229,6 @@ public abstract class TrafoUtil {
     return instanceNames;
   }
 
-  public static ASTMCQualifiedName getFullyQInstanceName(ASTPortAccess port) {
-    ASTMCQualifiedNameBuilder qualifiedNameBuilder = MontiThingsMill.mCQualifiedNameBuilder();
-
-    for (String s : port.getQName().split("\\.")) {
-      qualifiedNameBuilder.addParts(s);
-    }
-
-    return qualifiedNameBuilder.build();
-  }
-
   public static ASTMCQualifiedName getFullyQNameFromImports(File modelPath,
     ASTMACompilationUnit comp, String compTypeName) throws Exception {
     ASTMCQualifiedName qNameComp = TrafoUtil.copyASTMCQualifiedName(comp.getPackage());

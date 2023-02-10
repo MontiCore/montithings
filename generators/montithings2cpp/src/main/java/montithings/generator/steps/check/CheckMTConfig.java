@@ -40,20 +40,18 @@ public class CheckMTConfig extends GeneratorStep {
       MTConfigCoCos.createChecker().checkAll(ast);
     }
 
-    System.out.println("1");
     for (ASTMACompilationUnit c : state.getNotSplittedComponents()) {
-      System.out.println("2");
       ASTCompConfig cfg = MTConfigMill
         .compConfigBuilder()
         .setComponentType(
           c.getComponentType().getName()
         )
+        .setPlatform("GENERIC")
         .addMTCFGTag(
           MTConfigMill.separationHintBuilder().build()
         )
         .build();
 
-      System.out.println("3");
       ASTMTConfigUnit cu = MTConfigMill
         .mTConfigUnitBuilder()
         .setPackage(
@@ -62,14 +60,11 @@ public class CheckMTConfig extends GeneratorStep {
         .addElement(cfg)
         .build();
 
-      System.out.println("4");
       state.getConfig().setMtConfigScope(
         state.getMtConfigTool().createSymboltable(cu, state.getMtConfigGlobalScope())
       );
-      System.out.println("5");
     }
 
-    System.out.println("6");
     MTConfigMill.reset();
     BasicSymbolsMill.initializePrimitives();
   }
