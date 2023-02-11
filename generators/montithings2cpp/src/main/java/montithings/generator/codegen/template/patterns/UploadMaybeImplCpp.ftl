@@ -27,10 +27,10 @@ namespace montithings {
 
               std::string downloadUrl = blobClient->upload(json, filename, containername, containerSasUrl);
 
-              result.set${nameOfUrlOutputPort?cap_first}(origData);
+              result.set${nameOfUrlOutputPort?cap_first}(downloadUrl);
               interface.getPort${nameOfUrlOutputPort?cap_first}()->setNextValue(result.get${nameOfUrlOutputPort?cap_first}Message());
             } else {
-              result.set${nameOfDataOutputPort?cap_first}(origData);
+              result.set${nameOfDataOutputPort?cap_first}(input.get${nameOfInputPort?cap_first}().value());
               interface.getPort${nameOfDataOutputPort?cap_first}()->setNextValue(result.get${nameOfDataOutputPort?cap_first}Message());
             }
           }

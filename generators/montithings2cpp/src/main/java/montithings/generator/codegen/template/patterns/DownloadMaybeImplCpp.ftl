@@ -1,4 +1,4 @@
-${tc.signature("packageName", "compname", "nameOfUrlInputPort", "nameOfDataInputPort", "nameOfOutputPort")}
+${tc.signature("packageName", "compname", "nameOfUrlInputPort", "nameOfDataInputPort", "nameOfOutputPort", "dataPortType")}
 #include "${compname}Impl.h"
 
 namespace montithings {
@@ -19,14 +19,14 @@ namespace montithings {
 
             std::string json = blobClient->download(input.get${nameOfUrlInputPort?cap_first}().value());
 
-            auto origData = jsonToData(json);
+            ${dataPortType} origData = jsonToData<${dataPortType}>(json);
 
             result.set${nameOfOutputPort?cap_first}(origData);
             interface.getPort${nameOfOutputPort?cap_first}()->setNextValue(result.get${nameOfOutputPort?cap_first}Message());
           }
 
-          if (input.get${nameOfUrlInputPort?cap_first}()) {
-            result.set${nameOfOutputPort?cap_first}(input.get${nameOfUrlInputPort?cap_first}().value());
+          if (input.get${nameOfDataInputPort?cap_first}()) {
+            result.set${nameOfOutputPort?cap_first}(input.get${nameOfDataInputPort?cap_first}().value());
             interface.getPort${nameOfOutputPort?cap_first}()->setNextValue(result.get${nameOfOutputPort?cap_first}Message());
           }
 

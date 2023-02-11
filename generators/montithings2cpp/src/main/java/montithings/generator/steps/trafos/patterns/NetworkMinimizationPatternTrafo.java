@@ -79,6 +79,8 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
       for (String qCompSourceName : qCompSourceNames) {
         for (String qCompTargetName : qCompTargetNames) {
           if (!alreadyTransformed.contains(qCompSourceName + "," + qCompTargetName)) {
+            ASTMCType portType = this.getPortType(connection.target, targetComp, allModels, this.modelPath);
+
             // Generate interceptor components for up- and download wrapper
             ASTMACompilationUnit uploadMaybeWrapperComp = this.getInterceptComponent(UPLOAD_MAYBE_WRAPPER_NAME, targetComp);
             ASTMACompilationUnit downloadMaybeWrapperComp = this.getInterceptComponent(DOWNLOAD_MAYBE_WRAPPER_NAME, targetComp);
@@ -105,7 +107,7 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
 
             // Generate behavior for up- and download
             this.generateUploadBehavior(uploadMaybeComp);
-            this.generateDownloadBehavior(downloadMaybeComp);
+            this.generateDownloadBehavior(downloadMaybeComp, portType);
 
             // Generate mtcfg to prevent splitting
             this.generateMtcfg(targetComp);
@@ -318,15 +320,15 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             comp.getPackage().getQName(), UPLOAD_MAYBE_NAME);
   }
 
-  private void generateDownloadBehavior(ASTMACompilationUnit comp) {
+  private void generateDownloadBehavior(ASTMACompilationUnit comp, ASTMCType portType) {
     File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
     File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
 
     this.generate(tHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".cpp", DOWNLOAD_MAYBE_IMPL_CPP,
-            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME);
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME, portType.toString());
 
     this.generate(sHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".cpp", DOWNLOAD_MAYBE_IMPL_CPP,
-            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME);
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME, portType.toString());
 
     this.generate(tHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".h", DOWNLOAD_MAYBE_IMPL_HEADER,
             comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME);
