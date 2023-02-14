@@ -110,9 +110,9 @@ public class GeneratorToolState {
 
   protected List<String> cppRequirements;
 
-    protected List<ASTMACompilationUnit> notSplittedComponents = new ArrayList<>();
+  protected List<ASTMACompilationUnit> notSplittedComponents = new ArrayList<>();
 
-    protected boolean hasBlobStorageTf;
+  protected boolean hasBlobStorageTf;
 
     /* ============================================================ */
     /* ======================= GENERATED CODE ===================== */
@@ -276,70 +276,70 @@ public class GeneratorToolState {
     return executableSensorActuatorPorts;
   }
 
-    public void setExecutableSensorActuatorPorts(
-            List<String> executableSensorActuatorPorts) {
-        this.executableSensorActuatorPorts = executableSensorActuatorPorts;
-    }
+  public void setExecutableSensorActuatorPorts(
+          List<String> executableSensorActuatorPorts) {
+      this.executableSensorActuatorPorts = executableSensorActuatorPorts;
+  }
 
-    public Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> getModelPacks() {
-        return modelPacks;
-    }
+  public Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> getModelPacks() {
+      return modelPacks;
+  }
 
-    public void setModelPacks(
-            Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks) {
-        this.modelPacks = modelPacks;
-    }
+  public void setModelPacks(
+          Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks) {
+      this.modelPacks = modelPacks;
+  }
 
-    public List<String> getHwcPythonScripts() {
-        return hwcPythonScripts;
-    }
+  public List<String> getHwcPythonScripts() {
+      return hwcPythonScripts;
+  }
 
-    public void setHwcPythonScripts(List<String> hwcPythonScripts) {
-        this.hwcPythonScripts = hwcPythonScripts;
-    }
+  public void setHwcPythonScripts(List<String> hwcPythonScripts) {
+      this.hwcPythonScripts = hwcPythonScripts;
+  }
 
-    public List<String> getCppRequirements() {
-        return cppRequirements;
-    }
+  public List<String> getCppRequirements() {
+      return cppRequirements;
+  }
 
-    public void setCppRequirements(List<String> cppRequirements) {
-        this.cppRequirements = cppRequirements;
-    }
+  public void setCppRequirements(List<String> cppRequirements) {
+      this.cppRequirements = cppRequirements;
+  }
 
-    public List<Pair<ComponentTypeSymbol, String>> getInstances() {
-        return instances;
-    }
+  public List<Pair<ComponentTypeSymbol, String>> getInstances() {
+      return instances;
+  }
 
-    public void setInstances(
-            List<Pair<ComponentTypeSymbol, String>> instances) {
-        this.instances = instances;
-    }
+  public void setInstances(
+          List<Pair<ComponentTypeSymbol, String>> instances) {
+      this.instances = instances;
+  }
 
-    public List<Path> getProtoFiles() {
-        return protoFiles;
-    }
+  public List<Path> getProtoFiles() {
+      return protoFiles;
+  }
 
-    public void setProtoFiles(Collection<Path> protoFiles) {
-        this.protoFiles = new ArrayList<>(protoFiles);
-    }
+  public void setProtoFiles(Collection<Path> protoFiles) {
+      this.protoFiles = new ArrayList<>(protoFiles);
+  }
 
-    public List<ASTMACompilationUnit> getNotSplittedComponents() {
-        return notSplittedComponents;
-    }
+  public List<ASTMACompilationUnit> getNotSplittedComponents() {
+      return notSplittedComponents;
+  }
 
-    public void addNotSplittedComponents(List<ASTMACompilationUnit> notSplittedComponents) {
-        this.notSplittedComponents.addAll(notSplittedComponents);
-    }
+  public void addNotSplittedComponents(List<ASTMACompilationUnit> notSplittedComponents) {
+      this.notSplittedComponents.addAll(notSplittedComponents);
+  }
 
-    public void addNotSplittedComponent(ASTMACompilationUnit notSplittedComponent) {
-        this.notSplittedComponents.add(notSplittedComponent);
-    }
+  public void addNotSplittedComponent(ASTMACompilationUnit notSplittedComponent) {
+      this.notSplittedComponents.add(notSplittedComponent);
+  }
 
-    public boolean getHasBlobStorageTf() {
-        return hasBlobStorageTf;
-    }
+  public boolean getHasBlobStorageTf() {
+      return hasBlobStorageTf;
+  }
 
-    public void setHasBlobStorageTf(boolean hasBlobStorageTf) {
+  public void setHasBlobStorageTf(boolean hasBlobStorageTf) {
         this.hasBlobStorageTf = hasBlobStorageTf;
     }
 }
