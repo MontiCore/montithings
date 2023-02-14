@@ -347,9 +347,9 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
     File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
 
-    this.generate(tHwcPath, comp.getComponentType().getName(), ".tf", BLOB_STORAGE_TF);
+    this.generate(tHwcPath, comp.getComponentType().getName(), ".tf", BLOB_STORAGE_TF, CONTAINERNAME);
 
-    this.generate(sHwcPath, comp.getComponentType().getName(), ".tf", BLOB_STORAGE_TF);
+    this.generate(sHwcPath, comp.getComponentType().getName(), ".tf", BLOB_STORAGE_TF, CONTAINERNAME);
   }
 
   private void generate(File target, String name, String fileExtension, String template, Object... templateArguments) {
