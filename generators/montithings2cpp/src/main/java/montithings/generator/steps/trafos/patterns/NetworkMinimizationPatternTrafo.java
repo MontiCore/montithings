@@ -8,7 +8,9 @@ import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import montithings.MontiThingsMill;
 import montithings._visitor.FindConnectionsVisitor;
+import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.data.GeneratorToolState;
+import montithings.generator.helper.TypesHelper;
 import montithings.trafos.BasicTransformations;
 import montithings.trafos.MontiThingsTrafo;
 import montiarc._ast.ASTMACompilationUnit;
@@ -326,11 +328,13 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
     File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
 
+    String portTypeStr = TypesHelper.java2cppTypeString(new MontiThingsFullPrettyPrinter().prettyprint(portType));
+
     this.generate(tHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".cpp", DOWNLOAD_MAYBE_IMPL_CPP,
-            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME, portType.toString());
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME, portTypeStr);
 
     this.generate(sHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".cpp", DOWNLOAD_MAYBE_IMPL_CPP,
-            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME, portType.toString());
+            comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME, PORT_URL_NAME, PORT_DATA_NAME, OUTPORT_NAME, portTypeStr);
 
     this.generate(tHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".h", DOWNLOAD_MAYBE_IMPL_HEADER,
             comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME);
