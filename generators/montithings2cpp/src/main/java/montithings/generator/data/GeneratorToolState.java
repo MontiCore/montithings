@@ -112,6 +112,8 @@ public class GeneratorToolState {
 
     protected List<ASTMACompilationUnit> notSplittedComponents = new ArrayList<>();
 
+    protected boolean hasBlobStorageTf;
+
     /* ============================================================ */
     /* ======================= GENERATED CODE ===================== */
     /* ============================================================ */
@@ -331,5 +333,13 @@ public class GeneratorToolState {
 
     public void addNotSplittedComponent(ASTMACompilationUnit notSplittedComponent) {
         this.notSplittedComponents.add(notSplittedComponent);
+    }
+
+    public boolean getHasBlobStorageTf() {
+        return hasBlobStorageTf;
+    }
+
+    public void setHasBlobStorageTf(boolean hasBlobStorageTf) {
+        this.hasBlobStorageTf = hasBlobStorageTf;
     }
 }
