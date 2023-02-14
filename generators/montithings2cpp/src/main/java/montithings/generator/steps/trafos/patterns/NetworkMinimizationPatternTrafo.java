@@ -30,8 +30,6 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
   private static final String UPLOAD_MAYBE_IMPL_HEADER = "template/patterns/UploadMaybeImplHeader.ftl";
   private static final String DOWNLOAD_MAYBE_IMPL_CPP = "template/patterns/DownloadMaybeImplCpp.ftl";
   private static final String DOWNLOAD_MAYBE_IMPL_HEADER = "template/patterns/DownloadMaybeImplHeader.ftl";
-  private static final String UPLOAD_MAYBE_WRAPPER_MTCFG = "template/patterns/UploadMaybeWrapperMtcfg.ftl";
-  private static final String DOWNLOAD_MAYBE_WRAPPER_MTCFG = "template/patterns/DownloadMaybeWrapperMtcfg.ftl";
   private static final String INPORT_NAME = "in";
   private static final String OUTPORT_NAME = "out";
   private static final String PORT_URL_NAME = "url";
@@ -108,9 +106,6 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
             // Generate behavior for up- and download
             this.generateUploadBehavior(uploadMaybeComp);
             this.generateDownloadBehavior(downloadMaybeComp, portType);
-
-            // Generate mtcfg to prevent splitting
-            this.generateMtcfg(targetComp);
 
             // Remove source, target from target component
             removeSubcomponentInstantiation(targetComp, Collections.singletonList(sName));
@@ -335,23 +330,6 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
 
     this.generate(sHwcPath, DOWNLOAD_MAYBE_NAME + "Impl", ".h", DOWNLOAD_MAYBE_IMPL_HEADER,
             comp.getPackage().getQName(), DOWNLOAD_MAYBE_NAME);
-  }
-
-  private void generateMtcfg(ASTMACompilationUnit comp) {
-    File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
-    File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
-
-    this.generate(tHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
-            comp.getPackage().getQName(), UPLOAD_MAYBE_WRAPPER_NAME);
-
-    this.generate(sHwcPath, UPLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", UPLOAD_MAYBE_WRAPPER_MTCFG,
-            comp.getPackage().getQName(), UPLOAD_MAYBE_WRAPPER_NAME);
-
-    this.generate(tHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
-            comp.getPackage().getQName(), DOWNLOAD_MAYBE_WRAPPER_NAME);
-
-    this.generate(sHwcPath, DOWNLOAD_MAYBE_WRAPPER_NAME, ".mtcfg", DOWNLOAD_MAYBE_WRAPPER_MTCFG,
-            comp.getPackage().getQName(), DOWNLOAD_MAYBE_WRAPPER_NAME);
   }
 
   private void generate(File target, String name, String fileExtension, String template, Object... templateArguments) {
