@@ -31,18 +31,18 @@ public enum Options {
     MAINCOMP_SHORT("main"),
     VERSION("version");
 
-    final String name;
+  final String name;
 
-    Options(String name) {
-        this.name = name;
-    }
+  Options(String name) {
+    this.name = name;
+  }
 
-    /**
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-        return this.name;
-    }
+  /**
+   * @see java.lang.Enum#toString()
+   */
+  @Override
+  public String toString() {
+    return this.name;
+  }
 
 }
