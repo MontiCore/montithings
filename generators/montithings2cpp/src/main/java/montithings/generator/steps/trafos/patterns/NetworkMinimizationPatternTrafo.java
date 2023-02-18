@@ -311,11 +311,15 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
     File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
 
+    ASTMCQualifiedName fullyQName = TrafoUtil.copyASTMCQualifiedName(comp.getPackage());
+    fullyQName.addParts(comp.getComponentType().getName());
+    String containerName = CONTAINERNAME + "/" + fullyQName.getQName().replaceAll("\\.", "").toLowerCase();
+
     this.generate(tHwcPath, UPLOAD_MAYBE_NAME + "Impl", ".cpp", UPLOAD_MAYBE_IMPL_CPP,
-            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME, MAX_PORT_SIZE, CONTAINERNAME, PORT_URL_NAME, PORT_DATA_NAME, INPORT_NAME);
+            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME, MAX_PORT_SIZE, containerName, PORT_URL_NAME, PORT_DATA_NAME, INPORT_NAME);
 
     this.generate(sHwcPath, UPLOAD_MAYBE_NAME + "Impl", ".cpp", UPLOAD_MAYBE_IMPL_CPP,
-            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME, MAX_PORT_SIZE, CONTAINERNAME, PORT_URL_NAME, PORT_DATA_NAME, INPORT_NAME);
+            comp.getPackage().getQName(), UPLOAD_MAYBE_NAME, MAX_PORT_SIZE, containerName, PORT_URL_NAME, PORT_DATA_NAME, INPORT_NAME);
 
     this.generate(tHwcPath, UPLOAD_MAYBE_NAME + "Impl", ".h", UPLOAD_MAYBE_IMPL_HEADER,
             comp.getPackage().getQName(), UPLOAD_MAYBE_NAME);
