@@ -132,6 +132,24 @@ public abstract class BasicTransformations {
         return portType;
     }
 
+    protected List<String> getQCompInstanceNames(ASTMACompilationUnit targetComp, List<ASTMACompilationUnit> allModels) {
+        List<String> qCompInstanceNames = new ArrayList<>();
+
+        for (String parentName : TrafoUtil.findParents(allModels, targetComp)) {
+            ASTMACompilationUnit parentComp = TrafoUtil.getComponentByName(allModels, parentName);
+            List<ASTComponentInstantiation> instantiations = TrafoUtil
+                .getInstantiationsByType(parentComp, targetComp.getComponentType().getName());
+
+            for (ASTComponentInstantiation instantiation : instantiations) {
+                for (String instanceName : instantiation.getInstancesNames()) {
+                    qCompInstanceNames = TrafoUtil.getFullyQInstanceName(allModels, parentComp, instanceName);
+                }
+            }
+        }
+
+        return qCompInstanceNames;
+    }
+
     /**
      * Searches and removes connection defined in the given component with the source port on the left hand side and
      * the target port at the right hand side. If the connection is not defined, nothing will be removed.

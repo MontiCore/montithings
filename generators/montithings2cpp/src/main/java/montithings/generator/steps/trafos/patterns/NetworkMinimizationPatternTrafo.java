@@ -1,6 +1,5 @@
 package montithings.generator.steps.trafos.patterns;
 
-import arcbasis._ast.ASTComponentInstantiation;
 import arcbasis._ast.ASTPortAccess;
 import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
@@ -131,24 +130,6 @@ public class NetworkMinimizationPatternTrafo extends BasicTransformations implem
     Log.info("Return " + additionalTrafoModels.size() + " additional trafo models", TOOL_NAME);
     
     return additionalTrafoModels;
-  }
-
-  private List<String> getQCompInstanceNames(ASTMACompilationUnit targetComp, List<ASTMACompilationUnit> allModels) {
-    List<String> qCompInstanceNames = new ArrayList<>();
-
-    for (String parentName : TrafoUtil.findParents(allModels, targetComp)) {
-      ASTMACompilationUnit parentComp = TrafoUtil.getComponentByName(allModels, parentName);
-      List<ASTComponentInstantiation> instantiations = TrafoUtil
-              .getInstantiationsByType(parentComp, targetComp.getComponentType().getName());
-
-      for (ASTComponentInstantiation instantiation : instantiations) {
-        for (String instanceName : instantiation.getInstancesNames()) {
-          qCompInstanceNames = TrafoUtil.getFullyQInstanceName(allModels, parentComp, instanceName);
-        }
-      }
-    }
-
-    return qCompInstanceNames;
   }
 
   private List<FindConnectionsVisitor.Connection> getInConnections(ASTPortAccess portSource, List<FindConnectionsVisitor.Connection> connections) {
