@@ -52,6 +52,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setReplayMode(getReplayMode());
     configParams.setApplyAnomalyDetectionPattern(getApplyAnomalyDetectionPattern());
     configParams.setApplyNetworkMinimizationPattern(getApplyNetworkMinimizationPattern());
+    configParams.setApplyGrafanaPattern(getApplyGrafanaPattern());
     configParams.setReplayDataFile(getReplayDataFile());
     configParams.setHwcPath(getHWCPath());
     configParams.setProjectVersion(getVersion());
@@ -347,6 +348,15 @@ public class MontiThingsConfiguration implements Configuration {
 
   public ApplyPatterns getApplyNetworkMinimizationPattern() {
     Optional<String> applyPatterns = getAsString(Options.APPLYNETWORKMINIMIZATIONPATTERN);
+    if (applyPatterns.isPresent()) {
+      return ApplyPatterns.fromString(applyPatterns.get());
+    }
+    // fallback default is "off"
+    return ApplyPatterns.OFF;
+  }
+
+  public ApplyPatterns getApplyGrafanaPattern() {
+    Optional<String> applyPatterns = getAsString(Options.APPLYGRAFANAPATTERN);
     if (applyPatterns.isPresent()) {
       return ApplyPatterns.fromString(applyPatterns.get());
     }

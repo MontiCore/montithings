@@ -43,7 +43,9 @@ public class ConfigParams {
 
   protected ApplyPatterns applyAnomalyDetectionPattern = ApplyPatterns.OFF;
 
-  protected ApplyPatterns applyNetworkMinimizationPattern = ApplyPatterns.OFF;
+  protected ApplyPatterns applyNetworkMinimizationPattern = ApplyPatterns.OFF;;
+
+  protected ApplyPatterns applyGrafanaPattern = ApplyPatterns.OFF;
 
   protected RecordingMode recordingMode = RecordingMode.OFF;
 
@@ -241,6 +243,14 @@ public class ConfigParams {
 
   public void setApplyNetworkMinimizationPattern(ApplyPatterns applyPatterns) {
     this.applyNetworkMinimizationPattern = applyPatterns;
+  }
+
+  public ApplyPatterns getApplyGrafanaPattern() {
+    return applyGrafanaPattern;
+  }
+
+  public void setApplyGrafanaPattern(ApplyPatterns applyPatterns) {
+    this.applyGrafanaPattern = applyPatterns;
   }
 
   public File getHwcPath() {
