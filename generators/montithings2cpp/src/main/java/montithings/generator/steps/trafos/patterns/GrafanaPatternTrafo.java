@@ -4,6 +4,7 @@ import arcbasis._ast.ASTConnector;
 import arcbasis._ast.ASTPortAccess;
 import behavior._ast.ASTConnectStatement;
 import behavior._ast.ASTDisconnectStatement;
+import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
 import de.se_rwth.commons.logging.Log;
@@ -11,25 +12,19 @@ import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
 import montithings._ast.ASTBehavior;
 import montithings._visitor.FindConnectionsVisitor;
-import montithings.generator.data.GeneratorToolState;
 import montithings.trafos.BasicTransformations;
 import montithings.trafos.MontiThingsTrafo;
 import montithings.util.TrafoUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class GrafanaPatternTrafo extends BasicTransformations implements MontiThingsTrafo {
   private static final String TOOL_NAME = "GrafanaPatternTrafo";
-  private static final String INJECTOR_NAME = "UploadMaybe";
-  private final File modelPath;
+  private static final String INJECTOR_NAME = "Injector";
   private ASTMACompilationUnit injectorComp;
-
-  public GrafanaPatternTrafo(GeneratorToolState state) {
-    this.modelPath = state.getModelPath();
-  }
 
   public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
                                                     Collection<ASTMACompilationUnit> addedModels,
@@ -58,11 +53,9 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
       for (String qCompSourceName : qCompSourceNames) {
         for (String qCompTargetName : qCompTargetNames) {
           if (!alreadyTransformed.contains(qCompSourceName + "," + qCompTargetName)) {
-            ASTMCType portType = this.getPortType(connection.target, targetComp, allModels, this.modelPath);
-
             //  Generate Injector Component Type (only once like in Anomaly Detection)
             if (injectorComp == null) {
-              injectorComp = this.getInterceptComponent(INJECTOR_NAME, targetComp);
+              injectorComp = createCompilationUnit(targetComp.getPackage(), INJECTOR_NAME);
               additionalTrafoModels.add(injectorComp);
               allModels.add(injectorComp);
             }
@@ -115,18 +108,30 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
     //	injector.out -/> outOrig.in;
     // }
     //
-
     // Connect behavior
     ASTDisconnectStatement disconnectSourceToTargetStatement = MontiThingsMill
         .disconnectStatementBuilder()
         .setSource(portSource)
-        .setTarget(0, portTarget)
+        .setTargetList(Collections.singletonList(portTarget))
+        .build();
+
+
+    ASTPortAccess portInjectorIn = MontiThingsMill
+        .portAccessBuilder()
+        .setComponent(getInPortName())
+        .setPort("in")
+        .build();
+
+    ASTPortAccess portInjectorOut = MontiThingsMill
+        .portAccessBuilder()
+        .setComponent(getOutPortName())
+        .setPort("out")
         .build();
 
     ASTConnector connectorSourceToInjector = MontiThingsMill
         .connectorBuilder()
         .setSource(portSource.getQName())
-        .setTarget(0, getInPortName())
+        .setTargetList(Collections.singletonList(portInjectorIn))
         .build();
 
     ASTConnectStatement connectSourceToInjectorStatement = MontiThingsMill
@@ -136,8 +141,8 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
     ASTConnector connectorInjectorToTarget = MontiThingsMill
         .connectorBuilder()
-        .setSource(getOutPortName())
-        .setTarget(0, portTarget.getQName())
+        .setSource(getOutPortName() + ".out")
+        .setTargetList(Collections.singletonList(portTarget))
         .build();
 
     ASTConnectStatement connectInjectorToTargetStatement = MontiThingsMill
@@ -145,14 +150,18 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
         .setConnector(connectorInjectorToTarget)
         .build();
 
-    ASTBehavior connectBehavior = MontiThingsMill
-        .behaviorBuilder()
-        .setName(0, getInPortName())
+    ASTMCJavaBlock connectBehaviorBlock = MontiThingsMill
+        .mCJavaBlockBuilder()
+        .addMCBlockStatement(disconnectSourceToTargetStatement)
+        .addMCBlockStatement(connectSourceToInjectorStatement)
+        .addMCBlockStatement(connectInjectorToTargetStatement)
         .build();
 
-    connectBehavior.getMCJavaBlock().addMCBlockStatement(disconnectSourceToTargetStatement);
-    connectBehavior.getMCJavaBlock().addMCBlockStatement(connectSourceToInjectorStatement);
-    connectBehavior.getMCJavaBlock().addMCBlockStatement(connectInjectorToTargetStatement);
+    ASTBehavior connectBehavior = MontiThingsMill
+        .behaviorBuilder()
+        .setNamesList(Collections.singletonList(getInPortName()))
+        .setMCJavaBlock(connectBehaviorBlock)
+        .build();
 
     targetComp.getComponentType().getBody().addArcElement(connectBehavior);
 
@@ -160,7 +169,7 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
     ASTConnector connectorSourceToTarget = MontiThingsMill
         .connectorBuilder()
         .setSource(portSource.getQName())
-        .setTarget(0, portTarget.getQName())
+        .setTargetList(Collections.singletonList(portTarget))
         .build();
 
     ASTConnectStatement connectSourceToTargetStatement = MontiThingsMill
@@ -168,36 +177,30 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
         .setConnector(connectorSourceToTarget)
         .build();
 
-    ASTPortAccess portInjectorIn = MontiThingsMill
-        .portAccessBuilder()
-        .setQualifiedName(getInPortName())
-        .build();
-
     ASTDisconnectStatement disconnectSourceToInjectorStatement = MontiThingsMill
         .disconnectStatementBuilder()
         .setSource(portSource)
-        .setTarget(0, portInjectorIn)
-        .build();
-
-    ASTPortAccess portInjectorOut = MontiThingsMill
-        .portAccessBuilder()
-        .setQualifiedName(getOutPortName())
+        .setTargetList(Collections.singletonList(portInjectorIn))
         .build();
 
     ASTDisconnectStatement disconnectInjectorToTargetStatement = MontiThingsMill
         .disconnectStatementBuilder()
         .setSource(portInjectorOut)
-        .setTarget(0, portTarget)
+        .setTargetList(Collections.singletonList(portTarget))
+        .build();
+
+    ASTMCJavaBlock disconnectBehaviorBlock = MontiThingsMill
+        .mCJavaBlockBuilder()
+        .addMCBlockStatement(connectSourceToTargetStatement)
+        .addMCBlockStatement(disconnectSourceToInjectorStatement)
+        .addMCBlockStatement(disconnectInjectorToTargetStatement)
         .build();
 
     ASTBehavior disconnectBehavior = MontiThingsMill
         .behaviorBuilder()
-        .setName(0, getInPortName())
+        .setNamesList(Collections.singletonList(getOutPortName()))
+        .setMCJavaBlock(disconnectBehaviorBlock)
         .build();
-
-    disconnectBehavior.getMCJavaBlock().addMCBlockStatement(connectSourceToTargetStatement);
-    disconnectBehavior.getMCJavaBlock().addMCBlockStatement(disconnectSourceToInjectorStatement);
-    disconnectBehavior.getMCJavaBlock().addMCBlockStatement(disconnectInjectorToTargetStatement);
 
     targetComp.getComponentType().getBody().addArcElement(disconnectBehavior);
   }
