@@ -147,7 +147,7 @@ public class ExternalPortMockTrafo extends BasicTransformations implements Monti
     }
     else {
       // adds new subcomponent representing the external input
-      mockedPortComp = createCompilationUnit(targetComp.getPackage(), mockedComponentName);
+      mockedPortComp = createCompilationUnit(targetComp.getPackage(), mockedComponentName, false);
 
       if (isIngoingPort) {
         addBehavior(mockedPortComp, qNameInstance, port);

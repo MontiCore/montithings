@@ -3,7 +3,7 @@
 package hierarchy;
 
 component Sink {
-  port in String value;
+  port in int value;
 
   behavior value {
     log("Sink: " + value);

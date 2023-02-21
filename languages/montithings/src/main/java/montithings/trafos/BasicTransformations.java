@@ -83,7 +83,7 @@ public abstract class BasicTransformations {
 
         addSubComponentInstantiation(outermostComponent, fullyQName, interceptorComponentName.toLowerCase());
 
-        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
+        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName, false);
 
         flagAsGenerated(interceptorComponent);
 
@@ -239,7 +239,7 @@ public abstract class BasicTransformations {
      * @return ASTMACompilationUnit of the newly created component
      */
     protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId,
-                                                         String typeName) {
+                                                         String typeName, boolean isInterface) {
         ASTMACompilationUnitBuilder compBuilder = MontiThingsMill.mACompilationUnitBuilder();
         compBuilder.setPackage(packageId);
 
@@ -251,7 +251,7 @@ public abstract class BasicTransformations {
         typeBuilder.setHead(headBuilder.build());
         typeBuilder.setBody(bodyBuilder.build());
         typeBuilder.setName(typeName);
-        typeBuilder.setMTComponentModifier(componentModifier.build());
+        typeBuilder.setMTComponentModifier(componentModifier.setInterface(isInterface).build());
         compBuilder.setComponentType(typeBuilder.build());
 
         return compBuilder.build();

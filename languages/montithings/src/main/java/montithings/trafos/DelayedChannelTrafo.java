@@ -173,7 +173,7 @@ public class DelayedChannelTrafo extends BasicTransformations implements MontiTh
 
     // actually creates the model of the intercepting component
     ASTMACompilationUnit channelInterceptorComponent = createCompilationUnit(comp.getPackage(),
-      channelInterceptorComponentName);
+      channelInterceptorComponentName, false);
 
     List<Long> delays = dataHandler
       .getNetworkDelays(qCompSourceName, portSource.getPort(), qCompTargetName,
