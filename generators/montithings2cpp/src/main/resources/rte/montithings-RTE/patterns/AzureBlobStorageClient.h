@@ -3,7 +3,6 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "cpp-base64/base64.h"
 #include "cpp-httplib/httplib.h"
-#include "hmac_sha256/hmac_sha256.h"
 #include <iomanip>
 #include <iostream>
 #include <sstream>
