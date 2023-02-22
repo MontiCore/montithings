@@ -11,7 +11,8 @@ RUN apk add --update-cache \
 	mosquitto-dev \
 	protobuf-dev \
 	py3-protobuf \
-	libressl-dev
+	libressl-dev \
+    libpqxx-dev
 
 # Switch into our working directory for building NNG
 WORKDIR /usr/src/app

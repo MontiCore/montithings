@@ -152,7 +152,7 @@ if (APPLE OR WIN32)
   find_package(OpenSSL REQUIRED)
   target_link_libraries(MontiThingsRTE cpp-base64 OpenSSL::SSL OpenSSL::Crypto)
 else()
-  target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto)
+  target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto pqxx pq)
 endif()
 
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
