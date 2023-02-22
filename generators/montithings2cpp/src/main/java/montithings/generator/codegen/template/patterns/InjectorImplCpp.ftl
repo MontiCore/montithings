@@ -20,12 +20,14 @@ namespace montithings {
             // 1. Insert data in postgres db
             PostgresClient *pgClient = new PostgresClient();
 
-            std::string query = 
-              "CREATE SCHEMA IF NOT EXISTS public; " +
-              "CREATE TABLE IF NOT EXISTS public.${compname} (id serial NOT NULL, timestamp timestamp NOT NULL DEFAULT now(), data ${pgPortType} NOT NULL, CONSTRAINT ${compname}_pk PRIMARY KEY (id)); " +
-              "INSERT INTO public.${compname} (data) VALUES (" + input.getIn().value() + ");";
+            std::stringstream query;
+            query << "CREATE SCHEMA IF NOT EXISTS public; "
+                  << "CREATE TABLE IF NOT EXISTS public.${compname} (id serial NOT NULL, "
+                     "timestamp timestamp NOT NULL DEFAULT now(), data ${pgPortType} NOT NULL, "
+                     "CONSTRAINT ${compname}_pk PRIMARY KEY (id)); "
+                  << "INSERT INTO public.${compname} (data) VALUES (" << input.getIn ().value () << ");";
 
-            pgClient->exec(query, connectionStr);
+            pgClient->exec (query.str (), connectionStr);
 
             // 2. Pass values through
             result.setOut(input.getIn().value());

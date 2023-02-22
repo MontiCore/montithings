@@ -2,6 +2,7 @@ ${tc.signature("packageName", "compname")}
 #pragma once
 #include "${compname}ImplTOP.h"
 #include "patterns/PostgresClient.h"
+#include <sstream>
 
 namespace montithings {
     namespace ${packageName} {
