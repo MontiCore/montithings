@@ -22,16 +22,15 @@ import montithings.util.TrafoUtil;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class GrafanaPatternTrafo extends BasicTransformations implements MontiThingsTrafo {
   private static final String TOOL_NAME = "GrafanaPatternTrafo";
+  private static final String INJECTOR_IF_NAME = "InjectorIF";
   private static final String INJECTOR_NAME = "Injector";
   private static final String INJECTOR_IMPL_CPP = "template/patterns/InjectorImplCpp.ftl";
   private static final String INJECTOR_IMPL_HEADER = "template/patterns/InjectorImplHeader.ftl";
+  private ASTMACompilationUnit injectorIF;
   private ASTMACompilationUnit injectorComp;
   private final File modelPath;
   private final File targetHwcPath;
@@ -70,17 +69,19 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
       for (String qCompSourceName : qCompSourceNames) {
         for (String qCompTargetName : qCompTargetNames) {
           if (!alreadyTransformed.contains(qCompSourceName + "," + qCompTargetName)) {
-            //  Generate Injector Component Type (only once like in Anomaly Detection)
-            if (injectorComp == null) {
+            if (injectorComp == null || injectorIF == null) {
               ASTMCType portType = this.getPortType(connection.target, targetComp, allModels, this.modelPath);
+              injectorIF = getInjectorIF(portType, targetComp);
               injectorComp = getInjectorComp(portType, targetComp);
+              additionalTrafoModels.add(injectorIF);
               additionalTrafoModels.add(injectorComp);
+              allModels.add(injectorIF);
               allModels.add(injectorComp);
             }
 
             //  Add port to targetComp of Injector Component Type for this connection
-            addPort(targetComp, getConnectPortName(), false, getInjectorPortType(injectorComp));
-            addPort(targetComp, getDisconnectPortName(), false, getInjectorPortType(injectorComp));
+            addPort(targetComp, getConnectPortName(), false, getInjectorPortType(injectorIF));
+            addPort(targetComp, getDisconnectPortName(), false, getInjectorPortType(injectorIF));
 
             // Add behavior block for the new port
             generateBehavior(targetComp, connection.source, connection.target);
@@ -113,6 +114,9 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
   private String mtToPgPortType(String mtPortType) {
     switch (mtPortType) {
+      case "boolean":
+        return "boolean";
+
       case "int":
       case "double":
       case "float":
@@ -123,8 +127,15 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
     }
   }
 
+  private ASTMACompilationUnit getInjectorIF(ASTMCType portType, ASTMACompilationUnit targetComp) {
+    ASTMACompilationUnit pInjectorComp = createCompilationUnit(targetComp.getPackage(), INJECTOR_IF_NAME, true);
+    addPort(pInjectorComp, "in", false, portType);
+    addPort(pInjectorComp, "out", true, portType);
+    return pInjectorComp;
+  }
+
   private ASTMACompilationUnit getInjectorComp(ASTMCType portType, ASTMACompilationUnit targetComp) {
-    ASTMACompilationUnit pInjectorComp = createCompilationUnit(targetComp.getPackage(), INJECTOR_NAME, false);
+    ASTMACompilationUnit pInjectorComp = createCompilationUnit(targetComp.getPackage(), INJECTOR_NAME, false, Optional.of(INJECTOR_IF_NAME));
     addPort(pInjectorComp, "in", false, portType);
     addPort(pInjectorComp, "out", true, portType);
     generateInjectorBehavior(pInjectorComp, portType);
@@ -261,11 +272,11 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
   }
 
   private String getConnectPortName() {
-    return "connect" + "Co" + injectorComp.getComponentType().getName();
+    return "connect" + "Co" + injectorIF.getComponentType().getName();
   }
 
   private String getDisconnectPortName() {
-    return "disconnect" + "Co" + injectorComp.getComponentType().getName();
+    return "disconnect" + "Co" + injectorIF.getComponentType().getName();
   }
 
   private void generate(File target, String name, String fileExtension, String template, Object... templateArguments) {

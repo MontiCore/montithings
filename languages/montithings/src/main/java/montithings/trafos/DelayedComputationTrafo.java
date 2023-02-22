@@ -110,7 +110,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
     String compName = TrafoUtil.replaceDotsWithCamelCase(origQNameInstance);
     String compWrapperName = compName + "Wrapper";
     ASTMACompilationUnit compWrapper = createCompilationUnit(origComp.getPackage(),
-      compWrapperName, false);
+      compWrapperName);
 
     // copies parameters from original model
     List<ASTArcParameter> parameterList = origComp.getComponentType().getHead()
@@ -121,7 +121,7 @@ public class DelayedComputationTrafo extends BasicTransformations implements Mon
     ASTMACompilationUnit delayComp;
     String delayCompName = compWrapperName + "ComputationDelay";
 
-    delayComp = createCompilationUnit(origComp.getPackage(), delayCompName, false);
+    delayComp = createCompilationUnit(origComp.getPackage(), delayCompName);
 
     /* ============================================================ */
     /* ======================= INSTANTIATIONS ===================== */

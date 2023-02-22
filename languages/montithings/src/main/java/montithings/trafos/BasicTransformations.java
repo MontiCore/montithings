@@ -83,7 +83,7 @@ public abstract class BasicTransformations {
 
         addSubComponentInstantiation(outermostComponent, fullyQName, interceptorComponentName.toLowerCase());
 
-        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName, false);
+        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
 
         flagAsGenerated(interceptorComponent);
 
@@ -238,8 +238,16 @@ public abstract class BasicTransformations {
      * @param typeName  Name of the component type, e.g. Source
      * @return ASTMACompilationUnit of the newly created component
      */
-    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId,
-                                                         String typeName, boolean isInterface) {
+    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId, String typeName) {
+        return this.createCompilationUnit(packageId, typeName, false, Optional.empty());
+    }
+
+    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId, String typeName, boolean isInterface) {
+        return this.createCompilationUnit(packageId, typeName, isInterface, Optional.empty());
+    }
+
+    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId, String typeName,
+                                                         boolean isInterface, Optional<String> implementsName) {
         ASTMACompilationUnitBuilder compBuilder = MontiThingsMill.mACompilationUnitBuilder();
         compBuilder.setPackage(packageId);
 
@@ -252,6 +260,12 @@ public abstract class BasicTransformations {
         typeBuilder.setBody(bodyBuilder.build());
         typeBuilder.setName(typeName);
         typeBuilder.setMTComponentModifier(componentModifier.setInterface(isInterface).build());
+
+        if (implementsName.isPresent()) {
+            ASTMTImplementsBuilder mTImplementsBuilder = MontiThingsMill.mTImplementsBuilder().setNamesList(Collections.singletonList(implementsName.get()));
+            typeBuilder.setMTImplements(mTImplementsBuilder.build());
+        }
+
         compBuilder.setComponentType(typeBuilder.build());
 
         return compBuilder.build();
