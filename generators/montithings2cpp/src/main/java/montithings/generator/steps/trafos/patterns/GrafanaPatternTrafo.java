@@ -181,14 +181,19 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
         .setTargetList(Collections.singletonList(portTarget))
         .build();
 
-
-    ASTPortAccess portInjectorIn = MontiThingsMill
+    ASTPortAccess connectPortInjectorIn = MontiThingsMill
         .portAccessBuilder()
         .setComponent(getConnectPortName())
         .setPort("in")
         .build();
 
-    ASTPortAccess portInjectorOut = MontiThingsMill
+    ASTPortAccess disconnectPortInjectorIn = MontiThingsMill
+        .portAccessBuilder()
+        .setComponent(getDisconnectPortName())
+        .setPort("in")
+        .build();
+
+    ASTPortAccess disconnectPortInjectorOut = MontiThingsMill
         .portAccessBuilder()
         .setComponent(getDisconnectPortName())
         .setPort("out")
@@ -197,7 +202,7 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
     ASTConnector connectorSourceToInjector = MontiThingsMill
         .connectorBuilder()
         .setSource(portSource.getQName())
-        .setTargetList(Collections.singletonList(portInjectorIn))
+        .setTargetList(Collections.singletonList(connectPortInjectorIn))
         .build();
 
     ASTConnectStatement connectSourceToInjectorStatement = MontiThingsMill
@@ -207,7 +212,7 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
     ASTConnector connectorInjectorToTarget = MontiThingsMill
         .connectorBuilder()
-        .setSource(getDisconnectPortName() + ".out")
+        .setSource(getConnectPortName() + ".out")
         .setTargetList(Collections.singletonList(portTarget))
         .build();
 
@@ -246,12 +251,12 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
     ASTDisconnectStatement disconnectSourceToInjectorStatement = MontiThingsMill
         .disconnectStatementBuilder()
         .setSource(portSource)
-        .setTargetList(Collections.singletonList(portInjectorIn))
+        .setTargetList(Collections.singletonList(disconnectPortInjectorIn))
         .build();
 
     ASTDisconnectStatement disconnectInjectorToTargetStatement = MontiThingsMill
         .disconnectStatementBuilder()
-        .setSource(portInjectorOut)
+        .setSource(disconnectPortInjectorOut)
         .setTargetList(Collections.singletonList(portTarget))
         .build();
 
