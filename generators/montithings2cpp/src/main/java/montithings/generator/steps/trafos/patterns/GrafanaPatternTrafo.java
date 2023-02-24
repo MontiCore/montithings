@@ -30,8 +30,6 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
   private static final String INJECTOR_NAME = "Injector";
   private static final String INJECTOR_IMPL_CPP = "template/patterns/InjectorImplCpp.ftl";
   private static final String INJECTOR_IMPL_HEADER = "template/patterns/InjectorImplHeader.ftl";
-  private ASTMACompilationUnit injectorIF;
-  private ASTMACompilationUnit injectorComp;
   private final File modelPath;
   private final File targetHwcPath;
   private final File srcHwcPath;
@@ -69,22 +67,20 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
       for (String qCompSourceName : qCompSourceNames) {
         for (String qCompTargetName : qCompTargetNames) {
           if (!alreadyTransformed.contains(qCompSourceName + "," + qCompTargetName)) {
-            if (injectorComp == null || injectorIF == null) {
               ASTMCType portType = this.getPortType(connection.target, targetComp, allModels, this.modelPath);
-              injectorIF = getInjectorIF(portType, targetComp);
-              injectorComp = getInjectorComp(portType, targetComp);
+              ASTMACompilationUnit injectorIF = getInjectorIF(portType, targetComp, qCompSourceName, qCompTargetName);
+              ASTMACompilationUnit injectorComp = getInjectorComp(portType, targetComp, qCompSourceName, qCompTargetName);
               additionalTrafoModels.add(injectorIF);
               additionalTrafoModels.add(injectorComp);
               allModels.add(injectorIF);
               allModels.add(injectorComp);
-            }
 
             //  Add port to targetComp of Injector Component Type for this connection
-            addPort(targetComp, getConnectPortName(), false, getInjectorPortType(injectorIF));
-            addPort(targetComp, getDisconnectPortName(), false, getInjectorPortType(injectorIF));
+            addPort(targetComp, getConnectPortName(injectorIF), false, getInjectorPortType(injectorIF));
+            addPort(targetComp, getDisconnectPortName(injectorIF), false, getInjectorPortType(injectorIF));
 
             // Add behavior block for the new port
-            generateBehavior(targetComp, connection.source, connection.target);
+            generateBehavior(targetComp, connection.source, connection.target, injectorIF);
 
             // Set connection as transformed
             alreadyTransformed.add(qCompSourceName + "," + qCompTargetName);
@@ -127,39 +123,44 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
     }
   }
 
-  private ASTMACompilationUnit getInjectorIF(ASTMCType portType, ASTMACompilationUnit targetComp) {
-    ASTMACompilationUnit pInjectorComp = createCompilationUnit(targetComp.getPackage(), INJECTOR_IF_NAME, true);
+  private ASTMACompilationUnit getInjectorIF(ASTMCType portType, ASTMACompilationUnit targetComp, String qCompSourceName,
+                                             String qCompTargetName) {
+    String injectorIFName = TrafoUtil.replaceDotsWithCamelCase(qCompSourceName) + TrafoUtil.replaceDotsWithCamelCase(qCompTargetName) + INJECTOR_IF_NAME;
+    ASTMACompilationUnit pInjectorComp = createCompilationUnit(targetComp.getPackage(), injectorIFName, true);
     addPort(pInjectorComp, "in", false, portType);
     addPort(pInjectorComp, "out", true, portType);
     return pInjectorComp;
   }
 
-  private ASTMACompilationUnit getInjectorComp(ASTMCType portType, ASTMACompilationUnit targetComp) {
-    ASTMACompilationUnit pInjectorComp = createCompilationUnit(targetComp.getPackage(), INJECTOR_NAME, false, Optional.of(INJECTOR_IF_NAME));
+  private ASTMACompilationUnit getInjectorComp(ASTMCType portType, ASTMACompilationUnit targetComp, String qCompSourceName,
+                                               String qCompTargetName) {
+    String injectorName = TrafoUtil.replaceDotsWithCamelCase(qCompSourceName) + TrafoUtil.replaceDotsWithCamelCase(qCompTargetName) + INJECTOR_NAME;
+    String injectorIFName = TrafoUtil.replaceDotsWithCamelCase(qCompSourceName) + TrafoUtil.replaceDotsWithCamelCase(qCompTargetName) + INJECTOR_IF_NAME;
+    ASTMACompilationUnit pInjectorComp = createCompilationUnit(targetComp.getPackage(), injectorName, false, Optional.of(injectorIFName));
     addPort(pInjectorComp, "in", false, portType);
     addPort(pInjectorComp, "out", true, portType);
-    generateInjectorBehavior(pInjectorComp, portType);
+    generateInjectorBehavior(pInjectorComp, portType, injectorName);
     return pInjectorComp;
   }
 
-  private void generateInjectorBehavior(ASTMACompilationUnit comp, ASTMCType portType) {
+  private void generateInjectorBehavior(ASTMACompilationUnit comp, ASTMCType portType, String injectorName) {
     File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
     File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
 
-    this.generate(tHwcPath, INJECTOR_NAME + "Impl", ".cpp", INJECTOR_IMPL_CPP,
-        comp.getPackage().getQName(), INJECTOR_NAME, mtToPgPortType(portType.toString()));
+    this.generate(tHwcPath, injectorName + "Impl", ".cpp", INJECTOR_IMPL_CPP,
+        comp.getPackage().getQName(), injectorName, mtToPgPortType(portType.toString()));
 
-    this.generate(sHwcPath, INJECTOR_NAME + "Impl", ".cpp", INJECTOR_IMPL_CPP,
-        comp.getPackage().getQName(), INJECTOR_NAME, mtToPgPortType(portType.toString()));
+    this.generate(sHwcPath, injectorName + "Impl", ".cpp", INJECTOR_IMPL_CPP,
+        comp.getPackage().getQName(), injectorName, mtToPgPortType(portType.toString()));
 
-    this.generate(tHwcPath, INJECTOR_NAME + "Impl", ".h", INJECTOR_IMPL_HEADER,
-        comp.getPackage().getQName(), INJECTOR_NAME);
+    this.generate(tHwcPath, injectorName + "Impl", ".h", INJECTOR_IMPL_HEADER,
+        comp.getPackage().getQName(), injectorName);
 
-    this.generate(sHwcPath, INJECTOR_NAME + "Impl", ".h", INJECTOR_IMPL_HEADER,
-        comp.getPackage().getQName(), INJECTOR_NAME);
+    this.generate(sHwcPath, injectorName + "Impl", ".h", INJECTOR_IMPL_HEADER,
+        comp.getPackage().getQName(), injectorName);
   }
 
-  private void generateBehavior(ASTMACompilationUnit targetComp, ASTPortAccess portSource, ASTPortAccess portTarget) {
+  private void generateBehavior(ASTMACompilationUnit targetComp, ASTPortAccess portSource, ASTPortAccess portTarget, ASTMACompilationUnit injectorIF) {
     // On the parent component for each connection insert behavior block to connect with the injector eventually i.e.
     //
     // behavior connectCoName {
@@ -183,19 +184,19 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
     ASTPortAccess connectPortInjectorIn = MontiThingsMill
         .portAccessBuilder()
-        .setComponent(getConnectPortName())
+        .setComponent(getConnectPortName(injectorIF))
         .setPort("in")
         .build();
 
     ASTPortAccess disconnectPortInjectorIn = MontiThingsMill
         .portAccessBuilder()
-        .setComponent(getDisconnectPortName())
+        .setComponent(getDisconnectPortName(injectorIF))
         .setPort("in")
         .build();
 
     ASTPortAccess disconnectPortInjectorOut = MontiThingsMill
         .portAccessBuilder()
-        .setComponent(getDisconnectPortName())
+        .setComponent(getDisconnectPortName(injectorIF))
         .setPort("out")
         .build();
 
@@ -212,7 +213,7 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
     ASTConnector connectorInjectorToTarget = MontiThingsMill
         .connectorBuilder()
-        .setSource(getConnectPortName() + ".out")
+        .setSource(getConnectPortName(injectorIF) + ".out")
         .setTargetList(Collections.singletonList(portTarget))
         .build();
 
@@ -230,7 +231,7 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
     ASTBehavior connectBehavior = MontiThingsMill
         .behaviorBuilder()
-        .setNamesList(Collections.singletonList(getConnectPortName()))
+        .setNamesList(Collections.singletonList(getConnectPortName(injectorIF)))
         .setMCJavaBlock(connectBehaviorBlock)
         .build();
 
@@ -269,18 +270,18 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
     ASTBehavior disconnectBehavior = MontiThingsMill
         .behaviorBuilder()
-        .setNamesList(Collections.singletonList(getDisconnectPortName()))
+        .setNamesList(Collections.singletonList(getDisconnectPortName(injectorIF)))
         .setMCJavaBlock(disconnectBehaviorBlock)
         .build();
 
     targetComp.getComponentType().getBody().addArcElement(disconnectBehavior);
   }
 
-  private String getConnectPortName() {
+  private String getConnectPortName(ASTMACompilationUnit injectorIF) {
     return "connect" + "Co" + injectorIF.getComponentType().getName();
   }
 
-  private String getDisconnectPortName() {
+  private String getDisconnectPortName(ASTMACompilationUnit injectorIF) {
     return "disconnect" + "Co" + injectorIF.getComponentType().getName();
   }
 
