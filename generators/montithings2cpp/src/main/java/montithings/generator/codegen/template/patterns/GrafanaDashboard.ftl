@@ -1,171 +1,174 @@
+${tc.signature("panels", "title")}
 {
-  "annotations": {
-    "list": [
+  \"annotations\": {
+    \"list\": [
       {
-        "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+        \"builtIn\": 1,
+        \"datasource\": {
+          \"type\": \"grafana\",
+          \"uid\": \"-- Grafana --\"
         },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "target": {
-          "limit": 100,
-          "matchAny": false,
-          "tags": [],
-          "type": "dashboard"
+        \"enable\": true,
+        \"hide\": true,
+        \"iconColor\": \"rgba(0, 211, 255, 1)\",
+        \"name\": \"Annotations & Alerts\",
+        \"target\": {
+          \"limit\": 100,
+          \"matchAny\": false,
+          \"tags\": [],
+          \"type\": \"dashboard\"
         },
-        "type": "dashboard"
+        \"type\": \"dashboard\"
       }
     ]
   },
-  "editable": true,
-  "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
-  "id": 13,
-  "links": [],
-  "liveNow": false,
-  "panels": [
+  \"editable\": true,
+  \"fiscalYearStartMonth\": 0,
+  \"graphTooltip\": 0,
+  \"id\": 13,
+  \"links\": [],
+  \"liveNow\": false,
+  \"panels\": [
+    <#list panels as panel>
     {
-      "datasource": {
-        "type": "postgres",
-        "uid": "eOSdhkbVk"
+      \"datasource\": {
+        \"type\": \"postgres\",
+        \"uid\": \"eOSdhkbVk1234\"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+      \"fieldConfig\": {
+        \"defaults\": {
+          \"color\": {
+            \"mode\": \"palette-classic\"
           },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+          \"custom\": {
+            \"axisCenteredZero\": false,
+            \"axisColorMode\": \"text\",
+            \"axisLabel\": \"\",
+            \"axisPlacement\": \"auto\",
+            \"barAlignment\": 0,
+            \"drawStyle\": \"line\",
+            \"fillOpacity\": 0,
+            \"gradientMode\": \"none\",
+            \"hideFrom\": {
+              \"legend\": false,
+              \"tooltip\": false,
+              \"viz\": false
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            \"lineInterpolation\": \"linear\",
+            \"lineWidth\": 1,
+            \"pointSize\": 5,
+            \"scaleDistribution\": {
+              \"type\": \"linear\"
             },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
+            \"showPoints\": \"auto\",
+            \"spanNulls\": false,
+            \"stacking\": {
+              \"group\": \"A\",
+              \"mode\": \"none\"
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            \"thresholdsStyle\": {
+              \"mode\": \"off\"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+          \"mappings\": [],
+          \"thresholds\": {
+            \"mode\": \"absolute\",
+            \"steps\": [
               {
-                "color": "green",
-                "value": null
+                \"color\": \"green\",
+                \"value\": null
               },
               {
-                "color": "red",
-                "value": 80
+                \"color\": \"red\",
+                \"value\": 80
               }
             ]
           }
         },
-        "overrides": []
+        \"overrides\": []
       },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 0
+      \"gridPos\": {
+        \"h\": 8,
+        \"w\": 12,
+        \"x\": ${panel.getX()},
+        \"y\": ${panel.getY()}
       },
-      "id": 2,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+      \"id\": 2,
+      \"options\": {
+        \"legend\": {
+          \"calcs\": [],
+          \"displayMode\": \"list\",
+          \"placement\": \"bottom\",
+          \"showLegend\": true
         },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
+        \"tooltip\": {
+          \"mode\": \"single\",
+          \"sort\": \"none\"
         }
       },
-      "targets": [
+      \"targets\": [
         {
-          "datasource": {
-            "type": "postgres",
-            "uid": "eOSdhkbVk"
+          \"datasource\": {
+            \"type\": \"postgres\",
+            \"uid\": \"eOSdhkbVk\"
           },
-          "editorMode": "builder",
-          "format": "table",
-          "rawSql": "SELECT data, \"timestamp\" FROM injector LIMIT 50 ",
-          "refId": "A",
-          "sql": {
-            "columns": [
+          \"editorMode\": \"builder\",
+          \"format\": \"table\",
+          \"rawSql\": \"SELECT data, \\"timestamp\\" FROM ${panel.getSqlTable()} LIMIT 50 \",
+          \"refId\": \"A\",
+          \"sql\": {
+            \"columns\": [
               {
-                "parameters": [
+                \"parameters\": [
                   {
-                    "name": "data",
-                    "type": "functionParameter"
+                    \"name\": \"data\",
+                    \"type\": \"functionParameter\"
                   }
                 ],
-                "type": "function"
+                \"type\": \"function\"
               },
               {
-                "parameters": [
+                \"parameters\": [
                   {
-                    "name": "\"timestamp\"",
-                    "type": "functionParameter"
+                    \"name\": \"\\"timestamp\\"\",
+                    \"type\": \"functionParameter\"
                   }
                 ],
-                "type": "function"
+                \"type\": \"function\"
               }
             ],
-            "groupBy": [
+            \"groupBy\": [
               {
-                "property": {
-                  "type": "string"
+                \"property\": {
+                  \"type\": \"string\"
                 },
-                "type": "groupBy"
+                \"type\": \"groupBy\"
               }
             ],
-            "limit": 50
+            \"limit\": 50
           },
-          "table": "injector"
+          \"table\": \"${panel.getTitle()}\"
         }
       ],
-      "title": "Data",
-      "type": "timeseries"
+      \"title\": \"${panel.getSqlTable()}\",
+      \"type\": \"timeseries\"
     }
+    </#list>
   ],
-  "schemaVersion": 37,
-  "style": "dark",
-  "tags": [],
-  "templating": {
-    "list": []
+  \"schemaVersion\": 37,
+  \"style\": \"dark\",
+  \"tags\": [],
+  \"templating\": {
+    \"list\": []
   },
-  "time": {
-    "from": "now-6h",
-    "to": "now"
+  \"time\": {
+    \"from\": \"now-6h\",
+    \"to\": \"now\"
   },
-  "timepicker": {},
-  "timezone": "",
-  "title": "ConnectionName",
-  "uid": "lUkAhkb4k",
-  "version": 3,
-  "weekStart": ""
+  \"timepicker\": {},
+  \"timezone\": \"\",
+  \"title\": \"${title}\",
+  \"uid\": \"lUkAhkb4k1234\",
+  \"version\": 3,
+  \"weekStart\": \"\"
 }

@@ -51,6 +51,10 @@ public class ConfigParams {
 
   protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
 
+  protected String grafanaInstanceUrl = "";
+
+  protected String grafanaApiKey = "";
+
   /**
    * property for target platform
    */
@@ -251,6 +255,22 @@ public class ConfigParams {
 
   public void setApplyGrafanaPattern(ApplyPatterns applyPatterns) {
     this.applyGrafanaPattern = applyPatterns;
+  }
+
+  public String getGrafanaApiKey() {
+    return grafanaApiKey;
+  }
+
+  public void setGrafanaApiKey(String grafanaApiKey) {
+    this.grafanaApiKey = grafanaApiKey;
+  }
+
+  public String getGrafanaInstanceUrl() {
+    return grafanaInstanceUrl;
+  }
+
+  public void setGrafanaInstanceUrl(String grafanaInstanceUrl) {
+    this.grafanaInstanceUrl = grafanaInstanceUrl;
   }
 
   public File getHwcPath() {

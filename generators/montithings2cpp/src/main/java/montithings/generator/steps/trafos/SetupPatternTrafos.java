@@ -27,7 +27,7 @@ public class SetupPatternTrafos extends GeneratorStep {
         }
 
         if (config.getApplyGrafanaPattern() == ApplyPatterns.ON) {
-            tool.addTrafo(new GrafanaPatternTrafo(state));
+            tool.addTrafo(new GrafanaPatternTrafo(state, config.getGrafanaInstanceUrl(), config.getGrafanaApiKey()));
         }
     }
 }

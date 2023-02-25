@@ -27,6 +27,8 @@ public enum Options {
   APPLYANOMALYDETECTIONPATTERN("applyAnomalyDetectionPattern"),
   APPLYNETWORKMINIMIZATIONPATTERN("applyNetworkMinimizationPattern"),
   APPLYGRAFANAPATTERN("applyGrafanaPattern"),
+  GRAFANAINSTANCEURL("grafanaInstanceUrl"),
+  GRAFANAAPIKEY("grafanaApiKey"),
   REPLAYDATAFILE("replayDataPath"),
   MAINCOMP("mainComponent"),
   MAINCOMP_SHORT("main"),

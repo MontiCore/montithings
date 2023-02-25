@@ -53,6 +53,8 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setApplyAnomalyDetectionPattern(getApplyAnomalyDetectionPattern());
     configParams.setApplyNetworkMinimizationPattern(getApplyNetworkMinimizationPattern());
     configParams.setApplyGrafanaPattern(getApplyGrafanaPattern());
+    configParams.setGrafanaInstanceUrl(getGrafanaInstanceUrl());
+    configParams.setGrafanaApiKey(getGrafanaApiKey());
     configParams.setReplayDataFile(getReplayDataFile());
     configParams.setHwcPath(getHWCPath());
     configParams.setProjectVersion(getVersion());
@@ -362,6 +364,16 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "off"
     return ApplyPatterns.OFF;
+  }
+
+  public String getGrafanaInstanceUrl() {
+    Optional<String> grafanaInstanceUrl = getAsString(Options.GRAFANAINSTANCEURL);
+    return grafanaInstanceUrl.orElse("");
+  }
+
+  public String getGrafanaApiKey() {
+    Optional<String> grafanaApiKey = getAsString(Options.GRAFANAAPIKEY);
+    return grafanaApiKey.orElse("");
   }
 
   public File getReplayDataFile() {

@@ -30,14 +30,21 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
   private static final String INJECTOR_NAME = "Injector";
   private static final String INJECTOR_IMPL_CPP = "template/patterns/InjectorImplCpp.ftl";
   private static final String INJECTOR_IMPL_HEADER = "template/patterns/InjectorImplHeader.ftl";
+  private static final String TF = "template/patterns/GrafanaPatternTf.ftl";
+  private final String grafanaInstanceUrl;
+  private final String grafanaApiKey;
   private final File modelPath;
   private final File targetHwcPath;
   private final File srcHwcPath;
+  private final GeneratorToolState state;
 
-  public GrafanaPatternTrafo(GeneratorToolState state) {
+  public GrafanaPatternTrafo(GeneratorToolState state, String grafanaInstanceUrl, String grafanaApiKey) {
     this.modelPath = state.getModelPath();
     this.srcHwcPath = state.getHwcPath();
     this.targetHwcPath = Paths.get(state.getTarget().getAbsolutePath(), "hwc").toFile();
+    this.state = state;
+    this.grafanaInstanceUrl = grafanaInstanceUrl;
+    this.grafanaApiKey = grafanaApiKey;
   }
 
   public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
@@ -52,6 +59,8 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
     List<String> qCompInstanceNames = this.getQCompInstanceNames(targetComp, allModels);
     List<String> alreadyTransformed = new ArrayList<>();
 
+    List<GrafanaPanel> panels = new ArrayList<>();
+
     for (FindConnectionsVisitor.Connection connection : this.getConnections(targetComp)) {
       List<String> qCompSourceNames = qCompInstanceNames;
       List<String> qCompTargetNames = qCompInstanceNames;
@@ -63,6 +72,9 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
       if (connection.target.isPresentComponent()) {
         qCompTargetNames = TrafoUtil.getFullyQInstanceName(allModels, targetComp, connection.target.getComponent());
       }
+
+      int x = 0;
+      int y = 0;
 
       for (String qCompSourceName : qCompSourceNames) {
         for (String qCompTargetName : qCompTargetNames) {
@@ -82,6 +94,9 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
             // Add behavior block for the new port
             generateBehavior(targetComp, connection.source, connection.target, injectorIF);
 
+            String panelTitle = TrafoUtil.replaceDotsWithCamelCase(qCompSourceName) + TrafoUtil.replaceDotsWithCamelCase(qCompTargetName) + INJECTOR_IF_NAME;
+            panels.add(new GrafanaPanel(x, y, panelTitle, panelTitle));
+
             // Set connection as transformed
             alreadyTransformed.add(qCompSourceName + "," + qCompTargetName);
           }
@@ -89,7 +104,15 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
       }
     }
 
-    // TODO: Generate TF here like in Network Minimization
+    // Setup grafana provider and postgres db only once
+    // Setup dashboard for each component
+    if (additionalTrafoModels.size() > 0) {
+      this.generateTf(targetComp, panels, targetComp.getComponentType().getName(), !this.state.getHasGrafanaTf());
+
+      if (!this.state.getHasGrafanaTf()) {
+        this.state.setHasGrafanaTf(true);
+      }
+    }
 
     Log.info("Return " + additionalTrafoModels.size() + " additional trafo models", TOOL_NAME);
 
@@ -158,6 +181,15 @@ public class GrafanaPatternTrafo extends BasicTransformations implements MontiTh
 
     this.generate(sHwcPath, injectorName + "Impl", ".h", INJECTOR_IMPL_HEADER,
         comp.getPackage().getQName(), injectorName);
+  }
+
+
+  private void generateTf(ASTMACompilationUnit comp, List<GrafanaPanel> panels, String dashboardTitle, boolean setupProvider) {
+    File tHwcPath = Paths.get(this.targetHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+    File sHwcPath = Paths.get(this.srcHwcPath.getAbsolutePath(), comp.getPackage().getQName()).toFile();
+
+    this.generate(tHwcPath, comp.getComponentType().getName(), ".tf", TF, grafanaInstanceUrl, grafanaApiKey, panels, dashboardTitle, setupProvider);
+    this.generate(sHwcPath, comp.getComponentType().getName(), ".tf", TF, grafanaInstanceUrl, grafanaApiKey, panels, dashboardTitle, setupProvider);
   }
 
   private void generateBehavior(ASTMACompilationUnit targetComp, ASTPortAccess portSource, ASTPortAccess portTarget, ASTMACompilationUnit injectorIF) {
