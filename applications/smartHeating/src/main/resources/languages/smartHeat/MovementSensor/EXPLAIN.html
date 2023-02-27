@@ -1,3 +1,19 @@
-<html><body>
-MovementSensor Explaination
-</body></html>
+<html>
+    <body>
+    <h1>Movement Sensor</h1>
+        <p>This component defines under which circumstances the signal of a movement sensor should activate an action for a thermostat.</p>
+        
+        
+        <h3>Example Model</h3>
+        <p>Activate 2 for 2 hours if threshold 0.6 is exceeded on sensor 2</p>
+        <p>Activate 1 for 5 hours if threshold 0.2 is exceeded on sensor 1</p>
+
+
+        <h3>Model Format Rules</h3>
+        <p>
+            <ul>
+                <li>Every line defines one relation between sensor and thermostat. "Activate 2 for 2 hours if threshold 0.6 is exceeded on sensor 2" means that, the thermostat 2 is activated for 2 hours after the sensor 2 has an output greater that 0.6.</li>
+            </ul>
+        </p>
+    </body>
+</html>

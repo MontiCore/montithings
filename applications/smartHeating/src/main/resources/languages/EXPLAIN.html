@@ -1,1 +1,35 @@
-SmarthHeating System --ToDo explain
+<html>
+    <body>
+    <h1>Smart Heating</h1>
+        <p>This project simulates an adjustable heating system. </newline>
+            It contains following controllable Components:
+        </p>
+        
+        
+        <h3>Example Data Generator</h3>
+        <p>
+            This component exists just for simulation and would not exist in a real implementation. It allows the end-user to adjust the current time, whether or not the time should run, what kepad inputs have been pressed, the state of window and movment sensors.
+        </p>
+        <h3>Movement Sensor</h3>
+        <p>
+            This component allows the end-user to specify which hermostat a movement sensor should activate, as well as for how longit should be activated an at what threshold this should happen.
+        </p>
+        <h3>Temperature Adjustment Unit</h3>
+        <p>
+            This component allows the end-user to specify different modes, which overwrite the temperature setting of the thermostat for a definable time when a specific keypad inpout is made.
+        </p>
+        <h3>Thermostat</h3>
+        <p>
+            This component allows the end-user to specify in which month this thermostat should be turned on, as well as which temperature should be active at what time at which day of the week. It is also possible to activate certain heating periods only if movemnt has been detected.
+        </p>
+
+        <h3>Notes</h3>
+        <p>
+            <ul>
+                <li>Inorder to keep the simulation simple time works different in this project. Every two seconds an hour passes and every month is only a week long. There si no smaller increment of time than an hour.</li>
+                <li> Inorder to get any outputs of this simulation you need to read the logs of the simulated output: "docker logs -f smartHeating.heatingSystem.edp"</li>
+                
+            </ul>
+        </p>
+    </body>
+</html>

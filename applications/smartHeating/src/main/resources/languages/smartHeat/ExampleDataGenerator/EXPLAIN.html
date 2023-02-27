@@ -1,3 +1,26 @@
-<html><body>
-    ExampleDataGeneratorImpl Explaination
-</body></html>
+<html>
+    <body>
+    <h1>Example Data Generator</h1>
+        <p>This component generates exampel data, that is needed for ths simulationof this system, in a real world use case of this system all of this data would be provided by many different sensors.
+        </p>
+        
+        
+        <h3>Example Model</h3>
+        <p>Clock = February Tuesday 13 stop</p>
+        <p>KeypadInput = none</p>
+        <p>WindowSensors = 0 - c -> 1, 1 - o -> 1, 2  - c -> 2</p>
+        <p>MovementSensors = 0.3 --> 1 , 0.6 --> 2</p>
+
+
+        <h3>Model Format Rules</h3>
+        <p>
+            <ul>
+                <li>The order of defintion must allways be "Clock", "KeypadInput", "WindowSensors", "MovementSensors"</li>
+                <li>Clock: This line must always specify the date in following order &lt;month&gt;, &lt;weekday&gt;, &lt;time from 0 to 24&gt;, optional: stop. Specifiying stop will stop time in the simulation.</li>
+                <li>KeypadInput: This line will either be a integer or the word "none". Where none means that you don't want to simulate a keypad input.</li>
+                <li>WindowSensors: This line defines the value of multple window tilt sensors, with their id and the id of the thermostat that the value is relevant for. "0 - c -> 1" - means that the sensor with id 0 is closed and this information is relevant for thermostat 1. An open window would be identified using an "o" instead of a "c".</li>
+                <li>MovementSensors: This line defines the current value of the movement sensors. Here "0.3 --> 1" means that the sensor for thermostat 1 currently has a siganl of magnitude 0.3. In this project only the thermostat ids 1 and 2 can be used.</li>
+            </ul>
+        </p>
+    </body>
+</html>

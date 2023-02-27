@@ -1,3 +1,22 @@
-<html><body>
-Thermostat Explaination
-</body></html>
+<html>
+    <body>
+    <h1>Thermostat</h1>
+        <p>This component defines when and with which temperature under what circumstances the theoratically connected radiator should heat.</p>
+        
+        
+        <h3>Example Model</h3>
+        <p>Month: February, January, December, November</p>
+        <p>Days: (Monday -> 5-20 : 21°c) , (Tuesday -> 7-12: 10°c , 12-20 [M]: 20°c), (Saturday -> 0-24 [M]: 20°c)</p>
+
+
+
+        <h3>Model Format Rules</h3>
+        <p>
+            <ul>
+                <li>Every valid model needs to define following values in this order: "Month", "Days"</li>
+                <li>Month: This line defines all month in which the system should heat. These are to be defined in a comma seperated list.</li>
+                <li>Days: This line defines at which day and time which temperature shoulkd be used to heat. This is done with a comma seperated list of entries for each relevant day of the week. These entries must look like this. "(&lt;day of the week&gt; -> &lt;start time&gt;-&lt;end time&gt; &lt;optional [M]&gt;: &lt;temperature&gt;, &lt;start time 2&gt;-&lt;end time 2&gt; &lt;optional [M]&gt;: &lt;temperature 2&gt;)" where the optional value "[M]" stands for wether or not htis rule shoudl only be applied when movement has beed detected. For each day you can define an arbitrary amount of rules in a comma seperated list.</li>
+            </ul>
+        </p>
+    </body>
+</html>
