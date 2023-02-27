@@ -8,9 +8,9 @@ from PrinterImplTOP import PrinterImplTOP
 
 class PrinterImpl(PrinterImplTOP):
 
-    def __init__(self):
+    def __init__(self,instanceName):
         super().__init__(
-            client_id="calculationMachine.Machine.print", 
+            client_id=instanceName, 
             reconnect_on_failure=True
         )
 

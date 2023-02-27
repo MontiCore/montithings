@@ -8,9 +8,9 @@ from CalculatorImplTOP import CalculatorImplTOP
 
 class CalculatorImpl(CalculatorImplTOP):
 
-    def __init__(self):
+    def __init__(self,instanceName):
         super().__init__(
-            client_id="calculationMachine.Machine.calc", 
+            client_id=instanceName,
             reconnect_on_failure=True
         )
 

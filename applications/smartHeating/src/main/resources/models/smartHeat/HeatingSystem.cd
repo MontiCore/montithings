@@ -1,0 +1,46 @@
+package smartHeat;
+
+classdiagram HeatingSystem {
+    package ExampleDataGeneratorMessages {
+        class WindowSensorState {
+            public boolean state;
+            public int sensor_id;
+        }
+        class MovementSensorValue {
+            public float activation_value;
+            public int sensor_id;
+        }
+        class KeyPadInput {
+            public int value;
+        }
+        class Clock {
+            public int time;
+            public String day;
+            public String month;
+        }
+    }
+    package WindowSensorCombinerMessages {
+        class WindowRoomState {
+            public boolean state;
+        }
+    }
+    package MovementSensorMessages {
+        class MovementState {
+            public boolean state;
+        }
+    }
+    package TemperatureAdjustmentUnitMessages {
+        class TemperatureOverwrite {
+            public int temp;
+            public boolean overwrite;
+        }
+        class ModeConfiguration {
+            public String config;
+        }
+    }
+    package ThermostatMessages {
+        class Temperature {
+            public int temp;
+        }
+    }
+}

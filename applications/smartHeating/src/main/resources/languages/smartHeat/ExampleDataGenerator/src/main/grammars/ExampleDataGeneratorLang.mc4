@@ -1,0 +1,17 @@
+// (c) https://github.com/MontiCore/monticore
+
+grammar ExampleDataGeneratorLang extends de.monticore.MCBasics, de.monticore.literals.MCJavaLiterals {
+  Defs = Clock KeypadInput WindowSensors MovementSensors;
+
+  Clock = "Clock" "=" month:Month day:Days time:Num_Int ["stop"]?;
+  Month = (["January"]|["February"]|["March"]|["April"]|["May"]|["June"]|["July"]|["August"]|["September"]|["October"]|["November"]|["December"]);
+  Days = (["Monday"]|["Tuesday"]|["Wednesday"]|["Thursday"]|["Friday"]|["Saturday"]|["Sunday"]);
+  
+  KeypadInput = "KeypadInput" "=" (["none"] | input:Num_Int);
+
+  WindowSensors = "WindowSensors" "="sensors:(WindowSens ||",")*;
+  WindowSens = sensorId:Num_Int "-" (closed:["c"] |open:["o"]) "->"  roomId:Num_Int;
+
+  MovementSensors = "MovementSensors" "=" sensors:( MovementSens|| ",")*;
+  MovementSens = sensorValue:Num_Double "-->" roomId:Num_Int;
+}

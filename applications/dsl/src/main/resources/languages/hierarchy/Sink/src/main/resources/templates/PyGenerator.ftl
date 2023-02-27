@@ -8,9 +8,9 @@ from SinkImplTOP import SinkImplTOP
 
 class SinkImpl(SinkImplTOP):
 
-    def __init__(self):
+    def __init__(self,instanceName):
         super().__init__(
-            client_id="hierarchy.Example.sink", # client ID has to match the fully qualified name in Example.mt
+            client_id=instanceName,
             reconnect_on_failure=True
         )
 

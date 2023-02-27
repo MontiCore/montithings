@@ -95,7 +95,7 @@ task groovyTask(type: SEGroovyTask) {
   modelPath(file("$projectDir/src/main/resources/models"))
   handcodedPath(file("$projectDir/src/main/resources/hwc"))
   languagePath(file("$projectDir/src/main/resources/languages")
-  arguments.put("mainComponent", "hierarchy.Example")
+  arguments.put("mainComponent", "calculationMachine.Machine")
   arguments.put("splitting", "LOCAL")
   arguments.put("messageBroker", "MQTT")
   arguments.put("serialization", "PROTOBUF")

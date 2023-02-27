@@ -1,0 +1,106 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+import de.se_rwth.commons.logging.Finding
+import de.se_rwth.commons.logging.Log
+
+import java.security.Permission
+import java.util.stream.Collectors
+
+buildscript {
+  dependencies {
+    classpath "montithings.generators:montithings2cpp:$version"
+  }
+}
+
+plugins {
+  id "se-groovy" version "7.2.0-SNAPSHOT"
+}
+
+group = "montithings.applications"
+
+sourceSets {
+  main {
+    allSource.srcDirs += ["$buildDir/generated-sources"]
+  }
+}
+
+configurations {
+  mt_resources
+}
+
+dependencies {
+  mt_resources("montithings.generators:montithings2cpp:$version") {
+    capabilities {
+      requireCapability("montithings.generators:montithings2cpp-$montithings_resources_classifier")
+    }
+    transitive = false
+  }
+
+  implementation "de.se_rwth.commons:se-commons-groovy:$se_commons_version"
+  implementation "montithings.generators:cd2cpp:$version"
+  implementation "montithings.generators:montithings2cpp:$version"
+  runtimeOnly "ch.qos.logback:logback-classic:$logback_version"
+}
+
+task unpackResources(type: Sync) {
+  def genSrcDir = "$buildDir/generated-sources"
+  exclude 'META-INF', 'META-INF/**', "montithings/**", "test/**"
+
+  dependsOn configurations.mt_resources
+  from configurations.mt_resources.collect { zipTree(it) }
+  // the "rte" folder's subfolder 'montithings-RTE' should be
+  // unpacked directly without being in an 'rte' folder
+  eachFile { fcd ->
+    if (fcd.relativePath.segments[0] == "rte")
+      fcd.relativePath = new RelativePath(true, fcd.relativePath.segments.drop(1))
+  }
+  includeEmptyDirs = false
+  into "$genSrcDir"
+}
+
+task unpackTests(type: Sync) {
+  def genTestDir = "$buildDir/generated-test-sources"
+  exclude 'META-INF', 'META-INF/**', '**'
+  include 'test/**'
+
+  dependsOn configurations.mt_resources
+  from configurations.mt_resources.collect { zipTree(it) }
+  into "$genTestDir/test"
+}
+
+task groovyTask(type: SEGroovyTask) {
+
+  doFirst {
+    // workaround so delay system exit:
+    System.setSecurityManager(new SecurityManager() {
+      @Overridealc
+      public void checkExit(int status) {
+        String error = Log.getFindings().stream().
+            filter({ f -> f.getType().equals(Finding.Type.ERROR) })
+            .map({ f -> f.getMsg() })
+            .collect(Collectors.joining("\n"))
+        ant.fail(error)
+      }
+
+      @Override
+      public void checkPermission(Permission perm) {
+        // Allow other activities by default
+      }
+    })
+  }
+  baseClass = "montithings.generator.codegen.MontiThingsGeneratorScript"
+  script = "montithings/generator/mtgenerator.groovy"
+
+  outputDir = file "$buildDir/generated-sources"
+  modelPath(file("$projectDir/src/main/resources/models"))
+  handcodedPath(file("$projectDir/src/main/resources/hwc"))
+  languagePath(file("$projectDir/src/main/resources/languages")
+  arguments.put("mainComponent", "smartHeat.HeatingSystem")
+  arguments.put("splitting", "LOCAL")
+  arguments.put("messageBroker", "MQTT")
+  arguments.put("serialization", "PROTOBUF")
+  arguments.put("version", "$version")
+}
+
+groovyTask.mustRunAfter unpackResources
+build.dependsOn unpackResources, groovyTask//, unpackRte

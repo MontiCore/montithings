@@ -25,7 +25,8 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_start(){
     std::string pythonPath="python/${className}.py";
     std::string hostArg = "--host=" + brokerHostName;
     std::string portArg = "--port=" + std::to_string(brokerPort);
-    char *pythonArgs[]={strdup(interpreter.data()),strdup(pythonPath.data()),strdup(hostArg.data()),strdup(portArg.data()),NULL};
+    std::string nameArg = "--name=" + instanceName;
+    char *pythonArgs[]={strdup(interpreter.data()),strdup(pythonPath.data()),strdup(hostArg.data()),strdup(portArg.data()),strdup(nameArg.data()),NULL};
     execvp(strdup(interpreter.data()),pythonArgs);
   }
   else{
