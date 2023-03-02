@@ -4,9 +4,11 @@ package montithings.generator.helper;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
+import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.config.ConfigParams;
 import montithings.generator.config.SplittingMode;
 import montithings.generator.config.TargetPlatform;
+import montithings.generator.data.GeneratorToolState;
 import montithings.generator.data.Models;
 import org.apache.commons.io.FileUtils;
 
@@ -27,14 +29,21 @@ import java.util.stream.Stream;
 public class FileHelper {
 
   public static void copyHwcToTarget(File target, File hwcPath, String fqComponentName,
-    ConfigParams config, Models models) {
+    ConfigParams config, Models models, GeneratorToolState state) {
     Set<File> hwcFiles = new HashSet<>();
     try {
       // Get all files in HWC folder
       hwcFiles.addAll(Files.walk(hwcPath.toPath()).map(Path::toFile).collect(Collectors.toSet()));
+
       // remove the ones that implement components
-      for (String comp : models.getMontithings()) {
-        hwcFiles.removeAll(getHwcClasses(hwcPath, comp));
+      // Find all components including those that have no file because they were added by trafos
+      Set<ComponentTypeSymbol> components = new HashSet<>();
+      for (IMontiThingsScope s : state.getSymTab().getSubScopes()) {
+        components.addAll(s.getComponentTypeSymbols().values());
+      }
+
+      for (ComponentTypeSymbol comp : components) {
+        hwcFiles.removeAll(getHwcClasses(hwcPath, comp.getFullName()));
       }
 
       // re-add those related to the current component

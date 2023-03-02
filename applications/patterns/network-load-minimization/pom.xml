@@ -9,7 +9,7 @@
         <version>7.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>anomaly-detection</artifactId>
+    <artifactId>network-load-minimization</artifactId>
 
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 
@@ -269,10 +269,10 @@
                                 <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                                 <main>hierarchy.Example</main>
                                 <version>${project.version}</version>
-                                <!--<messageBroker>MQTT</messageBroker>-->
-                                <!--<splitting>LOCAL</splitting>-->
-                                <!--<applyAnomalyDetectionPattern>OFF</applyAnomalyDetectionPattern>-->
-                                <applyAnomalyDetectionPattern>ON</applyAnomalyDetectionPattern>
+                                <messageBroker>MQTT</messageBroker>
+                                <splitting>LOCAL</splitting>
+                                <!--<applyNetworkMinimizationPattern>OFF</applyNetworkMinimizationPattern>-->
+                                <applyNetworkMinimizationPattern>ON</applyNetworkMinimizationPattern>
                             </arguments>
                             <script>montithings/generator/mtgenerator.groovy</script>
                         </configuration>
