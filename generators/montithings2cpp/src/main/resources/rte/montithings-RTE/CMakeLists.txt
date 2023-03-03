@@ -152,8 +152,11 @@ if (APPLE OR WIN32)
   find_package(OpenSSL REQUIRED)
   target_link_libraries(MontiThingsRTE cpp-base64 OpenSSL::SSL OpenSSL::Crypto)
 else()
-  target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto pqxx pq)
+  target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto)
 endif()
+
+find_package(PostgreSQL REQUIRED)
+target_link_libraries(MontiThingsRTE PostgreSQL::PostgreSQL)
 
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)

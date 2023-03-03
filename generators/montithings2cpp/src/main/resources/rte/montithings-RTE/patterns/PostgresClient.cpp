@@ -7,11 +7,21 @@ void PostgresClient::exec(std::string query, std::string connectionStr)
 {
   try
   {
-    pqxx::connection con(connectionStr);
-    pqxx::work client(con);
-    client.exec(query);
-    client.commit();
-    con.disconnect();
+    PGconn *conn = PQconnectdb(connectionStr.c_str());
+    if (PQstatus(conn) != CONNECTION_OK)
+    {
+      fprintf(stderr, "Connection to database failed: %s", PQerrorMessage(conn));
+      PQfinish(conn);
+    }
+    PGresult *res = PQexec(conn, query.c_str());
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+      fprintf(stderr, "Query failed failed: %s", PQerrorMessage(conn));
+      PQclear(res);
+      PQfinish(conn);
+    }
+    PQclear(res);
+    PQfinish(conn);
   }
   catch (const std::exception &e)
   {

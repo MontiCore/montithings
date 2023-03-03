@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <pqxx/pqxx>
+#include "libpq-fe.h"
 
 class PostgresClient
 {
