@@ -18,6 +18,7 @@ RUN apk add --update-cache --force-overwrite \
 WORKDIR /usr/src/app
 
 # Build libpqxx
+ENV build_alias=x86_64-unknown-linux-gnu
 RUN git clone https://github.com/jtv/libpqxx.git
 RUN cd /usr/src/app/libpqxx \
 && git fetch && git fetch --tags \
