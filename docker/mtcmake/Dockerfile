@@ -17,16 +17,6 @@ RUN apk add --update-cache --force-overwrite \
 # Switch into our working directory for building NNG
 WORKDIR /usr/src/app
 
-# Build libpqxx
-ENV build_alias=x86_64-unknown-linux-gnu
-RUN git clone https://github.com/jtv/libpqxx.git
-RUN cd /usr/src/app/libpqxx \
-&& git fetch && git fetch --tags \
-&& git checkout 6.4 \
-&& ./configure --disable-documentation \
-&& make \
-&& make install
-
 # Build NNG
 RUN git clone https://github.com/nanomsg/nng.git
 RUN cd /usr/src/app/nng \
