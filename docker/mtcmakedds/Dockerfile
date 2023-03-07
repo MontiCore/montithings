@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
+    libpq-dev \
     libssl-dev \
     perl-base \
     perl-modules
