@@ -36,7 +36,7 @@ public class SDForMTTestPrettyPrinter implements SDForMTTestHandler {
     return this.printer;
   }
 
-  @Override
+  /*@Override
   public void handle(ASTAfterStatement node) {
     getPrinter().print("after");
     node.getTimeSpan().accept(getTraverser());
@@ -54,5 +54,5 @@ public class SDForMTTestPrettyPrinter implements SDForMTTestHandler {
     getPrinter().print(", ");
     node.getTo().accept(getTraverser());
     getPrinter().print("]");
-  }
+  }*/
 }

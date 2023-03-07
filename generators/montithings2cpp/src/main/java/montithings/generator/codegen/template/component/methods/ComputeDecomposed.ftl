@@ -29,9 +29,47 @@ ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
     <#-- Different from atomic component we do not set a "result" here, because the composed
          components are not allowed to send messages on outgoing ports
      -->
+  <#if hasTest>
+    if (!toTest.has_value()) {
+      ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+      ${tc.includeArgs("template.component.helper.ComputeResults", [comp, config, true, className])}
+      ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
+      toTest = tl::optional<bool>(true);
+    }
+    if (toTest.has_value() && toTest.value()) {
+      GarbageCollectorState* garbageCollectorState;
+      if (!testStarted) {
+        testStarted = true;
+        ${tc.includeArgs("template.component.helper.ComputeResults", [comp, config, true, className])}
+
+        // TODO State setzen von anderem Component!
+        // TODO States von allen eigenen Komponenten sichern!
+        garbageCollectorState = collector.getState();
+        garbageCollectorState->setTest(true); // Dies verhindert die Ausführung von compute();
+        collectorResult.setRemainingSpace(5);
+        collector.getInterface()->getPortRemainingSpace()->setNextValue(collectorResult.getRemainingSpaceMessage());
+
+
+      } else {
+
+        if (!collector.getInterface()->getPortPickUpSignal()->hasValue(this->uuid)) {
+        } else {
+          // TODO States zurücksetzen
+        }
+        garbageCollectorState->setTest(false);
+        toTest = tl::optional<bool>(false);
+
+      }
+      delay(1000);
+      GarbageCollectionResult res;
+      ${Identifier.getResultName()}.setConnect(input.getConnect());
+      interface.getPortConnect()->setNextValue(res.getConnectMessage());
+    }
+  <#else>
   ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
   ${tc.includeArgs("template.component.helper.ComputeResults", [comp, config, true, className])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
+  </#if>
   }
 </#list>
 

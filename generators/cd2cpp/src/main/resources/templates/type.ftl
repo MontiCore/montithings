@@ -179,10 +179,11 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     )
     <#if FieldHelper.hasFieldFromInterface(type)>
       :
+      ${fieldsFromInterface[0].interfaceName}(
       <#list fieldsFromInterface as fieldFromInterface>
-        ${fieldFromInterface.interfaceName}(${fieldFromInterface.name})
-        <#if !fieldFromInterface?is_last>,</#if>
+        ${fieldFromInterface.name}<#if !fieldFromInterface?is_last>, </#if>
       </#list>
+      )
     </#if>
     {
        <#list mandatoryFields as mandatoryField>

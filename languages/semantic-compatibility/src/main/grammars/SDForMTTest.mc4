@@ -7,13 +7,12 @@
  * application has for components it connects with at run-time. This is done by modeling
  * inputs on incoming ports and the expected outgoing values.
  */
-grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monticore.SIUnitLiterals // TODO AKL change to component grammar
+component grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monticore.SIUnitLiterals
 {
-  start SDArtifact;
 
-  interface SD4MTElement extends SDElement;
+  // interface SD4MTElement extends SDElement;
 
-  AfterStatement implements SD4MTElement =
+  /*AfterTestStatement implements SD4MTElement =
     "after" TimeSpan;
 
   interface TimeSpan;
@@ -22,5 +21,9 @@ grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monticore.SIUni
     SIUnitLiteral;
 
   TimeSpanSet implements TimeSpan =
-    "[" from:SIUnitLiteral? "," to:SIUnitLiteral? "]";
+    "[" from:SIUnitLiteral? "," to:SIUnitLiteral? "]";*/
+
+  TestBlock =
+    "test" "(" ((Name ":" Literal) | ",") ")" "{"
+      SDBody "}";
 }

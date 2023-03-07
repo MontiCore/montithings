@@ -11,6 +11,7 @@ grammar MontiThings extends MontiArc,
                             ConditionCatch,
                             SetDefinitions,
                             Behavior,
+                            SDForMTTest,
                             OCLExpressions,
                             OptionalOperators,
                             SIUnitTypes4Computing,
@@ -118,6 +119,7 @@ grammar MontiThings extends MontiArc,
     MTSCTransition implements SCStateElement, SCStatechartElement =
        Stereotype? sourceNames:(Name@SCState || ",")+ "->" targetNames:(Name@SCState || ",")+ SCTBody ";" ;
 
+    MTTestBlock implements ArcElement = TestBlock;
 
     /**
      * Used to re-send the last message on a port.

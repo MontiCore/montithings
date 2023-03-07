@@ -30,6 +30,7 @@
     <module>log-filtering</module>
     <module>record-transform-replay</module>
     <module>patterns</module>
+    <module>smart-garbage-collection</module>
   </modules>
 
 </project>
