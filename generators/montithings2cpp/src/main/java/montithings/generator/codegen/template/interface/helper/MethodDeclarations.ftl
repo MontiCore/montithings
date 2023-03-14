@@ -18,9 +18,9 @@ ${tc.signature("comp", "config", "existsHWC")}
   <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
   <#assign type = "Message<" + type + ">">
   <#assign name = port.getName()>
-  InOutPort<${type}>* getPortTest__${name?cap_first}();
-  void addInPortTest__${name?cap_first}(Port<${type}>* ${name});
-  void removeInPortTest__${name?cap_first}(Port<${type}>* ${name});
-  void addOutPortTest__${name?cap_first}(Port<${type}>* ${name});
-  void removeOutPortTest__${name?cap_first}(Port<${type}>* ${name});
+  InOutPort<${type}>* getPortTest__${name}();
+  void addInPortTest__${name}(Port<${type}>* ${name});
+  void removeInPortTest__${name}(Port<${type}>* ${name});
+  void addOutPortTest__${name}(Port<${type}>* ${name});
+  void removeOutPortTest__${name}(Port<${type}>* ${name});
 </#list>

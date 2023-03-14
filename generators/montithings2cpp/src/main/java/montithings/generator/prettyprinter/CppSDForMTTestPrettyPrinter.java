@@ -58,7 +58,7 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print("message.setPayload(");
       out.getExpression().accept(getTraverser());
       getPrinter().println(");");
-      getPrinter().print("interface.getPortTest__" + StringTransformations.capitalize(out.getName()) + "()");
+      getPrinter().print("interface.getPortTest__" + out.getName() + "()");
       getPrinter().println("->setNextValue(message);");
     }
 
@@ -67,7 +67,7 @@ public class CppSDForMTTestPrettyPrinter
 
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
       getPrinter().print("while (std::chrono::high_resolution_clock::now() <= end && !interface.getPortTest__");
-      getPrinter().println(StringTransformations.capitalize(in.getName()) + "()->hasValue(uuid)) {");
+      getPrinter().println(in.getName() + "()->hasValue(uuid)) {");
       getPrinter().println("std::this_thread::yield();");
       getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (10));");
       getPrinter().println("}");

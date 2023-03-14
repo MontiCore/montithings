@@ -41,8 +41,8 @@ std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
 
   // incoming test-port ${p.getName()}
 
-  this->interface.addInPortTest__${p.getName()?cap_first} (new MqttPort<Message<${type}>>(modelInstanceNameIn + "/test__${p.getName()}",
+  this->interface.addInPortTest__${p.getName()} (new MqttPort<Message<${type}>>(modelInstanceNameIn + "/test__${p.getName()}",
   std::unique_ptr<${serializerName}<Message<${type}>>>{new ${serializerName}<Message<${type}>>{}}
   ,true, mqttClientInstance, mqttClientLocalInstance));
-  interface.getPortTest__${p.getName()?cap_first} ()->attach (this);
+  interface.getPortTest__${p.getName()} ()->attach (this);
 </#list>
