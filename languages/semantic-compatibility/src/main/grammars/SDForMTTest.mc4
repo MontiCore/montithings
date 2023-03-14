@@ -30,7 +30,7 @@ component grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monti
       ExpectValueOnPort+
     "}";
 
-  SendValueOnPort = Name "=" Expression;
-  WaitStatement = "wait" SIUnitLiteral;
-  ExpectValueOnPort = "assert" Name "==" Expression;
+  SendValueOnPort = Name "=" Expression ";" ;
+  WaitStatement = "wait" SIUnitLiteral ";" ;
+  ExpectValueOnPort = "assert" Name "==" Expression ";" ;
 }

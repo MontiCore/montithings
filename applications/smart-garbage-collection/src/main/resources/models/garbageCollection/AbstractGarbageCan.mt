@@ -7,9 +7,4 @@ interface component AbstractGarbageCan {
 
   int typeOfTrash = 2;
   int fillLevel = 0;
-
-  test (fillLevel:30) {
-    //fillableSpace: 20;
-    assert pickUpSignal == 0;
-  }
 }

@@ -5,6 +5,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import montithings._ast.ASTMontiThingsNode;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter;
+import sdformttest._ast.ASTTestBlock;
 
 import java.util.Stack;
 
@@ -15,6 +16,10 @@ public class CppPrettyPrinter {
   }
 
   public static String print(ASTExpression node) {
+    return getPrinter().prettyprint(node);
+  }
+
+  public static String print(ASTTestBlock node) {
     return getPrinter().prettyprint(node);
   }
 

@@ -3,16 +3,20 @@ package montithings.generator.prettyprinter;
 
 
 import arcbasis._ast.ASTConnector;
+import arcbasis._ast.ASTPortAccess;
 import behavior._ast.ASTConnectStatement;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
+import de.se_rwth.commons.StringTransformations;
 import montithings.MontiThingsMill;
 import sdformttest._ast.ASTExpectValueOnPort;
 import sdformttest._ast.ASTSendValueOnPort;
 import sdformttest._ast.ASTTestBlock;
 import sdformttest._visitor.SDForMTTestHandler;
 import sdformttest._visitor.SDForMTTestTraverser;
+
+import java.util.List;
 
 
 public class CppSDForMTTestPrettyPrinter
@@ -27,20 +31,76 @@ public class CppSDForMTTestPrettyPrinter
 
   @Override
   public void handle(ASTTestBlock node) {
-    for (ASTSendValueOnPort out : node.getSendValueOnPortList()) {
-      ASTConnector connector = MontiThingsMill.connectorBuilder()
-        .setSource("test__" + out.getName())
-        .addTarget("connect." + out.getName()).build(); // TODO statt connect korrekten Namen des Ports
-      ASTConnectStatement connectStatement = MontiThingsMill.connectStatementBuilder().setConnector(connector).build();
-      connectStatement.accept(getTraverser());
+    List<ASTSendValueOnPort> sendValueOnPortList = node.getSendValueOnPortList();
+    List<ASTExpectValueOnPort> expectValueOnPortList = node.getExpectValueOnPortList();
+    for (ASTSendValueOnPort out : sendValueOnPortList) {
+      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
+      printGetExternalPortAccessFQN(out.getName());
+      getPrinter().print("), replaceDotsBySlashes (");
+      getPrinter().print("instanceName");
+      getPrinter().print(" + \"/" + "test__" + out.getName() + "\"");
+      getPrinter().print("));");
     }
-    for (ASTExpectValueOnPort in : node.getExpectValueOnPortList()) {
-      ASTConnector connector = MontiThingsMill.connectorBuilder()
-        .setSource("connect." + in.getName()) // TODO statt connect korrekten Namen des Ports
-        .addTarget("test__" + in.getName()).build();
-      ASTConnectStatement connectStatement = MontiThingsMill.connectStatementBuilder().setConnector(connector).build();
-      connectStatement.accept(getTraverser());
+    for (ASTExpectValueOnPort in : expectValueOnPortList) {
+      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
+      getPrinter().print("instanceName");
+      getPrinter().print(" + \"/" + "test__" + in.getName() + "\"");
+      getPrinter().print("), replaceDotsBySlashes (");
+      printGetExternalPortAccessFQN(in.getName());
+      getPrinter().print("));");
     }
+
+    getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (1000));");
+
+    for (ASTSendValueOnPort out : sendValueOnPortList) {
+      getPrinter().println("Message<int> message = Message<int>();"); // TODO Type dynamisch
+      getPrinter().println("message.setUuid(sole::uuid4());");
+      getPrinter().print("message.setPayload(");
+      out.getExpression().accept(getTraverser());
+      getPrinter().println(");");
+      getPrinter().print("interface.getPortTest__" + StringTransformations.capitalize(out.getName()) + "()");
+      getPrinter().println("->setNextValue(message);");
+    }
+
+    getPrinter().println("auto end = std::chrono::high_resolution_clock::now()\n" +
+      "+ std::chrono::seconds(5);"); // TODO WaitStatement
+
+    for (ASTExpectValueOnPort in : expectValueOnPortList) {
+      getPrinter().print("while (std::chrono::high_resolution_clock::now() <= end && !interface.getPortTest__");
+      getPrinter().println(StringTransformations.capitalize(in.getName()) + "()->hasValue(uuid)) {");
+      getPrinter().println("std::this_thread::yield();");
+      getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (10));");
+      getPrinter().println("}");
+    }
+
+    // Disconnect test ports
+    for (ASTSendValueOnPort out : sendValueOnPortList) {
+      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/disconnect/\" + ");
+      printGetExternalPortAccessFQN(out.getName());
+      getPrinter().print("), replaceDotsBySlashes (");
+      getPrinter().print("instanceName");
+      getPrinter().print(" + \"/" + "test__" + out.getName() + "\"");
+      getPrinter().print("));");
+    }
+    for (ASTExpectValueOnPort in : expectValueOnPortList) {
+      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/disconnect/\" + ");
+      getPrinter().print("instanceName");
+      getPrinter().print(" + \"/" + "test__" + in.getName() + "\"");
+      getPrinter().print("), replaceDotsBySlashes (");
+      printGetExternalPortAccessFQN(in.getName());
+      getPrinter().print("));");
+    }
+
+    getPrinter().println("if (std::chrono::high_resolution_clock::now() <= end) {");
+  }
+
+
+  protected void printGetExternalPortAccessFQN(String s) { // TODO weg von connect
+    getPrinter().print(
+      "input.get" + "Connect" + " ().value ()" +
+        ".get" + StringTransformations.capitalize(s) + " ()" +
+        ".getFullyQualifiedName ()"
+    );
   }
 
   protected void printTime(ASTSIUnitLiteral lit) {

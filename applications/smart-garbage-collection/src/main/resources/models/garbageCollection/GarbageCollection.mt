@@ -13,13 +13,9 @@ component GarbageCollection {
     collector.remainingSpace -> connect.fillableSpace;
     connect.pickUpSignal -> collector.pickUpSignal;
     connect.trashType -> collector.trashType;
-  } with test {
-
-  }
-
-  behavior disconnect {
-    collector.remainingSpace -/> disconnect.fillableSpace;
-    disconnect.pickUpSignal -/> collector.pickUpSignal;
-    disconnect.trashType -/> collector.trashType;
+  } test {
+    fillableSpace = 70;
+    wait 1s;
+    assert pickUpSignal == 1;
   }
 }

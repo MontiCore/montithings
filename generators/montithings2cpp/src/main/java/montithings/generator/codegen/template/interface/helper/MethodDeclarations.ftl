@@ -15,7 +15,7 @@ ${tc.signature("comp", "config", "existsHWC")}
   double getPort${name?cap_first}ConversionFactor();
 </#list>
 <#list ComponentHelper.getPortsToTest(comp) as port>
-  <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(comp, port, config)>
   <#assign type = "Message<" + type + ">">
   <#assign name = port.getName()>
   InOutPort<${type}>* getPortTest__${name?cap_first}();

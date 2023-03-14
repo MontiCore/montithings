@@ -1358,7 +1358,7 @@ public class ComponentHelper {
       for (ASTSendValueOnPort out : testBlock.getSendValueOnPortList()) {
         SymTypeExpression type = tc.typeOf(out.getExpression());
         ports.add(MontiThingsMill.portSymbolBuilder()
-          .setIncoming(true).setName("test__" + out.getName()).setType(type).build());
+          .setIncoming(true).setName(out.getName()).setType(type).build());
       }
     }
     return ports;
@@ -1370,7 +1370,7 @@ public class ComponentHelper {
       for (ASTExpectValueOnPort in : testBlock.getExpectValueOnPortList()) {
         SymTypeExpression type = tc.typeOf(in.getExpression());
         ports.add(MontiThingsMill.portSymbolBuilder()
-          .setIncoming(false).setName("test__" + in.getName()).setType(type).build());
+          .setIncoming(false).setName(in.getName()).setType(type).build());
       }
     }
     return ports;
@@ -1387,5 +1387,9 @@ public class ComponentHelper {
     ports.addAll(getIncomingPortsToTest(comp));
     ports.addAll(getOutgoingPortsToTest(comp));
     return ports;
+  }
+
+  public static String printTestBlock(ASTBehavior behavior) {
+    return CppPrettyPrinter.print(behavior.getTestBlock());
   }
 }

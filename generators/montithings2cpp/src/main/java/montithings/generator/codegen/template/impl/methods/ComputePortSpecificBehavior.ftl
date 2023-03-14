@@ -6,7 +6,7 @@ ${Utils.printTemplateArguments(comp)}
 ${compname}Result${generics}
 ${className}${generics}::compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}
 <#if ComponentHelper.hasTest(comp)>
-    (${compname}Input${generics} ${Identifier.getInputName()}, sole::uuid uuid);
+    (${compname}Input${generics} ${Identifier.getInputName()}, sole::uuid uuid)
 <#else>
     (${compname}Input${generics} ${Identifier.getInputName()})
 </#if>
@@ -16,7 +16,7 @@ ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [comp, config])}
 
 <#if ComponentHelper.hasTest(comp)>
-    ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input, sole::uuid uuid);
+    ${ComponentHelper.printTestBlock(behavior)}
 </#if>
 
 ${ComponentHelper.printJavaBlock(behavior.getMCJavaBlock(), logTracingEnabled)}
