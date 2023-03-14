@@ -24,6 +24,13 @@ component grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monti
     "[" from:SIUnitLiteral? "," to:SIUnitLiteral? "]";*/
 
   TestBlock =
-    "test" "(" ((Name ":" Literal) | ",") ")" "{"
-      SDBody "}";
+    "test" ("(" ((Name ":" Expression) | ",") ")")? "{"
+      SendValueOnPort+
+      WaitStatement
+      ExpectValueOnPort+
+    "}";
+
+  SendValueOnPort = Name "=" Expression;
+  WaitStatement = "wait" SIUnitLiteral;
+  ExpectValueOnPort = "assert" Name "==" Expression;
 }

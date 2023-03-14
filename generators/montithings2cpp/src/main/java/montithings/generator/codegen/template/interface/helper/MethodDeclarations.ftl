@@ -14,3 +14,13 @@ ${tc.signature("comp", "config", "existsHWC")}
   void setPort${name?cap_first}ConversionFactor(double ${name}ConversionFactor);
   double getPort${name?cap_first}ConversionFactor();
 </#list>
+<#list ComponentHelper.getPortsToTest(comp) as port>
+  <#assign type = TypesPrinter.getRealPortCppTypeString(port.getComponent().get(), port, config)>
+  <#assign type = "Message<" + type + ">">
+  <#assign name = port.getName()>
+  InOutPort<${type}>* getPortTest__${name?cap_first}();
+  void addInPortTest__${name?cap_first}(Port<${type}>* ${name});
+  void removeInPortTest__${name?cap_first}(Port<${type}>* ${name});
+  void addOutPortTest__${name?cap_first}(Port<${type}>* ${name});
+  void removeOutPortTest__${name?cap_first}(Port<${type}>* ${name});
+</#list>

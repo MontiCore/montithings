@@ -35,6 +35,7 @@ public class CppPrettyPrinter {
     printer.getTraverser().setMCCommonStatementsHandler(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setMCBasicTypesHandler(new CppMCBasicTypesPrettyPrinter(printer.getPrinter()));
 
+    printer.getTraverser().setSDForMTTestHandler(new CppSDForMTTestPrettyPrinter(printer.getPrinter()));
 
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
     Stack<ASTExpression> expressions = new Stack<>();

@@ -28,12 +28,14 @@ import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
+import de.monticore.types.check.TypeCheck;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.se_rwth.commons.StringTransformations;
 import de.se_rwth.commons.logging.Log;
 import montiarc._ast.ASTArcSync;
 import montiarc._ast.ASTArcTiming;
+import montithings.MontiThingsMill;
 import montithings._ast.*;
 import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
@@ -43,6 +45,9 @@ import montithings.generator.config.ConfigParams;
 import montithings.generator.config.SplittingMode;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
 import montithings.generator.visitor.*;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.MontiThingsTypeCheck;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import montithings.util.ClassDiagramUtil;
 import montithings.util.GenericBindingUtil;
 import mtconfig._ast.ASTCompConfig;
@@ -58,6 +63,9 @@ import portextensions._ast.ASTBufferedPort;
 import portextensions._ast.ASTSyncStatement;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
+import sdformttest._ast.ASTExpectValueOnPort;
+import sdformttest._ast.ASTSendValueOnPort;
+import sdformttest._ast.ASTTestBlock;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -1324,4 +1332,60 @@ public class ComponentHelper {
       .equals("RECORD_AND_REPLAY_GENERATED");
   }
 
+  public static boolean hasTestForPort(ComponentTypeSymbol comp, PortSymbol portSymbol) {
+    return getPortSpecificBehaviors(comp)
+      .stream().filter(b -> b.getNameList().contains(portSymbol.getName()))
+      .filter(b -> b.isPresentTestBlock()).count() > 0;
+  }
+
+  public static boolean hasTest(ComponentTypeSymbol comp) {
+    return getPortSpecificBehaviors(comp)
+      .stream().filter(b -> b.isPresentTestBlock()).count() > 0;
+  }
+
+  public static List<ASTTestBlock> getTestBlocks(ComponentTypeSymbol comp) {
+    return getPortSpecificBehaviors(comp)
+      .stream().filter(b -> b.isPresentTestBlock())
+      .map(b -> b.getTestBlock()).collect(Collectors.toList());
+  }
+
+  MontiThingsTypeCheck tc =
+    new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
+
+  public List<PortSymbol> getOutgoingPortsToTest(ComponentTypeSymbol comp) {
+    List<PortSymbol> ports = new ArrayList<>();
+    for (ASTTestBlock testBlock : getTestBlocks(comp)) {
+      for (ASTSendValueOnPort out : testBlock.getSendValueOnPortList()) {
+        SymTypeExpression type = tc.typeOf(out.getExpression());
+        ports.add(MontiThingsMill.portSymbolBuilder()
+          .setIncoming(true).setName("test__" + out.getName()).setType(type).build());
+      }
+    }
+    return ports;
+  }
+
+  public List<PortSymbol> getIncomingPortsToTest(ComponentTypeSymbol comp) {
+    List<PortSymbol> ports = new ArrayList<>();
+    for (ASTTestBlock testBlock : getTestBlocks(comp)) {
+      for (ASTExpectValueOnPort in : testBlock.getExpectValueOnPortList()) {
+        SymTypeExpression type = tc.typeOf(in.getExpression());
+        ports.add(MontiThingsMill.portSymbolBuilder()
+          .setIncoming(false).setName("test__" + in.getName()).setType(type).build());
+      }
+    }
+    return ports;
+  }
+
+  public List<PortSymbol> getPortsToTest(ComponentTypeSymbol comp) {
+    List<PortSymbol> ports = getIncomingPortsToTest(comp);
+    ports.addAll(getOutgoingPortsToTest(comp));
+    return ports;
+  }
+
+  public List<PortSymbol> getPortsAndPortsToTest(ComponentTypeSymbol comp) {
+    List<PortSymbol> ports = comp.getPorts();
+    ports.addAll(getIncomingPortsToTest(comp));
+    ports.addAll(getOutgoingPortsToTest(comp));
+    return ports;
+  }
 }

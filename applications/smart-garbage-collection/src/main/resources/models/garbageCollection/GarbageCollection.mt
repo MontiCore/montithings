@@ -13,6 +13,8 @@ component GarbageCollection {
     collector.remainingSpace -> connect.fillableSpace;
     connect.pickUpSignal -> collector.pickUpSignal;
     connect.trashType -> collector.trashType;
+  } with test {
+
   }
 
   behavior disconnect {
