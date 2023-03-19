@@ -1,7 +1,7 @@
 # (c) https://github.com/MontiCore/monticore 
 FROM alpine
 
-RUN apk add --update-cache \
+RUN apk add --update-cache --force-overwrite \
 	git \
 	g++ \
 	ninja \
@@ -11,6 +11,7 @@ RUN apk add --update-cache \
 	mosquitto-dev \
 	protobuf-dev \
 	py3-protobuf \
+    libpq-dev \
 	libressl-dev
 
 # Switch into our working directory for building NNG

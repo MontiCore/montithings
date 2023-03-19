@@ -41,7 +41,9 @@ public class ConfigParams {
    */
   protected ReplayMode replayMode = ReplayMode.OFF;
 
-  protected ApplyPatterns applyPatterns = ApplyPatterns.OFF;
+  protected ApplyPatterns applyAnomalyDetectionPattern = ApplyPatterns.OFF;
+
+  protected ApplyPatterns applyNetworkMinimizationPattern = ApplyPatterns.OFF;
 
   protected RecordingMode recordingMode = RecordingMode.OFF;
 
@@ -225,12 +227,20 @@ public class ConfigParams {
     this.replayMode = replayMode;
   }
 
-  public ApplyPatterns getApplyPatterns() {
-    return applyPatterns;
+  public ApplyPatterns getApplyAnomalyDetectionPattern() {
+    return applyAnomalyDetectionPattern;
   }
 
-  public void setApplyPatterns(ApplyPatterns applyPatterns) {
-    this.applyPatterns = applyPatterns;
+  public void setApplyAnomalyDetectionPattern(ApplyPatterns applyPatterns) {
+    this.applyAnomalyDetectionPattern = applyPatterns;
+  }
+
+  public ApplyPatterns getApplyNetworkMinimizationPattern() {
+    return applyNetworkMinimizationPattern;
+  }
+
+  public void setApplyNetworkMinimizationPattern(ApplyPatterns applyPatterns) {
+    this.applyNetworkMinimizationPattern = applyPatterns;
   }
 
   public File getHwcPath() {
@@ -338,7 +348,7 @@ public class ConfigParams {
   }
 
   public void setTypeArguments(
-    Multimap<ComponentTypeSymbol, String> typeArguments) {
+      Multimap<ComponentTypeSymbol, String> typeArguments) {
     this.typeArguments = typeArguments;
   }
 

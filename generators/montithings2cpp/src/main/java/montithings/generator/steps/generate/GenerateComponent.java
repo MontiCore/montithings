@@ -78,7 +78,7 @@ public class GenerateComponent extends GeneratorStep {
         if (!genDeploy) {
           // copy hwc for embedded component manually
           copyHwcToTarget(new File(state.getTarget(), baseModel), state.getHwcPath(), model,
-            state.getConfig(), state.getModels());
+            state.getConfig(), state.getModels(), state);
         }
       }
       // reset splitting mode and message broker
@@ -120,7 +120,7 @@ public class GenerateComponent extends GeneratorStep {
 
     if (state.getConfig().getSplittingMode() != SplittingMode.OFF) {
       copyHwcToTarget(target, state.getHwcPath(), model, state.getConfig(),
-        state.getModels());
+        state.getModels(), state);
     }
   }
 
