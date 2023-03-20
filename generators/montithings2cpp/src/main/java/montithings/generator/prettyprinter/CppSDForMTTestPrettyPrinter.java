@@ -2,14 +2,10 @@
 package montithings.generator.prettyprinter;
 
 
-import arcbasis._ast.ASTConnector;
-import arcbasis._ast.ASTPortAccess;
-import behavior._ast.ASTConnectStatement;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.se_rwth.commons.StringTransformations;
-import montithings.MontiThingsMill;
 import sdformttest._ast.ASTExpectValueOnPort;
 import sdformttest._ast.ASTSendValueOnPort;
 import sdformttest._ast.ASTTestBlock;
@@ -25,8 +21,14 @@ public class CppSDForMTTestPrettyPrinter
   protected SDForMTTestTraverser traverser;
   protected IndentPrinter printer;
 
+  private String portName;
+
   public CppSDForMTTestPrettyPrinter(IndentPrinter printer) {
     this.printer = printer;
+  }
+
+  public void setPortName(String portName) {
+    this.portName = portName;
   }
 
   @Override
@@ -62,8 +64,10 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().println("->setNextValue(message);");
     }
 
-    getPrinter().println("auto end = std::chrono::high_resolution_clock::now()\n" +
-      "+ std::chrono::seconds(5);"); // TODO WaitStatement
+    // Print wait statement
+    getPrinter().print("auto end = std::chrono::high_resolution_clock::now() + std::chrono::");
+    printTime(node.getWaitStatement().getSIUnitLiteral());
+    getPrinter().println(";");
 
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
       getPrinter().print("while (std::chrono::high_resolution_clock::now() <= end && !interface.getPortTest__");
