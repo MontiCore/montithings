@@ -19,15 +19,15 @@ public class CppPrettyPrinter {
     return getPrinter().prettyprint(node);
   }
 
-  public static String print(ASTTestBlock node) {
-    return getPrinter().prettyprint(node);
+  public static String print(ASTTestBlock node, String portName) {
+    return getPrinter(false, false, portName).prettyprint(node);
   }
 
   public static MontiThingsFullPrettyPrinter getPrinter() {
-    return getPrinter(false, false);
+    return getPrinter(false, false, "");
   }
 
-  public static MontiThingsFullPrettyPrinter getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck) {
+  public static MontiThingsFullPrettyPrinter getPrinter(boolean isLogTracingEnabled, boolean suppressPostConditionCheck, String portName) {
     MontiThingsFullPrettyPrinter printer = new MontiThingsFullPrettyPrinter();
     printer.getTraverser().setExpressionsBasisHandler(new CppExpressionPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setCommonExpressionsHandler(new CppCommonExpressionsPrettyPrinter(printer.getPrinter()));
@@ -40,7 +40,7 @@ public class CppPrettyPrinter {
     printer.getTraverser().setMCCommonStatementsHandler(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setMCBasicTypesHandler(new CppMCBasicTypesPrettyPrinter(printer.getPrinter()));
 
-    printer.getTraverser().setSDForMTTestHandler(new CppSDForMTTestPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setSDForMTTestHandler(new CppSDForMTTestPrettyPrinter(printer.getPrinter(), portName));
 
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
     Stack<ASTExpression> expressions = new Stack<>();

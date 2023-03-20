@@ -27,8 +27,9 @@ public class CppSDForMTTestPrettyPrinter
   private String portName;
   final private MontiThingsTypeCheck tc;
 
-  public CppSDForMTTestPrettyPrinter(IndentPrinter printer) {
+  public CppSDForMTTestPrettyPrinter(IndentPrinter printer, String portName) {
     this.printer = printer;
+    this.portName = portName;
     tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
   }
 
@@ -107,9 +108,9 @@ public class CppSDForMTTestPrettyPrinter
   }
 
 
-  protected void printGetExternalPortAccessFQN(String s) { // TODO weg von connect
+  protected void printGetExternalPortAccessFQN(String s) {
     getPrinter().print(
-      "input.get" + "Connect" + " ().value ()" +
+      "input.get" + StringTransformations.capitalize(portName) + " ().value ()" +
         ".get" + StringTransformations.capitalize(s) + " ()" +
         ".getFullyQualifiedName ()"
     );

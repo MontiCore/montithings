@@ -28,7 +28,6 @@ import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeOfNumericWithSIUnit;
-import de.monticore.types.check.TypeCheck;
 import de.monticore.types.mccollectiontypes._ast.ASTMCTypeArgument;
 import de.monticore.types.mcsimplegenerictypes._ast.ASTMCBasicGenericType;
 import de.se_rwth.commons.StringTransformations;
@@ -894,7 +893,7 @@ public class ComponentHelper {
   public static String printJavaBlock(ASTMCJavaBlock block, boolean isLogTracingEnabled,
     boolean suppressPostconditions) {
     MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(isLogTracingEnabled,
-      suppressPostconditions);
+      suppressPostconditions, "");
     return printer.prettyprint(block);
   }
 
@@ -1390,6 +1389,9 @@ public class ComponentHelper {
   }
 
   public static String printTestBlock(ASTBehavior behavior) {
-    return CppPrettyPrinter.print(behavior.getTestBlock());
+    if (behavior.isEmptyNames()) {
+      Log.error("Test Blocks are only allowed for port-specific behaviors");
+    }
+    return CppPrettyPrinter.print(behavior.getTestBlock(), behavior.getName(0));
   }
 }
