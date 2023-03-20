@@ -78,13 +78,20 @@ public class CppSDForMTTestPrettyPrinter
     getPrinter().print(TypesPrinter.printTime(node.getWaitStatement().getSIUnitLiteral()));
     getPrinter().println(";");
 
-    for (ASTExpectValueOnPort in : expectValueOnPortList) { // TODO Expected Values Comparison
-      getPrinter().print("while (std::chrono::high_resolution_clock::now() <= end && !interface.getPortTest__");
-      getPrinter().println(in.getName() + "()->hasValue(uuid)) {");
-      getPrinter().println("std::this_thread::yield();");
-      getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (10));");
-      getPrinter().println("}");
+    getPrinter().print("while (std::chrono::high_resolution_clock::now() <= end");
+    for (ASTExpectValueOnPort in : expectValueOnPortList) {
+      SymTypeExpression type = tc.typeOf(in.getExpression());
+      String typeString = TypesPrinter.printCPPTypeName(type);
+      getPrinter().print(" && !interface.getPortTest__" + in.getName() + "()->hasValue(uuid)");
+      getPrinter().print(" && !interface.getPortTest__" + in.getName() + "()->getCurrentValue(uuid).value()");
+      getPrinter().print(" == new Message<" + typeString + ">(");
+      in.getExpression().accept(getTraverser());
+      getPrinter().print(")");
     }
+    getPrinter().println(") {");
+    getPrinter().println("std::this_thread::yield();");
+    getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (10));");
+    getPrinter().println("}");
 
     // Disconnect test ports
     for (ASTSendValueOnPort out : sendValueOnPortList) {

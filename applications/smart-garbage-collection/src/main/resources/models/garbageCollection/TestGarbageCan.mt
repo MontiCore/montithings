@@ -17,7 +17,7 @@ component TestGarbageCan implements AbstractGarbageCan {
   behavior fillableSpace {
     if (fillLevel > 10 && fillLevel <= fillableSpace) {
       after 1s {
-        pickUpSignal = fillLevel;
+        pickUpSignal = 1;
         fillLevel = 0;
       }
     } else if (fillLevel < 10) {
