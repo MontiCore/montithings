@@ -87,6 +87,7 @@ public class MontiThingsCoCos {
     checker.addCoCo(new BehaviorsDoNotUseTheSamePorts());
     checker.addCoCo(new BehaviorsLeaveNoIncomingPortsUnused());
     checker.addCoCo(new InterfaceImplementedCorrectly());
+    checker.addCoCo(new GeneralBehaviorDoesNotHaveTestBlock());
 
     return checker;
   }

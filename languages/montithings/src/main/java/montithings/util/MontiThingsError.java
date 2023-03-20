@@ -59,6 +59,8 @@ public enum MontiThingsError implements montithings.util.Error {
       + "as another port-specific behavior uses a subset of these ports."),
   BEHAVIOR_REFERENCES_PORT_MULTIPLE_TIMES("0xMT1635", "Port-specific behavior for ports '%s'"
     + " of component '%s' declares its use of port '%s' is used multiple times"),
+  GENERAL_BEHAVIOR_HAS_TEST_BLOCK("0xMT1636", "Non port-specific behavior " +
+          "has a test block although test blocks are only allowed for port-specific behaviors."),
 
   TOOL_PARSE_IOEXCEPTION("0xMT1902", "Could not parse the file \"%s\"."),
   TOOL_FILE_WALK_IOEXCEPTION("0xMT1903",
