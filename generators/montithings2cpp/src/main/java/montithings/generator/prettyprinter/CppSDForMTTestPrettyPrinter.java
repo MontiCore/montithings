@@ -3,9 +3,12 @@ package montithings.generator.prettyprinter;
 
 
 import de.monticore.prettyprint.IndentPrinter;
-import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
-import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
+import de.monticore.types.check.SymTypeExpression;
 import de.se_rwth.commons.StringTransformations;
+import montithings.generator.helper.TypesPrinter;
+import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
+import montithings.types.check.MontiThingsTypeCheck;
+import montithings.types.check.SynthesizeSymTypeFromMontiThings;
 import sdformttest._ast.ASTExpectValueOnPort;
 import sdformttest._ast.ASTSendValueOnPort;
 import sdformttest._ast.ASTTestBlock;
@@ -22,9 +25,11 @@ public class CppSDForMTTestPrettyPrinter
   protected IndentPrinter printer;
 
   private String portName;
+  final private MontiThingsTypeCheck tc;
 
   public CppSDForMTTestPrettyPrinter(IndentPrinter printer) {
     this.printer = printer;
+    tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
   }
 
   public void setPortName(String portName) {
@@ -55,21 +60,24 @@ public class CppSDForMTTestPrettyPrinter
     getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (1000));");
 
     for (ASTSendValueOnPort out : sendValueOnPortList) {
-      getPrinter().println("Message<int> message = Message<int>();"); // TODO Type dynamisch
-      getPrinter().println("message.setUuid(sole::uuid4());");
-      getPrinter().print("message.setPayload(");
+      SymTypeExpression type = tc.typeOf(out.getExpression());
+      String typeName = TypesPrinter.printCPPTypeName(type);
+      String messageName = out.getName() + "__message";
+      getPrinter().println("Message<" + typeName + "> " + messageName + " = Message<" + typeName + ">();");
+      getPrinter().println(messageName + ".setUuid(sole::uuid4());");
+      getPrinter().print(messageName + ".setPayload(");
       out.getExpression().accept(getTraverser());
       getPrinter().println(");");
       getPrinter().print("interface.getPortTest__" + out.getName() + "()");
-      getPrinter().println("->setNextValue(message);");
+      getPrinter().println("->setNextValue(" + messageName + ");");
     }
 
     // Print wait statement
     getPrinter().print("auto end = std::chrono::high_resolution_clock::now() + std::chrono::");
-    printTime(node.getWaitStatement().getSIUnitLiteral());
+    getPrinter().print(TypesPrinter.printTime(node.getWaitStatement().getSIUnitLiteral()));
     getPrinter().println(";");
 
-    for (ASTExpectValueOnPort in : expectValueOnPortList) {
+    for (ASTExpectValueOnPort in : expectValueOnPortList) { // TODO Expected Values Comparison
       getPrinter().print("while (std::chrono::high_resolution_clock::now() <= end && !interface.getPortTest__");
       getPrinter().println(in.getName() + "()->hasValue(uuid)) {");
       getPrinter().println("std::this_thread::yield();");
@@ -106,25 +114,6 @@ public class CppSDForMTTestPrettyPrinter
         ".getFullyQualifiedName ()"
     );
   }
-
-  protected void printTime(ASTSIUnitLiteral lit) {
-    if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ns")) {
-      getPrinter().print("nanoseconds");
-    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("μs")) {
-      getPrinter().print("microseconds");
-    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("ms")) {
-      getPrinter().print("milliseconds");
-    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("s")) {
-      getPrinter().print("seconds");
-    } else if (SIUnitsPrettyPrinter.prettyprint(lit.getSIUnit()).equals("min")) {
-      getPrinter().print("minutes");
-    }
-    getPrinter().print("{");
-    lit.getNumericLiteral().accept(getTraverser());
-    getPrinter().print("}");
-  }
-
-
 
   /* ============================================================ */
   /* ====================== GENERATED CODE ====================== */
