@@ -82,9 +82,9 @@ public class CppSDForMTTestPrettyPrinter
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
       SymTypeExpression type = tc.typeOf(in.getExpression());
       String typeString = TypesPrinter.printCPPTypeName(type);
-      getPrinter().print(" && !interface.getPortTest__" + in.getName() + "()->hasValue(uuid)");
-      getPrinter().print(" && !interface.getPortTest__" + in.getName() + "()->getCurrentValue(uuid).value()");
-      getPrinter().print(" == new Message<" + typeString + ">(");
+      getPrinter().print(" && (!interface.getPortTest__" + in.getName() + "()->hasValue(uuid)");
+      getPrinter().print(" || interface.getPortTest__" + in.getName() + "()->getCurrentValue(uuid)" +
+        "->getPayload().value() != ");
       in.getExpression().accept(getTraverser());
       getPrinter().print(")");
     }
