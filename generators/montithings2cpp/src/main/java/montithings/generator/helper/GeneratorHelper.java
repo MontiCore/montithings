@@ -99,7 +99,7 @@ public class GeneratorHelper {
     File[] subFiles = specificLanguageFolder.listFiles();
     String name = "";
     for(File f : subFiles){
-      if(f.isDirectory()){
+      if(f.isDirectory() && f.getName() != "templates"){
         name = f.getName();
         break;
       }

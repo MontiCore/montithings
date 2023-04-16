@@ -30,6 +30,7 @@ dependencies {
     
     <#list languagePaths as path>
     implementation files('languages${path}/target/classes/java/main')
+    implementation files('languages${path}/target/classes')
     </#list>
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     implementation group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.0.2'
