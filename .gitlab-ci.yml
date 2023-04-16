@@ -180,16 +180,10 @@ Validate Gradle:
       - languages/monticore-extensions/target/
       - languages/montithings/target/
       - languages/mtconfig/target/
-      - applications/dsl2/src/main/resources/languages/calculationMachine/Calculator/target
-      - applications/dsl2/src/main/resources/languages/calculationMachine/Printer/target
 
   script:
     - gradle clean assemble
     - cd applications
-    - gradle clean assemble
-    - cd dsl2/src/main/resources/languages/calculationMachine/Calculator
-    - gradle clean assemble
-    - cd ../Printer
     - gradle clean assemble
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
