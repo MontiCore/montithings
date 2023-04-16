@@ -1,5 +1,5 @@
 <!-- (c) https://github.com/MontiCore/monticore -->
-# DSL - end-user development with MontiCore
+# EUD - end-user development with MontiCore
 
 This application shows with a basic example how end user development can be accomplished in MontiThings.
 
@@ -29,7 +29,7 @@ What calculation is performed depends on the entered model.
 This component receives the calculation, the initial value and the result of the calculation. It then creates a string, that represends thsi calculation depending on the inserted model. The string is send to the `NumberGenerator`.
 
 ### **Generator-Server**
-This not a component in the classical MontiThings way, but it is an important part of a project that requires end-user development. The `Generator-Server` hosts the website at which the language models can be uploaded. Furthermore it generates the python scripts that make up the behavior of the DSL-components based on the uploaded models.
+This not a component in the classical MontiThings way, but it is an important part of a project that requires end-user development. The `Generator-Server` hosts the website at which the language models can be uploaded. Furthermore it generates the python scripts that make up the behavior of the EUD-components based on the uploaded models.
 
 
 ## **Execution**
@@ -49,8 +49,6 @@ Building all the docker images.
 ```bash
 cd target/generated-sources
 ./dockerBuild.sh
-cd target/generated-sources/generator-server
-./dockerBuild.sh
 ```
 
 ### **Step 4**
@@ -59,8 +57,6 @@ Run the example.
 mosquitto
 cd target/generated-sources
 ./dockerRun.sh
-cd target/generated-sources/generator-server
-./dockerRun.sh
 ```
 
 ### **Step 5**
@@ -68,7 +64,7 @@ Now listen to the logs of the docker container `calculationMachine.Machine.numLo
 ```bash
 docker logs -f calculationMachine.Machine.numLog
 ```
-Access the web page using `127.0.0.1:8080` and upload a model. Example models can be found in the directory `dsl/exampleModels`.
+Access the web page using `127.0.0.1:8080` and upload a model. Example models can be found in the directory `eud/exampleModels`.
 
 If everything is working correctly you should see an output similar to the following one:
 ```bash
@@ -98,7 +94,7 @@ Y
 = 14803 if Y = 148 
 ```
 
-# Getting started building you own DSL-project
+# Getting started building you own EUD-project
 
 ## **Languages**
 All MontiCore languages that are supposed to be used for a component need to follow a certain structure.
@@ -128,12 +124,12 @@ Where all references to a template need to be made with following path `<package
 4. (Optional) If you want to explain your language to the end-user you can put a `EXPLAIN.html` in the folder `<packageName>/<ComponentType>`. Furthermore you can do the samething for the whole project ad how all of your languages work together by adding an `EXPLAIN.html` in your languages folder. These html-files will later be displayed on the website.
 
 
-## **Defining a DSL-project or DSL-component**
-A project is defined as a DSL-project, if there is a `languages` folder, whichs position is defined in the build configuration.
-Furthermore a component is defiend as a DSL-component, iff there exists a language in the `languages` folder matching its type.
+## **Defining a EUD-project or EUD-component**
+A project is defined as a EUD-project, if there is a `languages` folder, whichs position is defined in the build configuration.
+Furthermore a component is defiend as a EUD-component, iff there exists a language in the `languages` folder matching its type.
 
 ## **Python script structure**
-All DSL-components use a python script that is generated at runtime by the language, that needs to follow a specific format. This format is the same for the python script that needs to be defined under `src/main/resources/hwc/<ComponentType>Impl.py` for each ComponentType as a standart behavior for the component.
+All EUD-components use a python script that is generated at runtime by the language, that needs to follow a specific format. This format is the same for the python script that needs to be defined under `src/main/resources/hwc/<ComponentType>Impl.py` for each ComponentType as a standart behavior for the component.
 
 ```py
 # (c) https://github.com/MontiCore/monticore
@@ -165,5 +161,5 @@ class <ComponentType>Impl(<ComponentType>ImplTOP):
 ```
 
 ## **Model defintion**
-The models under `src/main/resources/models` don't need to be adapted, except for the fact, that all DSL-components need their inputs and outputs as protobuf values.
+The models under `src/main/resources/models` don't need to be adapted, except for the fact, that all EUD-components need their inputs and outputs as protobuf values.
 An indepth explaination on using protobuf for port values can be found in the `face-id-door-opener` example application.

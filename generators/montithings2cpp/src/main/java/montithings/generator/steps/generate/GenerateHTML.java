@@ -36,10 +36,10 @@ import static montithings.generator.helper.FileHelper.getSubPackagesPath;
 
 public class GenerateHTML extends GeneratorStep {
 
+  //This method starts the generation of html fiels for the website of the eud feature. 
+  //To do this it checks for all components if they use eud and if there is an explanation for them.
   @Override public void action(GeneratorToolState state) {
-
-    if(state.getConfig().getLanguagePath() != null){
-      ArrayList<String> languagePaths = getAllLanguageDirectories(state.getConfig());
+    if(ComponentHelper.isDSLProject(state.getConfig())){
       ArrayList<String> instanceNames = new ArrayList<>();
       for(Pair<ComponentTypeSymbol,String> pair : state.getInstances()){
         if(ComponentHelper.isDSLComponent(pair.getKey(), state.getConfig())){
@@ -60,6 +60,7 @@ public class GenerateHTML extends GeneratorStep {
           state.getMtg().generateHTMLFilesForDSLs(new File (state.getTarget().getAbsolutePath()),state.getConfig(), pair.getValue(), explain);
         }
       }
+      //generation of index webpage
       String explainProj = "No project description available!";
       try{
         File explainationProj = new File(state.getConfig().getLanguagePath().getPath() + "/" + "EXPLAIN.html");
@@ -72,34 +73,4 @@ public class GenerateHTML extends GeneratorStep {
       state.getMtg().generateHTMLIndexFile(new File (state.getTarget().getAbsolutePath()),state.getConfig(),instanceNames, explainProj);
     }
   }
-  
-   /**
-   * Get the full path of all Languages in the Langauge folder
-   */
-  public static ArrayList<String> getAllLanguageDirectories(ConfigParams config) {
-    File languagesFolder = config.getLanguagePath();
-    if(languagesFolder.isDirectory()){
-      ArrayList<String> languageDirectories = recursiveSearchLanguageFiles(languagesFolder,"");
-      return languageDirectories;
-    }
-    return new ArrayList<String>();
-  }
-
-  static ArrayList<String> recursiveSearchLanguageFiles(File rootFile, String path){
-    ArrayList<String> retVal = new ArrayList<String>();
-    File[] subDirs = rootFile.listFiles();
-    for(File file : subDirs){
-      if(file.isDirectory() && file.getName().equals("src")){
-        retVal.add(path);
-        return retVal;
-      }
-    }
-    for(File file : subDirs){
-      if(file.isDirectory()){
-        retVal.addAll(recursiveSearchLanguageFiles(file,path + "/" + file.getName()));
-      }
-    }
-    return retVal;
-  }
-
 }

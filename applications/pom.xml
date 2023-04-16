@@ -20,7 +20,7 @@
     <module>dynamics</module>
     <module>hierarchy</module>
     <module>language-features</module>
-    <module>dsl2</module>
+    <module>eud</module>
     <module>mqtt-ports</module>
     <module>face-id-door-opener</module>
     <module>dds-ports</module>

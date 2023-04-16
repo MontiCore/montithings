@@ -1,4 +1,4 @@
-${tc.signature("config","name","explain","what")}
+${tc.signature("config","name","explain","existsHWC")}
 <#include "/template/Preamble.ftl">
 
 <!DOCTYPE HTML>
@@ -153,7 +153,7 @@ ${tc.signature("config","name","explain","what")}
                 <a class="index-cont" style="text-decoration: none;" href="/">&#8962</a>
             </div>
             <div class="cmd">
-                <iframe class="cmd-cont" name="output" srcdoc="<p style=&quot;color: whitesmoke&quot;>This pannel will show you inforamtions aubout your requests...</p>"></iframe>
+                <iframe class="cmd-cont" name="output" srcdoc="<p style=&quot;color: whitesmoke&quot;>This pannel will show you informations aubout your requests...</p>"></iframe>
             </div>
             <div class="form">
                 <form class="form-cont" action="/${name}" method="POST" enctype="multipart/form-data"  target="output">

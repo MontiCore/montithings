@@ -2,7 +2,7 @@
 ${tc.signature("comp","config","className")}
 <#include "/template/component/helper/GeneralPreamble.ftl">
 
-
+// This method is triggered when a new python script is received, it it stores the file and triggers the function taht replaces the currently running process. (Part of the EUD feature)
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(std::string payload){
     std::fstream modelFile;
@@ -13,7 +13,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::python_receiver(std::
     python_start();
   }
 
-
+//This method executes new python scripts and termiantes old scripts. (Part of the EUD feature)
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp)}::python_start(){
   int pid = fork();

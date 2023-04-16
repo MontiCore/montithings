@@ -1,7 +1,9 @@
-${tc.signature("languagePaths", "config", "state" "what")}
+${tc.signature("config", "state" "existsHWC")}
 <#include "/template/Preamble.ftl">
 // (c) https://github.com/MontiCore/monticore
-
+//
+// GENERATED FILE. DO NOT EDIT. CHANGES WILL BE OVERWRITTEN!
+//
 import java.lang.Exception;
 
 import static spark.Spark.port;
@@ -78,6 +80,13 @@ public class Main {
                     System.err.flush();
                     System.setErr(old);
                     String errorMessage = "<div style=\"white-space: pre-wrap; color: whitesmoke;\">Task failed and the component has not been updated.\n Reason for failed task:\n " + os.toString("UTF-8") + "</div>";
+                    System.out.println(errorMessage);
+                    response.status(500);
+                    return errorMessage;
+                }catch (Exception e){
+                    System.err.flush();
+                    System.setErr(old);
+                    String errorMessage = "<div style=\"white-space: pre-wrap; color: whitesmoke;\">Generator crashed. This is an issue, that the software developer has to solve.\n Reason for crash:\n " + os.toString("UTF-8") + "</div>";
                     System.out.println(errorMessage);
                     response.status(500);
                     return errorMessage;

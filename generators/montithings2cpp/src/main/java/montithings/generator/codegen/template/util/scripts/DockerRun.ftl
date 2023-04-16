@@ -57,5 +57,14 @@ esac
     </#if>
 </#if>
 
+<#if ComponentHelper.isDSLProject(config)>
+cd generator-server
+./dockerRun.sh
+cd ..
+echo "$(cat generator-server/dockerKill.sh)" >> "$SCRIPTPATH"/dockerKill.sh
+echo "$(cat generator-server/dockerStop.sh)" >> "$SCRIPTPATH"/dockerStop.sh
+</#if>
+
+
 chmod +x "$SCRIPTPATH"/dockerStop.sh
 chmod +x "$SCRIPTPATH"/dockerKill.sh

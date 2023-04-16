@@ -11,7 +11,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dsl</artifactId>
+    <artifactId>eud</artifactId>
 
     <!-- == PROJECT DEPENDENCIES ============================================= -->
 
@@ -282,7 +282,7 @@
                                 <languagePath>${basedir}/src/main/resources/languages</languagePath>
                                 <handwrittenCode>${basedir}/src/main/resources/hwc</handwrittenCode>
                                 <!--<platform>DSA</platform>-->
-                                <main>hierarchy.Example</main>
+                                <main>calculationMachine.Machine</main>
                                 <version>${project.version}</version>
                                 <splitting>DISTRIBUTED</splitting>
                                 <messageBroker>MQTT</messageBroker>

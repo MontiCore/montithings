@@ -1,7 +1,10 @@
-${tc.signature("config","what")}
+${tc.signature("config","existsHWC")}
 <#include "/template/Preamble.ftl">
 
 # (c) https://github.com/MontiCore/monticore
+#
+# GENERATED FILE. DO NOT EDIT. CHANGES WILL BE OVERWRITTEN!
+#
 
 # Create a dedicated network named montithings. Skip if it is already present.
 docker network ls | grep montithings > /dev/null || docker network create --driver bridge montithings

@@ -60,7 +60,9 @@ class ThermostatImpl(ThermostatImplTOP):
                             </#if>
 
                         </#list>
+                        pass
                     </#list>
+                    pass
                 else:
                     temp = self.overwrite_temp
 

@@ -306,7 +306,7 @@ public class MTGenerator {
     makeExecutable(new File(targetPath.getPath() + File.separatorChar + "generator-server"), "dockerBuild", ".sh");
     fg.generate(targetPath, "generator-server" + File.separatorChar +  "build", ".gradle", "template/util/generatorServer/build.ftl", languagePaths);
 
-    fg.generate(targetPath, "generator-server" + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "java" + File.separatorChar + "Main", ".javaFile", "template/util/generatorServer/Main.ftl", languagePaths, config, state);
+    fg.generate(targetPath, "generator-server" + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "java" + File.separatorChar + "Main", ".javaFile", "template/util/generatorServer/Main.ftl", config, state);
   }
 
   

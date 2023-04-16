@@ -1,6 +1,9 @@
-${tc.signature("languagePaths","what")}
+${tc.signature("languagePaths","existsHWC")}
 <#include "/template/Preamble.ftl">
 /* (c) https://github.com/MontiCore/monticore */
+/*
+ GENERATED FILE. DO NOT EDIT. CHANGES WILL BE OVERWRITTEN!
+*/
 
 plugins {
     id 'java'

@@ -52,3 +52,8 @@ fi
       fi
     </#if>
 </#if>
+
+<#if ComponentHelper.isDSLProject(config)>
+cd ../..
+docker build . --file target/generated-sources/generator-server/Dockerfile --network host --tag ${config.getMainComponent()?lower_case}.generator-server:latest
+</#if>

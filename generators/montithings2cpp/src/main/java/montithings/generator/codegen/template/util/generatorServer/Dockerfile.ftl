@@ -1,5 +1,8 @@
-${tc.signature("languagePaths","what")}
+${tc.signature("languagePaths","existsHWC")}
 <#include "/template/Preamble.ftl">
+#
+# GENERATED FILE. DO NOT EDIT. CHANGES WILL BE OVERWRITTEN!
+#
 
 # (c) https://github.com/MontiCore/monticore
 FROM gradle:6.9.1-jdk11 as build

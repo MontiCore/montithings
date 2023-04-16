@@ -1,4 +1,4 @@
-${tc.signature("config","instanceNames","explain","what")}
+${tc.signature("config","instanceNames","explain","existsHWC")}
 <#include "/template/Preamble.ftl">
 
 
@@ -22,7 +22,7 @@ ${tc.signature("config","instanceNames","explain","what")}
                 height: 100vh;
                 width: 100vw;
                 gap: 0px;
-                grid-template-columns:  auto 50vw;
+                grid-template-columns:  auto 70vw;
                 grid-template-rows: 5vh auto;
             }
 
