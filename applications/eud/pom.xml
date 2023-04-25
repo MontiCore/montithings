@@ -90,7 +90,17 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>montithings.applications</groupId>
+            <artifactId>Calculator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>montithings.applications</groupId>
+            <artifactId>Printer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
     </dependencies>
 
