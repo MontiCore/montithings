@@ -14,6 +14,7 @@ import montithings.generator.steps.hwc.CopyDeploymentConfigToTarget;
 import montithings.generator.steps.hwc.CopyHwcToTarget;
 import montithings.generator.steps.hwc.FindCodeTemplates;
 import montithings.generator.steps.symbolTable.*;
+import montithings.generator.steps.trafos.SetupPatternTrafos;
 import montithings.generator.steps.trafos.SetupPortNamesTrafo;
 import montithings.generator.steps.trafos.SetupReplayerTrafos;
 import montithings.generator.steps.trafos.SetupStatechartTrafos;
@@ -39,6 +40,7 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .setNextStep(new SetupModelPath())
       .setNextStep(new LogStep("Initializing symboltable", TOOL_NAME))
       .setNextStep(new SerializeCDs())
+      .setNextStep(new SetupPatternTrafos())
       .setNextStep(new SetupReplayerTrafos())
       .setNextStep(new SetupStatechartTrafos())
       .setNextStep(new SetupCD4C())

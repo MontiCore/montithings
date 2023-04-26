@@ -25,6 +25,8 @@ public enum Options {
   MESSAGEBROKER("messageBroker"),
   MESSAGEBROKER_SHORT("broker"),
   REPLAYMODE("replayMode"),
+  APPLYANOMALYDETECTIONPATTERN("applyAnomalyDetectionPattern"),
+  APPLYNETWORKMINIMIZATIONPATTERN("applyNetworkMinimizationPattern"),
   REPLAYDATAFILE("replayDataPath"),
   MAINCOMP("mainComponent"),
   MAINCOMP_SHORT("main"),

@@ -1,5 +1,5 @@
 <#-- (c) https://github.com/MontiCore/monticore -->
-${tc.signature("config", "existsHWC")}
+${tc.signature("config", "cppRequirements", "existsHWC")}
 <#include "/template/Preamble.ftl">
 
 [requires]
@@ -12,6 +12,9 @@ nng/1.3.0
 <#if needsProtobuf>
 protobuf/3.21.1
 </#if>
+<#list cppRequirements as req >
+${req}
+</#list>
 
 [generators]
 cmake

@@ -1,6 +1,13 @@
 #!/bin/bash
 # (c) https://github.com/MontiCore/monticore
 
+#
+# Set "export SKIP_MVN=1" to skip the maven build at the end of this script
+# Or call "SKIP_MVN=1 ./installLinux.sh"
+# Set "export SKIPDOCKER=1" to skip Docker install
+# Or call "SKIPDOCKER=1 ./installLinux.sh"
+#
+
 # Check if a command is available on this system
 # Taken from https://get.docker.com/
 command_exists() {
@@ -17,19 +24,20 @@ MONTITHINGS_DIRECTORY=$PWD
 cd dependencies
 
 # Install packages
-sudo add-apt-repository -y ppa:openjdk-r/ppa
 sudo apt-get update
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository -y ppa:openjdk-r/ppa
 sudo apt-get install -y g++ git make cmake ninja-build mosquitto-dev libmosquitto-dev curl maven \
-  openjdk-11-jdk python3 python3-pip mosquitto-clients \
+  openjdk-11-jdk python3 python3-pip mosquitto-clients libssl-dev \
   protobuf-compiler libprotobuf-dev python3-protobuf
 
 pip3 install paho-mqtt
 
-# Install Docker 
-if ! command_exists docker
+# Install Docker
+if ! command_exists docker && ! [ "$SKIPDOCKER" ]
 then
 curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+sudo sh get-docker.sh
 sudo usermod -aG docker $USER
 newgrp docker << SHELL
 SHELL
@@ -65,5 +73,12 @@ fi
 cd $MONTITHINGS_DIRECTORY
 rm -rf dependencies
 
+if [ -z "${SKIP_MVN}" ] || [ "${SKIP_MVN}" != "1" ]
+then
 # Install MontiThings
 mvn clean install -Dexec.skip
+else
+  echo "###################################"
+  echo "MontiThings installed successfully!"
+  echo "###################################"
+fi

@@ -14,7 +14,7 @@ ${compname}Input${generics} ${Identifier.getInputName()}
 ) const
 {
 std::stringstream error;
-error << "Violated <#if !isPrecondition>pre<#else>post</#if>condition " << toString () << " on component '" << instanceName << "'" << std::endl;
+error << "Violated <#if isPrecondition>pre<#else>post</#if>condition " << toString () << " on component '" << instanceName << "'" << std::endl;
 error << "Input port values: " << std::endl;
 <#list ComponentHelper.getPortsNotInBatchStatements(comp) as inPort>
     <#if inPort.isIncoming()>

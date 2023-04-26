@@ -50,6 +50,8 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setHwcTemplatePath(Paths.get(getHWCPath().getAbsolutePath()));
     configParams.setMessageBroker(getMessageBroker(getSplittingMode()));
     configParams.setReplayMode(getReplayMode());
+    configParams.setApplyAnomalyDetectionPattern(getApplyAnomalyDetectionPattern());
+    configParams.setApplyNetworkMinimizationPattern(getApplyNetworkMinimizationPattern());
     configParams.setReplayDataFile(getReplayDataFile());
     configParams.setHwcPath(getHWCPath());
     configParams.setLanguagePath(getLanguagePath());
@@ -222,8 +224,7 @@ public class MontiThingsConfiguration implements Configuration {
     if (testPath.isPresent()) {
       Path mp = Paths.get(testPath.get());
       return mp.toFile();
-    }
-    else if (getModelPath() != null) {
+    } else if (getModelPath() != null) {
       Path defaultTestPath = getModelPath().toPath();
       for (int i = 0; i < 4; i++) {
         defaultTestPath = defaultTestPath.getParent();
@@ -330,8 +331,7 @@ public class MontiThingsConfiguration implements Configuration {
     if (splittingMode == SplittingMode.OFF) {
       // fallback default if not splitting is disabled is "off"
       return MessageBroker.OFF;
-    }
-    else {
+    } else {
       // fallback default if splitted is enabled "MQTT"
       return MessageBroker.MQTT;
     }
@@ -344,6 +344,24 @@ public class MontiThingsConfiguration implements Configuration {
     }
     // fallback default is "off"
     return ReplayMode.OFF;
+  }
+
+  public ApplyPatterns getApplyAnomalyDetectionPattern() {
+    Optional<String> applyPatterns = getAsString(Options.APPLYANOMALYDETECTIONPATTERN);
+    if (applyPatterns.isPresent()) {
+        return ApplyPatterns.fromString(applyPatterns.get());
+    }
+    // fallback default is "off"
+    return ApplyPatterns.OFF;
+  }
+
+  public ApplyPatterns getApplyNetworkMinimizationPattern() {
+    Optional<String> applyPatterns = getAsString(Options.APPLYNETWORKMINIMIZATIONPATTERN);
+    if (applyPatterns.isPresent()) {
+      return ApplyPatterns.fromString(applyPatterns.get());
+    }
+    // fallback default is "off"
+    return ApplyPatterns.OFF;
   }
 
   public File getReplayDataFile() {

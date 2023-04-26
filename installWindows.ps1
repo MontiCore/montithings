@@ -44,11 +44,15 @@ function Reload-Path {
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 }
 
+#
+# Set "$env:SKIP_MVN = 1" to skip the maven build at the end of this script
+#
+
 <#
  # checks using "Get-Command" if a specific program is installed on the system
  #
  # @param $ProgramName name of the program that should be checked
- # @return $true if $ProgramName is already installed on the System, $false otherwise
+ # @return $true if $ProgramName is already installed on the system, $false otherwise
  #>
 function Get-IsInstalled {
     param(
@@ -139,23 +143,23 @@ if(-not (Get-IsInstalled winget)){
 # Install software available via WinGet
 ##########################################
 if(-not (Get-IsInstalled git)){
-    winget install -e Git.Git
+    winget install -e Git.Git --accept-source-agreements --accept-package-agreements
 }
 if(-not (Get-IsInstalled java) -or -not (Get-JavaVersionIs11)){
-    winget install -e Microsoft.OpenJDK.11
+    winget install -e Microsoft.OpenJDK.11 --accept-source-agreements --accept-package-agreements
     Reload-Path
     if(-not (Get-JavaVersionIs11)){
-        Write-Output "WARNING: Java 11 was installed but is not your default java version. Please make sure to use java 11 with montithings"
+        Write-Output "WARNING: Java 11 was installed but is not your default Java version. Please make sure to use Java 11 with montithings"
     }
 }
 if(-not (Get-IsInstalled cmake)){
-    winget install -e Kitware.CMake
+    winget install -e Kitware.CMake --accept-source-agreements --accept-package-agreements
 }
 if(-not (Get-IsInstalled docker)){
-    winget install -e Docker.DockerDesktop
+    winget install -e Docker.DockerDesktop --accept-source-agreements --accept-package-agreements
 }
 if(-not (Get-IsInstalled mosquitto)){
-    winget install -e EclipseFoundation.Mosquitto
+    winget install -e EclipseFoundation.Mosquitto --accept-source-agreements --accept-package-agreements
 
     AddToPath("C:\Program Files\Mosquitto")
     AddToPath("C:\Program Files\CMake\bin")
@@ -175,7 +179,7 @@ if(-not (Get-IsInstalled choco)){
 # Install Maven
 ##########################################
 if(-not (Get-IsInstalled mvn)){
-    choco install maven
+    choco install -y maven
     Reload-Path
 }
 
@@ -196,6 +200,13 @@ if(-not (Get-IsInstalled ninja)){
 ##########################################
 if(-not (Get-IsInstalled gcc)){
     choco install -y mingw
+}
+
+##########################################
+# Install OpenSSL
+##########################################
+if(-not (Get-IsInstalled openssl)){
+    choco install -y openssl
 }
 
 ##########################################
@@ -223,7 +234,7 @@ if(-not((Test-Path -Path 'C:\nng-1.3.0') -or (Test-Path -Path 'C:\Program Files 
 # since winget adds an app-execution alias to the ms store for python our
 # Get-IsInstalled function would see python as installed. To fix this we must check for pip here instead
 if(-not (Get-IsInstalled pip)) {
-    winget install python
+    winget install python --accept-source-agreements --accept-package-agreements
     Reload-Path
 }
 
@@ -239,4 +250,17 @@ if(-not (Get-IsInstalled conan)){
 ##########################################
 # Install MontiThings
 ##########################################
-mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
+if ( $null -eq $env:SKIP_MVN -or $env:SKIP_MVN -ne 1) {
+  mvn clean install "-Dmaven.test.skip=true" "-Dexec.skip"
+}
+"
+Installed successfully!
+
+  _____  ___                __  _   ___________    _
+ /__   |/  /  ___________  / /_(_) / ___  __/ /_  (_)___  ____   __
+   / /|_/ / / __ \__/ __ \/ __/ / (_)  / / / __ \/ / __ \/ __ `//_ \
+  / /  / /_/ /_/ / / / / / /_/ /_   __/ / / / / / / / / / /_/ /___) )_
+ /_/  /____\____/ /_/ /_/\__/___/  /___/ /_/ /_/_/_/ /_/\__, /(______/
+                                                       /____/
+
+"

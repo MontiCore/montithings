@@ -17,6 +17,12 @@
 template <typename T> class MqttPort : public Port<T>, public MqttUser
 {
 protected:
+
+  /**
+   * prefix for the mqtt topic
+   */
+  std::string portPrefix = "/ports/";
+
   /**
    * Fully qualified name of the port (with slashes instead of dots)
    */
@@ -50,7 +56,7 @@ protected:
 
 public:
   explicit MqttPort (std::string name, std::unique_ptr<Serializer<T>> serializer, bool shouldSubscribe = true,
-                     MqttClient *client = MqttClient::instance (), MqttClient *localClient = MqttClient::localInstance ());
+                     MqttClient *client = MqttClient::instance (), MqttClient *localClient = MqttClient::localInstance (), std::string portPrefix="/ports/");
   ~MqttPort () = default;
 
   /**
@@ -101,8 +107,9 @@ public:
 };
 
 template <typename T>
-MqttPort<T>::MqttPort (std::string name, std::unique_ptr<Serializer<T>> serializer, bool shouldSubscribe, MqttClient *client, MqttClient *localClient)
+MqttPort<T>::MqttPort (std::string name, std::unique_ptr<Serializer<T>> serializer, bool shouldSubscribe, MqttClient *client, MqttClient *localClient, std::string portPrefix)
     : fullyQualifiedName (std::move (name)),
+    portPrefix(std::move(portPrefix)),
     serializer{std::move(serializer)}
 {
   mqttClientInstance = client;
@@ -129,7 +136,7 @@ template <typename T>
 void
 MqttPort<T>::subscribe (std::string portFqn)
 {
-  std::string topic = "/ports/" + replaceDotsBySlashes (portFqn);
+  std::string topic = portPrefix + replaceDotsBySlashes (portFqn);
   subscriptions.emplace (topic);
   mqttClientInstance->subscribe (topic);
 }
@@ -138,7 +145,7 @@ template <typename T>
 void
 MqttPort<T>::unsubscribe (std::string portFqn)
 {
-    std::string topic = "/ports/" + replaceDotsBySlashes (portFqn);
+    std::string topic = portPrefix + replaceDotsBySlashes (portFqn);
     mqttClientInstance->unsubscribe (topic);
     subscriptions.erase (topic);
 }
@@ -184,11 +191,11 @@ MqttPort<T>::onMessage (mosquitto *mosquitto, void *obj, const struct mosquitto_
 
   for (std::string subscription : subscriptions)
     {
-      // only process message messages from ports we are subscribed to
+      // only process messages from ports we are subscribed to
       if (topic.find (subscription) != std::string::npos)
         {
           // check if this message informs us about new data
-          if (topic.find ("/ports/") != std::string::npos
+          if (topic.find (portPrefix) != std::string::npos
               || topic.find ("/portsInject/") != std::string::npos
               || (isSensorActuator && topic.find ("/sensorActuator/data/") != std::string::npos))
             {
@@ -234,7 +241,7 @@ MqttPort<T>::sendToExternal (tl::optional<T> nextVal)
   if (nextVal)
     {
       std::string payload = serializer->serialize (nextVal.value());
-      std::string topic = "/ports/" + replaceDotsBySlashes (fullyQualifiedName);
+      std::string topic = portPrefix + replaceDotsBySlashes (fullyQualifiedName);
       if (isSensorActuator)
         {
           mqttClientLocalInstance->publish (sensorActuatorTopic, payload);

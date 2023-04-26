@@ -3,6 +3,7 @@ package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
 import de.se_rwth.commons.logging.Log;
+import montithings._symboltable.IMontiThingsScope;
 import montithings.generator.config.SplittingMode;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.helper.ComponentHelper;
@@ -21,9 +22,13 @@ public class FindModelPacks extends GeneratorStep {
     // determine the packs of components for each (base) model
     Map<ComponentTypeSymbol, Set<ComponentTypeSymbol>> modelPacks = new HashMap<>();
 
-    for (String model : state.getModels().getMontithings()) {
-      ComponentTypeSymbol comp = state.getTool().modelToSymbol(model, state.getSymTab());
+    // Find all components including those that have no file because they were added by trafos
+    Set<ComponentTypeSymbol> components = new HashSet<>();
+    for (IMontiThingsScope s : state.getSymTab().getSubScopes()) {
+      components.addAll(s.getComponentTypeSymbols().values());
+    }
 
+    for (ComponentTypeSymbol comp : components) {
       // If this component does not need its own executable, then we can just
       // ignore it right here. If splitting is turned off, we will generate
       // everything due to compatibility reasons.

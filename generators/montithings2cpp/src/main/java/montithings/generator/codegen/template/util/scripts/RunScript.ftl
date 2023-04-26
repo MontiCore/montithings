@@ -20,7 +20,7 @@ echo "Starting components..."
     OLD_PYTHONPATH="${r"${PYTHONPATH}"}"
     export PYTHONPATH="$PYTHONPATH:python"
     # start hwc-component ${hwcPythonFile}
-    python3 -u "python/${hwcPythonFile}" > "python/${hwcPythonFile}.log" 2>&1 &
+    python3 -u "python/${hwcPythonFile}" --name ${pair.getValue()} > "python/${hwcPythonFile}.log" 2>&1 &
     export PYTHONPATH="$OLD_PYTHONPATH"
     sleep 1 # wait for interpreted code to be ready - control MQTT ports MUST be subscribed to work
   </#if>

@@ -1,6 +1,11 @@
 #!/bin/bash
 # (c) https://github.com/MontiCore/monticore
 
+#
+# Set "export SKIP_MVN=1" to skip the maven build at the end of this script
+# Or call "SKIP_MVN=1 ./installMac.sh"
+#
+
 # Check if a command is available on this system
 # Taken from https://get.docker.com/
 command_exists() {
@@ -41,7 +46,7 @@ export PATH=$PATH:/opt/homebrew/bin
 fi
 
 # Install Dependencies
-brew install cmake ninja mosquitto terraform azure-cli conan python
+brew install cmake ninja mosquitto terraform azure-cli conan python openssl
 brew services start mosquitto
 if ! command_exists docker
 then
@@ -65,7 +70,22 @@ fi
 cd $MONTITHINGS_DIRECTORY
 rm -rf dependencies
 
-# Install MontiThings
-mvn clean install -Dexec.skip
+if [ -z "${SKIP_MVN}" ] || [ "${SKIP_MVN}" != "1" ]
+then
+  # Install MontiThings
+  mvn clean install -Dexec.skip
+fi
+
+echo "Installed successfully!"
+echo '
+
+  _____  ___                __  _   ___________    _
+ /__   |/  /  ___________  / /_(_) / ___  __/ /_  (_)___  ____   __
+   / /|_/ / / __ \__/ __ \/ __/ / (_)  / / / __ \/ / __ \/ __ `//_ \
+  / /  / /_/ /_/ / / / / / /_/ /_   __/ / / / / / / / / / /_/ /___) )_
+ /_/  /____\____/ /_/ /_/\__/___/  /___/ /_/ /_/_/_/ /_/\__, /(______/
+                                                       /____/
+
+'
 
 
