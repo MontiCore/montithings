@@ -46,7 +46,9 @@ public class GeneratePythonHwcComponent extends GeneratorStep {
         Path execPath = Paths.get(unqualifiedName + ".py");
         ge.generateNoA("template.util.pythonComponent.Component.ftl",
             execPath,
-            unqualifiedName);
+            unqualifiedName,
+            comp,
+            state.getConfig());
       }
     }
   }

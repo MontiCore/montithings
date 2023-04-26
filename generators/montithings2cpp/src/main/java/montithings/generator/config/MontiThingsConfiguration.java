@@ -54,6 +54,7 @@ public class MontiThingsConfiguration implements Configuration {
     configParams.setApplyNetworkMinimizationPattern(getApplyNetworkMinimizationPattern());
     configParams.setReplayDataFile(getReplayDataFile());
     configParams.setHwcPath(getHWCPath());
+    configParams.setLanguagePath(getLanguagePath());
     configParams.setProjectVersion(getVersion());
     configParams.setMainComponent(getMainComponent());
     configParams.setSerializationMode(getSerializationMode());
@@ -204,6 +205,15 @@ public class MontiThingsConfiguration implements Configuration {
     modelPath = getAsString(Options.MODELPATH_SHORT);
     if (modelPath.isPresent()) {
       Path mp = Paths.get(modelPath.get());
+      return mp.toFile();
+    }
+    return null;
+  }
+
+  public File getLanguagePath() {
+    Optional<String> languagePath = getAsString(Options.LANGUAGEPATH);
+    if (languagePath.isPresent()) {
+      Path mp = Paths.get(languagePath.get());
       return mp.toFile();
     }
     return null;

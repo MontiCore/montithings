@@ -22,6 +22,9 @@
     <module>dynamics</module>
     <module>hierarchy</module>
     <module>language-features</module>
+    <module>eud/src/main/resources/languages/calculationMachine/Calculator</module>
+    <module>eud/src/main/resources/languages/calculationMachine/Printer</module>
+    <module>eud</module>
     <module>mqtt-ports</module>
     <module>face-id-door-opener</module>
     <module>dds-ports</module>

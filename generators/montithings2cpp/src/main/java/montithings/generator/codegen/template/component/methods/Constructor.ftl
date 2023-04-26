@@ -10,6 +10,10 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   , MqttClient* passedMqttClientInstance
   , MqttClient* passedMqttClientLocalInstance
 </#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  , std::string brokerHostNameArg
+  , int brokerPortArg
+</#if>
 <#if comp.getParameters()?has_content>
   , ${Utils.printConfigurationParametersAsList(comp)}
 </#if>
@@ -41,6 +45,10 @@ this->instanceName = instanceName;
 <#if brokerIsMQTT>
 mqttClientInstance = passedMqttClientInstance;
 mqttClientLocalInstance = passedMqttClientLocalInstance;
+</#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  brokerHostName = brokerHostNameArg;
+  brokerPort = brokerPortArg;
 </#if>
 
 <#list comp.getParameters() as param >

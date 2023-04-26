@@ -12,7 +12,8 @@ public class Generate extends CLIStep {
       state.getTargetDirectory(),
       state.getHwcPath(),
       state.getTestPath(),
-      state.getMtcfg().configParams
+      state.getMtcfg().configParams,
+      state.getLanguagePath()
     );
   }
 

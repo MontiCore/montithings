@@ -6,6 +6,7 @@ package montithings.generator.config;
  */
 public enum Options {
 
+  LANGUAGEPATH("languagePath"),
   MODELPATH("modelPath"),
   MODELPATH_SHORT("mp"),
   TESTPATH("testPath"),

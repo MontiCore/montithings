@@ -14,4 +14,7 @@ void ${className}${Utils.printFormalTypeParameters(comp)}::start(){
         </#list>
     </#if>
 </#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+threads.push_back(std::thread{&${className}${Utils.printFormalTypeParameters(comp)}::python_start, this});
+</#if>
 }

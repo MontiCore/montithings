@@ -1,0 +1,10 @@
+// (c) https://github.com/MontiCore/monticore
+
+grammar CalculatorLang extends de.monticore.MCBasics, de.monticore.literals.MCJavaLiterals {
+  Calculation = (Computation | Linebreak)*;
+  token Linebreak = NEWLINE;
+
+  Computation = (Add | Mult);
+  Add = "+"value:Num_Int";";
+  Mult = "*"value:Num_Int";";
+}

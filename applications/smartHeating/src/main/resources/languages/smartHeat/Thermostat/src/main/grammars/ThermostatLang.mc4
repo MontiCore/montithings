@@ -1,0 +1,14 @@
+// (c) https://github.com/MontiCore/monticore
+
+grammar ThermostatLang extends de.monticore.MCBasics, de.monticore.literals.MCJavaLiterals {
+  Defs = Year Week;
+
+  Month = (["January"]|["February"]|["March"]|["April"]|["May"]|["June"]|["July"]|["August"]|["September"]|["October"]|["November"]|["December"]);
+  Days = (["Monday"]|["Tuesday"]|["Wednesday"]|["Thursday"]|["Friday"]|["Saturday"]|["Sunday"]);
+  HeatSetting = startTime:Num_Int "-" endTime:Num_Int condition:["[M]"]? ":" temp:Num_Int "°c";
+
+  Year = "Month:" month:(Month||",")*;
+  Week = "Days:" (Day || ",")*;
+  Day = "(" Days "->" (HeatSetting||",")* ")";
+
+}

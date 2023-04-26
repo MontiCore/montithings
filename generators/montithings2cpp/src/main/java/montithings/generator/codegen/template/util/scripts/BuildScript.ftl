@@ -61,6 +61,10 @@ cd ..
 find hwc -name "*.py" | cpio -pdm build/bin/ > /dev/null 2>&1
 cd build/bin
 cp ../../"$COMPNAME"/*.sh .
+
+<#list ComponentHelper.getAllLanguageDirectories(config) as file>
+  mkdir -p models${file}
+</#list>
 <#if brokerIsDDS>
 cp ../../"$COMPNAME"/*.ini .
 </#if>
@@ -75,7 +79,7 @@ cp ../../python/parse_cmd.py python/.
 
 PROTO_PATH="../../"
 PROTO_FILES=$(find "${r"${PROTO_PATH}"}" -name "*.proto")
-if [[ -n "${r"${PROTO_FILES}"}" ]]
+if [ -n "${r"${PROTO_FILES}"}" ]
 then
   echo "compiling .proto files:"
   echo "${r"${PROTO_FILES}"}"
