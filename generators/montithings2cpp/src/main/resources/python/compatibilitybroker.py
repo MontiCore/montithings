@@ -1,137 +1,94 @@
-# (c) https://github.com/MontiCore/monticore
-import paho.mqtt.client as mqtt
-import json
+import subprocess
 import time
-import datetime as dt
-import ast
-import parse_cmd
+import bluetooth
+import paho.mqtt.client as mqtt
+import re
+
+ip_address = "192.168.0.10"
+
+def get_ip_address(ifname):
+    output = subprocess.check_output(["ip", "addr", "show", ifname]).decode()
+    match = re.search(r"inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})", output)
+    if match:
+        ip_address = match.group(1)
+        return ip_address
+    else:
+        return None
+
+while True:
+    # Step 1: Check if MQTT broker is running
+    mqtt_running = False
+
+    ip_adress_wlan0 = get_ip_address("wlan0")
+    # Test if MQTT broker is running
+    if (ip_adress_wlan0 is not None):
+        mqtt_running = True
+        if (ip_adress_wlan0 == ip_address):
+            print("Access Point running on this device.")
+        else:
+            print("MQTT broker already running on different access point, connecting to existing broker...")
+
+    other_device_mac = None
+    mac_address = bluetooth.read_local_bdaddr()[0]
+
+    # Step 2: Turn on Bluetooth and wait for other devices
+    if (not mqtt_running):
+        bluetooth_on = False
+        tries = 0
+        while not bluetooth_on and tries < 3:
+            try:
+                # Turn on Bluetooth and start scanning for nearby devices
+                subprocess.check_output(["sudo", "hciconfig", "hci0", "piscan"])
+                devices = bluetooth.discover_devices(duration=8, lookup_names=True)
+                print("Bluetooth on and scanning for nearby devices...")
+                bluetooth_on = True
+            except bluetooth.btcommon.BluetoothError:
+                print("Bluetooth not ready yet, waiting...")
+                tries = tries + 1
+                time.sleep(5)
+
+        # Step 3: Compare MAC addresses and start MQTT broker if necessary
+        if (bluetooth_on):
+            for addr, name in devices:
+                if name.startswith('iot') and addr < mac_address:
+                    other_device_mac = addr
+                    break
+
+        if other_device_mac is None:
+            continue
+        else:
+            print(f"Found device with lower MAC address: {other_device_mac}")
+            print("Starting Access Point...")
 
 
-class CompatibilityBroker:
-    def __init__(self, broker_hostname, broker_port):
-        self.topics = dict()
-        self.waitingForAssignments = dict()
-        self.mqttc = mqtt.Client()
-        self.connected = False
-        self.connect_to_broker(broker_hostname, broker_port)
-        self.wait_for_connection()
+            dhcpcdConfFile = open('/etc/dhcpcd.conf', 'a')
+            dhcpcdConfFile.write("interface wlan0\n")
+            dhcpcdConfFile.write("static ip_address=192.168.0.10/24\n")
+            dhcpcdConfFile.write("denyinterfaces eth0\n")
+            dhcpcdConfFile.write("denyinterfaces wlan0\n")
+            dhcpcdConfFile.close()
 
-    def connect_to_broker(self, broker_hostname, broker_port):
-        self.mqttc.on_message = self.on_message
-        self.mqttc.on_connect = self.on_connect
-        self.mqttc.on_disconnect = self.on_disconnect
-        self.mqttc.connect(broker_hostname, broker_port)
-        self.mqttc.subscribe("/compatibility/#", qos=0)
-        self.mqttc.loop_start()
+            subprocess.run(["sudo", "systemctl", "start", "hostapd"])
+            subprocess.run(["sudo", "systemctl", "restart", "hostapd"])
 
-    def on_connect(self, mqttc, obj, flags, rc):
-        print("Connected CompatibilityBroker to MQTT broker.")
-        self.connected = True
+            # Start Compatibility Manager
+            subprocess.run(["python3", "compatibilitymanager.py"])
 
-    def on_disconnect(self, client, userdata, rc):
-        print("Disconnected CompatibilityBroker from MQTT broker.")
-        self.connected = False
+            # Reset dhcpcd file in order to be able to connect to other access points
+            subprocess.run(["sudo", "sed", "-i", "/interface wlan0/,$d", "/etc/dhcpcd.conf"])
 
-    def on_message(self, client, userdata, message):
+            subprocess.run(["sudo", "systemctl", "restart", "hostapd"])
 
-        # get the type of message that was received
-        messageTopic = message.topic.split("/")[2]
+    else:
+        # Connect to MQTT broker
+        broker_address = ip_address
+        client = mqtt.Client()
+        client.connect(broker_address)
 
-        print("Got Message " + message.payload.decode("utf-8") + " on topic " + message.topic)
-        json_dict = ast.literal_eval(message.payload.decode("utf-8"))
-
-        if messageTopic == "heartbeat":
-            if json_dict["occupiedBy"] != "False":
-                # refresh mapping of topic with current time and received component instance
-                self.topics[(json_dict["type"],message.topic.split("/")[3])] = (dt.datetime.now(), json_dict["occupiedBy"])
-
-        elif messageTopic == "component":
-
-            requestedType = json_dict['requestedType']
-            offeredType = json_dict['offeredType']
-
-            # check whether there exists an uuid for a certain topic already
-            exists = False
-            for topic in self.topics:
-                if requestedType == topic[0]:
-                    if not self.topics[topic][1]:
-                        # topic is not occupied yet
-                        self.send_response(instancePortName, topic[1], topic[0])
-                        exists = True
-                        break
-
-            if not exists:
-                # add component instance to instances waiting for connections
-                if requestedType in self.waitingForAssignments:
-                    self.waitingForAssignments[requestedType].append(instancePortName)
-                else:
-                    self.waitingForAssignments[requestedType] = [instancePortName]
-
-        elif messageTopic == "offer":
-            topic_uuid = json_dict['topic']
-            offeredType = json_dict['spec']['type']
-
-            # add entry to topic mapping with the offered type
-            self.topics[(offeredType, topic_uuid)] = (dt.datetime.now(), False)
-
-            # check whether component instances are waiting for assignments with the offered type
-            if offeredType in self.waitingForAssignments:
-                instancePortName = self.waitingForAssignments[offeredType][0]
-
-                self.waitingForAssignments[offeredType].pop(0)
-                if not self.waitingForAssignments[offeredType]:
-                    # remove type from dict if there are no component instances waiting for an assignment to this type
-                    self.waitingForAssignments.pop(offeredType)
-
-                # send response to component instance which requested connection
-                self.mqttc.publish("/sensorActuator/response/" + instancePortName, message.payload, qos=1)
-                # update mapping
-                self.topics[(offeredType, topic_uuid)] = (dt.datetime.now(), instancePortName)
-
-    def free_topic(self, topic):
-        info = self.mqttc.publish(topic, '{"occupiedBy": "False"}', qos=1, retain=True)
-        info.wait_for_publish()
-
-    def send_response(self, instancePortName, topic, typeName):
-        responseTopic = '/sensorActuator/response/' + instancePortName
-
-        # build message
-        spec = '"spec":{"type":"' + typeName + '"}'
-        responseMessage = '{"topic": "' + topic + '",' + spec + '}'
-
-        # send response to component instance which requested connection
-        self.mqttc.publish(responseTopic, responseMessage, qos=1)
-
-        # update topic mapping
-        self.topics[(typeName, topic)] = (dt.datetime.now(), instancePortName)
-
-    def wait_for_connection(self):
-        while not self.connected:
-            pass
-
-
-if __name__ == '__main__':
-    # Instantiate CompatibilityBroker
-    host, port = parse_cmd.parse_cmd_args()
-    mtc = CompatibilityBroker(host, port)
-
-    while True:
-        time.sleep(5)
-        for topic in mtc.topics:
-            # check if a new message was sent to this topic in the last 10 seconds even though it is free
-            if(((dt.datetime.now() - mtc.topics[topic][0]).total_seconds() >= 10) and (mtc.topics[topic][1] != "False")):
-                mtc.topics[topic] = (dt.datetime.now(), False)
-                mtc.free_topic("/sensorActuator/heartbeat/" + topic[1])
-
-                # check if someone is waiting for assignment to the type which was freed
-                offeredType = topic[0]
-                if offeredType in mtc.waitingForAssignments:
-                    instancePortName = mtc.waitingForAssignments[offeredType][0]
-
-                    mtc.waitingForAssignments[offeredType].pop(0)
-                    if not mtc.waitingForAssignments[offeredType]:
-                        # remove type from dict if there are no component instances waiting for an assignment to this type
-                        mtc.waitingForAssignments.pop(offeredType)
-
-                    # send response to component instance which is waiting for connection
-                    mtc.send_response(instancePortName, topic[1], topic[0])
+        # Publish message to broker
+        message = f"Hello from device with MAC address {mac_address} and ip {ip_address}"
+        topic = "discovery"
+        client.publish(topic, message)
+        print(f"Message published to topic {topic}: {message}")
+        client.disconnect()
+        break
