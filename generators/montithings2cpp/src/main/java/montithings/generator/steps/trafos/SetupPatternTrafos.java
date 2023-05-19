@@ -18,12 +18,12 @@ public class SetupPatternTrafos extends GeneratorStep {
         ConfigParams config = state.getConfig();
         MontiThingsGeneratorTool tool = state.getTool();
 
-        if (config.getApplyAnomalyDetectionPattern() == ApplyPatterns.ON) {
-            tool.addTrafo(new AnomalyDetectionPatternTrafo(state, WINDOW_SIZE, TOLERANCE));
-        }
-
         if (config.getApplyNetworkMinimizationPattern() == ApplyPatterns.ON) {
             tool.addTrafo(new NetworkMinimizationPatternTrafo(state));
+        }
+
+        if (config.getApplyAnomalyDetectionPattern() == ApplyPatterns.ON) {
+            tool.addTrafo(new AnomalyDetectionPatternTrafo(state, WINDOW_SIZE, TOLERANCE));
         }
 
         if (config.getApplyGrafanaPattern() == ApplyPatterns.ON) {

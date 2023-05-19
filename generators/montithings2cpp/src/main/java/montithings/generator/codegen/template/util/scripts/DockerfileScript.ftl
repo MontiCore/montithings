@@ -37,7 +37,7 @@ RUN ./build.sh ${comp.getFullName()}
     <#else>
     FROM alpine AS ${comp.getFullName()?lower_case}
 
-    RUN apk add --update-cache libgcc libstdc++ libressl-dev
+    RUN apk add --update-cache --force-overwrite libgcc libstdc++ libressl-dev libpq-dev postgresql-client
     </#if>
 
     <#if brokerIsMQTT>
@@ -70,15 +70,14 @@ RUN ./build.sh ${comp.getFullName()}
             <#else>
             FROM alpine AS ${pair.getKey().fullName}
 
-            RUN apk add --update-cache libgcc libstdc++ libressl-dev
+            RUN apk add --update-cache --force-overwrite libgcc libstdc++ libressl-dev libpq-dev postgresql-client
             </#if>
 
             <#if brokerIsMQTT>
             ADD deployment-config.json /.montithings/deployment-config.json
 
-            RUN apk add --update-cache mosquitto-libs++ libressl-dev
+            RUN apk add --update-cache --force-overwrite mosquitto-libs++ libressl-dev libpq-dev postgresql-client
             </#if>
-
             COPY --from=build /usr/src/app/build/bin/${pair.getKey().fullName} /usr/src/app/build/bin/
 
             WORKDIR /usr/src/app/build/bin

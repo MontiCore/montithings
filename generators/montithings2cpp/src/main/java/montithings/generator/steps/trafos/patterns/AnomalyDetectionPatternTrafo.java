@@ -41,6 +41,7 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
     private final File srcHwcPath;
     private ASTMACompilationUnit multivariateComp;
     private ASTMACompilationUnit univariateComp;
+    private final GeneratorToolState state;
 
     public AnomalyDetectionPatternTrafo(GeneratorToolState state, int windowSize, double tolerance) {
         this.windowSize = windowSize;
@@ -48,13 +49,19 @@ public class AnomalyDetectionPatternTrafo extends BasicTransformations implement
         this.modelPath = state.getModelPath();
         this.srcHwcPath = state.getHwcPath();
         this.targetHwcPath = Paths.get(state.getTarget().getAbsolutePath(), "hwc").toFile();
+        this.state = state;
     }
 
     @Override
     public Collection<ASTMACompilationUnit> transform(Collection<ASTMACompilationUnit> originalModels,
                                                       Collection<ASTMACompilationUnit> addedModels,
                                                       ASTMACompilationUnit targetComp) throws Exception {
-        Log.info("Apply transformation to: " + targetComp.getComponentType().getName(), TOOL_NAME);
+        Log.info("Apply Anomaly Detection Pattern to: " + targetComp.getComponentType().getName(), TOOL_NAME);
+
+        if (isNotSplittedComponent(this.state.getNotSplittedComponents(), targetComp)) {
+            Log.info("Component: " + targetComp.getComponentType().getName() + " is marked as not splitted. Stop trafo.", TOOL_NAME);
+            return new ArrayList<>();
+        }
 
         Collection<ASTMACompilationUnit> additionalTrafoModels = new ArrayList<>();
 

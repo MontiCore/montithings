@@ -90,6 +90,19 @@ public abstract class BasicTransformations {
         return interceptorComponent;
     }
 
+
+    protected ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent, String instanceName) {
+        ASTMCQualifiedName fullyQName = this.getInterceptorFullyQName(interceptorComponentName, outermostComponent.getPackage().getQName());
+
+        addSubComponentInstantiation(outermostComponent, fullyQName, instanceName);
+
+        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
+
+        flagAsGenerated(interceptorComponent);
+
+        return interceptorComponent;
+    }
+
     protected ASTMCQualifiedName getInterceptorFullyQName(String interceptorComponentName, String outermostPackage) {
         return MontiThingsMill
                 .mCQualifiedNameBuilder()
@@ -540,5 +553,15 @@ public abstract class BasicTransformations {
     protected boolean wasWrapped(ASTMACompilationUnit comp) {
         return comp.getComponentType().getHead().get_PreCommentList()
                 .stream().anyMatch(c -> c.getText().equals("RECORD_AND_REPLAY_WRAPPED"));
+    }
+
+    protected boolean isNotSplittedComponent(List<ASTMACompilationUnit> notSplittedComponents, ASTMACompilationUnit targetComp) {
+        for (ASTMACompilationUnit notSplittedComp : notSplittedComponents) {
+            if (notSplittedComp.getComponentType().getName().equals(targetComp.getComponentType().getName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
