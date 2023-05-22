@@ -1,0 +1,48 @@
+{
+  "info": {
+    "title": "OpenAPI Thing Description of the REST API of a smart door device",
+    "description": "This is an OpenAPI Description of a Smart Door actuator for the Web of Things.",
+    "contact": {
+      "email ": " atzavaras@tuc.gr"
+      },
+  "version ": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/MySmartDoor",
+      "description": "Smart Door service server URL"
+    }
+  ],
+  "type_of_thing": "actuator",
+  "supported_properties": ["state"],
+  "supported_actions": ["lock", "unlock"],
+  "sub_support": "yes",
+  "webthing_schema": {
+    "required": [
+      "id",
+      "name"
+    ],
+    "type": "object",
+    "x-refersTo": "http://www.w3.org/ns/sosa/Actuator",
+    "properties": {
+      "id": {
+       "type": "string",
+       "default": "SmartDoor",
+       "x-kindOf": "http://schema.org/identifier"
+      },
+      "name": {
+        "type": "string",
+        "example": " IoTSmartDoor",
+        "x-kindOf": "http://schema.org/name"
+      },
+      "description": {
+        "type": "string",
+        "example": "A Smart Door is an electronic door that can be sent commands to be locked or unlocked remotely. It can also report on its current state (OPEN, CLOSED, or LOCKED).",
+        "x-refersTo": "http://schema.org/description"
+      }
+    },
+    "xml": {
+      "name": " Webthing"
+    }
+  }
+}

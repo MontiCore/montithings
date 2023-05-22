@@ -17,6 +17,7 @@
 	<modules>
 		<module>fd-tagging-tool</module>
 		<module>iot-manager</module>
+		<module>openapi-generator</module>
 		<module>prolog-generator</module>
 		<module>prolog-server</module>
 		<module>replay-messages</module>
