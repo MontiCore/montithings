@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class OpenAPIToMTConverterTest {
   @Test
   public void testParseOpenAPIDocument() throws IOException {
-    Path model = Paths.get("src/test/resources/openapi/SmartDoor.txt");
+    Path model = Paths.get("src/test/resources/openapi/SmartDoor.json");
     JSONParser parser = new JSONParser();
 
 
@@ -29,7 +29,7 @@ public class OpenAPIToMTConverterTest {
 
   @Test
   public void testGenerateMTModel() throws IOException {
-    Path model = Paths.get("src/test/resources/openapi/SmartDoor.txt");
+    Path model = Paths.get("src/test/resources/openapi/SmartDoor.json");
     JSONParser parser = new JSONParser();
 
 

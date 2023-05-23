@@ -4,7 +4,6 @@ import de.monticore.generating.GeneratorEngine;
 import de.monticore.generating.GeneratorSetup;
 import de.monticore.lang.json._ast.*;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,16 +44,16 @@ public class OpenAPIToMTConverter {
 
   public List<String> getIncomingPortNames(ASTJSONValue json) {
     if (json instanceof ASTJSONObject) {
-      List<ASTJSONProperty> supportedProperties = ((ASTJSONObject) json).getProps("supported_properties");
-      return getStringListFromJsonProperty(supportedProperties);
+      List<ASTJSONProperty> supportedActions = ((ASTJSONObject) json).getProps("supported_actions");
+      return getStringListFromJsonProperty(supportedActions);
     }
     return Collections.emptyList();
   }
 
   public List<String> getStateVariables(ASTJSONValue json) {
     if (json instanceof ASTJSONObject) {
-      List<ASTJSONProperty> supportedActions = ((ASTJSONObject) json).getProps("supported_actions");
-      return getStringListFromJsonProperty(supportedActions);
+      List<ASTJSONProperty> supportedProperties = ((ASTJSONObject) json).getProps("supported_properties");
+      return getStringListFromJsonProperty(supportedProperties);
     }
     return Collections.emptyList();
   }

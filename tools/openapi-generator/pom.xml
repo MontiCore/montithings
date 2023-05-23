@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>montithings.services</groupId>
-    <artifactId>services</artifactId>
+    <groupId>montithings.tools</groupId>
+    <artifactId>tools</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -105,19 +105,6 @@
       <artifactId>monticore-grammar</artifactId>
       <classifier>${grammars.classifier}</classifier>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>de.monticore.lang</groupId>
-      <artifactId>JSON</artifactId>
-      <version>7.0.0</version>
-      <classifier>grammars</classifier>
-      <exclusions>
-        <exclusion>
-          <groupId>de.monticore</groupId>
-          <artifactId>monticore-generator</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
