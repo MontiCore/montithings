@@ -30,6 +30,9 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 <#if brokerIsMQTT>
   mqttClientInstance->addUser (this);
   mqttClientLocalInstance->addUser (this);
+  <#if true>
+    mqttClientCompatibilityInstance->addUser(this);
+  </#if>
 
   ${tc.includeArgs("template.component.helper.AddMqttOutPorts", [comp, config])}
   ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
@@ -49,6 +52,14 @@ ${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, classNam
 
   mqttClientInstance->subscribe ("/prepareComponent");
   mqttClientInstance->subscribe ("/components");
+
+  <#if true>
+    mqttClientCompatibilityInstance->subscribe("/component_match");
+
+    exitSignal__Compatibility = std::promise<void>();
+    std::future<void> keepAliveFuture__Compatibility = exitSignal__Compatibility.get_future();
+    th__Compatibility = std::thread(&${className}::sendCompatibilityHeartbeat, this, std::move(keepAliveFuture__Compatibility));
+  </#if>
 </#if>
 
 }

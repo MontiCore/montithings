@@ -41,6 +41,9 @@ this->instanceName = instanceName;
 <#if brokerIsMQTT>
 mqttClientInstance = passedMqttClientInstance;
 mqttClientLocalInstance = passedMqttClientLocalInstance;
+  <#if true>
+    mqttClientCompatibilityInstance = MqttClient::localInstance("192.168.0.10", 1883);
+  </#if>
 </#if>
 
 <#list comp.getParameters() as param >
