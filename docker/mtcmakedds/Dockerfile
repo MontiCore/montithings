@@ -9,16 +9,17 @@ RUN apt-get update && apt-get install -y \
 	mosquitto \
 	mosquitto-dev \
 	cpio \
-    protobuf-compiler \
+  protobuf-compiler \
 	libprotobuf-dev \
 	python3-protobuf \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
+	postgresql \
 	libpq-dev \
-    libssl-dev \
-    perl-base \
-    perl-modules
+	libssl-dev \
+	perl-base \
+	perl-modules
 
 RUN apt-get install --reinstall ca-certificates
 
