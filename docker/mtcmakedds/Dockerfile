@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	libxerces-c-dev \
 	postgresql \
+	postgresql-server-dev-all \
 	libpq-dev \
 	libssl-dev \
 	perl-base \
