@@ -6,7 +6,21 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibilityHeartbeat(std::future<void> keepAliveFuture){
   while (!hasComputedTODO) {
-    mqttClientCompatibilityInstance->publish("component_offer", getConnectionStringCo${compname}());
+
+    json j;
+    j["component_name"] = this->getInstanceName();
+    j["component_type"] = "<#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>${interface}</#list>";
+    j["connection_string"] = getConnectionStringCo${compname}();
+
+    <#if ComponentHelper.getIncomingPortsToTest(comp)?size <= 0>
+      j["requirements"] = "[]";
+    <#else>
+      <#list comp.getAllIncomingPorts()[0..*1] as p>
+        j["requirements"] = "[${p.getType().print()}]";
+      </#list>
+    </#if>
+
+    mqttClientCompatibilityInstance->publish("component_offer", j.dump());
     std::this_thread::sleep_for(std::chrono::seconds(45));
   }
 }
