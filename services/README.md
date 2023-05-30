@@ -1,4 +1,4 @@
-                                                       # Services
+# Services
 
 This folder contains services that mostly run alongside the generated
 MontiThings applications.
