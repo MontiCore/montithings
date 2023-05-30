@@ -15,7 +15,7 @@ The actual code generation is done by the FreeMarker templates under
 These freemarker templates contain the "blueprints" for the C++ code to be 
 generated. 
 
-In constrast to the rest of the generation, the C++ generation from the 
+In contrast to the rest of the generation, the C++ generation from the 
 behavior sublanguage is carried out by `CppPrettyPrinter` (in the `helper`
 folder) that uses MontiCore's Java-based pretty printer for the 
 MCCommonStatements.
