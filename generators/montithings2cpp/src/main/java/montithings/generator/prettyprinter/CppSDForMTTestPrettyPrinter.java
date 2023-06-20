@@ -80,11 +80,32 @@ public class CppSDForMTTestPrettyPrinter
 
     getPrinter().print("while (std::chrono::high_resolution_clock::now() <= end");
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
-      SymTypeExpression type = tc.typeOf(in.getExpression());
-      String typeString = TypesPrinter.printCPPTypeName(type);
       getPrinter().print(" && (!interface.getPortTest__" + in.getName() + "()->hasValue(uuid)");
       getPrinter().print(" || interface.getPortTest__" + in.getName() + "()->getCurrentValue(uuid)" +
-        "->getPayload().value() != ");
+        "->getPayload().value() ");
+      final String compareOperator = in.getCompareOperator().toString();
+      final String comparisonInCode;
+      switch (compareOperator) {
+        case "==":
+          comparisonInCode = "!=";
+          break;
+        case "!=":
+          comparisonInCode = "==";
+          break;
+        case "<":
+          comparisonInCode = ">=";
+          break;
+        case ">":
+          comparisonInCode = "<=";
+          break;
+        case ">=":
+          comparisonInCode = "<";
+          break;
+        default:
+          comparisonInCode = ">";
+          break;
+      }
+      getPrinter().print(comparisonInCode + " ");
       in.getExpression().accept(getTraverser());
       getPrinter().print(")");
     }
