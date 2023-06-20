@@ -33,5 +33,6 @@ component grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monti
   SendValueOnPort = Name "=" Expression ";" ;
   WaitStatement = "wait" SIUnitLiteral ";" ;
   ExpectValueOnPort = "assert" Name CompareOperator Expression ";" ;
-  CompareOperator = "==" | "!=" | "<" | ">" | "<=" | ">=";
+  CompareOperator = equals:"==" | notEquals:"!=" | lessThan:"<" |
+                    greaterThan:">" | LessEquals:"<=" | GreaterEquals:">=";
 }

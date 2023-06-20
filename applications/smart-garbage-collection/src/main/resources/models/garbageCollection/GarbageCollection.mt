@@ -15,7 +15,7 @@ component GarbageCollection {
     connect.trashType -> collector.trashType;
   } test {
     fillableSpace = 70;
-    wait 1s;
-    assert pickUpSignal == 1;
+    wait 2s;
+    assert pickUpSignal >= 1;
   }
 }

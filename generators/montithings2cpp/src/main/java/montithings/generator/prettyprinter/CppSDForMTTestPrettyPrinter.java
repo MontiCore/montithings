@@ -9,6 +9,7 @@ import montithings.generator.helper.TypesPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
+import sdformttest._ast.ASTCompareOperator;
 import sdformttest._ast.ASTExpectValueOnPort;
 import sdformttest._ast.ASTSendValueOnPort;
 import sdformttest._ast.ASTTestBlock;
@@ -83,27 +84,20 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print(" && (!interface.getPortTest__" + in.getName() + "()->hasValue(uuid)");
       getPrinter().print(" || interface.getPortTest__" + in.getName() + "()->getCurrentValue(uuid)" +
         "->getPayload().value() ");
-      final String compareOperator = in.getCompareOperator().toString();
+      final ASTCompareOperator compareOperator = in.getCompareOperator();
       final String comparisonInCode;
-      switch (compareOperator) {
-        case "==":
-          comparisonInCode = "!=";
-          break;
-        case "!=":
-          comparisonInCode = "==";
-          break;
-        case "<":
-          comparisonInCode = ">=";
-          break;
-        case ">":
-          comparisonInCode = "<=";
-          break;
-        case ">=":
-          comparisonInCode = "<";
-          break;
-        default:
-          comparisonInCode = ">";
-          break;
+      if (compareOperator.isPresentEquals()) {
+        comparisonInCode = "!=";
+      } else if (compareOperator.isPresentNotEquals()) {
+        comparisonInCode = "==";
+      } else if (compareOperator.isPresentLessThan()) {
+        comparisonInCode = ">=";
+      } else if (compareOperator.isPresentGreaterThan()) {
+        comparisonInCode = "<=";
+      } else if (compareOperator.isPresentGreaterEquals()) {
+        comparisonInCode = "<";
+      } else {
+        comparisonInCode = ">";
       }
       getPrinter().print(comparisonInCode + " ");
       in.getExpression().accept(getTraverser());

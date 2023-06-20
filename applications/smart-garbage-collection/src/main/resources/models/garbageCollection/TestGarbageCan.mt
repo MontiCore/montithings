@@ -5,8 +5,6 @@ component TestGarbageCan implements AbstractGarbageCan {
   port out int pickUpSignal;
   port out int trashType;
 
-  // TODO AKL port for signaling when pickUp is done
-
   int typeOfTrash = 2;
   int fillLevel = 20;
 
@@ -17,7 +15,7 @@ component TestGarbageCan implements AbstractGarbageCan {
   behavior fillableSpace {
     if (fillLevel > 10 && fillLevel <= fillableSpace) {
       after 1s {
-        pickUpSignal = 1;
+        pickUpSignal = fillLevel;
         fillLevel = 0;
       }
     } else if (fillLevel < 10) {

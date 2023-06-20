@@ -72,6 +72,16 @@ publishConnectors ();
 }
 }
 
+<#if ComponentHelper.getIncomingPortsToTest(comp)?size gt 0>
+  <#list comp.getAllIncomingPorts()[0..*1] as p>
+    // check if this message informs us about a new component match
+    if (topic.find ("/component_match") != std::string::npos) {
+      LOG(DEBUG) << "Component Match message received!";
+      mqttClientInstance->publish("/portsInject/" + replaceDotsBySlashes ("${p.getFullName()}"), payload);
+    }
+  </#list>
+</#if>
+
 ${tc.includeArgs("template.logtracing.hooks.AddInstanceNameToPortRef", [comp, config, "_"])}
 
 }
