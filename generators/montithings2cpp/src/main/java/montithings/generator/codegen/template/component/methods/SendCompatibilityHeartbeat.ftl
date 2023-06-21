@@ -5,22 +5,35 @@ ${tc.signature("comp","config","className")}
 
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibilityHeartbeat(std::future<void> keepAliveFuture){
-  while (!hasComputedTODO) {
+  while (true) {
+    if (!mqttClientCompatibilityInstance->isConnected()) {
+      try {
+        mqttClientCompatibilityInstance = MqttClient::localInstance("192.168.0.10", 1883);
+        mqttClientCompatibilityInstance->addUser(this);
+        mqttClientCompatibilityInstance->subscribe("/component_match");
+      } catch (std::runtime_error &err) {
+        log("Can't connect to compatibility-broker yet, Trying again in 3 seconds!");
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        continue;
+      }
+    }
 
-    json j;
-    j["component_name"] = this->getInstanceName();
-    j["component_type"] = "<#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>${interface}</#list>";
-    j["connection_string"] = getConnectionStringCo${compname}();
+    if (!hasComputedTODO) {
+      json j;
+      j["component_name"] = this->getInstanceName();
+      j["component_type"] = "<#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>${interface}</#list>";
+      j["connection_string"] = getConnectionStringCo${compname}();
 
-    <#if ComponentHelper.getIncomingPortsToTest(comp)?size <= 0>
+      <#if ComponentHelper.getIncomingPortsToTest(comp)?size <= 0>
       j["requirements"] = "[]";
-    <#else>
+      <#else>
       <#list comp.getAllIncomingPorts()[0..*1] as p>
-        j["requirements"] = "[${p.getType().print()}]";
+      j["requirements"] = "[${p.getType().print()}]";
       </#list>
-    </#if>
+      </#if>
 
-    mqttClientCompatibilityInstance->publish("component_offer", j.dump());
+      mqttClientCompatibilityInstance->publish("component_offer", j.dump());
+    }
     std::this_thread::sleep_for(std::chrono::seconds(45));
   }
 }
