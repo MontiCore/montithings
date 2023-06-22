@@ -56,3 +56,29 @@ std::string getModelInstanceName(const std::string& instanceName) {
   }
   return instanceName;
 }
+
+std::string getIPAddress() {
+    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd == -1) {
+        std::cerr << "Failed to create socket." << std::endl;
+        return "";
+    }
+
+    struct ifreq ifr;
+    std::memset(&ifr, 0, sizeof(ifr));
+    std::strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ - 1);
+
+    if (ioctl(sockfd, SIOCGIFADDR, &ifr) == -1) {
+        std::cerr << "Failed to retrieve IP address." << std::endl;
+        close(sockfd);
+        return "";
+    }
+
+    close(sockfd);
+
+    struct sockaddr_in* address = reinterpret_cast<struct sockaddr_in*>(&ifr.ifr_addr);
+    char ipAddress[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(address->sin_addr), ipAddress, INET_ADDRSTRLEN);
+
+    return ipAddress;
+}

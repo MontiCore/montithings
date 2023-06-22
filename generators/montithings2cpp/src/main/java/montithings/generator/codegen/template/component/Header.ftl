@@ -35,8 +35,9 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
 <#if brokerIsMQTT>
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
-  <#if true>
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     MqttClient *  mqttClientCompatibilityInstance;
+    MqttClient *  mqttClientSenderInstance;
   </#if>
   json sensorActuatorTypes;
 
@@ -58,10 +59,10 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
     </#if>
   </#list>
 
-  <#if true>
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     std::thread th__Compatibility;
-    std::promise<void> exitSignal__Compatibility;
   </#if>
+  std::promise<void> exitSignal__Compatibility;
 </#if>
 
 ${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config])}
@@ -106,7 +107,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::string typeName, std::future<void> keepAliveFuture);
   void sendConnectionString (std::string connectionStringTopic, std::string connectionString);
   MqttClient *getMqttClientInstance () const;
-  <#if true>
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     void sendCompatibilityHeartbeat(std::future<void> keepAliveFuture);
   </#if>
 </#if>
@@ -148,7 +149,7 @@ void compute() override;
   void compute${everyBlockName} ();
 </#list>
 bool shouldCompute();
-<#if true>
+<#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
   bool hasComputedTODO = false;
 </#if>
 <#list ComponentHelper.getPortSpecificMTBehaviors(comp) as behavior>

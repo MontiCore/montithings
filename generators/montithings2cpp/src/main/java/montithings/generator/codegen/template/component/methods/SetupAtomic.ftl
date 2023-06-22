@@ -33,9 +33,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   mqttClientInstance->publish (replaceDotsBySlashes ("/components"),
   replaceDotsBySlashes (instanceName));
 
-  <#if true>
-    mqttClientCompatibilityInstance->subscribe("/component_match");
-
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     exitSignal__Compatibility = std::promise<void>();
     std::future<void> keepAliveFuture__Compatibility = exitSignal__Compatibility.get_future();
     th__Compatibility = std::thread(&${className}::sendCompatibilityHeartbeat, this, std::move(keepAliveFuture__Compatibility));

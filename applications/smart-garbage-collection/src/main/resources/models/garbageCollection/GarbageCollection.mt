@@ -2,7 +2,6 @@ package garbageCollection;
 
 component GarbageCollection {
   port in CoAbstractGarbageCan connect;
-  port in CoAbstractGarbageCan disconnect;
 
   GarbageCollector collector;
   GarbageRemover remover;

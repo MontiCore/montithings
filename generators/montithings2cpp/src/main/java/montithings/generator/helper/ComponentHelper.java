@@ -1348,10 +1348,10 @@ public class ComponentHelper {
       .map(b -> b.getTestBlock()).collect(Collectors.toList());
   }
 
-  MontiThingsTypeCheck tc =
+  private static MontiThingsTypeCheck tc =
     new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
 
-  public List<PortSymbol> getOutgoingPortsToTest(ComponentTypeSymbol comp) {
+  static public List<PortSymbol> getOutgoingPortsToTest(ComponentTypeSymbol comp) {
     List<PortSymbol> ports = new ArrayList<>();
     for (ASTTestBlock testBlock : getTestBlocks(comp)) {
       for (ASTSendValueOnPort out : testBlock.getSendValueOnPortList()) {
@@ -1363,7 +1363,7 @@ public class ComponentHelper {
     return ports;
   }
 
-  public List<PortSymbol> getIncomingPortsToTest(ComponentTypeSymbol comp) {
+  static public List<PortSymbol> getIncomingPortsToTest(ComponentTypeSymbol comp) {
     List<PortSymbol> ports = new ArrayList<>();
     for (ASTTestBlock testBlock : getTestBlocks(comp)) {
       for (ASTExpectValueOnPort in : testBlock.getExpectValueOnPortList()) {
@@ -1393,5 +1393,9 @@ public class ComponentHelper {
       Log.error("Test Blocks are only allowed for port-specific behaviors");
     }
     return CppPrettyPrinter.print(behavior.getTestBlock(), behavior.getName(0));
+  }
+
+  public static boolean shouldGenerateCompatibilityHeartbeat(ComponentTypeSymbol comp) {
+    return !getIncomingPortsToTest(comp).isEmpty() || !getInterfaceClassNames(comp).isEmpty();
   }
 }

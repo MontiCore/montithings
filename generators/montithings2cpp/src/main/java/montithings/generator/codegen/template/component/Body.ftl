@@ -18,7 +18,7 @@ ${tc.signature("comp","config","className")}
   <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
     ${tc.includeArgs("template.component.methods.SendConnectionString", [comp, config, className])}
-    <#if true>
+    <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
       ${tc.includeArgs("template.component.methods.SendCompatibilityHeartbeat", [comp, config, className])}
     </#if>
   </#if>
@@ -42,7 +42,7 @@ ${tc.signature("comp","config","className")}
   <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
     ${tc.includeArgs("template.component.methods.SendConnectionString", [comp, config, className])}
-    <#if true>
+    <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
       ${tc.includeArgs("template.component.methods.SendCompatibilityHeartbeat", [comp, config, className])}
     </#if>
   </#if>  ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
