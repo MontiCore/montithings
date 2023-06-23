@@ -16,6 +16,7 @@ import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.StringTransformations;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
+import montithings.generator.helper.ComponentHelper;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -87,6 +88,20 @@ public class CppBehaviorPrettyPrinter
         printGetExternalPortAccessFQN(node.getConnector().getSource());
       }
       getPrinter().print("));");
+      getPrinter().println();
+
+      // subscribe to the topics so that messages can be sent to other mqtt broker
+      if (ComponentHelper.shouldGenerateCompatibilityHeartbeat(node.getEnclosingScope().getEnclosingScope()
+              .getLocalComponentTypeSymbols().get(0))) {
+        if (sourceIsComponentInstance && !targetIsComponentInstance) {
+          getPrinter().print("component.getMqttClientSenderInstance()->publish(new-subscriptions, replaceDotsBySlashes (");
+          getPrinter().print("instanceName + \"" + node.getConnector().getSource().getQName() + "\"));");
+        } else if (!sourceIsComponentInstance && targetIsComponentInstance) {
+          getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (");
+          getPrinter().print("instanceName + \"" + target.getQName() + "\"));");
+        }
+        getPrinter().println();
+      }
     }
   }
 
@@ -112,6 +127,7 @@ public class CppBehaviorPrettyPrinter
         printGetExternalPortAccessFQN(node.getSource());
       }
       getPrinter().print("));");
+      getPrinter().println();
     }
   }
 

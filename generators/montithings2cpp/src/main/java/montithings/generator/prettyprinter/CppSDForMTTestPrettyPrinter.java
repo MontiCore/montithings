@@ -48,7 +48,10 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print("), replaceDotsBySlashes (");
       getPrinter().print("instanceName");
       getPrinter().print(" + \"/" + "test__" + out.getName() + "\"");
-      getPrinter().print("));");
+      getPrinter().println("));");
+
+      getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (");
+      getPrinter().println("instanceName + \"test__" + out.getName() + "\"));");
     }
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
       getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
@@ -56,7 +59,10 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print(" + \"/" + "test__" + in.getName() + "\"");
       getPrinter().print("), replaceDotsBySlashes (");
       printGetExternalPortAccessFQN(in.getName());
-      getPrinter().print("));");
+      getPrinter().println("));");
+
+      getPrinter().print("component.getMqttClientSenderInstance()->publish(new-subscriptions, replaceDotsBySlashes (");
+      getPrinter().println("instanceName + \"test__" + in.getName() + "\"));");
     }
 
     getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (1000));");

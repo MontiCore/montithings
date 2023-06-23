@@ -84,7 +84,10 @@ publishConnectors ();
   </#if>
   else if (topic.find ("/offered_ip") != std::string::npos) {
     mqttClientSenderInstance = MqttClient::localInstance(payload, 1883);
-    mqttClientLocalInstance->subscribe("#");
+    mqttClientSenderInstance->subscribe("new-subscriptions");
+  }
+  else if (topic.find("new-subscriptions") != std::string::npos) {
+    mqttClientSenderInstance->subscribe(payload);
   }
   else if (mqttClientSenderInstance->isConnected()) {
     mqttClientSenderInstance->publish(topic, payload);
