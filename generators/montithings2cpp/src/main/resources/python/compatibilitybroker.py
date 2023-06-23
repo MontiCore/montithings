@@ -60,13 +60,12 @@ while True:
             print(f"Found device with lower MAC address: {other_device_mac}")
             print("Starting Access Point...")
 
-
-            dhcpcdConfFile = open('/etc/dhcpcd.conf', 'a')
-            dhcpcdConfFile.write("interface wlan0\n")
-            dhcpcdConfFile.write("static ip_address=192.168.0.10/24\n")
-            dhcpcdConfFile.write("denyinterfaces eth0\n")
-            dhcpcdConfFile.write("denyinterfaces wlan0\n")
-            dhcpcdConfFile.close()
+            dhcpcdConfigFile = open('/etc/dhcpcd.conf', 'a')
+            dhcpcdConfigFile.write("interface wlan0\n")
+            dhcpcdConfigFile.write("static ip_address=192.168.0.10/24\n")
+            dhcpcdConfigFile.write("denyinterfaces eth0\n")
+            dhcpcdConfigFile.write("denyinterfaces wlan0\n")
+            dhcpcdConfigFile.close()
 
             subprocess.run(["sudo", "systemctl", "start", "hostapd"])
             subprocess.run(["sudo", "systemctl", "restart", "hostapd"])
@@ -80,6 +79,9 @@ while True:
             subprocess.run(["sudo", "systemctl", "restart", "hostapd"])
 
     else:
+
+        # Maybe nothing has to be done here, because we're always sending our heartbeat to the same ip anyways
+
         # Connect to MQTT broker
         broker_address = ip_address
         client = mqtt.Client()
