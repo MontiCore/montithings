@@ -2,6 +2,7 @@
 package montithings.generator.prettyprinter;
 
 import arcbasis._ast.ASTPortAccess;
+import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import behavior._ast.*;
 import behavior._visitor.BehaviorHandler;
@@ -12,6 +13,7 @@ import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.symboltable.IScopeSpanningSymbol;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.StringTransformations;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
@@ -68,10 +70,20 @@ public class CppBehaviorPrettyPrinter
 
   @Override
   public void handle(ASTConnectStatement node) {
-    boolean sourceIsComponentInstance = isStaticComponentInstance(node.getConnector().getSource());
+    boolean useSenderInstance = false;
+    IScopeSpanningSymbol spanningSymbol = node.getEnclosingScope()
+      .getEnclosingScope().getSpanningSymbol();
+    if (spanningSymbol instanceof ComponentTypeSymbol) {
+      if (ComponentHelper.shouldGenerateCompatibilityHeartbeat((ComponentTypeSymbol) spanningSymbol)) {
+        useSenderInstance = true;
+      }
+    }
+    ASTPortAccess source = node.getConnector().getSource();
+    boolean sourceIsComponentInstance = isStaticComponentInstance(source);
     for (ASTPortAccess target : node.getConnector().getTargetList()) {
       boolean targetIsComponentInstance = isStaticComponentInstance(target);
-      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
+      final String senderString = !targetIsComponentInstance && sourceIsComponentInstance ? "Sender" : "";
+      getPrinter().print("component.getMqttClient" + senderString + "Instance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
       if (targetIsComponentInstance) {
         getPrinter().print("instanceName");
         getPrinter().print(" + \"/" + target.getQName() + "\"");
@@ -82,23 +94,23 @@ public class CppBehaviorPrettyPrinter
       getPrinter().print("), replaceDotsBySlashes (");
       if (sourceIsComponentInstance) {
         getPrinter().print("instanceName");
-        getPrinter().print(" + \"/" + node.getConnector().getSource().getQName() + "\"");
+        getPrinter().print(" + \"/" + source.getQName() + "\"");
       }
       else {
-        printGetExternalPortAccessFQN(node.getConnector().getSource());
+        printGetExternalPortAccessFQN(source);
       }
       getPrinter().print("));");
       getPrinter().println();
 
       // subscribe to the topics so that messages can be sent to other mqtt broker
-      if (ComponentHelper.shouldGenerateCompatibilityHeartbeat(node.getEnclosingScope().getEnclosingScope()
-              .getLocalComponentTypeSymbols().get(0))) {
+      if (useSenderInstance) {
         if (sourceIsComponentInstance && !targetIsComponentInstance) {
-          getPrinter().print("component.getMqttClientSenderInstance()->publish(new-subscriptions, replaceDotsBySlashes (");
-          getPrinter().print("instanceName + \"" + node.getConnector().getSource().getQName() + "\"));");
+          getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" +");
+          getPrinter().print("instanceName + \"" + source.getQName() + "\"));");
         } else if (!sourceIsComponentInstance && targetIsComponentInstance) {
-          getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (");
-          getPrinter().print("instanceName + \"" + target.getQName() + "\"));");
+          getPrinter().print("component.getMqttClientSenderInstance()->publish(\"new-subscriptions\", ");
+          printGetExternalPortAccessFQN(source);
+          getPrinter().print(");");
         }
         getPrinter().println();
       }

@@ -108,6 +108,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void sendConnectionString (std::string connectionStringTopic, std::string connectionString);
   MqttClient *getMqttClientInstance () const;
   <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
+    MqttClient *getMqttClientSenderInstance () const;
     void sendCompatibilityHeartbeat(std::future<void> keepAliveFuture);
   </#if>
 </#if>

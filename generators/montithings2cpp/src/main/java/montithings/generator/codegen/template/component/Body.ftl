@@ -18,9 +18,6 @@ ${tc.signature("comp","config","className")}
   <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
     ${tc.includeArgs("template.component.methods.SendConnectionString", [comp, config, className])}
-    <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
-      ${tc.includeArgs("template.component.methods.SendCompatibilityHeartbeat", [comp, config, className])}
-    </#if>
   </#if>
 
   <#if splittingModeDisabled>
@@ -42,9 +39,6 @@ ${tc.signature("comp","config","className")}
   <#if brokerIsMQTT>
     ${tc.includeArgs("template.component.methods.SendKeepAlive", [comp, config, className])}
     ${tc.includeArgs("template.component.methods.SendConnectionString", [comp, config, className])}
-    <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
-      ${tc.includeArgs("template.component.methods.SendCompatibilityHeartbeat", [comp, config, className])}
-    </#if>
   </#if>  ${tc.includeArgs("template.component.methods.SetResult", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
@@ -74,6 +68,10 @@ ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
   ${tc.includeArgs("template.component.methods.PublishConnectors", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.OnMessage", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetMqttClientInstance", [comp, config, className])}
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
+    ${tc.includeArgs("template.component.methods.SendCompatibilityHeartbeat", [comp, config, className])}
+    ${tc.includeArgs("template.component.methods.GetMqttClientSenderInstance", [comp, config, className])}
+  </#if>
 </#if>
 
 <#if brokerIsDDS>

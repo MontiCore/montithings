@@ -43,14 +43,14 @@ public class CppSDForMTTestPrettyPrinter
     List<ASTSendValueOnPort> sendValueOnPortList = node.getSendValueOnPortList();
     List<ASTExpectValueOnPort> expectValueOnPortList = node.getExpectValueOnPortList();
     for (ASTSendValueOnPort out : sendValueOnPortList) {
-      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
+      getPrinter().print("component.getMqttClientSenderInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
       printGetExternalPortAccessFQN(out.getName());
       getPrinter().print("), replaceDotsBySlashes (");
       getPrinter().print("instanceName");
       getPrinter().print(" + \"/" + "test__" + out.getName() + "\"");
       getPrinter().println("));");
 
-      getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (");
+      getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" +");
       getPrinter().println("instanceName + \"test__" + out.getName() + "\"));");
     }
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
@@ -61,8 +61,9 @@ public class CppSDForMTTestPrettyPrinter
       printGetExternalPortAccessFQN(in.getName());
       getPrinter().println("));");
 
-      getPrinter().print("component.getMqttClientSenderInstance()->publish(new-subscriptions, replaceDotsBySlashes (");
-      getPrinter().println("instanceName + \"test__" + in.getName() + "\"));");
+      getPrinter().print("component.getMqttClientSenderInstance()->publish(\"new-subscriptions\", ");
+      printGetExternalPortAccessFQN(in.getName());
+      getPrinter().println(");");
     }
 
     getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (1000));");
