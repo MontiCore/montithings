@@ -152,6 +152,7 @@ void compute() override;
 bool shouldCompute();
 <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
   bool hasComputedTODO = false;
+  std::string ip_address = "";
 </#if>
 <#list ComponentHelper.getPortSpecificMTBehaviors(comp) as behavior>
   bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(<#if !comp.isAtomic()>${compname}Input${generics}& ${Identifier.getInputName()}</#if>);

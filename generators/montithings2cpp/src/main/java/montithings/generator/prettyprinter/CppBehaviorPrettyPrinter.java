@@ -105,12 +105,12 @@ public class CppBehaviorPrettyPrinter
       // subscribe to the topics so that messages can be sent to other mqtt broker
       if (useSenderInstance) {
         if (sourceIsComponentInstance && !targetIsComponentInstance) {
-          getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" +");
+          getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" + ");
           getPrinter().print("instanceName + \"" + source.getQName() + "\"));");
         } else if (!sourceIsComponentInstance && targetIsComponentInstance) {
-          getPrinter().print("component.getMqttClientSenderInstance()->publish(\"new-subscriptions\", ");
+          getPrinter().print("component.getMqttClientSenderInstance()->publish(\"/new-subscriptions\", replaceDotsBySlashes (");
           printGetExternalPortAccessFQN(source);
-          getPrinter().print(");");
+          getPrinter().print("));");
         }
         getPrinter().println();
       }

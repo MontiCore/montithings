@@ -6,7 +6,6 @@ ${tc.signature("comp","config","className")}
 ${Utils.printTemplateArguments(comp)}
 void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibilityHeartbeat(std::future<void> keepAliveFuture){
   bool first = true;
-  std::string ip_address = "";
   while (true) {
     if (first || !mqttClientCompatibilityInstance->isConnected()) {
       try {

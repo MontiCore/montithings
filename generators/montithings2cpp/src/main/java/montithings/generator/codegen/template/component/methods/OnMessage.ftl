@@ -83,13 +83,15 @@ publishConnectors ();
     </#list>
   </#if>
   else if (topic.find ("/offered_ip") != std::string::npos) {
-    mqttClientSenderInstance = MqttClient::localInstance(payload, 1883);
-    mqttClientLocalInstance->subscribe("new-subscriptions");
+    if (payload != ip_address) {
+      mqttClientSenderInstance = MqttClient::localInstance(payload, 1883);
+      mqttClientInstance->subscribe("/new-subscriptions");
+    }
   }
-  else if (topic.find("new-subscriptions") != std::string::npos) {
+  else if (topic.find("/new-subscriptions") != std::string::npos) {
     mqttClientSenderInstance->subscribe("/ports/" + payload);
   }
-  else if (mqttClientSenderInstance->isConnected()) {
+  else if (topic.find("/ports") != std::string::npos && mqttClientSenderInstance->isConnected()) {
     mqttClientSenderInstance->publish(topic, payload);
   }
 </#if>
