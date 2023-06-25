@@ -89,6 +89,7 @@ publishConnectors ();
     }
   }
   else if (topic.find("/new-subscriptions") != std::string::npos) {
+    mqttClientInstance->subscribe("/ports/" + payload);
     subscriptionsToSend.emplace("/ports/" + payload);
   }
   else if (subscriptionsToSend.find(topic) != subscriptionsToSend.cend() && mqttClientSenderInstance->isConnected()) {

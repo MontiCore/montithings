@@ -50,6 +50,8 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print(" + \"/" + "test__" + out.getName() + "\"");
       getPrinter().println("));");
 
+      getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" + ");
+      getPrinter().println("instanceName + \"/test__" + out.getName() + "\"));");
       getPrinter().print("component.getSubscriptionsToSend()->emplace(replaceDotsBySlashes (\"/ports/\" + ");
       getPrinter().println("instanceName + \"/test__" + out.getName() + "\"));");
     }
