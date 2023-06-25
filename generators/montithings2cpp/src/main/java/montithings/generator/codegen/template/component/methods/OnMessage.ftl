@@ -84,14 +84,14 @@ publishConnectors ();
   </#if>
   else if (topic.find ("/offered_ip") != std::string::npos) {
     if (payload != ip_address) {
-      mqttClientSenderInstance = MqttClient::localInstance(payload, 1883);
+      mqttClientSenderInstance = new MqttClient(payload, 1883);
       mqttClientInstance->subscribe("/new-subscriptions");
     }
   }
   else if (topic.find("/new-subscriptions") != std::string::npos) {
-    mqttClientSenderInstance->subscribe("/ports/" + payload);
+    subscriptionsToSend.emplace("/ports/" + payload);
   }
-  else if (topic.find("/ports") != std::string::npos && mqttClientSenderInstance->isConnected()) {
+  else if (subscriptionsToSend.find(topic) != subscriptionsToSend.cend() && mqttClientSenderInstance->isConnected()) {
     mqttClientSenderInstance->publish(topic, payload);
   }
 </#if>

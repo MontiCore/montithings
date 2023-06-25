@@ -71,6 +71,7 @@ ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
   <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     ${tc.includeArgs("template.component.methods.SendCompatibilityHeartbeat", [comp, config, className])}
     ${tc.includeArgs("template.component.methods.GetMqttClientSenderInstance", [comp, config, className])}
+    ${tc.includeArgs("template.component.methods.GetSubscriptionsToSend", [comp, config, className])}
   </#if>
 </#if>
 

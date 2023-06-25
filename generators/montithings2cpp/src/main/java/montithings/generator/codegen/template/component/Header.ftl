@@ -38,6 +38,10 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
   <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     MqttClient *  mqttClientCompatibilityInstance;
     MqttClient *  mqttClientSenderInstance;
+
+    bool hasComputedTODO = false;
+    std::string ip_address = "";
+    std::set< std::string> subscriptionsToSend;
   </#if>
   json sensorActuatorTypes;
 
@@ -110,6 +114,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     MqttClient *getMqttClientSenderInstance () const;
     void sendCompatibilityHeartbeat(std::future<void> keepAliveFuture);
+    std::set< std::string> *getSubscriptionsToSend();
   </#if>
 </#if>
 
@@ -150,10 +155,6 @@ void compute() override;
   void compute${everyBlockName} ();
 </#list>
 bool shouldCompute();
-<#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
-  bool hasComputedTODO = false;
-  std::string ip_address = "";
-</#if>
 <#list ComponentHelper.getPortSpecificMTBehaviors(comp) as behavior>
   bool shouldCompute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(<#if !comp.isAtomic()>${compname}Input${generics}& ${Identifier.getInputName()}</#if>);
 </#list>

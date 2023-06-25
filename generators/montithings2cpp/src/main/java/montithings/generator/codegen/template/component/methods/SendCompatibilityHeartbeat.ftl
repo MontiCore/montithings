@@ -9,7 +9,7 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibil
   while (true) {
     if (first || !mqttClientCompatibilityInstance->isConnected()) {
       try {
-        mqttClientCompatibilityInstance = MqttClient::localInstance("192.168.0.10", 1883);
+        mqttClientCompatibilityInstance = new MqttClient("192.168.0.10", 1883);
         mqttClientCompatibilityInstance->addUser(this);
         mqttClientCompatibilityInstance->subscribe("/component_match");
         mqttClientCompatibilityInstance->subscribe("/offered_ip");

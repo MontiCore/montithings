@@ -50,7 +50,7 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print(" + \"/" + "test__" + out.getName() + "\"");
       getPrinter().println("));");
 
-      getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" + ");
+      getPrinter().print("component.getSubscriptionsToSend()->emplace(replaceDotsBySlashes (\"/ports/\" + ");
       getPrinter().println("instanceName + \"/test__" + out.getName() + "\"));");
     }
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
@@ -122,7 +122,7 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print("), replaceDotsBySlashes (");
       getPrinter().print("instanceName");
       getPrinter().print(" + \"/" + "test__" + out.getName() + "\"");
-      getPrinter().print("));");
+      getPrinter().println("));");
     }
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
       getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/disconnect/\" + ");
@@ -130,7 +130,7 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().print(" + \"/" + "test__" + in.getName() + "\"");
       getPrinter().print("), replaceDotsBySlashes (");
       printGetExternalPortAccessFQN(in.getName());
-      getPrinter().print("));");
+      getPrinter().println("));");
     }
 
     getPrinter().println("if (std::chrono::high_resolution_clock::now() <= end) {");
