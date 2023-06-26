@@ -11,8 +11,8 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibil
       try {
         mqttClientCompatibilityInstance = new MqttClient("192.168.0.10", 1883);
         mqttClientCompatibilityInstance->addUser(this);
-        mqttClientCompatibilityInstance->subscribe("/component_match");
-        mqttClientCompatibilityInstance->subscribe("/offered_ip");
+        mqttClientCompatibilityInstance->subscribe("/component_match/#");
+        mqttClientCompatibilityInstance->subscribe("/offered_ip/#");
         ip_address = getIPAddress();
         first = false;
       } catch (std::runtime_error &err) {

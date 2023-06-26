@@ -72,7 +72,7 @@ public class CppSDForMTTestPrettyPrinter
       Optional<PortSymbol> ps = componentTypeSymbol.getPort(portName);
       if (ps.isPresent()) {
         getPrinter().print("component.getMqttClientSenderInstance" + portName
-                + "()->publish(\"/new-subscriptions" + ps.get().getType().print() + "\", replaceDotsBySlashes (");
+                + "()->publish(\"/new-subscriptions/" + ps.get().getType().print() + "\", replaceDotsBySlashes (");
         printGetExternalPortAccessFQN(in.getName());
         getPrinter().println("));");
       }
