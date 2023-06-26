@@ -19,7 +19,7 @@ ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [co
     ${ComponentHelper.printTestBlock(behavior)}
 </#if>
 
-${ComponentHelper.printJavaBlock(behavior.getMCJavaBlock(), logTracingEnabled)}
+${ComponentHelper.printPortSpecificBehavior(behavior, logTracingEnabled)}
 
 <#if ComponentHelper.hasTest(comp)>}</#if>
 

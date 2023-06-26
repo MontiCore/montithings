@@ -36,7 +36,7 @@ public class CppPrettyPrinter {
     printer.getTraverser().setOptionalOperatorsHandler(new CppOptionalOperatorsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setSIUnitLiteralsHandler(new MontiThingsSIUnitLiteralsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setMCVarDeclarationStatementsHandler(new CppVarDeclarationStatementsPrettyPrinter(printer.getPrinter()));
-    printer.getTraverser().setBehaviorHandler(new CppBehaviorPrettyPrinter(printer.getPrinter()));
+    printer.getTraverser().setBehaviorHandler(new CppBehaviorPrettyPrinter(printer.getPrinter(), portName));
     printer.getTraverser().setMCCommonStatementsHandler(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setMCBasicTypesHandler(new CppMCBasicTypesPrettyPrinter(printer.getPrinter()));
 

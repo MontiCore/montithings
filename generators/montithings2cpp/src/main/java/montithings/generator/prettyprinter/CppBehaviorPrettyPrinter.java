@@ -33,10 +33,15 @@ public class CppBehaviorPrettyPrinter
   protected BehaviorTraverser traverser;
   protected IndentPrinter printer;
   protected int afterStatementIndex;
+  protected String currentPortName;
 
   public CppBehaviorPrettyPrinter(IndentPrinter printer) {
+    this(printer, "");
+  }
+  public CppBehaviorPrettyPrinter(IndentPrinter printer, String currentPortName) {
     this.printer = printer;
     this.afterStatementIndex = 0;
+    this.currentPortName = currentPortName;
   }
 
   @Override
@@ -83,7 +88,9 @@ public class CppBehaviorPrettyPrinter
     for (ASTPortAccess target : node.getConnector().getTargetList()) {
       boolean targetIsComponentInstance = isStaticComponentInstance(target);
       final String senderString = !targetIsComponentInstance && sourceIsComponentInstance ? "Sender" : "";
-      getPrinter().print("component.getMqttClient" + senderString + "Instance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
+      final String portName = senderString.length() == 0 ? "" : currentPortName;
+      getPrinter().print("component.getMqttClient" + senderString + "Instance" + portName
+              + "()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
       if (targetIsComponentInstance) {
         getPrinter().print("instanceName");
         getPrinter().print(" + \"/" + target.getQName() + "\"");
@@ -107,12 +114,17 @@ public class CppBehaviorPrettyPrinter
         if (sourceIsComponentInstance && !targetIsComponentInstance) {
           getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" + ");
           getPrinter().println("instanceName + \"/" + source.getQName() + "\"));");
-          getPrinter().print("component.getSubscriptionsToSend()->emplace(replaceDotsBySlashes (\"/ports/\" + ");
+          getPrinter().print("component.getSubscriptionsToSend" + currentPortName
+                  + "()->emplace(replaceDotsBySlashes (\"/ports/\" + ");
           getPrinter().print("instanceName + \"/" + source.getQName() + "\"));");
         } else if (!sourceIsComponentInstance && targetIsComponentInstance) {
-          getPrinter().print("component.getMqttClientSenderInstance()->publish(\"/new-subscriptions\", replaceDotsBySlashes (");
-          printGetExternalPortAccessFQN(source);
-          getPrinter().print("));");
+          Optional<PortSymbol> ps = ((ComponentTypeSymbol) spanningSymbol).getPort(currentPortName);
+          if (ps.isPresent()) {
+            getPrinter().print("component.getMqttClientSenderInstance" + currentPortName
+                    + "()->publish(\"/new-subscriptions/" + ps.get().getType().print() + "\", replaceDotsBySlashes (");
+            printGetExternalPortAccessFQN(source);
+            getPrinter().print("));");
+          }
         }
         getPrinter().println();
       }

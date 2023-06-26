@@ -2,6 +2,8 @@
 package montithings.generator.prettyprinter;
 
 
+import arcbasis._symboltable.ComponentTypeSymbol;
+import arcbasis._symboltable.PortSymbol;
 import de.monticore.prettyprint.IndentPrinter;
 import de.monticore.types.check.SymTypeExpression;
 import de.se_rwth.commons.StringTransformations;
@@ -17,6 +19,7 @@ import sdformttest._visitor.SDForMTTestHandler;
 import sdformttest._visitor.SDForMTTestTraverser;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public class CppSDForMTTestPrettyPrinter
@@ -42,8 +45,10 @@ public class CppSDForMTTestPrettyPrinter
   public void handle(ASTTestBlock node) {
     List<ASTSendValueOnPort> sendValueOnPortList = node.getSendValueOnPortList();
     List<ASTExpectValueOnPort> expectValueOnPortList = node.getExpectValueOnPortList();
+    ComponentTypeSymbol componentTypeSymbol = (ComponentTypeSymbol) node.getEnclosingScope().getSpanningSymbol();
     for (ASTSendValueOnPort out : sendValueOnPortList) {
-      getPrinter().print("component.getMqttClientSenderInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
+      getPrinter().print("component.getMqttClientSenderInstance" + portName
+              + "()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
       printGetExternalPortAccessFQN(out.getName());
       getPrinter().print("), replaceDotsBySlashes (");
       getPrinter().print("instanceName");
@@ -52,7 +57,8 @@ public class CppSDForMTTestPrettyPrinter
 
       getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" + ");
       getPrinter().println("instanceName + \"/test__" + out.getName() + "\"));");
-      getPrinter().print("component.getSubscriptionsToSend()->emplace(replaceDotsBySlashes (\"/ports/\" + ");
+      getPrinter().print("component.getSubscriptionsToSend" + portName +
+              "()->emplace(replaceDotsBySlashes (\"/ports/\" + ");
       getPrinter().println("instanceName + \"/test__" + out.getName() + "\"));");
     }
     for (ASTExpectValueOnPort in : expectValueOnPortList) {
@@ -63,9 +69,13 @@ public class CppSDForMTTestPrettyPrinter
       printGetExternalPortAccessFQN(in.getName());
       getPrinter().println("));");
 
-      getPrinter().print("component.getMqttClientSenderInstance()->publish(\"/new-subscriptions\", replaceDotsBySlashes (");
-      printGetExternalPortAccessFQN(in.getName());
-      getPrinter().println("));");
+      Optional<PortSymbol> ps = componentTypeSymbol.getPort(portName);
+      if (ps.isPresent()) {
+        getPrinter().print("component.getMqttClientSenderInstance" + portName
+                + "()->publish(\"/new-subscriptions" + ps.get().getType().print() + "\", replaceDotsBySlashes (");
+        printGetExternalPortAccessFQN(in.getName());
+        getPrinter().println("));");
+      }
     }
 
     getPrinter().println("std::this_thread::sleep_for (std::chrono::milliseconds (1000));");

@@ -37,11 +37,18 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
   MqttClient *  mqttClientLocalInstance;
   <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
     MqttClient *  mqttClientCompatibilityInstance;
-    MqttClient *  mqttClientSenderInstance;
-
-    bool hasComputedTODO = false;
+    <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
+      bool isConnectedToOtherComponent = false;
+      MqttClient *  mqttClientSenderInstance;
+      std::set< std::string> subscriptionsToSend;
+    <#else>
+      <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
+        bool isConnected${p.getName()} = false;
+        MqttClient *  mqttClientSenderInstance${p.getName()};
+        std::set< std::string> subscriptionsToSend${p.getName()};
+      </#list>
+    </#if>
     std::string ip_address = "";
-    std::set< std::string> subscriptionsToSend;
   </#if>
   json sensorActuatorTypes;
 
@@ -112,9 +119,16 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void sendConnectionString (std::string connectionStringTopic, std::string connectionString);
   MqttClient *getMqttClientInstance () const;
   <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
-    MqttClient *getMqttClientSenderInstance () const;
+    <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
+      MqttClient *getMqttClientSenderInstance() const;
+      std::set< std::string> *getSubscriptionsToSend();
+    <#else>
+      <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
+        MqttClient *getMqttClientSenderInstance${p.getName()}() const;
+        std::set< std::string> *getSubscriptionsToSend${p.getName()}();
+      </#list>
+    </#if>
     void sendCompatibilityHeartbeat(std::future<void> keepAliveFuture);
-    std::set< std::string> *getSubscriptionsToSend();
   </#if>
 </#if>
 

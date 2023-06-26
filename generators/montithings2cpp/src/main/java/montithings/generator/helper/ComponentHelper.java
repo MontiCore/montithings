@@ -897,6 +897,12 @@ public class ComponentHelper {
     return printer.prettyprint(block);
   }
 
+  public static String printPortSpecificBehavior(ASTMTBehavior behavior, boolean isLogTracingEnabled) {
+    MontiThingsFullPrettyPrinter printer = CppPrettyPrinter.getPrinter(isLogTracingEnabled,
+            false, behavior.getName(0));
+    return printer.prettyprint(behavior.getMCJavaBlock());
+  }
+
   public static String printBlock(ASTMCBlockStatement ast) {
     return CppPrettyPrinter.getPrinter().prettyprint(ast);
   }
@@ -1346,6 +1352,17 @@ public class ComponentHelper {
     return getPortSpecificBehaviors(comp)
       .stream().filter(b -> b.isPresentTestBlock())
       .map(b -> b.getTestBlock()).collect(Collectors.toList());
+  }
+
+  public static List<PortSymbol> getPortsWithTestBlocks(ComponentTypeSymbol comp) {
+    List<ASTBehavior> portSpecificBehaviors = getPortSpecificBehaviors(comp);
+    Set<String> names = new HashSet<>();
+    for (ASTBehavior behavior : portSpecificBehaviors) {
+      if (behavior.isPresentTestBlock() && behavior.getNameList().size() == 1) {
+        names.add(behavior.getName(0));
+      }
+    }
+    return comp.getPorts().stream().filter(p -> names.contains(p.getName())).collect(Collectors.toList());
   }
 
   private static MontiThingsTypeCheck tc =

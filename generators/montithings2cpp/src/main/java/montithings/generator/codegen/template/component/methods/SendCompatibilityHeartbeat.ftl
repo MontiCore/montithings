@@ -21,23 +21,32 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibil
         continue;
       }
     }
-
-    if (!hasComputedTODO) {
+    <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
+    if (!isConnectedToOtherComponent) {
       json j;
       j["component_name"] = this->getInstanceName();
       j["component_type"] = "<#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>${interface}</#list>";
       j["connection_string"] = getConnectionStringCo${compname}();
-
-      <#if ComponentHelper.getIncomingPortsToTest(comp)?size <= 0>
       j["requirements"] = "[]";
-      <#else>
-      <#list comp.getAllIncomingPorts()[0..*1] as p>
-      j["requirements"] = "[${p.getType().print()}]";
-      </#list>
-      </#if>
       j["ipaddress"] = ip_address;
       mqttClientCompatibilityInstance->publish("component_offer", j.dump());
     }
+    <#else>
+    <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
+    if (!mqttClientSenderInstance${p.getName()}->isConnected()) {
+      isConnected${p.getName()} = false;
+    }
+    if (!isConnected${p.getName()}) {
+      json j;
+      j["component_name"] = this->getInstanceName();
+      j["component_type"] = "<#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>${interface}</#list>";
+      j["connection_string"] = getConnectionStringCo${compname}();
+      j["requirements"] = "[${p.getType().print()}]";
+      j["ipaddress"] = ip_address;
+      mqttClientCompatibilityInstance->publish("component_offer", j.dump());
+    }
+    </#list>
+    </#if>
     std::this_thread::sleep_for(std::chrono::seconds(45));
   }
 }
