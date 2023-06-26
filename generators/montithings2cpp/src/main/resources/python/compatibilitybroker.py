@@ -76,7 +76,7 @@ while True:
             # Reset dhcpcd file in order to be able to connect to other access points
             subprocess.run(["sudo", "sed", "-i", "/interface wlan0/,$d", "/etc/dhcpcd.conf"])
 
-            subprocess.run(["sudo", "systemctl", "restart", "hostapd"])
+            subprocess.run(["sudo", "systemctl", "stop", "hostapd"])
 
     else:
 

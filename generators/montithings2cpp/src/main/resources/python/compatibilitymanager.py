@@ -54,9 +54,10 @@ while True:
 
                 if offered_type in requirements:
                     print(f"Match found between {component_name} and {offered_name}")
-                    client.publish("/offered_ip", offered_data["ip_address"])
-                    client.publish("/offered_ip", component_data["ip_address"])
-                    client.publish(f"/component_match", offered_data["connection_string"])
+                    client.publish("/offered_ip/" + offered_type, offered_data["ip_address"])
+                    client.publish("/offered_ip/" + offered_type, component_data["ip_address"])
+                    time.sleep(0.5)
+                    client.publish(f"/component_match/" + offered_type, offered_data["connection_string"])
                     components_to_be_deleted.append(component_name)
                     components_to_be_deleted.append(offered_name)
 
@@ -64,7 +65,7 @@ while True:
         del components[component_name]
 
     # Check if it's been more than a minute since the last message
-    if time.time() - last_message_time > 60:
+    if time.time() - last_message_time > 120:
         print("No messages received for 1 minute, stopping compatibilitymanager")
         break
 
