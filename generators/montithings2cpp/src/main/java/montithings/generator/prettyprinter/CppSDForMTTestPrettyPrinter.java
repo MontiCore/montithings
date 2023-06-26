@@ -46,6 +46,7 @@ public class CppSDForMTTestPrettyPrinter
     List<ASTSendValueOnPort> sendValueOnPortList = node.getSendValueOnPortList();
     List<ASTExpectValueOnPort> expectValueOnPortList = node.getExpectValueOnPortList();
     ComponentTypeSymbol componentTypeSymbol = (ComponentTypeSymbol) node.getEnclosingScope().getSpanningSymbol();
+    Optional<PortSymbol> ps = componentTypeSymbol.getPort(portName);
     for (ASTSendValueOnPort out : sendValueOnPortList) {
       getPrinter().print("component.getMqttClientSenderInstance" + portName
               + "()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
@@ -69,7 +70,6 @@ public class CppSDForMTTestPrettyPrinter
       printGetExternalPortAccessFQN(in.getName());
       getPrinter().println("));");
 
-      Optional<PortSymbol> ps = componentTypeSymbol.getPort(portName);
       if (ps.isPresent()) {
         getPrinter().print("component.getMqttClientSenderInstance" + portName
                 + "()->publish(\"/new-subscriptions/" + ps.get().getType().print() + "\", replaceDotsBySlashes (");
@@ -145,7 +145,15 @@ public class CppSDForMTTestPrettyPrinter
       getPrinter().println("));");
     }
 
-    getPrinter().println("if (std::chrono::high_resolution_clock::now() <= end) {");
+    if (ps.isPresent()) {
+      getPrinter().println("if (std::chrono::high_resolution_clock::now() > end) {");
+      getPrinter().println("component.getMqttClientSenderInstance" + portName + "()->" +
+              "publish(\"/connection-start/" + ps.get().getType().print() + "\", \"failure\");");
+      getPrinter().println("} else {");
+      getPrinter().println("component.setIsConnected" + portName + "();");
+      getPrinter().println("component.getMqttClientSenderInstance" + portName + "()->" +
+              "publish(\"/connection-start/" + ps.get().getType().print() + "\", \"success\");");
+    }
   }
 
 

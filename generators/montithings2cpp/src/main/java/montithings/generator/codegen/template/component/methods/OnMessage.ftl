@@ -79,11 +79,19 @@ publishConnectors ();
         if (payload != ip_address) {
           mqttClientSenderInstance = new MqttClient(payload, 1883);
           mqttClientInstance->subscribe("/new-subscriptions/${interface}");
+          mqttClientInstance->subscribe("/connection-start/${interface}");
         }
       }
       else if (topic.find("/new-subscriptions/${interface}") != std::string::npos) {
         mqttClientInstance->subscribe("/ports/" + payload);
         subscriptionsToSend.emplace("/ports/" + payload);
+      }
+      else if (topic.find("/connection-start/${interface}") != std::string::npos) {
+        if (payload == "success") {
+          isConnectedToOtherComponent = true;
+        } else {
+          subscriptionsToSend.clear();
+        }
       }
       else if (subscriptionsToSend.find(topic) != subscriptionsToSend.cend() && mqttClientSenderInstance->isConnected()) {
         mqttClientSenderInstance->publish(topic, payload);

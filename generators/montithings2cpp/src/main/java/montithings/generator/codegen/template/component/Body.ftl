@@ -76,6 +76,7 @@ ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
       <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
         ${tc.includeArgs("template.component.methods.GetMqttClientSenderInstance", [comp, config, className, p.getName()])}
         ${tc.includeArgs("template.component.methods.GetSubscriptionsToSend", [comp, config, className, p.getName()])}
+        ${tc.includeArgs("template.component.methods.SetIsConnected", [comp, config, className, p.getName()])}
       </#list>
     </#if>
     ${tc.includeArgs("template.component.methods.SendCompatibilityHeartbeat", [comp, config, className])}

@@ -126,6 +126,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
       <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
         MqttClient *getMqttClientSenderInstance${p.getName()}() const;
         std::set< std::string> *getSubscriptionsToSend${p.getName()}();
+        void setIsConnected${p.getName()}();
       </#list>
     </#if>
     void sendCompatibilityHeartbeat(std::future<void> keepAliveFuture);
