@@ -22,7 +22,7 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibil
       }
     }
     <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
-    if (!mqttClientSenderInstance->isConnected()) {
+    if (mqttClientSenderInstanceHasBeenConnected && !mqttClientSenderInstance->isConnected()) {
       subscriptionsToSend.clear();
       isConnectedToOtherComponent = false;
     }
@@ -37,7 +37,7 @@ void ${className}${Utils.printFormalTypeParameters(comp, false)}::sendCompatibil
     }
     <#else>
     <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
-    if (!mqttClientSenderInstance${p.getName()}->isConnected()) {
+    if (mqttClientSenderInstance${p.getName()}HasBeenConnected && !mqttClientSenderInstance${p.getName()}->isConnected()) {
       subscriptionsToSend${p.getName()}.clear();
       isConnected${p.getName()} = false;
     }

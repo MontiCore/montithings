@@ -40,11 +40,13 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
     <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
       bool isConnectedToOtherComponent = false;
       MqttClient *  mqttClientSenderInstance;
+      bool mqttClientSenderInstanceHasBeenConnected = false;
       std::set< std::string> subscriptionsToSend;
     <#else>
       <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
         bool isConnected${p.getName()} = false;
         MqttClient *  mqttClientSenderInstance${p.getName()};
+        bool mqttClientSenderInstance${p.getName()}HasBeenConnected = false;
         std::set< std::string> subscriptionsToSend${p.getName()};
       </#list>
     </#if>

@@ -78,6 +78,7 @@ publishConnectors ();
       else if (topic.find ("/offered_ip/${interface}") != std::string::npos) {
         if (payload != ip_address) {
           mqttClientSenderInstance = new MqttClient(payload, 1883);
+          mqttClientSenderInstanceHasBeenConnected = true;
           mqttClientInstance->subscribe("/new-subscriptions/${interface}");
           mqttClientInstance->subscribe("/connection-start/${interface}");
         }
@@ -107,6 +108,7 @@ publishConnectors ();
       else if (topic.find ("/offered_ip/${p.getType().print()}") != std::string::npos) {
         if (payload != ip_address) {
           mqttClientSenderInstance${p.getName()} = new MqttClient(payload, 1883);
+          mqttClientSenderInstance${p.getName()}HasBeenConnected = true;
         }
       }
       else if (subscriptionsToSend${p.getName()}.find(topic) != subscriptionsToSend${p.getName()}.cend() && mqttClientSenderInstance${p.getName()}->isConnected()) {
