@@ -17,7 +17,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode())
-        component_name = data["component_name"]
+        component_name = data["component_name"] + "_" + data["requirements"]
         component_type = data["component_type"]
         requirements = data["requirements"]
         connection_string = data["connection_string"]
@@ -51,6 +51,8 @@ while True:
                 if (component_name == offered_name):
                     continue
                 offered_type = offered_data["component_type"]
+                if (offered_type == ""):
+                    continue
 
                 if offered_type in requirements:
                     print(f"Match found between {component_name} and {offered_name}")
