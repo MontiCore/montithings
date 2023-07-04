@@ -157,7 +157,8 @@ endif()
 
 set(PostgreSQL_TYPE_INCLUDE_DIR /usr/include/postgresql)
 find_package(PostgreSQL REQUIRED)
-target_link_libraries(MontiThingsRTE PostgreSQL::PostgreSQL)
+target_include_directories(MontiThingsRTE ${PostgreSQL_INCLUDE_DIRS})
+target_link_libraries(MontiThingsRTE ${PostgreSQL_LIBRARIES})
 
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)
