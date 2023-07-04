@@ -7,21 +7,8 @@
  * application has for components it connects with at run-time. This is done by modeling
  * inputs on incoming ports and the expected outgoing values.
  */
-component grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monticore.SIUnitLiterals
+component grammar SDForMTTest extends de.monticore.expressions.ExpressionsBasis, de.monticore.SIUnitLiterals
 {
-
-  // interface SD4MTElement extends SDElement;
-
-  /*AfterTestStatement implements SD4MTElement =
-    "after" TimeSpan;
-
-  interface TimeSpan;
-
-  ConcreteTimeSpan implements TimeSpan =
-    SIUnitLiteral;
-
-  TimeSpanSet implements TimeSpan =
-    "[" from:SIUnitLiteral? "," to:SIUnitLiteral? "]";*/
 
   TestBlock =
     "test" ("(" ((Name ":" Expression) | ",") ")")? "{"
@@ -35,4 +22,5 @@ component grammar SDForMTTest extends de.monticore.lang.SD4Development, de.monti
   ExpectValueOnPort = "assert" Name CompareOperator Expression ";" ;
   CompareOperator = equals:"==" | notEquals:"!=" | lessThan:"<" |
                     greaterThan:">" | LessEquals:"<=" | GreaterEquals:">=";
+
 }
