@@ -14,6 +14,10 @@ ${tc.includeArgs("template.deploy.helper.MqttInit", [comp, config])}
   , mqttClientInstance
   , mqttClientLocalInstance
   </#if>
+  <#if ComponentHelper.isDSLComponent(comp,config)>
+  , brokerHostnameArg.getValue()
+  , brokerPortArg.getValue()
+  </#if>
   <#if comp.getParameters()?size gt 0>,</#if>
   <#list comp.getParameters() as variable>
       ${variable.getName()} <#sep>,</#sep>

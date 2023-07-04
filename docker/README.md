@@ -10,7 +10,7 @@ is packaged as a Docker image.
 
 ## mtcmake
 
-Contains the tools for building appplications generated with MontiThings.
+Contains the tools for building applications generated with MontiThings.
 This image shall be used for applications using MQTT or NNG as communication 
 technologies (_not_ DDS).
 
@@ -21,11 +21,16 @@ docker pull montithings/mtcmake
 
 ## mtcmakedds
 
-Contains the tools for building appplications generated with MontiThings that 
+Contains the tools for building applications generated with MontiThings that 
 use DDS as message broker.
 This image is considerably larger than the mtcmake image. 
 Use it only if you really are using DDS.
 Otherwise use the mtcmake image.
+
+You can pull the image at:
+```
+docker pull montithings/mtcmakedds
+```
 
 ## openddsdcpsinforepo
 

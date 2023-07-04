@@ -22,6 +22,8 @@ public class CppCodeTest {
 
   protected static final Path HWCPATH = Paths.get("src/test/resources/hwc/CPPTests/");
 
+  protected static final Path LANGUAGEPATH = Paths.get("src/test/resources/languages/");
+
   protected static final Path TARGETPATH = Paths.get("target/generated-test-sources/");
 
   protected static final Path RTEPATH = Paths.get("src/main/resources/rte/montithings-RTE");
@@ -67,11 +69,12 @@ public class CppCodeTest {
   public void CPPTests(String testName) {
     File models = Paths.get(MODELPATH.toString(), testName).toFile();
     File target = Paths.get(TARGETPATH.toString(), testName, "generated-test-sources/").toFile();
+    File languages = Paths.get(LANGUAGEPATH.toString(), testName).toFile();
     File hwc = Paths.get(HWCPATH.toString(), testName).toFile();
     File test = Paths.get(TESTPATH.toString(), testName).toFile();
 
     MontiThingsGeneratorTool script = new MontiThingsGeneratorTool();
-    script.generate(models, target, hwc, test, setup(testName));
+    script.generate(models, target, hwc, test, setup(testName),languages);
     MTGenerator mtg = new MTGenerator(target, hwc, setup(testName));
     mtg.generateTestScript(Paths.get(TARGETPATH.toString()).toFile());
   }

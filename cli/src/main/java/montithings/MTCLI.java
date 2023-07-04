@@ -9,6 +9,8 @@ public class MTCLI {
 
   public static final String DEFAULT_HWC_PATH = "src/main/resources/hwc";
 
+  public static final String DEFAULT_LANGUAGE_PATH = "src/main/resources/languages";
+
   public static final String DEFAULT_TEST_PATH = "src/test/resources/gtests";
 
   public static final String DEFAULT_TARGET_PATH = "target/generated-sources";

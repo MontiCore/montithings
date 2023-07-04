@@ -50,5 +50,8 @@ ${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, classNam
   mqttClientInstance->subscribe ("/prepareComponent");
   mqttClientInstance->subscribe ("/components");
 </#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  mqttClientInstance->subscribe("/hwc/" + replaceDotsBySlashes(instanceName));
+</#if>
 
 }

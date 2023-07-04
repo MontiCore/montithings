@@ -43,6 +43,9 @@ ${tc.signature("comp","config","className")}
   ${tc.includeArgs("template.component.methods.RunEveryBlocks", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetImpl", [comp, className])}
 </#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  ${tc.includeArgs("template.component.methods.PythonReceiver",[comp, config, className])}
+</#if>
 
 <#if ComponentHelper.componentHasPorts(comp)>
   ${tc.includeArgs("template.interface.hooks.MethodDefinition", [comp, className])}

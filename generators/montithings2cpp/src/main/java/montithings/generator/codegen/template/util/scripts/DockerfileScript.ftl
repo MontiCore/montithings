@@ -62,7 +62,7 @@ RUN ./build.sh ${comp.getFullName()}
     <#list instances as pair >
         <#if ! processedInstances?seq_contains(pair.getKey().fullName)>
             <#assign processedInstances = processedInstances + [pair.getKey().fullName] />
-
+            <#assign processedComp = ComponentHelper.getCompByName(pair.getKey().name, comp) />
             # COMPONENT: ${pair.getKey().fullName}
             <#-- the dds build image is based on ubuntu, thus we have to distinguish -->
             <#if brokerIsDDS>
@@ -73,7 +73,17 @@ RUN ./build.sh ${comp.getFullName()}
             RUN apk add --update-cache --force-overwrite libgcc libstdc++ libressl-dev libpq-dev postgresql-client
             </#if>
 
+            RUN apk add protoc
+            <#if ComponentHelper.isDSLComponent(processedComp,config)>
+
+            RUN apk add --update-cache python3 py3-pip py3-protobuf
+
+            RUN pip install paho-mqtt==1.5.1
+
+            COPY --from=build /usr/src/app/build/bin/python /usr/src/app/build/bin/python
+            </#if>
             <#if brokerIsMQTT>
+
             ADD deployment-config.json /.montithings/deployment-config.json
 
             RUN apk add --update-cache --force-overwrite mosquitto-libs++ libressl-dev libpq-dev postgresql-client
@@ -111,12 +121,14 @@ RUN ./build.sh ${comp.getFullName()}
             ENTRYPOINT [ "sh", "entrypoint.sh" ]
     </#list>
     <#list hwcPythonScripts as script >
-            <#assign splitScript  = script?split(".")>
+        <#assign splitScript  = script?split(".")>
+        <#if !ComponentHelper.isDSLComponent(ComponentHelper.getCompByLanguagePath(splitScript[1]?replace("Impl",""),comp),config)>
+                
 
             # PYTHON SCRIPT: ${script}
             FROM alpine AS ${script}
 
-            RUN apk add --no-cache python3 py3-pip
+            RUN apk add --no-cache python3 py3-pip py3-protobuf
 
             RUN apk add --update-cache mosquitto
 
@@ -125,7 +137,7 @@ RUN ./build.sh ${comp.getFullName()}
             COPY --from=build /usr/src/app/python/montithingsconnector.py /usr/src/app/build/bin/
             COPY --from=build /usr/src/app/python/parse_cmd.py /usr/src/app/build/bin/
 
-            COPY --from=build /usr/src/app/build/bin/python/requirements.txt /usr/src/app/build/bin/
+            COPY --from=build /usr/src/app/build/bin/python /usr/src/app/build/bin/
 
             COPY --from=build /usr/src/app/build/bin/hwc/${splitScript[0]}/${splitScript[1]}.py /usr/src/app/build/bin/
 
@@ -134,7 +146,8 @@ RUN ./build.sh ${comp.getFullName()}
             RUN pip install -r requirements.txt
 
             # Run our binary on container startup
-            ENTRYPOINT [ "python3", "${splitScript[1]}.py" ]
+            ENTRYPOINT [ "python3", "${splitScript[1]?replace("Impl","")}.py" ]
+        </#if>
 
     </#list>
     <#if hwcPythonScripts?size!=0>

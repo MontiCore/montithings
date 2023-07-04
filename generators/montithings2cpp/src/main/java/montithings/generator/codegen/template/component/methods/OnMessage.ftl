@@ -72,6 +72,13 @@ publishConnectors ();
 }
 }
 
+<#if ComponentHelper.isDSLComponent(comp,config)>
+// receive python files
+if (topic == "/hwc/" + replaceDotsBySlashes(instanceName)){
+  python_receiver(payload);
+}
+</#if>
+
 ${tc.includeArgs("template.logtracing.hooks.AddInstanceNameToPortRef", [comp, config, "_"])}
 
 }

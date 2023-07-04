@@ -27,11 +27,11 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
 
   protected boolean stopAfterCoCoCheck = false;
 
-  public void generate(File modelPath, File target, File hwcPath, File testPath,
-                       ConfigParams config) {
-
-    GeneratorToolState state = new GeneratorToolState(this, modelPath, target, hwcPath, testPath,
-      config);
+  public void generate(File modelPath, File target, File hwcPath, File testPath, ConfigParams config, File languagePath) {
+    if(languagePath.getPath() == ""){
+      languagePath = null;
+    }
+    GeneratorToolState state = new GeneratorToolState(this, modelPath, target, hwcPath, testPath, config, languagePath);
 
     GeneratorStep firstStep = new FindModels();
     firstStep.setNextStep(new SetupGenerator())
@@ -67,6 +67,8 @@ public class MontiThingsGeneratorTool extends MontiThingsTool {
       .setNextStep(new FindModelPacks())
       .setNextStep(new GenerateCMakeLists())
       .setNextStep(new GenerateComponent())
+      .setNextStep(new GenerateHTML())
+      .setNextStep(new GenerateGeneratorServer())
       .setNextStep(new GeneratePackageFiles())
       .setNextStep(new GenerateCDEAdapter())
       .setNextStep(new GenerateCD())

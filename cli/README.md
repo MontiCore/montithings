@@ -20,7 +20,7 @@ The command line tool requires running the [native installation](../docs/install
 usage: montithings [run [local|docker]|logs [-f]|stop] component
   run           build and execute component
   run local     build and execute component as distributed application
-  run docke     build and execute component as distributed application using Docker
+  run docker    build and execute component as distributed application using Docker
   logs          show the logs of component instance (cat)
   logs -f       show the logs of component instance (tail -f)
   stop          stop the execution of component (only for distributed)

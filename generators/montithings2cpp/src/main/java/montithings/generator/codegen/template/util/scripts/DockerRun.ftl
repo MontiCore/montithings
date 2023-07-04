@@ -47,12 +47,24 @@ esac
         ${tc.includeArgs("template.util.scripts.DockerRunCommandSensorActuatorPorts", [port, port?lower_case, config])}
     </#list>
     <#list hwcPythonScripts as script >
+      <#assign splitScript  = script?split(".")>
+      <#if !ComponentHelper.isDSLComponent(ComponentHelper.getCompByLanguagePath(splitScript[1]?replace("Impl",""),comp),config)>
         ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [script?lower_case, config])}
+      </#if>
     </#list>
     <#if sensorActuatorPorts?size gt 0 || hwcPythonScripts?size gt 0>
       ${tc.includeArgs("template.util.scripts.DockerRunCommandPython", [sensoractuatormanagerimage, config])}
     </#if>
 </#if>
+
+<#if ComponentHelper.isDSLProject(config)>
+cd generator-server
+./dockerRun.sh
+cd ..
+echo "$(cat generator-server/dockerKill.sh)" >> "$SCRIPTPATH"/dockerKill.sh
+echo "$(cat generator-server/dockerStop.sh)" >> "$SCRIPTPATH"/dockerStop.sh
+</#if>
+
 
 chmod +x "$SCRIPTPATH"/dockerStop.sh
 chmod +x "$SCRIPTPATH"/dockerKill.sh
