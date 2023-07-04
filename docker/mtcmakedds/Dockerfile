@@ -1,8 +1,5 @@
 FROM debian:buster
 
-RUN echo "cacert = /root/cacert.pem" >> /root/.curlrc \
-&& curl -k -L https://curl.se/ca/cacert.pem -o /root/cacert.pem
-
 RUN apt-get update && apt-get install -y \
 	git \
 	g++ \
@@ -24,6 +21,9 @@ RUN apt-get update && apt-get install -y \
 	libssl-dev \
 	perl-base \
 	perl-modules
+
+RUN echo "cacert = /root/cacert.pem" >> /root/.curlrc \
+&& curl -k -L https://curl.se/ca/cacert.pem -o /root/cacert.pem
 
 RUN apt-get install --reinstall ca-certificates
 
