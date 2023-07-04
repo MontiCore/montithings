@@ -6,6 +6,7 @@ import montithings.generator.config.ConfigParams;
 import montithings.generator.data.GeneratorToolState;
 import montithings.generator.steps.GeneratorStep;
 import montithings.generator.steps.trafos.patterns.AnomalyDetectionPatternTrafo;
+import montithings.generator.steps.trafos.patterns.GrafanaPatternTrafo;
 import montithings.generator.steps.trafos.patterns.NetworkMinimizationPatternTrafo;
 
 public class SetupPatternTrafos extends GeneratorStep {
@@ -17,12 +18,16 @@ public class SetupPatternTrafos extends GeneratorStep {
         ConfigParams config = state.getConfig();
         MontiThingsGeneratorTool tool = state.getTool();
 
+        if (config.getApplyNetworkMinimizationPattern() == ApplyPatterns.ON) {
+            tool.addTrafo(new NetworkMinimizationPatternTrafo(state));
+        }
+
         if (config.getApplyAnomalyDetectionPattern() == ApplyPatterns.ON) {
             tool.addTrafo(new AnomalyDetectionPatternTrafo(state, WINDOW_SIZE, TOLERANCE));
         }
 
-        if (config.getApplyNetworkMinimizationPattern() == ApplyPatterns.ON) {
-            tool.addTrafo(new NetworkMinimizationPatternTrafo(state));
+        if (config.getApplyGrafanaPattern() == ApplyPatterns.ON) {
+            tool.addTrafo(new GrafanaPatternTrafo(state, config.getGrafanaInstanceUrl(), config.getGrafanaApiKey()));
         }
     }
 }

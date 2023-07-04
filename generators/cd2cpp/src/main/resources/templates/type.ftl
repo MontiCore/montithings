@@ -74,6 +74,7 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     <#-- They may originate from attributes or associations with cardinality [1] -->
     <#assign mandatoryFields = []>
     <#assign fieldsFromInterface = []>
+    <#assign interfaceNames = []>
     
     <#list type.getFieldList() as field>
       <#-- attributes -->
@@ -88,6 +89,9 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
         this->${field.getName()} = ${field.getName()};
         }
       <#else>
+        <#if !interfaceNames?seq_contains(FieldHelper.getInterface(type, field))>
+          <#assign interfaceNames = interfaceNames + [FieldHelper.getInterface(type, field)]>
+        </#if>
         <#assign fieldsFromInterface = fieldsFromInterface + [{"name": field.getName(), "type":fieldType, "interfaceName": FieldHelper.getInterface(type, field)}]>
       </#if>
     </#list>
@@ -179,9 +183,15 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
     )
     <#if FieldHelper.hasFieldFromInterface(type)>
       :
-      <#list fieldsFromInterface as fieldFromInterface>
-        ${fieldFromInterface.interfaceName}(${fieldFromInterface.name})
-        <#if !fieldFromInterface?is_last>,</#if>
+      <#list interfaceNames as interfaceName>
+        ${interfaceName}(
+        <#list fieldsFromInterface as fieldFromInterface>
+          <#if fieldFromInterface.interfaceName == interfaceName>
+            ${fieldFromInterface.name}
+            <#if !fieldFromInterface?is_last>,</#if>
+          </#if>
+        </#list>
+        )
       </#list>
     </#if>
     {

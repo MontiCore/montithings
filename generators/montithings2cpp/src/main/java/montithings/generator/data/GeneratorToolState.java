@@ -118,6 +118,8 @@ public class GeneratorToolState {
 
   protected boolean hasBlobStorageTf;
 
+  protected boolean hasGrafanaTf;
+
   /* ============================================================ */
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
@@ -354,5 +356,13 @@ public class GeneratorToolState {
 
   public void setHasBlobStorageTf(boolean hasBlobStorageTf) {
     this.hasBlobStorageTf = hasBlobStorageTf;
+  }
+
+  public boolean getHasGrafanaTf() {
+    return hasGrafanaTf;
+  }
+
+  public void setHasGrafanaTf(boolean hasGrafanaTf) {
+    this.hasGrafanaTf = hasGrafanaTf;
   }
 }
