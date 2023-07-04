@@ -155,6 +155,7 @@ else()
   target_link_libraries(MontiThingsRTE cpp-base64 ssl crypto)
 endif()
 
+set(PostgreSQL_TYPE_INCLUDE_DIR /usr/include/postgresql)
 find_package(PostgreSQL REQUIRED)
 target_link_libraries(MontiThingsRTE PostgreSQL::PostgreSQL)
 
