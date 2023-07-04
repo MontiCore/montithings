@@ -113,32 +113,6 @@ endif ()
 list(FILTER RTE_SOURCES EXCLUDE REGEX ".*test.cpp")
 add_library(MontiThingsRTE ${RTE_SOURCES})
 
-if (NOT EXCLUDE_MQTT)
-  # Include Mosquitto Library
-  if(APPLE)
-    execute_process (
-      COMMAND bash -c "brew --prefix mosquitto"
-      OUTPUT_VARIABLE MOSQUITTO_PREFIX
-    )
-    find_library(MOSQUITTO_LIB mosquitto HINTS ${MOSQUITTO_PREFIX})
-    execute_process (
-      COMMAND bash -c "echo $(brew --prefix mosquitto)/include"
-      OUTPUT_VARIABLE MOSQUITTO_INCLUDE
-    )
-    include_directories("${MOSQUITTO_INCLUDE}")
-  elseif(WIN32)
-    include_directories(C:\\Program\ Files\\Mosquitto\\devel)
-    link_directories(C:\\Program\ Files\\Mosquitto\\devel)
-    find_library(MOSQUITTO_LIB mosquitto HINTS C:\\Program\ Files\\Mosquitto\\devel)
-  else()
-    find_library(MOSQUITTO_LIB mosquitto HINTS /snap/mosquitto/current/usr/lib)
-    include_directories(/snap/mosquitto/current/usr/include)
-  endif()
-
-  target_link_libraries(MontiThingsRTE ${MOSQUITTO_LIB})
-
-endif ()
-
 if (NOT EXCLUDE_DDS)
     target_link_libraries(MontiThingsRTE ${opendds_libs})
 endif ()
@@ -147,7 +121,6 @@ if (NOT EXCLUDE_COMM_MANAGER)
   target_link_libraries(MontiThingsRTE nng::nng)
 endif ()
 
-add_subdirectory(cpp-base64)
 if (APPLE OR WIN32)
   find_package(OpenSSL REQUIRED)
   target_link_libraries(MontiThingsRTE cpp-base64 OpenSSL::SSL OpenSSL::Crypto)
@@ -158,10 +131,7 @@ endif()
 set(PostgreSQL_TYPE_INCLUDE_DIR /usr/include/postgresql)
 find_package(PostgreSQL REQUIRED)
 target_include_directories(MontiThingsRTE PRIVATE ${PostgreSQL_INCLUDE_DIRS})
-target_link_libraries(MontiThingsRTE PRIVATE ${PostgreSQL_LIBRARIES})
+target_link_libraries(MontiThingsRTE ${PostgreSQL_LIBRARIES})
 
 set_target_properties(MontiThingsRTE PROPERTIES LINKER_LANGUAGE CXX)
 install(TARGETS MontiThingsRTE DESTINATION ${PROJECT_SOURCE_DIR}/lib)
-
-add_executable(Serializers.test EXCLUDE_FROM_ALL Serializers.test.cpp)
-target_link_libraries(Serializers.test PRIVATE cpp-base64)
