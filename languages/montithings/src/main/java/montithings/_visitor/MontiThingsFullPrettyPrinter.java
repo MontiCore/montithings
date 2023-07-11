@@ -37,7 +37,7 @@ import montithings.MontiThingsMill;
 import montithings._ast.ASTMontiThingsNode;
 import portextensions._visitor.PortExtensionsPrettyPrinter;
 import prepostcondition._visitor.PrePostConditionPrettyPrinter;
-import sdformttest._ast.ASTTestBlock;
+import componenttest._ast.ASTTestBlock;
 import setdefinitions._visitor.SetDefinitionsPrettyPrinter;
 
 public class MontiThingsFullPrettyPrinter {

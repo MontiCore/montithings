@@ -64,10 +64,10 @@ dependencies {
 }
 
 task generateGrammarSetDefinitions(type: MCTask) {
-  grammar = file "$grammarDir/SDForMTTest.mc4"
+  grammar = file "$grammarDir/ComponentTest.mc4"
   outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
   handcodedPath = [file("$projectDir/src/main/java")]
-  def upToDate = incCheck("SDForMTTest.mc4")
+  def upToDate = incCheck("ComponentTest.mc4")
   outputs.upToDateWhen { upToDate }
 }
 

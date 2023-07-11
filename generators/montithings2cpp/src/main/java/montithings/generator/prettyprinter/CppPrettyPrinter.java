@@ -5,7 +5,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import montithings._ast.ASTMontiThingsNode;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings.generator.visitor.MontiThingsSIUnitLiteralsPrettyPrinter;
-import sdformttest._ast.ASTTestBlock;
+import componenttest._ast.ASTTestBlock;
 
 import java.util.Stack;
 
@@ -40,7 +40,7 @@ public class CppPrettyPrinter {
     printer.getTraverser().setMCCommonStatementsHandler(new CppMCCommonStatementsPrettyPrinter(printer.getPrinter()));
     printer.getTraverser().setMCBasicTypesHandler(new CppMCBasicTypesPrettyPrinter(printer.getPrinter()));
 
-    printer.getTraverser().setSDForMTTestHandler(new CppSDForMTTestPrettyPrinter(printer.getPrinter(), portName));
+    printer.getTraverser().setComponentTestHandler(new CppComponentTestPrettyPrinter(printer.getPrinter(), portName));
 
     CppMontiThingsPrettyPrinter setPrinter = new CppMontiThingsPrettyPrinter(printer.getPrinter());
     Stack<ASTExpression> expressions = new Stack<>();

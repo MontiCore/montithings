@@ -7,7 +7,7 @@
  * application has for components it connects with at run-time. This is done by modeling
  * inputs on incoming ports and the expected outgoing values.
  */
-component grammar SDForMTTest extends de.monticore.expressions.ExpressionsBasis, de.monticore.SIUnitLiterals
+component grammar ComponentTest extends de.monticore.expressions.ExpressionsBasis, de.monticore.SIUnitLiterals
 {
 
   TestBlock =

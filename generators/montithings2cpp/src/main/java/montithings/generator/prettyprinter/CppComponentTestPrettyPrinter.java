@@ -11,27 +11,27 @@ import montithings.generator.helper.TypesPrinter;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
 import montithings.types.check.SynthesizeSymTypeFromMontiThings;
-import sdformttest._ast.ASTCompareOperator;
-import sdformttest._ast.ASTExpectValueOnPort;
-import sdformttest._ast.ASTSendValueOnPort;
-import sdformttest._ast.ASTTestBlock;
-import sdformttest._visitor.SDForMTTestHandler;
-import sdformttest._visitor.SDForMTTestTraverser;
+import componenttest._ast.ASTCompareOperator;
+import componenttest._ast.ASTExpectValueOnPort;
+import componenttest._ast.ASTSendValueOnPort;
+import componenttest._ast.ASTTestBlock;
+import componenttest._visitor.ComponentTestHandler;
+import componenttest._visitor.ComponentTestTraverser;
 
 import java.util.List;
 import java.util.Optional;
 
 
-public class CppSDForMTTestPrettyPrinter
-        implements SDForMTTestHandler {
+public class CppComponentTestPrettyPrinter
+        implements ComponentTestHandler {
 
-  protected SDForMTTestTraverser traverser;
+  protected ComponentTestTraverser traverser;
   protected IndentPrinter printer;
 
   private String portName;
   final private MontiThingsTypeCheck tc;
 
-  public CppSDForMTTestPrettyPrinter(IndentPrinter printer, String portName) {
+  public CppComponentTestPrettyPrinter(IndentPrinter printer, String portName) {
     this.printer = printer;
     this.portName = portName;
     tc = new MontiThingsTypeCheck(new SynthesizeSymTypeFromMontiThings(), new DeriveSymTypeOfMontiThingsCombine());
@@ -174,12 +174,12 @@ public class CppSDForMTTestPrettyPrinter
   }
 
   @Override
-  public SDForMTTestTraverser getTraverser() {
+  public ComponentTestTraverser getTraverser() {
     return traverser;
   }
 
   @Override
-  public void setTraverser(SDForMTTestTraverser traverser) {
+  public void setTraverser(ComponentTestTraverser traverser) {
     this.traverser = traverser;
   }
 }

@@ -62,9 +62,9 @@ import portextensions._ast.ASTBufferedPort;
 import portextensions._ast.ASTSyncStatement;
 import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
-import sdformttest._ast.ASTExpectValueOnPort;
-import sdformttest._ast.ASTSendValueOnPort;
-import sdformttest._ast.ASTTestBlock;
+import componenttest._ast.ASTExpectValueOnPort;
+import componenttest._ast.ASTSendValueOnPort;
+import componenttest._ast.ASTTestBlock;
 
 import java.io.File;
 import java.nio.file.Files;
