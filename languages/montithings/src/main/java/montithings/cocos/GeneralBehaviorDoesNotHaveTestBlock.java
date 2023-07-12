@@ -8,7 +8,7 @@ import montithings.util.MontiThingsError;
 public class GeneralBehaviorDoesNotHaveTestBlock implements MontiThingsASTBehaviorCoCo {
     @Override
     public void check(ASTBehavior node) {
-        if (node.isEmptyNames() && node.isPresentTestBlock()) {
+        if (node.isPresentTestBlock() && node.sizeNames() != 1) {
             Log.error(String.format(MontiThingsError.GENERAL_BEHAVIOR_HAS_TEST_BLOCK.toString()));
         }
     }

@@ -21,6 +21,6 @@ component grammar ComponentTest extends de.monticore.expressions.ExpressionsBasi
   WaitStatement = "wait" SIUnitLiteral ";" ;
   ExpectValueOnPort = "assert" Name CompareOperator Expression ";" ;
   CompareOperator = equals:"==" | notEquals:"!=" | lessThan:"<" |
-                    greaterThan:">" | LessEquals:"<=" | GreaterEquals:">=";
+                    greaterThan:">" | lessEquals:"<=" | greaterEquals:">=";
 
 }

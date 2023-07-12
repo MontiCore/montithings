@@ -7,6 +7,7 @@ import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCImportStatement;
 import montiarc._ast.ASTMACompilationUnit;
 import montithings.MontiThingsMill;
+import montithings._ast.ASTBehavior;
 import montithings._ast.ASTMTComponentType;
 import org.codehaus.commons.nullanalysis.NotNull;
 
@@ -54,5 +55,14 @@ public class MontiThingsScopesGenitor extends MontiThingsScopesGenitorTOP {
   @Override
   public void endVisit(ASTMTComponentType node) {
     getTraverser().endVisit((ASTComponentType) node);
+  }
+
+  @Override
+  public void visit(ASTBehavior node) {
+    // test block should have the information which port it is testing
+    if (node.isPresentTestBlock() && node.sizeNames() == 1) {
+      node.getTestBlock().setPortName(node.getName(0));
+    }
+    super.visit(node);
   }
 }
