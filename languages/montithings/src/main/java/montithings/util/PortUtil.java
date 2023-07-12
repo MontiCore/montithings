@@ -4,7 +4,9 @@ package montithings.util;
 import arcbasis._ast.ASTArcElement;
 import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
+import componenttest._ast.ASTTestBlock;
 import de.monticore.statements.mccommonstatements._ast.ASTMCJavaBlock;
+import de.monticore.symboltable.IScopeSpanningSymbol;
 import montithings._ast.ASTBehavior;
 import montithings._ast.ASTInitBehavior;
 import montithings._ast.ASTMTBehavior;
@@ -70,4 +72,13 @@ public class PortUtil {
       .anyMatch(e -> !e.isEmptyNames());
   }
 
+  public static PortSymbol findPortSymbolOfTestBlock(ASTTestBlock node) {
+    IScopeSpanningSymbol spanningSymbol = node.getEnclosingScope().getSpanningSymbol();
+    if (spanningSymbol instanceof ComponentTypeSymbol) {
+      List<PortSymbol> portSymbols = ((ComponentTypeSymbol) spanningSymbol).getAllIncomingPorts().stream()
+        .filter(p -> p.getName().equals(node.getPortName())).collect(Collectors.toList());
+      return portSymbols.size() == 1 ? portSymbols.get(0) : null;
+    }
+    return null;
+  }
 }

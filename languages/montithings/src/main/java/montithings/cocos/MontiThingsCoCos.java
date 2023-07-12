@@ -5,6 +5,7 @@ import arcbasis._cocos.*;
 import behavior.cocos.AttributeAssignmentTypesCorrect;
 import behavior.cocos.DuplicateAttributeAssignments;
 import behavior.cocos.SIUnitLiteralsDescribeTime;
+import componenttest.cocos.SIUnitsInWaitStatementDescribeTime;
 import de.monticore.siunittypes4computing._cocos.PrimitiveIsNumericType;
 import de.monticore.types.check.TypeCheck;
 import montithings._cocos.MontiThingsASTBehaviorCoCo;
@@ -88,6 +89,8 @@ public class MontiThingsCoCos {
     checker.addCoCo(new BehaviorsLeaveNoIncomingPortsUnused());
     checker.addCoCo(new InterfaceImplementedCorrectly());
     checker.addCoCo(new GeneralBehaviorDoesNotHaveTestBlock());
+    checker.addCoCo(new PortsInTestBlockExistAndAreUsedCorrectly());
+    checker.addCoCo(new SIUnitsInWaitStatementDescribeTime());
 
     return checker;
   }

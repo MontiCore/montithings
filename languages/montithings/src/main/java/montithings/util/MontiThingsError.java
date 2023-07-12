@@ -61,6 +61,8 @@ public enum MontiThingsError implements montithings.util.Error {
     + " of component '%s' declares its use of port '%s' is used multiple times"),
   GENERAL_BEHAVIOR_HAS_TEST_BLOCK("0xMT1636", "Behavior has a test block although " +
           "test blocks are only allowed for port-specific behaviors with exactly one port."),
+  PORTS_IN_TEST_BLOCK_DO_NOT_EXIST("0xMT1637", "A port used in a test block does not exist " +
+    "in the corresponding interface component."),
 
   TOOL_PARSE_IOEXCEPTION("0xMT1902", "Could not parse the file \"%s\"."),
   TOOL_FILE_WALK_IOEXCEPTION("0xMT1903",
