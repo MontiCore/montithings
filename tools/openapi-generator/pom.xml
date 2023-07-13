@@ -24,18 +24,6 @@
 
   <build>
     <plugins>
-      <!-- MontiCore Generation -->
-      <plugin>
-        <groupId>de.monticore.mojo</groupId>
-        <artifactId>monticore-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
 
       <!-- Other Configuration -->
       <plugin>

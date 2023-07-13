@@ -1,6 +1,5 @@
 package montithings.cocos;
 
-import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import com.google.common.collect.LinkedListMultimap;
 import componenttest._ast.ASTExpectValueOnPort;
@@ -9,7 +8,6 @@ import componenttest._ast.ASTTestBlock;
 import componenttest._cocos.ComponentTestASTTestBlockCoCo;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
-import de.monticore.symboltable.IScopeSpanningSymbol;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.MontiThingsScope;
 import montithings.util.MontiThingsError;
