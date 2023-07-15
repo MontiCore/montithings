@@ -57,6 +57,7 @@ dependencies {
   grammar files(project(":languages:error-handling").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:montithings").projectDir.toPath().resolve("src/main/grammars"))
   grammar files(project(":languages:iot-behavior").projectDir.toPath().resolve("src/main/grammars"))
+  grammar files(project(":languages:semantic-compatibility").projectDir.toPath().resolve("src/main/grammars"))
 
   implementation project(":languages:iot-behavior")
   implementation project(":languages:montithings")
@@ -64,6 +65,7 @@ dependencies {
   implementation project(":languages:monticore-extensions")
   implementation project(":languages:error-handling")
   implementation project(":languages:bindings")
+  implementation project(":languages:semantic-compatibility")
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.monticore:siunits:$siunits_version"

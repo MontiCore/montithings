@@ -79,18 +79,5 @@ while True:
             subprocess.run(["sudo", "systemctl", "stop", "hostapd"])
 
     else:
-
-        # Maybe nothing has to be done here, because we're always sending our heartbeat to the same ip anyways
-
-        # Connect to MQTT broker
-        broker_address = ip_address
-        client = mqtt.Client()
-        client.connect(broker_address)
-
-        # Publish message to broker
-        message = f"Hello from device with MAC address {mac_address} and ip {ip_address}"
-        topic = "discovery"
-        client.publish(topic, message)
-        print(f"Message published to topic {topic}: {message}")
-        client.disconnect()
+        time.sleep(30)
         break

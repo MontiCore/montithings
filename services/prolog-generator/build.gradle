@@ -62,6 +62,7 @@ dependencies {
     implementation project(":languages:montiarc-extensions")
     implementation project(":languages:error-handling")
     implementation project(":languages:iot-behavior")
+    implementation project(":languages:semantic-compatibility")
     implementation "de.monticore:monticore-runtime:$monticore_version"
     implementation "de.monticore:monticore-grammar:$monticore_version"
     implementation "montiarc.languages:montiarc-fe:$montiarc_version"
