@@ -54,10 +54,10 @@ while True:
                     other_device_mac = addr
                     break
 
-        if other_device_mac is None:
+        if other_device_mac is not None:
             continue
         else:
-            print(f"Found device with lower MAC address: {other_device_mac}")
+            print(f"Found no devices with lower MAC address")
             print("Starting Access Point...")
 
             dhcpcdConfigFile = open('/etc/dhcpcd.conf', 'a')
