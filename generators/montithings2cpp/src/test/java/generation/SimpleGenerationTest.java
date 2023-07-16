@@ -27,6 +27,8 @@ public class SimpleGenerationTest {
 
   protected static final Path HWCPATH = Paths.get("src/test/resources/hwc/hierarchy/");
 
+  protected static final Path LANGUAGEPATH = Paths.get("src/test/resources/languages/");
+
   protected static final Path TARGETPATH = Paths
     .get("target/generated-test-sources/SimpleGenerationTest");
 
@@ -84,7 +86,7 @@ public class SimpleGenerationTest {
     params.setHwcPath(HWCPATH.toFile());
     params.setProjectVersion("unspecified");
     params.setMainComponent("hierarchy.Example");
-    script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(), null, params);
+    script.generate(MODELPATH.toFile(), TARGETPATH.toFile(), HWCPATH.toFile(), null, params,LANGUAGEPATH.toFile());
   }
 
 }

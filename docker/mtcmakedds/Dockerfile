@@ -9,16 +9,21 @@ RUN apt-get update && apt-get install -y \
 	mosquitto \
 	mosquitto-dev \
 	cpio \
-    protobuf-compiler \
+	protobuf-compiler \
 	libprotobuf-dev \
 	python3-protobuf \
 	# required by OpenDDS
 	curl \
 	libxerces-c-dev \
-    libpq-dev \
-    libssl-dev \
-    perl-base \
-    perl-modules
+	postgresql \
+	postgresql-server-dev-all \
+	libpq-dev \
+	libssl-dev \
+	perl-base \
+	perl-modules
+
+RUN echo "cacert = /root/cacert.pem" >> /root/.curlrc \
+&& curl -k -L https://curl.se/ca/cacert.pem -o /root/cacert.pem
 
 RUN apt-get install --reinstall ca-certificates
 

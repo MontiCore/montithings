@@ -1,8 +1,10 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.generator.helper;
 
+
 import arcbasis._symboltable.PortSymbol;
 import de.monticore.utils.Names;
+import jline.internal.Log;
 import montithings.generator.config.ConfigParams;
 import mtconfig._ast.ASTHookpoint;
 import mtconfig._symboltable.PortTemplateTagSymbol;
@@ -78,4 +80,40 @@ public class GeneratorHelper {
 
     return Optional.empty();
   }
+  /**
+   * Searches for the name of a language and retruns it
+   * @param path
+   * @return name of language
+   */
+  public static String getLanguageNameFromLanguagePath(String path, ConfigParams config){
+    // Gradle
+    File specificLanguageFolder = new File(config.getLanguagePath().getPath() + path + "/target/classes/java/main");
+    if (!specificLanguageFolder.exists()) {
+      // Maven
+      specificLanguageFolder = new File(config.getLanguagePath().getPath() + path + "/target/classes");
+    }
+    if (!specificLanguageFolder.exists()) {
+      // Neither Maven or Gradle was executed
+      Log.error("Language used by component was not built. Missing folder '" + specificLanguageFolder.getPath() + "'");
+    }
+    File[] subFiles = specificLanguageFolder.listFiles();
+    String name = "";
+    for(File f : subFiles){
+      if(f.isDirectory() && f.getName() != "templates"){
+        name = f.getName();
+        break;
+      }
+    }
+    return name;
+  }
+
+  /**
+   * replaces all occurences of "." with "/"
+   * @param str
+   * @return replaced string
+   */
+  public static String replaceDotsBySlashes(String str){
+    return str.replace('.', '/');
+  }
+
 }

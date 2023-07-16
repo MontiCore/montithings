@@ -15,6 +15,7 @@
     <modules>
         <module>anomaly-detection</module>
         <module>network-load-minimization</module>
+        <module>grafana</module>
     </modules>
 
 </project>

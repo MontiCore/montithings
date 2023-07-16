@@ -26,6 +26,9 @@ ${tc.signature("comp", "config", "useWsPorts", "existsHWC")}
 #include "easyloggingpp/easylogging++.h"
 #include ${"<iostream>"}
 #include <fstream>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  #include<unistd.h>
+</#if>
 <#if brokerIsMQTT>
   #include "MqttClient.h"
   #include "MqttPort.h"

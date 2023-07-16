@@ -6,6 +6,7 @@ package montithings.generator.config;
  */
 public enum Options {
 
+  LANGUAGEPATH("languagePath"),
   MODELPATH("modelPath"),
   MODELPATH_SHORT("mp"),
   TESTPATH("testPath"),
@@ -26,6 +27,9 @@ public enum Options {
   REPLAYMODE("replayMode"),
   APPLYANOMALYDETECTIONPATTERN("applyAnomalyDetectionPattern"),
   APPLYNETWORKMINIMIZATIONPATTERN("applyNetworkMinimizationPattern"),
+  APPLYGRAFANAPATTERN("applyGrafanaPattern"),
+  GRAFANAINSTANCEURL("grafanaInstanceUrl"),
+  GRAFANAAPIKEY("grafanaApiKey"),
   REPLAYDATAFILE("replayDataPath"),
   MAINCOMP("mainComponent"),
   MAINCOMP_SHORT("main"),

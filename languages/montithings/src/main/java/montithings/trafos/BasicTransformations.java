@@ -90,6 +90,19 @@ public abstract class BasicTransformations {
         return interceptorComponent;
     }
 
+
+    protected ASTMACompilationUnit getInterceptComponent(String interceptorComponentName, ASTMACompilationUnit outermostComponent, String instanceName) {
+        ASTMCQualifiedName fullyQName = this.getInterceptorFullyQName(interceptorComponentName, outermostComponent.getPackage().getQName());
+
+        addSubComponentInstantiation(outermostComponent, fullyQName, instanceName);
+
+        ASTMACompilationUnit interceptorComponent = createCompilationUnit(outermostComponent.getPackage(), interceptorComponentName);
+
+        flagAsGenerated(interceptorComponent);
+
+        return interceptorComponent;
+    }
+
     protected ASTMCQualifiedName getInterceptorFullyQName(String interceptorComponentName, String outermostPackage) {
         return MontiThingsMill
                 .mCQualifiedNameBuilder()
@@ -130,6 +143,24 @@ public abstract class BasicTransformations {
         }
 
         return portType;
+    }
+
+    protected List<String> getQCompInstanceNames(ASTMACompilationUnit targetComp, List<ASTMACompilationUnit> allModels) {
+        List<String> qCompInstanceNames = new ArrayList<>();
+
+        for (String parentName : TrafoUtil.findParents(allModels, targetComp)) {
+            ASTMACompilationUnit parentComp = TrafoUtil.getComponentByName(allModels, parentName);
+            List<ASTComponentInstantiation> instantiations = TrafoUtil
+                .getInstantiationsByType(parentComp, targetComp.getComponentType().getName());
+
+            for (ASTComponentInstantiation instantiation : instantiations) {
+                for (String instanceName : instantiation.getInstancesNames()) {
+                    qCompInstanceNames = TrafoUtil.getFullyQInstanceName(allModels, parentComp, instanceName);
+                }
+            }
+        }
+
+        return qCompInstanceNames;
     }
 
     /**
@@ -220,8 +251,16 @@ public abstract class BasicTransformations {
      * @param typeName  Name of the component type, e.g. Source
      * @return ASTMACompilationUnit of the newly created component
      */
-    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId,
-                                                         String typeName) {
+    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId, String typeName) {
+        return this.createCompilationUnit(packageId, typeName, false, Optional.empty());
+    }
+
+    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId, String typeName, boolean isInterface) {
+        return this.createCompilationUnit(packageId, typeName, isInterface, Optional.empty());
+    }
+
+    protected ASTMACompilationUnit createCompilationUnit(ASTMCQualifiedName packageId, String typeName,
+                                                         boolean isInterface, Optional<String> implementsName) {
         ASTMACompilationUnitBuilder compBuilder = MontiThingsMill.mACompilationUnitBuilder();
         compBuilder.setPackage(packageId);
 
@@ -233,7 +272,13 @@ public abstract class BasicTransformations {
         typeBuilder.setHead(headBuilder.build());
         typeBuilder.setBody(bodyBuilder.build());
         typeBuilder.setName(typeName);
-        typeBuilder.setMTComponentModifier(componentModifier.build());
+        typeBuilder.setMTComponentModifier(componentModifier.setInterface(isInterface).build());
+
+        if (implementsName.isPresent()) {
+            ASTMTImplementsBuilder mTImplementsBuilder = MontiThingsMill.mTImplementsBuilder().setNamesList(Collections.singletonList(implementsName.get()));
+            typeBuilder.setMTImplements(mTImplementsBuilder.build());
+        }
+
         compBuilder.setComponentType(typeBuilder.build());
 
         return compBuilder.build();
@@ -508,5 +553,15 @@ public abstract class BasicTransformations {
     protected boolean wasWrapped(ASTMACompilationUnit comp) {
         return comp.getComponentType().getHead().get_PreCommentList()
                 .stream().anyMatch(c -> c.getText().equals("RECORD_AND_REPLAY_WRAPPED"));
+    }
+
+    protected boolean isNotSplittedComponent(List<ASTMACompilationUnit> notSplittedComponents, ASTMACompilationUnit targetComp) {
+        for (ASTMACompilationUnit notSplittedComp : notSplittedComponents) {
+            if (notSplittedComp.getComponentType().getName().equals(targetComp.getComponentType().getName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

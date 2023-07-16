@@ -1,0 +1,11 @@
+// (c) https://github.com/MontiCore/monticore
+
+grammar TAULang extends de.monticore.MCBasics, de.monticore.literals.MCJavaLiterals {
+  Defs = (ModeDef)*;
+
+  ModeDef = "Mode"  modeName:Name  "on"  key:Num_Int ":" Time Temperature Rooms;
+
+  Time =  "Time:"  ( stop:["stop"]| timeDelta:Num_Int  "hours");
+  Temperature = "Temperature:"  temp:Num_Int  "°c";
+  Rooms =  "Rooms:"  room:(Num_Int || "," )*;
+}

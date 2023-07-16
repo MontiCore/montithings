@@ -24,7 +24,7 @@ fi
       <#assign processedInstances = processedInstances + [pair.getKey().fullName] />
 
       docker build --target ${pair.getKey().fullName} -t "${"$REGISTRY"}"${pair.getKey().fullName?lower_case}:latest .
-      if [ $2 -eq 1 ]; then
+      if [ "$2" == "1" ]; then
         docker push "${"$REGISTRY"}"${pair.getKey().fullName?lower_case}:latest
       fi
     </#if>
@@ -34,21 +34,26 @@ fi
   <#list sensorActuatorPorts as port >
 
       docker build --target ${port} -t "${"$REGISTRY"}"${port?lower_case}:latest .
-      if [ $2 -eq 1 ]; then
+      if [ "$2" == "1" ]; then
       docker push "${"$REGISTRY"}"${port?lower_case}:latest
       fi
   </#list>
   <#list hwcPythonScripts as script >
 
       docker build --target ${script} -t "${"$REGISTRY"}"${script?lower_case}:latest .
-      if [ $2 -eq 1 ]; then
+      if [ "$2" == "1"]; then
       docker push "${"$REGISTRY"}"${script?lower_case}:latest
       fi
   </#list>
     <#if hwcPythonScripts?size!=0>
       docker build --target sensoractuatormanager -t "${"$REGISTRY"}"sensoractuatormanager:latest .
-      if [ $2 -eq 1 ]; then
+      if [ "$2" == "1" ]; then
       docker push "${"$REGISTRY"}"sensoractuatormanager:latest
       fi
     </#if>
+</#if>
+
+<#if ComponentHelper.isDSLProject(config)>
+cd ../..
+docker build . --file target/generated-sources/generator-server/Dockerfile --network host --tag ${config.getMainComponent()?lower_case}.generator-server:latest
 </#if>

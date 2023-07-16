@@ -1,0 +1,29 @@
+<html>
+    <body>
+    <h1>Temperature Adjustment Unit</h1>
+        <p>This component defines modes which are used to overwrite the settings of thermostats at one central unit. Modes are activated by a simulated keypad input.</p>
+        
+        
+        <h3>Example Model</h3>
+        <pre>   Mode Warm on 2:</pre>
+        <pre>       Time: stop</pre>
+        <pre>       Temperature: 22°c</pre>
+        <pre>       Rooms: 2, 1</pre>
+        <pre>   Mode Temp on 3:</pre>
+        <pre>       Time: 5 hours</pre>
+        <pre>       Temperature: 21°c</pre>
+        <pre>       Rooms: 1</pre>
+
+
+
+        <h3>Model Format Rules</h3>
+        <p>
+            <ul>
+                <li>Every Mode has name and an assigned key. The foramt is as follwos "Mode &lt;name&gt; on &lt;key&gt;". Furthermore every mode defines settings in the following order "Time", "Temperature", "Rooms"</li>
+                <li>Time: This line defiens for how long the mode should stay activated. There are two options, specifiying a time in hourswith " &lt;time&gt; hours" or specifiying, that the mode should be deactivated manually by pressing  the same key again with "stop".</li>
+                <li>Temperature: Here you define the temperature that should be set, when the mode is active. The format is "&lt;temperature&gt; °c"</li>
+                <li>Rooms: This line defines which thermostats should be affected by a mode. In this simulationonly only 1 and 2 are available. All values are specified in a comma seperated list.</li>
+            </ul>
+        </p>
+    </body>
+</html>

@@ -10,11 +10,15 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
   , MqttClient* passedMqttClientInstance
   , MqttClient* passedMqttClientLocalInstance
 </#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  , std::string brokerHostNameArg
+  , int brokerPortArg
+</#if>
 <#if comp.getParameters()?has_content>
   , ${Utils.printConfigurationParametersAsList(comp)}
 </#if>
 )
-<#if comp.isAtomic() || shouldPrintSubcomponents || comp.getParameters()?has_content>
+<#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0 || shouldPrintSubcomponents || comp.getParameters()?has_content>
   :
 </#if>
 <#if comp.getParameters()?has_content>
@@ -26,11 +30,11 @@ ${className}${Utils.printFormalTypeParameters(comp)}::${className}
     <#list comp.getParameters() as param >
       ${param.getName()} <#sep>,</#sep>
     </#list>)
-  <#if comp.isAtomic() || shouldPrintSubcomponents>,</#if>
+  <#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0 || shouldPrintSubcomponents>,</#if>
 </#if>
 <#if comp.isAtomic() || ComponentHelper.getPortSpecificBehaviors(comp)?size gt 0>
   ${tc.includeArgs("template.component.helper.BehaviorInitializerListEntry", [comp, config])}
-  <#if !comp.isAtomic()>,</#if>
+  <#if shouldPrintSubcomponents>,</#if>
 </#if>
 <#if shouldPrintSubcomponents>
   ${tc.includeArgs("template.component.helper.SubcompInitializerList", [comp, config])}
@@ -41,6 +45,10 @@ this->instanceName = instanceName;
 <#if brokerIsMQTT>
 mqttClientInstance = passedMqttClientInstance;
 mqttClientLocalInstance = passedMqttClientLocalInstance;
+</#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  brokerHostName = brokerHostNameArg;
+  brokerPort = brokerPortArg;
 </#if>
 
 <#list comp.getParameters() as param >

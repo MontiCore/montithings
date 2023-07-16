@@ -52,7 +52,9 @@ AzureBlobStorageClient::upload(std::string json, std::string filename, std::stri
   {
     std::cout << "Status: " << res->status << std::endl;
     std::cout << "Body: " << res->body << std::endl;
-  } else {
+  }
+  else
+  {
     std::cout << "Res is not defined" << std::endl;
   }
 
@@ -74,8 +76,7 @@ AzureBlobStorageClient::download(std::string downloadUrl)
 
   httplib::Client2 cli(hostUrl.c_str());
 
-  httplib::Headers headers = {
-  };
+  httplib::Headers headers = {};
 
   auto res = cli.Get(downloadUrlParts[1].c_str(), headers);
 
@@ -87,7 +88,9 @@ AzureBlobStorageClient::download(std::string downloadUrl)
   {
     std::cout << "Status: " << res->status << std::endl;
     std::cout << "Body: " << res->body << std::endl;
-  } else {
+  }
+  else
+  {
     std::cout << "Res is not defined" << std::endl;
   }
 
@@ -97,7 +100,7 @@ AzureBlobStorageClient::download(std::string downloadUrl)
 
 std::vector<std::string>
 AzureBlobStorageClient::getUploadUrlPart(std::string filename, std::string containername,
-                                     std::string blobServiceSasUrl)
+                                         std::string blobServiceSasUrl)
 {
   std::string delim = "/?";
   std::vector<std::string> parts = this->split(blobServiceSasUrl, delim);
@@ -120,7 +123,7 @@ AzureBlobStorageClient::getDownloadUrlParts(std::string url)
 {
   std::string delim = "/";
   std::vector<std::string> parts = this->split(url, delim);
-  std::string path = "/" + parts[parts.size() - 2] + "/" + parts[parts.size() - 1];
+  std::string path = "/" + parts[parts.size() - 3] + "/" + parts[parts.size() - 2] + "/" + parts[parts.size() - 1];
   std::string host = this->split(url, path)[0];
   std::string urlParts[2] = {host, path};
   std::vector<std::string> v(&urlParts[0], &urlParts[0] + 2);

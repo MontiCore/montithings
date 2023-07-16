@@ -25,6 +25,7 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
   ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
 </#if>
 
+
 <#if ComponentHelper.retainState(comp)>
   this->restoreState ();
 </#if>
@@ -39,6 +40,12 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
     th__Compatibility = std::thread(&${className}::sendCompatibilityHeartbeat, this, std::move(keepAliveFuture__Compatibility));
   </#if>
 </#if>
+
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  mqttClientInstance->subscribe("/hwc/" + replaceDotsBySlashes(instanceName));
+</#if>
+
+
 
 ${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, className])}
 }

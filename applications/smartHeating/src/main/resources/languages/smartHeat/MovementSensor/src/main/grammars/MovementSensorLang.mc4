@@ -1,0 +1,6 @@
+// (c) https://github.com/MontiCore/monticore
+
+grammar MovementSensorLang extends de.monticore.MCBasics, de.monticore.literals.MCJavaLiterals {
+  Defs = (SensorRule)*;
+  SensorRule = "Activate" outPort:Num_Int "for" time:Num_Int "hours" "if" "threshold" threshold:Num_Double "is" "exceeded" "on" "sensor" inPort:Num_Int;
+}

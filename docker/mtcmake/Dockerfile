@@ -11,7 +11,7 @@ RUN apk add --update-cache --force-overwrite \
 	mosquitto-dev \
 	protobuf-dev \
 	py3-protobuf \
-    libpq-dev \
+	libpq-dev \
 	libressl-dev
 
 # Switch into our working directory for building NNG

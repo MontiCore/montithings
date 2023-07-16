@@ -37,6 +37,10 @@ public class GeneratorToolState {
   protected File modelPath;
 
   /**
+   * Directory path to languages 
+   */
+  protected File languagePath;
+  /**
    * Model path in MontiCore's format
    */
   protected ModelPath mcModelPath;
@@ -114,18 +118,21 @@ public class GeneratorToolState {
 
   protected boolean hasBlobStorageTf;
 
+  protected boolean hasGrafanaTf;
+
   /* ============================================================ */
   /* ======================= GENERATED CODE ===================== */
   /* ============================================================ */
 
   public GeneratorToolState(MontiThingsGeneratorTool tool, File modelPath, File target,
-                            File hwcPath, File testPath, ConfigParams config) {
+    File hwcPath, File testPath, ConfigParams config, File languagePath) {
     this.tool = tool;
     this.modelPath = modelPath;
     this.target = target;
     this.hwcPath = hwcPath;
     this.testPath = testPath;
     this.config = config;
+    this.languagePath = languagePath;
   }
 
   public MontiThingsGeneratorTool getTool() {
@@ -150,6 +157,14 @@ public class GeneratorToolState {
 
   public void setModelPath(File modelPath) {
     this.modelPath = modelPath;
+  }
+
+  public File getLanguagePath() {
+    return languagePath;
+  }
+
+  public void setMLanguagePath(File languagePath) {
+    this.languagePath = languagePath;
   }
 
   public ModelPath getMcModelPath() {
@@ -341,5 +356,13 @@ public class GeneratorToolState {
 
   public void setHasBlobStorageTf(boolean hasBlobStorageTf) {
     this.hasBlobStorageTf = hasBlobStorageTf;
+  }
+
+  public boolean getHasGrafanaTf() {
+    return hasGrafanaTf;
+  }
+
+  public void setHasGrafanaTf(boolean hasGrafanaTf) {
+    this.hasGrafanaTf = hasGrafanaTf;
   }
 }

@@ -56,5 +56,8 @@ ${tc.includeArgs("template.component.helper.SetupPorts", [comp, config, classNam
     th__Compatibility = std::thread(&${className}::sendCompatibilityHeartbeat, this, std::move(keepAliveFuture__Compatibility));
   </#if>
 </#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  mqttClientInstance->subscribe("/hwc/" + replaceDotsBySlashes(instanceName));
+</#if>
 
 }

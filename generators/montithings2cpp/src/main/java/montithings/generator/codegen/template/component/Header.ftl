@@ -32,6 +32,11 @@ ${tc.includeArgs("template.component.declarations.ThreadsAndMutexes", [comp, con
 ${tc.includeArgs("template.component.declarations.Timemode", [comp, config])}
 ${tc.includeArgs("template.component.declarations.DDS", [config])}
 
+
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  std::string brokerHostName;
+  int brokerPort;
+</#if>
 <#if brokerIsMQTT>
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
@@ -101,6 +106,13 @@ ${compname}State${Utils.printFormalTypeParameters(comp)} ${Identifier.getStateNa
   </#list>
 </#if>
 
+<#if ComponentHelper.isDSLComponent(comp,config)>
+void python_receiver(std::string payload);
+void python_start();
+int lastPyPID = -1;
+</#if>
+
+
 // if set to true, loop-threads will stop after their current iteration
 bool stopSignalReceived = false;
 
@@ -109,6 +121,10 @@ ${className}(std::string instanceName
 <#if brokerIsMQTT>
   , MqttClient* passedMqttClientInstance
   , MqttClient* passedMqttClientLocalInstance
+</#if>
+<#if ComponentHelper.isDSLComponent(comp,config)>
+  , std::string brokerHostNameArg
+  , int brokerPortArg
 </#if>
 <#if comp.getParameters()?has_content>,</#if>
 ${TypesPrinter.printConstructorArguments(comp)});
@@ -139,6 +155,8 @@ ${TypesPrinter.printConstructorArguments(comp)});
   // sensor actuator ports require cmd args in order to set up their DDS clients
   void setDDSCmdArgs (int argc, char *argv[]);
 </#if>
+
+
 
 <#if comp.isDecomposed()>
   <#if !(splittingModeDisabled) && brokerDisabled>

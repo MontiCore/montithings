@@ -43,11 +43,17 @@ public class ConfigParams {
 
   protected ApplyPatterns applyAnomalyDetectionPattern = ApplyPatterns.OFF;
 
-  protected ApplyPatterns applyNetworkMinimizationPattern = ApplyPatterns.OFF;
+  protected ApplyPatterns applyNetworkMinimizationPattern = ApplyPatterns.OFF;;
+
+  protected ApplyPatterns applyGrafanaPattern = ApplyPatterns.OFF;
 
   protected RecordingMode recordingMode = RecordingMode.OFF;
 
   protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
+
+  protected String grafanaInstanceUrl = "";
+
+  protected String grafanaApiKey = "";
 
   /**
    * property for target platform
@@ -90,9 +96,10 @@ public class ConfigParams {
    */
   protected File hwcPath;
 
-  /**
-   * All type arguments which which a component type is ever instantiated
-   */
+   /** Directory that contains handwritten code for components.*/
+  protected File languagePath;
+
+  /** All type arguments which which a component type is ever instantiated */
   Multimap<ComponentTypeSymbol, String> typeArguments;
 
   /**
@@ -243,12 +250,44 @@ public class ConfigParams {
     this.applyNetworkMinimizationPattern = applyPatterns;
   }
 
+  public ApplyPatterns getApplyGrafanaPattern() {
+    return applyGrafanaPattern;
+  }
+
+  public void setApplyGrafanaPattern(ApplyPatterns applyPatterns) {
+    this.applyGrafanaPattern = applyPatterns;
+  }
+
+  public String getGrafanaApiKey() {
+    return grafanaApiKey;
+  }
+
+  public void setGrafanaApiKey(String grafanaApiKey) {
+    this.grafanaApiKey = grafanaApiKey;
+  }
+
+  public String getGrafanaInstanceUrl() {
+    return grafanaInstanceUrl;
+  }
+
+  public void setGrafanaInstanceUrl(String grafanaInstanceUrl) {
+    this.grafanaInstanceUrl = grafanaInstanceUrl;
+  }
+
   public File getHwcPath() {
     return hwcPath;
   }
 
   public void setHwcPath(File hwcPath) {
     this.hwcPath = hwcPath;
+  }
+
+  public File getLanguagePath() {
+    return languagePath;
+  }
+
+  public void setLanguagePath(File languagePath) {
+    this.languagePath = languagePath;
   }
 
   public Path getHwcTemplatePath() {

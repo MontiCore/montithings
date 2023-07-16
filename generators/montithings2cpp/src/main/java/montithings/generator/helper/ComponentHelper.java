@@ -76,6 +76,8 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.swing.text.DocumentFilter;
+
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
 /**
@@ -256,6 +258,62 @@ public class ComponentHelper {
   }
 
   /**
+   * Returns the Component matching the given name
+   * @param name component name
+   * @return component 
+   */
+  public static ComponentTypeSymbol getCompByName(String name, ComponentTypeSymbol someComp){
+    ComponentTypeSymbol comp = GenericBindingUtil.getComponentFromString(GenericBindingUtil.getEnclosingMontiArcArtifactScope((MontiThingsArtifactScope) someComp.getEnclosingScope()), name);
+    if(comp == null){
+      System.out.println("!!! Empty !!!");
+    }
+    return comp;
+  }
+
+  /**
+   * Returns the Component matching the given languagePath
+   * @param name component name
+   * @return component 
+   */
+  public static ComponentTypeSymbol getCompByLanguagePath(String path, ComponentTypeSymbol someComp){
+
+    return getCompByName(path.substring(path.lastIndexOf("/") + 1), someComp);
+  }
+
+  /**
+   * Returns True iff the given component is a dsl component
+   */
+  public static boolean isDSLComponent(ComponentTypeSymbol comp, ConfigParams config) {
+    if(isDSLProject(config)){
+      if (comp.getAstNode() instanceof ASTMTComponentType) {
+        Path pathToLanguageFile = getFullLanguagePath(comp, config);
+        File languageFile = new File(pathToLanguageFile.toString());
+        if(languageFile.exists())
+        {
+          if(languageFile.isDirectory())
+          {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Retruns iff the entrie project is a project that uses endu user development features
+   * @param config
+   * @return boolean
+   */
+  public static boolean isDSLProject(ConfigParams config) {
+    if (config.getLanguagePath() != null) {
+      return true;
+    }
+    return false;
+  }
+
+
+  /**
    * Get the names of all types generated for the interfaces implemented by the given component
    */
   public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component,
@@ -270,6 +328,58 @@ public class ComponentHelper {
 
   public static Set<String> getInterfaceClassNames(ComponentTypeSymbol component) {
     return getInterfaceClassNames(component, true);
+  }
+
+  /**
+   * Get the full path to the components specific language folder of DSL components
+   */
+  public static Path getFullLanguagePath(ComponentTypeSymbol comp, ConfigParams config) {
+    File languagesFolder = config.getLanguagePath();
+    Path pathToLanguageFile = Paths.get( languagesFolder.getPath() + File.separatorChar + comp.getFullName().replace('.', File.separatorChar));
+    return pathToLanguageFile;
+  }
+
+  /**
+   * Get the full path of all Languages in the Langauge folder
+   */
+  public static ArrayList<String> getAllLanguageDirectories(ConfigParams config) {
+    if(isDSLProject(config)){
+      File languagesFolder = config.getLanguagePath();
+      if(languagesFolder.isDirectory()){
+        ArrayList<String> languageDirectories = recursiveSearchLanguageFiles(languagesFolder,"");
+        return languageDirectories;
+      }
+    }
+    return new ArrayList<String>();
+    
+  }
+
+  /**
+   * recursive helper function for getAllLanguageDirectories
+   */
+  static ArrayList<String> recursiveSearchLanguageFiles(File rootFile, String path){
+    ArrayList<String> retVal = new ArrayList<String>();
+    File[] subDirs = rootFile.listFiles();
+    for(File file : subDirs){
+      if(file.isDirectory() && file.getName().equals("src")){
+        retVal.add(path);
+        return retVal;
+      }
+    }
+    for(File file : subDirs){
+      if(file.isDirectory()){
+        retVal.addAll(recursiveSearchLanguageFiles(file,path + "/" + file.getName()));
+      }
+    }
+    return retVal;
+  }
+
+  /**
+   * Get className from languagePath
+   */
+  public static String getClassNameFromLanguagePath(String path) {
+    LinkedList<String> items = new LinkedList<String>(Arrays.asList(path.split(String.valueOf(File.separatorChar))));
+    return items.getLast();
   }
 
   /**
