@@ -22,6 +22,7 @@ public enum Options {
   LOGTRACING("logtracing"),
   RECORDING("recording"),
   PORTNAME("portsToMain"),
+  COMPONENT_ADDITIONS("automaticComponentAdditions"),
   MESSAGEBROKER("messageBroker"),
   MESSAGEBROKER_SHORT("broker"),
   REPLAYMODE("replayMode"),

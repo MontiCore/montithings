@@ -1522,7 +1522,8 @@ public class ComponentHelper {
     return CppPrettyPrinter.print(behavior.getTestBlock(), behavior.getName(0));
   }
 
-  public static boolean shouldGenerateCompatibilityHeartbeat(ComponentTypeSymbol comp) {
-    return !getIncomingPortsToTest(comp).isEmpty() || !getInterfaceClassNames(comp).isEmpty();
+  public static boolean shouldGenerateCompatibilityHeartbeat(ComponentTypeSymbol comp, ConfigParams config) {
+    return /*config.getAutomaticComponentAdditions() == AutomaticComponentAdditions.ON &&*/
+      (!getIncomingPortsToTest(comp).isEmpty() || !getInterfaceClassNames(comp).isEmpty());
   }
 }
