@@ -16,6 +16,7 @@ component grammar ComponentTest extends de.monticore.expressions.ExpressionsBasi
       WaitStatement
       ExpectValueOnPort+
     "}";
+  nokeyword "test";
 
   SendValueOnPort = Name "=" Expression ";" ;
   WaitStatement = "wait" SIUnitLiteral ";" ;
