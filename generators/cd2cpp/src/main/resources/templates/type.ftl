@@ -193,7 +193,6 @@ ${kind} ${typeName} <#if super != "">: ${super} </#if>{
         </#list>
         )
       </#list>
-      )
     </#if>
     {
        <#list mandatoryFields as mandatoryField>
