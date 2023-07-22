@@ -11,7 +11,7 @@ component grammar ComponentTest extends de.monticore.expressions.ExpressionsBasi
 {
 
   TestBlock =
-    "test" ("(" ((Name ":" Expression) | ",") ")")? "{"
+    "test" "{"
       SendValueOnPort+
       WaitStatement
       ExpectValueOnPort+

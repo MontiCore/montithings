@@ -71,7 +71,7 @@ ${tc.includeArgs("template.component.methods.GetState", [comp, className])}
   ${tc.includeArgs("template.component.methods.PublishConnectors", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.OnMessage", [comp, config, className])}
   ${tc.includeArgs("template.component.methods.GetMqttClientInstance", [comp, config, className])}
-  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
     <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
         ${tc.includeArgs("template.component.methods.GetMqttClientSenderInstance", [comp, config, className, ""])}
         ${tc.includeArgs("template.component.methods.GetSubscriptionsToSend", [comp, config, className, ""])}

@@ -39,6 +39,7 @@ public class OpenAPIToMTConverter {
         }
       }
     }
+    // unexpected JSON formatting
     return "";
   }
 
@@ -47,6 +48,7 @@ public class OpenAPIToMTConverter {
       List<ASTJSONProperty> supportedActions = ((ASTJSONObject) json).getProps("supported_actions");
       return getStringListFromJsonProperty(supportedActions);
     }
+    // unexpected JSON formatting
     return Collections.emptyList();
   }
 
@@ -55,6 +57,7 @@ public class OpenAPIToMTConverter {
       List<ASTJSONProperty> supportedProperties = ((ASTJSONObject) json).getProps("supported_properties");
       return getStringListFromJsonProperty(supportedProperties);
     }
+    // unexpected JSON formatting
     return Collections.emptyList();
   }
 

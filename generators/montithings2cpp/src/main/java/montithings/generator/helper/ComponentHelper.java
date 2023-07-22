@@ -40,6 +40,7 @@ import montithings._symboltable.MontiThingsArtifactScope;
 import montithings._visitor.MontiThingsFullPrettyPrinter;
 import montithings._visitor.MontiThingsTraverser;
 import montithings.generator.codegen.util.Utils;
+import montithings.generator.config.AutomaticComponentAdditions;
 import montithings.generator.config.ConfigParams;
 import montithings.generator.config.SplittingMode;
 import montithings.generator.prettyprinter.CppPrettyPrinter;
@@ -1522,8 +1523,8 @@ public class ComponentHelper {
     return CppPrettyPrinter.print(behavior.getTestBlock(), behavior.getName(0));
   }
 
-  public static boolean shouldGenerateCompatibilityHeartbeat(ComponentTypeSymbol comp/*, ConfigParams config*/) {
-    return /*config.getAutomaticComponentAdditions() == AutomaticComponentAdditions.ON &&*/
+  public static boolean shouldGenerateCompatibilityHeartbeat(ComponentTypeSymbol comp, ConfigParams config) {
+    return config.getAutomaticComponentAdditions() == AutomaticComponentAdditions.ON &&
       (!getIncomingPortsToTest(comp).isEmpty() || !getInterfaceClassNames(comp).isEmpty());
   }
 }

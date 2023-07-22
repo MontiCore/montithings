@@ -72,7 +72,7 @@ publishConnectors ();
 }
 }
 
-<#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
+<#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
   <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
     <#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>
       else if (topic.find ("/offered_ip/${interface}") != std::string::npos) {

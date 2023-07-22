@@ -79,7 +79,8 @@ public class CppBehaviorPrettyPrinter
     IScopeSpanningSymbol spanningSymbol = node.getEnclosingScope()
       .getEnclosingScope().getSpanningSymbol();
     if (spanningSymbol instanceof ComponentTypeSymbol) {
-      if (ComponentHelper.shouldGenerateCompatibilityHeartbeat((ComponentTypeSymbol) spanningSymbol)) {
+      if (!ComponentHelper.getIncomingPortsToTest((ComponentTypeSymbol) spanningSymbol).isEmpty() ||
+          !ComponentHelper.getInterfaceClassNames((ComponentTypeSymbol) spanningSymbol).isEmpty()) {
         useSenderInstance = true;
       }
     }

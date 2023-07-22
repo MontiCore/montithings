@@ -40,7 +40,7 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
 <#if brokerIsMQTT>
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
-  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
     MqttClient *  mqttClientCompatibilityInstance;
     <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
       bool isConnectedToOtherComponent = false;
@@ -77,7 +77,7 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
     </#if>
   </#list>
 
-  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
     std::thread th__Compatibility;
   </#if>
   std::promise<void> exitSignal__Compatibility;
@@ -136,7 +136,7 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::string typeName, std::future<void> keepAliveFuture);
   void sendConnectionString (std::string connectionStringTopic, std::string connectionString);
   MqttClient *getMqttClientInstance () const;
-  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp)>
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
     <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
       MqttClient *getMqttClientSenderInstance() const;
       std::set< std::string> *getSubscriptionsToSend();
