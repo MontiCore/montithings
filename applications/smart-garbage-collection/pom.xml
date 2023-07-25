@@ -246,6 +246,7 @@
                                 <!--<messageBroker>MQTT</messageBroker>-->
                                 <version>${project.version}</version>
                                 <splitting>LOCAL</splitting>
+                                <automaticComponentAdditions>ON</automaticComponentAdditions>
                             </arguments>
                             <script>montithings/generator/mtgenerator.groovy</script>
                         </configuration>
