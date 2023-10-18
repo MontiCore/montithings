@@ -4,6 +4,14 @@
 #pragma once
 
 #include <string>
+#include <iostream>
+#include <cstring>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <unistd.h>
 #include "tl/optional.hpp"
 #include "cereal/archives/json.hpp"
 #include "cereal/types/string.hpp"
@@ -118,6 +126,12 @@ std::string getEnclosingComponentName (const std::string& input);
  * \return the fully qualified name without last trailing number part
  */
 std::string getModelInstanceName(const std::string& instanceName);
+
+/**
+ * Get the ip-address of the device on which the caller is deployed on.
+ * Used for compatibility. Looks at the interface "wlan0".
+ */
+std::string getIPAddress();
 
 /* Additional serialization functions for cereal */
 namespace cereal

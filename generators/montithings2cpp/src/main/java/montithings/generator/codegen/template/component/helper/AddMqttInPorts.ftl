@@ -36,3 +36,13 @@ std::string modelInstanceNameIn = getModelInstanceName(this->getInstanceName());
     ,false, mqttClientInstance, mqttClientLocalInstance, "/protobuf/");
   </#if>
 </#list>
+<#list ComponentHelper.getIncomingPortsToTest(comp) as p>
+    <#assign type = TypesPrinter.getRealPortCppTypeString(comp, p, config)>
+
+  // incoming test-port ${p.getName()}
+
+  this->interface.addInPortTest__${p.getName()} (new MqttPort<Message<${type}>>(modelInstanceNameIn + "/test__${p.getName()}",
+  std::unique_ptr<${serializerName}<Message<${type}>>>{new ${serializerName}<Message<${type}>>{}}
+  ,true, mqttClientInstance, mqttClientLocalInstance));
+  interface.getPortTest__${p.getName()} ()->attach (this);
+</#list>

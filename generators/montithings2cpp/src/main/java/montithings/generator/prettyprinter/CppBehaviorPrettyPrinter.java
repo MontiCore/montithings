@@ -2,6 +2,7 @@
 package montithings.generator.prettyprinter;
 
 import arcbasis._ast.ASTPortAccess;
+import arcbasis._symboltable.ComponentTypeSymbol;
 import arcbasis._symboltable.PortSymbol;
 import behavior._ast.*;
 import behavior._visitor.BehaviorHandler;
@@ -12,10 +13,12 @@ import de.monticore.siunitliterals._ast.ASTSIUnitLiteral;
 import de.monticore.siunits.prettyprint.SIUnitsPrettyPrinter;
 import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
 import de.monticore.symbols.basicsymbols._symboltable.VariableSymbol;
+import de.monticore.symboltable.IScopeSpanningSymbol;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.StringTransformations;
 import montithings._auxiliary.ExpressionsBasisMillForMontiThings;
 import montithings.generator.codegen.util.Identifier;
+import montithings.generator.helper.ComponentHelper;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -30,10 +33,15 @@ public class CppBehaviorPrettyPrinter
   protected BehaviorTraverser traverser;
   protected IndentPrinter printer;
   protected int afterStatementIndex;
+  protected String currentPortName;
 
   public CppBehaviorPrettyPrinter(IndentPrinter printer) {
+    this(printer, "");
+  }
+  public CppBehaviorPrettyPrinter(IndentPrinter printer, String currentPortName) {
     this.printer = printer;
     this.afterStatementIndex = 0;
+    this.currentPortName = currentPortName;
   }
 
   @Override
@@ -67,10 +75,23 @@ public class CppBehaviorPrettyPrinter
 
   @Override
   public void handle(ASTConnectStatement node) {
-    boolean sourceIsComponentInstance = isStaticComponentInstance(node.getConnector().getSource());
+    boolean useSenderInstance = false;
+    IScopeSpanningSymbol spanningSymbol = node.getEnclosingScope()
+      .getEnclosingScope().getSpanningSymbol();
+    if (spanningSymbol instanceof ComponentTypeSymbol) {
+      if (!ComponentHelper.getIncomingPortsToTest((ComponentTypeSymbol) spanningSymbol).isEmpty() ||
+          !ComponentHelper.getInterfaceClassNames((ComponentTypeSymbol) spanningSymbol).isEmpty()) {
+        useSenderInstance = true;
+      }
+    }
+    ASTPortAccess source = node.getConnector().getSource();
+    boolean sourceIsComponentInstance = isStaticComponentInstance(source);
     for (ASTPortAccess target : node.getConnector().getTargetList()) {
       boolean targetIsComponentInstance = isStaticComponentInstance(target);
-      getPrinter().print("component.getMqttClientInstance()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
+      final String senderString = !targetIsComponentInstance && sourceIsComponentInstance ? "Sender" : "";
+      final String portName = senderString.length() == 0 ? "" : currentPortName;
+      getPrinter().print("component.getMqttClient" + senderString + "Instance" + portName
+              + "()->publish (replaceDotsBySlashes (\"/connectors/\" + ");
       if (targetIsComponentInstance) {
         getPrinter().print("instanceName");
         getPrinter().print(" + \"/" + target.getQName() + "\"");
@@ -81,12 +102,33 @@ public class CppBehaviorPrettyPrinter
       getPrinter().print("), replaceDotsBySlashes (");
       if (sourceIsComponentInstance) {
         getPrinter().print("instanceName");
-        getPrinter().print(" + \"/" + node.getConnector().getSource().getQName() + "\"");
+        getPrinter().print(" + \"/" + source.getQName() + "\"");
       }
       else {
-        printGetExternalPortAccessFQN(node.getConnector().getSource());
+        printGetExternalPortAccessFQN(source);
       }
       getPrinter().print("));");
+      getPrinter().println();
+
+      // subscribe to the topics so that messages can be sent to other mqtt broker
+      if (useSenderInstance) {
+        if (sourceIsComponentInstance && !targetIsComponentInstance) {
+          getPrinter().print("component.getMqttClientInstance()->subscribe(replaceDotsBySlashes (\"/ports/\" + ");
+          getPrinter().println("instanceName + \"/" + source.getQName() + "\"));");
+          getPrinter().print("component.getSubscriptionsToSend" + currentPortName
+                  + "()->emplace(replaceDotsBySlashes (\"/ports/\" + ");
+          getPrinter().print("instanceName + \"/" + source.getQName() + "\"));");
+        } else if (!sourceIsComponentInstance && targetIsComponentInstance) {
+          Optional<PortSymbol> ps = ((ComponentTypeSymbol) spanningSymbol).getPort(currentPortName);
+          if (ps.isPresent()) {
+            getPrinter().print("component.getMqttClientSenderInstance" + currentPortName
+                    + "()->publish(\"/new-subscriptions/" + ps.get().getType().print() + "\", replaceDotsBySlashes (");
+            printGetExternalPortAccessFQN(source);
+            getPrinter().print("));");
+          }
+        }
+        getPrinter().println();
+      }
     }
   }
 
@@ -112,6 +154,7 @@ public class CppBehaviorPrettyPrinter
         printGetExternalPortAccessFQN(node.getSource());
       }
       getPrinter().print("));");
+      getPrinter().println();
     }
   }
 

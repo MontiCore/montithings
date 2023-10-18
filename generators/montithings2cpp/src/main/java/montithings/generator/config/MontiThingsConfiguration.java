@@ -430,6 +430,15 @@ public class MontiThingsConfiguration implements Configuration {
     return PortNameTrafo.OFF;
   }
 
+  public AutomaticComponentAdditions getAutomaticComponentAdditions() {
+    Optional<String> automaticComponentAdditions = getAsString(Options.COMPONENT_ADDITIONS);
+    if (automaticComponentAdditions.isPresent()) {
+      return AutomaticComponentAdditions.fromString(automaticComponentAdditions.get());
+    }
+    // fallback default is "off"
+    return AutomaticComponentAdditions.OFF;
+  }
+
   /**
    * @param files as String names to convert
    * @return list of files by creating file objects from the Strings

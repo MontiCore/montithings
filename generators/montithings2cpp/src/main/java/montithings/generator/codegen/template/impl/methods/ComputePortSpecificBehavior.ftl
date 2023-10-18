@@ -5,12 +5,24 @@ ${tc.signature("behavior", "comp", "config", "existsHWC")}
 ${Utils.printTemplateArguments(comp)}
 ${compname}Result${generics}
 ${className}${generics}::compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}
-(${compname}Input${generics} ${Identifier.getInputName()})
+<#if ComponentHelper.hasTest(comp)>
+    (${compname}Input${generics} ${Identifier.getInputName()}, sole::uuid uuid)
+<#else>
+    (${compname}Input${generics} ${Identifier.getInputName()})
+</#if>
 {
 ${compname}Result${generics} ${Identifier.getResultName()};
 ${compname}State${generics} state__at__pre = ${Identifier.getStateName()};
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementStart", [comp, config])}
-${ComponentHelper.printJavaBlock(behavior.getMCJavaBlock(), logTracingEnabled)}
+
+<#if ComponentHelper.hasTest(comp)>
+    ${ComponentHelper.printTestBlock(behavior)}
+</#if>
+
+${ComponentHelper.printPortSpecificBehavior(behavior, logTracingEnabled)}
+
+<#if ComponentHelper.hasTest(comp)>}</#if>
+
 ${tc.includeArgs("template.impl.helper.RecorderComputationMeasurementEnd", [comp, config])}
 <#list ComponentHelper.getPublishedPorts(comp, behavior.getMCJavaBlock()) as port>
     ${Identifier.getResultName()}.set${port.getName()?capitalize}(tl::nullopt);

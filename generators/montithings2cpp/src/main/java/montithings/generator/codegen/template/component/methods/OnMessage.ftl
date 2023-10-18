@@ -63,7 +63,7 @@ publishConfigForSubcomponent (replaceDotsBySlashes(payload));
 }
 
 // check if this message informs us about new component instances
-if (topic.find ("/components") != std::string::npos)
+else if (topic.find ("/components") != std::string::npos)
 {
 if (refersToSubcomp)
 {
@@ -72,6 +72,51 @@ publishConnectors ();
 }
 }
 
+<#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
+  <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
+    <#list ComponentHelper.getInterfaceClassNames(comp)[0..*1] as interface>
+      else if (topic.find ("/offered_ip/${interface}") != std::string::npos) {
+        if (payload != ip_address) {
+          mqttClientSenderInstance = new MqttClient(payload, 1883);
+          mqttClientSenderInstanceHasBeenConnected = true;
+          mqttClientInstance->subscribe("/new-subscriptions/${interface}");
+          mqttClientInstance->subscribe("/connection-start/${interface}");
+        }
+      }
+      else if (topic.find("/new-subscriptions/${interface}") != std::string::npos) {
+        mqttClientInstance->subscribe("/ports/" + payload);
+        subscriptionsToSend.emplace("/ports/" + payload);
+      }
+      else if (topic.find("/connection-start/${interface}") != std::string::npos) {
+        if (payload == "success") {
+          isConnectedToOtherComponent = true;
+        } else {
+          subscriptionsToSend.clear();
+        }
+      }
+      else if (subscriptionsToSend.find(topic) != subscriptionsToSend.cend() && mqttClientSenderInstance->isConnected()) {
+        mqttClientSenderInstance->publish(topic, payload);
+      }
+    </#list>
+  <#else>
+    <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
+      // check if this message informs us about a new component match
+      else if (topic.find ("/component_match/${p.getType().print()}") != std::string::npos) {
+        LOG(DEBUG) << "Component Match message received!";
+        mqttClientInstance->publish("/portsInject/" + replaceDotsBySlashes ("${p.getFullName()}"), payload);
+      }
+      else if (topic.find ("/offered_ip/${p.getType().print()}") != std::string::npos) {
+        if (payload != ip_address) {
+          mqttClientSenderInstance${p.getName()} = new MqttClient(payload, 1883);
+          mqttClientSenderInstance${p.getName()}HasBeenConnected = true;
+        }
+      }
+      else if (subscriptionsToSend${p.getName()}.find(topic) != subscriptionsToSend${p.getName()}.cend() && mqttClientSenderInstance${p.getName()}->isConnected()) {
+        mqttClientSenderInstance${p.getName()}->publish(topic, payload);
+      }
+    </#list>
+  </#if>
+</#if>
 <#if ComponentHelper.isDSLComponent(comp,config)>
 // receive python files
 if (topic == "/hwc/" + replaceDotsBySlashes(instanceName)){

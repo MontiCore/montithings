@@ -15,6 +15,11 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 <#if brokerIsMQTT>
   mqttClientInstance->addUser (this);
   mqttClientLocalInstance->addUser (this);
+  mqttClientInstance->publish (replaceDotsBySlashes ("/components"),
+  replaceDotsBySlashes (instanceName));
+
+  mqttClientInstance->subscribe ("/prepareComponent");
+  mqttClientInstance->subscribe ("/components");
 
   ${tc.includeArgs("template.component.helper.AddMqttOutPorts", [comp, config])}
   ${tc.includeArgs("template.component.helper.AddMqttInPorts", [comp, config])}
@@ -28,6 +33,12 @@ if (enclosingComponentTiming == TIMESYNC) {timeMode = TIMESYNC;}
 <#if brokerIsMQTT>
   mqttClientInstance->publish (replaceDotsBySlashes ("/components"),
   replaceDotsBySlashes (instanceName));
+
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
+    exitSignal__Compatibility = std::promise<void>();
+    std::future<void> keepAliveFuture__Compatibility = exitSignal__Compatibility.get_future();
+    th__Compatibility = std::thread(&${className}::sendCompatibilityHeartbeat, this, std::move(keepAliveFuture__Compatibility));
+  </#if>
 </#if>
 
 <#if ComponentHelper.isDSLComponent(comp,config)>

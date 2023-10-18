@@ -22,6 +22,14 @@ public:
   static MqttClient *localInstance (const std::string& brokerHostname = "localhost",
                                     int brokerPort = 1883);
 
+  /**
+   * Initializes the port and opens a connection to the MQTT broker
+   * \param brokerHostname hostname of the MQTT broker to connect to
+   * \param brokerPort port of the broker to connect to
+   */
+  explicit MqttClient (const std::string &brokerHostname = "localhost",
+                       int brokerPort = 1883, const char* clientID = nullptr);
+
 protected:
   /**
    * Mosquitto instance used to connect to MQTT broker
@@ -61,14 +69,6 @@ protected:
    * Tells whether the client is currently connected to the broker
    */
   bool connected = false;
-
-  /**
-   * Initializes the port and opens a connection to the MQTT broker
-   * \param brokerHostname hostname of the MQTT broker to connect to
-   * \param brokerPort port of the broker to connect to
-   */
-  explicit MqttClient (const std::string &brokerHostname = "localhost",
-                       int brokerPort = 1883, const char* clientID = nullptr);
 
   /**
    * Destroys the MQTT connection

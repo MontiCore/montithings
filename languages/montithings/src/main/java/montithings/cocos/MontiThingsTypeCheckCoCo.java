@@ -3,7 +3,13 @@ package montithings.cocos;
 
 import arcbasis._ast.ASTArcField;
 import arcbasis._ast.ASTArcParameter;
+import arcbasis._symboltable.PortSymbol;
 import arcbasis._visitor.ArcBasisVisitor2;
+import com.google.common.collect.LinkedListMultimap;
+import componenttest._ast.ASTExpectValueOnPort;
+import componenttest._ast.ASTSendValueOnPort;
+import componenttest._ast.ASTTestBlock;
+import componenttest._visitor.ComponentTestVisitor2;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.ocl.types.check.OCLTypeCheck;
 import de.monticore.statements.mccommonstatements._ast.*;
@@ -13,13 +19,18 @@ import de.monticore.statements.mcvardeclarationstatements._ast.ASTVariableDeclar
 import de.monticore.statements.mcvardeclarationstatements._visitor.MCVarDeclarationStatementsVisitor2;
 import de.monticore.symbols.basicsymbols._ast.ASTFunction;
 import de.monticore.symbols.basicsymbols._ast.ASTVariable;
+import de.monticore.symbols.basicsymbols._symboltable.TypeSymbol;
+import de.monticore.symbols.oosymbols._symboltable.FieldSymbol;
+import de.monticore.types.check.SymTypeConstant;
 import de.monticore.types.check.SymTypeExpression;
+import de.monticore.types.check.SymTypeOfGenerics;
 import de.monticore.types.check.TypeCheck;
 import de.monticore.types.check.cocos.TypeCheckCoCo;
 import de.se_rwth.commons.logging.Log;
 import montithings.MontiThingsMill;
 import montithings._ast.ASTMTComponentType;
 import montithings._cocos.MontiThingsASTMTComponentTypeCoCo;
+import montithings._symboltable.MontiThingsScope;
 import montithings._visitor.MontiThingsTraverser;
 import montithings.types.check.DeriveSymTypeOfMontiThingsCombine;
 import montithings.types.check.MontiThingsTypeCheck;
@@ -28,10 +39,15 @@ import prepostcondition._ast.ASTPostcondition;
 import prepostcondition._ast.ASTPrecondition;
 import prepostcondition._visitor.PrePostConditionVisitor2;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static montithings.util.PortUtil.findPortSymbolOfTestBlock;
+
 public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo
   implements MontiThingsASTMTComponentTypeCoCo, ArcBasisVisitor2,
   MCVarDeclarationStatementsVisitor2, MCCommonStatementsVisitor2,
-  PrePostConditionVisitor2 {
+  PrePostConditionVisitor2, ComponentTestVisitor2 {
   /**
    * Creates an instance of TypeCheckCoCo
    *
@@ -55,6 +71,7 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo
     traverser.add4MCVarDeclarationStatements(this);
     traverser.add4MCCommonStatements(this);
     traverser.add4PrePostCondition(this);
+    traverser.add4ComponentTest(this);
     return traverser;
   }
 
@@ -150,6 +167,55 @@ public class MontiThingsTypeCheckCoCo extends TypeCheckCoCo
   @Override
   public void visit(ASTConstantExpressionSwitchLabel node) {
     checkExpression(node.getConstant());
+  }
+
+  @Override
+  public void visit(ASTTestBlock node) {
+    Map<String, SymTypeExpression> portTypes = new HashMap<>();
+    PortSymbol port = findPortSymbolOfTestBlock(node);
+    addPortTypes(portTypes, port);
+
+    for (ASTSendValueOnPort sendValueOnPort : node.getSendValueOnPortList()) {
+      SymTypeExpression portType = portTypes.get(sendValueOnPort.getName());
+      SymTypeExpression expressionType = tc.typeOf(sendValueOnPort.getExpression());
+      if (!MontiThingsTypeCheck.compatible(portType, expressionType)) {
+        Log.error("Type of port " + sendValueOnPort.getName() + " not compatible with its assigned expression" +
+          " in ASTSendValueOnPort from test block for port " + node.getPortName() + "!");
+      }
+    }
+
+    for (ASTExpectValueOnPort expectValueOnPort : node.getExpectValueOnPortList()) {
+      SymTypeExpression portType = portTypes.get(expectValueOnPort.getName());
+      SymTypeExpression expressionType = tc.typeOf(expectValueOnPort.getExpression());
+      if (!expectValueOnPort.getCompareOperator().isPresentEquals() &&
+        !expectValueOnPort.getCompareOperator().isPresentNotEquals()) {
+        // other comparison operators can only be used for numeric values
+        if (portType instanceof SymTypeConstant && !((SymTypeConstant) portType).isNumericType()) {
+          Log.error("Comparison Operators other than equals and notEquals only allow numeric values in " +
+            "ASTExpectValueOnPort nonterminals");
+        }
+      }
+      if (!MontiThingsTypeCheck.compatible(portType, expressionType)) {
+        Log.error("Type of port " + expectValueOnPort.getName() + " not compatible with its assigned expression" +
+          " in ASTSendValueOnPort from test block for port " + node.getPortName() + "!");
+      }
+    }
+  }
+
+  private void addPortTypes(Map<String, SymTypeExpression> portTypes, PortSymbol port) {
+    if (port != null) {
+      TypeSymbol type = port.getTypeInfo();
+      if (type.getSpannedScope() instanceof MontiThingsScope) {
+        LinkedListMultimap<String, FieldSymbol> fieldSymbols = ((MontiThingsScope) type.getSpannedScope()).getFieldSymbols();
+        for (String name : fieldSymbols.keySet()) {
+          // check whether port is incoming or outgoing
+          SymTypeExpression portType = fieldSymbols.get(name).get(0).getType();
+          if (portType instanceof SymTypeOfGenerics) {
+            portTypes.put(name, ((SymTypeOfGenerics) portType).getArgument(0));
+          }
+        }
+      }
+    }
   }
 
   private void checkCondition(ASTExpression e) {

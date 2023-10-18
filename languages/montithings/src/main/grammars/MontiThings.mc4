@@ -11,6 +11,7 @@ grammar MontiThings extends MontiArc,
                             ConditionCatch,
                             SetDefinitions,
                             Behavior,
+                            ComponentTest,
                             OCLExpressions,
                             OptionalOperators,
                             SIUnitTypes4Computing,
@@ -78,7 +79,7 @@ grammar MontiThings extends MontiArc,
      * of the MCJavaBlock have a new message available. If no ports are listed
      * the behavior is executed whenever any port has a new message available.
      */
-    Behavior implements MTBehavior = "behavior" (Name@Port || ",")* MCJavaBlock;
+    Behavior implements MTBehavior = "behavior" (Name@Port || ",")* MCJavaBlock TestBlock?;
 
     /**
      * InitBehavior of components get executed once all ports listed in front
@@ -117,7 +118,6 @@ grammar MontiThings extends MontiArc,
      */
     MTSCTransition implements SCStateElement, SCStatechartElement =
        Stereotype? sourceNames:(Name@SCState || ",")+ "->" targetNames:(Name@SCState || ",")+ SCTBody ";" ;
-
 
     /**
      * Used to re-send the last message on a port.

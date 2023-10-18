@@ -29,7 +29,12 @@ ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "pre"])}
     <#-- Different from atomic component we do not set a "result" here, because the composed
          components are not allowed to send messages on outgoing ports
      -->
-  ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+  <#if ComponentHelper.hasTest(comp)>
+    threads.push_back(std::thread{&${compname}Impl::compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)},
+      ${Identifier.getBehaviorImplName()}, ${Identifier.getInputName()}, this->uuid});
+  <#else>
+    ${Identifier.getBehaviorImplName()}.compute${ComponentHelper.getPortSpecificBehaviorName(comp, behavior)}(${Identifier.getInputName()});
+  </#if>
   ${tc.includeArgs("template.component.helper.ComputeResults", [comp, config, true, className])}
   ${tc.includeArgs("template.prepostconditions.hooks.Check", [comp, "post"])}
   }

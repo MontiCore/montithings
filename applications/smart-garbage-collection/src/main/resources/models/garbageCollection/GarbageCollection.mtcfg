@@ -1,0 +1,5 @@
+package garbageCollection;
+
+config GarbageCollection for GENERIC {
+  separate none;
+}

@@ -42,6 +42,7 @@ dependencies {
   implementation project(':languages:montiarc-extensions')
   implementation project(':languages:monticore-extensions')
   implementation project(':languages:mtconfig')
+  implementation project(":languages:semantic-compatibility")
   implementation "montiarc.languages:montiarc-fe:$montiarc_version"
   implementation "de.monticore:siunits:$siunits_version"
   implementation "de.monticore.lang:ocl:$ocl_version"

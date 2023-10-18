@@ -1,0 +1,91 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
+}
+
+def grammarDir = "$projectDir/src/main/grammars"
+def reportsDir = "$buildDir/generated-sources/monticore/sourcecode/reports/"
+
+sourceSets {
+    main {
+        java.srcDirs += ["$buildDir/generated-sources/monticore/sourcecode"]
+    }
+    test {
+        java.srcDirs += ["$buildDir/generated-test-sources/monticore/sourcecode"]
+    }
+    grammars {
+        resources {
+            srcDirs(grammarDir, reportsDir)
+            include("**/*.mc4", "**/*.cd")
+        }
+    }
+}
+
+repositories {
+    maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        url repo
+    }
+    maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        url sePrivateRepo
+    }
+
+    maven {
+        url = uri('https://git.rwth-aachen.de/api/v4/groups/montibelle/-/packages/maven')
+    }
+
+    mavenCentral()
+}
+
+dependencies {
+    grammar "de.monticore:monticore-grammar:$monticore_version:$grammars_classifier"
+    grammar("de.monticore.lang:JSON:7.0.0:$grammars_classifier"){
+        exclude group:'de.monticore', module:'monticore-grammar'
+    }
+
+    implementation 'commons-cli:commons-cli:1.4'
+    implementation "de.se_rwth.commons:se-commons-logging:$se_commons_version"
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "org.antlr:antlr4:$antlr_version"
+    implementation "de.monticore:monticore-runtime:$monticore_version"
+    implementation "de.monticore:monticore-grammar:$monticore_version"
+    implementation 'de.monticore.lang:JSON:7.0.0'
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+    testImplementation "org.assertj:assertj-core:$assertj_version"
+    testImplementation "de.monticore:monticore-runtime:$monticore_version"
+}
+
+group = 'montithings.tools'
+version = '7.0.0-SNAPSHOT'
+description = 'openapi-generator'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+
+java {
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+compileJava {
+    dependsOn project.collect { it.tasks.findAll { task -> task.name.startsWith("generateGrammar") } }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

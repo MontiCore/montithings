@@ -72,6 +72,19 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>semantic-compatibility</artifactId>
+            <classifier>${grammars.classifier}</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>montithings.languages</groupId>
+            <artifactId>semantic-compatibility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- MontiArc's languages -->
 
         <dependency>

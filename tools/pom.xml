@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>openapi-generator</module>
         <module>sd4componenttesting</module>
     </modules>
 

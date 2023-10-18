@@ -40,6 +40,23 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
 <#if brokerIsMQTT>
   MqttClient *  mqttClientInstance;
   MqttClient *  mqttClientLocalInstance;
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
+    MqttClient *  mqttClientCompatibilityInstance;
+    <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
+      bool isConnectedToOtherComponent = false;
+      MqttClient *  mqttClientSenderInstance;
+      bool mqttClientSenderInstanceHasBeenConnected = false;
+      std::set< std::string> subscriptionsToSend;
+    <#else>
+      <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
+        bool isConnected${p.getName()} = false;
+        MqttClient *  mqttClientSenderInstance${p.getName()};
+        bool mqttClientSenderInstance${p.getName()}HasBeenConnected = false;
+        std::set< std::string> subscriptionsToSend${p.getName()};
+      </#list>
+    </#if>
+    std::string ip_address = "";
+  </#if>
   json sensorActuatorTypes;
 
   <#if needsProtobuf>
@@ -59,6 +76,11 @@ ${tc.includeArgs("template.component.declarations.DDS", [config])}
       std::string currentTopic${p.getName()?cap_first};
     </#if>
   </#list>
+
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
+    std::thread th__Compatibility;
+  </#if>
+  std::promise<void> exitSignal__Compatibility;
 </#if>
 
 ${tc.includeArgs("template.logtracing.hooks.VariableDeclaration", [comp, config])}
@@ -114,6 +136,19 @@ ${TypesPrinter.printConstructorArguments(comp)});
   void sendKeepAlive(std::string sensorActuatorConfigTopic, std::string portName, std::string typeName, std::future<void> keepAliveFuture);
   void sendConnectionString (std::string connectionStringTopic, std::string connectionString);
   MqttClient *getMqttClientInstance () const;
+  <#if ComponentHelper.shouldGenerateCompatibilityHeartbeat(comp, config)>
+    <#if ComponentHelper.getPortsWithTestBlocks(comp)?size <= 0>
+      MqttClient *getMqttClientSenderInstance() const;
+      std::set< std::string> *getSubscriptionsToSend();
+    <#else>
+      <#list ComponentHelper.getPortsWithTestBlocks(comp) as p>
+        MqttClient *getMqttClientSenderInstance${p.getName()}() const;
+        std::set< std::string> *getSubscriptionsToSend${p.getName()}();
+        void setIsConnected${p.getName()}();
+      </#list>
+    </#if>
+    void sendCompatibilityHeartbeat(std::future<void> keepAliveFuture);
+  </#if>
 </#if>
 
 <#if brokerIsDDS>

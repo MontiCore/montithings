@@ -43,13 +43,15 @@ public class ConfigParams {
 
   protected ApplyPatterns applyAnomalyDetectionPattern = ApplyPatterns.OFF;
 
-  protected ApplyPatterns applyNetworkMinimizationPattern = ApplyPatterns.OFF;;
+  protected ApplyPatterns applyNetworkMinimizationPattern = ApplyPatterns.OFF;
 
   protected ApplyPatterns applyGrafanaPattern = ApplyPatterns.OFF;
 
   protected RecordingMode recordingMode = RecordingMode.OFF;
 
   protected PortNameTrafo portNameTrafo = PortNameTrafo.OFF;
+
+  protected AutomaticComponentAdditions automaticComponentAdditions = AutomaticComponentAdditions.OFF;
 
   protected String grafanaInstanceUrl = "";
 
@@ -380,6 +382,14 @@ public class ConfigParams {
 
   public void setPortNameTrafo(PortNameTrafo portNameTrafo) {
     this.portNameTrafo = portNameTrafo;
+  }
+
+  public AutomaticComponentAdditions getAutomaticComponentAdditions() {
+    return automaticComponentAdditions;
+  }
+
+  public void setAutomaticComponentAdditions(AutomaticComponentAdditions automaticComponentAdditions) {
+    this.automaticComponentAdditions = automaticComponentAdditions;
   }
 
   public Multimap<ComponentTypeSymbol, String> getTypeArguments() {

@@ -1,0 +1,27 @@
+// (c) https://github.com/MontiCore/monticore
+
+/* Alpha-version: This is intended to become a MontiCore stable grammar. */
+
+/**
+ * This grammar is intended for modelling semantic requirements which a MontiThings
+ * application has for components it connects with at run-time. This is done by modeling
+ * inputs on incoming ports and the expected outgoing values.
+ */
+component grammar ComponentTest extends de.monticore.expressions.ExpressionsBasis, de.monticore.SIUnitLiterals
+{
+
+  TestBlock =
+    "test" "{"
+      SendValueOnPort+
+      WaitStatement
+      ExpectValueOnPort+
+    "}";
+  nokeyword "test";
+
+  SendValueOnPort = Name "=" Expression ";" ;
+  WaitStatement = "wait" SIUnitLiteral ";" ;
+  ExpectValueOnPort = "assert" Name CompareOperator Expression ";" ;
+  CompareOperator = equals:"==" | notEquals:"!=" | lessThan:"<" |
+                    greaterThan:">" | lessEquals:"<=" | greaterEquals:">=";
+
+}

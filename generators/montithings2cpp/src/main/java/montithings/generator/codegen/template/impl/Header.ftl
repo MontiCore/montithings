@@ -81,7 +81,11 @@ void setInstanceName (const std::string &instanceName);
 
 <#list ComponentHelper.getPortSpecificBehaviors(comp) as behavior>
   <#assign behaviorName = ComponentHelper.getPortSpecificBehaviorName(comp, behavior)>
+  <#if ComponentHelper.hasTest(comp)>
+  ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input, sole::uuid uuid);
+  <#else>
   ${compname}Result${generics} compute${behaviorName}(${compname}Input${generics} input);
+  </#if>
 </#list>
 
 <#list ComponentHelper.getPortSpecificInitBehaviors(comp) as initBehavior>
