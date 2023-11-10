@@ -16,7 +16,7 @@ namespace montithings {
     RestResult
     RestImpl::compute (RestInput input)
     {
-        httplib::Client2 cli("https://api.cognitive.microsofttranslator.com");
+        httplib::Client cli("https://api.cognitive.microsofttranslator.com");
 
         httplib::Headers headers = {
             { "Ocp-Apim-Subscription-Key", std::getenv("primarykey") },

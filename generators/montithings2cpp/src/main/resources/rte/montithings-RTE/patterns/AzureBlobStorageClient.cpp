@@ -34,7 +34,7 @@ AzureBlobStorageClient::upload(std::string json, std::string filename, std::stri
 
   std::cout << "Upload url: " << uploadUrlParts[0] << uploadUrlParts[1] << std::endl;
 
-  httplib::Client2 cli(hostUrl.c_str());
+  httplib::Client cli(hostUrl.c_str());
 
   httplib::Headers headers = {
       {"x-ms-blob-type", "BlockBlob"},
@@ -74,7 +74,7 @@ AzureBlobStorageClient::download(std::string downloadUrl)
 
   std::cout << "Download url: " << downloadUrlParts[0] << downloadUrlParts[1] << std::endl;
 
-  httplib::Client2 cli(hostUrl.c_str());
+  httplib::Client cli(hostUrl.c_str());
 
   httplib::Headers headers = {};
 
