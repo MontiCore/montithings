@@ -13,7 +13,7 @@ stages:
   - generator-test
   - post-test
   - security
-  - build-applications
+  - build-examples
   - mirror
 
 variables:
