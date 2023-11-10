@@ -6,7 +6,7 @@
     <!-- == PROJECT COORDINATES ============================================= -->
     <parent>
         <artifactId>examples</artifactId>
-        <groupId>montithings.applications</groupId>
+        <groupId>montithings.examples</groupId>
         <version>7.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -91,13 +91,13 @@
         </dependency>
 
         <dependency>
-            <groupId>montithings.applications</groupId>
+            <groupId>montithings.examples</groupId>
             <artifactId>Calculator</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>montithings.applications</groupId>
+            <groupId>montithings.examples</groupId>
             <artifactId>Printer</artifactId>
             <version>${project.version}</version>
         </dependency>

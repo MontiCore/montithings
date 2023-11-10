@@ -11,7 +11,7 @@
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>montithings.applications</groupId>
+  <groupId>montithings.examples</groupId>
   <artifactId>examples</artifactId>
   <packaging>pom</packaging>
 
