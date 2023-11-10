@@ -4,7 +4,7 @@
  * sends data on an internally managed mqtt topic.
  * make a dynamic listener subscribe to this topic by using announce()
  * then send data via sendData() --> The listener will receive the data
- * as demonstrated in applications/dynamics
+ * as demonstrated in examples/dynamics
  */
 
 #ifndef mt_interface_h

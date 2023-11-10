@@ -1,0 +1,28 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- == PROJECT COORDINATES ============================================= -->
+  <parent>
+    <artifactId>examples</artifactId>
+    <groupId>montithings.applications</groupId>
+    <version>7.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>language-features</artifactId>
+  <modules>
+
+    <module>behavior</module>
+    <module>class-diagrams</module>
+    <module>initialization</module>
+    <module>interface-components</module>
+    <module>interface-componentsMTB</module>
+    <module>ocl</module>
+    <module>pre-postconditions</module>
+    <module>si-units</module>
+    <module>statecharts</module>
+  </modules>
+
+  <packaging>pom</packaging>
+
+</project>

@@ -90,7 +90,7 @@ mvn clean install -Dexec.skip
 Now the project should start building. This can take a while (10-15 minutes are normal).
 
 Once the project is built, you can look at the generated source code.
-The `application` folder contains some example applications.
+The `examples` folder contains some example applications.
 Each of them should now contain a `target/generated-sources` subdirectory.
 If you want, you can reformat the generated sources for better readability using the
 `reformatCode.sh` script (requires clang-format). Within that directory you can find

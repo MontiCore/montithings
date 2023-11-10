@@ -12,7 +12,7 @@
 	<!-- == PROJECT MODULES ================================================= -->
 
 	<modules>
-		<module>applications</module>
+		<module>examples</module>
 		<module>generators</module>
 		<module>languages</module>
 		<module>services</module>

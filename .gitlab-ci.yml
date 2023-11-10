@@ -192,7 +192,7 @@ Validate Gradle:
 
   script:
     - gradle clean assemble
-    - cd applications
+    - cd examples
     - gradle clean assemble
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
@@ -207,7 +207,7 @@ Validate Maven:
     paths:
       - generators/montithings2cpp/target/
       - languages/montithings/target/
-      - applications
+      - examples
     expire_in: 1 week
 
 Unit Test Gradle:
@@ -237,8 +237,8 @@ Unit Test Gradle:
         - ./languages/montithings/target/surefire-reports/TEST-*.xml
     paths:
       - generators/montithings2cpp/target/
-      - "applications/**/target/generated-sources"
-      - "applications/**/target/generated-test-sources"
+      - "examples/**/target/generated-sources"
+      - "examples/**/target/generated-test-sources"
 
 Unit Test JDK 8:
   image: registry.git.rwth-aachen.de/monticore/container-registry/maven:3-jdk-8
@@ -279,14 +279,14 @@ Generator Test DDS:
   image: $CI_REGISTRY_IMAGE/mtcmakedds
   <<: *generator_test_definition
 
-Compile Applications:
+Compile Examples:
   image: $CI_REGISTRY_IMAGE/mtcmake
   stage: generator-test
   dependencies:
     - Unit Test JDK 11 #download generated-test-sources
   needs: ["Unit Test JDK 11"] # can run immediately after Unit Test JDK 11
   script:
-    - cd applications
+    - cd examples
     - ./compile.sh
 
 .test-application-template: &test-application-definition
@@ -297,7 +297,7 @@ Compile Applications:
   stage: generator-test
   retry: 2
   script:
-    - cd applications/$APPLICATION_NAME/target/generated-test-sources
+    - cd examples/$APPLICATION_NAME/target/generated-test-sources
     - ./build.sh
     - cd build/bin
     - for f in *; do ./"$f"; done
@@ -417,8 +417,8 @@ Code Quality:
     reports:
       codequality: codeclimate.json
 
-#Docker Applications:
-#  stage: build-applications
+#Docker Examples:
+#  stage: build-examples
 #  dependencies:
 #    - Validate Maven #download artifacts from build
 #  variables:
@@ -508,17 +508,17 @@ flawfinder-sast:
 ##########################################
 
 trigger-hierarchy:
-  stage: build-applications
+  stage: build-examples
   trigger:
-    project: monticore/montithings/applications/hierarchy
+    project: monticore/montithings/examples/hierarchy
     branch: master
   only:
     - develop
 
 trigger-smart-home:
-  stage: build-applications
+  stage: build-examples
   trigger:
-    project: monticore/montithings/applications/smart-home
+    project: monticore/montithings/examples/smart-home
     branch: development
   only:
     - develop
