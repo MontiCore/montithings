@@ -1,0 +1,39 @@
+/* (c) https://github.com/MontiCore/monticore */
+
+pluginManagement {
+  repositories {
+    maven {
+      credentials.username mavenUser
+      credentials.password mavenPassword
+      url sePublicRepo
+    }
+    gradlePluginPortal()
+  }
+}
+
+rootProject.name = 'examples'
+
+
+include(':basic-input-output')
+
+includeBuild '../'
+//include(':fireAlarm')
+include(':hierarchy')
+include(':language-features:behavior')
+include(':language-features:class-diagrams')
+include(':language-features:error-handling')
+include(':language-features:interface-components')
+include(':language-features:interface-componentsMTB')
+include(':language-features:ocl')
+include(':language-features:pre-postconditions')
+include(':language-features:si-units')
+include(':language-features:statecharts')
+include(':language-features')
+include(':dds-ports')
+include(':dynamics')
+include(':log-filtering')
+include(':mqtt-ports')
+include(':retain-state')
+include(':record-transform-replay')
+include(':sensor-actuator-access')
+include(':face-id-door-opener')
