@@ -510,7 +510,7 @@ flawfinder-sast:
 trigger-hierarchy:
   stage: build-examples
   trigger:
-    project: monticore/montithings/examples/hierarchy
+    project: monticore/montithings/applications/hierarchy
     branch: master
   only:
     - develop
@@ -518,7 +518,7 @@ trigger-hierarchy:
 trigger-smart-home:
   stage: build-examples
   trigger:
-    project: monticore/montithings/examples/smart-home
+    project: monticore/montithings/applications/smart-home
     branch: development
   only:
     - develop
