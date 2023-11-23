@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.services.openapi_generator.openapi.generator;
 
 import de.monticore.generating.GeneratorEngine;

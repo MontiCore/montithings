@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;

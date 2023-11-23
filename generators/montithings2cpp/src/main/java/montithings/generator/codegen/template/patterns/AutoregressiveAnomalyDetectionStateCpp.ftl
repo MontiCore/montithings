@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("packageName", "compname", "namesOfInputPorts")}
 #include "${compname}State.h"
 #include <iostream>

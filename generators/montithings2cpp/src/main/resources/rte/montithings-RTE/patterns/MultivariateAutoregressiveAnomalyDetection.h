@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #ifndef MULTIREGRESSIVE_ANOMALY_DETECTION_HEADER
 #define MULTIREGRESSIVE_ANOMALY_DETECTION_HEADER
 

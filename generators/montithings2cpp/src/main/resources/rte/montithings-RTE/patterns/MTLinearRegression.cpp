@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #include "MTLinearRegression.h"
 
 float MTLinearRegression::predict_value(float input, std::vector<float> values)

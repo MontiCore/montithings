@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("config","name","explain","existsHWC")}
 <#include "/template/Preamble.ftl">
 

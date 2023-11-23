@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.steps.trafos.patterns;
 
 public class GrafanaPanel {

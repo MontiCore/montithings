@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 from fastapi import FastAPI, Header
 
 from .models import TerraformBody

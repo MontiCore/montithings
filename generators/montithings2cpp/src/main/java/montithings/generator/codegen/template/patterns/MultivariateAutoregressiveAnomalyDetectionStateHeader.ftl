@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("packageName", "compname", "batchesOfNamesOfInputPorts")}
 #pragma once
 #include "${compname}StateTOP.h"

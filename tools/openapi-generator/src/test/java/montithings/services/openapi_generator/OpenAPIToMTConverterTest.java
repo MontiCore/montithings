@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.services.openapi_generator;
 
 import de.monticore.lang.json._ast.ASTJSONDocument;

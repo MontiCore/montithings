@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.services.prolog_generator.devicedescription.generator;
 
 import de.monticore.expressions.prettyprint.CommonExpressionsPrettyPrinter;

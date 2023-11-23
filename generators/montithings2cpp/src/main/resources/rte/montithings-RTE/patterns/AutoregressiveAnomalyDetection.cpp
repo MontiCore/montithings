@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #include "AutoregressiveAnomalyDetection.h"
 
 bool AutoregressiveAnomalyDetection::is_anomaly(float input, std::vector<float> past_values)

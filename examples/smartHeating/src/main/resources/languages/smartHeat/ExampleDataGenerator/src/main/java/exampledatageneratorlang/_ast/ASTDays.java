@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package exampledatageneratorlang._ast;
 import java.util.ArrayList;
 

@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package exampledatageneratorlang._ast;
 
 public class ASTMonth extends ASTMonthTOP {

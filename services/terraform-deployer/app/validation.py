@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 from fastapi import HTTPException
 
 from app.models import TerraformBody

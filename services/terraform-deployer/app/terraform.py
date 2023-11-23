@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 import os
 
 from base64 import b64decode
