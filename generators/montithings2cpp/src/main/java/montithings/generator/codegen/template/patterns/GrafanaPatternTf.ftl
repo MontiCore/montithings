@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("grafanaInstanceUrl", "grafanaApiKey", "panels", "title", "setupProvider")}
 <#if setupProvider == true>
 provider "grafana" {

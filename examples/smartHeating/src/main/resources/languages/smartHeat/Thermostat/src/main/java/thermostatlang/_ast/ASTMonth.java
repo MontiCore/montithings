@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package thermostatlang._ast;
 
 public class ASTMonth extends ASTMonthTOP {

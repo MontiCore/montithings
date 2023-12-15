@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package componenttest._ast;
 
 public class ASTTestBlock extends ASTTestBlockTOP {

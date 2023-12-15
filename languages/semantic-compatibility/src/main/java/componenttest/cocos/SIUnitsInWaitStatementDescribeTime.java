@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package componenttest.cocos;
 
 import componenttest._ast.ASTWaitStatement;

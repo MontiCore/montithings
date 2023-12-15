@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.generator.cd2proto;
 
 import de.monticore.generating.templateengine.freemarker.MontiCoreFreeMarkerException;

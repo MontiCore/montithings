@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # montithings2cpp Generator
 
 The `montithings2cpp` generator is MontiThings' main generator that

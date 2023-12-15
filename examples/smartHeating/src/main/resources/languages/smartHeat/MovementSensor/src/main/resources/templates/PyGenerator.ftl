@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 # (c) https://github.com/MontiCore/monticore
 <#setting locale="en_US">
 <#assign offsets=[64,59,55,50,45,40]>

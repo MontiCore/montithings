@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Services
 
 This folder contains services that mostly run alongside the generated

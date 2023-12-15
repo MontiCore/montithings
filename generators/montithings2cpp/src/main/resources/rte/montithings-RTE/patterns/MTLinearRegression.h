@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 #ifndef MT_LINEAR_REGRESSION_HEADER
 #define MT_LINEAR_REGRESSION_HEADER
 

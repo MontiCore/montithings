@@ -1,3 +1,4 @@
+# (c) https://github.com/MontiCore/monticore
 from typing import List, Union
 
 from pydantic import BaseModel

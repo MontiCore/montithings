@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server.data;
 
 import java.nio.charset.StandardCharsets;

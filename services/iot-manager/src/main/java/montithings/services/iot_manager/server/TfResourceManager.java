@@ -1,3 +1,4 @@
+// (c) https://github.com/MontiCore/monticore
 package montithings.services.iot_manager.server;
 
 import java.io.BufferedReader;

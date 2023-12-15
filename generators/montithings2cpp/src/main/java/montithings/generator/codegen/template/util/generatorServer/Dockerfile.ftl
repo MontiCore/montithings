@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("languagePaths","existsHWC")}
 <#include "/template/Preamble.ftl">
 #

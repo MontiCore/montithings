@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Example Applications
 
 This folder contains many example projects that showcase MontiThings.

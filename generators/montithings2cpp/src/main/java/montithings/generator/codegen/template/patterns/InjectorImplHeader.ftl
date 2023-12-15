@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("packageName", "compname")}
 #pragma once
 #include "${compname}ImplTOP.h"

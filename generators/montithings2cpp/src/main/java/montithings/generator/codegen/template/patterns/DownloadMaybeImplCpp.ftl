@@ -1,3 +1,4 @@
+<#-- (c) https://github.com/MontiCore/monticore -->
 ${tc.signature("packageName", "compname", "nameOfUrlInputPort", "nameOfDataInputPort", "nameOfOutputPort", "dataPortType")}
 #include "${compname}Impl.h"
 
