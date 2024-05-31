@@ -27,11 +27,15 @@ cd dependencies
 sudo apt-get update
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository -y ppa:openjdk-r/ppa
+sudo apt-get install -y openjdk-11-jdk 
 sudo apt-get install -y g++ git make cmake ninja-build mosquitto-dev libmosquitto-dev curl maven \
-  openjdk-11-jdk python3 python3-pip mosquitto-clients libssl-dev libpq-dev \
-  protobuf-compiler libprotobuf-dev python3-protobuf
+  python3 python3-pip mosquitto-clients libssl-dev libpq-dev \
+  protobuf-compiler libprotobuf-dev python3-protobuf zip unzip
 
 sudo apt-get install -y python3-paho-mqtt || pip3 install paho-mqtt
+
+# Make sure to use Java 11
+sudo update-java-alternatives -s $(update-java-alternatives -l | grep java-1.11.0-openjdk | awk 'NR == 1 {print $3}')
 
 # Install Docker
 if ! command_exists docker && ! [ "$SKIPDOCKER" ]
