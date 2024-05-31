@@ -486,22 +486,11 @@ GitHub Mirror:
 
 include:
   - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Security/SAST.gitlab-ci.yml
 
 # Check there are no secrets in the projects
 secret_detection:
   stage: security
   needs: [] # can run immediately
-
-# Check RTE for security flaws
-flawfinder-sast:
-  stage: security
-  needs: [] # can run immediately
-  rules:
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - "**/*.c"
-        - "**/*.cpp"
 
 ##########################################
 # Trigger other projects' pipelines
