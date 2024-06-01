@@ -480,6 +480,14 @@ GitHub Mirror:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
 
+Docker GitHub Codespace:
+  <<: *docker_build_definition
+  stage: mirror
+  script:
+    - docker build -t montithings/codespace -f .devcontainer/Dockerfile .
+    - docker push montithings/codespace
+
+
 ##########################################
 # Security Jobs
 ##########################################
