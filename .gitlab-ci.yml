@@ -484,11 +484,8 @@ Docker GitHub Codespace:
   <<: *docker_build_definition
   stage: mirror
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/codespace -f .devcontainer/Dockerfile .
-    - docker tag $CI_REGISTRY_IMAGE/codespace montithings/codespace
+    - docker build -t montithings/codespace -f .devcontainer/Dockerfile .
     - docker push montithings/codespace
-    - docker push $CI_REGISTRY_IMAGE/codespace
   rules:
     - when: manual
 
