@@ -486,8 +486,6 @@ Docker GitHub Codespace:
   script:
     - docker build -t montithings/codespace -f .devcontainer/Dockerfile .
     - docker push montithings/codespace
-  rules:
-    - when: manual
 
 
 ##########################################
