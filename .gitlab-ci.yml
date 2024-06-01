@@ -483,11 +483,12 @@ GitHub Mirror:
 Docker GitHub Codespace:
   <<: *docker_build_definition
   stage: mirror
+  needs: ["GitHub Mirror"] # Wait to complete mirror so docker pulls the latest version
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
       when: on_success
   script:
-    - docker build -t montithings/codespace -f .devcontainer/Dockerfile .
+    - docker build --no-cache -t montithings/codespace -f .devcontainer/Dockerfile .
     - docker push montithings/codespace
   
 
