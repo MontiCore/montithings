@@ -36,9 +36,16 @@ For the purpose of this tutorial, you can choose between the following options:
 3. using MontiThings' Docker containers to avoid an installation [(*install instructions*)](./docs/install/docker.md)
 4. using one of our supported online IDEs (you will need to sign in with your GitHub account):
 
-   | [![Open in GitHub Codespace](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=develop&repo=403976771) | [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings)  |
-      |---|---|
+   
 
+## Open in an Online IDE of your choice
+Skip cloning locally, and start developing in the cloud
+
+[![Open in GitHub Codespace](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=develop&repo=403976771) 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/monticore/montithings) 
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/monticore/montithings)
+[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/monticore/montithings)
+[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/monticore/montithings)
 
 # Building and Running Your First Application
 
