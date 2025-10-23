@@ -2,6 +2,7 @@
 package montithings.generator.helper;
 
 import arcbasis._symboltable.ComponentTypeSymbol;
+import com.google.common.base.Verify;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import montithings._symboltable.IMontiThingsScope;
@@ -218,7 +219,7 @@ public class FileHelper {
           if (recursive) {
             pathStream = Files.walk(hwcPath.toPath());
           } else {
-            pathStream = Arrays.stream(Objects.requireNonNull(hwcPath.listFiles())).map(File::toPath);
+            pathStream = Arrays.stream(Verify.verifyNotNull(hwcPath.listFiles())).map(File::toPath);
           }
 
           files = pathStream
@@ -251,7 +252,7 @@ public class FileHelper {
           if (recursive) {
             pathStream = Files.walk(hwcPath.toPath());
           } else {
-            pathStream = Arrays.stream(Objects.requireNonNull(hwcPath.listFiles())).map(File::toPath);
+            pathStream = Arrays.stream(Verify.verifyNotNull(hwcPath.listFiles())).map(File::toPath);
           }
 
           files = pathStream
@@ -299,7 +300,7 @@ public class FileHelper {
     File[] subDirs = new File(modelPath).listFiles(File::isDirectory);
 
     // Iterate over subdirectories of the model folder and add the paths of the subdirs to array
-    for (File subDir : Objects.requireNonNull(subDirs)) {
+    for (File subDir : Verify.verifyNotNull(subDirs)) {
       subPackagesPaths.add(new File(subDir.getAbsolutePath()));
     }
 

@@ -77,8 +77,6 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.swing.text.DocumentFilter;
-
 import static montithings.generator.helper.TypesHelper.java2cppTypeString;
 
 /**
@@ -1094,7 +1092,7 @@ public class ComponentHelper {
 
   public static String getInitBehaviorName(ComponentTypeSymbol component, ASTBehavior behavior) {
     return getPortSpecificInitBehaviorName(component,
-      Objects.requireNonNull(getInitBehavior(component, behavior)));
+      Preconditions.checkNotNull(getInitBehavior(component, behavior)));
   }
 
   public static List<ASTInitBehavior> getInitBehaviorsWithoutBehaviors(
