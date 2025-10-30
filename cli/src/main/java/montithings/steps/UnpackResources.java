@@ -1,6 +1,7 @@
 // (c) https://github.com/MontiCore/monticore
 package montithings.steps;
 
+import com.google.common.base.Verify;
 import montithings.CLIState;
 import montithings.CLIStep;
 import montithings.MTCLI;
@@ -54,7 +55,7 @@ public class UnpackResources extends CLIStep {
    * @param target copy destination directory
    */
   public void copyFromJar(String source, final Path target) throws URISyntaxException, IOException {
-    URI resource = Objects.requireNonNull(MTCLI.class.getResource("")).toURI();
+    URI resource = Verify.verifyNotNull(MTCLI.class.getResource("")).toURI();
     FileSystem fileSystem;
     try {
       fileSystem = FileSystems.newFileSystem(resource, Collections.<String, String>emptyMap());

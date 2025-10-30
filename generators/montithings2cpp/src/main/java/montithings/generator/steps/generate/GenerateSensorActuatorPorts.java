@@ -2,6 +2,7 @@
 package montithings.generator.steps.generate;
 
 import arcbasis._symboltable.PortSymbol;
+import com.google.common.base.Verify;
 import de.se_rwth.commons.logging.Log;
 import montithings.generator.config.SplittingMode;
 import montithings.generator.config.TargetPlatform;
@@ -43,7 +44,7 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
 
     List<String> executableSensorActuatorPorts = new ArrayList<>();
 
-    for (File pckg : Objects.requireNonNull(packages)) {
+    for (File pckg : Verify.verifyNotNull(packages)) {
       Set<String> sensorActuatorPorts = getFilesWithEnding(pckg, getFileEndings(), false);
       for (String port : sensorActuatorPorts) {
         if (!templatePortBelongsToComponent(port, state)) {
@@ -56,7 +57,7 @@ public class GenerateSensorActuatorPorts extends GeneratorStep {
       }
     }
 
-    for (File pckg : Objects.requireNonNull(packages)) {
+    for (File pckg : Verify.verifyNotNull(packages)) {
       Set<String> sensorActuatorPorts = getFilesWithPrefix(pckg, Collections.singleton("&"), false);
       for (String port : sensorActuatorPorts) {
         Log.debug("Processing handwritten port '" + port + "'", TOOL_NAME);
